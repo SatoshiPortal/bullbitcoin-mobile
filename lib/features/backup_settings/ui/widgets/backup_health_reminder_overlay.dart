@@ -6,12 +6,12 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_health_reminder.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_health_reminder_cubit.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class BackupHealthReminderOverlay extends StatefulWidget {
   final Widget child;
@@ -92,36 +92,10 @@ class _BackupHealthReminderBlocker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final decision = state.decision;
-    final title = switch (decision.posture) {
-      BackupHealthPosture.recoverbullOnly =>
-        context.loc.backupHealthRecoverbullOnlyTitle,
-      BackupHealthPosture.physicalOnly =>
-        context.loc.backupHealthPhysicalOnlyTitle,
-      BackupHealthPosture.both => context.loc.backupHealthBothTitle,
-    };
-    final intro = switch (decision.trigger) {
-      BackupHealthTrigger.scheduled => context.loc.backupHealthScheduledIntro,
-      BackupHealthTrigger.balanceMilestone =>
-        context.loc.backupHealthBalanceIntro,
-    };
-    final body = switch (decision.posture) {
-      BackupHealthPosture.recoverbullOnly =>
-        context.loc.backupHealthRecoverbullOnlyBody,
-      BackupHealthPosture.physicalOnly =>
-        context.loc.backupHealthPhysicalOnlyBody,
-      BackupHealthPosture.both => context.loc.backupHealthBothBody,
-    };
-    final primaryLabel = switch (decision.posture) {
-      BackupHealthPosture.recoverbullOnly =>
-        context.loc.backupHealthMakePhysicalBackup,
-      BackupHealthPosture.physicalOnly =>
-        context.loc.backupHealthTestPhysicalBackup,
-      BackupHealthPosture.both => context.loc.backupHealthReviewBackups,
-    };
-    final secondaryLabel =
-        decision.posture == BackupHealthPosture.recoverbullOnly
-        ? context.loc.backupHealthUnderstandRisk
-        : context.loc.backupHealthRemindThreeMonths;
+    final isMilestone =
+        decision.trigger == BackupHealthTrigger.balanceMilestone;
+    final urgesPhysicalBackup = decision.posture.urgesPhysicalBackup;
+    final lastTestedAt = decision.physicalBackupTestedAt;
 
     return Positioned.fill(
       child: PopScope(
@@ -153,24 +127,43 @@ class _BackupHealthReminderBlocker extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               BBText(
-                                title,
+                                isMilestone
+                                    ? context.loc.backupHealthMilestoneTitle
+                                    : context.loc.backupHealthReminderTitle,
                                 style: context.font.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                                 color: context.appColors.onSurface,
                               ),
                               const Gap(16),
+                              if (isMilestone) ...[
+                                BBText(
+                                  context.loc.backupHealthMilestoneBody,
+                                  style: context.font.bodyMedium,
+                                  color: context.appColors.onSurface,
+                                ),
+                                const Gap(8),
+                              ],
                               BBText(
-                                intro,
+                                urgesPhysicalBackup
+                                    ? context
+                                          .loc
+                                          .backupHealthRecoverbullOnlyBody
+                                    : context.loc.backupHealthTestBackupBody,
                                 style: context.font.bodyMedium,
                                 color: context.appColors.onSurface,
                               ),
-                              const Gap(8),
-                              BBText(
-                                body,
-                                style: context.font.bodyMedium,
-                                color: context.appColors.onSurface,
-                              ),
+                              if (!urgesPhysicalBackup &&
+                                  lastTestedAt != null) ...[
+                                const Gap(8),
+                                BBText(
+                                  context.loc.backupHealthLastTested(
+                                    timeago.format(lastTestedAt),
+                                  ),
+                                  style: context.font.bodySmall,
+                                  color: context.appColors.textMuted,
+                                ),
+                              ],
                               if (state.failure != null) ...[
                                 const Gap(12),
                                 BBText(
@@ -185,37 +178,24 @@ class _BackupHealthReminderBlocker extends StatelessWidget {
                       ),
                       const Gap(24),
                       BBButton.big(
-                        label: primaryLabel,
+                        label: urgesPhysicalBackup
+                            ? context.loc.backupHealthAddPhysicalBackupAction
+                            : context.loc.backupHealthTestBackupAction,
                         onPressed: () => _startPrimaryAction(context),
                         bgColor: context.appColors.onSurface,
                         textColor: context.appColors.surface,
                         disabled: state.isSaving,
                       ),
-                      const Gap(12),
-                      BBButton.big(
-                        label: secondaryLabel,
-                        onPressed: () => context
-                            .read<BackupHealthReminderCubit>()
-                            .acknowledge(),
-                        bgColor: context.appColors.surface,
-                        textColor: context.appColors.onSurface,
-                        outlined: true,
-                        disabled: state.isSaving,
+                      const Gap(8),
+                      TextButton(
+                        onPressed: state.isSaving
+                            ? null
+                            : () => context
+                                  .read<BackupHealthReminderCubit>()
+                                  .acknowledge(),
+                        child: Text(context.loc.backupHealthNotNow),
                       ),
-                      if (decision.posture ==
-                          BackupHealthPosture.physicalOnly) ...[
-                        const Gap(8),
-                        TextButton(
-                          onPressed: state.isSaving
-                              ? null
-                              : () => _openOtherBackupOptions(context),
-                          child: Text(
-                            context.loc.backupHealthOtherBackupOptions,
-                          ),
-                        ),
-                      ],
-                      if (state.failure != null) ...[
-                        const Gap(8),
+                      if (state.failure != null)
                         TextButton(
                           onPressed: state.isSaving
                               ? null
@@ -224,7 +204,6 @@ class _BackupHealthReminderBlocker extends StatelessWidget {
                                     .dismissFailureForSession(),
                           child: Text(context.loc.backupHealthCloseForNow),
                         ),
-                      ],
                     ],
                   ),
                 ),
@@ -242,37 +221,11 @@ class _BackupHealthReminderBlocker extends StatelessWidget {
         .startRecommendedAction();
     if (!started || !context.mounted) return;
 
-    switch (state.decision.posture) {
-      case BackupHealthPosture.recoverbullOnly:
-        await context.pushNamed(
-          TestWalletBackupRoute.testPhysicalBackupFlow.name,
-          extra: TestPhysicalBackupFlow.backup,
-        );
-        return;
-      case BackupHealthPosture.physicalOnly:
-        await context.pushNamed(
-          TestWalletBackupRoute.testPhysicalBackupFlow.name,
-          extra: TestPhysicalBackupFlow.verify,
-        );
-        return;
-      case BackupHealthPosture.both:
-        await context.pushNamed(
-          BackupSettingsSubroute.backupOptions.name,
-          extra: BackupSettingsFlow.test,
-        );
-        return;
-    }
-  }
-
-  Future<void> _openOtherBackupOptions(BuildContext context) async {
-    final started = await context
-        .read<BackupHealthReminderCubit>()
-        .startRecommendedAction();
-    if (!started || !context.mounted) return;
-
     await context.pushNamed(
-      BackupSettingsSubroute.backupOptions.name,
-      extra: BackupSettingsFlow.backup,
+      TestWalletBackupRoute.testPhysicalBackupFlow.name,
+      extra: state.decision.posture.urgesPhysicalBackup
+          ? TestPhysicalBackupFlow.backup
+          : TestPhysicalBackupFlow.verify,
     );
   }
 }

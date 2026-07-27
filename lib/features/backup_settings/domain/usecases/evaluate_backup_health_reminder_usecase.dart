@@ -6,9 +6,7 @@ import 'package:bb_mobile/features/backup_settings/domain/repositories/backup_he
 import 'package:meta/meta.dart';
 
 class EvaluateBackupHealthReminderUsecase {
-  static final _oneMillionSats = BigInt.from(1000000);
-  static final _tenMillionSats = BigInt.from(10000000);
-  static const _recurrence = Duration(days: 90);
+  static final _milestoneSats = BigInt.from(10000000);
 
   final BackupHealthReminderRepository _repository;
   final DateTime Function() _clock;
@@ -36,34 +34,31 @@ class EvaluateBackupHealthReminderUsecase {
               wallet.masterFingerprint == fingerprint,
         )
         .toList();
-    final hasRecoverbull = seedWallets.any(
-      (wallet) => wallet.isEncryptedVaultTested,
+
+    final posture = BackupHealthPosture.of(
+      isEncryptedVaultTested: seedWallets.any(
+        (wallet) => wallet.isEncryptedVaultTested,
+      ),
+      isPhysicalBackupTested: seedWallets.any(
+        (wallet) => wallet.isPhysicalBackupTested,
+      ),
     );
-    final hasPhysical = seedWallets.any(
-      (wallet) => wallet.isPhysicalBackupTested,
-    );
+    if (posture == null) return const Ok(null);
 
-    if (!hasRecoverbull && !hasPhysical) return const Ok(null);
-
-    final posture = switch ((hasRecoverbull, hasPhysical)) {
-      (true, false) => BackupHealthPosture.recoverbullOnly,
-      (false, true) => BackupHealthPosture.physicalOnly,
-      (true, true) => BackupHealthPosture.both,
-      (false, false) => throw StateError('No verified backup'),
-    };
-
-    final backupTimestamps = <DateTime>[
+    final vaultTestedAt = _latest([
       for (final wallet in seedWallets)
         if (wallet.isEncryptedVaultTested &&
             wallet.latestEncryptedBackup != null)
           wallet.latestEncryptedBackup!.toUtc(),
+    ]);
+    final physicalTestedAt = _latest([
       for (final wallet in seedWallets)
         if (wallet.isPhysicalBackupTested &&
             wallet.latestPhysicalBackup != null)
           wallet.latestPhysicalBackup!.toUtc(),
-    ];
-    final latestBackupAt = _latest(backupTimestamps);
-    BackupHealthReminderRecord record;
+    ]);
+
+    final BackupHealthReminderRecord record;
     switch (await _repository.fetch(fingerprint)) {
       case Ok(:final value):
         record = value;
@@ -71,51 +66,43 @@ class EvaluateBackupHealthReminderUsecase {
         return Err(failure);
     }
 
-    if (record.pendingActionStartedAt != null) {
-      final actionCompleted =
-          latestBackupAt != null &&
-          !latestBackupAt.isBefore(record.pendingActionStartedAt!.toUtc());
-      record = record.copyWith(
-        highestHandledBalanceTier: actionCompleted
-            ? BackupBalanceTier.highest(
-                record.highestHandledBalanceTier,
-                record.pendingActionBalanceTier,
-              )
-            : record.highestHandledBalanceTier,
-        clearPendingAction: true,
-      );
-      if (await _repository.save(record) case Err(:final failure)) {
-        return Err(failure);
-      }
-    }
-
-    final currentTier = _balanceTier(_eligibleBalance(wallets, arkBalanceSat));
-    if (currentTier.isHigherThan(record.highestHandledBalanceTier)) {
+    // The stakes changing is worth interrupting for once per wallet, whatever
+    // the schedule says.
+    if (!record.crossedTenMillionSats &&
+        _eligibleBalance(wallets, arkBalanceSat) >= _milestoneSats) {
       return Ok(
         BackupHealthDecision(
           masterFingerprint: fingerprint,
           posture: posture,
           trigger: BackupHealthTrigger.balanceMilestone,
-          currentBalanceTier: currentTier,
+          physicalBackupTestedAt: physicalTestedAt,
         ),
       );
     }
 
-    final acknowledgedAt = record.lastAcknowledgedAt?.toUtc();
-    final anchor = _latest([?latestBackupAt, ?acknowledgedAt]);
-    final now = _clock().toUtc();
-    final scheduled =
-        anchor == null ||
-        anchor.isAfter(now) ||
-        !now.isBefore(anchor.add(_recurrence));
-    if (!scheduled) return const Ok(null);
+    // The schedule follows the clock of the thing being urged. Asking a
+    // both-backups user to test their words must not be reset by a fresh
+    // vault, and vice versa.
+    final urgedTestedAt = posture.urgesPhysicalBackup
+        ? vaultTestedAt
+        : physicalTestedAt;
+    final anchor = _latest([
+      ?urgedTestedAt,
+      ?record.lastAcknowledgedAt?.toUtc(),
+    ]);
+    final due = isBackupReminderDue(
+      anchor: anchor,
+      now: _clock().toUtc(),
+      interval: posture.reminderInterval,
+    );
+    if (!due) return const Ok(null);
 
     return Ok(
       BackupHealthDecision(
         masterFingerprint: fingerprint,
         posture: posture,
         trigger: BackupHealthTrigger.scheduled,
-        currentBalanceTier: currentTier,
+        physicalBackupTestedAt: physicalTestedAt,
       ),
     );
   }
@@ -132,6 +119,9 @@ class EvaluateBackupHealthReminderUsecase {
     return null;
   }
 
+  /// The balance at stake if this phone vanished: every mainnet wallet whose
+  /// keys are on the device, plus Ark. Watch-only, watch-signer and hardware
+  /// wallets recover from elsewhere, so they are excluded.
   BigInt _eligibleBalance(List<Wallet> wallets, int arkBalanceSat) {
     var total = BigInt.from(arkBalanceSat < 0 ? 0 : arkBalanceSat);
     for (final wallet in wallets) {
@@ -142,12 +132,6 @@ class EvaluateBackupHealthReminderUsecase {
       }
     }
     return total;
-  }
-
-  BackupBalanceTier _balanceTier(BigInt balance) {
-    if (balance > _tenMillionSats) return BackupBalanceTier.tenMillion;
-    if (balance > _oneMillionSats) return BackupBalanceTier.oneMillion;
-    return BackupBalanceTier.none;
   }
 
   DateTime? _latest(Iterable<DateTime> timestamps) {

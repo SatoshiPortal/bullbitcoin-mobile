@@ -28,34 +28,46 @@ void main() {
 
     expect(record.masterFingerprint, fingerprint);
     expect(record.lastAcknowledgedAt, isNull);
-    expect(record.highestHandledBalanceTier, BackupBalanceTier.none);
-    expect(record.pendingActionStartedAt, isNull);
+    expect(record.crossedTenMillionSats, isFalse);
   });
 
   test(
-    'round-trips acknowledgement, tiers, and pending action in UTC',
+    'round-trips the acknowledgement and the milestone flag in UTC',
     () async {
-      final acknowledgedAt = DateTime.parse('2026-07-14T08:00:00-04:00');
-      final pendingAt = DateTime.parse('2026-07-15T08:00:00-04:00');
+      final acknowledgedAt = DateTime.parse('2026-07-27T08:00:00-04:00');
 
       final saved = await repository.save(
         BackupHealthReminderRecord(
           masterFingerprint: fingerprint,
           lastAcknowledgedAt: acknowledgedAt,
-          highestHandledBalanceTier: BackupBalanceTier.oneMillion,
-          pendingActionStartedAt: pendingAt,
-          pendingActionBalanceTier: BackupBalanceTier.tenMillion,
+          crossedTenMillionSats: true,
         ),
       );
       expect(saved, isA<Ok>());
 
       final record = await fetchRecord();
       expect(record.lastAcknowledgedAt, acknowledgedAt.toUtc());
-      expect(record.highestHandledBalanceTier, BackupBalanceTier.oneMillion);
-      expect(record.pendingActionStartedAt, pendingAt.toUtc());
-      expect(record.pendingActionBalanceTier, BackupBalanceTier.tenMillion);
+      expect(record.crossedTenMillionSats, isTrue);
     },
   );
+
+  test('keys from an earlier record shape are ignored, not rejected', () async {
+    SharedPreferences.setMockInitialValues({
+      'backup_health_reminder_v1_$fingerprint':
+          '{"version":1,"lastAcknowledgedAt":1784000000000,'
+          '"highestHandledBalanceTier":"oneMillion",'
+          '"pendingActionStartedAt":1784000000001,'
+          '"pendingActionBalanceTier":"tenMillion"}',
+    });
+
+    final record = await fetchRecord();
+
+    expect(
+      record.lastAcknowledgedAt,
+      DateTime.fromMillisecondsSinceEpoch(1784000000000, isUtc: true),
+    );
+    expect(record.crossedTenMillionSats, isFalse);
+  });
 
   test('corrupt state fails safely to an empty record', () async {
     SharedPreferences.setMockInitialValues({
@@ -66,20 +78,20 @@ void main() {
 
     expect(record.masterFingerprint, fingerprint);
     expect(record.lastAcknowledgedAt, isNull);
-    expect(record.highestHandledBalanceTier, BackupBalanceTier.none);
+    expect(record.crossedTenMillionSats, isFalse);
   });
 
   test('wrongly typed state fails safely to an empty record', () async {
     SharedPreferences.setMockInitialValues({
       'backup_health_reminder_v1_$fingerprint':
-          '{"version":"one","lastAcknowledgedAt":null}',
+          '{"version":1,"crossedTenMillionSats":"yes"}',
     });
 
     final record = await fetchRecord();
 
     expect(record.masterFingerprint, fingerprint);
     expect(record.lastAcknowledgedAt, isNull);
-    expect(record.highestHandledBalanceTier, BackupBalanceTier.none);
+    expect(record.crossedTenMillionSats, isFalse);
   });
 
   test('non-object state fails safely to an empty record', () async {
@@ -90,7 +102,6 @@ void main() {
     final record = await fetchRecord();
 
     expect(record.masterFingerprint, fingerprint);
-    expect(record.lastAcknowledgedAt, isNull);
-    expect(record.highestHandledBalanceTier, BackupBalanceTier.none);
+    expect(record.crossedTenMillionSats, isFalse);
   });
 }

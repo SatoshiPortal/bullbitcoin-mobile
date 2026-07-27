@@ -1,42 +1,57 @@
 # Backup health reminders
 
-Backup health reminders encourage users to periodically confirm that their wallet can still be recovered. They supplement the existing no-backup warning; they do not replace it.
+Every backup surface answers one question: **if this phone vanished right now, could you get your money back?** Each state has exactly one honest answer and exactly one thing to do about it.
+
+| Situation | Honest answer | The one action |
+| --- | --- | --- |
+| Nothing backed up | No — the money is gone | Back up, urgently |
+| Encrypted Vault only | Probably — it needs the server up and your PIN | Add a physical backup |
+| Physical backup done (with or without a vault) | Yes — if the words are still findable and correct | Occasionally confirm that is still true |
+
+## One surface per state
+
+Three surfaces, three tenses, no overlap:
+
+- the **every-launch warning** (`backup_warning_overlay.dart`) means "you are unprotected right now". Zero-backup only, unchanged by this feature.
+- the **reminder popup** means "it has been a while, or something changed". Every posture except zero-backup.
+- the **Backup Settings hero** means "here is your standing situation". Always available on the screen you visit deliberately.
+
+So zero backup gets the warning and the hero, never the popup; every other state gets the popup and the hero, never the warning. One popup asks one question and offers one action.
 
 ## Reminder matrix
 
-The reminder is evaluated for the default mainnet hot-wallet seed after at least one backup method has been verified. Eligible balances are aggregated separately as described below.
+The reminder is evaluated for the default mainnet hot-wallet seed once at least one backup method has been verified.
 
-| Verified backup posture | Reminder message | Primary action | Secondary action |
-| --- | --- | --- | --- |
-| No verified backup | No quarterly reminder. Existing no-backup warning behavior remains unchanged. | Existing backup flow | Existing dismissal behavior |
-| Recoverbull only | Explain that automatic recovery normally depends on the Recoverbull key server and recommend an independent physical backup. | Create and test a physical backup | Acknowledge the dependency risk |
-| Physical only | Ask the user to perform a health check of the physical backup they already have. Recoverbull is available only through a neutral link to other backup options. | Test the physical backup | Remind in three months |
-| Recoverbull and physical | Ask the user to review and test their available backups. | Review backup options | Remind in three months |
+| Verified backup posture | Reminder | Action |
+| --- | --- | --- |
+| No verified backup | None. The existing no-backup warning owns this state. | — |
+| Encrypted Vault only | Every 90 days: without a physical backup you cannot recover if the vault server is unavailable. | Add a physical backup |
+| Physical backup, with or without a vault | Every 365 days since the physical backup was last tested. | Test the backup |
 
-The reminder is shown only on the wallet home screen and only after higher-priority no-backup and legacy-storage warnings are clear.
+There is deliberately **no vault-freshness or PIN reminder**. A vault-only wallet's real exposure is depending on someone else for its only recovery path, and the fix for that is a physical backup, not a PIN rehearsal. Once a physical backup exists, PIN rot cannot cost the user their money.
 
-## Timing and balance milestones
+## Timing
 
-A scheduled reminder becomes due 90 full days after the most recent of:
+A scheduled reminder is anchored on the clock of the thing being urged:
 
-- the latest completed physical backup;
-- the latest completed Recoverbull backup; or
-- the last time the user acknowledged the reminder.
+- vault only — the latest vault backup, or the last acknowledgement;
+- physical backup present — the latest *physical* backup test, or the last acknowledgement. A fresh vault does not buy silence about words that were last read two years ago.
 
-A verified backup record with no completion timestamp is treated as due immediately. Acknowledging a reminder starts a new 90-day interval.
+A verified backup with no completion timestamp is due immediately.
 
-Balance milestones can show the reminder before the scheduled date:
+Dismissing a reminder snoozes it for a full cycle (90 or 365 days). It never writes a tested timestamp, so the Backup Settings screen keeps saying how long ago the backup was really tested while the popup is quiet. Only completing a verification flow resets that date; creating a backup counts as tested on day zero, because the creation flow tests it.
 
-- more than 1,000,000 sats; and
-- more than 10,000,000 sats after the first milestone has been handled.
+The popup is shown on the wallet home screen only, and only once the higher-priority no-backup and legacy-storage warnings are clear. A deep link or payment intent lands on its own route, so nothing ever stands between a payment and its completion.
 
-The comparisons are strict: exactly 1,000,000 or 10,000,000 sats does not trigger a milestone. Each milestone is recorded after the user acknowledges the reminder or completes the selected backup action, so ordinary balance fluctuations do not repeatedly trigger it.
+## Balance milestone
 
-Starting a backup action records a pending action. On the next evaluation, a backup completion timestamp at or after the action start handles the associated balance milestone. Cancelling the flow leaves the milestone due for the next app session.
+The first time an evaluation observes an eligible balance of **10,000,000 sats or more**, the reminder is shown once, whatever the schedule says, with the posture-appropriate ask. The comparison is inclusive: exactly 10,000,000 sats counts.
+
+That notice is retired for the lifetime of the wallet as soon as the user either dismisses it or acts on it. A balance later dropping below the threshold and crossing it again changes nothing — a wallet is told once.
 
 ## Eligible wallets and balances
 
-Only mainnet wallets whose keys are held on the device participate in reminder evaluation and balance milestones.
+Only mainnet wallets whose keys are held on the device participate in reminder evaluation and in the balance total.
 
 Included:
 
@@ -65,14 +80,20 @@ The overlay evaluates when wallet data or the Ark balance changes, after its fir
 
 Reminder state is stored locally in a versioned SharedPreferences record keyed by master fingerprint. It contains only:
 
-- the last acknowledgement time;
-- the highest handled balance tier;
-- a pending action start time; and
-- the pending action balance tier.
+- the last acknowledgement time; and
+- whether the balance milestone has been shown.
 
-No mnemonic, seed, private key, vault key, or other secret is stored or logged by the reminder. Malformed, unsupported, or unreadable reminder records are replaced with an empty in-memory record, which favors showing another reminder over suppressing one indefinitely. The underlying read failure is logged without exposing it to the user.
+No mnemonic, seed, private key, vault key, or other secret is stored or logged by the reminder. Keys written by an earlier shape of the record are ignored rather than rejected. Malformed, unsupported, or unreadable records are replaced with an empty in-memory record, which favors showing another reminder over suppressing one indefinitely. The underlying read failure is logged without exposing it to the user.
 
 If a reminder action cannot be persisted, the overlay stays visible so the user can retry. A localized "close for now" action is then available as a session-only escape; it does not acknowledge the reminder, so the app evaluates it again on the next launch.
+
+## Backup Settings screen
+
+The screen is composed top to bottom as status rows, then at most one hero, then the settings menu:
+
+1. **Status rows** — Physical Backup and Encrypted Vault, each Tested or Not tested, with a muted "Last tested …" line under a tested physical backup.
+2. **Hero** — the single most useful action right now, or nothing at all: an urgent *Back up your wallet* card when nothing is backed up, *add a physical backup* for a vault-only wallet, *test your backup* once the physical test is over a year old, and no card when the physical backup is fresh. The hero derives its posture from the same domain code the reminder uses, so the two can never disagree.
+3. **Menu** — Encrypted vault settings, Labels, Transaction History, plus the vault-key and test-backup entries when they apply. There is no "Start Backup" row: the zero-backup hero is the way in.
 
 ## Architecture
 
@@ -86,7 +107,7 @@ The repository boundary uses a domain entity and a separate persistence model. R
 
 ## Tests
 
-The focused suite covers the posture matrix, exact 90-day boundary, strict balance thresholds, testnet and non-local-signer exclusions, pending actions, persistence corruption, physical completion, and Recoverbull completion ordering.
+The focused suite covers the posture matrix, both cadences and their exact boundaries, the anchor rule (a fresh vault must not silence a stale physical backup), the inclusive milestone threshold and its once-per-wallet guarantee, dismissal snoozing without recording a test, testnet and non-local-signer exclusions, persistence corruption, and each hero the screen can render.
 
 Run it with:
 

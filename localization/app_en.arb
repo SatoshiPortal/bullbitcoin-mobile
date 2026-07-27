@@ -15025,61 +15025,17 @@
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
   },
-  "backupHealthScheduledIntro": "It is time to review your wallet backup again.",
-  "@backupHealthScheduledIntro": {
-    "description": "Introduction for a backup health reminder triggered by elapsed time"
-  },
-  "backupHealthBalanceIntro": "Your wallet now holds a significant balance. This is a good time to check your backup.",
-  "@backupHealthBalanceIntro": {
-    "description": "Introduction for a backup health reminder triggered by a balance milestone"
-  },
-  "backupHealthRecoverbullOnlyTitle": "Add an independent backup",
-  "@backupHealthRecoverbullOnlyTitle": {
-    "description": "Title shown when Recoverbull is the only verified backup"
-  },
-  "backupHealthRecoverbullOnlyBody": "Recoverbull normally retrieves your vault key from a key server. If that server is unavailable, automatic recovery will not work. You can still recover the encrypted vault with a separately saved vault key. A tested physical backup gives you an independent recovery method.",
+  "backupHealthRecoverbullOnlyBody": "Without a physical backup, you cannot recover your wallet if the Encrypted Vault server is unavailable.",
   "@backupHealthRecoverbullOnlyBody": {
-    "description": "Explains the key-server dependency and independent physical backup option"
+    "description": "Explains what a vault-only wallet cannot recover from; shown in the reminder popup and the Backup Settings hero"
   },
-  "backupHealthPhysicalOnlyTitle": "Check your physical backup",
-  "@backupHealthPhysicalOnlyTitle": {
-    "description": "Title shown when a physical backup is the only verified backup"
+  "backupHealthAddPhysicalBackupAction": "ADD A PHYSICAL BACKUP",
+  "@backupHealthAddPhysicalBackupAction": {
+    "description": "Button label for the one action a vault-only wallet needs: create and test a physical backup"
   },
-  "backupHealthPhysicalOnlyBody": "Test your physical backup to make sure your recovery words are complete, readable, and stored somewhere safe.",
-  "@backupHealthPhysicalOnlyBody": {
-    "description": "Physical backup health-check guidance"
-  },
-  "backupHealthBothTitle": "Check your backups",
-  "@backupHealthBothTitle": {
-    "description": "Title shown when both backup methods are verified"
-  },
-  "backupHealthBothBody": "Periodically test your physical backup and Recoverbull vault to make sure you can still recover your wallet.",
-  "@backupHealthBothBody": {
-    "description": "Backup health-check guidance when both methods are verified"
-  },
-  "backupHealthMakePhysicalBackup": "MAKE A PHYSICAL BACKUP",
-  "@backupHealthMakePhysicalBackup": {
-    "description": "Primary action for a Recoverbull-only reminder"
-  },
-  "backupHealthTestPhysicalBackup": "TEST PHYSICAL BACKUP",
-  "@backupHealthTestPhysicalBackup": {
-    "description": "Primary action for a physical-only reminder"
-  },
-  "backupHealthReviewBackups": "REVIEW BACKUPS",
-  "@backupHealthReviewBackups": {
-    "description": "Primary action when both backup methods are verified"
-  },
-  "backupHealthUnderstandRisk": "NO, I UNDERSTAND THE RISK",
-  "@backupHealthUnderstandRisk": {
-    "description": "Acknowledgement action for a Recoverbull-only reminder"
-  },
-  "backupHealthRemindThreeMonths": "REMIND ME IN 3 MONTHS",
-  "@backupHealthRemindThreeMonths": {
-    "description": "Defers the next recurring backup health reminder"
-  },
-  "backupHealthOtherBackupOptions": "OTHER BACKUP OPTIONS",
-  "@backupHealthOtherBackupOptions": {
-    "description": "Neutral link to other backup methods from the physical health check"
+  "backupHealthTestBackupAction": "TEST YOUR BACKUP",
+  "@backupHealthTestBackupAction": {
+    "description": "Button label for the one action a wallet with a physical backup needs: confirm it still recovers"
   },
   "backupHealthSaveFailed": "Your backup reminder could not be updated. Please try again or close it for now.",
   "@backupHealthSaveFailed": {
@@ -15092,5 +15048,34 @@
   "onboardingBackupVerificationSaveFailed": "Your wallet was restored, but the backup check could not be saved. Test your physical backup again later in Backup Settings.",
   "@onboardingBackupVerificationSaveFailed": {
     "description": "Partial-success message when wallet recovery succeeds but physical backup verification persistence fails"
+  },
+  "backupHealthReminderTitle": "Can you still recover your wallet?",
+  "@backupHealthReminderTitle": {
+    "description": "Headline of the scheduled backup reminder popup and of the Backup Settings hero"
+  },
+  "backupHealthTestBackupBody": "Test your physical backup to confirm you can still recover.",
+  "@backupHealthTestBackupBody": {
+    "description": "Body asking the user to verify the physical backup they already have"
+  },
+  "backupHealthMilestoneTitle": "Your wallet now holds more money",
+  "@backupHealthMilestoneTitle": {
+    "description": "Headline of the one-time popup shown the first time the balance reaches the milestone"
+  },
+  "backupHealthMilestoneBody": "More is at stake now if this phone is lost, stolen, or broken.",
+  "@backupHealthMilestoneBody": {
+    "description": "Body of the one-time balance milestone popup, shown before the posture-appropriate ask"
+  },
+  "backupHealthLastTested": "Last tested {when}.",
+  "@backupHealthLastTested": {
+    "description": "Muted line stating when the physical backup was last tested; never shown when no test has been observed",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "backupHealthNotNow": "NOT NOW",
+  "@backupHealthNotNow": {
+    "description": "Dismisses a backup reminder popup for a full cycle without recording a test"
   }
 }

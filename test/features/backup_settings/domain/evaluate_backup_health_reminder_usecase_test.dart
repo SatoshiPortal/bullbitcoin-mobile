@@ -33,7 +33,7 @@ class _InMemoryBackupHealthReminderRepository
 
 void main() {
   const fingerprint = 'f00dbabe';
-  final now = DateTime.utc(2026, 7, 14, 12);
+  final now = DateTime.utc(2026, 7, 27, 12);
   late _InMemoryBackupHealthReminderRepository repository;
   late EvaluateBackupHealthReminderUsecase evaluate;
 
@@ -76,10 +76,11 @@ void main() {
     );
   });
 
-  Future<BackupHealthDecision?> evaluateDecision({
+  Future<BackupHealthDecision?> decisionFrom(
+    EvaluateBackupHealthReminderUsecase usecase, {
     required List<Wallet> wallets,
     required int arkBalanceSat,
-  }) async => switch (await evaluate.execute(
+  }) async => switch (await usecase.execute(
     wallets: wallets,
     arkBalanceSat: arkBalanceSat,
   )) {
@@ -89,6 +90,11 @@ void main() {
     ),
   };
 
+  Future<BackupHealthDecision?> evaluateDecision({
+    required List<Wallet> wallets,
+    required int arkBalanceSat,
+  }) => decisionFrom(evaluate, wallets: wallets, arkBalanceSat: arkBalanceSat);
+
   Future<BackupHealthReminderRecord> reminderRecord() async =>
       switch (await repository.fetch(fingerprint)) {
         Ok(:final value) => value,
@@ -97,58 +103,13 @@ void main() {
         ),
       };
 
-  group('backup posture and quarterly schedule', () {
-    test(
-      'does not add a quarterly reminder when neither backup exists',
-      () async {
-        final decision = await evaluateDecision(
-          wallets: [wallet(balanceSat: 10000001)],
-          arkBalanceSat: 0,
-        );
+  AcknowledgeBackupHealthReminderUsecase acknowledgeAt(DateTime at) =>
+      AcknowledgeBackupHealthReminderUsecase(repository, clock: () => at);
 
-        expect(decision, isNull);
-      },
-    );
-
-    test('Recoverbull-only is scheduled at exactly 90 full days', () async {
+  group('posture', () {
+    test('a wallet with no verified backup is left to the warning', () async {
       final decision = await evaluateDecision(
-        wallets: [
-          wallet(
-            encrypted: true,
-            encryptedAt: now.subtract(const Duration(days: 90)),
-          ),
-        ],
-        arkBalanceSat: 0,
-      );
-
-      expect(decision?.posture, BackupHealthPosture.recoverbullOnly);
-      expect(decision?.trigger, BackupHealthTrigger.scheduled);
-    });
-
-    test('physical-only is not scheduled before 90 full days', () async {
-      final decision = await evaluateDecision(
-        wallets: [
-          wallet(
-            physical: true,
-            physicalAt: now.subtract(const Duration(days: 89, hours: 23)),
-          ),
-        ],
-        arkBalanceSat: 0,
-      );
-
-      expect(decision, isNull);
-    });
-
-    test('both-backups posture uses the most recent completion date', () async {
-      final decision = await evaluateDecision(
-        wallets: [
-          wallet(
-            encrypted: true,
-            physical: true,
-            encryptedAt: now.subtract(const Duration(days: 100)),
-            physicalAt: now.subtract(const Duration(days: 20)),
-          ),
-        ],
+        wallets: [wallet(balanceSat: 10000001)],
         arkBalanceSat: 0,
       );
 
@@ -163,6 +124,7 @@ void main() {
 
       expect(decision?.posture, BackupHealthPosture.physicalOnly);
       expect(decision?.trigger, BackupHealthTrigger.scheduled);
+      expect(decision?.physicalBackupTestedAt, isNull);
     });
 
     test('testnet is ignored even when its backup is overdue', () async {
@@ -171,7 +133,7 @@ void main() {
           wallet(
             network: Network.bitcoinTestnet,
             encrypted: true,
-            encryptedAt: now.subtract(const Duration(days: 100)),
+            encryptedAt: now.subtract(const Duration(days: 400)),
           ),
         ],
         arkBalanceSat: 10000001,
@@ -189,7 +151,7 @@ void main() {
             network: Network.bitcoinTestnet,
             isDefault: false,
             encrypted: true,
-            encryptedAt: now.subtract(const Duration(days: 100)),
+            encryptedAt: now.subtract(const Duration(days: 400)),
           ),
         ],
         arkBalanceSat: 0,
@@ -197,87 +159,6 @@ void main() {
 
       expect(decision, isNull);
     });
-  });
-
-  group('balance accelerators', () {
-    test('exactly 1,000,000 sats does not trigger the first tier', () async {
-      final decision = await evaluateDecision(
-        wallets: [wallet(balanceSat: 1000000, physical: true, physicalAt: now)],
-        arkBalanceSat: 0,
-      );
-
-      expect(decision, isNull);
-    });
-
-    test('1,000,001 sats triggers the first tier immediately', () async {
-      final decision = await evaluateDecision(
-        wallets: [wallet(balanceSat: 1000001, physical: true, physicalAt: now)],
-        arkBalanceSat: 0,
-      );
-
-      expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
-      expect(decision?.currentBalanceTier, BackupBalanceTier.oneMillion);
-    });
-
-    test(
-      'the 10,000,000 tier can fire after the first tier was handled',
-      () async {
-        repository.records[fingerprint] = const BackupHealthReminderRecord(
-          masterFingerprint: fingerprint,
-          highestHandledBalanceTier: BackupBalanceTier.oneMillion,
-        );
-
-        final decision = await evaluateDecision(
-          wallets: [
-            wallet(balanceSat: 10000001, encrypted: true, encryptedAt: now),
-          ],
-          arkBalanceSat: 0,
-        );
-
-        expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
-        expect(decision?.currentBalanceTier, BackupBalanceTier.tenMillion);
-      },
-    );
-
-    test(
-      'watch-only, watch-signer, hardware, and testnet balances are excluded',
-      () async {
-        final wallets = [
-          wallet(physical: true, physicalAt: now),
-          wallet(
-            origin: 'watch-only',
-            isDefault: false,
-            signer: SignerEntity.none,
-            balanceSat: 10000001,
-          ),
-          wallet(
-            origin: 'watch-signer',
-            isDefault: false,
-            signer: SignerEntity.remote,
-            balanceSat: 10000001,
-          ),
-          wallet(
-            origin: 'hardware',
-            isDefault: false,
-            signerDevice: SignerDeviceEntity.coldcardMk4,
-            balanceSat: 10000001,
-          ),
-          wallet(
-            origin: 'testnet',
-            network: Network.bitcoinTestnet,
-            isDefault: false,
-            balanceSat: 10000001,
-          ),
-        ];
-
-        final decision = await evaluateDecision(
-          wallets: wallets,
-          arkBalanceSat: 0,
-        );
-
-        expect(decision, isNull);
-      },
-    );
 
     test('a hardware default wallet is not eligible for reminders', () async {
       final decision = await evaluateDecision(
@@ -286,7 +167,38 @@ void main() {
             signerDevice: SignerDeviceEntity.coldcardMk4,
             balanceSat: 10000001,
             physical: true,
-            physicalAt: now.subtract(const Duration(days: 100)),
+            physicalAt: now.subtract(const Duration(days: 400)),
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision, isNull);
+    });
+  });
+
+  group('cadence', () {
+    test('a vault-only wallet is asked at exactly 90 full days', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            encrypted: true,
+            encryptedAt: now.subtract(const Duration(days: 90)),
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.posture, BackupHealthPosture.recoverbullOnly);
+      expect(decision?.trigger, BackupHealthTrigger.scheduled);
+    });
+
+    test('a vault-only wallet is not asked before 90 full days', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            encrypted: true,
+            encryptedAt: now.subtract(const Duration(days: 89, hours: 23)),
           ),
         ],
         arkBalanceSat: 0,
@@ -295,110 +207,319 @@ void main() {
       expect(decision, isNull);
     });
 
-    test('imported local mainnet and Ark balances are included', () async {
+    test('a tested physical backup is left alone for 90 days', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            physical: true,
+            physicalAt: now.subtract(const Duration(days: 90)),
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision, isNull);
+    });
+
+    test('a tested physical backup is asked at exactly 365 days', () async {
+      final testedAt = now.subtract(const Duration(days: 365));
+      final decision = await evaluateDecision(
+        wallets: [wallet(physical: true, physicalAt: testedAt)],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.posture, BackupHealthPosture.physicalOnly);
+      expect(decision?.trigger, BackupHealthTrigger.scheduled);
+      expect(decision?.physicalBackupTestedAt, testedAt);
+    });
+  });
+
+  group('schedule anchor', () {
+    test('a fresh vault does not excuse a stale physical backup', () async {
+      final testedAt = now.subtract(const Duration(days: 730));
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            encrypted: true,
+            physical: true,
+            encryptedAt: now.subtract(const Duration(days: 1)),
+            physicalAt: testedAt,
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.posture, BackupHealthPosture.both);
+      expect(decision?.trigger, BackupHealthTrigger.scheduled);
+      expect(decision?.physicalBackupTestedAt, testedAt);
+    });
+
+    test('a stale vault does not make a fresh physical backup due', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            encrypted: true,
+            physical: true,
+            encryptedAt: now.subtract(const Duration(days: 730)),
+            physicalAt: now.subtract(const Duration(days: 1)),
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision, isNull);
+    });
+
+    test('a vault-only schedule follows the vault test date', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            encrypted: true,
+            encryptedAt: now.subtract(const Duration(days: 91)),
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.posture, BackupHealthPosture.recoverbullOnly);
+    });
+  });
+
+  group('balance milestone', () {
+    test('just below 10,000,000 sats says nothing', () async {
+      final decision = await evaluateDecision(
+        wallets: [wallet(balanceSat: 9999999, physical: true, physicalAt: now)],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision, isNull);
+    });
+
+    test('exactly 10,000,000 sats interrupts once', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(balanceSat: 10000000, physical: true, physicalAt: now),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
+      expect(decision?.posture, BackupHealthPosture.physicalOnly);
+    });
+
+    test('above 10,000,000 sats interrupts a vault-only wallet too', () async {
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(balanceSat: 10000001, encrypted: true, encryptedAt: now),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
+      expect(decision?.posture, BackupHealthPosture.recoverbullOnly);
+    });
+
+    test('the milestone never fires twice, not even after a drop', () async {
+      final crossed = [
+        wallet(balanceSat: 10000000, physical: true, physicalAt: now),
+      ];
+      final first = await evaluateDecision(wallets: crossed, arkBalanceSat: 0);
+      expect(first?.trigger, BackupHealthTrigger.balanceMilestone);
+      expect(await acknowledgeAt(now).execute(first!), isA<Ok>());
+
+      expect(
+        await evaluateDecision(wallets: crossed, arkBalanceSat: 0),
+        isNull,
+      );
+      expect(
+        await evaluateDecision(
+          wallets: [wallet(balanceSat: 1, physical: true, physicalAt: now)],
+          arkBalanceSat: 0,
+        ),
+        isNull,
+      );
+      expect(
+        await evaluateDecision(wallets: crossed, arkBalanceSat: 0),
+        isNull,
+      );
+    });
+
+    test('the milestone interrupts a snoozed schedule', () async {
+      final staleWallets = [
+        wallet(
+          physical: true,
+          physicalAt: now.subtract(const Duration(days: 400)),
+        ),
+      ];
+      final scheduled = await evaluateDecision(
+        wallets: staleWallets,
+        arkBalanceSat: 0,
+      );
+      expect(scheduled?.trigger, BackupHealthTrigger.scheduled);
+      expect(await acknowledgeAt(now).execute(scheduled!), isA<Ok>());
+      expect((await reminderRecord()).crossedTenMillionSats, isFalse);
+
+      final decision = await evaluateDecision(
+        wallets: [
+          wallet(
+            balanceSat: 10000000,
+            physical: true,
+            physicalAt: now.subtract(const Duration(days: 400)),
+          ),
+        ],
+        arkBalanceSat: 0,
+      );
+
+      expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
+    });
+
+    test(
+      'watch-only, watch-signer, hardware and testnet are excluded',
+      () async {
+        final decision = await evaluateDecision(
+          wallets: [
+            wallet(physical: true, physicalAt: now),
+            wallet(
+              origin: 'watch-only',
+              isDefault: false,
+              signer: SignerEntity.none,
+              balanceSat: 10000001,
+            ),
+            wallet(
+              origin: 'watch-signer',
+              isDefault: false,
+              signer: SignerEntity.remote,
+              balanceSat: 10000001,
+            ),
+            wallet(
+              origin: 'hardware',
+              isDefault: false,
+              signerDevice: SignerDeviceEntity.coldcardMk4,
+              balanceSat: 10000001,
+            ),
+            wallet(
+              origin: 'testnet',
+              network: Network.bitcoinTestnet,
+              isDefault: false,
+              balanceSat: 10000001,
+            ),
+          ],
+          arkBalanceSat: 0,
+        );
+
+        expect(decision, isNull);
+      },
+    );
+
+    test('imported local mainnet and Ark balances are counted', () async {
       final decision = await evaluateDecision(
         wallets: [
           wallet(physical: true, physicalAt: now),
           wallet(
             origin: 'imported-local',
             isDefault: false,
-            balanceSat: 600000,
+            balanceSat: 6000000,
           ),
         ],
-        arkBalanceSat: 400001,
+        arkBalanceSat: 4000000,
       );
 
       expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
-      expect(decision?.currentBalanceTier, BackupBalanceTier.oneMillion);
     });
   });
 
-  group('acknowledgement and backup action', () {
-    test(
-      'acknowledging resets the schedule and handles the current tier',
-      () async {
-        const decision = BackupHealthDecision(
-          masterFingerprint: fingerprint,
-          posture: BackupHealthPosture.recoverbullOnly,
-          trigger: BackupHealthTrigger.balanceMilestone,
-          currentBalanceTier: BackupBalanceTier.oneMillion,
-        );
-        final acknowledge = AcknowledgeBackupHealthReminderUsecase(
-          repository,
-          clock: () => now,
-        );
+  group('acknowledgement', () {
+    test('dismissing buys a full cycle of quiet, then asks again', () async {
+      final testedAt = now.subtract(const Duration(days: 400));
+      final staleWallets = [wallet(physical: true, physicalAt: testedAt)];
 
-        expect(await acknowledge.execute(decision), isA<Ok>());
+      final decision = await evaluateDecision(
+        wallets: staleWallets,
+        arkBalanceSat: 0,
+      );
+      expect(decision?.trigger, BackupHealthTrigger.scheduled);
+      expect(await acknowledgeAt(now).execute(decision!), isA<Ok>());
+      expect((await reminderRecord()).lastAcknowledgedAt, now);
+
+      expect(
+        await evaluateDecision(wallets: staleWallets, arkBalanceSat: 0),
+        isNull,
+      );
+      expect(
+        await decisionFrom(
+          EvaluateBackupHealthReminderUsecase(
+            repository,
+            clock: () => now.add(const Duration(days: 364)),
+          ),
+          wallets: staleWallets,
+          arkBalanceSat: 0,
+        ),
+        isNull,
+      );
+
+      final later = await decisionFrom(
+        EvaluateBackupHealthReminderUsecase(
+          repository,
+          clock: () => now.add(const Duration(days: 365)),
+        ),
+        wallets: staleWallets,
+        arkBalanceSat: 0,
+      );
+      expect(later?.trigger, BackupHealthTrigger.scheduled);
+      // The popup went quiet; the screen still knows the real test date.
+      expect(later?.physicalBackupTestedAt, testedAt);
+    });
+
+    test('acting on a milestone retires it for good', () async {
+      final crossed = [
+        wallet(balanceSat: 10000000, physical: true, physicalAt: now),
+      ];
+      final decision = await evaluateDecision(
+        wallets: crossed,
+        arkBalanceSat: 0,
+      );
+      expect(decision?.trigger, BackupHealthTrigger.balanceMilestone);
+
+      expect(
+        await StartBackupHealthActionUsecase(repository).execute(decision!),
+        isA<Ok>(),
+      );
+
+      expect((await reminderRecord()).crossedTenMillionSats, isTrue);
+      expect(
+        await evaluateDecision(wallets: crossed, arkBalanceSat: 0),
+        isNull,
+      );
+    });
+
+    test(
+      'starting then abandoning a test leaves it due next session',
+      () async {
+        final staleWallets = [
+          wallet(
+            physical: true,
+            physicalAt: now.subtract(const Duration(days: 400)),
+          ),
+        ];
+        final decision = await evaluateDecision(
+          wallets: staleWallets,
+          arkBalanceSat: 0,
+        );
+        expect(decision?.trigger, BackupHealthTrigger.scheduled);
+
+        expect(
+          await StartBackupHealthActionUsecase(repository).execute(decision!),
+          isA<Ok>(),
+        );
 
         final record = await reminderRecord();
-        expect(record.lastAcknowledgedAt, now);
-        expect(record.highestHandledBalanceTier, BackupBalanceTier.oneMillion);
-
+        expect(record.lastAcknowledgedAt, isNull);
+        expect(record.crossedTenMillionSats, isFalse);
         final next = await evaluateDecision(
-          wallets: [
-            wallet(
-              balanceSat: 1000001,
-              encrypted: true,
-              encryptedAt: now.subtract(const Duration(days: 100)),
-            ),
-          ],
+          wallets: staleWallets,
           arkBalanceSat: 0,
         );
-        expect(next, isNull);
-      },
-    );
-
-    test(
-      'starting then cancelling a backup leaves the reminder due next session',
-      () async {
-        const decision = BackupHealthDecision(
-          masterFingerprint: fingerprint,
-          posture: BackupHealthPosture.recoverbullOnly,
-          trigger: BackupHealthTrigger.balanceMilestone,
-          currentBalanceTier: BackupBalanceTier.oneMillion,
-        );
-        final start = StartBackupHealthActionUsecase(
-          repository,
-          clock: () => now.subtract(const Duration(hours: 1)),
-        );
-        expect(await start.execute(decision), isA<Ok>());
-
-        final next = await evaluateDecision(
-          wallets: [
-            wallet(
-              balanceSat: 1000001,
-              encrypted: true,
-              encryptedAt: now.subtract(const Duration(days: 1)),
-            ),
-          ],
-          arkBalanceSat: 0,
-        );
-
-        expect(next?.trigger, BackupHealthTrigger.balanceMilestone);
-        expect((await reminderRecord()).pendingActionStartedAt, isNull);
-      },
-    );
-
-    test(
-      'a backup completed after action start handles the pending tier',
-      () async {
-        repository.records[fingerprint] = BackupHealthReminderRecord(
-          masterFingerprint: fingerprint,
-          pendingActionStartedAt: now.subtract(const Duration(hours: 1)),
-          pendingActionBalanceTier: BackupBalanceTier.oneMillion,
-        );
-
-        final next = await evaluateDecision(
-          wallets: [
-            wallet(balanceSat: 1000001, physical: true, physicalAt: now),
-          ],
-          arkBalanceSat: 0,
-        );
-
-        expect(next, isNull);
-        final record = await reminderRecord();
-        expect(record.highestHandledBalanceTier, BackupBalanceTier.oneMillion);
-        expect(record.pendingActionStartedAt, isNull);
+        expect(next?.trigger, BackupHealthTrigger.scheduled);
       },
     );
   });

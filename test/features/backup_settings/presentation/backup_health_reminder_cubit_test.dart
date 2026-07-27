@@ -24,7 +24,11 @@ void main() {
     masterFingerprint: 'f00dbabe',
     posture: BackupHealthPosture.recoverbullOnly,
     trigger: BackupHealthTrigger.scheduled,
-    currentBalanceTier: BackupBalanceTier.none,
+  );
+  const milestoneDecision = BackupHealthDecision(
+    masterFingerprint: 'f00dbabe',
+    posture: BackupHealthPosture.both,
+    trigger: BackupHealthTrigger.balanceMilestone,
   );
   final wallet = Wallet(
     origin: 'default',
@@ -154,6 +158,21 @@ void main() {
       ).called(1);
     },
   );
+
+  test('dismissing a milestone hands the milestone to the writer', () async {
+    when(
+      () => evaluate.execute(wallets: any(named: 'wallets'), arkBalanceSat: 0),
+    ).thenAnswer((_) async => const Ok(milestoneDecision));
+    when(
+      () => acknowledge.execute(milestoneDecision),
+    ).thenAnswer((_) async => const Ok(null));
+
+    await cubit.evaluate(wallets: [wallet], arkBalanceSat: 0);
+    await cubit.acknowledge();
+
+    expect(cubit.state, isA<BackupHealthReminderHidden>());
+    verify(() => acknowledge.execute(milestoneDecision)).called(1);
+  });
 
   test('does not navigate when primary-action persistence fails', () async {
     when(
