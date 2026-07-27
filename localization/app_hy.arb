@@ -971,7 +971,6 @@
   "receiveCopyAddressOnly": "Պատճենել կամ սկանավորել միայն հասցեն",
   "receiveError": "Սխալ․ {error}",
   "receiveFeeExplanation": "Այս վճարը կհանվի ուղարկվող գումարից",
-  "receiveNotePlaceholder": "Նշում",
   "receiveReceiveAmount": "Ստացվող գումար",
   "receiveSendNetworkFee": "Ուղարկման ցանցի վճար",
   "receiveServerNetworkFees": "Սերվերի ցանցի վճարներ",

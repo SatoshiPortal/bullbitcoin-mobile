@@ -480,7 +480,6 @@
   "testBackupTapWordsInOrder": "恢复语\n权利保护令",
   "transactionSwapDescLnSendExpired": "这笔交易已过期，资金将会自动返还至您的钱包",
   "testBackupButton": "退约",
-  "receiveNotePlaceholder": "说明",
   "sendChange": "变化",
   "coreScreensInternalTransfer": "内部转让",
   "sendSwapWillTakeTime": "待确认",

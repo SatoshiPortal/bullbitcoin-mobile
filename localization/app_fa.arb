@@ -2421,10 +2421,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "تغییر",
   "@sendChange": {
     "description": "Label for change output in a transaction"

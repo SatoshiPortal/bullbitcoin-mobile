@@ -1629,10 +1629,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Poznámka",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Změna",
   "@sendChange": {
     "description": "Label for change output in a transaction"

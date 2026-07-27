@@ -1388,10 +1388,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "* 이름",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "- 기타",
   "@sendChange": {
     "description": "Label for change output in a transaction"

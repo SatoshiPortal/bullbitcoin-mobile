@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
@@ -1695,6 +1696,167 @@ void main() {
       expect(emitted, hasLength(2));
       expect(emitted.last.status, PayjoinStatus.aborted);
       await sub.cancel();
+    });
+  });
+
+  group('confirmed-first input preference in the propose path', () {
+    // _filterAvailableUtxos must hand PDK's tryPreservingPrivacy only
+    // confirmed candidates when any exist: PDK selects on privacy heuristics
+    // alone, and a payjoin spending our unconfirmed input can be invalidated
+    // by an RBF of that input's parent after both sides consider the payment
+    // done. Unconfirmed-only wallets still contribute (payjoin eligibility
+    // deliberately counts unconfirmed balance), so the preference must fall
+    // back rather than filter to nothing — and it must not fire at all when
+    // the confirmed candidates are too small for the payment.
+    BitcoinWalletUtxoModel utxo({
+      required String txId,
+      required int confirmations,
+      int amountSat = 100000,
+    }) =>
+        WalletUtxoModel.bitcoin(
+              txId: txId,
+              vout: 0,
+              amountSat: BigInt.from(amountSat),
+              scriptPubkey: Uint8List.fromList([0]),
+              address: 'tb1qtest',
+              isExternalKeyChain: false,
+              confirmations: confirmations,
+            )
+            as BitcoinWalletUtxoModel;
+
+    // Arranges the full propose path (same scaffolding as the watcher-arming
+    // group's request test) and returns the inputPairs the repository handed
+    // to proposePayjoin for the given wallet utxo set.
+    List<PayjoinInputPairModel> proposedPairsFor(
+      FakeAsync async,
+      List<WalletUtxoModel> utxos,
+    ) {
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _testSettings(payjoinMinAmountSat: 10000));
+      final origin = WalletMetadataService.encodeOrigin(
+        fingerprint: '00000000',
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+      );
+      when(() => walletMetadataDatasource.fetch('w1')).thenAnswer(
+        (_) async => WalletMetadataModel(
+          id: origin,
+          masterFingerprint: '00000000',
+          xpubFingerprint: '00000000',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: false,
+        ),
+      );
+      when(() => seedDatasource.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(mnemonicWords: ['abandon'])
+                as MnemonicSeedModel,
+      );
+      when(
+        () => bdkWalletDatasource.getUtxos(wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async => utxos);
+      when(
+        () => bdkWalletDatasource.createIsMineChecker(
+          wallet: any(named: 'wallet'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Uint8List _) => true,
+      );
+      when(
+        () =>
+            bdkWalletDatasource.createPsbtSigner(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async =>
+            (String psbt) => psbt,
+      );
+      final requestModel = _receiverModel(
+        id: 'pj1',
+        walletId: 'w1',
+        amountSat: 10000,
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => localDatasource.fetchReceiver('pj1'),
+      ).thenAnswer((_) async => requestModel);
+      // No txId on the returned model: the broadcast watcher never arms, so
+      // the propose call is the last interaction this test cares about.
+      when(
+        () => pdkDatasource.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          hasOwnedInputs: any(named: 'hasOwnedInputs'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            requestModel.copyWith(proposalPsbt: 'cHNidP9wcm9wb3NhbA=='),
+      );
+
+      buildRepository();
+      requestsController.add(requestModel);
+      async.flushMicrotasks();
+
+      return verify(
+            () => pdkDatasource.proposePayjoin(
+              receiverModel: any(named: 'receiverModel'),
+              hasOwnedInputs: any(named: 'hasOwnedInputs'),
+              hasReceiverOutput: any(named: 'hasReceiverOutput'),
+              inputPairs: captureAny(named: 'inputPairs'),
+              processPsbt: any(named: 'processPsbt'),
+            ),
+          ).captured.single
+          as List<PayjoinInputPairModel>;
+    }
+
+    test('only confirmed utxos are offered when one covers the payment', () {
+      fakeAsync((async) {
+        final pairs = proposedPairsFor(async, [
+          utxo(txId: 'unconfirmed-utxo', confirmations: 0),
+          utxo(txId: 'confirmed-utxo', confirmations: 2),
+        ]);
+
+        expect(pairs.map((p) => p.txId), ['confirmed-utxo']);
+      });
+    });
+
+    test('a confirmed utxo too small for the payment does not shut out a '
+        'well-sized unconfirmed one — forcing dust on avoid_uih would trade '
+        "the proposal's privacy gain for the RBF mitigation", () {
+      fakeAsync((async) {
+        // Payment is 10 000 sat (see proposedPairsFor's receiver model).
+        final pairs = proposedPairsFor(async, [
+          utxo(txId: 'confirmed-dust', confirmations: 2, amountSat: 1000),
+          utxo(txId: 'unconfirmed-usable', confirmations: 0),
+        ]);
+
+        expect(
+          pairs.map((p) => p.txId),
+          containsAll(['confirmed-dust', 'unconfirmed-usable']),
+        );
+      });
+    });
+
+    test('unconfirmed utxos are still offered when nothing is confirmed — '
+        'fresh wallets must activate payjoin immediately', () {
+      fakeAsync((async) {
+        final pairs = proposedPairsFor(async, [
+          utxo(txId: 'unconfirmed-a', confirmations: 0),
+          utxo(txId: 'unconfirmed-b', confirmations: 0),
+        ]);
+
+        expect(
+          pairs.map((p) => p.txId),
+          containsAll(['unconfirmed-a', 'unconfirmed-b']),
+        );
+      });
     });
   });
 

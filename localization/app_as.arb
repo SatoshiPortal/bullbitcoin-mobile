@@ -651,7 +651,6 @@
     }
   },
   "receiveFeeExplanation": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
-  "receiveNotePlaceholder": "টোকা",
   "receiveReceiveAmount": "গ্ৰহণ কৰা পৰিমাণ",
   "receiveSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
   "receiveServerNetworkFees": "চাৰ্ভাৰ নেটৱৰ্ক মাচুল",

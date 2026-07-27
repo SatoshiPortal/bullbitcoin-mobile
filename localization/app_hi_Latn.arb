@@ -1537,10 +1537,6 @@
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
   },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "receiveReceiveAmount": "Prapt Raashi",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"

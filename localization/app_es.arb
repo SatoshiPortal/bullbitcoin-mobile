@@ -348,7 +348,6 @@
     }
   },
   "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
-  "receiveNotePlaceholder": "Nota",
   "receiveReceiveAmount": "Monto a recibir",
   "receiveSendNetworkFee": "Comisión de red de envío",
   "receiveServerNetworkFees": "Comisiones de red del servidor",

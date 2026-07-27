@@ -1198,10 +1198,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Σημείωση",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Αλλαγή αλλαγής",
   "@sendChange": {
     "description": "Label for change output in a transaction"

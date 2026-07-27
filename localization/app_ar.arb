@@ -1310,10 +1310,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "ملاحظة",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "التغيير",
   "@sendChange": {
     "description": "Label for change output in a transaction"

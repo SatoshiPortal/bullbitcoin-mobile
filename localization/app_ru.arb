@@ -4164,10 +4164,6 @@
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
   },
-  "receiveNotePlaceholder": "Заметка",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "receiveNote": "Заметка",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"

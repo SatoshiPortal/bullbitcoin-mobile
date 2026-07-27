@@ -468,7 +468,6 @@
   "testBackupTapWordsInOrder": "Tippen Sie auf die Wiederherstellungswörter in der\nrichtigen Reihenfolge",
   "transactionSwapDescLnSendExpired": "Dieser Swap ist abgelaufen. Ihr Geld wird automatisch an Ihre Wallet zurücküberwiesen",
   "testBackupButton": "Backup testen",
-  "receiveNotePlaceholder": "Anmerkung",
   "coreScreensInternalTransfer": "Interne Übertragung",
   "sendSwapWillTakeTime": "Die Bestätigung kann einige Zeit dauern",
   "autoswapSelectWalletError": "Bitte wählen Sie eine Bitcoin-Empfänger-Wallet aus.",

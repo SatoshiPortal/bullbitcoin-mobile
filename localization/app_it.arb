@@ -479,7 +479,6 @@
   "testBackupTapWordsInOrder": "Toccare le parole di recupero in\nordine giusto",
   "transactionSwapDescLnSendExpired": "Questo swap è scaduto. I vostri fondi saranno automaticamente restituiti al vostro portafoglio.",
   "testBackupButton": "Test di backup",
-  "receiveNotePlaceholder": "Nota",
   "sendChange": "Cambiamento",
   "coreScreensInternalTransfer": "Trasferimento interno",
   "sendSwapWillTakeTime": "Ci vorrà un po' per confermare",

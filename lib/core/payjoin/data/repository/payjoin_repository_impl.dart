@@ -1091,7 +1091,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ) {
     return _lock.synchronized(() async {
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
-      final inputPairs = _filterAvailableUtxos(unspentUtxos, lockedUtxos);
+      final inputPairs = _filterAvailableUtxos(
+        unspentUtxos,
+        lockedUtxos,
+        requestedAmountSat: payjoin.amountSat,
+      );
 
       if (inputPairs.isEmpty) {
         throw NoInputsToPayjoinException(
@@ -1134,13 +1138,45 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     });
   }
 
+  /// The candidate set handed to PDK's `tryPreservingPrivacy`, minus the UTXOs
+  /// already committed to another live payjoin.
+  ///
+  /// Confirmed candidates are preferred, because a payjoin spending our
+  /// unconfirmed input can be invalidated by an RBF of that input's parent
+  /// after both sides consider the payment done. PDK selects on privacy
+  /// heuristics alone, so the narrowing must happen here.
+  ///
+  /// The preference is bounded by [requestedAmountSat]: narrowing only happens
+  /// when a confirmed candidate is at least as large as the payment, i.e. the
+  /// order of magnitude `avoid_uih` needs to produce a proposal that does not
+  /// scream "unnecessary input". Without that floor, a confirmed dust UTXO
+  /// would outrank a well-sized unconfirmed one, `avoid_uih` would find no
+  /// acceptable selection and `select_first_candidate` would contribute the
+  /// dust — payjoin "active" but UIH-revealing, which is the privacy gain it
+  /// exists for. When no confirmed candidate clears the floor, the whole set
+  /// is handed over and PDK picks: a fresh wallet whose balance is still
+  /// unconfirmed keeps payjoining immediately (see
+  /// ReceiveBloc._isPayjoinEligible for the accepted residual risk).
+  ///
+  /// A null [requestedAmountSat] (the amount is read from the original
+  /// transaction when the request arrives, so this only happens if a session
+  /// somehow reaches here before that) disables the floor and keeps the plain
+  /// confirmed-first preference: without an amount there is no mismatch to
+  /// detect, while the RBF argument still holds.
   List<PayjoinInputPairModel> _filterAvailableUtxos(
     List<WalletUtxoModel> unspent,
-    List<({String txId, int vout})> locked,
-  ) {
-    return unspent
+    List<({String txId, int vout})> locked, {
+    required int? requestedAmountSat,
+  }) {
+    final candidates = unspent
         .where((u) => !locked.any((l) => l.txId == u.txId && l.vout == u.vout))
         .whereType<BitcoinWalletUtxoModel>()
+        .toList();
+    final confirmed = candidates.where((u) => u.confirmations > 0).toList();
+    final preferConfirmed = requestedAmountSat == null
+        ? confirmed.isNotEmpty
+        : confirmed.any((u) => u.amountSat >= BigInt.from(requestedAmountSat));
+    return (preferConfirmed ? confirmed : candidates)
         .map((u) => PayjoinInputPairModel.fromWalletUtxoModel(u))
         .toList();
   }

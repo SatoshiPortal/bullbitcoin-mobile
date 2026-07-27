@@ -477,7 +477,6 @@
   "testBackupTapWordsInOrder": "Toque nas palavras de recuperação no\nordem certa",
   "transactionSwapDescLnSendExpired": "Esta troca expirou. Os seus fundos serão automaticamente devolvidos à sua carteira.",
   "testBackupButton": "Teste de backup",
-  "receiveNotePlaceholder": "Nota",
   "sendChange": "Variação",
   "coreScreensInternalTransfer": "Transferência interna",
   "sendSwapWillTakeTime": "Levará algum tempo para confirmar",

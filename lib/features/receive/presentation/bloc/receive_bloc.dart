@@ -139,14 +139,24 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// it must be able to sign locally (payjoin needs to sign a proposal
   /// non-interactively), the global setting must be on, AND the wallet must
   /// have a balance — a payjoin proposal needs at least one UTXO to
-  /// contribute as an input. Unconfirmed counts: the contribution path draws
-  /// from BDK's listUnspent (which includes unconfirmed outputs), so waiting
-  /// for a confirmation only delays payjoin activation on fresh wallets;
-  /// worst case is not just a strict sender rejecting the proposal (falling
-  /// back to a normal broadcast): a payjoin tx spending our unconfirmed
-  /// input can be invalidated by an RBF of that input's parent after both
-  /// sides consider the payment done. _filterAvailableUtxos preferring
-  /// confirmed UTXOs when available is the cheap mitigation.
+  /// contribute as an input.
+  ///
+  /// Unconfirmed counts, on purpose: the contribution path draws from BDK's
+  /// listUnspent (which includes unconfirmed outputs) and an unconfirmed
+  /// output is spendable, so gating on confirmations would leave the app
+  /// contradicting itself for as long as a confirmation takes — a balance on
+  /// screen next to "no balance yet to contribute".
+  ///
+  /// KNOWN ACCEPTED LIMITATION. A payjoin transaction spending one of our
+  /// unconfirmed inputs dies if that input's parent is replaced (BIP125) after
+  /// both sides consider the payment done: the sender keeps their funds, and
+  /// nothing here re-broadcasts the original fallback — _watchForFallback
+  /// watches for the original APPEARING, not for the payjoin DISAPPEARING.
+  /// _filterAvailableUtxos lowers the probability (confirmed candidates are
+  /// preferred whenever one covers the payment) but does not close the
+  /// scenario; the mitigation that would is a watcher re-broadcasting the
+  /// original when an observed payjoin transaction never confirms, which
+  /// belongs to the deferred watch-for-broadcast work.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
       wallet.signsLocally && payjoinEnabled && wallet.balanceSat > BigInt.zero;
 
@@ -311,8 +321,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       } else if (state.payjoin != null &&
           !_isPayjoinEligible(wallet, payjoinEnabled)) {
         // If the wallet is watch only, payjoin was turned off since we last
-        //  created a receiver, or the wallet no longer has a confirmed
-        //  balance to contribute, clear it.
+        //  created a receiver, or the wallet no longer has a balance to
+        //  contribute, clear it.
         emit(state.copyWith(payjoin: null));
         // cancel the payjoin subscription as well if it exists
         await _payjoinSubscription?.cancel();

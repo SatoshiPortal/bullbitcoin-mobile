@@ -348,7 +348,6 @@
     }
   },
   "receiveFeeExplanation": "Ces frais seront déduits du montant envoyé",
-  "receiveNotePlaceholder": "Note",
   "receiveReceiveAmount": "Montant à recevoir",
   "receiveSendNetworkFee": "Frais de réseau d'envoi",
   "receiveServerNetworkFees": "Frais de réseau du serveur",

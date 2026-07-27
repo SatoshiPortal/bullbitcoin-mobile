@@ -338,7 +338,6 @@
   "receivePaymentInProgress": "Плата за прогрес",
   "receivePayjoinInProgress": "Payjoin в прогресі",
   "receiveFeeExplanation": "Цей збір буде відхилений від суми, відправленого",
-  "receiveNotePlaceholder": "Зареєструватися",
   "receiveReceiveAmount": "Отримувати Amount",
   "receiveSendNetworkFee": "Закупи хостинг »",
   "receiveServerNetworkFees": "Статус на сервери",

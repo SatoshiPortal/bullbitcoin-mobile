@@ -134,10 +134,6 @@
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
   },
-  "receiveNotePlaceholder": "შენიშვნა",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "transactionDetailAddNote": "შენიშვნის დამატება",
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"

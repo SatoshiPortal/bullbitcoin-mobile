@@ -310,7 +310,6 @@
     }
   },
   "receiveFeeExplanation": "Tämä kulu vähennetään lähetetystä summasta",
-  "receiveNotePlaceholder": "Kuvaus",
   "receiveReceiveAmount": "Vastaanotettava määrä",
   "receiveSendNetworkFee": "Lähetyksen verkkokulu",
   "receiveServerNetworkFees": "Palvelimen swap-kulut",

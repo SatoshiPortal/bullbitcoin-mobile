@@ -971,7 +971,6 @@
   "receiveCopyAddressOnly": "Chỉ sao chép hoặc quét địa chỉ",
   "receiveError": "Lỗi: {error}",
   "receiveFeeExplanation": "Khoản phí này sẽ được trừ từ số tiền được gửi",
-  "receiveNotePlaceholder": "Ghi chú",
   "receiveReceiveAmount": "Số tiền nhận được",
   "receiveSendNetworkFee": "Phí mạng gửi",
   "receiveServerNetworkFees": "Phí mạng của máy chủ",

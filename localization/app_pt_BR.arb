@@ -1318,10 +1318,6 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "receiveNotePlaceholder": "Nota",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sellServiceFee": "Taxa de serviço",
   "@sellServiceFee": {
     "description": "Label for Bull Bitcoin service fee"
