@@ -13269,5 +13269,14 @@
   "transactionStatusPayjoinAborted": "Payjoin přerušen",
   "transactionDetailLabelPayjoinAborted": "Přerušeno",
   "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Upozornění k Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Upozornění k Payjoin",
+  "settingsPayjoinAdvancedTitle": "Rozšířená nastavení Payjoin",
+  "receiveAdditionalInformation": "Další informace",
+  "receiveAdditionalInformationPlaceholder": "Přidejte částku nebo zprávu pro odesílatele",
+  "receiveMessageForSender": "Zpráva pro odesílatele",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
+  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin."
 }

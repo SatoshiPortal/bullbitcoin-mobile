@@ -3739,5 +3739,14 @@
   "transactionStatusPayjoinAborted": "Payjoin-ը չեղարկվել է",
   "transactionDetailLabelPayjoinAborted": "Չեղարկված",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-ի միջնորդավճարի ներդրում",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin-ը գաղտնիությունը բարելավելու համար վճարմանը որպես լրացուցիչ մուտք ավելացնում է ձեր մետաղադրամներից մեկը։ Այդ ավելացված մուտքի հանութային վճարը հանվում է ձեր ստացած գումարից (BIP78)։"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ը գաղտնիությունը բարելավելու համար վճարմանը որպես լրացուցիչ մուտք ավելացնում է ձեր մետաղադրամներից մեկը։ Այդ ավելացված մուտքի հանութային վճարը հանվում է ձեր ստացած գումարից (BIP78)։",
+  "settingsPayjoinDisclaimerTitle": "Payjoin-ի նախազգուշացում",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin-ի նախազգուշացում",
+  "settingsPayjoinAdvancedTitle": "Payjoin-ի ընդլայնված կարգավորումներ",
+  "receiveAdditionalInformation": "Լրացուցիչ տեղեկություններ",
+  "receiveAdditionalInformationPlaceholder": "Ավելացրեք գումար կամ հաղորդագրություն ուղարկողի համար",
+  "receiveMessageForSender": "Հաղորդագրություն ուղարկողին",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin-ը միացված է, սակայն այս դրամապանակը դեռ ներդրման համար մնացորդ չունի։ Այն կակտիվանա միջոցներ ստանալուն պես։",
+  "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։"
 }

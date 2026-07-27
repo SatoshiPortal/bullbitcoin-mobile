@@ -13459,5 +13459,14 @@
   "transactionStatusPayjoinAborted": "Payjoin रद्द किया गया",
   "transactionDetailLabelPayjoinAborted": "रद्द किया गया",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin शुल्क योगदान",
-  "transactionPayjoinFeeContributionExplanation": "गोपनीयता बेहतर बनाने के लिए Payjoin भुगतान में आपका एक सिक्का अतिरिक्त इनपुट के रूप में जोड़ता है। उस जोड़े गए इनपुट का माइनिंग शुल्क आपको मिलने वाली राशि से काट लिया जाता है (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "गोपनीयता बेहतर बनाने के लिए Payjoin भुगतान में आपका एक सिक्का अतिरिक्त इनपुट के रूप में जोड़ता है। उस जोड़े गए इनपुट का माइनिंग शुल्क आपको मिलने वाली राशि से काट लिया जाता है (BIP78)।",
+  "settingsPayjoinDisclaimerTitle": "Payjoin अस्वीकरण",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin अस्वीकरण",
+  "settingsPayjoinAdvancedTitle": "उन्नत Payjoin सेटिंग्स",
+  "receiveAdditionalInformation": "अतिरिक्त जानकारी",
+  "receiveAdditionalInformationPlaceholder": "राशि या भेजने वाले के लिए संदेश जोड़ें",
+  "receiveMessageForSender": "भेजने वाले के लिए संदेश",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
+  "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।"
 }

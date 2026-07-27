@@ -5269,5 +5269,14 @@
   "transactionStatusPayjoinAborted": "Payjoin 已中止",
   "transactionDetailLabelPayjoinAborted": "已中止",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 手续费分摊",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。",
+  "settingsPayjoinDisclaimerTitle": "Payjoin 说明",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin 说明",
+  "settingsPayjoinAdvancedTitle": "Payjoin 高级设置",
+  "receiveAdditionalInformation": "附加信息",
+  "receiveAdditionalInformationPlaceholder": "添加金额或给付款方的留言",
+  "receiveMessageForSender": "给付款方的留言",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
+  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。"
 }

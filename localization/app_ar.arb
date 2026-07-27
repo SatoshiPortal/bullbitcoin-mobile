@@ -13272,5 +13272,14 @@
   "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
   "transactionDetailLabelPayjoinAborted": "ملغى",
   "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "إخلاء مسؤولية Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
+  "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
+  "receiveAdditionalInformation": "معلومات إضافية",
+  "receiveAdditionalInformationPlaceholder": "أضف مبلغًا أو رسالة للمرسل",
+  "receiveMessageForSender": "رسالة إلى المرسل",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
+  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin."
 }

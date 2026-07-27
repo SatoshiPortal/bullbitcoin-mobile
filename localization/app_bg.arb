@@ -10958,5 +10958,14 @@
   "transactionStatusPayjoinAborted": "Payjoin отменен",
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Уведомление за Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
+  "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
+  "receiveAdditionalInformation": "Допълнителна информация",
+  "receiveAdditionalInformationPlaceholder": "Добавете сума или съобщение за изпращача",
+  "receiveMessageForSender": "Съобщение за изпращача",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
+  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin."
 }

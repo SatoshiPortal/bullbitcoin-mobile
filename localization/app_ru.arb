@@ -5275,5 +5275,14 @@
   "transactionStatusPayjoinAborted": "Payjoin отменён",
   "transactionDetailLabelPayjoinAborted": "Отменено",
   "transactionDetailLabelPayjoinFeeContribution": "Комиссия за участие в Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Предупреждение о Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Предупреждение о Payjoin",
+  "settingsPayjoinAdvancedTitle": "Расширенные настройки Payjoin",
+  "receiveAdditionalInformation": "Дополнительная информация",
+  "receiveAdditionalInformationPlaceholder": "Добавьте сумму или сообщение для отправителя",
+  "receiveMessageForSender": "Сообщение для отправителя",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin включён, но в этом кошельке пока нет средств для участия. Он активируется, как только вы получите средства.",
+  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin."
 }

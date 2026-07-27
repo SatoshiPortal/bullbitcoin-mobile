@@ -3739,5 +3739,14 @@
   "transactionStatusPayjoinAborted": "Payjoin đã bị hủy",
   "transactionDetailLabelPayjoinAborted": "Đã hủy",
   "transactionDetailLabelPayjoinFeeContribution": "Khoản phí đóng góp Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin thêm một trong các đồng coin của bạn làm đầu vào bổ sung cho khoản thanh toán để cải thiện quyền riêng tư. Phí khai thác cho đầu vào bổ sung đó sẽ được trừ vào số tiền bạn nhận được (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin thêm một trong các đồng coin của bạn làm đầu vào bổ sung cho khoản thanh toán để cải thiện quyền riêng tư. Phí khai thác cho đầu vào bổ sung đó sẽ được trừ vào số tiền bạn nhận được (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Lưu ý về Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Lưu ý về Payjoin",
+  "settingsPayjoinAdvancedTitle": "Cài đặt Payjoin nâng cao",
+  "receiveAdditionalInformation": "Thông tin bổ sung",
+  "receiveAdditionalInformationPlaceholder": "Thêm số tiền hoặc lời nhắn cho người gửi",
+  "receiveMessageForSender": "Lời nhắn cho người gửi",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin đã được bật, nhưng ví này chưa có số dư để đóng góp. Tính năng sẽ hoạt động khi bạn nhận được tiền.",
+  "announcementAutoswapDescription": "Liquid của bạn được tự động đổi sang Bitcoin."
 }

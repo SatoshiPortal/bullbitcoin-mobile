@@ -5261,5 +5261,14 @@
   "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
   "transactionDetailLabelPayjoinAborted": "Keskeytetty",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin-huomautus",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin-huomautus",
+  "settingsPayjoinAdvancedTitle": "Payjoinin lisäasetukset",
+  "receiveAdditionalInformation": "Lisätiedot",
+  "receiveAdditionalInformationPlaceholder": "Lisää summa tai viesti lähettäjälle",
+  "receiveMessageForSender": "Viesti lähettäjälle",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin on käytössä, mutta tässä lompakossa ei vielä ole osallistumiseen tarvittavaa saldoa. Se aktivoituu, kun vastaanotat varoja.",
+  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin."
 }

@@ -3754,5 +3754,14 @@
   "transactionStatusPayjoinAborted": "Payjoin imesitishwa",
   "transactionDetailLabelPayjoinAborted": "Imesitishwa",
   "transactionDetailLabelPayjoinFeeContribution": "Mchango wa ada ya Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin huongeza moja ya sarafu zako kama ingizo la ziada kwenye malipo ili kuboresha faragha. Ada ya uchimbaji kwa ingizo hilo lililoongezwa hukatwa kutoka kiasi unachopokea (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin huongeza moja ya sarafu zako kama ingizo la ziada kwenye malipo ili kuboresha faragha. Ada ya uchimbaji kwa ingizo hilo lililoongezwa hukatwa kutoka kiasi unachopokea (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Ilani ya Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Ilani ya Payjoin",
+  "settingsPayjoinAdvancedTitle": "Mipangilio ya kina ya Payjoin",
+  "receiveAdditionalInformation": "Maelezo ya nyongeza",
+  "receiveAdditionalInformationPlaceholder": "Ongeza kiasi au ujumbe kwa mtumaji",
+  "receiveMessageForSender": "Ujumbe kwa mtumaji",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin imewashwa, lakini pochi hii bado haina salio la kuchangia. Itaanza kufanya kazi mara tu utakapopokea fedha.",
+  "announcementAutoswapDescription": "Liquid yako hubadilishwa kiotomatiki kuwa Bitcoin."
 }
