@@ -3871,10 +3871,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "다운로드",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "우리의 은행의 주소",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -12183,10 +12179,6 @@
   "importWalletColdcardQ": "콜드 카드 Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "backupSettingsStartBackup": "백업하기",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "sendReceiveAmount": "결제하기",
   "@sendReceiveAmount": {

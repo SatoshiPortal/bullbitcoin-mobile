@@ -4507,10 +4507,6 @@
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
-  "backupSettingsRecoverBullSettings": "بازیابی",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "backupWalletGoogleDrivePrivacyMessage5": "مشترک با Bitcoin Bull.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
@@ -11350,10 +11346,6 @@
   "importWalletColdcardQ": "کارت سرد Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "sendReceiveAmount": "دریافت مبلغ",
   "@sendReceiveAmount": {

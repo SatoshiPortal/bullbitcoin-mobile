@@ -4708,10 +4708,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "backupSettingsStartBackup": "বেকআপ আৰম্ভ কৰক",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "backupSettingsExportVault": "Vault ৰপ্তানি কৰক",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -4763,10 +4759,6 @@
   "backupSettingsLabelsButton": "লেবেলসমূহ",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "backupWalletImportanceWarning": "বেকআপ নোহোৱাকৈ আপুনি শেষত আপোনাৰ ধনলৈ প্ৰৱেশ হেৰুৱাব। বেকআপ কৰাটো অতি গুৰুত্বপূৰ্ণ।",
   "@backupWalletImportanceWarning": {

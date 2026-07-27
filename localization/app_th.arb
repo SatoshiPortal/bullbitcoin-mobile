@@ -3871,10 +3871,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "การกู้คืน",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "ที่อยู่ธนาคารของเรา",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -12175,10 +12171,6 @@
   "importWalletColdcardQ": "รถบัส",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "sendReceiveAmount": "จํานวนเงิน",
   "@sendReceiveAmount": {

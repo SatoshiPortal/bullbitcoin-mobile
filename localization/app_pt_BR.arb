@@ -3325,10 +3325,6 @@
   "@dcaViewSettings": {
     "description": "Link to view DCA settings"
   },
-  "backupSettingsRecoverBullSettings": "Recuperação",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "exchangeAuthOk": "ESTÁ BEM",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -11343,10 +11339,6 @@
   "withdrawOrderAlreadyConfirmedError": "Esta ordem de retirada já foi confirmada.",
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
-  },
-  "backupSettingsStartBackup": "Iniciar backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Falhado para selecionar o vault do Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {

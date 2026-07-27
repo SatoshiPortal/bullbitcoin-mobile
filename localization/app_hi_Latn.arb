@@ -6876,10 +6876,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "backupSettingsStartBackup": "Backup Shuru Karo",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "backupSettingsExportVault": "Vault Export Karo",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -6931,10 +6927,6 @@
   "backupSettingsLabelsButton": "Labels",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "backupWalletImportanceWarning": "Backup ke bina aap apna paisa kho doge. Backup karna bahut zaroori hai.",
   "@backupWalletImportanceWarning": {

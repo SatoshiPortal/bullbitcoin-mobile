@@ -3653,10 +3653,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "exchangeDcaAddressLabelLiquid": "العنوان السائل",
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
@@ -11430,10 +11426,6 @@
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "backupSettingsStartBackup": "ابدأوا",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "sendReceiveAmount": "المبلغ المستلم",
   "@sendReceiveAmount": {

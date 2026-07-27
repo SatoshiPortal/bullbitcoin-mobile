@@ -8078,10 +8078,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "backupSettingsExportVault": "Export Vault",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -8133,10 +8129,6 @@
   "backupSettingsLabelsButton": "Labels",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "backupWalletImportanceWarning": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupWalletImportanceWarning": {
@@ -15077,5 +15069,21 @@
   "backupHealthNotNow": "NOT NOW",
   "@backupHealthNotNow": {
     "description": "Dismisses a backup reminder popup for a full cycle without recording a test"
+  },
+  "backupSettingsEncryptedVaultSettings": "Encrypted vault settings",
+  "@backupSettingsEncryptedVaultSettings": {
+    "description": "Menu row opening the Encrypted Vault settings; matches the Encrypted Vault status row vocabulary"
+  },
+  "backupSettingsHeroBackUpTitle": "Back up your wallet",
+  "@backupSettingsHeroBackUpTitle": {
+    "description": "Hero headline on Backup Settings when nothing is backed up"
+  },
+  "backupSettingsHeroBackUpBody": "If this phone is lost, stolen, or broken, your money is gone. Nothing can be recovered without a backup.",
+  "@backupSettingsHeroBackUpBody": {
+    "description": "Hero body on Backup Settings when nothing is backed up"
+  },
+  "backupSettingsStartBackupAction": "START BACKUP",
+  "@backupSettingsStartBackupAction": {
+    "description": "Hero button on Backup Settings that opens the backup options; replaces the old Start Backup menu row"
   }
 }

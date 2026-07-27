@@ -3180,10 +3180,6 @@
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "Адрес на нашата банка",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -9278,10 +9274,6 @@
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "backupSettingsStartBackup": "Започни резервно копиране",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "sendReceiveAmount": "Сума за получаване",
   "@sendReceiveAmount": {

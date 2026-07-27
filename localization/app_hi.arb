@@ -3871,10 +3871,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "हमारे बैंक का पता",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -12183,10 +12179,6 @@
   "importWalletColdcardQ": "कोल्डकार्ड Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "backupSettingsStartBackup": "बैकअप",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
   },
   "sendReceiveAmount": "राशि प्राप्त करना",
   "@sendReceiveAmount": {

@@ -11872,10 +11872,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "Přijmout částku",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -12188,10 +12184,6 @@
   "pinProtectionDescription": "PIN chrání přístup k Tvé peněžence a nastavením. Zapamatuj si ho.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "pinButtonContinue": "Pokračovat",
   "@pinButtonContinue": {
