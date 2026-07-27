@@ -15065,5 +15065,9 @@
   "backupSettingsStartBackup": "Start Backup",
   "@backupSettingsStartBackup": {
     "description": "Button text to start new backup process"
+  },
+  "recoverbullServerCustomWarning": "You are about to use a custom Recoverbull server. Make sure you trust this server.",
+  "@recoverbullServerCustomWarning": {
+    "description": "Warning shown before saving a custom key server URL in the encrypted vault settings"
   }
 }
