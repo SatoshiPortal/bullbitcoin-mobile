@@ -13435,5 +13435,6 @@
   "transactionStatusPayjoinAborted": "Payjoin रद्द किया गया",
   "transactionDetailLabelPayjoinAborted": "रद्द किया गया",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin शुल्क योगदान",
-  "transactionPayjoinFeeContributionExplanation": "गोपनीयता बेहतर बनाने के लिए Payjoin भुगतान में आपका एक सिक्का अतिरिक्त इनपुट के रूप में जोड़ता है। उस जोड़े गए इनपुट का माइनिंग शुल्क आपको मिलने वाली राशि से काट लिया जाता है (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "गोपनीयता बेहतर बनाने के लिए Payjoin भुगतान में आपका एक सिक्का अतिरिक्त इनपुट के रूप में जोड़ता है। उस जोड़े गए इनपुट का माइनिंग शुल्क आपको मिलने वाली राशि से काट लिया जाता है (BIP78)।",
+  "backupSettingsStartBackup": "बैकअप"
 }

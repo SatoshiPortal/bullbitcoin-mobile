@@ -15061,5 +15061,9 @@
   "recoverbullSelectBackupFileNotValidError": "This encrypted vault backup file is not valid",
   "@recoverbullSelectBackupFileNotValidError": {
     "description": "Error when the selected file is not a valid encrypted vault backup format"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
   }
 }

@@ -66,7 +66,7 @@ void main() {
     expect(find.text(loc.backupSettingsHeroBackUpTitle), findsOneWidget);
     expect(find.text(loc.backupSettingsStartBackupAction), findsOneWidget);
     expect(find.text(loc.backupHealthReminderTitle), findsNothing);
-    // The old menu row is gone; the hero is the way in.
+    // Nothing to test yet, so no test-backup row.
     expect(find.text(loc.backupSettingsTestBackup), findsNothing);
   });
 
@@ -155,6 +155,47 @@ void main() {
 
     expect(find.text(loc.backupSettingsHeroBackUpTitle), findsNothing);
     expect(find.text(loc.backupSettingsStartBackupAction), findsNothing);
+  });
+
+  // Availability is not encouragement: the hero goes quiet once a physical
+  // backup is fresh, but adding another backup must never stop being possible.
+  group('the backup action is always available', () {
+    final now = DateTime.now();
+    final postures = <String, Map<String, Object?>>{
+      'nothing backed up': {'physical': false, 'vault': false},
+      'vault only': {'physical': false, 'vault': true, 'vaultAt': now},
+      'physical fresh': {
+        'physical': true,
+        'vault': false,
+        'physicalAt': now.subtract(const Duration(days: 30)),
+      },
+      'physical stale': {
+        'physical': true,
+        'vault': false,
+        'physicalAt': now.subtract(const Duration(days: 400)),
+      },
+      'both': {
+        'physical': true,
+        'vault': true,
+        'physicalAt': now.subtract(const Duration(days: 30)),
+        'vaultAt': now,
+      },
+    };
+
+    for (final entry in postures.entries) {
+      testWidgets(entry.key, (tester) async {
+        final p = entry.value;
+        await pumpScreen(
+          tester,
+          physicalTested: p['physical']! as bool,
+          vaultTested: p['vault']! as bool,
+          lastPhysicalBackup: p['physicalAt'] as DateTime?,
+          lastEncryptedBackup: p['vaultAt'] as DateTime?,
+        );
+
+        expect(find.text(loc.backupSettingsStartBackup), findsOneWidget);
+      });
+    }
   });
 
   testWidgets('names the encrypted vault menu row after the status row', (

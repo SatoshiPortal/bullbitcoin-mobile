@@ -144,6 +144,10 @@ class _Screen extends StatelessWidget {
   /// The settings rows. Insertion point for the fork's metadata backup menu
   /// row: add one [SettingsEntryItem] to this list.
   List<Widget> _menuRows(BackupSettingsState state) => [
+    // Availability is not encouragement. The hero never asks for another
+    // backup once a physical one is fresh, but adding one deliberately has to
+    // stay possible from here in every state.
+    const _StartBackupButton(),
     if (state.lastEncryptedBackup != null) const _ViewVaultKeyButton(),
     if (state.lastEncryptedBackup != null || state.lastPhysicalBackup != null)
       const _TestBackupButton(),
@@ -318,6 +322,23 @@ class _TestBackupHero extends StatelessWidget {
       onAction: () => context.pushNamed(
         TestWalletBackupRoute.testPhysicalBackupFlow.name,
         extra: TestPhysicalBackupFlow.verify,
+      ),
+    );
+  }
+}
+
+class _StartBackupButton extends StatelessWidget {
+  const _StartBackupButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsEntryItem(
+      icon: Icons.save_as,
+      iconColor: context.appColors.primary,
+      title: context.loc.backupSettingsStartBackup,
+      onTap: () => context.pushNamed(
+        BackupSettingsSubroute.backupOptions.name,
+        extra: BackupSettingsFlow.backup,
       ),
     );
   }

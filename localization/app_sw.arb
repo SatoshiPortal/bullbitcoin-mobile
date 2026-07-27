@@ -3742,5 +3742,6 @@
   "transactionStatusPayjoinAborted": "Payjoin imesitishwa",
   "transactionDetailLabelPayjoinAborted": "Imesitishwa",
   "transactionDetailLabelPayjoinFeeContribution": "Mchango wa ada ya Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin huongeza moja ya sarafu zako kama ingizo la ziada kwenye malipo ili kuboresha faragha. Ada ya uchimbaji kwa ingizo hilo lililoongezwa hukatwa kutoka kiasi unachopokea (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin huongeza moja ya sarafu zako kama ingizo la ziada kwenye malipo ili kuboresha faragha. Ada ya uchimbaji kwa ingizo hilo lililoongezwa hukatwa kutoka kiasi unachopokea (BIP78).",
+  "backupSettingsStartBackup": "Anza Nakala Rudufu"
 }
