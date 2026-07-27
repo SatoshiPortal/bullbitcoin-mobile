@@ -161,8 +161,10 @@ void main() {
   // backup is fresh, but adding another backup must never stop being possible.
   group('the backup action is always available', () {
     final now = DateTime.now();
+    // The zero-backup state is deliberately absent: there the hero itself
+    // renders START BACKUP, so the menu row would be a second identical entry
+    // a few pixels below it. Covered by its own test after this group.
     final postures = <String, Map<String, Object?>>{
-      'nothing backed up': {'physical': false, 'vault': false},
       'vault only': {'physical': false, 'vault': true, 'vaultAt': now},
       'physical fresh': {
         'physical': true,
@@ -197,6 +199,18 @@ void main() {
       });
     }
   });
+
+  testWidgets(
+    'the zero-backup hero offers START BACKUP without a duplicate menu row',
+    (tester) async {
+      await pumpScreen(tester, physicalTested: false, vaultTested: false);
+
+      // The hero's own CTA is present…
+      expect(find.text(loc.backupSettingsStartBackupAction), findsOneWidget);
+      // …and the menu row offering the same action is suppressed here only.
+      expect(find.text(loc.backupSettingsStartBackup), findsNothing);
+    },
+  );
 
   testWidgets('names the encrypted vault menu row after the status row', (
     tester,

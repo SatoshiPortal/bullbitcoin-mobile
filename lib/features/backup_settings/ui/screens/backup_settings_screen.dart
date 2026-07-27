@@ -146,8 +146,10 @@ class _Screen extends StatelessWidget {
   List<Widget> _menuRows(BackupSettingsState state) => [
     // Availability is not encouragement. The hero never asks for another
     // backup once a physical one is fresh, but adding one deliberately has to
-    // stay possible from here in every state.
-    const _StartBackupButton(),
+    // stay possible from here in every state — EXCEPT the one state where the
+    // hero is already offering this exact action, where a second identical
+    // entry a few pixels below it is just noise.
+    if (!_heroOffersStartBackup(state)) const _StartBackupButton(),
     if (state.lastEncryptedBackup != null) const _ViewVaultKeyButton(),
     if (state.lastEncryptedBackup != null || state.lastPhysicalBackup != null)
       const _TestBackupButton(),
@@ -155,6 +157,18 @@ class _Screen extends StatelessWidget {
     const _Bip329LabelsButton(),
     const _TransactionHistoryButton(),
   ];
+
+  /// True only in the zero-backup state, where [_ZeroBackupHero] already
+  /// renders START BACKUP as its primary action. Mirrors the `posture == null`
+  /// branch of [_hero]; every other state either shows a different hero action
+  /// or none at all, so the menu row stays.
+  bool _heroOffersStartBackup(BackupSettingsState state) =>
+      state.status == BackupSettingsStatus.success &&
+      BackupHealthPosture.of(
+            isEncryptedVaultTested: state.isDefaultEncryptedBackupTested,
+            isPhysicalBackupTested: state.isDefaultPhysicalBackupTested,
+          ) ==
+          null;
 }
 
 class _StatusRow extends StatelessWidget {
