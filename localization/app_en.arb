@@ -15042,18 +15042,6 @@
   "@recoverbullSettingsTitle": {
     "description": "AppBar title on the encrypted vault settings page; matches the menu row that opens it"
   },
-  "settingsRecoverbullTitle": "Encrypted vault",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the encrypted vault backup section in app settings"
-  },
-  "recoverbullRecoveryTitle": "Encrypted vault recovery",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
-  "recoverbullVaultRecoveryTitle": "Encrypted vault recovery",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for encrypted vault recovery screen"
-  },
   "recoverbullLearnMore": "Learn more at recoverbull.com",
   "@recoverbullLearnMore": {
     "description": "Link text opening recoverbull.com from the vault settings and server confirmation pages"
