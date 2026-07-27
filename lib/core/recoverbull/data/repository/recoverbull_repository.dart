@@ -147,14 +147,6 @@ class RecoverBullRepository {
     await recoverbullSettingsDatasource.store(url);
   }
 
-  Future<void> allowPermission(bool isGranted) async {
-    await recoverbullSettingsDatasource.allowPermission(isGranted);
-  }
-
-  Future<bool> fetchPermission() async {
-    return await recoverbullSettingsDatasource.fetchPermission();
-  }
-
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
   RecoverBullCoreFailure _mapKeyServer(recoverbull.KeyServerException e) {
     final code = e.code;

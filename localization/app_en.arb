@@ -14277,30 +14277,6 @@
   "@autoswapMaximumBalanceLabel": {
     "description": "Label for the maximum instant wallet balance setting in autoswap"
   },
-  "recoverbullServerConfirmTitle": "Vault Recovery Server",
-  "@recoverbullServerConfirmTitle": {
-    "description": "AppBar title on the Recoverbull server confirmation page"
-  },
-  "recoverbullServerUsingDefault": "Using Default Server",
-  "@recoverbullServerUsingDefault": {
-    "description": "Shown when the default Recoverbull server is in use"
-  },
-  "recoverbullServerUsingCustom": "Using Custom Server",
-  "@recoverbullServerUsingCustom": {
-    "description": "Shown when a custom Recoverbull server is in use"
-  },
-  "recoverbullServerUrlLabel": "Server URL:",
-  "@recoverbullServerUrlLabel": {
-    "description": "Label for the Recoverbull server URL value"
-  },
-  "recoverbullServerCustomWarning": "You are using a custom Recoverbull server. Make sure you trust this server.",
-  "@recoverbullServerCustomWarning": {
-    "description": "Warning shown when using a custom Recoverbull server"
-  },
-  "recoverbullServerTorNotice": "We will connect to this server through Tor",
-  "@recoverbullServerTorNotice": {
-    "description": "Notice that the Recoverbull server connection goes through Tor"
-  },
   "recoverbullSettingsKeyServerUrl": "Key Server URL",
   "@recoverbullSettingsKeyServerUrl": {
     "description": "Label for the Recoverbull key server URL field"
