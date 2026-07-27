@@ -87,7 +87,6 @@
   "settingsGetHelpLabel": "Pyydä apua",
   "settingsServicesStatusTitle": "Palveluiden tila",
   "settingsTorSettingsTitle": "Tor-asetukset",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Kieli",
   "settingsThemeTitle": "Teema",
   "settingsArkTitle": "Ark",
@@ -1146,7 +1145,6 @@
   "takeYourTimeTag": "Ota aikaa",
   "customLocationTitle": "Mukautettu sijainti",
   "recoverWalletScreenTitle": "Palauta lompakko",
-  "recoverbullVaultRecoveryTitle": "Recoverbull-holvin palautus",
   "chooseAccessPinTitle": "Valitse käyttö {pinOrPassword}",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2712,7 +2710,6 @@
   "recoverbullSelectFetchDriveFilesError": "Kaikkien Drive-varmuuskopioiden haku epäonnistui",
   "recoverbullSelectFileNotSelectedError": "Tiedostoa ei valittu",
   "recoverbullSelectCustomLocationError": "Tiedoston valinta mukautetusta sijainnista epäonnistui",
-  "recoverbullSelectBackupFileNotValidError": "RecoverBull-varmuuskopiotiedosto ei ole kelvollinen",
   "recoverbullSelectVaultProvider": "Valitse holvin tarjoaja",
   "recoverbullSwitchToPassword": "Valitse salasana sen sijaan",
   "recoverbullSwitchToPIN": "Valitse PIN sen sijaan",
@@ -2727,7 +2724,6 @@
   "recoverbullVaultKeyInput": "Holviavain",
   "recoverbullVaultSelected": "Holvi valittu",
   "recoverbullWaiting": "Odotetaan",
-  "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
   "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
   "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -4759,8 +4755,6 @@
   "recoverbullServerUrlLabel": "Palvelimen URL:",
   "recoverbullServerCustomWarning": "Käytät mukautettua Recoverbull-palvelinta. Varmista, että luotat tähän palvelimeen.",
   "recoverbullServerTorNotice": "Yhdistämme tähän palvelimeen Tor-verkon kautta",
-  "recoverbullLearnMore": "Lue lisää Recoverbullista",
-  "recoverbullSettingsTitle": "Recoverbull-asetukset",
   "recoverbullSettingsKeyServerUrl": "Avainpalvelimen URL",
   "recoverbullSettingsEdit": "Muokkaa",
   "recoverbullSettingsCancel": "Peruuta",

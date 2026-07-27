@@ -3321,10 +3321,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "بازیابی مجدد",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "کد QR را از کیف پول سخت افزاری خود اسکن کنید",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -5319,10 +5315,6 @@
   "importQrDeviceSpecterStep9": "کد QR را که بر روی Specter شما نمایش داده شده است، اسکن کنید",
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
-  },
-  "settingsRecoverbullTitle": "بازیابی",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "buyInputKycPending": "KYC ID Verification",
   "@buyInputKycPending": {
@@ -8618,10 +8610,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "فایل پشتیبان بازیابیbull معتبر نیست",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "نمی تواند معامله ایجاد کند. به دلیل بودجه کافی برای پوشش هزینه ها و مبلغ.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -11812,10 +11800,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "recoverbullVaultRecoveryTitle": "بازیابی مجدد",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "physicalBackupRecommendation": "پشتیبانی فیزیکی: ",
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -12601,8 +12585,6 @@
   "recoverbullServerUrlLabel": "آدرس سرور:",
   "recoverbullServerCustomWarning": "شما در حال استفاده از یک سرور Recoverbull سفارشی هستید. مطمئن شوید که به این سرور اعتماد دارید.",
   "recoverbullServerTorNotice": "ما از طریق Tor به این سرور متصل می‌شویم",
-  "recoverbullLearnMore": "درباره Recoverbull بیشتر بدانید",
-  "recoverbullSettingsTitle": "تنظیمات Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL سرور کلید",
   "recoverbullSettingsEdit": "ویرایش",
   "recoverbullSettingsCancel": "لغو",

@@ -2496,10 +2496,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull vault वसूली",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "अपने हार्डवेयर वॉलेट से QR कोड स्कैन करें",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -4826,10 +4822,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "KYC ID सत्यापन लंबित",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -5008,10 +5000,6 @@
   "autoswapWarningExplanation": "जब आपका शेष अधिकतम शेष से अधिक हो जाता है, तो एक स्वैप शुरू हो जाएगा। लक्ष्य संतुलन आपके तत्काल भुगतान वॉलेट में रखा जाएगा और शेष राशि को आपके सुरक्षित बिटकॉइन वॉलेट में स्वैप किया जाएगा।।",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault वसूली",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
   "@passportStep14": {
@@ -8873,10 +8861,6 @@
   "buyInputInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
-  },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull बैकअप फ़ाइल मान्य नहीं है",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "swapErrorInsufficientFunds": "लेन-देन का निर्माण नहीं कर सका। समान रूप से शुल्क और राशि को कवर करने के लिए अपर्याप्त धन के कारण।।",
   "@swapErrorInsufficientFunds": {
@@ -12863,8 +12847,6 @@
   "recoverbullServerUrlLabel": "सर्वर URL:",
   "recoverbullServerCustomWarning": "आप एक कस्टम Recoverbull सर्वर का उपयोग कर रहे हैं। सुनिश्चित करें कि आप इस सर्वर पर भरोसा करते हैं।",
   "recoverbullServerTorNotice": "हम Tor के माध्यम से इस सर्वर से कनेक्ट करेंगे",
-  "recoverbullLearnMore": "Recoverbull के बारे में और जानें",
-  "recoverbullSettingsTitle": "Recoverbull सेटिंग्स",
   "recoverbullSettingsKeyServerUrl": "की सर्वर URL",
   "recoverbullSettingsEdit": "संपादित करें",
   "recoverbullSettingsCancel": "रद्द करें",

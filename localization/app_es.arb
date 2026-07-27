@@ -125,7 +125,6 @@
   "settingsGetHelpLabel": "Obtener ayuda",
   "settingsServicesStatusTitle": "Estado de Servicios",
   "settingsTorSettingsTitle": "Ajustes de Tor",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Idioma",
   "settingsThemeTitle": "Tema",
   "settingsArkTitle": "Ark",
@@ -1187,7 +1186,6 @@
   "takeYourTimeTag": "Tómate tu tiempo",
   "customLocationTitle": "Ubicación personalizada",
   "recoverWalletScreenTitle": "Recuperar Billetera",
-  "recoverbullVaultRecoveryTitle": "Recuperación de bóveda Recoverbull",
   "chooseAccessPinTitle": "Elegir {pinOrPassword} de acceso",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2763,7 +2761,6 @@
   "recoverbullSelectFetchDriveFilesError": "Error al obtener todos los respaldos de Drive",
   "recoverbullSelectFileNotSelectedError": "Archivo no seleccionado",
   "recoverbullSelectCustomLocationError": "Error al seleccionar archivo desde ubicación personalizada",
-  "recoverbullSelectBackupFileNotValidError": "El archivo de respaldo de RecoverBull no es válido",
   "recoverbullSelectVaultProvider": "Seleccionar Proveedor de Bóveda",
   "recoverbullSwitchToPassword": "Elegir una contraseña en su lugar",
   "recoverbullSwitchToPIN": "Elegir un PIN en su lugar",
@@ -2778,7 +2775,6 @@
   "recoverbullVaultKeyInput": "Clave de Bóveda",
   "recoverbullVaultSelected": "Bóveda Seleccionada",
   "recoverbullWaiting": "Esperando",
-  "recoverbullRecoveryTitle": "Recuperación de bóveda RecoverBull",
   "recoverbullRecoveryLoadingMessage": "Buscando saldo y transacciones…",
   "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -4773,8 +4769,6 @@
   "recoverbullServerUrlLabel": "URL del servidor:",
   "recoverbullServerCustomWarning": "Estás usando un servidor Recoverbull personalizado. Asegúrate de confiar en este servidor.",
   "recoverbullServerTorNotice": "Nos conectaremos a este servidor a través de Tor",
-  "recoverbullLearnMore": "Más información sobre Recoverbull",
-  "recoverbullSettingsTitle": "Ajustes de Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL del servidor de claves",
   "recoverbullSettingsEdit": "Editar",
   "recoverbullSettingsCancel": "Cancelar",

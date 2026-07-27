@@ -299,7 +299,6 @@
   "settingsGithubLabel": "Github",
   "settingsServicesStatusTitle": "সেৱাৰ স্থিতি",
   "settingsTorSettingsTitle": "Tor ছেটিংছ",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
   "settingsArkTitle": "Ark",
@@ -1498,7 +1497,6 @@
   "takeYourTimeTag": "সময় লওক",
   "customLocationTitle": "কাস্টম ঠাই",
   "recoverWalletScreenTitle": "Wallet পুনৰুদ্ধাৰ কৰক",
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
   "chooseAccessPinTitle": "প্ৰৱেশ {pinOrPassword} বাছনি কৰক",
   "@chooseAccessPinTitle": {
     "description": "Title for choosing access PIN or password",
@@ -5616,10 +5614,6 @@
   "@recoverbullSelectCustomLocationError": {
     "description": "Error when file selection from custom location fails"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull বেকআপ ফাইল বৈধ নহয়",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "recoverbullSelectVaultProvider": "Vault প্ৰদানকাৰী বাছনি কৰক",
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
@@ -5675,10 +5669,6 @@
   "recoverbullWaiting": "অপেক্ষা কৰক",
   "@recoverbullWaiting": {
     "description": "Status label indicating waiting state"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "recoverbullRecoveryLoadingMessage": "বেলেন্স আৰু লেনদেন বিচাৰি আছে…",
   "@recoverbullRecoveryLoadingMessage": {
@@ -9718,8 +9708,6 @@
   "recoverbullServerUrlLabel": "চাৰ্ভাৰ URL:",
   "recoverbullServerCustomWarning": "আপুনি এটা কাষ্টম Recoverbull চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে। নিশ্চিত কৰক যে আপুনি এই চাৰ্ভাৰক বিশ্বাস কৰে।",
   "recoverbullServerTorNotice": "আমি Tor ৰ জৰিয়তে এই চাৰ্ভাৰৰ সৈতে সংযোগ কৰিম",
-  "recoverbullLearnMore": "Recoverbull ৰ বিষয়ে অধিক জানক",
-  "recoverbullSettingsTitle": "Recoverbull ছেটিংছ",
   "recoverbullSettingsKeyServerUrl": "কী চাৰ্ভাৰ URL",
   "recoverbullSettingsEdit": "সম্পাদনা কৰক",
   "recoverbullSettingsCancel": "বাতিল কৰক",

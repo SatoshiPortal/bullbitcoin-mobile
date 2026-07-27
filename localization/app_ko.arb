@@ -2496,10 +2496,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull vault 복구",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "하드웨어 지갑에서 QR 코드를 스캔",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -4826,10 +4822,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "다운로드",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "KYC ID 검증 완료",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -5008,10 +5000,6 @@
   "autoswapWarningExplanation": "잔액이 최대 잔액을 초과하면 스왑이 트리거됩니다. 대상 잔액은 즉시 결제 지갑에 보관되며 나머지 금액은 Secure Bitcoin Wallet으로 교환됩니다.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault 복구",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
   "@passportStep14": {
@@ -8874,10 +8862,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull 백업 파일은 유효하지 않습니다",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "거래를 만들 수 없습니다. 수수료 및 금액에 대한 충분한 자금 때문에.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -12601,8 +12585,6 @@
   "recoverbullServerUrlLabel": "서버 URL:",
   "recoverbullServerCustomWarning": "사용자 지정 Recoverbull 서버를 사용하고 있습니다. 이 서버를 신뢰할 수 있는지 확인하세요.",
   "recoverbullServerTorNotice": "Tor를 통해 이 서버에 연결합니다",
-  "recoverbullLearnMore": "Recoverbull에 대해 자세히 알아보기",
-  "recoverbullSettingsTitle": "Recoverbull 설정",
   "recoverbullSettingsKeyServerUrl": "키 서버 URL",
   "recoverbullSettingsEdit": "편집",
   "recoverbullSettingsCancel": "취소",

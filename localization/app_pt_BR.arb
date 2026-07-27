@@ -2114,10 +2114,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "transactionListNoTransactions": "Ainda não há transações.",
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
@@ -4165,10 +4161,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "settingsRecoverbullTitle": "Recuperação",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "dcaBuyingMessage": "Você está comprando {amount} cada {frequency} via {network} desde que haja fundos em sua conta.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4481,10 +4473,6 @@
   "coldcardStep7": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
-  },
-  "recoverbullVaultRecoveryTitle": "Recuperação do vault do Recoverbull",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "systemLabelPayjoin": "Payjoin",
   "@systemLabelPayjoin": {
@@ -7948,10 +7936,6 @@
   "sellSendPaymentSecureWallet": "Carteira Bitcoin segura",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
-  },
-  "recoverbullSelectBackupFileNotValidError": "O arquivo de backup do Recoverbull não é válido",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "payNewRecipients": "Novos destinatários",
   "@payNewRecipients": {
@@ -12715,8 +12699,6 @@
   "recoverbullServerUrlLabel": "URL do servidor:",
   "recoverbullServerCustomWarning": "Você está usando um servidor Recoverbull personalizado. Certifique-se de confiar neste servidor.",
   "recoverbullServerTorNotice": "Vamos nos conectar a este servidor através do Tor",
-  "recoverbullLearnMore": "Saiba mais sobre o Recoverbull",
-  "recoverbullSettingsTitle": "Configurações do Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL do servidor de chaves",
   "recoverbullSettingsEdit": "Editar",
   "recoverbullSettingsCancel": "Cancelar",

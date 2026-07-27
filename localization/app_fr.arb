@@ -125,7 +125,6 @@
   "settingsGetHelpLabel": "Obtenir de l'aide",
   "settingsServicesStatusTitle": "État des services",
   "settingsTorSettingsTitle": "Paramètres Tor",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Langue",
   "settingsThemeTitle": "Thème",
   "settingsArkTitle": "Ark",
@@ -1184,7 +1183,6 @@
   "takeYourTimeTag": "Prenez votre temps",
   "customLocationTitle": "Emplacement personnalisé",
   "recoverWalletScreenTitle": "Récupérer le portefeuille",
-  "recoverbullVaultRecoveryTitle": "Récupération du coffre-fort Recoverbull",
   "chooseAccessPinTitle": "Choisir le {pinOrPassword} d'accès",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2760,7 +2758,6 @@
   "recoverbullSelectFetchDriveFilesError": "Échec de la récupération de toutes les sauvegardes Drive",
   "recoverbullSelectFileNotSelectedError": "Fichier non sélectionné",
   "recoverbullSelectCustomLocationError": "Échec de la sélection du fichier depuis l'emplacement personnalisé",
-  "recoverbullSelectBackupFileNotValidError": "Le fichier de sauvegarde RecoverBull n'est pas valide",
   "recoverbullSelectVaultProvider": "Sélectionnez le fournisseur de coffre-fort",
   "recoverbullSwitchToPassword": "Choisir un mot de passe",
   "recoverbullSwitchToPIN": "Choisir un NIP plutôt",
@@ -2775,7 +2772,6 @@
   "recoverbullVaultKeyInput": "Clé de coffre-fort",
   "recoverbullVaultSelected": "Coffre-fort sélectionné",
   "recoverbullWaiting": "En attente",
-  "recoverbullRecoveryTitle": "Récupération du coffre-fort RecoverBull",
   "recoverbullRecoveryLoadingMessage": "Recherche du solde et des transactions…",
   "recoverbullRecoveryBalanceLabel": "Solde : {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -4756,8 +4752,6 @@
   "recoverbullServerUrlLabel": "URL du serveur :",
   "recoverbullServerCustomWarning": "Vous utilisez un serveur Recoverbull personnalisé. Assurez-vous de faire confiance à ce serveur.",
   "recoverbullServerTorNotice": "Nous nous connecterons à ce serveur via Tor",
-  "recoverbullLearnMore": "En savoir plus sur Recoverbull",
-  "recoverbullSettingsTitle": "Paramètres Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL du serveur de clés",
   "recoverbullSettingsEdit": "Modifier",
   "recoverbullSettingsCancel": "Annuler",

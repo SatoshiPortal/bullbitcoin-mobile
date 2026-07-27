@@ -2457,10 +2457,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull ভল্ট পুনরুদ্ধার",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "আপনার হার্ডওয়্যার ও ওয়ালেট থেকে QR কোড স্ক্যান করুন",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -4714,10 +4710,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "KYC ID যাচাই প্রক্রিয়াধীন",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4883,10 +4875,6 @@
   "autoswapWarningExplanation": "যখন আপনার ব্যালেন্স সর্বোচ্চ সীমা ছাড়িয়ে যাবে, তখন একটি সোয়াপ ট্রিগার হবে। লক্ষ্য ব্যালেন্সটি আপনার Instant Payments ওয়ালেটে রাখা হবে এবং বাকি পরিমাণটি আপনার Secure Bitcoin Wallet-এ সোয়াপ করা হবে।",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull ভল্ট পুনরুদ্ধার",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "এটি এখন ব্রডকাস্ট করার জন্য প্রস্তুত! ব্রডকাস্ট ক্লিক করলে লেনদেনটি বিটকয়েন নেটওয়ার্কে প্রকাশিত হবে এবং তহবিল পাঠিয়ে দেওয়া হবে।",
   "@passportStep14": {
@@ -8642,10 +8630,6 @@
   "buyInputInsufficientBalanceMessage": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালান্স নেই",
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
-  },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull ব্যাকআপ ফাইলটি বৈধ নয়",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "swapErrorInsufficientFunds": "ট্রান্স্যাকশন তৈরি করা সম্ভব হয়নি। সম্ভবত ফি ও পরিমাণ কভার করতে পর্যাপ্ত তহবিল না থাকার কারণে।",
   "@swapErrorInsufficientFunds": {
@@ -12885,8 +12869,6 @@
   "recoverbullServerUrlLabel": "সার্ভার URL:",
   "recoverbullServerCustomWarning": "আপনি একটি কাস্টম Recoverbull সার্ভার ব্যবহার করছেন। নিশ্চিত করুন যে আপনি এই সার্ভারকে বিশ্বাস করেন।",
   "recoverbullServerTorNotice": "আমরা Tor এর মাধ্যমে এই সার্ভারে সংযোগ করব",
-  "recoverbullLearnMore": "Recoverbull সম্পর্কে আরও জানুন",
-  "recoverbullSettingsTitle": "Recoverbull সেটিংস",
   "recoverbullSettingsKeyServerUrl": "কী সার্ভার URL",
   "recoverbullSettingsEdit": "সম্পাদনা করুন",
   "recoverbullSettingsCancel": "বাতিল করুন",

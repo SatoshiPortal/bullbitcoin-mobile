@@ -479,10 +479,6 @@
   "@settingsTorSettingsTitle": {
     "description": "Title for the Tor settings section in app settings"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "settingsLanguageTitle": "Language",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -4752,10 +4748,6 @@
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
   },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault recovery",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "chooseAccessPinTitle": "Choose access {pinOrPassword}",
   "@chooseAccessPinTitle": {
     "description": "Title for choosing access PIN or password",
@@ -9002,10 +8994,6 @@
   "@recoverbullSelectCustomLocationError": {
     "description": "Error when file selection from custom location fails"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull backup file is not valid",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "recoverbullSelectVaultProvider": "Select Vault Provider",
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
@@ -9061,10 +9049,6 @@
   "recoverbullWaiting": "Waiting",
   "@recoverbullWaiting": {
     "description": "Status label indicating waiting state"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault recovery",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions…",
   "@recoverbullRecoveryLoadingMessage": {
@@ -14317,14 +14301,6 @@
   "@recoverbullServerTorNotice": {
     "description": "Notice that the Recoverbull server connection goes through Tor"
   },
-  "recoverbullLearnMore": "Learn more about Recoverbull",
-  "@recoverbullLearnMore": {
-    "description": "Link text to learn more about Recoverbull"
-  },
-  "recoverbullSettingsTitle": "Recoverbull Settings",
-  "@recoverbullSettingsTitle": {
-    "description": "AppBar title on the Recoverbull settings page"
-  },
   "recoverbullSettingsKeyServerUrl": "Key Server URL",
   "@recoverbullSettingsKeyServerUrl": {
     "description": "Label for the Recoverbull key server URL field"
@@ -15085,5 +15061,29 @@
   "backupSettingsStartBackupAction": "START BACKUP",
   "@backupSettingsStartBackupAction": {
     "description": "Hero button on Backup Settings that opens the backup options; replaces the old Start Backup menu row"
+  },
+  "recoverbullSettingsTitle": "Encrypted vault settings",
+  "@recoverbullSettingsTitle": {
+    "description": "AppBar title on the encrypted vault settings page; matches the menu row that opens it"
+  },
+  "settingsRecoverbullTitle": "Encrypted vault",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the encrypted vault backup section in app settings"
+  },
+  "recoverbullRecoveryTitle": "Encrypted vault recovery",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullVaultRecoveryTitle": "Encrypted vault recovery",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for encrypted vault recovery screen"
+  },
+  "recoverbullLearnMore": "Learn more at recoverbull.com",
+  "@recoverbullLearnMore": {
+    "description": "Link text opening recoverbull.com from the vault settings and server confirmation pages"
+  },
+  "recoverbullSelectBackupFileNotValidError": "This encrypted vault backup file is not valid",
+  "@recoverbullSelectBackupFileNotValidError": {
+    "description": "Error when the selected file is not a valid encrypted vault backup format"
   }
 }

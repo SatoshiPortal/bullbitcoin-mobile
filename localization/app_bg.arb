@@ -2137,10 +2137,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull vault възстановяване",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "transactionStatusTransferInProgress": "Прехвърлянето е в процес",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
@@ -3854,10 +3850,6 @@
   "transactionDetailLabelPayinStatus": "Статус на плащането",
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "importWatchOnlySelectDerivation": "Изберете деривация",
   "@importWatchOnlySelectDerivation": {
@@ -6802,10 +6794,6 @@
   "sendAmount": "Сума",
   "@sendAmount": {
     "description": "Label for the transaction amount"
-  },
-  "recoverbullSelectBackupFileNotValidError": "Резервното копие на Recoverbull не е валидно",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "swapErrorInsufficientFunds": "Не може да се създаде транзакция. Вероятно поради недостатъчни средства за покриване на таксите и сумата",
   "@swapErrorInsufficientFunds": {
@@ -9773,8 +9761,6 @@
   "recoverbullServerUrlLabel": "URL на сървъра:",
   "recoverbullServerCustomWarning": "Използвате персонализиран сървър Recoverbull. Уверете се, че се доверявате на този сървър.",
   "recoverbullServerTorNotice": "Ще се свържем с този сървър чрез Tor",
-  "recoverbullLearnMore": "Научете повече за Recoverbull",
-  "recoverbullSettingsTitle": "Настройки на Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL на сървъра за ключове",
   "recoverbullSettingsEdit": "Редактирай",
   "recoverbullSettingsCancel": "Отказ",
@@ -10159,7 +10145,6 @@
   "fundExchangeJurisdictionColombia": "🇨🇴 Колумбия",
   "customLocationTitle": "Персонализирано местоположение",
   "recoverWalletScreenTitle": "Възстанови портфейл",
-  "recoverbullVaultRecoveryTitle": "Възстановяване на Recoverbull трезор",
   "chooseAccessPinTitle": "Избери {pinOrPassword} за достъп",
   "memorizePasswordWarning": "Трябва да запомните тази {pinOrPassword}, за да възстановите достъпа до портфейла си. Трябва да бъде поне 6 цифри. Ако загубите тази {pinOrPassword}, не можете да възстановите резервното си копие.",
   "passwordTooCommonError": "Тази {pinOrPassword} е твърде често срещана. Моля, изберете различна.",

@@ -2084,10 +2084,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "Βάλτε τον κωδικό QR από το πορτοφόλι υλικού σας",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -4047,10 +4043,6 @@
   "importQrDeviceSpecterStep9": "Βάλτε τον κωδικό QR που εμφανίζεται στο Specter σας",
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyInputKycPending": {
@@ -7341,10 +7333,6 @@
   "buyInputInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
-  },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull εφεδρικό αρχείο δεν ισχύει",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "swapErrorInsufficientFunds": "Δεν θα μπορούσε να χτίσει συναλλαγές. Ακριβώς λόγω ανεπαρκών κεφαλαίων για την κάλυψη των τελών και του ποσού.",
   "@swapErrorInsufficientFunds": {
@@ -11040,10 +11028,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "recoverbullVaultRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος έχει επιβεβαιωθεί. Υποστηρίζετε τώρα τα κεφάλαια για να ολοκληρώσετε τη μεταφορά σας.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
@@ -12719,8 +12703,6 @@
   "recoverbullServerUrlLabel": "URL διακομιστή:",
   "recoverbullServerCustomWarning": "Χρησιμοποιείτε έναν προσαρμοσμένο διακομιστή Recoverbull. Βεβαιωθείτε ότι εμπιστεύεστε αυτόν τον διακομιστή.",
   "recoverbullServerTorNotice": "Θα συνδεθούμε σε αυτόν τον διακομιστή μέσω Tor",
-  "recoverbullLearnMore": "Μάθετε περισσότερα για το Recoverbull",
-  "recoverbullSettingsTitle": "Ρυθμίσεις Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL διακομιστή κλειδιών",
   "recoverbullSettingsEdit": "Επεξεργασία",
   "recoverbullSettingsCancel": "Ακύρωση",
