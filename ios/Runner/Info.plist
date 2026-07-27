@@ -59,6 +59,8 @@
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>The app itself never collects your location. Location access is only requested if a website opened in the in-app browser asks for it</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>The app itself never collects your location. Location access is only requested if a website opened in the in-app browser asks for it</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIDesignRequiresCompatibility</key>

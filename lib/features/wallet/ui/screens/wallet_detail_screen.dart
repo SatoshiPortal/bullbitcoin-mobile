@@ -22,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletDetailScreen extends StatelessWidget {
@@ -72,6 +73,10 @@ class WalletDetailScreen extends StatelessWidget {
                       signer: wallet.signer,
                     ),
                   ),
+                  if (wallet.isLiquid)
+                    SliverToBoxAdapter(
+                      child: ConsolidationBanner(wallet: wallet),
+                    ),
                   if (wallet.isBitcoin) ...[
                     const SliverToBoxAdapter(child: Gap(8)),
                     SliverToBoxAdapter(child: _CoinsEntryTile(wallet: wallet)),

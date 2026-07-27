@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
+import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -74,8 +76,13 @@ class AppRouter {
               location.contains('/support-chat') ||
               location.contains('/login-support');
 
-          return BlocProvider(
-            create: (_) => locator<PriceChartCubit>(),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => locator<PriceChartCubit>()),
+              BlocProvider(
+                create: (_) => locator<AnnouncementsCubit>()..refresh(),
+              ),
+            ],
             child: PopScope(
               canPop: false,
               onPopInvokedWithResult: (didPop, _) {
@@ -145,6 +152,7 @@ class AppRouter {
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,
+      ConsolidationRouter.route,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,

@@ -47,6 +47,7 @@ class AppColors {
   final Color onError;
   final Color errorContainer;
   final Color success;
+  final Color onSuccess;
   final Color warning;
   final Color warningContainer;
   final Color info;
@@ -96,6 +97,7 @@ class AppColors {
     required this.onError,
     required this.errorContainer,
     required this.success,
+    required this.onSuccess,
     required this.warning,
     required this.warningContainer,
     required this.info,
@@ -140,6 +142,7 @@ class AppColors {
     onError: Color(0xFFFFFFFF),
     errorContainer: Color(0xFFFFEBEE),
     success: Color(0xFF34C759),
+    onSuccess: Color(0xFFFFFFFF),
     warning: Color(0xFFFB9300),
     warningContainer: Color(0xFFFFF4E6),
     info: Color(0xFF0063F7),
@@ -184,6 +187,7 @@ class AppColors {
     onError: Color(0xFFFFFFFF),
     errorContainer: Color(0xFF3D0000),
     success: Color(0xFF32D74B),
+    onSuccess: Color(0xFFFFFFFF),
     warning: Color(0xFFFF9F0A),
     warningContainer: Color(0xFF3D2D00),
     info: Color(0xFF0A84FF),

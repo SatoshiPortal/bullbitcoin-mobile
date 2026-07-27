@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
     as domain;
 import 'package:bb_mobile/core/settings/domain/update_tor_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:get_it/get_it.dart';
 
@@ -39,6 +40,11 @@ class SettingsLocator {
     );
     locator.registerFactory<WatchCurrencyChangesUsecase>(
       () => WatchCurrencyChangesUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchPayjoinEnabledChangesUsecase>(
+      () => WatchPayjoinEnabledChangesUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );

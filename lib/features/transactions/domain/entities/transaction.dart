@@ -51,6 +51,69 @@ sealed class Transaction with _$Transaction {
       isOngoingPayjoin && payjoin is PayjoinReceiver;
   bool get isOngoingPayjoinSender =>
       isOngoingPayjoin && payjoin is PayjoinSender;
+
+  /// The payjoin status to DISPLAY, derived from what actually happened
+  /// on-chain rather than from the session row alone. The session's
+  /// persisted status can lag reality: completion/abort detection runs on
+  /// background polls in the payjoin repository, so right after a payment
+  /// lands the row may still say requested/proposed while the broadcast
+  /// transaction is already visible in the wallet. When the wallet
+  /// transaction is present, its txid is authoritative:
+  /// - it IS the payjoin transaction → the negotiation completed;
+  /// - it IS the original transaction → the payjoin was aborted and the
+  ///   payment fell back to a plain broadcast.
+  /// Falls back to the session status when there is no wallet transaction
+  /// (nothing broadcast yet, or not synced in) — and null when this
+  /// transaction has no payjoin at all.
+  PayjoinStatus? get displayPayjoinStatus {
+    final pj = payjoin;
+    if (pj == null) return null;
+    final walletTxId = walletTransaction?.txId;
+    if (walletTxId != null) {
+      if (walletTxId == pj.txId) return PayjoinStatus.completed;
+      if (walletTxId == pj.originalTxId && !pj.isCompleted) {
+        return PayjoinStatus.aborted;
+      }
+    }
+    return pj.status;
+  }
+
+  /// The mining fee (sats) deducted from a completed payjoin receive,
+  /// paying for the input the receiver contributed to the transaction
+  /// (BIP78). `null` unless this is a payjoin actually reflected in a
+  /// broadcast transaction, on the receive side, with a positive gap
+  /// between the amount the sender negotiated ([Payjoin.amountSat]) and the
+  /// amount the wallet actually sees ([WalletTransaction.amountSat]).
+  ///
+  /// The applicability check deliberately mirrors the existing "is this
+  /// payjoin done" display heuristic used elsewhere
+  /// (transaction_details_table.dart's status row: isCompleted ||
+  /// (proposed && the broadcast tx IS the proposal)) rather than a strict
+  /// `isCompleted` check: without the receiver-side watch-for-broadcast
+  /// this branch doesn't add, a receiver session may never reach
+  /// `completed` even once its real payjoin transaction has landed in the
+  /// wallet — a strict check would never show this row for a receiver at
+  /// all. The proposed case additionally requires the wallet transaction's
+  /// txid to match the session's proposal txid: sessions are also joined
+  /// to their ORIGINAL transaction (see LocalPayjoinDatasource.fetchByTxId),
+  /// and an original that landed on-chain is a plain fallback — no input
+  /// was contributed, so no fee-contribution row must appear for it.
+  int? get payjoinFeeContributionSat {
+    final p = payjoin;
+    final wt = walletTransaction;
+    if (p is! PayjoinReceiver || wt == null) return null;
+    final isRealPayjoinBroadcast =
+        p.isCompleted ||
+        (p.status == PayjoinStatus.proposed &&
+            p.txId != null &&
+            p.txId == wt.txId);
+    if (!isRealPayjoinBroadcast) return null;
+    final expectedAmountSat = p.amountSat;
+    if (expectedAmountSat == null) return null;
+    final gap = expectedAmountSat - wt.amountSat;
+    return gap > 0 ? gap : null;
+  }
+
   bool get isOrder => order != null;
   bool get isBuyOrder => order is BuyOrder;
   bool get isSellOrder => order is SellOrder;

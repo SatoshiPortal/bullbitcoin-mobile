@@ -1,9 +1,15 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 
 abstract class SettingsRepository {
   Stream<String> get currencyChangeStream;
+
+  /// Emits the new value every time [setPayjoinEnabled] persists a change,
+  /// so a live listener (the receive flow) can react to the setting being
+  /// flipped elsewhere in the app without needing to re-enter its screen.
+  Stream<bool> get payjoinEnabledChangeStream;
 
   Future<void> close();
 
@@ -22,6 +28,9 @@ abstract class SettingsRepository {
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
+    bool isPayjoinEnabled = false,
+    int payjoinMinAmountSat = PayjoinConstants.defaultMinAmountSat,
+    int payjoinExpireAfterSec = PayjoinConstants.defaultExpireAfterSec,
   });
 
   Future<SettingsEntity> fetch();
@@ -47,6 +56,12 @@ abstract class SettingsRepository {
   Future<void> setThemeMode(AppThemeMode themeMode);
 
   Future<void> setErrorReportingEnabled(bool enabled);
+
+  Future<void> setPayjoinEnabled(bool enabled);
+
+  Future<void> setPayjoinMinAmountSat(int amountSat);
+
+  Future<void> setPayjoinExpireAfterSec(int expireAfterSec);
 
   Future<void> setExchangeTestnetBasicAuth({
     String? username,

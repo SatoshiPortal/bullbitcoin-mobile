@@ -1,9 +1,11 @@
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
+import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/autoswap_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
@@ -135,8 +137,10 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
               onRefresh: () => context.read<WalletBloc>().refresh(),
               slivers: [
                 const SliverToBoxAdapter(child: WalletHomeTopSection()),
+                const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
                 const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
+                const SliverToBoxAdapter(child: HomeConsolidationBanner()),
                 SliverToBoxAdapter(
                   child: WalletCards(
                     onTap: (w) {

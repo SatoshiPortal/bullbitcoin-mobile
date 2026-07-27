@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
@@ -20,6 +21,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -171,6 +173,7 @@ class SendLocator {
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
+        watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
         decodeInvoiceUsecase: locator<DecodeInvoiceUsecase>(),
@@ -191,6 +194,8 @@ class SendLocator {
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),
+        checkLiquidConsolidationUsecase:
+            locator<CheckLiquidConsolidationUsecase>(),
       ),
     );
   }

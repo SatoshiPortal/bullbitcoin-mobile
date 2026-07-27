@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -36,6 +38,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
@@ -619,6 +622,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       walletLabel: selectedWallet.label,
                                     ),
                                   ),
+                                  if (state.consolidationRequired) ...[
+                                    const Gap(16),
+                                    ConsolidationRequiredCard(
+                                      title: context
+                                          .loc
+                                          .consolidationRequiredTitle,
+                                      onTap: () => context.pushNamed(
+                                        ConsolidationRoute.consolidation.name,
+                                        pathParameters: {
+                                          'walletId': selectedWallet.id,
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                   if (buildError != null) ...[
                                     const Gap(16),
                                     const _SendError(),
@@ -989,10 +1006,21 @@ class _OnchainTransactionReview extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
     final label = context.select((SendCubit cubit) => cubit.state.label);
+    final willAttemptPayjoin = context.select(
+      (SendCubit cubit) => cubit.state.willAttemptPayjoin,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (willAttemptPayjoin) ...[
+          InfoCard(
+            description: context.loc.sendPayjoinWillBeAttempted,
+            tagColor: context.appColors.secondary,
+            bgColor: context.appColors.onSecondary,
+          ),
+          const Gap(16),
+        ],
         CommonOnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
@@ -1622,12 +1650,29 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
+    // Same canonical getter the manual-fallback button on the transaction
+    // details screen is gated on (Payjoin.canManuallyBroadcastOriginal) —
+    // reusing it here, rather than a hand-rolled `proposalPsbt == null`
+    // check, means this countdown can never linger past the point where a
+    // proposal has arrived or the session has expired.
+    final showFallbackCountdown = context.select(
+      (SendCubit cubit) =>
+          cubit.state.payjoinSender?.canManuallyBroadcastOriginal ?? false,
+    );
+    final payjoinExpiresAt = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.expiresAt,
+    );
+    // Computed once per build — acceptable, the screen rebuilds on each cubit
+    // emit; deliberately not adding a ticker to the bloc for this.
+    final isImminent =
+        payjoinExpiresAt != null &&
+        payjoinExpiresAt.difference(DateTime.now()) <= const Duration(hours: 1);
 
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: const TopBar(title: 'Send'),
+        flexibleSpace: TopBar(title: context.loc.sendTitle),
         actions: [
           CloseButton(
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
@@ -1694,6 +1739,30 @@ class SendSendingScreen extends StatelessWidget {
                   maxLines: 4,
                   textAlign: TextAlign.center,
                 ),
+                if (showFallbackCountdown &&
+                    payjoinExpiresAt != null &&
+                    isImminent) ...[
+                  const Gap(8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BBText(
+                        context.loc.sendPayjoinFallbackCountdown,
+                        style: context.font.bodyMedium,
+                        color: context.appColors.secondary,
+                      ),
+                      const Gap(4),
+                      Countdown(
+                        until: payjoinExpiresAt.add(
+                          const Duration(
+                            seconds: PayjoinConstants.directoryPollingInterval,
+                          ),
+                        ),
+                        onTimeout: () {},
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ],
           ),
@@ -1834,11 +1903,28 @@ class SendSucessScreen extends StatelessWidget {
                       context.loc.sendSwapWillTakeTime,
                       style: context.font.labelSmall,
                     ),
-                  ] else
+                  ] else ...[
                     BBText(
                       context.loc.sendSuccessfullySent,
                       style: context.font.bodyLarge,
                     ),
+                    // A payjoin send that completed via the plain-broadcast
+                    // fallback (receiver declined/expired or the payjoin
+                    // negotiation failed). The user explicitly expected a
+                    // payjoin, so say that it didn't happen instead of
+                    // presenting the fallback as indistinguishable from a
+                    // successful payjoin.
+                    if (payjoin != null && payjoin.isAborted) ...[
+                      const Gap(8),
+                      BBText(
+                        context.loc.sendSentWithoutPayjoin,
+                        style: context.font.bodyMedium,
+                        color: context.appColors.secondary,
+                        maxLines: 4,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                   const Gap(8),
                   BBText(
                     amount,
@@ -1890,10 +1976,22 @@ class SendSucessScreen extends StatelessWidget {
                       },
                     );
                   } else if (payjoin != null) {
+                    // Navigate by the on-chain txid, NOT payjoin.id: a
+                    //  sender's id IS the full BIP21 URI (address+amount) and
+                    //  would leak into the router location string. By this
+                    //  point the session is terminal, so txId (real payjoin)
+                    //  or originalTxId (fallback) is always the broadcast tx —
+                    //  and landing on the real transaction is better UX than
+                    //  the session placeholder.
                     context.pushNamed(
-                      TransactionsRoute.payjoinTransactionDetails.name,
-                      pathParameters: {'payjoinId': payjoin.id},
-                      queryParameters: {'returnHome': 'true'},
+                      TransactionsRoute.transactionDetails.name,
+                      pathParameters: {
+                        'txId': payjoin.txId ?? payjoin.originalTxId,
+                      },
+                      queryParameters: {
+                        'walletId': payjoin.walletId,
+                        'returnHome': 'true',
+                      },
                     );
                   }
                 },
