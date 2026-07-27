@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/liquid_receive_address_index_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -56,6 +57,10 @@ class WalletLocator {
     locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
       () => FrozenWalletUtxoDatasource(db: locator<SqliteDatabase>()),
     );
+
+    locator.registerLazySingleton<LiquidReceiveAddressIndexDatasource>(
+      () => LiquidReceiveAddressIndexDatasource(),
+    );
   }
 
   static void registerRepositories(GetIt locator) {
@@ -80,6 +85,8 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        liquidReceiveAddressIndexDatasource:
+            locator<LiquidReceiveAddressIndexDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
       ),
     );
@@ -99,6 +106,8 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        liquidReceiveAddressIndexDatasource:
+            locator<LiquidReceiveAddressIndexDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );

@@ -15,16 +15,18 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/check_liquid_consolidation_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
@@ -51,6 +53,8 @@ class SwapLocator {
     locator.registerFactory<PrepareLiquidSendUsecase>(
       () => PrepareLiquidSendUsecase(
         liquidWalletRepository: locator<LiquidWalletRepository>(),
+        walletUtxoRepository: locator<WalletUtxoRepository>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
     locator.registerFactory<SignLiquidTxUsecase>(
@@ -111,6 +115,11 @@ class SwapLocator {
         ),
       ),
     );
+    locator.registerFactory<CheckLiquidConsolidationRequiredUsecase>(
+      () => CheckLiquidConsolidationRequiredUsecase(
+        consolidationFacade: locator<ConsolidationFacade>(),
+      ),
+    );
   }
 
   static void registerBlocs(GetIt locator) {
@@ -149,8 +158,8 @@ class SwapLocator {
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),
-        checkLiquidConsolidationUsecase:
-            locator<CheckLiquidConsolidationUsecase>(),
+        checkLiquidConsolidationRequiredUsecase:
+            locator<CheckLiquidConsolidationRequiredUsecase>(),
       ),
     );
   }

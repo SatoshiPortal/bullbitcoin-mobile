@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/liquid_receive_address_index_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
@@ -25,6 +26,7 @@ class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
+  final LiquidReceiveAddressIndexDatasource _liquidReceiveIndex;
   final ElectrumServersPort _serversPort;
 
   final _electrumSyncResultController =
@@ -34,9 +36,12 @@ class WalletRepository {
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
+    required LiquidReceiveAddressIndexDatasource
+    liquidReceiveAddressIndexDatasource,
     required this._serversPort,
   }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource {
+       _lwkWallet = lwkWalletDatasource,
+       _liquidReceiveIndex = liquidReceiveAddressIndexDatasource {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
@@ -492,12 +497,20 @@ class WalletRepository {
       isLiquid: isLiquid,
     );
 
+    final stopAtIndex = isLiquid
+        ? await _liquidReceiveIndex.read(wallet.id)
+        : null;
+
     try {
       await _serversPort.runWithFallback<void>(
         network: network,
         operation: (connection) async {
           if (isLiquid) {
-            await _lwkWallet.sync(wallet: wallet, electrumServer: connection);
+            await _lwkWallet.sync(
+              wallet: wallet,
+              electrumServer: connection,
+              stopAtIndex: stopAtIndex,
+            );
           } else {
             await _bdkWallet.sync(wallet: wallet, electrumServer: connection);
           }

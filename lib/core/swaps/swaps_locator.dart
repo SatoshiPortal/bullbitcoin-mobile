@@ -34,8 +34,10 @@ import 'package:bb_mobile/core/swaps/interface_adapters/blockchain_adapter.dart'
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -240,6 +242,8 @@ class SwapsLocator {
         ),
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
+        walletUtxoRepository: locator<WalletUtxoRepository>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
         blockchainPort: locator<BlockchainPort>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
         labelsFacade: locator<LabelsFacade>(),

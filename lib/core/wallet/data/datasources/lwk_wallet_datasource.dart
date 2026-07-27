@@ -12,6 +12,8 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/liquid_tx_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -72,9 +74,19 @@ class LwkWalletDatasource {
     }
   }
 
+  /// [stopAtIndex]: scan the descriptor at least up to this derivation
+  /// index, instead of stopping at LWK's default 20-consecutive-unused gap
+  /// limit. Must be passed whenever the app has handed out addresses beyond
+  /// what LWK has ever seen as used (see
+  /// `LiquidReceiveAddressIndexDatasource`): e.g. a consolidation reserves
+  /// 2 fresh addresses per batch without syncing in between, so a multi-batch
+  /// run can leave funded addresses further out than a default gap-limit
+  /// scan will ever look — making those UTXOs (and the balance they carry)
+  /// invisible to the wallet until a deep-enough scan runs.
   Future<void> sync({
     required WalletModel wallet,
     required ElectrumConnection electrumServer,
+    int? stopAtIndex,
   }) {
     // TODO: if needed, add these debugPrint to a filterable logger.debug
     // TODO: to avoid spamming the terminal with recurring prints
@@ -88,6 +100,7 @@ class LwkWalletDatasource {
         await lwkWallet.sync_(
           electrumUrl: electrumServer.url,
           validateDomain: electrumServer.validateDomain,
+          stopAtIndex: stopAtIndex,
         );
         //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
       } catch (e) {
@@ -377,42 +390,6 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<String> buildPset({
-    required String address,
-    required RelativeFee feeRate,
-    int? amountSat,
-    bool drain = false,
-    required WalletModel wallet,
-  }) async {
-    try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
-      // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
-      // arithmetic promoted to double — no precision loss at the SDK boundary.
-      final pset = await lwkWallet.buildLbtcTx(
-        sats: BigInt.from(amountSat ?? 0),
-        outAddress: address,
-        feeRate: feeRate.satPerKvbyte,
-        drain: drain,
-      );
-      final decoded = await lwkWallet.decodeTx(pset: pset);
-      log.info(decoded.absoluteFees.toString());
-      return pset;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        // A build failure on a wallet whose confirmed L-BTC UTXO count exceeds
-        // the Liquid confidential-tx input limit is almost certainly the
-        // ">256 inputs" case.
-        if (await _exceedsLiquidInputLimit(wallet)) {
-          throw ConsolidationRequiredException(e.msg);
-        }
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
   /// Number of confidential-tx inputs above which a Liquid transaction can no
   /// longer be built (the true protocol maximum is 256).
   static const int maxLiquidTxInputs = 256;
@@ -434,6 +411,92 @@ class LwkWalletDatasource {
       return lbtcCount;
     } catch (e) {
       if (e is lwk.LwkError) {
+        throw e.msg;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  /// Confirmed L-BTC UTXOs — the candidates for consolidation batching.
+  /// Asset+height filtered directly against the live LWK UTXO set (mirrors
+  /// the filter the old `Wallet.consolidate()` RPC used to apply internally).
+  ///
+  /// Distinct from [getLbtcUtxoCount], which counts ALL L-BTC UTXOs
+  /// (confirmed or not) for the send-blocking input-limit check — consolidate
+  /// candidates must be confirmed, but a pending send still has to account
+  /// for every UTXO it could end up spending.
+  Future<List<WalletUtxoModel>> getConfirmedLbtcUtxos({
+    required WalletModel wallet,
+  }) async {
+    try {
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final utxos = await lwkWallet.utxos();
+      final network = wallet.isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
+      final lbtcAssetId = _lBtcAssetId(network);
+      return utxos
+          .where((u) => u.unblinded.asset == lbtcAssetId && u.height != null)
+          .map(
+            (u) => WalletUtxoModel.liquid(
+              txId: u.outpoint.txid,
+              vout: u.outpoint.vout,
+              amountSat: u.unblinded.value,
+              scriptPubkey: u.scriptPubkey,
+              standardAddress: u.address.standard,
+              confidentialAddress: u.address.confidential,
+              confirmations: 1,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      if (e is lwk.LwkError) {
+        throw e.msg;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  /// Build a PSET spending exactly [utxos], paying [outputs], with any
+  /// leftover L-BTC value (after outputs + fee) swept to [drainToAddress] if
+  /// set. General-purpose builder for custom output shapes — e.g. a
+  /// consolidation batch's drain output plus a decoy output.
+  Future<String> buildCustomTx({
+    required WalletModel wallet,
+    required List<Outpoint> utxos,
+    required List<LiquidTxOutput> outputs,
+    String? drainToAddress,
+    required RelativeFee feeRate,
+  }) async {
+    try {
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final pset = await lwkWallet.buildCustomTx(
+        utxos: utxos
+            .map((o) => lwk.OutPoint(txid: o.txId, vout: o.vout))
+            .toList(),
+        outputs: outputs
+            .map(
+              (o) => lwk.TxOutputSpec(
+                address: o.address,
+                satoshi: BigInt.from(o.satoshi),
+                assetId: o.assetId,
+              ),
+            )
+            .toList(),
+        drainTo: drainToAddress,
+        feeRate: feeRate.satPerKvbyte,
+      );
+      return pset;
+    } catch (e) {
+      if (e is lwk.LwkError) {
+        // A build failure on a wallet whose confirmed L-BTC UTXO count exceeds
+        // the Liquid confidential-tx input limit is almost certainly the
+        // ">256 inputs" case.
+        if (await _exceedsLiquidInputLimit(wallet)) {
+          throw ConsolidationRequiredException(e.msg);
+        }
         throw e.msg;
       } else {
         rethrow;
@@ -487,6 +550,37 @@ class LwkWalletDatasource {
     }
   }
 
+  /// The output index (vout) of the first output in [pset] with a plaintext
+  /// value of exactly [satoshi] — used to identify a known-amount output
+  /// (e.g. a decoy) after building a custom tx, without assuming output
+  /// ordering. A PSET (unlike a finalized tx) still carries the plaintext
+  /// amount for outputs this wallet itself constructed, so no unblinding is
+  /// needed. Returns null if no output matches.
+  int? findOutputIndexByAmount({required String pset, required int satoshi}) {
+    try {
+      final decoded = lwk.PartiallySignedElementsTransaction.fromString(
+        psetString: pset,
+      );
+      final outputs = decoded.getOutputs();
+      final target = BigInt.from(satoshi);
+      for (var i = 0; i < outputs.length; i++) {
+        final output = outputs[i];
+        // Exclude the fee output (empty scriptPubkey) so an implausibly
+        // small fee can never be mistaken for the decoy.
+        if (output.amount == target && output.scriptPubkey.isNotEmpty) {
+          return i;
+        }
+      }
+      return null;
+    } catch (e) {
+      if (e is lwk.LwkError) {
+        throw e.msg;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
   Future<String> signPset(
     String pset, {
     required PrivateLwkWalletModel wallet,
@@ -515,6 +609,16 @@ class LwkWalletDatasource {
       final decoded = await lwk.getSizeAndAbsoluteFees(pset: pset);
       debugPrint(decoded.absoluteFees.toString());
       // final decoded = await lwkWallet.decodeTx(pset: pset);
+      if (decoded.absoluteFees.isEmpty) {
+        // Should never happen for a well-formed single-asset (L-BTC) PSET —
+        // surfaced as a clear, specific message instead of an opaque
+        // `StateError: No element` from `.first`, so a caller's failure
+        // banner/log actually says what went wrong.
+        throw Exception(
+          'PSET decoded with no fee entries for any asset (absoluteFees was '
+          'empty)',
+        );
+      }
       return (
         decoded.discountedVsize.toInt(),
         decoded.absoluteFees.first.value,

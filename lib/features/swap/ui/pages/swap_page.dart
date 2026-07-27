@@ -226,14 +226,14 @@ class SwapPageState extends State<SwapPage> {
                           padding: const EdgeInsets.only(bottom: 12),
                           child: ConsolidationRequiredCard(
                             title: context.loc.consolidationRequiredTitle,
-                            onTap: () {
+                            onTap: () async {
                               final walletId = context
                                   .read<TransferBloc>()
                                   .state
                                   .fromWallet
                                   ?.id;
                               if (walletId != null) {
-                                context.pushNamed(
+                                await context.pushNamed(
                                   ConsolidationRoute.consolidation.name,
                                   pathParameters: {'walletId': walletId},
                                 );

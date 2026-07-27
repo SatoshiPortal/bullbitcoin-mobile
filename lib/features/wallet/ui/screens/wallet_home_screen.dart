@@ -142,6 +142,19 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),
                 SliverToBoxAdapter(
+                  child: BlocBuilder<WalletBloc, WalletState>(
+                    buildWhen: (previous, current) =>
+                        previous.wallets != current.wallets ||
+                        previous.isRefreshing != current.isRefreshing,
+                    builder: (context, state) => HomeConsolidationBanner(
+                      liquidWallets: state.wallets
+                          .where((w) => w.isLiquid)
+                          .toList(),
+                      isRefreshing: state.isRefreshing,
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
                   child: WalletCards(
                     onTap: (w) {
                       context.pushNamed(

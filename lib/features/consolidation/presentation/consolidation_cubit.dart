@@ -1,84 +1,127 @@
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/consolidation_failure.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Presentation layer for the consolidation screen. Loads the UTXO count and a
-/// fee preview, then drives the review → broadcasting → success/failed flow.
-/// No business decisions live here — it delegates to
-/// [ConsolidateLiquidWalletUsecase].
 class ConsolidationCubit extends Cubit<ConsolidationState> {
   final ConsolidateLiquidWalletUsecase _consolidate;
   final CheckLiquidConsolidationUsecase _check;
+  final GetWalletUsecase _getWallet;
+  final SyncWalletUsecase _sync;
 
   ConsolidationCubit({
     required String walletId,
     required ConsolidateLiquidWalletUsecase consolidateLiquidWalletUsecase,
     required CheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase,
+    required GetWalletUsecase getWalletUsecase,
+    required SyncWalletUsecase syncWalletUsecase,
   }) : _consolidate = consolidateLiquidWalletUsecase,
        _check = checkLiquidConsolidationUsecase,
+       _getWallet = getWalletUsecase,
+       _sync = syncWalletUsecase,
        super(ConsolidationState(walletId: walletId));
 
   Future<void> load() async {
-    // L-BTC UTXO count (asset-accurate) for the "outputs before" display.
-    final utxoCount = await _check.count(walletId: state.walletId);
-    if (!isClosed && utxoCount != null) {
-      emit(state.copyWith(utxoCount: utxoCount));
-    }
-    // Build the PSETs up front so the real network fee can be shown before
-    // the user confirms.
     try {
-      final preview = await _consolidate.prepare(walletId: state.walletId);
-      if (!isClosed) emit(state.copyWith(preview: preview));
-    } catch (e) {
-      // Leave the preview/fee unavailable (shown as "—"), but still log the
-      // cause — previously this was silently discarded, making a real build
-      // failure indistinguishable from "still loading" with no way to
-      // diagnose why the fee never appeared.
-      log.warning('Consolidation prepare failed: $e');
+      final wallet = await _getWallet.execute(state.walletId);
+      if (!isClosed && wallet != null) {
+        emit(state.copyWith(balanceSat: wallet.balanceSat.toInt()));
+      }
+    } catch (_) {
+      // Best-effort: the balance row just stays at 0.
+    }
+
+    // L-BTC UTXO count (asset-accurate) for the "outputs before" display.
+    final status = await _check.execute(walletId: state.walletId);
+    if (!isClosed && status.utxoCount != null) {
+      emit(state.copyWith(utxoCount: status.utxoCount!));
+    }
+
+    final previewResult = await _consolidate.prepare(walletId: state.walletId);
+    if (!isClosed) {
+      switch (previewResult) {
+        case Ok(:final value):
+          emit(state.copyWith(preview: value, utxoCount: value.utxoCount));
+        case Err(:final failure):
+          log.warning('Consolidation prepare failed: ${failure.logMessage}');
+          emit(
+            state.copyWith(
+              status: ConsolidationStatus.failed,
+              failure: failure,
+            ),
+          );
+      }
     }
   }
 
   Future<void> consolidate() async {
-    // Re-entrancy guard: a second call (e.g. a fast double-tap landing before
-    // the UI's own `disabled` rebuild takes effect) must be a no-op rather
-    // than running the whole build→sign→broadcast pipeline concurrently a
-    // second time against the same, still-unbroadcast PSETs.
     if (state.status == ConsolidationStatus.broadcasting) return;
 
     emit(state.copyWith(status: ConsolidationStatus.broadcasting));
-    try {
-      // consolidate (build) → sign → broadcast. batchBroadcast loops the same
-      // broadcastLiquidTransaction usecase a normal send uses.
-      final preview =
-          state.preview ?? await _consolidate.prepare(walletId: state.walletId);
-      await _consolidate.broadcast(
+
+    var preview = state.preview;
+    if (preview == null) {
+      try {
+        final wallet = await _getWallet.execute(state.walletId);
+        if (wallet != null) await _sync.execute(wallet);
+      } catch (e) {
+        log.warning('Consolidation pre-retry sync failed: $e');
+        if (!isClosed) {
+          emit(
+            state.copyWith(
+              status: ConsolidationStatus.failed,
+              failure: ConsolidationSyncFailure(e.toString()),
+            ),
+          );
+        }
+        return;
+      }
+
+      final previewResult = await _consolidate.prepare(
         walletId: state.walletId,
-        unsignedPsets: preview.unsignedPsets,
       );
-      if (!isClosed) {
-        emit(state.copyWith(status: ConsolidationStatus.success));
+      switch (previewResult) {
+        case Ok(:final value):
+          preview = value;
+        case Err(:final failure):
+          if (!isClosed) {
+            emit(
+              state.copyWith(
+                status: ConsolidationStatus.failed,
+                failure: failure,
+              ),
+            );
+          }
+          return;
       }
-    } catch (e) {
-      // No funds are ever double-spent (an already-broadcast PSET's inputs
-      // are already spent, so the network simply rejects a resubmission),
-      // but a stale `preview` left in state would still repeatedly retry
-      // the very same (partially already-spent) PSET list on every tap —
-      // never reaching whichever batches never got a chance to broadcast,
-      // and never surfacing that some of them actually did succeed. Clear
-      // it so the next attempt always calls `prepare()` again, rebuilding
-      // fresh PSETs.
-      final succeededTxids = e is ConsolidationException
-          ? e.succeededTxids
-          : const <String>[];
-      log.warning(
-        'Consolidation broadcast failed: $e '
-        '(${succeededTxids.length} batch(es) already succeeded)',
-      );
-      if (!isClosed) {
-        emit(state.copyWith(status: ConsolidationStatus.failed, preview: null));
-      }
+    }
+
+    final broadcastResult = await _consolidate.broadcast(
+      walletId: state.walletId,
+      batches: preview.batches,
+    );
+    if (isClosed) return;
+    switch (broadcastResult) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            status: ConsolidationStatus.success,
+            unfrozenDecoyCount: value.unfrozenDecoyCount,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: ConsolidationStatus.failed,
+            failure: failure,
+            preview: null,
+          ),
+        );
     }
   }
 }

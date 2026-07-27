@@ -40,6 +40,9 @@ class WalletDetailScreen extends StatelessWidget {
       }
     });
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
+    final isRefreshing = context.select(
+      (WalletBloc bloc) => bloc.state.isRefreshing,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +78,10 @@ class WalletDetailScreen extends StatelessWidget {
                   ),
                   if (wallet.isLiquid)
                     SliverToBoxAdapter(
-                      child: ConsolidationBanner(wallet: wallet),
+                      child: ConsolidationBanner(
+                        wallet: wallet,
+                        isRefreshing: isRefreshing,
+                      ),
                     ),
                   if (wallet.isBitcoin) ...[
                     const SliverToBoxAdapter(child: Gap(8)),

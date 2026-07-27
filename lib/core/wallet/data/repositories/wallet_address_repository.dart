@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/liquid_receive_address_index_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
@@ -14,15 +15,19 @@ class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
+  final LiquidReceiveAddressIndexDatasource _liquidReceiveIndex;
   final LabelsFacade _labelsFacade;
 
   WalletAddressRepository({
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
+    required LiquidReceiveAddressIndexDatasource
+    liquidReceiveAddressIndexDatasource,
     required this._labelsFacade,
   }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource;
+       _lwkWallet = lwkWalletDatasource,
+       _liquidReceiveIndex = liquidReceiveAddressIndexDatasource;
 
   Future<WalletAddress> getLastRevealedReceiveAddress({
     required String walletId,
@@ -44,11 +49,26 @@ class WalletAddressRepository {
       index = addressInfo.index;
       address = addressInfo.address;
     } else {
-      final ({String confidential, int index, String standard}) addressInfo =
+      // LWK's own "last unused" is purely sync-derived — self-heal against
+      // whichever locally persisted index is higher (e.g. a restored
+      // wallet's sync hasn't caught up yet, or a prior session already
+      // handed out a higher index this app's sync doesn't reflect yet).
+      final ({String confidential, int index, String standard}) syncDerived =
           await _lwkWallet.getLastUnusedAddress(wallet: walletModel);
+      final persistedIndex =
+          await _liquidReceiveIndex.read(walletId) ?? syncDerived.index;
 
-      index = addressInfo.index;
-      address = addressInfo.confidential;
+      if (persistedIndex > syncDerived.index) {
+        final addressInfo = await _lwkWallet.getAddressByIndex(
+          persistedIndex,
+          wallet: walletModel,
+        );
+        index = persistedIndex;
+        address = addressInfo.confidential;
+      } else {
+        index = syncDerived.index;
+        address = syncDerived.confidential;
+      }
     }
 
     var labels = await _labelsFacade.fetchByReference(address);
@@ -68,6 +88,10 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
       labels = await _labelsFacade.fetchByReference(address);
+    }
+
+    if (walletModel is! PublicBdkWalletModel) {
+      await _liquidReceiveIndex.ensureAtLeast(walletId, index);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -110,9 +134,15 @@ class WalletAddressRepository {
         wallet: walletModel,
       );
 
-      // Generate a new address with the next index.
+      // Atomically reserve a fresh index — never the same one twice, even
+      // if this is called again before a sync updates LWK's own view of
+      // what's "last unused".
+      final reservedIndex = await _liquidReceiveIndex.reserveNext(
+        walletId,
+        atLeast: lastUnusedAddressInfo.index,
+      );
       final addressInfo = await _lwkWallet.getAddressByIndex(
-        lastUnusedAddressInfo.index + 1,
+        reservedIndex,
         wallet: walletModel,
       );
 
@@ -137,6 +167,10 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
       labels = await _labelsFacade.fetchByReference(address);
+    }
+
+    if (walletModel is! PublicBdkWalletModel) {
+      await _liquidReceiveIndex.ensureAtLeast(walletId, index);
     }
 
     final walletAddressModel = WalletAddressModel(
