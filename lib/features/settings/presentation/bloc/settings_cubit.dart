@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -43,6 +45,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setPayjoinEnabledUsecase,
     required this._setPayjoinMinAmountUsecase,
     required this._setPayjoinExpireAfterSecUsecase,
+    required this._getPayjoinDisclaimerShownUsecase,
+    required this._markPayjoinDisclaimerShownUsecase,
   }) : super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -61,6 +65,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final SetPayjoinMinAmountUsecase _setPayjoinMinAmountUsecase;
   final SetPayjoinExpireAfterSecUsecase _setPayjoinExpireAfterSecUsecase;
+  final GetPayjoinDisclaimerShownUsecase _getPayjoinDisclaimerShownUsecase;
+  final MarkPayjoinDisclaimerShownUsecase _markPayjoinDisclaimerShownUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
@@ -72,7 +78,36 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
+
+    final disclaimerResult = await _getPayjoinDisclaimerShownUsecase.execute();
+    final payjoinDisclaimerShown = disclaimerResult.fold(
+      (shown) => shown,
+      (_) => false,
+    );
+    emit(
+      state.copyWith(
+        // Do not overwrite a presentation recorded while this read was in
+        // flight with an older persisted false value.
+        payjoinDisclaimerShown:
+            state.payjoinDisclaimerShown == true || payjoinDisclaimerShown,
+      ),
+    );
     await checkHasLegacySeeds();
+  }
+
+  /// Records that the one-time payjoin disclaimer has been presented. Called by
+  /// the UI *after* the dialog was actually displayed and dismissed — writing
+  /// it earlier would permanently skip a privacy disclosure if the widget went
+  /// away in between.
+  Future<void> markPayjoinDisclaimerShown() async {
+    final result = await _markPayjoinDisclaimerShownUsecase.execute();
+    result.fold(
+      (_) => emit(state.copyWith(payjoinDisclaimerShown: true)),
+      (failure) => log.warning(
+        'Failed to mark the Payjoin disclaimer as shown: '
+        '${failure.logMessage}',
+      ),
+    );
   }
 
   Future<void> toggleTestnetMode(bool active) async {

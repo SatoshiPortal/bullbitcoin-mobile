@@ -1,33 +1,14 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_datasource.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 
-/// The payjoin disclaimer pop-up (product decision 2026-07-25): shown ONCE,
-/// automatically, the first time the user turns payjoin on — from either the
-/// settings screen or the receive-screen toggle — and afterwards only on
-/// demand via the "Payjoin disclaimer" row on the payjoin settings screen.
+/// Passive Payjoin privacy disclosure shared by settings and receive.
 abstract final class PayjoinDisclaimerDialog {
-  /// Shows the disclaimer unconditionally (the settings-row entry point).
   static Future<void> show(BuildContext context) {
     return BullDialog.show<void>(
       context: context,
       builder: (dialogContext) => _PayjoinDisclaimerBody(dialogContext),
     );
-  }
-
-  /// Shows the disclaimer only if it has never been shown before, and marks
-  /// it shown. Call after the user turns payjoin ON.
-  static Future<void> showIfNeverShown(BuildContext context) async {
-    final datasource = locator<PayjoinDisclaimerDatasource>();
-    if (await datasource.readDisclaimerShown()) return;
-    // Mark shown only once the dialog was actually displayed — writing
-    // first would permanently skip the one-time disclosure if the context
-    // is unmounted by the time the async read resolves.
-    if (!context.mounted) return;
-    await show(context);
-    await datasource.writeDisclaimerShown();
   }
 }
 

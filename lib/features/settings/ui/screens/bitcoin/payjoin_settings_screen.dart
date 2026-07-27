@@ -4,8 +4,8 @@ import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/payjoin_disclaimer_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -43,12 +43,18 @@ class PayjoinSettingsScreen extends StatelessWidget {
                   ),
                   BBSwitch(
                     value: isEnabled,
-                    onChanged: (value) {
-                      context.read<SettingsCubit>().togglePayjoinEnabled(value);
-                      // One-time disclaimer, only when turning ON.
-                      if (value) {
-                        PayjoinDisclaimerDialog.showIfNeverShown(context);
+                    onChanged: (value) async {
+                      final cubit = context.read<SettingsCubit>();
+                      await cubit.togglePayjoinEnabled(value);
+                      // One-time disclaimer, only when turning ON. Recorded
+                      // after the dialog was actually dismissed.
+                      if (!value ||
+                          cubit.state.payjoinDisclaimerShown == true ||
+                          !context.mounted) {
+                        return;
                       }
+                      await PayjoinDisclaimerDialog.show(context);
+                      await cubit.markPayjoinDisclaimerShown();
                     },
                   ),
                 ],

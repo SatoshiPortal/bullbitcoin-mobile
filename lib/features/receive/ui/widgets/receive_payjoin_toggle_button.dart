@@ -4,8 +4,8 @@ import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/payjoin_disclaimer_dialog.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -59,15 +59,23 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
             ),
             BBSwitch(
               value: enabled,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              onChanged: (value) {
+              onChanged: (value) async {
+                final settings = locator<SettingsFacade>();
                 context.read<ReceiveBloc>().add(
                   ReceiveEvent.receivePayjoinToggled(value),
                 );
-                // One-time disclaimer, only when turning ON.
-                if (value) {
-                  PayjoinDisclaimerDialog.showIfNeverShown(context);
+                // One-time disclaimer, only when turning ON. Recorded after
+                // the dialog was actually dismissed, so an interrupted show
+                // never consumes the disclosure.
+                if (!value) {
+                  return;
                 }
+                final shownResult = await settings.getPayjoinDisclaimerShown();
+                final shown = shownResult.fold((value) => value, (_) => false);
+                if (shown || !context.mounted) return;
+                await PayjoinDisclaimerDialog.show(context);
+                final markResult = await settings.markPayjoinDisclaimerShown();
+                markResult.fold((_) {}, (_) {});
               },
             ),
           ],

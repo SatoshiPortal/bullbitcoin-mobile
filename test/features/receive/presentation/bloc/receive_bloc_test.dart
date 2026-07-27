@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dar
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -22,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -65,20 +65,19 @@ class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
 class _MockWatchPayjoinEnabledChangesUsecase extends Mock
     implements WatchPayjoinEnabledChangesUsecase {}
 
-class _MockSetPayjoinEnabledUsecase extends Mock
-    implements SetPayjoinEnabledUsecase {}
+class _MockSetReceivePayjoinEnabledUsecase extends Mock
+    implements SetReceivePayjoinEnabledUsecase {}
 
 // Defaults to a confirmed balance: most tests in this file are about the
-//  isPayjoinEnabled/proposal-state gating, not the balance one — a zero
-//  default would make every payjoin-creating test fail for a reason unrelated
-//  to what it names. The balance-eligibility tests override it explicitly.
+// isPayjoinEnabled/proposal-state gating, not the balance one. The
+// balance-eligibility tests override it explicitly.
 // confirmedBalanceSat mirrors balanceSat by default: these tests are about
 // the isPayjoinEnabled/eligibility gating, not the confirmed-vs-unconfirmed
 // distinction, so keeping the two in lockstep here avoids every
 // payjoin-creating test failing for a reason unrelated to what it names.
 // confirmedBalanceSat is a separate optional override so a test can build a
 // wallet with unconfirmed-only funds (balanceSat > 0, confirmedBalanceSat ==
-// 0) — the specific divergence _isPayjoinEligible must reject.
+// 0) to cover the accepted unconfirmed-only case.
 Wallet _testWallet({
   String origin = 'w1',
   BigInt? balanceSat,
@@ -136,7 +135,7 @@ void main() {
   late _MockWatchWalletTransactionByAddressUsecase watchWalletTransaction;
   late _MockLabelsFacade labels;
   late _MockWatchPayjoinEnabledChangesUsecase watchPayjoinEnabledChanges;
-  late _MockSetPayjoinEnabledUsecase setPayjoinEnabled;
+  late _MockSetReceivePayjoinEnabledUsecase setPayjoinEnabled;
   late StreamController<bool> payjoinEnabledChangeController;
 
   setUpAll(() {
@@ -159,7 +158,7 @@ void main() {
     labelsFacade: labels,
     getSwapLimitsUsecase: _MockGetSwapLimitsUsecase(),
     watchPayjoinEnabledChangesUsecase: watchPayjoinEnabledChanges,
-    setPayjoinEnabledUsecase: setPayjoinEnabled,
+    setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
     wallet: wallet ?? _testWallet(),
   );
 
@@ -178,7 +177,7 @@ void main() {
     when(
       () => watchPayjoinEnabledChanges.execute(),
     ).thenAnswer((_) => payjoinEnabledChangeController.stream);
-    setPayjoinEnabled = _MockSetPayjoinEnabledUsecase();
+    setPayjoinEnabled = _MockSetReceivePayjoinEnabledUsecase();
     // Toggling persists to settings, which in the real app feeds back via the
     //  change stream; the tests emit on payjoinEnabledChangeController to
     //  simulate that round-trip explicitly.
@@ -204,6 +203,12 @@ void main() {
     when(
       () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => _testAddress());
+    when(
+      () => receiveWithPayjoin.execute(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+      ),
+    ).thenAnswer((_) async => _receiver());
     when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
     // WatchPayjoinUsecase.execute returns a Stream<Payjoin> in the work tree.
     when(
@@ -480,7 +485,7 @@ void main() {
     });
 
     test('does NOT create a session on enable if the wallet still has no '
-        'confirmed balance', () async {
+        'balance', () async {
       when(() => getSettings.execute()).thenAnswer(
         (_) async => const SettingsEntity(
           environment: Environment.mainnet,
