@@ -347,8 +347,8 @@ class _TestBackupHero extends StatelessWidget {
 
 /// Creating a backup is an ACTION, not a setting, so it is a button rather
 /// than a menu row — obvious at a glance even when a backup already exists.
-/// Outlined rather than filled: it must not compete with a hero's own CTA when
-/// one is present, and it is an offer, never a warning.
+/// Filled in the app's primary red: this is the screen's main action whenever
+/// no hero is claiming that role.
 class _StartBackupButton extends StatelessWidget {
   const _StartBackupButton();
 
@@ -366,10 +366,8 @@ class _StartBackupButton extends StatelessWidget {
           BackupSettingsSubroute.backupOptions.name,
           extra: BackupSettingsFlow.backup,
         ),
-        outlined: true,
-        bgColor: context.appColors.transparent,
-        textColor: context.appColors.onSurface,
-        borderColor: context.appColors.outline,
+        bgColor: context.appColors.primary,
+        textColor: context.appColors.onPrimary,
       ),
     );
   }
