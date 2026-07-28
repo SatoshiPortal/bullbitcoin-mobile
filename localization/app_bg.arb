@@ -917,10 +917,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone Инструкции",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "Статус на прехвърлянето",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1737,15 +1733,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "Влезте във вашето {device} устройство",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Коста Рика",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -1883,10 +1870,6 @@
   "payCoinjoinCompleted": "CoinJoin завършен",
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
-  },
-  "psbtFlowClickSign": "Натисни Подпиши",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "сатоши/vB",
   "@rbfSatsPerVbyte": {
@@ -3432,10 +3415,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "SeedSigner Инструкции",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "неуспешен опит",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -3847,10 +3826,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "Изберете опцията \"Сканирай QR\"",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Прехвърлете средства в щатски долари (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
     "description": "Subtitle description for IBAN USD payment method"
@@ -4246,10 +4221,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "Дръж QR кода стабилен и центриран.",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "testBackupGoogleDrivePrivacyPart1": "Тази информация ",
   "@testBackupGoogleDrivePrivacyPart1": {
     "description": "First part of privacy message"
@@ -4547,10 +4518,6 @@
   "sendErrorInsufficientBalanceForSwap": "Нямате достатъчно средства за плащане на този обмен чрез Liquid и той не попада в лимитите за обмен за плащане чрез Bitcoin",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Инструкции",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
@@ -4919,10 +4886,6 @@
   "walletTypeWatchOnly": "Само за наблюдение",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Krux Инструкции",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "Дешифрирайте сейфа",
   "@recoverbullDecryptVault": {
@@ -5596,10 +5559,6 @@
   "bitboxScreenConnecting": "Свързване към BitBox",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "Изберете опцията \"Сканирай всеки QR код\"",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "Сървърни такси за мрежата",
   "@transactionLabelServerNetworkFees": {
@@ -6607,15 +6566,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "Грешка: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Очаквано време за потвърждение ~ 10 минути.",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -7093,10 +7043,6 @@
   "coldcardStep4": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
-  },
-  "psbtFlowClickPsbt": "Натисни PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "Фактурата е платена.",
   "@sendInvoicePaid": {
@@ -7605,10 +7551,6 @@
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
   },
-  "psbtFlowSignWithQr": "Натисни Подпиши с QR код",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "Готово",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -7874,10 +7816,6 @@
   "recoverbullSelectFetchDriveFilesError": "Не успях да заредя всички резервни копия от Google Диск",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "Натисни Зареди от камерата",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "Ограничена верификация",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -8217,10 +8155,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "Добавете защитна парола, ако имате такава (по избор)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "Разширени настройки",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -8248,10 +8182,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": ". Средствата ще бъдат добавени към баланса ви в акаунта.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "Опитай да преместиш устройството си по-близо или по-далече.",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "pinButtonConfirm": "Потвърди",
   "@pinButtonConfirm": {
@@ -8551,10 +8481,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "Foundation Passport Инструкции",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "notLoggedInMessage": "Моля, влезете в акаунта си в Bull Bitcoin, за да получите достъп до настройките за обмен.",
   "@notLoggedInMessage": {
@@ -10966,5 +10892,7 @@
   "transactionStatusPayjoinAborted": "Payjoin отменен",
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "psbtFlowInvalidPsbtError": "Тази транзакция не можа да бъде прочетена. Върнете се и я създайте отново.",
+  "psbtFlowQrEncodingError": "Тази транзакция не може да бъде преобразувана в QR код."
 }

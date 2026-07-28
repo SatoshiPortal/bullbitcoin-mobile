@@ -847,10 +847,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone 지침",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "전송 상태",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1943,15 +1939,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "{device} 장치에 로그인",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "· 한국어 리카",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -2121,10 +2108,6 @@
   "electrumAddCustomServer": "Custom Server 추가",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "자주 묻는 질문",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "통계/VB",
   "@rbfSatsPerVbyte": {
@@ -4230,10 +4213,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "SeedSigner 지침",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "실패 시도",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4810,10 +4789,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "\"Scan QR\" 옵션을 선택하십시오",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "coreSwapsLnReceiveFailed": "스왑 실패.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
@@ -5389,10 +5364,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "QR 코드를 보관하고 중심",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "자주 묻는 질문",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5787,10 +5758,6 @@
   "sendErrorInsufficientBalanceForSwap": "Liquid를 통해 이 스왑을 지불하고 Bitcoin을 통해 지불 할 수 없습니다.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "블록스트림 제이드 PSBT 관련 기사",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "torSettingsDescUnknown": "결정할 수 없음 Tor 상태. Orbot을 설치하고 실행합니다.",
   "@torSettingsDescUnknown": {
@@ -6307,10 +6274,6 @@
   "walletTypeWatchOnly": "계정 정보",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Krux 지침",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "암호 해독",
   "@recoverbullDecryptVault": {
@@ -7255,10 +7218,6 @@
   "bitboxScreenConnecting": "BitBox에 연결",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "\"Scan any QR code\" 옵션을 선택하십시오",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "서버 네트워크 요금",
   "@transactionLabelServerNetworkFees": {
@@ -8609,15 +8568,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "오류: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "예상 배송 ~ 10 분",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -9286,10 +9236,6 @@
   "importQrDevicePassportStep5": "\"Sparrow\"옵션 선택",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "psbtFlowClickPsbt": "PSBT를 클릭",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "청구서 지급",
   "@sendInvoicePaid": {
@@ -9991,10 +9937,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "QR Code로 로그인하기",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "한국어",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -10338,10 +10280,6 @@
   "recoverbullSelectFetchDriveFilesError": "모든 드라이브 백업을 fetch로 실패",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "본문 바로가기",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "제한 검증",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -10785,10 +10723,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "(선택 사항)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "고급 옵션",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -10828,10 +10762,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "장치를 더 가까이 이동하거나 더 멀리",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "arkAboutDurationMinutes": "{minutes} 분",
   "@arkAboutDurationMinutes": {
@@ -11242,10 +11172,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "Foundation 여권 안내",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "Bitcoin을 판매, Bitcoin으로 지불",
   "@exchangeLandingFeature3": {
@@ -13277,5 +13203,7 @@
   "transactionStatusPayjoinAborted": "Payjoin 중단됨",
   "transactionDetailLabelPayjoinAborted": "중단됨",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 수수료 기여분",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78).",
+  "psbtFlowInvalidPsbtError": "이 거래를 읽을 수 없습니다. 뒤로 돌아가 다시 생성하세요.",
+  "psbtFlowQrEncodingError": "이 거래를 QR 코드로 변환할 수 없습니다."
 }

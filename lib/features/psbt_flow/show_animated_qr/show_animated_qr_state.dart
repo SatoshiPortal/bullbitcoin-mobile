@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/psbt_flow/domain/psbt_flow_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'show_animated_qr_state.freezed.dart';
@@ -9,6 +10,6 @@ abstract class ShowAnimatedQrState with _$ShowAnimatedQrState {
     @Default([]) List<String> parts,
     @Default(100) int fragmentLength,
     @Default(false) bool isLoading,
-    String? error,
+    PsbtFlowFailure? failure,
   }) = _ShowAnimatedQrState;
 }

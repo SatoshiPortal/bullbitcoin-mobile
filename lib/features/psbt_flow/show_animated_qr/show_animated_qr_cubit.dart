@@ -1,48 +1,47 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/urqr/urqr.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/psbt_flow/domain/generate_psbt_qr_parts_usecase.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShowAnimatedQrCubit extends Cubit<ShowAnimatedQrState> {
+  final GeneratePsbtQrPartsUsecase _generatePsbtQrPartsUsecase;
   final String psbt;
   final QrType qrType;
   Timer? _timer;
 
-  ShowAnimatedQrCubit({required this.psbt, required this.qrType})
-    : super(const ShowAnimatedQrState()) {
+  ShowAnimatedQrCubit({
+    required this._generatePsbtQrPartsUsecase,
+    required this.psbt,
+    required this.qrType,
+  }) : super(const ShowAnimatedQrState()) {
     _generateQrParts();
   }
 
   Future<void> _generateQrParts() async {
-    try {
-      emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
-      final parts = switch (qrType) {
-        QrType.bbqr => await Bbqr.splitPsbt(psbt),
-        QrType.urqr => UrQrGenerator.generatePsbtUr(
-          psbt,
-          fragmentLength: state.fragmentLength,
-        ),
-        QrType.none => <String>[],
-      };
+    final result = await _generatePsbtQrPartsUsecase.execute(
+      psbt: psbt,
+      qrType: qrType,
+      fragmentLength: state.fragmentLength,
+    );
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          parts: parts,
-          currentIndex: 0,
-          error: null,
-        ),
-      );
-
-      if (parts.isNotEmpty) {
-        _startCycling();
-      }
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            isLoading: false,
+            parts: value,
+            currentIndex: 0,
+            failure: null,
+          ),
+        );
+        if (value.isNotEmpty) _startCycling();
+      case Err(:final failure):
+        emit(state.copyWith(isLoading: false, failure: failure));
     }
   }
 

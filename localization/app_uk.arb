@@ -1386,7 +1386,6 @@
   "sendTransferFeeDescription": "Це загальна плата, яка відхилена від суми, відправленого",
   "arkReceiveSegmentBoarding": "Дошка",
   "seedsignerStep12": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на SeedSigner. Сканування.",
-  "psbtFlowKeystoneTitle": "Інструкція Keystone",
   "arkSessionDuration": "Тривалість сеансу",
   "buyAboveMaxAmountError": "Ви намагаєтеся придбати над максимальною кількістю.",
   "electrumTimeoutWarning": "Ваш час ({timeoutValue} секунди) нижче рекомендованого значення ({recommended} секунд) для цього Stop Gap.",
@@ -1626,14 +1625,6 @@
   },
   "loginButton": "ЛОГІН",
   "arkAboutNetwork": "Мережа",
-  "psbtFlowLoginToDevice": "Увійти до пристрою {device}",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "sendUnfreezeCoin": "Нефризе Монета",
   "jadeInstructionsTitle": "Блокстрім Jade PSBT Інструкції",
   "scanNfcButton": "Сканер NFC",
@@ -1674,7 +1665,6 @@
   "psbtFlowIncreaseBrightness": "Збільшення яскравості екрану на вашому пристрої",
   "payCoinjoinCompleted": "CoinJoin завершено",
   "electrumAddCustomServer": "Додати користувальницький сервер",
-  "psbtFlowClickSign": "Натисніть кнопку",
   "rbfSatsPerVbyte": "сати/ВБ",
   "broadcastSignedTxDoneButton": "Сонце",
   "sendRecommendedFee": "{rate} sat/vB",
@@ -2130,7 +2120,6 @@
   "swapTransferTo": "Трансфер до",
   "bitcoinSettingsMempoolServerTitle": "Налаштування сервера Mempool",
   "selectCoinsManuallyLabel": "Виберіть монети вручну",
-  "psbtFlowSeedSignerTitle": "SeedSigner Інструкції",
   "appUnlockAttemptSingular": "невдала спроба",
   "importQrDevicePassportStep2": "Введіть Ваш кошик",
   "buyExpressWithdrawalDesc": "Отримати Bitcoin миттєво після оплати",
@@ -2243,7 +2232,6 @@
   "addressViewBalance": "Посилання",
   "recoverbullSelectNoBackupsFound": "Не знайдено резервних копій",
   "importMnemonicNestedSegwit": "Нескінченний Segwit",
-  "psbtFlowScanQrOption": "Виберіть опцію \"Scan QR\"",
   "importQrDeviceSpecterStep9": "Сканування QR-коду, що відображається на вашому Specter",
   "importWatchOnlySelectDerivation": "Виберіть заборгованість",
   "hwPassport": "Паспорт Фундації",
@@ -2376,7 +2364,6 @@
   "bitboxErrorDeviceNotFound": "Пристрій BitBox не знайдено.",
   "ledgerScanningMessage": "Шукайте пристрої Ledger поблизу...",
   "tryAgainButton": "Зареєструватися",
-  "psbtFlowHoldSteady": "Утриманий QR-код, стійкий до центру",
   "swapConfirmTitle": "Підтвердження трансферу",
   "testBackupGoogleDrivePrivacyPart1": "Інформація ",
   "connectHardwareWalletKeystone": "Головна",
@@ -2484,7 +2471,6 @@
   "recoverbullErrorServiceUnavailable": "Сервіс 0 Будь ласка, перевірте підключення.",
   "arkSettleTitle": "Шахрайські операції",
   "sendErrorInsufficientBalanceForSwap": "Чи не достатньо балансу для оплати за допомогою Рідини і не в межах обмежених обмежень для оплати через Біткойн.",
-  "psbtFlowJadeTitle": "Блокстрім Jade PSBT Інструкції",
   "torSettingsDescUnknown": "Неможливо визначити Статус на сервери Забезпечити Orbot встановлюється і працює.",
   "importQrDeviceKeystoneStep8": "У гаманці BULL виберіть бажаний тип деривації. Якщо ви не впевнені, виберіть \"Segwit (BIP84)\"",
   "dcaContinueButton": "Продовжити",
@@ -2599,7 +2585,6 @@
   "payHighPriority": "Висока якість",
   "sendFrozenCoin": "Заморожені",
   "importColdcardInstructionsStep4": "Перевірити, що ваша прошивка оновлена до версії 1.3.4Q",
-  "psbtFlowKruxTitle": "Krux Інструкції",
   "recoverbullDecryptVault": "Розшифрування за замовчуванням",
   "connectHardwareWalletJade": "Блокстрім Jade",
   "autoswapMaxFee": "Макс Трансфер Fee",
@@ -2829,7 +2814,6 @@
   "backupWalletGoogleDriveSignInTitle": "Ви повинні зареєструватися на Google Диску",
   "testBackupBackupId": "Ідентифікатор резервного копіювання:",
   "bitboxScreenConnecting": "Підключення до BitBox",
-  "psbtFlowScanAnyQr": "Виберіть параметр \"Зберегти будь-який QR-код\"",
   "importQrDeviceSeedsignerStep10": "Комплектація",
   "sellKycPendingDescription": "Ви повинні завершити перевірку ID першим",
   "fundExchangeETransferDescription": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.",
@@ -3182,14 +3166,6 @@
   "backupWalletHowToDecideVaultCustomLocation": "Зручне розташування може бути набагато більш безпечною, в залежності від місця розташування, яку ви обираєте. Ви також повинні переконатися, що не втратити файл резервного копіювання або втратити пристрій, на якому зберігаються файли резервного копіювання.",
   "buyProofOfAddress": "Адреса",
   "backupWalletInstructionNoDigitalCopies": "Не робити цифрові копії вашого резервного копіювання. Написати його на шматку паперу, або гравійований в металі.",
-  "psbtFlowError": "{error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Орієнтовна доставка ~ 10 хвилин",
   "importQrDeviceSeedsignerStep2": "Відкрийте меню \"Шведи\"",
   "exchangeAmountInputValidationZero": "Кількість повинна бути більшою, ніж нуль",
@@ -3342,7 +3318,6 @@
   "jadeStep2": "Якщо у вас є одна (необов'язково)",
   "coldcardStep4": "Сканування QR-коду, показаного в булл-гаманці",
   "importQrDevicePassportStep5": "Виберіть опцію \"Ворна\"",
-  "psbtFlowClickPsbt": "Натисніть PSBT",
   "sendInvoicePaid": "Пайд пароля",
   "arkReceiveSegmentArk": "Арк",
   "autoswapRecipientWalletInfo": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
@@ -3513,7 +3488,6 @@
   "importWalletLedger": "Клей",
   "recoverbullCheckingConnection": "Перевірка підключення до RecoverBull",
   "exchangeLandingTitle": "БУЛ БІТКОІН",
-  "psbtFlowSignWithQr": "Натисніть кнопку Вхід з QR-кодом",
   "doneButton": "Сонце",
   "withdrawSuccessTitle": "Зняття ініціації",
   "paySendAll": "Відправити",
@@ -3598,7 +3572,6 @@
     }
   },
   "recoverbullSelectFetchDriveFilesError": "Заборонено фіксувати всі резервні копії приводу",
-  "psbtFlowLoadFromCamera": "Натисніть завантаження з камери",
   "addressViewErrorLoadingMoreAddresses": "{error}",
   "@addressViewErrorLoadingMoreAddresses": {
     "placeholders": {
@@ -3720,13 +3693,11 @@
     }
   },
   "bitboxErrorInvalidResponse": "Інвалідна відповідь від пристрою BitBox. Будь ласка, спробуйте знову.",
-  "psbtFlowAddPassphrase": "Якщо у вас є одна (необов'язково)",
   "sendSigningTransaction": "Реєстрація.",
   "sellErrorFeesNotCalculated": "Комісія не розраховується. Будь ласка, спробуйте знову.",
   "dcaAddressLiquid": "Контакти",
   "buyVerificationInProgress": "Перевірка в прогресі ...",
   "mempoolSettingsUseForFeeEstimation": "Використання для оцінки Fee",
-  "psbtFlowMoveCloserFurther": "Спробуйте перемістити пристрій ближче або далі",
   "swapProgressTitle": "Внутрішній переказ",
   "pinButtonConfirm": "Підтвердження",
   "coldcardStep2": "Якщо у вас є одна (необов'язково)",
@@ -3838,7 +3809,6 @@
       }
     }
   },
-  "psbtFlowPassportTitle": "Інструкції щодо Паспорту Фонду",
   "exchangeLandingFeature3": "Bitcoin у USD",
   "notLoggedInMessage": "Будь ласка, ввійдіть в обліковий запис Bull Bitcoin для налаштування обміну доступом.",
   "swapTotalFees": "Всього коштів ",
@@ -5268,5 +5238,7 @@
   "transactionStatusPayjoinAborted": "Payjoin скасовано",
   "transactionDetailLabelPayjoinAborted": "Скасовано",
   "transactionDetailLabelPayjoinFeeContribution": "Внесок комісії Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin додає одну з ваших монет як додатковий вхід до платежу для покращення конфіденційності. Комісія за майнінг цього доданого входу віднімається від суми, яку ви отримуєте (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin додає одну з ваших монет як додатковий вхід до платежу для покращення конфіденційності. Комісія за майнінг цього доданого входу віднімається від суми, яку ви отримуєте (BIP78).",
+  "psbtFlowInvalidPsbtError": "Не вдалося прочитати цю транзакцію. Повернітеся та створіть її знову.",
+  "psbtFlowQrEncodingError": "Не вдалося перетворити цю транзакцію на QR-код."
 }

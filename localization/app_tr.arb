@@ -843,10 +843,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone Talimatları",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "Transfer durumu",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1935,15 +1931,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "{device} cihazınıza giriş",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "Costa Rika",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -2113,10 +2100,6 @@
   "electrumAddCustomServer": "Add private Server",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "Click Sign",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "satmak/vB",
   "@rbfSatsPerVbyte": {
@@ -4214,10 +4197,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "SeedSigner Talimatlar",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "başarısız deneme başarısız deneme",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4790,10 +4769,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "\"Scan QR\" seçeneği seçin",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "coreSwapsLnReceiveFailed": "Swap başarısız oldu.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
@@ -5365,10 +5340,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "QR kodunu sürekli tutun ve merkezied",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "Onay Onaylandı",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5763,10 +5734,6 @@
   "sendErrorInsufficientBalanceForSwap": "Bu değişimi sıvı ile ödemek için yeterli bir denge değil ve Bitcoin üzerinden ödemek için takas sınırları içinde değil.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Talimatlar",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "torSettingsDescUnknown": "Belirlenemez Tor durumu. Emin Orbot kuruldu ve çalışıyor.",
   "@torSettingsDescUnknown": {
@@ -6279,10 +6246,6 @@
   "walletTypeWatchOnly": "Watch-Only",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Krux Talimatlar",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "Decryptob",
   "@recoverbullDecryptVault": {
@@ -7214,10 +7177,6 @@
   "bitboxScreenConnecting": "BitBox'a bağlanın",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "\"Scan any QR code\" seçeneğini seçin",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "Server Network Fees",
   "@transactionLabelServerNetworkFees": {
@@ -8534,15 +8493,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "Hata: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Tahmin edilen teslimat - 10 dakika",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -9207,10 +9157,6 @@
   "importQrDevicePassportStep5": "\"Sparrow\" seçeneği seçin",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "psbtFlowClickPsbt": "Click PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "Fatura Ücretli",
   "@sendInvoicePaid": {
@@ -9912,10 +9858,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "Click Sign with QR Code",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "Done",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -10259,10 +10201,6 @@
   "recoverbullSelectFetchDriveFilesError": "Tüm sürücü yedeklerini getirmek için başarısız oldu",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "Kameradan Yük",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "Sınırlı doğrulama",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -10706,10 +10644,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "Bir tane varsa bir geçiş ekleyin (isteğen)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "Gelişmiş seçenekler",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -10745,10 +10679,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "Cihazınızı daha yakın veya daha fazla hareket etmeye çalışın",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "arkAboutDurationMinutes": "{minutes} dakika",
   "@arkAboutDurationMinutes": {
@@ -11150,10 +11080,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "Vakıf Pasaport Kuralları",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "Bitcoin satmak, Bitcoin ile ödeme yapmak",
   "@exchangeLandingFeature3": {
@@ -13277,5 +13203,7 @@
   "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
   "transactionDetailLabelPayjoinAborted": "İptal edildi",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "psbtFlowInvalidPsbtError": "Bu işlem okunamadı. Geri dönüp yeniden oluşturun.",
+  "psbtFlowQrEncodingError": "Bu işlem QR koduna dönüştürülemedi."
 }
