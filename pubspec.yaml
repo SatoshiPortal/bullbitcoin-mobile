@@ -36,7 +36,15 @@ dependencies:
       path: flutter_secure_storage
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
-  payjoin: ^0.1.2
+  # Vendored copy of pub.dev payjoin 0.1.2 with the payjoin Rust crate
+  # exact-pinned to 1.0.0-rc.5: rc.6 (published 2026-07-23) broke the
+  # package's from-source FFI build (UriExt/PjUri API changes), failing every
+  # fresh CI/container build. Point back to pub.dev once upstream ships a
+  # release built against a newer payjoin-ffi.
+  payjoin:
+    git:
+      url: https://github.com/SatoshiPortal/payjoin-dart
+      ref: 26595d9821250bbd88f4e43b97acc85f17a93d71
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
