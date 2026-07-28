@@ -2542,14 +2542,6 @@
   "@payInvalidState": {
     "description": "Error message for invalid state"
   },
-  "payInProgress": "Payment In Progress!",
-  "@payInProgress": {
-    "description": "Title for payment in progress screen"
-  },
-  "payInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
-  "@payInProgressDescription": {
-    "description": "Description for payment in progress"
-  },
   "payViewDetails": "View details",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -2566,9 +2558,17 @@
   "@payCompleted": {
     "description": "Title for payment completed screen"
   },
-  "payCompletedDescription": "Your payment has been completed and the recipient has received the funds.",
-  "@payCompletedDescription": {
-    "description": "Description for payment completed"
+  "payCompletedDescriptionDetails": "The payment of {fiatAmount} to {recipient} has been completed.",
+  "@payCompletedDescriptionDetails": {
+    "description": "Description for payment completed, with the fiat amount and the recipient",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -2630,9 +2630,29 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payPaymentInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
-  "@payPaymentInProgressDescription": {
-    "description": "Description for payment in progress"
+  "payPaymentInProgressDescriptionDetails": "The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescriptionDetails": {
+    "description": "Description for payment in progress, before the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPaymentPayinConfirmedDescriptionDetails": "Your transaction is confirmed. The payment of {fiatAmount} to {recipient} is being processed.",
+  "@payPaymentPayinConfirmedDescriptionDetails": {
+    "description": "Description for payment in progress, once the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
   },
   "payPriceRefreshIn": "Price will refresh in ",
   "@payPriceRefreshIn": {
@@ -3280,6 +3300,14 @@
   "transactionDetailAccelerate": "Accelerate",
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLoadError": "Could not load the transaction details.",
+  "@transactionDetailLoadError": {
+    "description": "Error message shown when the transaction details could not be loaded"
+  },
+  "transactionDetailLabelRecipient": "Recipient",
+  "@transactionDetailLabelRecipient": {
+    "description": "Label for the recipient of a fiat payment order"
   },
   "transactionDetailLabelTransactionId": "Transaction ID",
   "@transactionDetailLabelTransactionId": {
