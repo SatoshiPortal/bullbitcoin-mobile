@@ -1536,10 +1536,11 @@ packages:
   payjoin:
     dependency: "direct main"
     description:
-      name: payjoin
-      sha256: "2b8e3f2c0f78e2054fcee9c25a8ce670df3fb4bec7ea66c4524dbac5e5b654eb"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"
+      resolved-ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"
+      url: "https://github.com/SatoshiPortal/payjoin-dart"
+    source: git
     version: "0.1.2"
   permission_handler:
     dependency: "direct main"
