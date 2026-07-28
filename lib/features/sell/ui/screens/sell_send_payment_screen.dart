@@ -81,9 +81,9 @@ class SellSendPaymentScreen extends StatelessWidget {
                     color: context.appColors.outline,
                   ),
                 ),
-                if (order != null)
+                if (order?.confirmationDeadline case final deadline?)
                   Countdown(
-                    until: order.confirmationDeadline,
+                    until: deadline,
                     onTimeout: () {
                       context.read<SellBloc>().add(
                         const SellEvent.orderRefreshTimePassed(),

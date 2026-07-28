@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
@@ -67,12 +68,14 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
       );
 
-      final orderModel = orderModels.firstWhere(
+      // A wallet transaction with no matching order is the normal case, not an
+      // error, so it must not be logged as one.
+      final orderModel = orderModels.firstWhereOrNull(
         (model) =>
             model.bitcoinTransactionId == txId ||
             model.liquidTransactionId == txId,
-        orElse: () => throw Exception('Order not found for txId: $txId'),
       );
+      if (orderModel == null) return null;
 
       return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
@@ -104,8 +107,23 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
       );
 
+      // Map each order on its own. The catch-all below returns an empty list, so
+      // a single order the app can't map would otherwise cost the user all of
+      // them.
       List<Order> orders = orderModels
-          .map((model) => model.toEntity(isTestnet: _isTestnet))
+          .map((model) {
+            try {
+              return model.toEntity(isTestnet: _isTestnet);
+            } catch (e, stackTrace) {
+              log.severe(
+                message: 'Error mapping order ${model.orderId}',
+                error: e,
+                trace: stackTrace,
+              );
+              return null;
+            }
+          })
+          .whereType<Order>()
           .toList();
 
       // this filtering should also be done separately, read from disk not over network
@@ -127,6 +145,10 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
             orders = orders.whereType<RefundOrder>().toList();
           case OrderType.balanceAdjustment:
             orders = orders.whereType<BalanceAdjustmentOrder>().toList();
+          case OrderType.sellUsdt:
+          case OrderType.unknown:
+            // Both map onto GenericOrder, so match on the type itself.
+            orders = orders.where((o) => o.orderType == type).toList();
         }
       }
 

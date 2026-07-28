@@ -94,14 +94,15 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     style: context.font.bodyMedium,
                     color: context.appColors.outline,
                   ),
-                  Countdown(
-                    until: order.confirmationDeadline,
-                    onTimeout: () {
-                      context.read<PayBloc>().add(
-                        const PayEvent.orderRefreshTimePassed(),
-                      );
-                    },
-                  ),
+                  if (order.confirmationDeadline case final deadline?)
+                    Countdown(
+                      until: deadline,
+                      onTimeout: () {
+                        context.read<PayBloc>().add(
+                          const PayEvent.orderRefreshTimePassed(),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

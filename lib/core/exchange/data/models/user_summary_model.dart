@@ -106,8 +106,10 @@ sealed class UserDcaModel with _$UserDcaModel {
         'monthly' => DcaBuyFrequency.monthly,
         _ => null,
       },
+      // A DCA currency this build doesn't support must not fail the whole user
+      // summary parse (balances, stats and preferences come with it).
       currency: currencyCode != null
-          ? FiatCurrency.fromCode(currencyCode!)
+          ? FiatCurrency.tryFromCode(currencyCode!)
           : null,
       amount: amount,
       network: switch (recipientType) {
