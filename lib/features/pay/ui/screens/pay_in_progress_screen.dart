@@ -63,6 +63,21 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
     _pollingTimer = null;
   }
 
+  /// The copy follows the polled order: once the payin is confirmed onchain the
+  /// message says so, instead of asking the user to keep waiting for a
+  /// confirmation that already happened.
+  String _description(BuildContext context, FiatPaymentOrder order) {
+    final amount = order.payoutAmountToDisplay;
+    final recipient = order.recipientToDisplay ?? context.loc.payNotAvailable;
+
+    return order.isPayinCompleted
+        ? context.loc.payPaymentPayinConfirmedDescriptionDetails(
+            amount,
+            recipient,
+          )
+        : context.loc.payPaymentInProgressDescriptionDetails(amount, recipient);
+  }
+
   @override
   Widget build(BuildContext context) {
     final order = context.select(
@@ -132,15 +147,17 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                     context.loc.payPaymentInProgress,
                     style: context.font.titleLarge,
                   ),
-                  const Gap(10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Text(
-                      context.loc.payPaymentInProgressDescription,
-                      style: context.font.bodyMedium,
-                      textAlign: .center,
+                  if (order != null) ...[
+                    const Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text(
+                        _description(context, order),
+                        style: context.font.bodyMedium,
+                        textAlign: .center,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

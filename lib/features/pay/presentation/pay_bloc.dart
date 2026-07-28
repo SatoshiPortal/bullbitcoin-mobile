@@ -462,7 +462,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       if (state is PayPaymentState) {
         emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
       }
-      emit(payPaymentState.toSuccessState(payOrder: payPaymentState.payOrder));
+      // The order fetched after the broadcast, not the pre-broadcast one, so
+      // the success screens show the up-to-date payin status.
+      emit(payPaymentState.toSuccessState(payOrder: latestOrder));
     } on PrepareLiquidSendException catch (e) {
       emit(
         payPaymentState.copyWith(
@@ -608,6 +610,12 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         // Convert Order to FiatPaymentOrder if needed
         if (orderSummary is FiatPaymentOrder) {
           emit(currentState.copyWith(payOrder: orderSummary));
+        } else {
+          log.severe(
+            error:
+                'Expected FiatPaymentOrder for order ${event.orderId} but received ${orderSummary.runtimeType}',
+            trace: StackTrace.current,
+          );
         }
       }
     } catch (e) {

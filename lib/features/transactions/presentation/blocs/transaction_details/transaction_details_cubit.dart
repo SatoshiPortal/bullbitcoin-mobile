@@ -57,6 +57,11 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   _broadcastOriginalTransactionUsecase;
   final ProcessSwapUsecase _processSwapUsecase;
 
+  /// The load that populated this cubit, so [refresh] can re-run it whichever
+  /// init path the screen used. Orders only load once (they have no watcher),
+  /// which is why the screen needs a way to ask for fresh data.
+  Future<void> Function()? _reload;
+
   StreamSubscription? _walletTransactionSubscription;
   StreamSubscription? _swapSubscription;
   StreamSubscription? _payjoinSubscription;
@@ -80,11 +85,30 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     return super.close();
   }
 
+  /// Re-runs the load that populated the details, for pull-to-refresh and for
+  /// retrying after a failed load.
+  Future<void> refresh() async {
+    final reload = _reload;
+    if (reload == null) return;
+
+    if (state.err != null || state.notFoundError != null) {
+      emit(state.copyWith(err: null, notFoundError: null));
+    }
+    await reload();
+  }
+
   Future<void> initByWalletTxId(String txId, {required String walletId}) async {
-    // Start monitoring the wallet transaction for updates. Cancel any
-    // previous watcher first: this is also reached from the by-payjoin-id
-    // path once the broadcast transaction becomes visible.
+    // Keep the reload of whichever init the screen started with: an order that
+    // resolves to a wallet tx delegates here, and reloading the wallet tx also
+    // refetches the order.
+    _reload ??= () => _loadDetailsByWalletTxId(txId, walletId: walletId);
+
+    // An order-id entry whose order only later gains a transactionId re-enters
+    // here on every refresh, so drop the previous watcher instead of leaking a
+    // live one that keeps fetching per wallet-tx event.
     await _walletTransactionSubscription?.cancel();
+
+    // Start monitoring the wallet transaction for updates.
     _walletTransactionSubscription = _watchWalletTransactionByTxIdUsecase
         .execute(txId: txId, walletId: walletId)
         .listen((_) => _loadDetailsByWalletTxId(txId, walletId: walletId));
@@ -258,6 +282,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
     // Load the initial details of the swap.
     await _loadDetailsBySwapId(swapId, walletId: walletId);
+
+    // Only when the swap didn't resolve to a wallet tx, which sets its own
+    // reload without re-subscribing the watchers.
+    _reload ??= () => _loadDetailsBySwapId(swapId, walletId: walletId);
   }
 
   Future<void> _loadDetailsBySwapId(
@@ -326,6 +354,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
     // Load the initial details of the payjoin.
     await _loadDetailsByPayjoinId(payjoinId);
+
+    _reload ??= () => _loadDetailsByPayjoinId(payjoinId);
   }
 
   Future<void> _loadDetailsByPayjoinId(String payjoinId) async {
@@ -481,6 +511,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   Future<void> initByOrderId(String orderId) async {
     await _loadDetailsByOrderId(orderId);
+
+    // Only when the order didn't resolve to a wallet tx, which sets its own
+    // reload without re-subscribing the watchers.
+    _reload ??= () => _loadDetailsByOrderId(orderId);
   }
 
   Future<void> _loadDetailsByOrderId(String orderId) async {
