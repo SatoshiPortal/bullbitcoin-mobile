@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
-import 'package:bb_mobile/core/background_tasks/tasks.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
@@ -49,6 +49,16 @@ import 'package:workmanager/workmanager.dart';
 /// identically in both timing paths.
 WizardRepository _buildPreInitWizardRepository() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
+
+@visibleForTesting
+void resumePayjoinsOnAppResume(
+  AppLifecycleState state,
+  PayjoinRepository repository,
+) {
+  if (state == AppLifecycleState.resumed) {
+    unawaited(repository.resumePayjoinsOnStartup());
+  }
+}
 
 class Bull {
   static Future<void> init() async {
@@ -112,9 +122,9 @@ class Bull {
       // definition — cross-isolate truncation races with the other
       // isolate's open IOSink and can destroy recently-buffered
       // lines). FG file pruning therefore only happens here; the BG
-      // file is pruned by the `logs-prune` workmanager fire. Long
-      // FG-only sessions (rare cold restarts, no BG fires) can let
-      // the FG file grow past the cap until the next cold launch —
+      // file no longer grows because background tasks are disabled. Long
+      // FG-only sessions (rare cold restarts) can let the FG file grow past
+      // the cap until the next cold launch —
       // acceptable: worst case is a few hundred KB until the user
       // restarts.
       //
@@ -126,23 +136,16 @@ class Bull {
 
   static Future<void> initLocator() async {
     await AppLocator.setup(locator, SqliteDatabase());
+    unawaited(locator<PayjoinRepository>().resumePayjoinsOnStartup());
     Bloc.observer = AppBlocObserver();
   }
 
   static Future<void> initWorkmanager() async {
     await Workmanager().initialize(backgroundTasksHandler);
+    // Background execution is intentionally disabled. Cancel schedules left
+    // by previous releases, but keep initialization so upgrades reliably
+    // remove those persisted native tasks.
     await Workmanager().cancelAll();
-    await Workmanager().registerPeriodicTask(
-      BackgroundTask.logsPrune.id,
-      BackgroundTask.logsPrune.name,
-      frequency: const Duration(minutes: 15),
-      constraints: Constraints(
-        requiresBatteryNotLow: true,
-        requiresStorageNotLow: false,
-        requiresDeviceIdle: false,
-        requiresCharging: false,
-      ),
-    );
   }
 }
 
@@ -235,6 +238,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
+    resumePayjoinsOnAppResume(state, locator<PayjoinRepository>());
     // iOS lifecycle is `active → inactive → hidden → paused`. The user can
     // force-quit from the app switcher during `inactive` and skip both the
     // `hidden` and `paused` flushes, so flush there too.

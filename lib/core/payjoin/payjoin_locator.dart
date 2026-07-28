@@ -63,12 +63,11 @@ class PayjoinLocator {
   }
 
   static void registerRepositories(GetIt locator) {
-    // Eager (not lazy) singleton: it subscribes to the datasource's event
-    // streams at construction. Resuming unfinished sessions is deferred to
-    // an explicit resumePayjoinsOnStartup() call from AppLocator.setup (see
-    // that method), once every dependency it needs is registered.
-    locator.registerSingleton<PayjoinRepository>(
-      PayjoinRepositoryImpl(
+    // The foreground resolves this singleton explicitly before resuming
+    // sessions. Background locators must not instantiate a second protocol
+    // executor merely by registering dependencies.
+    locator.registerLazySingleton<PayjoinRepository>(
+      () => PayjoinRepositoryImpl(
         localPayjoinDatasource: locator<LocalPayjoinDatasource>(),
         pdkPayjoinDatasource: locator<PdkPayjoinDatasource>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
@@ -76,18 +75,11 @@ class PayjoinLocator {
         seedDatasource: locator<SeedDatasource>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
-        // Lazy: WalletLocator registers these AFTER
-        // PayjoinLocator.registerRepositories (see core_locator.dart), and
-        // this repository is an eager registerSingleton. They are only
-        // called from broadcast/completion watchers, well after startup.
+        // Lazy accessors keep registration order independent.
         walletRepository: () => locator<WalletRepository>(),
         walletTransactionRepository: () =>
             locator<WalletTransactionRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        // Lazy: LabelsLocator.registerFacade runs after
-        // PayjoinLocator.registerRepositories (see core_locator.dart), and
-        // this repository is an eager registerSingleton — see
-        // PayjoinRepositoryImpl's _labelsFacade doc comment.
         labelsFacade: () => locator<LabelsFacade>(),
       ),
     );
