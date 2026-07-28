@@ -1339,6 +1339,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "Ödeme cüzdanı",
+  "buyPayoutMethodLiquid": "Liquid üzerinde L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin zincirinde BTC",
   "buyConfirmPayoutMethod": "Payout yöntemi",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -2135,6 +2138,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "Siparişiniz şu anda oluşturulamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
   "buyOrderAlreadyConfirmedError": "Bu satın sipariş zaten doğrulandı.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -3467,7 +3471,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "You buy {amount}",
+  "buyYouBought": "{fiatAmount} karşılığında {amount} satın aldınız",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

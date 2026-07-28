@@ -7,10 +7,17 @@ part 'pay_error.freezed.dart';
 @freezed
 sealed class PayError with _$PayError {
   const factory PayError.unauthenticated() = UnauthenticatedPayError;
-  const factory PayError.belowMinAmount({required int minAmountSat}) =
-      BelowMinAmountPayError;
-  const factory PayError.aboveMaxAmount({required int maxAmountSat}) =
-      AboveMaxAmountPayError;
+
+  /// [minAmount] is denominated in [currency], which the api picks and can be
+  /// either a fiat currency or BTC/LBTC.
+  const factory PayError.belowMinAmount({
+    required double minAmount,
+    required String currency,
+  }) = BelowMinAmountPayError;
+  const factory PayError.aboveMaxAmount({
+    required double maxAmount,
+    required String currency,
+  }) = AboveMaxAmountPayError;
   const factory PayError.insufficientBalance() = InsufficientBalancePayError;
   const factory PayError.orderNotFound() = OrderNotFoundPayError;
   const factory PayError.orderAlreadyConfirmed() =
@@ -23,8 +30,8 @@ sealed class PayError with _$PayError {
   /// Returns the localized error message.
   String toTranslated(BuildContext context) => when(
     unauthenticated: () => context.loc.payNotAuthenticated,
-    belowMinAmount: (_) => context.loc.payBelowMinAmount,
-    aboveMaxAmount: (_) => context.loc.payAboveMaxAmount,
+    belowMinAmount: (_, _) => context.loc.payBelowMinAmount,
+    aboveMaxAmount: (_, _) => context.loc.payAboveMaxAmount,
     insufficientBalance: () => context.loc.payInsufficientBalance,
     orderNotFound: () => context.loc.payOrderNotFound,
     orderAlreadyConfirmed: () => context.loc.payOrderAlreadyConfirmed,

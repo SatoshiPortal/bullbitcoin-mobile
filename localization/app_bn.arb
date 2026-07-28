@@ -1334,6 +1334,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "পেআউট ওয়ালেট",
+  "buyPayoutMethodLiquid": "Liquid-এ L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin চেইনে BTC",
   "buyConfirmPayoutMethod": "পাওআউট পদ্ধতি",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -2116,6 +2119,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "আপনার অর্ডার এই মুহূর্তে তৈরি করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "buyOrderAlreadyConfirmedError": "এই ক্রয় অর্ডারটি ইতিমধ্যেই নিশ্চিত করা হয়েছে।",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -3406,7 +3410,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "আপনি {amount} কিনেছেন",
+  "buyYouBought": "আপনি {fiatAmount} দিয়ে {amount} কিনেছেন",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
