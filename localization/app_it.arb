@@ -287,7 +287,6 @@
   },
   "sendTransferFeeDescription": "Questa è la quota totale detratta dall'importo inviato",
   "seedsignerStep12": "Il portafoglio Bull Bitcoin ti chiederà di scansionare il codice QR sul SeedSigner. Scansione.",
-  "psbtFlowKeystoneTitle": "Istruzioni Keystone",
   "transactionLabelTransferStatus": "Stato di trasferimento",
   "buyAboveMaxAmountError": "Stai cercando di acquistare sopra la quantità massima.",
   "electrumTimeoutWarning": "Il vostro timeout ({timeoutValue} secondi) è inferiore al valore raccomandato ({recommended} secondi) per questo Stop Gap.",
@@ -545,7 +544,6 @@
   "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
   "testBackupDecryptVault": "Decrypt vault",
   "transactionDetailBumpFees": "Pagamenti",
-  "psbtFlowNoPartsToDisplay": "Nessuna parte da visualizzare",
   "addressCardCopiedMessage": "Indirizzo copiato a clipboard",
   "totalFeeLabel": "Costo totale",
   "mempoolCustomServerBottomSheetDescription": "Inserisci l'URL del server mempool personalizzato. Il server verrà convalidato prima di salvare.",
@@ -591,14 +589,6 @@
   "payLastName": "Ultimo nome",
   "transactionPayjoinStatusExpired": "Scadenza",
   "fundExchangeMethodBankTransferWire": "Trasferimento bancario (Wire o EFT)",
-  "psbtFlowLoginToDevice": "Accedi al tuo dispositivo {device}",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Rica",
   "payCalculating": "Calcolo...",
   "transactionDetailLabelTransferId": "ID trasferimento",
@@ -646,7 +636,6 @@
   "psbtFlowIncreaseBrightness": "Aumenta la luminosità dello schermo sul tuo dispositivo",
   "payCoinjoinCompleted": "CoinJoin completato",
   "electrumAddCustomServer": "Aggiungi server personalizzato",
-  "psbtFlowClickSign": "Fare clic sul segno",
   "rbfSatsPerVbyte": "sats/vB",
   "broadcastSignedTxDoneButton": "Fatto",
   "sendRecommendedFee": "Consigliato: {rate} sat/vB",
@@ -1262,7 +1251,6 @@
   },
   "transactionSwapDescLnReceiveDefault": "Il tuo scambio e' in corso. Questo processo è automatizzato e può richiedere un po 'di tempo per completare.",
   "selectCoinsManuallyLabel": "Seleziona le monete manualmente",
-  "psbtFlowSeedSignerTitle": "Istruzioni SeedSigner",
   "appUnlockAttemptSingular": "tentativo fallito",
   "importQrDevicePassportStep2": "Inserisci il tuo PIN",
   "transactionOrderLabelPayoutMethod": "Metodo di pagamento",
@@ -1423,7 +1411,6 @@
   "recoverbullSelectNoBackupsFound": "Nessun backup trovato",
   "importMnemonicNestedSegwit": "Segwit annidato",
   "sendReplaceByFeeActivated": "Attivato il sostituto",
-  "psbtFlowScanQrOption": "Selezionare l'opzione \"Scan QR\"",
   "coreSwapsLnReceiveFailed": "Swap ha fallito.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Trasferimenti in dollari statunitensi (USD)",
   "transactionDetailLabelPayinStatus": "Stato di pagamento",
@@ -1595,7 +1582,6 @@
   "sellInsufficientBalanceError": "Insufficiente equilibrio nel portafoglio selezionato per completare questo ordine di vendita.",
   "transactionSwapDescLnReceivePending": "Il tuo scambio e' stato avviato. Stiamo aspettando che venga ricevuto un pagamento sul Lightning Network.",
   "tryAgainButton": "Prova ancora",
-  "psbtFlowHoldSteady": "Tenere il codice QR costante e centralizzato",
   "swapConfirmTitle": "Confermare il trasferimento",
   "testBackupGoogleDrivePrivacyPart1": "Queste informazioni ",
   "connectHardwareWalletKeystone": "Keystone",
@@ -1725,7 +1711,6 @@
   "electrumBitcoinServerInfo": "Inserisci l'indirizzo del server in formato: host:port (ad esempio.com:50001)",
   "recoverbullErrorServiceUnavailable": "Servizio non disponibile. Controlla la connessione.",
   "sendErrorInsufficientBalanceForSwap": "Non abbastanza saldo per pagare questo swap tramite Liquid e non entro limiti di swap per pagare tramite Bitcoin.",
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Istruzioni",
   "transactionFilterPayjoin": "Pagamento",
   "importQrDeviceKeystoneStep8": "Nel portafoglio BULL, scegli il tipo di derivazione preferito. Se non sei sicuro, seleziona \"Segwit (BIP84)\"",
   "fundExchangeCrIbanUsdTitle": "Trasferimento bancario (USD)",
@@ -1878,7 +1863,6 @@
   "sendBroadcastTransaction": "Transazione di trasmissione",
   "receiveBitcoinConfirmationMessage": "La transazione Bitcoin richiederà un po 'per confermare.",
   "walletTypeWatchOnly": "Guarda solo",
-  "psbtFlowKruxTitle": "Istruzioni Krux",
   "recoverbullDecryptVault": "Decrypt vault",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "Il trasferimento è pronto per essere rimborsato.",
@@ -2148,7 +2132,6 @@
   "testBackupBackupId": "ID di backup:",
   "walletDeletionErrorOngoingSwaps": "Non è possibile eliminare un portafoglio con swap in corso.",
   "bitboxScreenConnecting": "Collegamento a BitBox",
-  "psbtFlowScanAnyQr": "Selezionare l'opzione \"Scan any QR code\"",
   "transactionLabelServerNetworkFees": "Tasse di rete del server",
   "importQrDeviceSeedsignerStep10": "Setup completo",
   "sendReceive": "Ricevi",
@@ -2570,14 +2553,6 @@
   "exchangeLegacyTransactionsComingSoon": "Transazioni legacy - Arrivo presto",
   "buyProofOfAddress": "Prova di indirizzo",
   "backupWalletInstructionNoDigitalCopies": "Non fare copie digitali del backup. Scrivilo su un pezzo di carta o inciso in metallo.",
-  "psbtFlowError": "Errore: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Consegna stimata ~ 10 minuti",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "importQrDeviceSeedsignerStep2": "Aprire il menu \"Seme\"",
@@ -2771,7 +2746,6 @@
   "jadeStep2": "Aggiungi una passphrase se ne hai una (opzionale)",
   "coldcardStep4": "Scansione del codice QR mostrato nel portafoglio Bull",
   "importQrDevicePassportStep5": "Selezionare l'opzione \"Sparrow\"",
-  "psbtFlowClickPsbt": "Fare clic su PSBT",
   "sendInvoicePaid": "Fattura a pagamento",
   "buyKycPendingDescription": "È necessario completare l'ID verifica prima",
   "payBelowMinAmountError": "Stai cercando di pagare sotto l'importo minimo che può essere pagato con questo portafoglio.",
@@ -2992,7 +2966,6 @@
   "importWalletLedger": "Ledger",
   "recoverbullCheckingConnection": "Controllo della connessione per RecoverBull",
   "exchangeLandingTitle": "BULL BITCOIN",
-  "psbtFlowSignWithQr": "Fare clic sul segno con il codice QR",
   "doneButton": "Fatto",
   "withdrawSuccessTitle": "Iniziato il ritiro",
   "paySendAll": "Invia tutto",
@@ -3112,7 +3085,6 @@
   "coreSwapsLnReceiveExpired": "Scambio scaduto.",
   "fundExchangeOnlineBillPaymentLabelBillerName": "Cerca la lista dei fatturatori della tua banca per questo nome",
   "recoverbullSelectFetchDriveFilesError": "Non riuscito a recuperare tutti i backup delle unità",
-  "psbtFlowLoadFromCamera": "Fare clic su Carica dalla fotocamera",
   "exchangeAccountInfoVerificationLimitedVerification": "Verifica limitata",
   "sendBuildingTransaction": "Operazione di costruzione...",
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
@@ -3252,7 +3224,6 @@
     }
   },
   "bitboxErrorInvalidResponse": "Risposta non valida dal dispositivo BitBox. Per favore riprovate.",
-  "psbtFlowAddPassphrase": "Aggiungi una passphrase se ne hai una (opzionale)",
   "payAdvancedOptions": "Opzioni avanzate",
   "sendSigningTransaction": "La transazione di firma...",
   "sellErrorFeesNotCalculated": "Tasse di transazione non calcolate. Per favore riprovate.",
@@ -3262,7 +3233,6 @@
   "buyPaymentMethod": "Metodo di pagamento",
   "coreSwapsStatusCompleted": "Completato",
   "fundExchangeCrIbanUsdDescriptionEnd": ". I fondi saranno aggiunti al saldo del tuo conto.",
-  "psbtFlowMoveCloserFurther": "Prova a spostare il dispositivo più vicino o più lontano",
   "swapProgressTitle": "Trasferimento interno",
   "pinButtonConfirm": "Conferma",
   "coldcardStep2": "Aggiungi una passphrase se ne hai una (opzionale)",
@@ -3399,7 +3369,6 @@
       }
     }
   },
-  "psbtFlowPassportTitle": "Istruzioni per il passaporto della Fondazione",
   "exchangeLandingFeature3": "Vendere Bitcoin, ottenere pagato con Bitcoin",
   "notLoggedInMessage": "Accedi al tuo account Bull Bitcoin per accedere alle impostazioni di scambio.",
   "swapTotalFees": "Totale delle spese ",
@@ -4940,5 +4909,7 @@
   "exchangeSupportChatLoadAttachmentError": "Impossibile aprire l'allegato. Riprova.",
   "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
   "statusCheckResultsMayBeOutdated": "I risultati potrebbero essere obsoleti",
-  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova."
+  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova.",
+  "psbtFlowInvalidPsbtError": "Non è stato possibile leggere questa transazione. Torna indietro e creala di nuovo.",
+  "psbtFlowQrEncodingError": "Non è stato possibile convertire questa transazione in un codice QR."
 }

@@ -1052,10 +1052,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone Pokyny",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "Stav převodu",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1861,10 +1857,6 @@
   "@transactionDetailBumpFees": {
     "description": "Button label to increase transaction fees via RBF"
   },
-  "psbtFlowNoPartsToDisplay": "Žádné díly pro zobrazení",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "addressCardCopiedMessage": "Adresa kopírována do schránky",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1999,15 +1991,6 @@
   "fundExchangeMethodBankTransferWire": "Bankovní převod (Wire nebo EFT)",
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
-  },
-  "psbtFlowLoginToDevice": "Přihlášení do zařízení {device}",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Čeština Čeština",
   "@fundExchangeJurisdictionCostaRica": {
@@ -2146,10 +2129,6 @@
   "electrumAddCustomServer": "Přidat vlastní server",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "Klikněte na Přihlásit se",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
@@ -3991,10 +3970,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "SeedSigner pokyny",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "neúspěšný pokus",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4507,10 +4482,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "Zvolte možnost \"Scan QR\"",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Převod prostředků na americký dolar (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
     "description": "Subtitle description for IBAN USD payment method"
@@ -4990,10 +4961,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "Držte QR kód stabilní a vysoušený",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "Potvrzení převodu",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5363,10 +5330,6 @@
   "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento swap pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "Blokstream Jade PSBT Čeština",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "transactionFilterPayjoin": "Čeština",
   "@transactionFilterPayjoin": {
@@ -5831,10 +5794,6 @@
   "walletTypeWatchOnly": "Sledovat",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Krux instrukce",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "Decrypt klenba",
   "@recoverbullDecryptVault": {
@@ -6640,10 +6599,6 @@
   "bitboxScreenConnecting": "Připojení k BitBoxu",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "Zvolte možnost \"Scan libovolný QR kód\"",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "Server Síťové poplatky",
   "@transactionLabelServerNetworkFees": {
@@ -7815,15 +7770,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "Chyba: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Odhadováno doručení ~ 10 minut",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -8401,10 +8347,6 @@
   "importQrDevicePassportStep5": "Zvolte možnost \"Sparrow\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "psbtFlowClickPsbt": "Klikněte na PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "Placené faktury",
   "@sendInvoicePaid": {
@@ -9025,10 +8967,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "Klikněte na Přihlásit se QR kódem",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "Čeština",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -9328,10 +9266,6 @@
   "recoverbullSelectFetchDriveFilesError": "Vypnuto načíst všechny zálohy",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "Klikněte na Vložte z kamery",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "Omezená ověření",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -9705,10 +9639,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "Přidejte pasfrase, pokud máte jeden (volitelně)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "Pokročilé možnosti",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -9740,10 +9670,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": "Čeština Fondy budou přidány do zůstatku na účtu.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "Zkuste přesunout zařízení blíže nebo dál",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "swapProgressTitle": "Interní přenos",
   "@swapProgressTitle": {
@@ -10108,10 +10034,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "Pokyny pro cestovní pas",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "Prodej Bitcoin, získat zaplaceno s Bitcoin",
   "@exchangeLandingFeature3": {
@@ -12326,5 +12248,7 @@
   "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
   "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
   "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé",
-  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu."
+  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
+  "psbtFlowInvalidPsbtError": "Tuto transakci nelze přečíst. Vraťte se a vytvořte ji znovu.",
+  "psbtFlowQrEncodingError": "Tuto transakci nelze převést na QR kód."
 }

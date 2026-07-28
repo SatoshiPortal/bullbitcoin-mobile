@@ -785,10 +785,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "कीस्टोन निर्देश",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "स्थानांतरण स्थिति",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1643,10 +1639,6 @@
   "@transactionDetailBumpFees": {
     "description": "Button label to increase transaction fees via RBF"
   },
-  "psbtFlowNoPartsToDisplay": "प्रदर्शित करने के लिए कोई भाग नहीं",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "addressCardCopiedMessage": "पता क्लिपबोर्ड पर कॉपी हो गया",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1790,15 +1782,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "अपने {device} डिवाइस पर लॉगिन करें",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -1936,10 +1919,6 @@
   "electrumAddCustomServer": "कस्टम सर्वर जोड़ें",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "साइन क्लिक करें",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "sats/vb",
   "@rbfSatsPerVbyte": {
@@ -3883,10 +3862,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "बीजगणित निर्देश",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "असफल प्रयास",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4423,10 +4398,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "\"Scan QR\" विकल्प का चयन करें",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "coreSwapsLnReceiveFailed": "Swap विफल।",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
@@ -4954,10 +4925,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "QR कोड को स्थिर और केन्द्रित रखें",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "स्थानांतरण की पुष्टि करें",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5335,10 +5302,6 @@
   "sendErrorInsufficientBalanceForSwap": "लिक्विड के माध्यम से इस स्वैप का भुगतान करने के लिए पर्याप्त संतुलन नहीं है और बिटकॉइन के माध्यम से भुगतान करने के लिए स्वैप सीमा के भीतर नहीं है।।",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "ब्लॉकस्ट्रीम जेड पीएसबीटी निर्देश",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
@@ -5819,10 +5782,6 @@
   "walletTypeWatchOnly": "Watch-Only",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Krux निर्देश",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "डिक्रिप्ट वॉल्ट",
   "@recoverbullDecryptVault": {
@@ -6665,10 +6624,6 @@
   "bitboxScreenConnecting": "बिटबॉक्स से कनेक्ट",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "\"Scan any QR code\" विकल्प का चयन करें",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "सर्वर नेटवर्क शुल्क",
   "@transactionLabelServerNetworkFees": {
@@ -7892,15 +7847,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "त्रुटि: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "अनुमानित प्रसव ~ 10 मिनट",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -8507,10 +8453,6 @@
   "importQrDevicePassportStep5": "\"Sparrow\" विकल्प चुनें",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "psbtFlowClickPsbt": "पीएसबीटी क्लिक करें",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "चालान भुगतान",
   "@sendInvoicePaid": {
@@ -9167,10 +9109,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "QR कोड के साथ साइन इन करें",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "दान",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -9494,10 +9432,6 @@
   "recoverbullSelectFetchDriveFilesError": "सभी ड्राइव बैकअप प्राप्त करने में विफल",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "कैमरा से लोड क्लिक करें",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "सीमित सत्यापन",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -9891,10 +9825,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "उन्नत विकल्प",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -9930,10 +9860,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": "। आपके खाते की शेष राशि में फंड जोड़े जाएंगे।।",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "अपने डिवाइस को करीब या आगे बढ़ने की कोशिश करें",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "swapProgressTitle": "आंतरिक स्थानांतरण",
   "@swapProgressTitle": {
@@ -10314,10 +10240,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "फाउंडेशन पासपोर्ट निर्देश",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "बिटकॉइन बेचें",
   "@exchangeLandingFeature3": {
@@ -12516,5 +12438,7 @@
   "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
   "statusCheckNoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
   "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं",
-  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।"
+  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "psbtFlowInvalidPsbtError": "यह लेनदेन पढ़ा नहीं जा सका। वापस जाएँ और इसे फिर से बनाएँ।",
+  "psbtFlowQrEncodingError": "इस लेनदेन को QR कोड में परिवर्तित नहीं किया जा सका।"
 }
