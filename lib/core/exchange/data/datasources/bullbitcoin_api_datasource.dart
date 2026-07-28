@@ -258,7 +258,21 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     final elements = resp.data['result']['elements'] as List<dynamic>?;
     if (elements == null) return [];
     return elements
-        .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+        .map((e) {
+          // Parse each order on its own so one malformed element doesn't cost
+          // the user their whole order history. Nulls are filtered out below.
+          try {
+            return OrderModel.fromJson(e as Map<String, dynamic>);
+          } catch (err, stackTrace) {
+            log.severe(
+              message: 'Error parsing order element',
+              error: err,
+              trace: stackTrace,
+            );
+            return null;
+          }
+        })
+        .whereType<OrderModel>()
         .toList();
   }
 
