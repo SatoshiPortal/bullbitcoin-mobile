@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/announcements_failure.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_catalog.dart';
@@ -8,41 +6,23 @@ import 'package:bb_mobile/features/announcements/domain/repositories/announcemen
 
 /// Orchestrates which announcements are currently visible on the home carousel.
 ///
-/// Thin orchestration only: it gathers the trigger signals (autoswap settings
-/// and the Liquid balance they apply to), asks each catalog entry whether its
-/// trigger fires, drops anything the user has dismissed (respecting the
-/// per-announcement dismiss policy), and returns the survivors ordered by
-/// ascending priority. All decision *rules* live on the entities / catalog;
-/// this use-case only wires signals to them.
+/// Thin orchestration only: it asks each catalog entry whether its trigger
+/// fires for the current [AnnouncementSignals], drops anything the user has
+/// dismissed (respecting the per-announcement dismiss policy), and returns
+/// the survivors ordered by ascending priority. All decision *rules* live on
+/// the entities / catalog; this use-case only wires signals to them. (The
+/// catalog is currently empty — see its doc comment — so this returns an
+/// empty list until a future announcement is added.)
 class GetVisibleAnnouncementsUsecase {
-  final GetWalletsUsecase _getWalletsUsecase;
-  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final AnnouncementDismissalRepository _dismissalRepository;
 
-  GetVisibleAnnouncementsUsecase({
-    required this._getWalletsUsecase,
-    required this._getAutoSwapSettingsUsecase,
-    required this._dismissalRepository,
-  });
+  GetVisibleAnnouncementsUsecase({required this._dismissalRepository});
 
   Future<Result<List<Announcement>, AnnouncementsFailure>> execute() async {
     try {
-      // The three sources are independent, so gather them concurrently.
-      final (liquidBalanceSat, autoSwap, dismissals) = await (
-        _defaultLiquidBalanceSat(),
-        _getAutoSwapSettingsUsecase.execute(),
-        _dismissalRepository.getDismissals(),
-      ).wait;
+      final dismissals = await _dismissalRepository.getDismissals();
 
-      // Autoswap sweeps the default Liquid wallet, so its balance is what
-      // the trigger threshold applies to. The threshold rule itself lives on
-      // the AutoSwap entity (passedRequiredBalance also checks `enabled`).
-      final signals = AnnouncementSignals(
-        isAutoswapTriggerable:
-            !autoSwap.showWarning &&
-            autoSwap.passedRequiredBalance(liquidBalanceSat.toInt()),
-      );
-
+      const signals = AnnouncementSignals();
       final dismissedAtById = {for (final d in dismissals) d.id: d.dismissedAt};
       final now = DateTime.now().toUtc();
 
@@ -62,29 +42,7 @@ class GetVisibleAnnouncementsUsecase {
       visible.sort((a, b) => a.priority.compareTo(b.priority));
       return Ok(visible);
     } catch (e) {
-      // Sources span wallets/autoswap/storage, so this is a genuine
-      // catch-all rather than a storage-only failure.
       return Err(AnnouncementUnexpectedFailure(e.toString()));
-    }
-  }
-
-  /// Balance of the default Liquid wallet(s) of the current environment, or
-  /// zero when there is none.
-  ///
-  /// [GetWalletsUsecase] throws [NoWalletsFoundException] on an empty result,
-  /// which would turn a perfectly ordinary state ("this environment has no
-  /// default liquid wallet yet") into an `Err`, i.e. an error snackbar on the
-  /// home screen, re-fired on every wallet sync. No wallet means no balance,
-  /// which is a signal value, not a failure.
-  Future<BigInt> _defaultLiquidBalanceSat() async {
-    try {
-      final wallets = await _getWalletsUsecase.execute(
-        onlyLiquid: true,
-        onlyDefaults: true,
-      );
-      return wallets.fold<BigInt>(BigInt.zero, (sum, w) => sum + w.balanceSat);
-    } on NoWalletsFoundException {
-      return BigInt.zero;
     }
   }
 }

@@ -1,9 +1,3 @@
-import 'dart:async';
-
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/announcements_failure.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
@@ -23,30 +17,19 @@ part 'announcements_state.dart';
 class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   final GetVisibleAnnouncementsUsecase _getVisibleAnnouncementsUsecase;
   final DismissAnnouncementUsecase _dismissAnnouncementUsecase;
-  final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
-  final WatchAutoSwapSettingsUsecase _watchAutoSwapSettingsUsecase;
-
-  StreamSubscription<Wallet>? _walletSyncSub;
-  StreamSubscription<AutoSwap>? _autoSwapSettingsSub;
 
   bool _refreshing = false;
   bool _refreshQueued = false;
 
+  // No signal subscriptions: the catalog is currently empty, and its only
+  // past signals (autoswap balance/settings) left with the autoswap card —
+  // autoswap's home surface is AutoSwapWarningCard, not an announcement.
+  // When a future announcement adds a signal, re-add the matching watch
+  // here (see git history for the wallet-sync + autoswap-settings pair).
   AnnouncementsCubit({
     required this._getVisibleAnnouncementsUsecase,
     required this._dismissAnnouncementUsecase,
-    required this._watchFinishedWalletSyncsUsecase,
-    required this._watchAutoSwapSettingsUsecase,
-  }) : super(const AnnouncementsState()) {
-    // Re-evaluate after each wallet sync: the Liquid balance (the autoswap
-    // trigger signal) only moves when a sync lands.
-    _walletSyncSub = _watchFinishedWalletSyncsUsecase.execute().listen(
-      (_) => refresh(),
-    );
-    _autoSwapSettingsSub = _watchAutoSwapSettingsUsecase.execute().listen(
-      (_) => refresh(),
-    );
-  }
+  }) : super(const AnnouncementsState());
 
   /// (Re)loads the visible announcements. Called on mount and whenever a
   /// trigger signal changes.
@@ -85,12 +68,5 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
       (_) => refresh(),
       (failure) async => emit(state.copyWith(failure: failure)),
     );
-  }
-
-  @override
-  Future<void> close() {
-    _walletSyncSub?.cancel();
-    _autoSwapSettingsSub?.cancel();
-    return super.close();
   }
 }
