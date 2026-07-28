@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -117,7 +118,8 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
     required this._selectedFeeOptionTitle,
     this._onFeePriorityTap,
     this._isToSelf = false,
-    this._checkedStatusLabel,
+    this._payjoinToggleValue,
+    this._onPayjoinToggleChanged,
     this._note = '',
   });
   final String _sendWalletLabel;
@@ -129,8 +131,12 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final VoidCallback? _onFeePriorityTap;
   final bool _isToSelf;
 
-  /// Optional checked capability/status row supplied by the owning feature.
-  final String? _checkedStatusLabel;
+  /// Payjoin toggle row: shown when [_payjoinToggleValue] is non-null (i.e.
+  /// a payjoin is available for this send), letting the sender choose NOT to
+  /// payjoin. The value mirrors the feature's will-attempt state so the
+  /// switch and the sign path can never disagree.
+  final bool? _payjoinToggleValue;
+  final ValueChanged<bool>? _onPayjoinToggleChanged;
   final String _note;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
@@ -176,16 +182,15 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
-          if (_checkedStatusLabel != null) ...[
+          if (_payjoinToggleValue != null) ...[
             _divider(context),
             CommonInfoRow(
-              title: _checkedStatusLabel,
+              title: context.loc.sendPayjoinLabel,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: Icon(
-                  Icons.check,
-                  color: context.appColors.secondary,
-                  size: 20,
+                child: BBSwitch(
+                  value: _payjoinToggleValue,
+                  onChanged: _onPayjoinToggleChanged,
                 ),
               ),
             ),

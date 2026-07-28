@@ -369,6 +369,18 @@ void main() {
             )
             as Bip21PaymentRequest;
 
+    test('the sender opt-out defeats an otherwise-available payjoin, and '
+        'isPayjoinAvailable stays true so the toggle keeps rendering', () {
+      final state = SendState(
+        paymentRequest: bip21WithPj(),
+        payjoinGloballyEnabled: true,
+        selectedWallet: bitcoinWallet(),
+        payjoinOptedOut: true,
+      );
+      expect(state.isPayjoinAvailable, isTrue);
+      expect(state.willAttemptPayjoin, isFalse);
+    });
+
     test('false when payjoin is disabled globally, even with a pj= URI', () {
       final state = SendState(
         paymentRequest: bip21WithPj(),
