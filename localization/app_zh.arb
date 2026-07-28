@@ -133,7 +133,7 @@
   "autoswapUpdateSettingsError": "未能更新汽车互换环境",
   "transactionStatusTransferFailed": "3. 汇款",
   "jadeStep11": "然后,Jade将显示自己的QR代码.",
-  "buyConfirmExternalWallet": "外墙",
+  "buyConfirmExternalWallet": "外部比特币钱包",
   "bitboxActionPairDeviceProcessing": "付费装置",
   "exchangeCurrencyDropdownTitle": "选择性货币",
   "receiveServerNetworkFees": "服务器网",
@@ -462,7 +462,10 @@
   "backupWalletGoogleDrivePrivacyMessage3": "页: 1 ",
   "backupCompletedDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
   "sendErrorInsufficientFundsForFees": "资金不足以支付数额和费用",
-  "buyConfirmPayoutMethod": "薪酬办法",
+  "buyConfirmPayoutWallet": "支付钱包",
+  "buyPayoutMethodLiquid": "Liquid 上的 L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin 链上的 BTC",
+  "buyConfirmPayoutMethod": "支付方式",
   "dcaCancelButton": "Cancel",
   "durationMinutes": "{minutes}分钟",
   "@durationMinutes": {
@@ -725,6 +728,7 @@
     }
   },
   "mempoolCustomServerUrl": "服务器 URL",
+  "buyUnexpectedError": "当前无法创建您的订单。请重试或联系客服。",
   "buyOrderAlreadyConfirmedError": "这项购买令已经确认.",
   "fundExchangeArsBankTransferTitle": "银行转账",
   "transactionLabelReceiveAmount": "收款情况",
@@ -1162,7 +1166,7 @@
   "importWatchOnlyScanQR": "Scan",
   "walletBalanceUnconfirmedIncoming": "A. 进展",
   "selectAmountTitle": "选择性数额",
-  "buyYouBought": "页: 1",
+  "buyYouBought": "您用 {fiatAmount} 购买了 {amount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {

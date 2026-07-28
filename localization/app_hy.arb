@@ -1,4 +1,8 @@
 {
+  "buyUnexpectedError": "Ձեր պատվերը հնարավոր չեղավ ստեղծել այս պահին։ Փորձեք կրկին կամ դիմեք աջակցման ծառայությանը։",
+  "buyConfirmPayoutWallet": "Վճարման դրամապանակ",
+  "buyPayoutMethodLiquid": "L-BTC Liquid-ում",
+  "buyPayoutMethodBitcoin": "BTC Bitcoin-ի շղթայում",
   "fundExchangeRestrictedTitle": "Ֆինանսավորումն անհասանելի է",
   "fundExchangeRestrictedMessage": "Ֆինանսավորումն անհասանելի է ձեր հաշվի համար։ Լրացուցիչ տեղեկությունների համար խնդրում ենք կապվել աջակցման ծառայության հետ։",
   "recipientsListLoadError": "Չհաջողվեց բեռնել ստացողներին։ Քաշեք ներքև՝ կրկին փորձելու համար։",

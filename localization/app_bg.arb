@@ -1,4 +1,8 @@
 {
+  "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
+  "buyConfirmPayoutWallet": "Портфейл за изплащане",
+  "buyPayoutMethodLiquid": "L-BTC в Liquid",
+  "buyPayoutMethodBitcoin": "BTC в блокчейна на Bitcoin",
   "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
   "backupWarningLoseReasonLostPhone": "Загубите телефона си",
   "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
@@ -2897,7 +2901,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Купихте {amount}",
+  "buyYouBought": "Купихте {amount} за {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

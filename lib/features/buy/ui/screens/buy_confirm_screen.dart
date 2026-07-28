@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -42,9 +43,15 @@ class BuyConfirmScreen extends StatelessWidget {
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
-    final payoutMethod = selectedWallet == null
+    final payoutWallet = selectedWallet == null
         ? externalBitcoinWalletLabel
         : selectedWallet.displayLabel(context);
+    // With no wallet of ours selected the payout goes to an address the user
+    // pasted, so the order itself is the only source for the network.
+    final payoutMethod = buyPayoutMethodLabel(
+      context,
+      isLiquid: selectedWallet?.network.isLiquid ?? buyOrder.isLiquid,
+    );
 
     final isConfirmingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isConfirmingOrder,
@@ -93,6 +100,10 @@ class BuyConfirmScreen extends StatelessWidget {
                 BuyConfirmDetailRow(
                   label: context.loc.buyConfirmBitcoinPrice,
                   value: formattedExchangeRate,
+                ),
+                BuyConfirmDetailRow(
+                  label: context.loc.buyConfirmPayoutWallet,
+                  value: payoutWallet,
                 ),
                 BuyConfirmDetailRow(
                   label: context.loc.buyConfirmPayoutMethod,

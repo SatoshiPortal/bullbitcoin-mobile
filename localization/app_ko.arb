@@ -1342,6 +1342,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "지급 지갑",
+  "buyPayoutMethodLiquid": "Liquid의 L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin 체인의 BTC",
   "buyConfirmPayoutMethod": "Payout 방법",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -2146,6 +2149,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "현재 주문을 생성할 수 없습니다. 다시 시도하거나 고객 지원에 문의해 주세요.",
   "buyOrderAlreadyConfirmedError": "이 구매 순서는 이미 확인되었습니다.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -3482,7 +3486,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "당신은 구입 {amount}",
+  "buyYouBought": "{fiatAmount}으로 {amount}을 구매했습니다",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

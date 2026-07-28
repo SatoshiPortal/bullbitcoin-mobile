@@ -1160,6 +1160,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "Πορτοφόλι πληρωμής",
+  "buyPayoutMethodLiquid": "L-BTC στο Liquid",
+  "buyPayoutMethodBitcoin": "BTC στην αλυσίδα Bitcoin",
   "buyConfirmPayoutMethod": "Μέθοδος πληρωμής",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -1815,6 +1818,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "buyOrderAlreadyConfirmedError": "Αυτή η παραγγελία αγοράς έχει ήδη επιβεβαιωθεί.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -2932,7 +2936,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Αγοράσατε {amount}",
+  "buyYouBought": "Αγοράσατε {amount} με {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
