@@ -2114,10 +2114,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "transactionListNoTransactions": "Ainda não há transações.",
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
@@ -3325,10 +3321,6 @@
   "@dcaViewSettings": {
     "description": "Link to view DCA settings"
   },
-  "backupSettingsRecoverBullSettings": "Recuperação",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "exchangeAuthOk": "ESTÁ BEM",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -4169,10 +4161,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "settingsRecoverbullTitle": "Recuperação",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "dcaBuyingMessage": "Você está comprando {amount} cada {frequency} via {network} desde que haja fundos em sua conta.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4485,10 +4473,6 @@
   "coldcardStep7": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
-  },
-  "recoverbullVaultRecoveryTitle": "Recuperação do vault do Recoverbull",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "systemLabelPayjoin": "Payjoin",
   "@systemLabelPayjoin": {
@@ -7953,10 +7937,6 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "recoverbullSelectBackupFileNotValidError": "O arquivo de backup do Recoverbull não é válido",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "payNewRecipients": "Novos destinatários",
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
@@ -11344,10 +11324,6 @@
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
   },
-  "backupSettingsStartBackup": "Iniciar backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "recoverbullGoogleDriveErrorSelectFailed": "Falhado para selecionar o vault do Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
@@ -12717,14 +12693,6 @@
   "mempoolCustomServerNoSsl": "Sem SSL",
   "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
   "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
-  "recoverbullServerConfirmTitle": "Servidor de recuperação do cofre",
-  "recoverbullServerUsingDefault": "Usando o servidor padrão",
-  "recoverbullServerUsingCustom": "Usando um servidor personalizado",
-  "recoverbullServerUrlLabel": "URL do servidor:",
-  "recoverbullServerCustomWarning": "Você está usando um servidor Recoverbull personalizado. Certifique-se de confiar neste servidor.",
-  "recoverbullServerTorNotice": "Vamos nos conectar a este servidor através do Tor",
-  "recoverbullLearnMore": "Saiba mais sobre o Recoverbull",
-  "recoverbullSettingsTitle": "Configurações do Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL do servidor de chaves",
   "recoverbullSettingsEdit": "Editar",
   "recoverbullSettingsCancel": "Cancelar",
@@ -13274,5 +13242,6 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "backupSettingsStartBackup": "Iniciar backup"
 }

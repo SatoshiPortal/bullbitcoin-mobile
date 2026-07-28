@@ -87,7 +87,6 @@
   "settingsGetHelpLabel": "Pyydä apua",
   "settingsServicesStatusTitle": "Palveluiden tila",
   "settingsTorSettingsTitle": "Tor-asetukset",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Kieli",
   "settingsThemeTitle": "Teema",
   "settingsArkTitle": "Ark",
@@ -1146,7 +1145,6 @@
   "takeYourTimeTag": "Ota aikaa",
   "customLocationTitle": "Mukautettu sijainti",
   "recoverWalletScreenTitle": "Palauta lompakko",
-  "recoverbullVaultRecoveryTitle": "Recoverbull-holvin palautus",
   "chooseAccessPinTitle": "Valitse käyttö {pinOrPassword}",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2370,7 +2368,6 @@
   "backupSettingsTested": "Testattu",
   "backupSettingsNotTested": "Ei testattu",
   "backupSettingsTestBackup": "Testaa varmuuskopio",
-  "backupSettingsStartBackup": "Aloita varmuuskopiointi",
   "backupSettingsExportVault": "Vie holvi",
   "backupSettingsExporting": "Viedään...",
   "backupSettingsViewVaultKey": "Näytä holviavain",
@@ -2384,7 +2381,6 @@
   "backupSettingsKeyWarningMessage": "On elintärkeää, ettet tallenna varmuuskopioavainta samaan paikkaan kuin varmuuskopiotiedostoa. Säilytä ne aina eri laitteilla tai eri pilvipalveluissa.",
   "backupSettingsKeyWarningExample": "Esimerkiksi, jos käytit Google Drivea varmuuskopiotiedostoon, älä käytä Google Drivea varmuuskopioavaimelle.",
   "backupSettingsLabelsButton": "Tunnisteet",
-  "backupSettingsRecoverBullSettings": "Recoverbull",
   "backupWalletImportanceWarning": "Ilman varmuuskopiota menetät lopulta pääsyn varoihisi. Varmuuskopiointi on ehdottoman tärkeää.",
   "backupWalletEncryptedVaultTitle": "Salattu holvi",
   "backupWalletEncryptedVaultDescription": "Anonyymi varmuuskopio vahvalla salauksella pilvessä.",
@@ -2714,7 +2710,6 @@
   "recoverbullSelectFetchDriveFilesError": "Kaikkien Drive-varmuuskopioiden haku epäonnistui",
   "recoverbullSelectFileNotSelectedError": "Tiedostoa ei valittu",
   "recoverbullSelectCustomLocationError": "Tiedoston valinta mukautetusta sijainnista epäonnistui",
-  "recoverbullSelectBackupFileNotValidError": "RecoverBull-varmuuskopiotiedosto ei ole kelvollinen",
   "recoverbullSelectVaultProvider": "Valitse holvin tarjoaja",
   "recoverbullSwitchToPassword": "Valitse salasana sen sijaan",
   "recoverbullSwitchToPIN": "Valitse PIN sen sijaan",
@@ -2729,7 +2724,6 @@
   "recoverbullVaultKeyInput": "Holviavain",
   "recoverbullVaultSelected": "Holvi valittu",
   "recoverbullWaiting": "Odotetaan",
-  "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
   "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
   "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -4755,14 +4749,6 @@
   "mempoolCustomServerNoSsl": "Ei SSL:ää",
   "autoswapTargetBalanceLabel": "Instant Wallet -tavoitesaldo",
   "autoswapMaximumBalanceLabel": "Instant Wallet -enimmäissaldo",
-  "recoverbullServerConfirmTitle": "Holvin palautuspalvelin",
-  "recoverbullServerUsingDefault": "Käytetään oletuspalvelinta",
-  "recoverbullServerUsingCustom": "Käytetään mukautettua palvelinta",
-  "recoverbullServerUrlLabel": "Palvelimen URL:",
-  "recoverbullServerCustomWarning": "Käytät mukautettua Recoverbull-palvelinta. Varmista, että luotat tähän palvelimeen.",
-  "recoverbullServerTorNotice": "Yhdistämme tähän palvelimeen Tor-verkon kautta",
-  "recoverbullLearnMore": "Lue lisää Recoverbullista",
-  "recoverbullSettingsTitle": "Recoverbull-asetukset",
   "recoverbullSettingsKeyServerUrl": "Avainpalvelimen URL",
   "recoverbullSettingsEdit": "Muokkaa",
   "recoverbullSettingsCancel": "Peruuta",
@@ -5263,5 +5249,6 @@
   "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
   "transactionDetailLabelPayjoinAborted": "Keskeytetty",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
+  "backupSettingsStartBackup": "Aloita varmuuskopiointi"
 }

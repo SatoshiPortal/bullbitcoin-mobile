@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recoverbull/domain/complete_encrypted_vault_backup_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -29,6 +30,9 @@ class _MockPickVault extends Mock implements PickVaultUsecase {}
 class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
+
+class _MockCompleteVault extends Mock
+    implements CompleteEncryptedVaultBackupUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
@@ -65,6 +69,7 @@ void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
+  late _MockCompleteVault completeVault;
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
@@ -87,6 +92,7 @@ void main() {
     pickVault = _MockPickVault();
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
+    completeVault = _MockCompleteVault();
     storeKey = _MockStoreKey();
     checkConnection = _MockCheckConnection();
     fetchKey = _MockFetchKey();
@@ -102,8 +108,6 @@ void main() {
     torConfig = _MockTorConfig();
   });
 
-  // The bloc constructor does not auto-dispatch any event, so unstubbed mocks
-  // stay untouched unless a test drives the matching flow.
   RecoverBullBloc buildBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
@@ -113,6 +117,7 @@ void main() {
     pickVaultUsecase: pickVault,
     saveFileToSystemUsecase: saveFile,
     createEncryptedVaultUsecase: createVault,
+    completeEncryptedVaultBackupUsecase: completeVault,
     storeVaultKeyIntoServerUsecase: storeKey,
     checkKeyServerConnectionUsecase: checkConnection,
     fetchVaultKeyFromServerUsecase: fetchKey,
@@ -131,16 +136,12 @@ void main() {
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '
         'fetched', () async {
-      // recoverVault hits the default branch; no preSelectedVault => null.
       final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
 
       bloc.add(const OnVaultPasswordSet(password: 'pw'));
       await pumpEventQueue();
 
       expect(bloc.state.failure, isA<VaultNotSetFailure>());
-      // The guard must return before storing the password or fetching the
-      // key — proving the early `return` is effective (the pre-fix code fell
-      // through to `state.vault!`).
       expect(bloc.state.vaultPassword, isNull);
       verifyNever(
         () => fetchKey.execute(
@@ -166,9 +167,6 @@ void main() {
         );
         await pumpEventQueue();
 
-        // The pre-fix code fell through to `state.vaultPassword!`, which threw and
-        // surfaced as a generic RecoverBullUnexpectedFailure. The guard must keep
-        // the intended typed failure and never reach vault creation.
         expect(bloc.state.failure, isA<PasswordNotSetFailure>());
         verifyNever(() => createVault.execute());
 
@@ -186,9 +184,10 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(
-          () => createVault.execute(),
-        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => createVault.execute()).thenAnswer(
+          (_) async =>
+              Ok((vault: vault, vaultKey: 'deadbeef', walletId: 'wallet-id')),
+        );
         when(() => checkConnection.execute()).thenAnswer((_) async => true);
         when(
           () => saveFile.execute(
@@ -209,8 +208,6 @@ void main() {
 
         final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
 
-        // secureVault stores the password, then provider selection triggers
-        // creation.
         bloc.add(const OnVaultPasswordSet(password: 'pw'));
         await pumpEventQueue();
         bloc.add(
@@ -220,13 +217,100 @@ void main() {
         );
         await pumpEventQueue();
 
-        // The 429 cooldown must survive the create path instead of collapsing
-        // into the generic VaultCreationFailure.
         expect(bloc.state.failure, isA<VaultRateLimitedFailure>());
         expect(
           (bloc.state.failure as VaultRateLimitedFailure).retryIn,
           cooldown,
         );
+        verifyNever(
+          () => completeVault.execute(walletId: any(named: 'walletId')),
+        );
+
+        await bloc.close();
+      },
+    );
+  });
+
+  group('OnVaultCreation completion timestamp', () {
+    late _MockEncryptedVault vault;
+
+    setUp(() {
+      vault = _MockEncryptedVault();
+      when(() => vault.toFile()).thenReturn('{}');
+      when(() => vault.filename).thenReturn('vault.json');
+      when(() => createVault.execute()).thenAnswer(
+        (_) async =>
+            Ok((vault: vault, vaultKey: 'deadbeef', walletId: 'wallet-id')),
+      );
+      when(() => checkConnection.execute()).thenAnswer((_) async => true);
+      when(
+        () => saveFile.execute(
+          content: any(named: 'content'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => storeKey.execute(
+          password: any(named: 'password'),
+          vault: any(named: 'vault'),
+          vaultKey: any(named: 'vaultKey'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+    });
+
+    test(
+      'marks backup complete only after the file and server key succeed',
+      () async {
+        when(
+          () => completeVault.execute(walletId: 'wallet-id'),
+        ).thenAnswer((_) async => const Ok(null));
+        final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+
+        bloc.add(const OnVaultPasswordSet(password: 'pw'));
+        await pumpEventQueue();
+        bloc.add(
+          const OnVaultProviderSelection(
+            provider: VaultProvider.customLocation,
+          ),
+        );
+        await pumpEventQueue();
+
+        expect(bloc.state.failure, isNull);
+        expect(bloc.state.vault, same(vault));
+        verifyInOrder([
+          () => saveFile.execute(content: '{}', filename: 'vault.json'),
+          () => storeKey.execute(
+            password: 'pw',
+            vault: vault,
+            vaultKey: 'deadbeef',
+          ),
+          () => completeVault.execute(walletId: 'wallet-id'),
+        ]);
+
+        await bloc.close();
+      },
+    );
+
+    test(
+      'does not finish the flow when completion status cannot be saved',
+      () async {
+        when(() => completeVault.execute(walletId: 'wallet-id')).thenAnswer(
+          (_) async =>
+              const Err(VaultStatusPersistenceFailure('database unavailable')),
+        );
+        final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+
+        bloc.add(const OnVaultPasswordSet(password: 'pw'));
+        await pumpEventQueue();
+        bloc.add(
+          const OnVaultProviderSelection(
+            provider: VaultProvider.customLocation,
+          ),
+        );
+        await pumpEventQueue();
+
+        expect(bloc.state.failure, isA<VaultStatusPersistenceFailure>());
+        expect(bloc.state.vault, isNull);
 
         await bloc.close();
       },

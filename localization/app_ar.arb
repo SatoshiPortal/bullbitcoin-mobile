@@ -2342,10 +2342,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "استرداد الخزنة",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "امسح شفرة (كيو آر) من محفظة معداتك",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -3653,10 +3649,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "exchangeDcaAddressLabelLiquid": "العنوان السائل",
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
@@ -4566,10 +4558,6 @@
   "importQrDeviceSpecterStep9": "امسح رمز QR عرض على سبيكتر",
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "buyInputKycPending": "قيد التحقق",
   "@buyInputKycPending": {
@@ -8345,10 +8333,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "ملف الاسترداد الاحتياطي غير صحيح",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "لم أستطع بناء صفقة ويعزى ذلك على الأرجح إلى عدم كفاية الأموال لتغطية الرسوم والمبالغ.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -11431,10 +11415,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "ابدأوا",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "المبلغ المستلم",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -11905,10 +11885,6 @@
   "autoswapWarningExplanation": "عندما يتجاوز رصيدك الحد الأقصى للتوازن، سيتم التبديل. الميزان المستهدف سيُحتفظ به في محفظة الدفع الضئيلة الخاصة بك والمبلغ المتبقي سيُعاد توزيعه في وولك الآمن.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "استرداد الخزنة",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "transactionSwapDescChainClaimable": "تم تأكيد صفقة القفل أنت الآن تَدْعي الأموالَ لإكمال نقلِكَ.",
   "@transactionSwapDescChainClaimable": {
@@ -12607,14 +12583,6 @@
   "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
   "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
-  "recoverbullServerConfirmTitle": "خادم استرداد الخزنة",
-  "recoverbullServerUsingDefault": "استخدام الخادم الافتراضي",
-  "recoverbullServerUsingCustom": "استخدام خادم مخصص",
-  "recoverbullServerUrlLabel": "رابط الخادم:",
-  "recoverbullServerCustomWarning": "أنت تستخدم خادم Recoverbull مخصصًا. تأكد من أنك تثق بهذا الخادم.",
-  "recoverbullServerTorNotice": "سنتصل بهذا الخادم عبر Tor",
-  "recoverbullLearnMore": "اعرف المزيد عن Recoverbull",
-  "recoverbullSettingsTitle": "إعدادات Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL خادم المفاتيح",
   "recoverbullSettingsEdit": "تعديل",
   "recoverbullSettingsCancel": "إلغاء",
@@ -13280,5 +13248,6 @@
   "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
   "transactionDetailLabelPayjoinAborted": "ملغى",
   "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78).",
+  "backupSettingsStartBackup": "ابدأوا"
 }

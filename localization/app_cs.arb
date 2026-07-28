@@ -260,10 +260,6 @@
   "@settingsTorSettingsTitle": {
     "description": "Title for the Tor settings section in app settings"
   },
-  "settingsRecoverbullTitle": "Čeština",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "settingsLanguageTitle": "Čeština",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -2687,10 +2683,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Obnovení obnovit obnovení klenby",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "Skenujte QR kód z hardwarové peněženky",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -5052,10 +5044,6 @@
   "autoswapWarningExplanation": "Když váš zůstatek překračuje maximální rovnováhu, bude spuštěna výměna. Cílová rovnováha bude udržována v peněžence Instant Payments a zbývající částka bude vyměněna do vaší Secure Bitcoin Peněženka.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Obnovení obnovit obnovení klenby",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
   "@passportStep14": {
@@ -8728,10 +8716,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Obnoveníbull záložní soubor není platný",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "Nelze stavět transakci. Stejně jako v důsledku nedostatečných prostředků na pokrytí poplatků a částky.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -11872,10 +11856,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "Přijmout částku",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -12188,10 +12168,6 @@
   "pinProtectionDescription": "PIN chrání přístup k Tvé peněžence a nastavením. Zapamatuj si ho.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "pinButtonContinue": "Pokračovat",
   "@pinButtonContinue": {
@@ -12721,14 +12697,6 @@
   "mempoolCustomServerNoSsl": "Bez SSL",
   "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
   "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
-  "recoverbullServerConfirmTitle": "Server pro obnovu trezoru",
-  "recoverbullServerUsingDefault": "Používá se výchozí server",
-  "recoverbullServerUsingCustom": "Používá se vlastní server",
-  "recoverbullServerUrlLabel": "URL serveru:",
-  "recoverbullServerCustomWarning": "Používáte vlastní server Recoverbull. Ujistěte se, že tomuto serveru důvěřujete.",
-  "recoverbullServerTorNotice": "K tomuto serveru se připojíme přes Tor",
-  "recoverbullLearnMore": "Více informací o Recoverbull",
-  "recoverbullSettingsTitle": "Nastavení Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL serveru klíčů",
   "recoverbullSettingsEdit": "Upravit",
   "recoverbullSettingsCancel": "Zrušit",
@@ -13277,5 +13245,6 @@
   "transactionStatusPayjoinAborted": "Payjoin přerušen",
   "transactionDetailLabelPayjoinAborted": "Přerušeno",
   "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "backupSettingsStartBackup": "Start Backup"
 }

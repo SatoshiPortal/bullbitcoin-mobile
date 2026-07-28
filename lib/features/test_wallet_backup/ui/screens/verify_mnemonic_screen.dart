@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
+import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:flutter/material.dart';
@@ -37,22 +38,28 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               (previous.reorderedMnemonic.length != current.mnemonic.length &&
                   current.reorderedMnemonic.length ==
                       current.mnemonic.length) ||
-              (previous.statusError.isEmpty && current.statusError.isNotEmpty),
+              (!previous.isVerificationComplete &&
+                  current.isVerificationComplete) ||
+              (previous.failure == null && current.failure != null),
           listener: (context, state) {
-            if (state.statusError.isNotEmpty) {
-              SnackBarUtils.showSnackBar(context, state.statusError);
-              context.read<TestWalletBackupBloc>().add(const ClearError());
-            } else if (state.reorderedMnemonic.length ==
-                    state.mnemonic.length &&
-                state.statusError.isEmpty) {
-              // Verify and save backup completion before navigating
-              context.read<TestWalletBackupBloc>().add(
-                const VerifyPhysicalBackup(),
+            if (state.failure != null) {
+              SnackBarUtils.showSnackBar(
+                context,
+                state.failure!.toTranslated(context),
               );
+              context.read<TestWalletBackupBloc>().add(const ClearError());
+            } else if (state.isVerificationComplete) {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const BackupTestSuccessScreen(),
                 ),
+              );
+            } else if (state.reorderedMnemonic.length ==
+                    state.mnemonic.length &&
+                state.failure == null &&
+                !state.isVerificationSaving) {
+              context.read<TestWalletBackupBloc>().add(
+                const VerifyPhysicalBackup(),
               );
             }
           },

@@ -70,6 +70,7 @@ Automated selection of the wallet can be overridden by the user at any time. Thi
 - BIP39 passphrase is also stored in secure storage, and can be viewed only via the application.
 - When initializing the app, a single-sig hot wallet wallet is created. By default, this wallet does not have a BIP39 passphrase.
 - A warning is displayed until the user has tested their backup by successfully entering the mnemonic.
+- Verified backups receive periodic health reminders based on elapsed time and mainnet hot-wallet balance milestones. See [Backup health reminders](docs/backup-health-reminders.md) for the exact behavior.
 
 ### Hardware wallets and watch-only wallets
 

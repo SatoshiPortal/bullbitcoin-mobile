@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/announcements/presentation/announcements_cubi
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_health_reminder_overlay.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -39,6 +40,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
@@ -76,7 +78,7 @@ class AppRouter {
               location.contains('/support-chat') ||
               location.contains('/login-support');
 
-          return MultiBlocProvider(
+          final shell = MultiBlocProvider(
             providers: [
               BlocProvider(create: (_) => locator<PriceChartCubit>()),
               BlocProvider(
@@ -145,6 +147,27 @@ class AppRouter {
                 ),
               ),
             ),
+          );
+
+          return BlocBuilder<WalletBloc, WalletState>(
+            buildWhen: (previous, current) =>
+                previous.wallets != current.wallets ||
+                previous.arkBalanceSat != current.arkBalanceSat ||
+                previous.showBackupWarning() != current.showBackupWarning() ||
+                previous.showLegacyStorageWarning() !=
+                    current.showLegacyStorageWarning(),
+            builder: (context, walletState) {
+              final canShow =
+                  state.uri.path == WalletRoute.walletHome.path &&
+                  !walletState.showBackupWarning() &&
+                  !walletState.showLegacyStorageWarning();
+              return BackupHealthReminderOverlay(
+                canShow: canShow,
+                wallets: walletState.wallets,
+                arkBalanceSat: walletState.arkBalanceSat,
+                child: shell,
+              );
+            },
           );
         },
         routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],

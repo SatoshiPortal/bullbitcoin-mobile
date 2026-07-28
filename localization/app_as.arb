@@ -299,7 +299,6 @@
   "settingsGithubLabel": "Github",
   "settingsServicesStatusTitle": "সেৱাৰ স্থিতি",
   "settingsTorSettingsTitle": "Tor ছেটিংছ",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
   "settingsArkTitle": "Ark",
@@ -1498,7 +1497,6 @@
   "takeYourTimeTag": "সময় লওক",
   "customLocationTitle": "কাস্টম ঠাই",
   "recoverWalletScreenTitle": "Wallet পুনৰুদ্ধাৰ কৰক",
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
   "chooseAccessPinTitle": "প্ৰৱেশ {pinOrPassword} বাছনি কৰক",
   "@chooseAccessPinTitle": {
     "description": "Title for choosing access PIN or password",
@@ -4708,10 +4706,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "backupSettingsStartBackup": "বেকআপ আৰম্ভ কৰক",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "backupSettingsExportVault": "Vault ৰপ্তানি কৰক",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -4763,10 +4757,6 @@
   "backupSettingsLabelsButton": "লেবেলসমূহ",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "backupWalletImportanceWarning": "বেকআপ নোহোৱাকৈ আপুনি শেষত আপোনাৰ ধনলৈ প্ৰৱেশ হেৰুৱাব। বেকআপ কৰাটো অতি গুৰুত্বপূৰ্ণ।",
   "@backupWalletImportanceWarning": {
@@ -5624,10 +5614,6 @@
   "@recoverbullSelectCustomLocationError": {
     "description": "Error when file selection from custom location fails"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull বেকআপ ফাইল বৈধ নহয়",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "recoverbullSelectVaultProvider": "Vault প্ৰদানকাৰী বাছনি কৰক",
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
@@ -5683,10 +5669,6 @@
   "recoverbullWaiting": "অপেক্ষা কৰক",
   "@recoverbullWaiting": {
     "description": "Status label indicating waiting state"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "recoverbullRecoveryLoadingMessage": "বেলেন্স আৰু লেনদেন বিচাৰি আছে…",
   "@recoverbullRecoveryLoadingMessage": {
@@ -9720,14 +9702,6 @@
   "mempoolCustomServerNoSsl": "কোনো SSL নাই",
   "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet বেলেন্স",
   "autoswapMaximumBalanceLabel": "সৰ্বাধিক Instant Wallet বেলেন্স",
-  "recoverbullServerConfirmTitle": "Vault ৰিকভাৰী চাৰ্ভাৰ",
-  "recoverbullServerUsingDefault": "ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে",
-  "recoverbullServerUsingCustom": "কাষ্টম চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে",
-  "recoverbullServerUrlLabel": "চাৰ্ভাৰ URL:",
-  "recoverbullServerCustomWarning": "আপুনি এটা কাষ্টম Recoverbull চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে। নিশ্চিত কৰক যে আপুনি এই চাৰ্ভাৰক বিশ্বাস কৰে।",
-  "recoverbullServerTorNotice": "আমি Tor ৰ জৰিয়তে এই চাৰ্ভাৰৰ সৈতে সংযোগ কৰিম",
-  "recoverbullLearnMore": "Recoverbull ৰ বিষয়ে অধিক জানক",
-  "recoverbullSettingsTitle": "Recoverbull ছেটিংছ",
   "recoverbullSettingsKeyServerUrl": "কী চাৰ্ভাৰ URL",
   "recoverbullSettingsEdit": "সম্পাদনা কৰক",
   "recoverbullSettingsCancel": "বাতিল কৰক",
@@ -10318,5 +10292,6 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "backupSettingsStartBackup": "বেকআপ আৰম্ভ কৰক"
 }

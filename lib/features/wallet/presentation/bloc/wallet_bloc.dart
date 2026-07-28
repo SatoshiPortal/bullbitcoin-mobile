@@ -671,8 +671,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     VerifyBackupStatus event,
     Emitter<WalletState> emit,
   ) async {
-    final dbBackupNeeded = await _checkBackupNeededUsecase.execute();
-    if (dbBackupNeeded == state.hasNoBackup()) return;
+    await _checkBackupNeededUsecase.execute();
     final wallets = await _getWalletsUsecase.execute();
     emit(state.copyWith(wallets: wallets));
   }

@@ -2084,10 +2084,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "Βάλτε τον κωδικό QR από το πορτοφόλι υλικού σας",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -3255,10 +3251,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "exchangeDcaAddressLabelLiquid": "Liquid διεύθυνση",
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
@@ -4051,10 +4043,6 @@
   "importQrDeviceSpecterStep9": "Βάλτε τον κωδικό QR που εμφανίζεται στο Specter σας",
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyInputKycPending": {
@@ -7346,10 +7334,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull εφεδρικό αρχείο δεν ισχύει",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "Δεν θα μπορούσε να χτίσει συναλλαγές. Ακριβώς λόγω ανεπαρκών κεφαλαίων για την κάλυψη των τελών και του ποσού.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -10052,10 +10036,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "Ξεκινήστε το Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "Αποδεχόμενο ποσό",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -11047,10 +11027,6 @@
   "transactionListOngoingTransfersTitle": "Συνεχές Μεταφορές",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος έχει επιβεβαιωθεί. Υποστηρίζετε τώρα τα κεφάλαια για να ολοκληρώσετε τη μεταφορά σας.",
   "@transactionSwapDescChainClaimable": {
@@ -12721,14 +12697,6 @@
   "mempoolCustomServerNoSsl": "Χωρίς SSL",
   "autoswapTargetBalanceLabel": "Στόχος υπολοίπου άμεσου πορτοφολιού",
   "autoswapMaximumBalanceLabel": "Μέγιστο υπόλοιπο άμεσου πορτοφολιού",
-  "recoverbullServerConfirmTitle": "Διακομιστής ανάκτησης θησαυροφυλακίου",
-  "recoverbullServerUsingDefault": "Χρήση προεπιλεγμένου διακομιστή",
-  "recoverbullServerUsingCustom": "Χρήση προσαρμοσμένου διακομιστή",
-  "recoverbullServerUrlLabel": "URL διακομιστή:",
-  "recoverbullServerCustomWarning": "Χρησιμοποιείτε έναν προσαρμοσμένο διακομιστή Recoverbull. Βεβαιωθείτε ότι εμπιστεύεστε αυτόν τον διακομιστή.",
-  "recoverbullServerTorNotice": "Θα συνδεθούμε σε αυτόν τον διακομιστή μέσω Tor",
-  "recoverbullLearnMore": "Μάθετε περισσότερα για το Recoverbull",
-  "recoverbullSettingsTitle": "Ρυθμίσεις Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL διακομιστή κλειδιών",
   "recoverbullSettingsEdit": "Επεξεργασία",
   "recoverbullSettingsCancel": "Ακύρωση",
@@ -13277,5 +13245,6 @@
   "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
   "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
   "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "backupSettingsStartBackup": "Ξεκινήστε το Backup"
 }

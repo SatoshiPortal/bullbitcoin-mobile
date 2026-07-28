@@ -2496,10 +2496,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "การกู้คืนข้อผิดพลาด",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "สแกนรหัส QR จากฮาร์ดแวร์ของคุณ",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -3871,10 +3867,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "การกู้คืน",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "ที่อยู่ธนาคารของเรา",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -4830,10 +4822,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "การกู้คืน",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "สําเนารหัส",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -5012,10 +5000,6 @@
   "autoswapWarningExplanation": "เมื่อสมดุลของคุณเกินสมดุลสูงสุด, ยอดเงินจะถูกถูกถูกถูกถูกถูกถูกถูกบังคับ ยอดคงเหลือจะเก็บไว้ในกระเป๋าสตางค์ของคุณทันทีและจํานวนเงินที่เหลือจะสลับในเบราว์เซอร์ของคุณ.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "การกู้คืนข้อผิดพลาด",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "ตอนนี้พร้อมที่จะออกอากาศ! ทันทีที่คุณคลิกออกอากาศ, การทําธุรกรรมจะตีพิมพ์บนเครือข่าย Bitcoin และเงินจะส่ง.",
   "@passportStep14": {
@@ -8870,10 +8854,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "กู้คืนไฟล์สแกน",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "ไม่สามารถสร้างการทําธุรกรรม เช่นเดียวกับค่าใช้จ่ายไม่เพียงพอต่อค่าธรรมเนียมและจํานวนเงิน.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -12176,10 +12156,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "จํานวนเงิน",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -12603,14 +12579,6 @@
   "mempoolCustomServerNoSsl": "ไม่มี SSL",
   "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
   "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
-  "recoverbullServerConfirmTitle": "เซิร์ฟเวอร์กู้คืนวอลต์",
-  "recoverbullServerUsingDefault": "กำลังใช้เซิร์ฟเวอร์เริ่มต้น",
-  "recoverbullServerUsingCustom": "กำลังใช้เซิร์ฟเวอร์ที่กำหนดเอง",
-  "recoverbullServerUrlLabel": "URL เซิร์ฟเวอร์:",
-  "recoverbullServerCustomWarning": "คุณกำลังใช้เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง โปรดตรวจสอบให้แน่ใจว่าคุณเชื่อถือเซิร์ฟเวอร์นี้",
-  "recoverbullServerTorNotice": "เราจะเชื่อมต่อกับเซิร์ฟเวอร์นี้ผ่าน Tor",
-  "recoverbullLearnMore": "เรียนรู้เพิ่มเติมเกี่ยวกับ Recoverbull",
-  "recoverbullSettingsTitle": "การตั้งค่า Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL เซิร์ฟเวอร์คีย์",
   "recoverbullSettingsEdit": "แก้ไข",
   "recoverbullSettingsCancel": "ยกเลิก",
@@ -13277,5 +13245,6 @@
   "transactionStatusPayjoinAborted": "Payjoin ถูกยกเลิก",
   "transactionDetailLabelPayjoinAborted": "ถูกยกเลิก",
   "transactionDetailLabelPayjoinFeeContribution": "ค่าธรรมเนียมส่วนร่วม Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)",
+  "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล"
 }

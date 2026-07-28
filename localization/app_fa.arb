@@ -3321,10 +3321,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "بازیابی مجدد",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "کد QR را از کیف پول سخت افزاری خود اسکن کنید",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -4507,10 +4503,6 @@
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
-  "backupSettingsRecoverBullSettings": "بازیابی",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "backupWalletGoogleDrivePrivacyMessage5": "مشترک با Bitcoin Bull.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
@@ -5323,10 +5315,6 @@
   "importQrDeviceSpecterStep9": "کد QR را که بر روی Specter شما نمایش داده شده است، اسکن کنید",
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
-  },
-  "settingsRecoverbullTitle": "بازیابی",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "buyInputKycPending": "KYC ID Verification",
   "@buyInputKycPending": {
@@ -8622,10 +8610,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "فایل پشتیبان بازیابیbull معتبر نیست",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "نمی تواند معامله ایجاد کند. به دلیل بودجه کافی برای پوشش هزینه ها و مبلغ.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -11351,10 +11335,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "دریافت مبلغ",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -11819,10 +11799,6 @@
   "transactionListOngoingTransfersTitle": "انتقال مستمر",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "recoverbullVaultRecoveryTitle": "بازیابی مجدد",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "physicalBackupRecommendation": "پشتیبانی فیزیکی: ",
   "@physicalBackupRecommendation": {
@@ -12603,14 +12579,6 @@
   "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
   "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
-  "recoverbullServerConfirmTitle": "سرور بازیابی والت",
-  "recoverbullServerUsingDefault": "استفاده از سرور پیش‌فرض",
-  "recoverbullServerUsingCustom": "استفاده از سرور سفارشی",
-  "recoverbullServerUrlLabel": "آدرس سرور:",
-  "recoverbullServerCustomWarning": "شما در حال استفاده از یک سرور Recoverbull سفارشی هستید. مطمئن شوید که به این سرور اعتماد دارید.",
-  "recoverbullServerTorNotice": "ما از طریق Tor به این سرور متصل می‌شویم",
-  "recoverbullLearnMore": "درباره Recoverbull بیشتر بدانید",
-  "recoverbullSettingsTitle": "تنظیمات Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL سرور کلید",
   "recoverbullSettingsEdit": "ویرایش",
   "recoverbullSettingsCancel": "لغو",
@@ -13277,5 +13245,6 @@
   "transactionStatusPayjoinAborted": "Payjoin لغو شد",
   "transactionDetailLabelPayjoinAborted": "لغو شده",
   "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78).",
+  "backupSettingsStartBackup": "Start Backup"
 }

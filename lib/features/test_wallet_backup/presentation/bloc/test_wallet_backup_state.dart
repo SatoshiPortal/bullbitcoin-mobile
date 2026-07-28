@@ -8,9 +8,11 @@ abstract class TestWalletBackupState with _$TestWalletBackupState {
     @Default([]) List<String> shuffledMnemonic,
     @Default([]) List<String> reorderedMnemonic,
     @Default([]) List<int> selectedMnemonicWords,
-    @Default('') String statusError,
+    TestWalletBackupFailure? failure,
     @Default([]) List<Wallet> wallets,
     @Default(null) Wallet? selectedWallet,
+    @Default(false) bool isVerificationSaving,
+    @Default(false) bool isVerificationComplete,
   }) = _TestWalletBackupState;
   const TestWalletBackupState._();
 }

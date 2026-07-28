@@ -2488,10 +2488,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbullob kurtarma",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "QR kodunu donanım cüzdanınızdan çek",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -3859,10 +3855,6 @@
   "@coreScreensSendAmountLabel": {
     "description": "Label for send amount field"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "Bankamızın Adresi",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -4810,10 +4802,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "KİTAP ID Verification Pending",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4992,10 +4980,6 @@
   "autoswapWarningExplanation": "Dengeniz maksimum dengeyi aştığında, bir takas tetiklenecek. Hedef dengesi, Anında Ödemeler cüzdanınızda tutulacak ve kalan miktar güvenli Bitcoin Cüzdanınız ile değiştirilecektir.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbullob kurtarma",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
   "@passportStep14": {
@@ -8803,10 +8787,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull yedekleme dosyası geçerli değildir",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "İşlem inşa edemez. Ücretleri ve miktarı karşılamak için yetersiz fonlar nedeniyle.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -12071,10 +12051,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "Kabul Miktarı",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -12603,14 +12579,6 @@
   "mempoolCustomServerNoSsl": "SSL Yok",
   "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
   "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
-  "recoverbullServerConfirmTitle": "Kasa Kurtarma Sunucusu",
-  "recoverbullServerUsingDefault": "Varsayılan Sunucu Kullanılıyor",
-  "recoverbullServerUsingCustom": "Özel Sunucu Kullanılıyor",
-  "recoverbullServerUrlLabel": "Sunucu URL'si:",
-  "recoverbullServerCustomWarning": "Özel bir Recoverbull sunucusu kullanıyorsunuz. Bu sunucuya güvendiğinizden emin olun.",
-  "recoverbullServerTorNotice": "Bu sunucuya Tor üzerinden bağlanacağız",
-  "recoverbullLearnMore": "Recoverbull hakkında daha fazla bilgi edinin",
-  "recoverbullSettingsTitle": "Recoverbull Ayarları",
   "recoverbullSettingsKeyServerUrl": "Anahtar Sunucu URL'si",
   "recoverbullSettingsEdit": "Düzenle",
   "recoverbullSettingsCancel": "İptal",
@@ -13277,5 +13245,6 @@
   "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
   "transactionDetailLabelPayjoinAborted": "İptal edildi",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "backupSettingsStartBackup": "Start Backup"
 }

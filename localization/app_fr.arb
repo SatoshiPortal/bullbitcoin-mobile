@@ -125,7 +125,6 @@
   "settingsGetHelpLabel": "Obtenir de l'aide",
   "settingsServicesStatusTitle": "État des services",
   "settingsTorSettingsTitle": "Paramètres Tor",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Langue",
   "settingsThemeTitle": "Thème",
   "settingsArkTitle": "Ark",
@@ -1184,7 +1183,6 @@
   "takeYourTimeTag": "Prenez votre temps",
   "customLocationTitle": "Emplacement personnalisé",
   "recoverWalletScreenTitle": "Récupérer le portefeuille",
-  "recoverbullVaultRecoveryTitle": "Récupération du coffre-fort Recoverbull",
   "chooseAccessPinTitle": "Choisir le {pinOrPassword} d'accès",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2418,7 +2416,6 @@
   "backupSettingsTested": "Testé",
   "backupSettingsNotTested": "Non testé",
   "backupSettingsTestBackup": "Tester la sauvegarde",
-  "backupSettingsStartBackup": "Démarrer la sauvegarde",
   "backupSettingsExportVault": "Exporter le coffre-fort",
   "backupSettingsExporting": "Exportation en cours...",
   "backupSettingsViewVaultKey": "Afficher la clé du coffre-fort",
@@ -2432,7 +2429,6 @@
   "backupSettingsKeyWarningMessage": "Il est absolument essentiel de ne pas enregistrer la clé de sauvegarde au même endroit que votre fichier de sauvegarde. Conservez-les toujours sur des appareils distincts ou des fournisseurs de cloud distincts.",
   "backupSettingsKeyWarningExample": "Par exemple, si vous avez utilisé Google Drive pour votre fichier de sauvegarde, n'utilisez pas Google Drive pour votre clé de sauvegarde.",
   "backupSettingsLabelsButton": "Étiquettes",
-  "backupSettingsRecoverBullSettings": "Recoverbull",
   "backupWalletImportanceWarning": "Sans sauvegarde, vous finirez par perdre l'accès à votre argent. Il est absolument essentiel d'effectuer une sauvegarde.",
   "backupWalletEncryptedVaultTitle": "Coffre-fort chiffré",
   "backupWalletEncryptedVaultDescription": "Sauvegarde anonyme avec chiffrement robuste utilisant votre cloud.",
@@ -2762,7 +2758,6 @@
   "recoverbullSelectFetchDriveFilesError": "Échec de la récupération de toutes les sauvegardes Drive",
   "recoverbullSelectFileNotSelectedError": "Fichier non sélectionné",
   "recoverbullSelectCustomLocationError": "Échec de la sélection du fichier depuis l'emplacement personnalisé",
-  "recoverbullSelectBackupFileNotValidError": "Le fichier de sauvegarde RecoverBull n'est pas valide",
   "recoverbullSelectVaultProvider": "Sélectionnez le fournisseur de coffre-fort",
   "recoverbullSwitchToPassword": "Choisir un mot de passe",
   "recoverbullSwitchToPIN": "Choisir un NIP plutôt",
@@ -2777,7 +2772,6 @@
   "recoverbullVaultKeyInput": "Clé de coffre-fort",
   "recoverbullVaultSelected": "Coffre-fort sélectionné",
   "recoverbullWaiting": "En attente",
-  "recoverbullRecoveryTitle": "Récupération du coffre-fort RecoverBull",
   "recoverbullRecoveryLoadingMessage": "Recherche du solde et des transactions…",
   "recoverbullRecoveryBalanceLabel": "Solde : {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -4752,14 +4746,6 @@
   "mempoolCustomServerNoSsl": "Sans SSL",
   "autoswapTargetBalanceLabel": "Solde cible du portefeuille instantané",
   "autoswapMaximumBalanceLabel": "Solde maximal du portefeuille instantané",
-  "recoverbullServerConfirmTitle": "Serveur de récupération du coffre",
-  "recoverbullServerUsingDefault": "Serveur par défaut utilisé",
-  "recoverbullServerUsingCustom": "Serveur personnalisé utilisé",
-  "recoverbullServerUrlLabel": "URL du serveur :",
-  "recoverbullServerCustomWarning": "Vous utilisez un serveur Recoverbull personnalisé. Assurez-vous de faire confiance à ce serveur.",
-  "recoverbullServerTorNotice": "Nous nous connecterons à ce serveur via Tor",
-  "recoverbullLearnMore": "En savoir plus sur Recoverbull",
-  "recoverbullSettingsTitle": "Paramètres Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL du serveur de clés",
   "recoverbullSettingsEdit": "Modifier",
   "recoverbullSettingsCancel": "Annuler",
@@ -5283,5 +5269,6 @@
   "announcementDismissConfirmTitle": "Ignorer cette annonce ?",
   "announcementDismissConfirmBody": "Lisez pour en savoir plus, ou ignorez pour la masquer. Les annonces ignorées ne réapparaîtront plus.",
   "announcementDismissConfirmAction": "Ignorer",
-  "announcementDismissConfirmRead": "Lire"
+  "announcementDismissConfirmRead": "Lire",
+  "backupSettingsStartBackup": "Démarrer la sauvegarde"
 }

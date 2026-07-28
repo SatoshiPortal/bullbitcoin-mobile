@@ -33,6 +33,10 @@ final class VaultCreationFailure extends RecoverBullFailure {
   const VaultCreationFailure();
 }
 
+final class VaultStatusPersistenceFailure extends RecoverBullFailure {
+  const VaultStatusPersistenceFailure([super.logMessage]);
+}
+
 final class TorNotStartedFailure extends RecoverBullFailure {
   const TorNotStartedFailure();
 }

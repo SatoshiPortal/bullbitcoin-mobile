@@ -125,7 +125,6 @@
   "settingsGetHelpLabel": "Obtener ayuda",
   "settingsServicesStatusTitle": "Estado de Servicios",
   "settingsTorSettingsTitle": "Ajustes de Tor",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Idioma",
   "settingsThemeTitle": "Tema",
   "settingsArkTitle": "Ark",
@@ -1187,7 +1186,6 @@
   "takeYourTimeTag": "Tómate tu tiempo",
   "customLocationTitle": "Ubicación personalizada",
   "recoverWalletScreenTitle": "Recuperar Billetera",
-  "recoverbullVaultRecoveryTitle": "Recuperación de bóveda Recoverbull",
   "chooseAccessPinTitle": "Elegir {pinOrPassword} de acceso",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2421,7 +2419,6 @@
   "backupSettingsTested": "Probado",
   "backupSettingsNotTested": "No Probado",
   "backupSettingsTestBackup": "Probar Respaldo",
-  "backupSettingsStartBackup": "Iniciar Respaldo",
   "backupSettingsExportVault": "Exportar Bóveda",
   "backupSettingsExporting": "Exportando...",
   "backupSettingsViewVaultKey": "Ver Clave de la Bóveda",
@@ -2435,7 +2432,6 @@
   "backupSettingsKeyWarningMessage": "Es críticamente importante que no guarde la clave de respaldo en el mismo lugar donde guarda su archivo de respaldo. Siempre almacénelos en dispositivos separados o proveedores de nube separados.",
   "backupSettingsKeyWarningExample": "Por ejemplo, si utilizó Google Drive para su archivo de respaldo, no utilice Google Drive para su clave de respaldo.",
   "backupSettingsLabelsButton": "Etiquetas",
-  "backupSettingsRecoverBullSettings": "Recoverbull",
   "backupWalletImportanceWarning": "Sin un respaldo, eventualmente perderá el acceso a su dinero. Es críticamente importante hacer un respaldo.",
   "backupWalletEncryptedVaultTitle": "Bóveda cifrada",
   "backupWalletEncryptedVaultDescription": "Respaldo anónimo con cifrado robusto usando su nube.",
@@ -2765,7 +2761,6 @@
   "recoverbullSelectFetchDriveFilesError": "Error al obtener todos los respaldos de Drive",
   "recoverbullSelectFileNotSelectedError": "Archivo no seleccionado",
   "recoverbullSelectCustomLocationError": "Error al seleccionar archivo desde ubicación personalizada",
-  "recoverbullSelectBackupFileNotValidError": "El archivo de respaldo de RecoverBull no es válido",
   "recoverbullSelectVaultProvider": "Seleccionar Proveedor de Bóveda",
   "recoverbullSwitchToPassword": "Elegir una contraseña en su lugar",
   "recoverbullSwitchToPIN": "Elegir un PIN en su lugar",
@@ -2780,7 +2775,6 @@
   "recoverbullVaultKeyInput": "Clave de Bóveda",
   "recoverbullVaultSelected": "Bóveda Seleccionada",
   "recoverbullWaiting": "Esperando",
-  "recoverbullRecoveryTitle": "Recuperación de bóveda RecoverBull",
   "recoverbullRecoveryLoadingMessage": "Buscando saldo y transacciones…",
   "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -4769,14 +4763,6 @@
   "mempoolCustomServerNoSsl": "Sin SSL",
   "autoswapTargetBalanceLabel": "Saldo objetivo de la billetera instantánea",
   "autoswapMaximumBalanceLabel": "Saldo máximo de la billetera instantánea",
-  "recoverbullServerConfirmTitle": "Servidor de recuperación de la bóveda",
-  "recoverbullServerUsingDefault": "Usando el servidor predeterminado",
-  "recoverbullServerUsingCustom": "Usando un servidor personalizado",
-  "recoverbullServerUrlLabel": "URL del servidor:",
-  "recoverbullServerCustomWarning": "Estás usando un servidor Recoverbull personalizado. Asegúrate de confiar en este servidor.",
-  "recoverbullServerTorNotice": "Nos conectaremos a este servidor a través de Tor",
-  "recoverbullLearnMore": "Más información sobre Recoverbull",
-  "recoverbullSettingsTitle": "Ajustes de Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL del servidor de claves",
   "recoverbullSettingsEdit": "Editar",
   "recoverbullSettingsCancel": "Cancelar",
@@ -5263,5 +5249,6 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribución a la comisión de Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78).",
+  "backupSettingsStartBackup": "Iniciar Respaldo"
 }

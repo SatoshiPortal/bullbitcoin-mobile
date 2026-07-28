@@ -381,10 +381,6 @@
   "@settingsTorSettingsTitle": {
     "description": "Title for the Tor settings section in app settings"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "settingsLanguageTitle": "Bhaasha",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -3798,10 +3794,6 @@
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
   },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault recovery",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "chooseAccessPinTitle": "Access {pinOrPassword} chuniye",
   "@chooseAccessPinTitle": {
     "description": "Title for choosing access PIN or password",
@@ -6876,10 +6868,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "backupSettingsStartBackup": "Backup Shuru Karo",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "backupSettingsExportVault": "Vault Export Karo",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -6931,10 +6919,6 @@
   "backupSettingsLabelsButton": "Labels",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "backupWalletImportanceWarning": "Backup ke bina aap apna paisa kho doge. Backup karna bahut zaroori hai.",
   "@backupWalletImportanceWarning": {
@@ -7792,10 +7776,6 @@
   "@recoverbullSelectCustomLocationError": {
     "description": "Error when file selection from custom location fails"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull backup file valid nahi hai",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "recoverbullSelectVaultProvider": "Vault Provider Chuniye",
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
@@ -7851,10 +7831,6 @@
   "recoverbullWaiting": "Intezaar Ho Raha Hai",
   "@recoverbullWaiting": {
     "description": "Status label indicating waiting state"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault recovery",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "recoverbullRecoveryLoadingMessage": "Balance aur transactions dhoondh rahe hain…",
   "@recoverbullRecoveryLoadingMessage": {
@@ -13050,14 +13026,6 @@
   "mempoolCustomServerNoSsl": "Koi SSL nahi",
   "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
   "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",
-  "recoverbullServerConfirmTitle": "Vault Recovery Server",
-  "recoverbullServerUsingDefault": "Default Server use kar rahe hain",
-  "recoverbullServerUsingCustom": "Custom Server use kar rahe hain",
-  "recoverbullServerUrlLabel": "Server URL:",
-  "recoverbullServerCustomWarning": "Aap ek custom Recoverbull server use kar rahe hain. Sunishchit karo ki aap is server par bharosa karte hain.",
-  "recoverbullServerTorNotice": "Hum Tor ke through is server se connect karenge",
-  "recoverbullLearnMore": "Recoverbull ke baare mein aur jaano",
-  "recoverbullSettingsTitle": "Recoverbull Settings",
   "recoverbullSettingsKeyServerUrl": "Key Server URL",
   "recoverbullSettingsEdit": "Edit Karo",
   "recoverbullSettingsCancel": "Cancel",
@@ -13672,5 +13640,6 @@
   "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
   "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
-  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78).",
+  "backupSettingsStartBackup": "Backup Shuru Karo"
 }

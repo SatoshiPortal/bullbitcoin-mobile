@@ -479,10 +479,6 @@
   "@settingsTorSettingsTitle": {
     "description": "Title for the Tor settings section in app settings"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "settingsLanguageTitle": "Language",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -4752,10 +4748,6 @@
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
   },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault recovery",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "chooseAccessPinTitle": "Choose access {pinOrPassword}",
   "@chooseAccessPinTitle": {
     "description": "Title for choosing access PIN or password",
@@ -8078,10 +8070,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "backupSettingsStartBackup": "Start Backup",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "backupSettingsExportVault": "Export Vault",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -8133,10 +8121,6 @@
   "backupSettingsLabelsButton": "Labels",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
-  },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
   },
   "backupWalletImportanceWarning": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupWalletImportanceWarning": {
@@ -8558,6 +8542,18 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
+  "testBackupErrorVerificationFailedGeneric": "We could not save your backup test. Please go back and try again.",
+  "@testBackupErrorVerificationFailedGeneric": {
+    "description": "Localized physical-backup persistence error; never include raw exception details"
+  },
+  "testBackupErrorLoadWalletsGeneric": "We could not load your wallets. Please go back and try again.",
+  "@testBackupErrorLoadWalletsGeneric": {
+    "description": "Localized wallet-loading error for physical backup verification; never include raw exception details"
+  },
+  "testBackupErrorLoadMnemonicGeneric": "We could not load your recovery words. Please go back and try again.",
+  "@testBackupErrorLoadMnemonicGeneric": {
+    "description": "Localized recovery-word loading error for physical backup verification; never include raw exception details"
+  },
   "testBackupErrorVerificationFailed": "Verification failed: {error}",
   "@testBackupErrorVerificationFailed": {
     "description": "Generic error message for verification failure",
@@ -8795,6 +8791,10 @@
   "@recoverbullErrorVaultCreationFailed": {
     "description": "Error message when overall vault creation fails"
   },
+  "recoverbullErrorVaultStatusPersistenceFailed": "Your encrypted vault and vault key were saved, but the app could not mark the backup as complete. Return to Backup Settings and test the encrypted vault before relying on it.",
+  "@recoverbullErrorVaultStatusPersistenceFailed": {
+    "description": "Partial-success message after vault and key storage succeeds but local completion persistence fails"
+  },
   "recoverbullErrorVaultNotSet": "Vault is not set",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -8994,10 +8994,6 @@
   "@recoverbullSelectCustomLocationError": {
     "description": "Error when file selection from custom location fails"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull backup file is not valid",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "recoverbullSelectVaultProvider": "Select Vault Provider",
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
@@ -9053,10 +9049,6 @@
   "recoverbullWaiting": "Waiting",
   "@recoverbullWaiting": {
     "description": "Status label indicating waiting state"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault recovery",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions…",
   "@recoverbullRecoveryLoadingMessage": {
@@ -14285,38 +14277,6 @@
   "@autoswapMaximumBalanceLabel": {
     "description": "Label for the maximum instant wallet balance setting in autoswap"
   },
-  "recoverbullServerConfirmTitle": "Vault Recovery Server",
-  "@recoverbullServerConfirmTitle": {
-    "description": "AppBar title on the Recoverbull server confirmation page"
-  },
-  "recoverbullServerUsingDefault": "Using Default Server",
-  "@recoverbullServerUsingDefault": {
-    "description": "Shown when the default Recoverbull server is in use"
-  },
-  "recoverbullServerUsingCustom": "Using Custom Server",
-  "@recoverbullServerUsingCustom": {
-    "description": "Shown when a custom Recoverbull server is in use"
-  },
-  "recoverbullServerUrlLabel": "Server URL:",
-  "@recoverbullServerUrlLabel": {
-    "description": "Label for the Recoverbull server URL value"
-  },
-  "recoverbullServerCustomWarning": "You are using a custom Recoverbull server. Make sure you trust this server.",
-  "@recoverbullServerCustomWarning": {
-    "description": "Warning shown when using a custom Recoverbull server"
-  },
-  "recoverbullServerTorNotice": "We will connect to this server through Tor",
-  "@recoverbullServerTorNotice": {
-    "description": "Notice that the Recoverbull server connection goes through Tor"
-  },
-  "recoverbullLearnMore": "Learn more about Recoverbull",
-  "@recoverbullLearnMore": {
-    "description": "Link text to learn more about Recoverbull"
-  },
-  "recoverbullSettingsTitle": "Recoverbull Settings",
-  "@recoverbullSettingsTitle": {
-    "description": "AppBar title on the Recoverbull settings page"
-  },
   "recoverbullSettingsKeyServerUrl": "Key Server URL",
   "@recoverbullSettingsKeyServerUrl": {
     "description": "Label for the Recoverbull key server URL field"
@@ -15008,5 +14968,98 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "backupHealthRecoverbullOnlyBody": "Without a physical backup, you cannot recover your wallet if the Encrypted Vault server is unavailable.",
+  "@backupHealthRecoverbullOnlyBody": {
+    "description": "Explains what a vault-only wallet cannot recover from; shown in the reminder popup and the Backup Settings hero"
+  },
+  "backupHealthAddPhysicalBackupAction": "ADD A PHYSICAL BACKUP",
+  "@backupHealthAddPhysicalBackupAction": {
+    "description": "Button label for the one action a vault-only wallet needs: create and test a physical backup"
+  },
+  "backupHealthTestBackupAction": "TEST YOUR BACKUP",
+  "@backupHealthTestBackupAction": {
+    "description": "Button label for the one action a wallet with a physical backup needs: confirm it still recovers"
+  },
+  "backupHealthSaveFailed": "Your backup reminder could not be updated. Please try again or close it for now.",
+  "@backupHealthSaveFailed": {
+    "description": "Retryable error when a backup reminder action cannot be persisted; never include raw exception details"
+  },
+  "backupHealthCloseForNow": "CLOSE FOR NOW",
+  "@backupHealthCloseForNow": {
+    "description": "Session-only escape shown after a backup reminder persistence failure"
+  },
+  "onboardingBackupVerificationSaveFailed": "Your wallet was restored, but the backup check could not be saved. Test your physical backup again later in Backup Settings.",
+  "@onboardingBackupVerificationSaveFailed": {
+    "description": "Partial-success message when wallet recovery succeeds but physical backup verification persistence fails"
+  },
+  "backupHealthReminderTitle": "Can you still recover your wallet?",
+  "@backupHealthReminderTitle": {
+    "description": "Headline of the scheduled backup reminder popup and of the Backup Settings hero"
+  },
+  "backupHealthTestBackupBody": "Test your physical backup to confirm you can still recover.",
+  "@backupHealthTestBackupBody": {
+    "description": "Body asking the user to verify the physical backup they already have"
+  },
+  "backupHealthMilestoneTitle": "Your wallet now holds more money",
+  "@backupHealthMilestoneTitle": {
+    "description": "Headline of the one-time popup shown the first time the balance reaches the milestone"
+  },
+  "backupHealthMilestoneBody": "More is at stake now if this phone is lost, stolen, or broken.",
+  "@backupHealthMilestoneBody": {
+    "description": "Body of the one-time balance milestone popup, shown before the posture-appropriate ask"
+  },
+  "backupHealthLastTested": "Last tested {when}.",
+  "@backupHealthLastTested": {
+    "description": "Muted line stating when the physical backup was last tested; never shown when no test has been observed",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "backupHealthNotNow": "NOT NOW",
+  "@backupHealthNotNow": {
+    "description": "Dismisses a backup reminder popup for a full cycle without recording a test"
+  },
+  "backupSettingsEncryptedVaultSettings": "Encrypted vault settings",
+  "@backupSettingsEncryptedVaultSettings": {
+    "description": "Menu row opening the Encrypted Vault settings; matches the Encrypted Vault status row vocabulary"
+  },
+  "backupSettingsHeroBackUpTitle": "Back up your wallet",
+  "@backupSettingsHeroBackUpTitle": {
+    "description": "Hero headline on Backup Settings when nothing is backed up"
+  },
+  "backupSettingsHeroBackUpBody": "If this phone is lost, stolen, or broken, your money is gone. Nothing can be recovered without a backup.",
+  "@backupSettingsHeroBackUpBody": {
+    "description": "Hero body on Backup Settings when nothing is backed up"
+  },
+  "backupSettingsStartBackupAction": "START BACKUP",
+  "@backupSettingsStartBackupAction": {
+    "description": "Hero button on Backup Settings that opens the backup options; replaces the old Start Backup menu row"
+  },
+  "recoverbullSettingsTitle": "Encrypted vault settings",
+  "@recoverbullSettingsTitle": {
+    "description": "AppBar title on the encrypted vault settings page; matches the menu row that opens it"
+  },
+  "recoverbullLearnMore": "Learn more at recoverbull.com",
+  "@recoverbullLearnMore": {
+    "description": "Link text opening recoverbull.com from the vault settings and server confirmation pages"
+  },
+  "recoverbullSelectBackupFileNotValidError": "This encrypted vault backup file is not valid",
+  "@recoverbullSelectBackupFileNotValidError": {
+    "description": "Error when the selected file is not a valid encrypted vault backup format"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "recoverbullServerCustomWarning": "You are about to use a custom Recoverbull server. Make sure you trust this server.",
+  "@recoverbullServerCustomWarning": {
+    "description": "Warning shown before saving a custom key server URL in the encrypted vault settings"
+  },
+  "backupWalletEncryptedVaultUsesTorTag": "Uses Tor",
+  "@backupWalletEncryptedVaultUsesTorTag": {
+    "description": "Tag on the encrypted vault option card indicating the key server is reached over Tor"
   }
 }

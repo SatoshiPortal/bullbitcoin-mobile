@@ -2137,10 +2137,6 @@
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
   },
-  "recoverbullRecoveryTitle": "Recoverbull vault възстановяване",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "transactionStatusTransferInProgress": "Прехвърлянето е в процес",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
@@ -3180,10 +3176,6 @@
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
-  "backupSettingsRecoverBullSettings": "Recoverbull",
-  "@backupSettingsRecoverBullSettings": {
-    "description": "Button text for Recoverbull"
-  },
   "fundExchangeLabelBankAddress": "Адрес на нашата банка",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
@@ -3858,10 +3850,6 @@
   "transactionDetailLabelPayinStatus": "Статус на плащането",
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "importWatchOnlySelectDerivation": "Изберете деривация",
   "@importWatchOnlySelectDerivation": {
@@ -6807,10 +6795,6 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "recoverbullSelectBackupFileNotValidError": "Резервното копие на Recoverbull не е валидно",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "Не може да се създаде транзакция. Вероятно поради недостатъчни средства за покриване на таксите и сумата",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -9279,10 +9263,6 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "backupSettingsStartBackup": "Започни резервно копиране",
-  "@backupSettingsStartBackup": {
-    "description": "Button text to start new backup process"
-  },
   "sendReceiveAmount": "Сума за получаване",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
@@ -9775,14 +9755,6 @@
   "mempoolCustomServerNoSsl": "Без SSL",
   "autoswapTargetBalanceLabel": "Целеви баланс на незабавния портфейл",
   "autoswapMaximumBalanceLabel": "Максимален баланс на незабавния портфейл",
-  "recoverbullServerConfirmTitle": "Сървър за възстановяване на трезора",
-  "recoverbullServerUsingDefault": "Използва се сървърът по подразбиране",
-  "recoverbullServerUsingCustom": "Използва се персонализиран сървър",
-  "recoverbullServerUrlLabel": "URL на сървъра:",
-  "recoverbullServerCustomWarning": "Използвате персонализиран сървър Recoverbull. Уверете се, че се доверявате на този сървър.",
-  "recoverbullServerTorNotice": "Ще се свържем с този сървър чрез Tor",
-  "recoverbullLearnMore": "Научете повече за Recoverbull",
-  "recoverbullSettingsTitle": "Настройки на Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL на сървъра за ключове",
   "recoverbullSettingsEdit": "Редактирай",
   "recoverbullSettingsCancel": "Отказ",
@@ -10167,7 +10139,6 @@
   "fundExchangeJurisdictionColombia": "🇨🇴 Колумбия",
   "customLocationTitle": "Персонализирано местоположение",
   "recoverWalletScreenTitle": "Възстанови портфейл",
-  "recoverbullVaultRecoveryTitle": "Възстановяване на Recoverbull трезор",
   "chooseAccessPinTitle": "Избери {pinOrPassword} за достъп",
   "memorizePasswordWarning": "Трябва да запомните тази {pinOrPassword}, за да възстановите достъпа до портфейла си. Трябва да бъде поне 6 цифри. Ако загубите тази {pinOrPassword}, не можете да възстановите резервното си копие.",
   "passwordTooCommonError": "Тази {pinOrPassword} е твърде често срещана. Моля, изберете различна.",
@@ -10966,5 +10937,6 @@
   "transactionStatusPayjoinAborted": "Payjoin отменен",
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "backupSettingsStartBackup": "Започни резервно копиране"
 }
