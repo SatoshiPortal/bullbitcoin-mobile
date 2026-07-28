@@ -87,35 +87,31 @@ class Bbqr {
   }
 
   static Future<List<String>> splitPsbt(String psbt) async {
-    try {
-      // check if the PSBT is valid, will throw if not
-      final parsedPsbt = bdk.Psbt(psbtBase64: psbt);
-      final validPstb = parsedPsbt.serialize();
-      final psbtBytes = base64.decode(validPstb);
+    // check if the PSBT is valid, will throw if not
+    final parsedPsbt = bdk.Psbt(psbtBase64: psbt);
+    final validPstb = parsedPsbt.serialize();
+    final psbtBytes = base64.decode(validPstb);
 
-      // The more we split the easier it is to scan the QR code.
-      var minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);
-      if (minSplitNumber < BigInt.from(1)) minSplitNumber = BigInt.from(1);
+    // The more we split the easier it is to scan the QR code.
+    var minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);
+    if (minSplitNumber < BigInt.from(1)) minSplitNumber = BigInt.from(1);
 
-      final defaultOptions = await bbqr.SplitOptions.default_();
-      final bbqrOptions = bbqr.SplitOptions(
-        minVersion: defaultOptions.minVersion,
-        maxVersion: defaultOptions.maxVersion,
-        encoding: defaultOptions.encoding,
-        maxSplitNumber: defaultOptions.maxSplitNumber,
-        minSplitNumber: minSplitNumber,
-      );
+    final defaultOptions = await bbqr.SplitOptions.default_();
+    final bbqrOptions = bbqr.SplitOptions(
+      minVersion: defaultOptions.minVersion,
+      maxVersion: defaultOptions.maxVersion,
+      encoding: defaultOptions.encoding,
+      maxSplitNumber: defaultOptions.maxSplitNumber,
+      minSplitNumber: minSplitNumber,
+    );
 
-      final split = await bbqr.Split.tryFromData(
-        bytes: psbtBytes,
-        fileType: bbqr.FileType.psbt,
-        options: bbqrOptions,
-      );
+    final split = await bbqr.Split.tryFromData(
+      bytes: psbtBytes,
+      fileType: bbqr.FileType.psbt,
+      options: bbqrOptions,
+    );
 
-      return split.parts;
-    } catch (e) {
-      rethrow;
-    }
+    return split.parts;
   }
 }
 
