@@ -343,20 +343,11 @@ class LocalPayjoinDatasource {
     ];
   }
 
-  Future<List<PayjoinReceiverModel>> fetchReceivers({
-    bool onlyOngoing = false,
-  }) async {
-    final receiversTable = _db.managers.payjoinReceivers;
-    List<PayjoinReceiverRow> receivers;
-    if (onlyOngoing) {
-      receivers = await receiversTable
-          .filter((f) => f.isExpired(false))
-          .filter((f) => f.isCompleted(false))
-          .filter((f) => f.isAborted(false))
-          .get();
-    } else {
-      receivers = await receiversTable.get();
-    }
+  /// Every receiver row, terminal ones included: the callers are the disable
+  /// sweep and startup recovery, which both decide what to settle from the
+  /// freshest row under a session lock. Filtered reads go through [fetchAll].
+  Future<List<PayjoinReceiverModel>> fetchReceivers() async {
+    final receivers = await _db.managers.payjoinReceivers.get();
 
     return receivers
         .map(
@@ -366,21 +357,9 @@ class LocalPayjoinDatasource {
         .toList();
   }
 
-  Future<List<PayjoinSenderModel>> fetchSenders({
-    bool onlyOngoing = false,
-  }) async {
-    final sendersTable = _db.managers.payjoinSenders;
-    List<PayjoinSenderRow> senders;
-
-    if (onlyOngoing) {
-      senders = await sendersTable
-          .filter((f) => f.isExpired(false))
-          .filter((f) => f.isCompleted(false))
-          .filter((f) => f.isAborted(false))
-          .get();
-    } else {
-      senders = await sendersTable.get();
-    }
+  /// Every sender row — same rationale as [fetchReceivers].
+  Future<List<PayjoinSenderModel>> fetchSenders() async {
+    final senders = await _db.managers.payjoinSenders.get();
 
     return senders
         .map(

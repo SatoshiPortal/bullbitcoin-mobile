@@ -240,9 +240,6 @@ void main() {
     // empty by default, overridden in the sweep tests. Only runs from
     // resumePayjoinsOnStartup, never the constructor.
     when(() => localDatasource.fetchReceivers()).thenAnswer((_) async => []);
-    when(
-      () => localDatasource.fetchReceivers(onlyOngoing: true),
-    ).thenAnswer((_) async => []);
     when(() => localDatasource.fetchSenders()).thenAnswer((_) async => []);
     when(
       () => localDatasource.recordReceiverRequest(any()),
