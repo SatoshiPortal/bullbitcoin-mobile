@@ -1021,7 +1021,9 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: selectedFeeOption.title(),
           isToSelf: isToSelf,
-          isPayjoin: willAttemptPayjoin,
+          checkedStatusLabel: willAttemptPayjoin
+              ? context.loc.sendPayjoinLabel
+              : null,
           note: label,
           onFeePriorityTap: hasFinalizedTx
               ? null

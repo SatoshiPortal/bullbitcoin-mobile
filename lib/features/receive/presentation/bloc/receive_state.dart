@@ -251,10 +251,13 @@ abstract class ReceiveState with _$ReceiveState {
   /// excluded: a fresh receiver session with no request yet means a plain
   /// send to this address, unrelated to payjoin, which must still navigate
   /// via the generic listener.
-  bool get isPayjoinFlowOwningNavigation =>
-      type == ReceiveType.bitcoin &&
-      payjoin != null &&
-      payjoin!.status != PayjoinStatus.started;
+  bool get isPayjoinFlowOwningNavigation {
+    final receiver = payjoin;
+    if (type != ReceiveType.bitcoin || receiver == null) return false;
+    if (receiver.status == PayjoinStatus.started) return false;
+    return !(receiver.status == PayjoinStatus.expired &&
+        receiver.originalTxBytes == null);
+  }
 
   /// True when the payjoin session resolved via the plain-broadcast fallback
   /// specifically because the sender's amount fell below the configured

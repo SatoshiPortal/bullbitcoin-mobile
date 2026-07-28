@@ -32,6 +32,9 @@ abstract class PayjoinRepository {
   });
   Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin);
 
+  /// Stops receivers that have not committed a proposal yet.
+  Future<void> disableReceivers();
+
   /// Resumes polling/watching for every unfinished payjoin session left over
   /// from a previous app run. A composition-root lifecycle hook: the
   /// repository is constructed as an eager singleton before every dependency

@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -41,44 +41,42 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
     // receive screen — QR, address, additional info, this box and the
     // bottom button — fits without scrolling. Long-press opens the payjoin
     // settings screen.
-    return Padding(
-      padding: EdgeInsets.only(top: topGap / 2),
-      child: BorderedTappableTile(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-        backgroundColor: context.appColors.surfaceContainerHighest,
-        onLongPress: () =>
-            context.pushNamed(SettingsRoute.payjoinSettings.name),
-        child: Row(
-          children: [
-            Expanded(
-              child: BBText(
-                context.loc.receivePayjoinQrBadge,
-                style: context.font.bodyMedium,
-                color: context.appColors.secondary,
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen: (previous, current) =>
+          current.error is SettingsFailure && previous.error != current.error,
+      listener: (context, state) {
+        final failure = state.error! as SettingsFailure;
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      },
+      child: Padding(
+        padding: EdgeInsets.only(top: topGap / 2),
+        child: BorderedTappableTile(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+          backgroundColor: context.appColors.surfaceContainerHighest,
+          onLongPress: () =>
+              context.pushNamed(SettingsRoute.payjoinSettings.name),
+          child: Row(
+            children: [
+              Expanded(
+                child: BBText(
+                  context.loc.receivePayjoinQrBadge,
+                  style: context.font.bodyMedium,
+                  color: context.appColors.secondary,
+                ),
               ),
-            ),
-            BBSwitch(
-              value: enabled,
-              onChanged: (value) async {
-                final settings = locator<SettingsFacade>();
-                context.read<ReceiveBloc>().add(
-                  ReceiveEvent.receivePayjoinToggled(value),
-                );
-                // One-time disclaimer, only when turning ON. Recorded after
-                // the dialog was actually dismissed, so an interrupted show
-                // never consumes the disclosure.
-                if (!value) {
-                  return;
-                }
-                final shownResult = await settings.getPayjoinDisclaimerShown();
-                final shown = shownResult.fold((value) => value, (_) => false);
-                if (shown || !context.mounted) return;
-                await PayjoinDisclaimerDialog.show(context);
-                final markResult = await settings.markPayjoinDisclaimerShown();
-                markResult.fold((_) {}, (_) {});
-              },
-            ),
-          ],
+              BBSwitch(
+                value: enabled,
+                onChanged: (value) {
+                  context.read<ReceiveBloc>().add(
+                    ReceiveEvent.receivePayjoinToggled(value, () async {
+                      if (!context.mounted) return false;
+                      return PayjoinDisclaimerDialog.show(context);
+                    }),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

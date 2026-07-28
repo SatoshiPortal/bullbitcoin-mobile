@@ -6,11 +6,6 @@ sealed class SettingsState with _$SettingsState {
     SettingsEntity? storedSettings,
     String? appVersion,
     bool? hasLegacySeeds,
-
-    /// Whether the one-time payjoin disclaimer has already been presented.
-    /// Null until [SettingsCubit.init] has read it: treated as "not shown yet"
-    /// by callers, so a disclosure is never silently skipped.
-    bool? payjoinDisclaimerShown,
   }) = _SettingsState;
   const SettingsState._();
 

@@ -7,3 +7,11 @@ sealed class SettingsFailure extends Failure {
 final class SettingsStorageFailure extends SettingsFailure {
   const SettingsStorageFailure([super.logMessage]);
 }
+
+final class SettingsConsentFailure extends SettingsFailure {
+  const SettingsConsentFailure([super.logMessage]);
+}
+
+final class SettingsPayjoinFailure extends SettingsFailure {
+  const SettingsPayjoinFailure([super.logMessage]);
+}

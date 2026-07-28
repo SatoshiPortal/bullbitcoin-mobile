@@ -78,10 +78,18 @@ class ReceiveRouter {
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
                       state.isPayjoinFlowOwningNavigation) {
-                    context.goNamed(
-                      ReceiveRoute.payjoinInProgress.name,
-                      extra: bloc,
-                    );
+                    if (state.payjoin?.isCompleted == true) {
+                      context.goNamed(
+                        TransactionsRoute.payjoinTransactionDetails.name,
+                        pathParameters: {'payjoinId': state.payjoin!.id},
+                        queryParameters: {'returnHome': 'true'},
+                      );
+                    } else {
+                      context.goNamed(
+                        ReceiveRoute.payjoinInProgress.name,
+                        extra: bloc,
+                      );
+                    }
                   } else if (type == ReceiveType.lightning) {
                     context.goNamed(
                       ReceiveRoute.lightningPaymentInProgress.name,

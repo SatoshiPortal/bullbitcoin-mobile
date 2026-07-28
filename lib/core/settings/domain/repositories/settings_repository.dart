@@ -11,6 +11,9 @@ abstract class SettingsRepository {
   /// flipped elsewhere in the app without needing to re-enter its screen.
   Stream<bool> get payjoinEnabledChangeStream;
 
+  /// Emits the new anti-probing threshold after it has been persisted.
+  Stream<int> get payjoinMinAmountChangeStream;
+
   Future<void> close();
 
   Future<void> store({

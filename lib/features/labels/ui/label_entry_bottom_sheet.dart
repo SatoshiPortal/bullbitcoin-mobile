@@ -34,6 +34,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
     this.suggestionsFuture,
     this.hint,
     this.disclosure,
+    this.allowEmpty = false,
   });
 
   final String title;
@@ -44,6 +45,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
   /// Privacy notice rendered under the title when non-null.
   /// Set by [LabelEntryBottomSheet.note]; null for [LabelEntryBottomSheet.label].
   final String? disclosure;
+  final bool allowEmpty;
 
   /// Open the sheet for a counterparty-visible note. The disclosure copy is
   /// resolved from `context.loc.noteVisibleToSenderNotice`.
@@ -61,6 +63,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
       suggestionsFuture: suggestionsFuture,
       hint: hint,
       disclosure: context.loc.noteVisibleToSenderNotice,
+      allowEmpty: true,
     );
   }
 
@@ -79,6 +82,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
       suggestionsFuture: suggestionsFuture,
       hint: hint,
       disclosure: null,
+      allowEmpty: false,
     );
   }
 
@@ -89,6 +93,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
     Future<Set<String>>? suggestionsFuture,
     String? hint,
     String? disclosure,
+    required bool allowEmpty,
   }) {
     return BlurredBottomSheet.show<String>(
       context: context,
@@ -98,6 +103,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
         suggestionsFuture: suggestionsFuture,
         hint: hint,
         disclosure: disclosure,
+        allowEmpty: allowEmpty,
       ),
     );
   }
@@ -111,7 +117,8 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
   String? _errorMessage;
 
   String get _trimmed => _controller.text.trim();
-  bool get _canSave => _errorMessage == null && _trimmed.isNotEmpty;
+  bool get _canSave =>
+      _errorMessage == null && (widget.allowEmpty || _trimmed.isNotEmpty);
 
   @override
   void initState() {

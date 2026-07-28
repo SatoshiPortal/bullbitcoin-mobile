@@ -1,10 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
+import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,8 +19,39 @@ import 'package:go_router/go_router.dart';
 /// and a row navigating to the advanced settings page (minimum amount,
 /// session expiry, servers). The disclaimer shows automatically exactly once
 /// the first time payjoin is enabled (see [PayjoinDisclaimerDialog]).
-class PayjoinSettingsScreen extends StatelessWidget {
+class PayjoinSettingsScreen extends StatefulWidget {
   const PayjoinSettingsScreen({super.key});
+
+  @override
+  State<PayjoinSettingsScreen> createState() => _PayjoinSettingsScreenState();
+}
+
+class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
+  bool _updating = false;
+
+  Future<void> _setPayjoinEnabled(bool enabled) async {
+    if (_updating) return;
+    setState(() => _updating = true);
+
+    final cubit = context.read<SettingsCubit>();
+    final result = await cubit.togglePayjoinEnabled(
+      enabled,
+      requestConsent: () async {
+        if (!mounted) return false;
+        return PayjoinDisclaimerDialog.show(context);
+      },
+    );
+    result.fold((_) {}, (failure) {
+      log.warning(
+        'Failed to update Payjoin from settings: ${failure.logMessage}',
+      );
+      if (mounted) {
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      }
+    });
+
+    if (mounted) setState(() => _updating = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,25 +77,15 @@ class PayjoinSettingsScreen extends StatelessWidget {
                   ),
                   BBSwitch(
                     value: isEnabled,
-                    onChanged: (value) async {
-                      final cubit = context.read<SettingsCubit>();
-                      await cubit.togglePayjoinEnabled(value);
-                      // One-time disclaimer, only when turning ON. Recorded
-                      // after the dialog was actually dismissed.
-                      if (!value ||
-                          cubit.state.payjoinDisclaimerShown == true ||
-                          !context.mounted) {
-                        return;
-                      }
-                      await PayjoinDisclaimerDialog.show(context);
-                      await cubit.markPayjoinDisclaimerShown();
-                    },
+                    onChanged: _updating ? null : _setPayjoinEnabled,
                   ),
                 ],
               ),
               const Gap(16),
               BorderedTappableTile(
-                onTap: () => PayjoinDisclaimerDialog.show(context),
+                onTap: () async {
+                  await PayjoinDisclaimerDialog.show(context);
+                },
                 child: Row(
                   children: [
                     Expanded(

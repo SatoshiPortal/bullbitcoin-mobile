@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -22,7 +23,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -60,6 +63,8 @@ class _MockWatchSwapUsecase extends Mock implements WatchSwapUsecase {}
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
+class _MockLabel extends Mock implements Label {}
+
 class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
 
 class _MockWatchPayjoinEnabledChangesUsecase extends Mock
@@ -67,6 +72,9 @@ class _MockWatchPayjoinEnabledChangesUsecase extends Mock
 
 class _MockSetReceivePayjoinEnabledUsecase extends Mock
     implements SetReceivePayjoinEnabledUsecase {}
+
+class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
+    implements WatchReceivePayjoinMinAmountUsecase {}
 
 // Defaults to a confirmed balance: most tests in this file are about the
 // isPayjoinEnabled/proposal-state gating, not the balance one. The
@@ -136,7 +144,9 @@ void main() {
   late _MockLabelsFacade labels;
   late _MockWatchPayjoinEnabledChangesUsecase watchPayjoinEnabledChanges;
   late _MockSetReceivePayjoinEnabledUsecase setPayjoinEnabled;
+  late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
   late StreamController<bool> payjoinEnabledChangeController;
+  late StreamController<int> payjoinMinAmountChangeController;
 
   setUpAll(() {
     registerFallbackValue(_receiver());
@@ -158,6 +168,7 @@ void main() {
     labelsFacade: labels,
     getSwapLimitsUsecase: _MockGetSwapLimitsUsecase(),
     watchPayjoinEnabledChangesUsecase: watchPayjoinEnabledChanges,
+    watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
     setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
     wallet: wallet ?? _testWallet(),
   );
@@ -174,14 +185,24 @@ void main() {
     labels = _MockLabelsFacade();
     watchPayjoinEnabledChanges = _MockWatchPayjoinEnabledChangesUsecase();
     payjoinEnabledChangeController = StreamController<bool>.broadcast();
+    payjoinMinAmountChangeController = StreamController<int>.broadcast();
     when(
       () => watchPayjoinEnabledChanges.execute(),
     ).thenAnswer((_) => payjoinEnabledChangeController.stream);
+    watchPayjoinMinAmount = _MockWatchReceivePayjoinMinAmountUsecase();
+    when(
+      () => watchPayjoinMinAmount.execute(),
+    ).thenAnswer((_) => payjoinMinAmountChangeController.stream);
     setPayjoinEnabled = _MockSetReceivePayjoinEnabledUsecase();
     // Toggling persists to settings, which in the real app feeds back via the
     //  change stream; the tests emit on payjoinEnabledChangeController to
     //  simulate that round-trip explicitly.
-    when(() => setPayjoinEnabled.execute(any())).thenAnswer((_) async {});
+    when(
+      () => setPayjoinEnabled.execute(
+        any(),
+        requestConsent: any(named: 'requestConsent'),
+      ),
+    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(true));
 
     // Payjoin is enabled by default here so the guard group can create a
     // session; the gated group overrides this stub to disable it.
@@ -224,6 +245,7 @@ void main() {
 
   tearDown(() async {
     await payjoinEnabledChangeController.close();
+    await payjoinMinAmountChangeController.close();
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
@@ -516,6 +538,109 @@ void main() {
     });
   });
 
+  group('live payjoin minimum', () {
+    test(
+      'updates the open receive state without recreating its session',
+      () async {
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+
+        payjoinMinAmountChangeController.add(50000);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.payjoinMinAmountSat, 50000);
+        verify(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).called(1);
+      },
+    );
+  });
+
+  group('idle receiver expiry', () {
+    test(
+      'rotates to a fresh receiver instead of surfacing a payment timeout',
+      () async {
+        final first = _receiver(id: 'first');
+        final second = _receiver(id: 'second');
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => first);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state.payjoin?.id, 'first');
+
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => second);
+        bloc.add(
+          ReceivePayjoinUpdated(
+            _receiver(id: 'first', status: PayjoinStatus.expired),
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.payjoin?.id, 'second');
+        expect(bloc.state.isPayjoinFlowOwningNavigation, isFalse);
+      },
+    );
+  });
+
+  group('optional receive details', () {
+    test('clearing an optional on-chain amount restores null', () async {
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.confirmedAmountSat, 1000);
+
+      bloc.add(const ReceiveAmountInputChanged(''));
+      bloc.add(const ReceiveAmountConfirmed());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.confirmedAmountSat, isNull);
+    });
+
+    test('clearing a message removes its persisted address label', () async {
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      final label = _MockLabel();
+      when(() => label.id).thenReturn(7);
+      when(() => label.type).thenReturn(LabelType.address);
+      when(
+        () => labels.fetchByReference('bc1qtest'),
+      ).thenAnswer((_) async => [label]);
+      when(
+        () => labels.trash(7),
+      ).thenAnswer((_) async => const Ok<Null, LabelFailure>(null));
+
+      bloc.add(const ReceiveNoteChanged(''));
+      bloc.add(const ReceiveNoteSaved());
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => labels.trash(7)).called(1);
+    });
+  });
+
   group('payjoin badge toggle (ReceivePayjoinToggled)', () {
     test('persists the new value to the global setting', () async {
       final bloc = buildBloc();
@@ -524,11 +649,52 @@ void main() {
       bloc.add(const ReceiveBitcoinStarted(null));
       await Future<void>.delayed(Duration.zero);
 
-      bloc.add(const ReceivePayjoinToggled(false));
+      bloc.add(ReceivePayjoinToggled(false, () async => true));
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => setPayjoinEnabled.execute(false)).called(1);
+      verify(
+        () => setPayjoinEnabled.execute(
+          false,
+          requestConsent: any(named: 'requestConsent'),
+        ),
+      ).called(1);
     });
+
+    test(
+      'drops repeated toggles while consent and persistence are in flight',
+      () async {
+        final pending = Completer<Result<bool, SettingsFailure>>();
+        when(
+          () => setPayjoinEnabled.execute(
+            any(),
+            requestConsent: any(named: 'requestConsent'),
+          ),
+        ).thenAnswer((_) => pending.future);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(ReceivePayjoinToggled(true, () async => true));
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(ReceivePayjoinToggled(false, () async => true));
+        await Future<void>.delayed(Duration.zero);
+
+        verify(
+          () => setPayjoinEnabled.execute(
+            true,
+            requestConsent: any(named: 'requestConsent'),
+          ),
+        ).called(1);
+        verifyNever(
+          () => setPayjoinEnabled.execute(
+            false,
+            requestConsent: any(named: 'requestConsent'),
+          ),
+        );
+
+        pending.complete(const Ok<bool, SettingsFailure>(true));
+        await Future<void>.delayed(Duration.zero);
+      },
+    );
 
     test('isPayjoinToggleable is true for a funded, locally-signing bitcoin '
         'wallet and false for an empty one', () async {

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -105,6 +107,7 @@ void main() {
   PayjoinReceiver payjoinWith({
     required PayjoinStatus status,
     int? amountSat,
+    bool hasRequest = false,
   }) =>
       Payjoin.receiver(
             status: status,
@@ -115,6 +118,7 @@ void main() {
             createdAt: DateTime(2026),
             expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
             amountSat: amountSat,
+            originalTxBytes: hasRequest ? Uint8List.fromList([1]) : null,
           )
           as PayjoinReceiver;
 
@@ -232,7 +236,7 @@ void main() {
       ]) {
         final state = ReceiveState(
           type: ReceiveType.bitcoin,
-          payjoin: payjoinWith(status: status),
+          payjoin: payjoinWith(status: status, hasRequest: true),
         );
 
         expect(
@@ -241,6 +245,15 @@ void main() {
           reason: 'status: $status',
         );
       }
+    });
+
+    test('false when an idle receiver expires before any sender request', () {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        payjoin: payjoinWith(status: PayjoinStatus.expired),
+      );
+
+      expect(state.isPayjoinFlowOwningNavigation, isFalse);
     });
   });
 

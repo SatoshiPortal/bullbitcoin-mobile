@@ -12,10 +12,12 @@ class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
   final StreamController<bool> _payjoinEnabledChangeController;
+  final StreamController<int> _payjoinMinAmountChangeController;
 
   SettingsRepository({required this._settingsDatasource})
     : _currencyChangeController = StreamController<String>.broadcast(),
-      _payjoinEnabledChangeController = StreamController<bool>.broadcast();
+      _payjoinEnabledChangeController = StreamController<bool>.broadcast(),
+      _payjoinMinAmountChangeController = StreamController<int>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
@@ -25,9 +27,14 @@ class SettingsRepository implements domain.SettingsRepository {
       _payjoinEnabledChangeController.stream;
 
   @override
+  Stream<int> get payjoinMinAmountChangeStream =>
+      _payjoinMinAmountChangeController.stream;
+
+  @override
   Future<void> close() async {
     await _currencyChangeController.close();
     await _payjoinEnabledChangeController.close();
+    await _payjoinMinAmountChangeController.close();
   }
 
   @override
@@ -157,6 +164,7 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setPayjoinMinAmountSat(int amountSat) async {
     await _settingsDatasource.setPayjoinMinAmountSat(amountSat);
+    _payjoinMinAmountChangeController.add(amountSat);
   }
 
   @override

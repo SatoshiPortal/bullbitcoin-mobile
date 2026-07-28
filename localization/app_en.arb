@@ -14821,11 +14821,11 @@
   "@settingsPayjoinTitle": {
     "description": "Title of the payjoin settings screen"
   },
-  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to the person you are transacting with — someone you are already paying anyway.",
+  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to your counterparty.",
   "@settingsPayjoinPrivacyGainExplanation": {
     "description": "First disclosure paragraph on the payjoin settings screen: the privacy benefit and the UTXO-exposure risk it trades against"
   },
-  "settingsPayjoinV1DirectoryLeakExplanation": "If the person you are paying uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
+  "settingsPayjoinV1DirectoryLeakExplanation": "If your counterparty uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
   "@settingsPayjoinV1DirectoryLeakExplanation": {
     "description": "Second disclosure paragraph on the payjoin settings screen: a v1 (non-v2) counterparty leaks the same UTXO to the payjoin directory"
   },
@@ -14839,7 +14839,7 @@
   },
   "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
   "@settingsPayjoinAdvancedTitle": {
-    "description": "Collapsed section on the payjoin settings screen containing minimum amount, session expiry and servers."
+    "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
   "settingsPayjoinEnabledLabel": "Payjoin enabled",
   "@settingsPayjoinEnabledLabel": {
@@ -15008,10 +15008,10 @@
   },
   "receiveAdditionalInformationPlaceholder": "Add an amount or message for sender",
   "@receiveAdditionalInformationPlaceholder": {
-    "description": "Placeholder on the Additional Information receive tile when neither amount nor label is set yet."
+    "description": "Placeholder on the Additional Information receive tile when neither amount nor message is set yet."
   },
   "@receiveAdditionalInformation": {
-    "description": "Receive-screen tile unifying the optional amount and note; tapping opens a bottom sheet to set both."
+    "description": "Receive-screen tile unifying the optional amount and message; tapping opens the additional-information page to edit both."
   },
   "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no balance yet to contribute. It will activate once you receive funds.",
   "@receivePayjoinAwaitingFunds": {

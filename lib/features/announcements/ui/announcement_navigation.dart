@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 /// Resolves each announcement to the route its [NavigateAction] opens.
 ///

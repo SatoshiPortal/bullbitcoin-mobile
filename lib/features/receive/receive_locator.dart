@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:get_it/get_it.dart';
@@ -37,6 +38,11 @@ class ReceiveLocator {
     );
     locator.registerFactory<SetReceivePayjoinEnabledUsecase>(
       () => SetReceivePayjoinEnabledUsecase(
+        settingsFacade: locator<SettingsFacade>(),
+      ),
+    );
+    locator.registerFactory<WatchReceivePayjoinMinAmountUsecase>(
+      () => WatchReceivePayjoinMinAmountUsecase(
         settingsFacade: locator<SettingsFacade>(),
       ),
     );
@@ -63,6 +69,8 @@ class ReceiveLocator {
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         watchPayjoinEnabledChangesUsecase:
             locator<WatchPayjoinEnabledChangesUsecase>(),
+        watchReceivePayjoinMinAmountUsecase:
+            locator<WatchReceivePayjoinMinAmountUsecase>(),
         setReceivePayjoinEnabledUsecase:
             locator<SetReceivePayjoinEnabledUsecase>(),
         wallet: wallet,

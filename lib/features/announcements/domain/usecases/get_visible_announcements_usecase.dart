@@ -38,9 +38,9 @@ class GetVisibleAnnouncementsUsecase {
       // the trigger threshold applies to. The threshold rule itself lives on
       // the AutoSwap entity (passedRequiredBalance also checks `enabled`).
       final signals = AnnouncementSignals(
-        isAutoswapTriggerable: autoSwap.passedRequiredBalance(
-          liquidBalanceSat.toInt(),
-        ),
+        isAutoswapTriggerable:
+            !autoSwap.showWarning &&
+            autoSwap.passedRequiredBalance(liquidBalanceSat.toInt()),
       );
 
       final dismissedAtById = {for (final d in dismissals) d.id: d.dismissedAt};

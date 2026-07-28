@@ -264,7 +264,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
-  }) async {
+  }) => _lock.synchronized(() async {
     final model = await _pdkPayjoinDatasource.createReceiver(
       walletId: walletId,
       address: address,
@@ -273,13 +273,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       expireAfterSec: expireAfterSec,
     );
 
-    // Store the payjoin receiver in the local database
+    final settings = await _settingsRepository.fetch();
+    if (!settings.isPayjoinEnabled) {
+      _pdkPayjoinDatasource.stopPolling(model.id);
+      throw StateError('Payjoin was disabled while creating the receiver');
+    }
+
     await _localPayjoinDatasource.storeReceiver(model);
-
-    final payjoin = model.toEntity() as PayjoinReceiver;
-
-    return payjoin;
-  }
+    return model.toEntity() as PayjoinReceiver;
+  });
 
   @override
   Future<PayjoinSender> createPayjoinSender({
@@ -322,7 +324,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   @override
-  Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin) async {
+  Future<Payjoin?> tryBroadcastOriginalTransaction(
+    Payjoin payjoin,
+  ) => _lock.synchronized(() async {
     // Idempotency/safety guard for MANUAL/external callers only (the
     // BroadcastOriginalTransactionUsecase invoked from
     // ReceiveBloc._onPayjoinOriginalTxBroadcasted and
@@ -373,7 +377,33 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _payjoinStreamController.add(result);
     }
     return result;
-  }
+  });
+
+  @override
+  Future<void> disableReceivers() => _lock.synchronized(() async {
+    final receivers = await _localPayjoinDatasource.fetchReceivers(
+      onlyOngoing: true,
+    );
+    for (final receiver in receivers) {
+      final fresh = await _localPayjoinDatasource.fetchReceiver(receiver.id);
+      if (fresh == null || fresh.isCompleted || fresh.isAborted) continue;
+
+      // Once a proposal has been posted, the sender owns the final
+      // transaction. Keep its broadcast/fallback watchers alive.
+      if (fresh.proposalPsbt != null) continue;
+
+      if (fresh.originalTxBytes != null) {
+        final result = await _broadcastOriginalWithRetry(fresh.toEntity());
+        if (result == null) {
+          throw StateError('Failed to fall back an active Payjoin receiver');
+        }
+        continue;
+      }
+
+      _stopWatching(fresh.id);
+      await _localPayjoinDatasource.deleteReceiver(fresh.id);
+    }
+  });
 
   /// The actual original-transaction broadcast mechanism, shared by the
   /// public (guarded) [tryBroadcastOriginalTransaction] entry point and this
@@ -799,6 +829,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final payjoin = expiredModel.toEntity();
 
     // TODO: Unfreeze the utxo used in the payjoin
+
+    if (expiredModel is PayjoinReceiverModel &&
+        expiredModel.originalTxBytes == null) {
+      // No sender ever contacted this endpoint. It is not a transaction and
+      // must not leave a terminal 0-sat row in history. Notify the live
+      // receive flow so it can rotate to a fresh endpoint, then remove it.
+      _stopWatching(expiredModel.id);
+      await _localPayjoinDatasource.deleteReceiver(expiredModel.id);
+      _payjoinStreamController.add(payjoin);
+      return;
+    }
 
     if (payjoin is PayjoinReceiver &&
         payjoin.originalTxBytes != null &&
@@ -1495,7 +1536,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// a real payjoin. `txId` is cleared for the same reason
   /// [_broadcastOriginalTransaction] clears it. Never labels the transaction
   /// "payjoin" — this is by definition not a real one.
-  Future<void> _onOriginalTransactionSeen(String payjoinId) async {
+  Future<void> _onOriginalTransactionSeen(
+    String payjoinId,
+  ) => _lock.synchronized(() async {
     // Stop first: the watch stream re-emits on every sync, and completion is
     // a one-shot side effect. Whichever of the real payjoin txid or this
     // original txid lands first resolves the session, so both watchers are
@@ -1521,7 +1564,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       'transaction observed on-chain (fallback, not necessarily broadcast '
       'by this device)',
     );
-  }
+  });
 
   /// Stops every watcher of a session — the real-payjoin broadcast watch
   /// ([_watchForBroadcast]), the original-transaction fallback watch

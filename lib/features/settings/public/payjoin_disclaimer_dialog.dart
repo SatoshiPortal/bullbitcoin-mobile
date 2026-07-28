@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 
 /// Passive Payjoin privacy disclosure shared by settings and receive.
 abstract final class PayjoinDisclaimerDialog {
-  static Future<void> show(BuildContext context) {
-    return BullDialog.show<void>(
+  static Future<bool> show(BuildContext context) async {
+    final accepted = await BullDialog.show<bool>(
       context: context,
-      builder: (dialogContext) => _PayjoinDisclaimerBody(dialogContext),
+      isDismissible: false,
+      builder: (dialogContext) =>
+          PopScope(canPop: false, child: _PayjoinDisclaimerBody(dialogContext)),
     );
+    return accepted ?? false;
   }
 }
 
@@ -42,7 +45,7 @@ class _PayjoinDisclaimerBody extends StatelessWidget {
         const Gap(20),
         BullButton.small(
           label: context.loc.okButton,
-          onPressed: () => Navigator.of(dialogContext).pop(),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
           bgColor: colors.primary,
           textColor: colors.onPrimary,
         ),

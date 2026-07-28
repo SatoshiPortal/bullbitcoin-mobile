@@ -47,6 +47,10 @@ class LocalPayjoinDatasource {
     return PayjoinModel.fromSenderTable(sender) as PayjoinSenderModel;
   }
 
+  Future<void> deleteReceiver(String id) async {
+    await _db.managers.payjoinReceivers.filter((f) => f.id(id)).delete();
+  }
+
   Future<List<PayjoinModel>> fetchAll({
     String? walletId,
     bool onlyUnfinished = false,

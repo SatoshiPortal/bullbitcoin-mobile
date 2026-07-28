@@ -53,6 +53,7 @@ void main() {
     required bool autoswapEnabled,
     required int liquidBalanceSat,
     int triggerBalanceSats = 1000000,
+    bool showWarning = false,
     List<AnnouncementDismissal> dismissals = const [],
   }) {
     when(
@@ -62,6 +63,7 @@ void main() {
       (_) async => AutoSwap(
         enabled: autoswapEnabled,
         triggerBalanceSats: triggerBalanceSats,
+        showWarning: showWarning,
       ),
     );
     when(
@@ -98,6 +100,18 @@ void main() {
     final list = (result as Ok<List<Announcement>, dynamic>).value;
     expect(list, isEmpty);
   });
+
+  test(
+    'hides it until the mandatory autoswap warning is acknowledged',
+    () async {
+      stub(autoswapEnabled: true, liquidBalanceSat: 5000000, showWarning: true);
+
+      final result = await usecase.execute();
+
+      final list = (result as Ok<List<Announcement>, dynamic>).value;
+      expect(list, isEmpty);
+    },
+  );
 
   test('hides it when permanently dismissed', () async {
     stub(

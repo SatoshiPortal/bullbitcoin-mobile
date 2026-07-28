@@ -117,7 +117,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
     required this._selectedFeeOptionTitle,
     this._onFeePriorityTap,
     this._isToSelf = false,
-    this._isPayjoin = false,
+    this._checkedStatusLabel,
     this._note = '',
   });
   final String _sendWalletLabel;
@@ -129,9 +129,8 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final VoidCallback? _onFeePriorityTap;
   final bool _isToSelf;
 
-  /// Whether this send will attempt a payjoin (the scanned BIP21 carried a
-  /// pj= endpoint) — shown as a ticked row, mirroring the self-transfer one.
-  final bool _isPayjoin;
+  /// Optional checked capability/status row supplied by the owning feature.
+  final String? _checkedStatusLabel;
   final String _note;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
@@ -177,10 +176,10 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
-          if (_isPayjoin) ...[
+          if (_checkedStatusLabel != null) ...[
             _divider(context),
             CommonInfoRow(
-              title: context.loc.sendPayjoinLabel,
+              title: _checkedStatusLabel,
               details: Align(
                 alignment: Alignment.centerRight,
                 child: Icon(

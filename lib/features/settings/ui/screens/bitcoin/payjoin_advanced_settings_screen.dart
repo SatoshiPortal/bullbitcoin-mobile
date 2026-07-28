@@ -45,13 +45,17 @@ class _PayjoinAdvancedSettingsScreenState
   final FocusNode _expireNode = FocusNode();
   Timer? _minAmountDebounce;
   Timer? _expireDebounce;
+  int? _pendingMinAmount;
+  int? _pendingExpireAfterSec;
   String? _minAmountError;
   String? _expireError;
+  late final SettingsCubit _settingsCubit;
 
   @override
   void initState() {
     super.initState();
-    final settings = context.read<SettingsCubit>().state;
+    _settingsCubit = context.read<SettingsCubit>();
+    final settings = _settingsCubit.state;
     _minAmountController = TextEditingController(
       text: settings.payjoinMinAmountSat.toString(),
     );
@@ -64,6 +68,20 @@ class _PayjoinAdvancedSettingsScreenState
   void dispose() {
     _minAmountDebounce?.cancel();
     _expireDebounce?.cancel();
+    final pendingMinAmount = _pendingMinAmount;
+    if (pendingMinAmount != null) {
+      unawaited(
+        _persist(() => _settingsCubit.setPayjoinMinAmount(pendingMinAmount)),
+      );
+    }
+    final pendingExpireAfterSec = _pendingExpireAfterSec;
+    if (pendingExpireAfterSec != null) {
+      unawaited(
+        _persist(
+          () => _settingsCubit.setPayjoinExpireAfterSec(pendingExpireAfterSec),
+        ),
+      );
+    }
     _minAmountController.dispose();
     _expireController.dispose();
     _minAmountNode.dispose();
@@ -73,6 +91,7 @@ class _PayjoinAdvancedSettingsScreenState
 
   void _onMinAmountChanged(String value) {
     _minAmountDebounce?.cancel();
+    _pendingMinAmount = null;
     // An empty field is "still typing", not an invalid value: clear any
     // error and don't persist anything.
     if (value.isEmpty) {
@@ -92,15 +111,16 @@ class _PayjoinAdvancedSettingsScreenState
       return;
     }
     setState(() => _minAmountError = null);
+    _pendingMinAmount = amountSat;
     _minAmountDebounce = Timer(_debounceDuration, () {
-      _persist(
-        () => context.read<SettingsCubit>().setPayjoinMinAmount(amountSat),
-      );
+      _pendingMinAmount = null;
+      _persist(() => _settingsCubit.setPayjoinMinAmount(amountSat));
     });
   }
 
   void _onExpireChanged(String value) {
     _expireDebounce?.cancel();
+    _pendingExpireAfterSec = null;
     if (value.isEmpty) {
       setState(() => _expireError = null);
       return;
@@ -118,12 +138,10 @@ class _PayjoinAdvancedSettingsScreenState
       return;
     }
     setState(() => _expireError = null);
+    _pendingExpireAfterSec = expireAfterSec;
     _expireDebounce = Timer(_debounceDuration, () {
-      _persist(
-        () => context.read<SettingsCubit>().setPayjoinExpireAfterSec(
-          expireAfterSec,
-        ),
-      );
+      _pendingExpireAfterSec = null;
+      _persist(() => _settingsCubit.setPayjoinExpireAfterSec(expireAfterSec));
     });
   }
 
@@ -131,7 +149,6 @@ class _PayjoinAdvancedSettingsScreenState
   /// UI validates bounds before ever calling this, so a throw here is a
   /// programmer bug that must not be silently swallowed.
   Future<void> _persist(Future<void> Function() save) async {
-    if (!mounted) return;
     try {
       await save();
     } catch (e) {
