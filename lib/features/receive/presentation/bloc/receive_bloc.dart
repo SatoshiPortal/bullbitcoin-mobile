@@ -188,10 +188,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(payjoin: null, receivePayjoinException: null));
       }
 
+      final eventWallet = event.wallet != null && event.wallet!.isBitcoin
+          ? event.wallet
+          : null;
       if (state.wallet != null && !state.wallet!.isBitcoin) {
         emit(state.copyWith(wallet: null, bitcoinAddress: null));
       } else {
-        emit(state.copyWith(wallet: event.wallet, bitcoinAddress: null));
+        emit(state.copyWith(wallet: eventWallet, bitcoinAddress: null));
       }
 
       // Emit a state with the Bitcoin type so the UI can update allready before
@@ -209,8 +212,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ),
       );
 
-      // If no wallet is passed through the constructor, get the default bitcoin wallet
-      Wallet? wallet = _wallet ?? state.wallet;
+      // If no bitcoin wallet is passed through the constructor, get the
+      // default bitcoin wallet. The network check on _wallet matters: the
+      // preselected wallet survives tab switches (the shell's bloc is
+      // created once), so entering receive from a liquid wallet and
+      // switching to the Bitcoin tab must not resurrect the liquid wallet
+      // here — its balance would drive the payjoin gates (hasUtxos,
+      // _isPayjoinEligible) and its id the generated address.
+      final presetWallet = _wallet != null && _wallet.isBitcoin
+          ? _wallet
+          : null;
+      Wallet? wallet = presetWallet ?? state.wallet;
       if (wallet == null) {
         final wallets = await _getWalletsUsecase.execute(onlyBitcoin: true);
         emit(state.copyWith(wallets: wallets));
@@ -493,8 +505,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
       }
 
-      // If no wallet is passed through the constructor, get the default liquid wallet
-      Wallet? wallet = _wallet;
+      // If no liquid wallet is passed through the constructor, get the
+      // default liquid wallet (same network guard as the bitcoin flow: the
+      // preselected wallet survives tab switches).
+      Wallet? wallet = _wallet != null && _wallet.isLiquid ? _wallet : null;
       if (wallet == null) {
         final wallets = await _getWalletsUsecase.execute(
           onlyLiquid: true,

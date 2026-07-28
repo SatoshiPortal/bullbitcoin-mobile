@@ -90,9 +90,10 @@ Wallet _testWallet({
   String origin = 'w1',
   BigInt? balanceSat,
   BigInt? confirmedBalanceSat,
+  Network network = Network.bitcoinMainnet,
 }) => Wallet(
   origin: origin,
-  network: Network.bitcoinMainnet,
+  network: network,
   xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
   xpub: '',
@@ -133,6 +134,7 @@ PayjoinReceiver _receiver({
         as PayjoinReceiver;
 
 void main() {
+  late _MockGetWalletsUsecase getWallets;
   late _MockGetSettingsUsecase getSettings;
   late _MockGetAvailableCurrenciesUsecase getAvailableCurrencies;
   late _MockConvertSatsToCurrencyAmountUsecase convertSatsToCurrency;
@@ -153,7 +155,7 @@ void main() {
   });
 
   ReceiveBloc buildBloc({Wallet? wallet}) => ReceiveBloc(
-    getWalletsUsecase: _MockGetWalletsUsecase(),
+    getWalletsUsecase: getWallets,
     getAvailableCurrenciesUsecase: getAvailableCurrencies,
     getSettingsUsecase: getSettings,
     convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
@@ -174,6 +176,10 @@ void main() {
   );
 
   setUp(() {
+    getWallets = _MockGetWalletsUsecase();
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => [_testWallet(origin: 'default-btc')]);
     getSettings = _MockGetSettingsUsecase();
     getAvailableCurrencies = _MockGetAvailableCurrenciesUsecase();
     convertSatsToCurrency = _MockConvertSatsToCurrencyAmountUsecase();
@@ -638,6 +644,51 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       verify(() => labels.trash(7)).called(1);
+    });
+  });
+
+  group('preselected-wallet network guard', () {
+    // The preselected wallet survives tab switches (the shell's bloc is
+    // created once), so a receive entered from a liquid wallet must not
+    // carry that wallet into the bitcoin flow — its balance would drive the
+    // payjoin gates and its id the generated address.
+    test('a liquid preselected wallet never becomes the bitcoin flow wallet '
+        '— the default bitcoin wallet is used instead', () async {
+      final liquidWallet = _testWallet(
+        origin: 'liquid-w',
+        network: Network.liquidMainnet,
+        balanceSat: BigInt.from(900000),
+      );
+      final bloc = buildBloc(wallet: liquidWallet);
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.wallet?.origin, 'default-btc');
+      expect(bloc.state.wallet?.isBitcoin, isTrue);
+    });
+
+    test('payjoin gates read the bitcoin wallet balance, not the funded '
+        'liquid wallet the flow was entered with', () async {
+      when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
+        (_) async => [
+          _testWallet(origin: 'default-btc', balanceSat: BigInt.zero),
+        ],
+      );
+      final liquidWallet = _testWallet(
+        origin: 'liquid-w',
+        network: Network.liquidMainnet,
+        balanceSat: BigInt.from(900000),
+      );
+      final bloc = buildBloc(wallet: liquidWallet);
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.hasUtxos, isFalse);
+      expect(bloc.state.isPayjoinToggleable, isFalse);
     });
   });
 
