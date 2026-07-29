@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -12,24 +11,18 @@ typedef DcaStartData = ({
   List<UserBalance> balances,
   FiatCurrency? currency,
   String? lightningAddress,
-  Map<String, dynamic> buyLimits,
 });
 
 class StartDcaUsecase {
   final SettingsRepository _settingsRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
-  final ExchangeOrderRepository _mainnetDcaRepository;
-  final ExchangeOrderRepository _testnetDcaRepository;
 
   StartDcaUsecase({
     required this._settingsRepository,
     required this._mainnetExchangeUserRepository,
     required this._testnetExchangeUserRepository,
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-  }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
-       _testnetDcaRepository = testnetExchangeOrderRepository;
+  });
 
   @useResult
   Future<Result<DcaStartData, DcaFailure>> execute() async {
@@ -73,21 +66,10 @@ class StartDcaUsecase {
         : FiatCurrency.fromCode(currencyCode);
     final defaultLightningAddress = userSummary.autoBuy.addresses.lightning;
 
-    final Map<String, dynamic> buyLimits;
-    try {
-      buyLimits = isMainnet
-          ? await _mainnetDcaRepository.getBuyLimits()
-          : await _testnetDcaRepository.getBuyLimits();
-    } catch (e, st) {
-      log.warning('Failed to fetch buy limits', error: e, trace: st);
-      return Err(DcaAccountUnavailableFailure(e.toString()));
-    }
-
     return Ok((
       balances: balances,
       currency: currency,
       lightningAddress: defaultLightningAddress,
-      buyLimits: buyLimits,
     ));
   }
 }

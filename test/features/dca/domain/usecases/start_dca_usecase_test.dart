@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -11,17 +10,12 @@ import 'package:mocktail/mocktail.dart';
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserRepository {}
 
-class MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
-
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
   late MockSettingsRepository settings;
   late MockExchangeUserRepository mainnetUsers;
   late MockExchangeUserRepository testnetUsers;
-  late MockExchangeOrderRepository mainnetOrders;
-  late MockExchangeOrderRepository testnetOrders;
   late StartDcaUsecase usecase;
 
   const mainnetSettings = SettingsEntity(
@@ -34,14 +28,10 @@ void main() {
     settings = MockSettingsRepository();
     mainnetUsers = MockExchangeUserRepository();
     testnetUsers = MockExchangeUserRepository();
-    mainnetOrders = MockExchangeOrderRepository();
-    testnetOrders = MockExchangeOrderRepository();
     usecase = StartDcaUsecase(
       settingsRepository: settings,
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
-      mainnetExchangeOrderRepository: mainnetOrders,
-      testnetExchangeOrderRepository: testnetOrders,
     );
     when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
   });

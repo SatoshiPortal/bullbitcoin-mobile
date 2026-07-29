@@ -25,12 +25,6 @@ class DcaLocator {
         testnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'testnetExchangeUserRepository',
         ),
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
       ),
     );
     locator.registerFactory<SetDcaUsecase>(
