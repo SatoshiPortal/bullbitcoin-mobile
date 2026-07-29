@@ -23,6 +23,7 @@ sealed class PayEvent with _$PayEvent {
   // back, so a second copy on the event could only ever disagree (#2521).
   const factory PayEvent.sendPaymentConfirmed() = PaySendPaymentConfirmed;
   const factory PayEvent.pollOrderStatus() = PayPollOrderStatus;
+  const factory PayEvent.payjoinToggled(bool enabled) = PayPayjoinToggled;
   const factory PayEvent.replaceByFeeChanged({required bool replaceByFee}) =
       PayReplaceByFeeChanged;
   const factory PayEvent.utxosSelected({required List<WalletUtxo> utxos}) =

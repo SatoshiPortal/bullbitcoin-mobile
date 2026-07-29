@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
@@ -58,6 +59,11 @@ class PaySendPaymentScreen extends StatelessWidget {
           bloc.state is PayPaymentState &&
           (bloc.state as PayPaymentState).isConfirmingPayment,
     );
+    final isPayinBroadcast = context.select(
+      (PayBloc bloc) =>
+          bloc.state is PayPaymentState &&
+          (bloc.state as PayPaymentState).isPayinBroadcast,
+    );
     final wallet = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
           ? (bloc.state as PayPaymentState).selectedWallet
@@ -72,6 +78,11 @@ class PaySendPaymentScreen extends StatelessWidget {
       (PayBloc bloc) => bloc.state is PayPaymentState
           ? (bloc.state as PayPaymentState).selectedRecipient
           : null,
+    );
+    final isPayjoinEnabled = context.select(
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).isPayjoinEnabled
+          : false,
     );
 
     return Scaffold(
@@ -215,6 +226,27 @@ class PaySendPaymentScreen extends StatelessWidget {
                 return context.loc.payCalculating;
               }),
             ),
+            if (wallet != null &&
+                !wallet.isLiquid &&
+                order?.payjoinBip21 != null)
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.loc.payjoinUseToggle,
+                      style: context.font.bodyMedium,
+                    ),
+                  ),
+                  BBSwitch(
+                    value: isPayjoinEnabled,
+                    onChanged: isConfirmingPayment || isPayinBroadcast
+                        ? null
+                        : (enabled) => context.read<PayBloc>().add(
+                            PayEvent.payjoinToggled(enabled),
+                          ),
+                  ),
+                ],
+              ),
             const Spacer(),
             _BottomButtons(
               onContinuePressed: () {
@@ -442,6 +474,11 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is PayPaymentState &&
           (bloc.state as PayPaymentState).isConfirmingPayment,
     );
+    final isPayinBroadcast = context.select(
+      (PayBloc bloc) =>
+          bloc.state is PayPaymentState &&
+          (bloc.state as PayPaymentState).isPayinBroadcast,
+    );
     final wallet = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
           ? (bloc.state as PayPaymentState).selectedWallet
@@ -453,6 +490,7 @@ class _BottomButtons extends StatelessWidget {
         if (wallet != null && !wallet.isLiquid) ...[
           BBButton.big(
             label: context.loc.payAdvancedSettings,
+            disabled: isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
               BlurredBottomSheet.show(
                 context: context,
@@ -471,7 +509,7 @@ class _BottomButtons extends StatelessWidget {
         ],
         BBButton.big(
           label: context.loc.payContinue,
-          disabled: isConfirmingPayment,
+          disabled: isConfirmingPayment || isPayinBroadcast,
           onPressed: onContinuePressed,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

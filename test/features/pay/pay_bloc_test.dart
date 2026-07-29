@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -19,6 +20,8 @@ import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_typ
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -68,6 +71,15 @@ class _MockGetWalletUtxosUsecase extends Mock
 
 class _MockGetOrderUsecase extends Mock implements GetOrderUsecase {}
 
+class _MockSendWithPayjoinUsecase extends Mock
+    implements SendWithPayjoinUsecase {}
+
+class _MockPreviewBitcoinFeeUsecase extends Mock
+    implements PreviewBitcoinFeeUsecase {}
+
+class _MockPreviewBitcoinFeePresetsUsecase extends Mock
+    implements PreviewBitcoinFeePresetsUsecase {}
+
 class _MockWallet extends Mock implements Wallet {}
 
 /// Exposes [emit] so a test can put the bloc on the state under test instead of
@@ -83,6 +95,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTransactionUsecase,
     required super.broadcastLiquidTransactionUsecase,
+    required super.sendWithPayjoinUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -90,6 +103,8 @@ class _SeedablePayBloc extends PayBloc {
     required super.getAddressAtIndexUsecase,
     required super.getWalletUtxosUsecase,
     required super.getOrderUsecase,
+    required super.previewBitcoinFeeUsecase,
+    required super.previewBitcoinFeePresetsUsecase,
   });
 
   void seed(PayState state) => emit(state);
@@ -155,6 +170,7 @@ void main() {
     broadcastBitcoinTransactionUsecase:
         _MockBroadcastBitcoinTransactionUsecase(),
     broadcastLiquidTransactionUsecase: broadcastLiquid,
+    sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
     getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
     calculateLiquidAbsoluteFeesUsecase:
         _MockCalculateLiquidAbsoluteFeesUsecase(),
@@ -165,6 +181,8 @@ void main() {
     getAddressAtIndexUsecase: _MockGetAddressAtIndexUsecase(),
     getWalletUtxosUsecase: _MockGetWalletUtxosUsecase(),
     getOrderUsecase: getOrder,
+    previewBitcoinFeeUsecase: _MockPreviewBitcoinFeeUsecase(),
+    previewBitcoinFeePresetsUsecase: _MockPreviewBitcoinFeePresetsUsecase(),
   );
 
   setUpAll(() {
@@ -225,9 +243,7 @@ void main() {
     final successState = bloc.stream.firstWhere(
       (state) => state is PaySuccessState,
     );
-    bloc.add(
-      const PayEvent.sendPaymentConfirmed(feeSelection: FeeSelection.economic),
-    );
+    bloc.add(const PayEvent.sendPaymentConfirmed());
 
     final state = await successState as PaySuccessState;
     expect(state.payOrder.payinStatus, OrderPayinStatus.awaitingConfirmation);

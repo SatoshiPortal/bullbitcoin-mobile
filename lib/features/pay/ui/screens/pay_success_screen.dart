@@ -84,11 +84,22 @@ class PaySuccessScreen extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.payViewDetails,
                     onPressed: () {
-                      context.pushNamed(
-                        TransactionsRoute.orderTransactionDetails.name,
-                        pathParameters: {'orderId': order.orderId},
-                        queryParameters: {'returnToExchange': 'true'},
-                      );
+                      final txId = order.payjoin?.txid;
+                      if (txId != null) {
+                        context.pushNamed(
+                          TransactionsRoute
+                              .payjoinTransactionDetailsByTxId
+                              .name,
+                          pathParameters: {'txId': txId},
+                          queryParameters: {'returnToExchange': 'true'},
+                        );
+                      } else {
+                        context.pushNamed(
+                          TransactionsRoute.orderTransactionDetails.name,
+                          pathParameters: {'orderId': order.orderId},
+                          queryParameters: {'returnToExchange': 'true'},
+                        );
+                      }
                     },
                     bgColor: context.appColors.secondary,
                     textColor: context.appColors.onSecondary,

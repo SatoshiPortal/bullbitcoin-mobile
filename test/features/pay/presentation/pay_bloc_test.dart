@@ -10,6 +10,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -69,6 +71,8 @@ class _MockGetWalletUtxos extends Mock implements GetWalletUtxosUsecase {}
 
 class _MockGetOrder extends Mock implements GetOrderUsecase {}
 
+class _MockSendWithPayjoin extends Mock implements SendWithPayjoinUsecase {}
+
 class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
 class _MockPreviewBitcoinFeePresets extends Mock
@@ -92,6 +96,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTransactionUsecase,
     required super.broadcastLiquidTransactionUsecase,
+    required super.sendWithPayjoinUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -114,6 +119,8 @@ void main() {
       'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
       'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
   const payinAddress = 'bc1q0000000000000000000000000000000000000';
+  const expectedTxid =
+      '813d01e5c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
   const userSummary = UserSummary(
     userNumber: 1,
     groups: ['KYC_IDENTITY_VERIFIED'],
@@ -139,27 +146,29 @@ void main() {
   );
 
   late _MockPrepareBitcoinSend prepareBitcoinSend;
+  late _MockSignBitcoinTx signBitcoinTx;
   late _MockBroadcastBitcoin broadcastBitcoin;
+  late _MockCalculateBitcoinFees calculateBitcoinFees;
   late _MockGetNetworkFees getNetworkFees;
   late _MockGetOrder getOrder;
+  late _MockRefreshPayOrder refreshPayOrder;
+  late _MockSendWithPayjoin sendWithPayjoin;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockPayOrder payOrder;
   late _MockWallet wallet;
   late _SeedablePayBloc bloc;
 
   /// Every `networkFee` the bloc handed to a PSBT build, in call order.
-  List<NetworkFee> capturedBuildFees() =>
-      verify(
-            () => prepareBitcoinSend.execute(
-              walletId: any(named: 'walletId'),
-              address: any(named: 'address'),
-              amountSat: any(named: 'amountSat'),
-              networkFee: captureAny(named: 'networkFee'),
-              selectedInputs: any(named: 'selectedInputs'),
-              replaceByFee: any(named: 'replaceByFee'),
-            ),
-          ).captured
-          .cast<NetworkFee>();
+  List<NetworkFee> capturedBuildFees() => verify(
+    () => prepareBitcoinSend.execute(
+      walletId: any(named: 'walletId'),
+      address: any(named: 'address'),
+      amountSat: any(named: 'amountSat'),
+      networkFee: captureAny(named: 'networkFee'),
+      selectedInputs: any(named: 'selectedInputs'),
+      replaceByFee: any(named: 'replaceByFee'),
+    ),
+  ).captured.cast<NetworkFee>();
 
   /// Asserts the bloc never asked for a PSBT build. Separate from
   /// [capturedBuildFees] because `verify` needs at least one matching call.
@@ -204,22 +213,25 @@ void main() {
 
   setUp(() {
     prepareBitcoinSend = _MockPrepareBitcoinSend();
+    signBitcoinTx = _MockSignBitcoinTx();
     broadcastBitcoin = _MockBroadcastBitcoin();
+    calculateBitcoinFees = _MockCalculateBitcoinFees();
     getNetworkFees = _MockGetNetworkFees();
     getOrder = _MockGetOrder();
+    refreshPayOrder = _MockRefreshPayOrder();
+    sendWithPayjoin = _MockSendWithPayjoin();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     payOrder = _MockPayOrder();
     wallet = _MockWallet();
 
     when(() => wallet.id).thenReturn('wallet-1');
     when(() => wallet.isLiquid).thenReturn(false);
+    when(() => wallet.network).thenReturn(Network.bitcoinMainnet);
     when(() => payOrder.orderId).thenReturn('order-1');
     when(() => payOrder.payinAmount).thenReturn(0.001);
     when(() => payOrder.payoutCurrency).thenReturn('CAD');
     when(() => payOrder.bitcoinAddress).thenReturn(payinAddress);
 
-    final signBitcoinTx = _MockSignBitcoinTx();
-    final calculateBitcoinFees = _MockCalculateBitcoinFees();
     when(
       () => prepareBitcoinSend.execute(
         walletId: any(named: 'walletId'),
@@ -243,10 +255,7 @@ void main() {
     ).thenAnswer((_) async => (signedPsbt: unsignedPsbt, txSize: 110));
     when(
       () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
-    ).thenAnswer(
-      (_) async =>
-          '813d01e5c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55',
-    );
+    ).thenAnswer((_) async => expectedTxid);
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => feeOptions);
@@ -257,13 +266,14 @@ void main() {
     bloc = _SeedablePayBloc(
       getExchangeUserSummaryUsecase: _MockGetUserSummary(),
       placePayOrderUsecase: _MockPlacePayOrder(),
-      refreshPayOrderUsecase: _MockRefreshPayOrder(),
+      refreshPayOrderUsecase: refreshPayOrder,
       prepareBitcoinSendUsecase: prepareBitcoinSend,
       prepareLiquidSendUsecase: _MockPrepareLiquidSend(),
       signBitcoinTxUsecase: signBitcoinTx,
       signLiquidTxUsecase: _MockSignLiquidTx(),
       broadcastBitcoinTransactionUsecase: broadcastBitcoin,
       broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
+      sendWithPayjoinUsecase: sendWithPayjoin,
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
@@ -279,6 +289,194 @@ void main() {
   });
 
   tearDown(() => bloc.close());
+
+  group('PayBloc — broadcast latch', () {
+    test(
+      'a post-broadcast failure never allows a second broadcast',
+      () async {
+        when(
+          () => getOrder.execute(orderId: any(named: 'orderId')),
+        ).thenThrow(GetOrderException('backend unavailable'));
+
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is PayPaymentState && state.isPayinBroadcast,
+        );
+        await Future<void>.delayed(const Duration(seconds: 6));
+
+        final latched = bloc.state as PayPaymentState;
+        expect(latched.payinBroadcastTxid, expectedTxid);
+        expect(latched.isConfirmingPayment, isTrue);
+        expect(latched.error, isNull);
+
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        verify(
+          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        ).called(1);
+        verify(
+          () => prepareBitcoinSend.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            networkFee: any(named: 'networkFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            replaceByFee: any(named: 'replaceByFee'),
+          ),
+        ).called(1);
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
+    test('simultaneous confirmations start one send only', () async {
+      final build =
+          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+      when(
+        () => prepareBitcoinSend.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenAnswer((_) => build.future);
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      verify(
+        () => prepareBitcoinSend.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).called(1);
+
+      build.complete((
+        unsignedPsbt: unsignedPsbt,
+        txSize: 110,
+        isToSelf: false,
+      ));
+      await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.isPayinBroadcast,
+      );
+    });
+
+    test('a price refresh cannot overwrite a confirmation in flight', () async {
+      final refresh = Completer<FiatPaymentOrder>();
+      when(
+        () => refreshPayOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) => refresh.future);
+
+      bloc.add(const PayEvent.orderRefreshTimePassed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      bloc.seed(paymentState(isConfirmingPayment: true));
+      refresh.complete(payOrder);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
+    });
+
+    test('Payjoin toggle is ignored while confirmation is in flight', () async {
+      bloc.seed(paymentState(isConfirmingPayment: true));
+
+      bloc.add(const PayEvent.payjoinToggled(false));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect((bloc.state as PayPaymentState).isPayjoinEnabled, isTrue);
+    });
+
+    test('an order poll spanning broadcast preserves the latch', () async {
+      final poll = Completer<Order>();
+      when(
+        () => getOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) => poll.future);
+      when(
+        () => payOrder.payinStatus,
+      ).thenReturn(OrderPayinStatus.awaitingPayment);
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      bloc.seed(
+        paymentState(
+          isConfirmingPayment: true,
+        ).copyWith(payinBroadcastTxid: expectedTxid),
+      );
+      poll.complete(payOrder);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final state = bloc.state as PayPaymentState;
+      expect(state.payinBroadcastTxid, expectedTxid);
+      expect(state.isConfirmingPayment, isTrue);
+    });
+
+    test('absolute custom fees pass their actual rate to Payjoin', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => payOrder.bip21URI).thenReturn(bip21);
+      when(
+        () => payOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(
+        () => calculateBitcoinFees.execute(psbt: any(named: 'psbt')),
+      ).thenAnswer((_) async => 1100);
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            Payjoin.sender(
+                  uri: bip21,
+                  isTestnet: false,
+                  walletId: 'wallet-1',
+                  originalPsbt: unsignedPsbt,
+                  originalTxId: expectedTxid,
+                  amountSat: 100000,
+                  createdAt: DateTime(2026),
+                  expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+                )
+                as PayjoinSender,
+      );
+      bloc.seed(
+        paymentState().copyWith(
+          selectedFeeOption: FeeSelection.custom,
+          customFee: const NetworkFee.absolute(1100),
+          absoluteFees: 1100,
+        ),
+      );
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.isPayinBroadcast,
+      );
+
+      verify(
+        () => sendWithPayjoin.execute(
+          walletId: 'wallet-1',
+          isTestnet: false,
+          bip21: bip21,
+          unsignedOriginalPsbt: unsignedPsbt,
+          amountSat: 100000,
+          networkFeesSatPerVb: 10,
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).called(1);
+    });
+  });
 
   group('PayBloc — fee selection (#2521)', () {
     /// Resolves once the fee recalculation triggered by a selection has landed.
@@ -398,92 +596,108 @@ void main() {
       expect(cache.custom.feeSat, isNull);
     });
 
-    test('the payin is built at the selected preset, not Fastest', () async {
-      bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
-      final recalculated = await awaitRecalculatedFee();
-      expect(recalculated.selectedFeeOption, FeeSelection.slow);
+    test(
+      'the payin is built at the selected preset, not Fastest',
+      () async {
+        bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
+        final recalculated = await awaitRecalculatedFee();
+        expect(recalculated.selectedFeeOption, FeeSelection.slow);
 
-      bloc.add(const PayEvent.sendPaymentConfirmed());
-      await bloc.stream.firstWhere((state) => state is PaySuccessState);
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere((state) => state is PaySuccessState);
 
-      // Both the estimate rebuild and the broadcast build used Slow; the
-      // hardcoded Fastest rate must appear nowhere.
-      expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
-      verify(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
-      ).called(1);
-    }, timeout: const Timeout(Duration(seconds: 60)));
+        // Both the estimate rebuild and the broadcast build used Slow; the
+        // hardcoded Fastest rate must appear nowhere.
+        expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
+        verify(
+          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        ).called(1);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
 
-    test('a typed custom rate is committed on dismissal and paid', () async {
-      final customFee = NetworkFee.relativeFromSatPerVbyte(3);
+    test(
+      'a typed custom rate is committed on dismissal and paid',
+      () async {
+        final customFee = NetworkFee.relativeFromSatPerVbyte(3);
 
-      // Typing arms the rate without rebuilding; dismissing the modal is what
-      // applies it.
-      bloc.add(PayEvent.customFeeArmed(customFee));
-      await bloc.stream.firstWhere(
-        (state) =>
-            state is PayPaymentState &&
-            state.selectedFeeOption == FeeSelection.custom,
-      );
-      verifyNoBuilds();
+        // Typing arms the rate without rebuilding; dismissing the modal is what
+        // applies it.
+        bloc.add(PayEvent.customFeeArmed(customFee));
+        await bloc.stream.firstWhere(
+          (state) =>
+              state is PayPaymentState &&
+              state.selectedFeeOption == FeeSelection.custom,
+        );
+        verifyNoBuilds();
 
-      bloc.add(const PayEvent.customFeeFinalized());
-      final committed = await awaitRecalculatedFee();
-      expect(committed.customFee, customFee);
-      expect(committed.armPriorSelection, isNull);
+        bloc.add(const PayEvent.customFeeFinalized());
+        final committed = await awaitRecalculatedFee();
+        expect(committed.customFee, customFee);
+        expect(committed.armPriorSelection, isNull);
 
-      bloc.add(const PayEvent.sendPaymentConfirmed());
-      await bloc.stream.firstWhere((state) => state is PaySuccessState);
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere((state) => state is PaySuccessState);
 
-      expect(capturedBuildFees(), everyElement(equals(customFee)));
-    }, timeout: const Timeout(Duration(seconds: 60)));
+        expect(capturedBuildFees(), everyElement(equals(customFee)));
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
 
-    test('a custom rate below the relay floor rolls back on dismissal', () async {
-      // 0.05 sat/vB is under the 0.1 sat/vB floor, so dismissing discards it
-      // rather than staging a transaction the network would not relay.
-      bloc.add(
-        PayEvent.customFeeArmed(NetworkFee.relativeFromSatPerVbyte(0.05)),
-      );
-      await bloc.stream.firstWhere(
-        (state) =>
-            state is PayPaymentState &&
-            state.selectedFeeOption == FeeSelection.custom,
-      );
+    test(
+      'a custom rate below the relay floor rolls back on dismissal',
+      () async {
+        // 0.05 sat/vB is under the 0.1 sat/vB floor, so dismissing discards it
+        // rather than staging a transaction the network would not relay.
+        bloc.add(
+          PayEvent.customFeeArmed(NetworkFee.relativeFromSatPerVbyte(0.05)),
+        );
+        await bloc.stream.firstWhere(
+          (state) =>
+              state is PayPaymentState &&
+              state.selectedFeeOption == FeeSelection.custom,
+        );
 
-      bloc.add(const PayEvent.customFeeFinalized());
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+        bloc.add(const PayEvent.customFeeFinalized());
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
-      final state = bloc.state as PayPaymentState;
-      expect(state.selectedFeeOption, FeeSelection.fastest);
-      expect(state.customFee, isNull);
-      verifyNoBuilds();
-    });
+        final state = bloc.state as PayPaymentState;
+        expect(state.selectedFeeOption, FeeSelection.fastest);
+        expect(state.customFee, isNull);
+        verifyNoBuilds();
+      },
+    );
 
-    test('fee selection is inert while the confirmation is in flight', () async {
-      bloc.seed(paymentState(isConfirmingPayment: true));
+    test(
+      'fee selection is inert while the confirmation is in flight',
+      () async {
+        bloc.seed(paymentState(isConfirmingPayment: true));
 
-      // Changing the fee now would rebuild the transaction being signed.
-      bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
-      bloc.add(PayEvent.customFeeArmed(NetworkFee.relativeFromSatPerVbyte(9)));
-      bloc.add(const PayEvent.presetFeesPreviewRequested());
-      await Future<void>.delayed(const Duration(milliseconds: 200));
+        // Changing the fee now would rebuild the transaction being signed.
+        bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
+        bloc.add(
+          PayEvent.customFeeArmed(NetworkFee.relativeFromSatPerVbyte(9)),
+        );
+        bloc.add(const PayEvent.presetFeesPreviewRequested());
+        await Future<void>.delayed(const Duration(milliseconds: 200));
 
-      final state = bloc.state as PayPaymentState;
-      expect(state.selectedFeeOption, FeeSelection.fastest);
-      expect(state.customFee, isNull);
-      verifyNoBuilds();
-      verifyNever(
-        () => previewBitcoinFeePresets.execute(
-          presets: any(named: 'presets'),
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
-          replaceByFee: any(named: 'replaceByFee'),
-          selectedInputs: any(named: 'selectedInputs'),
-          drain: any(named: 'drain'),
-        ),
-      );
-    });
+        final state = bloc.state as PayPaymentState;
+        expect(state.selectedFeeOption, FeeSelection.fastest);
+        expect(state.customFee, isNull);
+        verifyNoBuilds();
+        verifyNever(
+          () => previewBitcoinFeePresets.execute(
+            presets: any(named: 'presets'),
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            drain: any(named: 'drain'),
+          ),
+        );
+      },
+    );
 
     test('opening the modal prices each preset from a built PSBT', () async {
       stubPresetPreviews();

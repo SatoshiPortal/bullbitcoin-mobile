@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/payjoin_session_window.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -31,6 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -50,6 +53,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._signLiquidTxUsecase,
     required this._broadcastBitcoinTransactionUsecase,
     required this._broadcastLiquidTransactionUsecase,
+    required this._sendWithPayjoinUsecase,
     required this._getNetworkFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
@@ -66,8 +70,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
     on<PayWalletSelected>(_onWalletSelected);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
     on<PayOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
-    on<PaySendPaymentConfirmed>(_onSendPaymentConfirmed);
+    on<PaySendPaymentConfirmed>(
+      _onSendPaymentConfirmed,
+      transformer: droppable(),
+    );
     on<PayPollOrderStatus>(_onPollOrderStatus);
+    on<PayPayjoinToggled>(_onPayjoinToggled);
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<PayUtxosSelected>(_onUtxosSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
@@ -91,6 +99,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
+  final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -282,6 +291,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
             ? OrderBitcoinNetwork.liquid
             : OrderBitcoinNetwork.bitcoin,
         paymentDescription: walletSelectionState.paymentDescription,
+        usePayjoin:
+            !event.wallet.isLiquid &&
+            walletSelectionState.userSummary.payjoinReceiveEnabled,
       );
 
       if (!event.wallet.isLiquid) {
@@ -388,7 +400,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     Emitter<PayState> emit,
   ) async {
     // We should be on a PayPaymentState
-    final paymentState = state.cleanPaymentState;
+    final paymentState = _currentPaymentState;
     if (paymentState == null) {
       log.severe(
         error: 'Expected to be on PayPaymentState',
@@ -397,21 +409,32 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
+    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+      return;
+    }
+
     try {
       final refreshedOrder = await _refreshPayOrderUsecase.execute(
         orderId: paymentState.payOrder.orderId,
       );
 
-      final refreshed = paymentState.copyWith(payOrder: refreshedOrder);
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+
+      final refreshed = current.copyWith(payOrder: refreshedOrder);
       // A new price lock moves the payin amount, which invalidates every
       // preview built for the old one.
       emit(
-        refreshedOrder.payinAmount == paymentState.payOrder.payinAmount
+        refreshedOrder.payinAmount == current.payOrder.payinAmount
             ? refreshed
             : _clearedFeePreviews(refreshed),
       );
     } on PayError catch (e) {
-      emit(paymentState.copyWith(error: e));
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+      emit(current.copyWith(error: e));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
     }
@@ -429,6 +452,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
         error: 'Expected to be on PayPaymentState',
         trace: StackTrace.current,
       );
+      return;
+    }
+
+    if (payPaymentState.isPayinBroadcast) {
+      emit(payPaymentState.copyWith(isConfirmingPayment: true));
+      try {
+        await _completeAfterBroadcast(emit);
+      } catch (e) {
+        log.severe(error: e, trace: StackTrace.current);
+      }
       return;
     }
 
@@ -456,7 +489,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
           pset: pset,
           walletId: wallet.id,
         );
-        await _broadcastLiquidTransactionUsecase.execute(signedPset);
+        final txid = await _broadcastLiquidTransactionUsecase.execute(
+          signedPset,
+        );
+        _latchBroadcast(emit, txid);
       } else {
         // The rate the user committed in the fee modal, which defaults to
         // Fastest. The absolute fee from the last estimate is the fallback for
@@ -504,72 +540,67 @@ class PayBloc extends Bloc<PayEvent, PayState>
             bitcoinTxSize: preparedSend.txSize,
           ),
         );
-        final signedTx = await _signBitcoinTxUsecase.execute(
-          psbt: preparedSend.unsignedPsbt,
-          walletId: wallet.id,
-        );
-        await _broadcastBitcoinTransactionUsecase.execute(
-          signedTx.signedPsbt,
-          isPsbt: true,
-        );
+        final confirmationDeadline =
+            payPaymentState.payOrder.confirmationDeadline;
+        final payjoinWindow =
+            payPaymentState.payOrder.bip21URI == null ||
+                confirmationDeadline == null
+            ? null
+            : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+        if (payPaymentState.isPayjoinEnabled && payjoinWindow != null) {
+          final payjoinSender = await _sendWithPayjoinUsecase.execute(
+            walletId: wallet.id,
+            isTestnet: wallet.network.isTestnet,
+            bip21: payPaymentState.payOrder.bip21URI!,
+            unsignedOriginalPsbt: preparedSend.unsignedPsbt,
+            amountSat: payinAmountSat,
+            networkFeesSatPerVb: networkFee.isRelative
+                ? networkFee.value as double
+                : absoluteFeesUpdated / preparedSend.txSize,
+            expireAfterSec: payjoinWindow,
+          );
+          _latchBroadcast(emit, payjoinSender.originalTxId);
+        } else {
+          final signedTx = await _signBitcoinTxUsecase.execute(
+            psbt: preparedSend.unsignedPsbt,
+            walletId: wallet.id,
+          );
+          final txid = await _broadcastBitcoinTransactionUsecase.execute(
+            signedTx.signedPsbt,
+            isPsbt: true,
+          );
+          _latchBroadcast(emit, txid);
+        }
       }
-      // 5s delay gives backend time to register the 0 conf
-      await Future.delayed(const Duration(seconds: 5));
-      final latestOrder = await _getOrderUsecase.execute(
-        orderId: payPaymentState.payOrder.orderId,
-      );
-
-      if (latestOrder is! FiatPaymentOrder) {
-        throw const PayError.unexpected(
-          message:
-              'Expected FiatPaymentOrder but received a different order type',
-        );
-      }
-      if (state is PayPaymentState) {
-        emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
-      }
-      // The order fetched after the broadcast, not the pre-broadcast one, so
-      // the success screens show the up-to-date payin status.
-      emit(payPaymentState.toSuccessState(payOrder: latestOrder));
+      await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.message),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, PayError.unexpected(message: e.message));
     } on PrepareBitcoinSendException catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
     } on SignLiquidTxException catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
     } on SignBitcoinTxException catch (e) {
-      // Handle PayError and emit error state
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
     } catch (e) {
-      // Log unexpected errors
       log.severe(error: e, trace: StackTrace.current);
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
+    } finally {
+      final current = _currentPaymentState;
+      if (current != null && !current.isPayinBroadcast) {
+        emit(current.copyWith(isConfirmingPayment: false));
+      }
     }
+  }
+
+  void _onPayjoinToggled(PayPayjoinToggled event, Emitter<PayState> emit) {
+    final paymentState = _currentPaymentState;
+    if (paymentState == null || paymentState.selectedWallet?.isLiquid == true) {
+      return;
+    }
+    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+      return;
+    }
+    emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
   }
 
   // From Sell: Poll for order status
@@ -577,9 +608,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayPollOrderStatus event,
     Emitter<PayState> emit,
   ) async {
-    if (state is! PayPaymentState) return;
-
-    final payPaymentState = state as PayPaymentState;
+    final payPaymentState = _currentPaymentState;
+    if (payPaymentState == null) return;
 
     try {
       final latestOrder = await _getOrderUsecase.execute(
@@ -607,7 +637,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
               .toSuccessState(payOrder: latestOrder),
         );
       } else {
-        emit(payPaymentState.copyWith(payOrder: latestOrder, isPolling: true));
+        final current = _currentPaymentState;
+        if (current == null) return;
+        emit(current.copyWith(payOrder: latestOrder, isPolling: true));
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -619,9 +651,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayReplaceByFeeChanged event,
     Emitter<PayState> emit,
   ) async {
-    if (state is! PayPaymentState) return;
-
-    final payPaymentState = state as PayPaymentState;
+    final payPaymentState = _feeEditablePaymentState;
+    if (payPaymentState == null) return;
     // RBF changes the sequence numbers, so every cached preview PSBT is for a
     // different transaction now.
     emit(
@@ -637,9 +668,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayUtxosSelected event,
     Emitter<PayState> emit,
   ) async {
-    if (state is! PayPaymentState) return;
-
-    final payPaymentState = state as PayPaymentState;
+    final payPaymentState = _feeEditablePaymentState;
+    if (payPaymentState == null) return;
     final selectedUtxos = event.utxos;
 
     // Coin selection changed — the previews were priced on the old input set.
@@ -661,10 +691,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
     try {
       final utxos = await _getWalletUtxosUsecase.execute(walletId: wallet.id);
-      emit(payPaymentState.copyWith(utxos: utxos));
+      final current = _currentPaymentState;
+      if (current == null) return;
+      emit(current.copyWith(utxos: utxos));
     } catch (e) {
+      final current = _currentPaymentState;
+      if (current == null) return;
       emit(
-        payPaymentState.copyWith(
+        current.copyWith(
           error: PayError.unexpected(message: 'Failed to load UTXOs: $e'),
         ),
       );
@@ -794,6 +828,49 @@ class PayBloc extends Bloc<PayEvent, PayState>
     return currentState is PayPaymentState ? currentState : null;
   }
 
+  void _latchBroadcast(Emitter<PayState> emit, String txid) {
+    final current = _currentPaymentState;
+    if (current == null) return;
+    emit(
+      current.copyWith(
+        payinBroadcastTxid: txid,
+        isConfirmingPayment: true,
+        error: null,
+      ),
+    );
+  }
+
+  Future<void> _completeAfterBroadcast(Emitter<PayState> emit) async {
+    await Future.delayed(const Duration(seconds: 5));
+
+    final paymentState = _currentPaymentState;
+    if (paymentState == null) return;
+
+    final latestOrder = await _getOrderUsecase.execute(
+      orderId: paymentState.payOrder.orderId,
+    );
+    if (latestOrder is! FiatPaymentOrder) {
+      throw const PayError.unexpected(
+        message:
+            'Expected FiatPaymentOrder but received a different order type',
+      );
+    }
+
+    emit(paymentState.toSuccessState(payOrder: latestOrder));
+  }
+
+  void _emitSendPaymentError(Emitter<PayState> emit, PayError error) {
+    final current = _currentPaymentState;
+    if (current == null || current.isPayinBroadcast) return;
+    emit(current.copyWith(error: error, isConfirmingPayment: false));
+
+    final confirmationDeadline = current.payOrder.confirmationDeadline;
+    if (confirmationDeadline != null &&
+        !confirmationDeadline.isAfter(DateTime.now())) {
+      add(const PayEvent.orderRefreshTimePassed());
+    }
+  }
+
   /// Address the payin is (or will be) built for. The order's own address keeps
   /// the estimate honest — a build against one of our own addresses can differ
   /// in vsize when the script types differ. Falls back to an own address only
@@ -816,9 +893,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   /// price the modal for a transaction we are no longer building.
   PayPaymentState _clearedFeePreviews(PayPaymentState paymentState) {
     _bitcoinPreviewEpoch++;
-    return paymentState.copyWith(
-      feePreviewCache: BitcoinFeePreviewCache.empty,
-    );
+    return paymentState.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty);
   }
 
   /// Payment state while fee selection is still allowed, or null when the event

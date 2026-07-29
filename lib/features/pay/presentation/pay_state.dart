@@ -29,11 +29,15 @@ sealed class PayState with _$PayState {
     required FiatPaymentOrder payOrder,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
+    // Txid of the payin transaction once it is on the wire. Acts as a latch:
+    // the send path must never run again for this order (#2522).
+    String? payinBroadcastTxid,
     PayError? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(true) bool replaceByFee,
+    @Default(true) bool isPayjoinEnabled,
     double? exchangeRateEstimate,
     // Bitcoin fee selection (#2521), mirroring SellPaymentState: the payin is
     // built at the rate picked in the shared fee modal, not a hardcoded
@@ -256,6 +260,7 @@ extension PayPaymentStateX on PayPaymentState {
   bool get isExternalWallet => selectedWallet == null;
   bool get canConfirmPayment => isInternalWallet && selectedUtxos.isNotEmpty;
   bool get isProcessing => isConfirmingPayment || isPolling;
+  bool get isPayinBroadcast => payinBroadcastTxid != null;
 
   /// Fee the payin must be built at, resolved from the committed selection.
   /// Null while the presets have not loaded (or custom was selected with no
@@ -274,6 +279,7 @@ extension PayPaymentStateX on PayPaymentState {
   /// payins have no fee choice at all.
   bool get canEditFees =>
       !isConfirmingPayment &&
+      !isPayinBroadcast &&
       selectedWallet != null &&
       !selectedWallet!.isLiquid;
 
