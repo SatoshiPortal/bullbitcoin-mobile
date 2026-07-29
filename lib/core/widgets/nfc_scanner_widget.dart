@@ -85,7 +85,7 @@ class _NfcPageState extends State<NfcScannerWidget> {
           BBButton.big(
             label: context.loc.scanNfcButton,
             onPressed: _scan,
-            bgColor: context.appColors.onPrimary,
+            bgColor: context.appColors.surface,
             textColor: context.appColors.secondary,
             iconData: Icons.nfc,
           ),

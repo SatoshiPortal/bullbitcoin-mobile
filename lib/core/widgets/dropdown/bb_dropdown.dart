@@ -32,7 +32,7 @@ class BBDropdown<T> extends StatelessWidget {
               borderRadius: BorderRadius.circular(4.0),
               side: BorderSide(color: context.appColors.primary, width: 1.0),
             ),
-            color: context.appColors.onPrimary,
+            color: context.appColors.surface,
             elevation: 8,
           ),
         ),

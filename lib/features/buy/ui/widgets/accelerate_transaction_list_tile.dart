@@ -17,7 +17,7 @@ class AccelerateTransactionListTile extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary, // or Colors.white
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: context.appColors.secondary),
         boxShadow: [
@@ -43,24 +43,24 @@ class AccelerateTransactionListTile extends StatelessWidget {
                 backgroundColor: context.appColors.shimmerBase,
               ),
             ),
-            Icon(Icons.schedule, size: 16, color: context.appColors.secondary),
+            Icon(Icons.schedule, size: 16, color: context.appColors.onSurface),
           ],
         ),
         title: Text(
           context.loc.buyAccelerateTransaction,
           style: theme.textTheme.headlineLarge?.copyWith(
-            color: context.appColors.secondary,
+            color: context.appColors.onSurface,
           ),
         ),
         subtitle: Text(
           context.loc.buyGetConfirmedFaster,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: context.appColors.secondary,
+            color: context.appColors.onSurface,
           ),
         ),
         trailing: Icon(
           Icons.fast_forward_outlined,
-          color: context.appColors.secondary,
+          color: context.appColors.onSurface,
         ),
         onTap: onTap,
       ),

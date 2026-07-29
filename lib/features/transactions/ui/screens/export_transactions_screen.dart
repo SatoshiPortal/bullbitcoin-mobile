@@ -69,7 +69,7 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                 builder: (context, isLoading) => FadingLinearProgress(
                   height: 3,
                   trigger: isLoading,
-                  backgroundColor: context.appColors.onPrimary,
+                  backgroundColor: context.appColors.surface,
                   foregroundColor: context.appColors.primary,
                 ),
               ),

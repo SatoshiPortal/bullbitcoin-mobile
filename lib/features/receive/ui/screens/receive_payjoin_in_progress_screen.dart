@@ -45,7 +45,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             preferredSize: const Size.fromHeight(3.0),
             child: FadingLinearProgress(
               trigger: isBroadcasting,
-              backgroundColor: context.appColors.onPrimary,
+              backgroundColor: context.appColors.surface,
               foregroundColor: context.appColors.primary,
             ),
           ),

@@ -59,7 +59,7 @@ class AccountOwnershipWidget extends StatelessWidget {
         height: 56,
         child: Material(
           elevation: 4,
-          color: context.appColors.onPrimary,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(4),
           child: Container(
             decoration: BoxDecoration(

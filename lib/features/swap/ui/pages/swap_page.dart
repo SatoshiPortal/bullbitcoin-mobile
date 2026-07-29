@@ -101,7 +101,7 @@ class SwapPageState extends State<SwapPage> {
               builder: (context, isLoading) => FadingLinearProgress(
                 height: 3,
                 trigger: isLoading,
-                backgroundColor: context.appColors.onPrimary,
+                backgroundColor: context.appColors.surface,
                 foregroundColor: context.appColors.primary,
               ),
             ),

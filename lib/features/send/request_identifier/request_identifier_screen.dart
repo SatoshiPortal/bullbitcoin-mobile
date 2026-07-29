@@ -59,7 +59,7 @@ class RequestIdentifierScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: context.appColors.onPrimary,
+                      color: context.appColors.surface,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
@@ -172,7 +172,7 @@ class ContinueButtonWidget extends StatelessWidget {
       onPressed: cubit.validatePaymentRequest,
       disabled: !hasRequest || hasError,
       bgColor: context.appColors.secondary,
-      textColor: context.appColors.onPrimary,
+      textColor: context.appColors.onSecondary,
     );
   }
 }

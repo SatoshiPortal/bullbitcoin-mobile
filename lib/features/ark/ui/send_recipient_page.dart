@@ -122,7 +122,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                           focusNode: _focusNode,
                           textInputAction: .done,
                           decoration: InputDecoration(
-                            fillColor: context.appColors.onPrimary,
+                            fillColor: context.appColors.surface,
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),

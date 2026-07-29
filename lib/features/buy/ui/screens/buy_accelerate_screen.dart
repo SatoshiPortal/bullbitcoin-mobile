@@ -115,6 +115,8 @@ class BuyAccelerateScreen extends StatelessWidget {
                     },
                     bgColor: context.appColors.surface,
                     textColor: context.appColors.secondary,
+                    outlined: true,
+                    borderColor: context.appColors.border,
                   ),
                 const Gap(16),
                 BBButton.big(
@@ -126,7 +128,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                     );
                   },
                   bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onPrimary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),
