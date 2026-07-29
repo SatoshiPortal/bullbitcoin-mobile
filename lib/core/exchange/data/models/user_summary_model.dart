@@ -20,6 +20,9 @@ sealed class UserSummaryModel with _$UserSummaryModel {
     required UserDcaModel dca,
     required UserAutoBuyModel autoBuy,
     @Default(true) bool emailNotificationsEnabled,
+    // Defaults to false so a response without the field (older backend, or an
+    // account outside the pilot) disables payjoin — see UserSummary's field.
+    @Default(false) bool payjoinReceiveEnabled,
     UserKycDocumentStatusModel? kycDocumentStatus,
   }) = _UserSummaryModel;
 
@@ -41,6 +44,7 @@ sealed class UserSummaryModel with _$UserSummaryModel {
       dca: dca.toEntity(),
       autoBuy: autoBuy.toEntity(),
       emailNotificationsEnabled: emailNotificationsEnabled,
+      payjoinReceiveEnabled: payjoinReceiveEnabled,
       kycDocumentStatus: kycDocumentStatus?.toEntity(),
     );
   }

@@ -70,9 +70,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       // A wallet transaction with no matching order is the normal case, not an
       // error, so it must not be logged as one.
       final orderModel = orderModels.firstWhereOrNull(
-        (model) =>
-            model.bitcoinTransactionId == txId ||
-            model.liquidTransactionId == txId,
+        (model) => model.matchesTxId(txId),
       );
       if (orderModel == null) return null;
 
@@ -181,6 +179,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
     required bool isOwner,
+    String? payjoinBip21,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -197,7 +196,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderAmount: orderAmount,
         network: network,
         isOwner: isOwner,
-        address: toAddress,
+        address: payjoinBip21 == null ? toAddress : null,
+        bip21URI: payjoinBip21,
       );
 
       final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
@@ -223,6 +223,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
+    bool usePayjoin = false,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -238,6 +239,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         fiatCurrency: currency,
         orderAmount: orderAmount,
         network: network,
+        usePayjoin: usePayjoin,
       );
 
       final order = orderModel.toEntity(isTestnet: _isTestnet) as SellOrder;
@@ -264,6 +266,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    bool usePayjoin = false,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -280,6 +283,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
+        usePayjoin: usePayjoin,
       );
 
       final order =

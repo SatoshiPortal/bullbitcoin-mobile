@@ -136,19 +136,29 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
   }
 
+  /// Exactly one of [address] and [bip21URI] is sent: they are mutually
+  /// exclusive server-side, and the backend extracts the payout address from the
+  /// URI when it is given. A payjoin buy therefore has to pass [bip21URI], and
+  /// there is no endpoint to swap one for the other afterwards.
   Future<OrderModel> createBuyOrder({
     required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
     required bool isOwner,
-    required String address,
+    String? address,
+    String? bip21URI,
   }) async {
+    assert(
+      (address == null) != (bip21URI == null),
+      'createOrderBuy takes an address or a bip21URI, never both and never '
+      'neither',
+    );
     final params = {
       'fiatCurrency': fiatCurrency.code,
       'network': network.value,
       'isOwner': isOwner,
-      'address': address,
+      if (bip21URI != null) 'bip21URI': bip21URI else 'address': address,
     };
 
     if (orderAmount.isFiat) {
@@ -318,15 +328,21 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
   }
 
+  /// [usePayjoin] asks the exchange to receive the payin through payjoin, which
+  /// makes it publish a `bip21URI` on the order. Only meaningful on
+  /// [OrderBitcoinNetwork.bitcoin]. Omitted rather than sent as false so a
+  /// backend without the flag is unaffected.
   Future<OrderModel> createSellOrder({
     required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
+    bool usePayjoin = false,
   }) async {
     final params = <String, dynamic>{
       'fiatCurrency': fiatCurrency.code,
       'bitcoinNetwork': network.value,
+      if (usePayjoin) 'usePayjoin': true,
     };
 
     if (orderAmount.isFiat) {
@@ -354,16 +370,20 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
+  /// See [createSellOrder] for [usePayjoin]; a payment is a sell to a recipient
+  /// and the flag behaves identically.
   Future<OrderModel> createPayOrder({
     required String apiKey,
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    bool usePayjoin = false,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,
       'bitcoinNetwork': network.value,
+      if (usePayjoin) 'usePayjoin': true,
     };
 
     if (orderAmount.isFiat) {

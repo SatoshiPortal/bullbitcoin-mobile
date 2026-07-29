@@ -293,6 +293,43 @@ class PayinAmountChanged {
   });
 }
 
+/// The exchange's own view of a payjoin attached to an order.
+///
+/// Only [txid] is mapped, deliberately. Both exchange payjoin flows make the
+/// app a protocol participant — receiver on a buy, sender on a sell or a
+/// payment — so the amounts, fees and input/output breakdown the backend also
+/// reports are already known locally from our own session. Mirroring them would
+/// create a second source of truth for the same numbers.
+///
+/// The txid is the one thing we cannot derive: it names the transaction the
+/// exchange considers final, and it stays null until the exchange has seen the
+/// payjoin. That makes it the signal to gate any payjoin claim in the UI on —
+/// a payout that fell back to a plain transaction must never be presented as a
+/// payjoin.
+class OrderPayjoinDetails {
+  final String? txid;
+
+  OrderPayjoinDetails({this.txid});
+}
+
+/// What became of the payjoin attached to an order.
+enum OrderPayjoinOutcome {
+  /// No payjoin was ever attached — the ordinary exchange flow.
+  none,
+
+  /// Attached, and the exchange has not reported an outcome yet.
+  inProgress,
+
+  /// The exchange settled through the payjoin transaction.
+  succeeded,
+
+  /// The exchange settled through an ordinary transaction instead.
+  plainSend;
+
+  bool get isOngoing => this == OrderPayjoinOutcome.inProgress;
+  bool get hasPayjoin => this != OrderPayjoinOutcome.none;
+}
+
 @freezed
 sealed class Order with _$Order {
   const Order._();
@@ -335,6 +372,8 @@ sealed class Order with _$Order {
     String? indexRateCurrency,
     DateTime? lightningVoucherExpiresAt,
     double? unbatchedBuyOnchainFees,
+    String? bip21URI,
+    OrderPayjoinDetails? payjoinDetails,
     required bool isTestnet,
   }) = BuyOrder;
 
@@ -379,6 +418,8 @@ sealed class Order with _$Order {
     double? indexRateAmount,
     String? indexRateCurrency,
     DateTime? lightningVoucherExpiresAt,
+    String? bip21URI,
+    OrderPayjoinDetails? payjoinDetails,
     required bool isTestnet,
   }) = SellOrder;
 
@@ -421,6 +462,8 @@ sealed class Order with _$Order {
     PayinAmountChanged? payinAmountChanged,
     double? indexRateAmount,
     String? indexRateCurrency,
+    String? bip21URI,
+    OrderPayjoinDetails? payjoinDetails,
     required bool isTestnet,
     String? referenceNumber,
     String? originName,
@@ -695,6 +738,51 @@ sealed class Order with _$Order {
       case _:
         return null;
     }
+  }
+
+  /// The payjoin endpoint attached to this order, if the exchange published one.
+  String? get payjoinBip21 {
+    switch (this) {
+      case final BuyOrder o:
+        return o.bip21URI;
+      case final SellOrder o:
+        return o.bip21URI;
+      case final FiatPaymentOrder o:
+        return o.bip21URI;
+      case _:
+        return null;
+    }
+  }
+
+  OrderPayjoinDetails? get payjoin {
+    switch (this) {
+      case final BuyOrder o:
+        return o.payjoinDetails;
+      case final SellOrder o:
+        return o.payjoinDetails;
+      case final FiatPaymentOrder o:
+        return o.payjoinDetails;
+      case _:
+        return null;
+    }
+  }
+
+  /// What became of the payjoin on this order, as the exchange sees it.
+  ///
+  /// The distinction that matters is between [OrderPayjoinOutcome.succeeded] and
+  /// [OrderPayjoinOutcome.plainSend]: a payjoin is only ever claimed once the
+  /// exchange reports the transaction it settled through. A payment that fell
+  /// back to an ordinary transaction has a settlement txid but no payjoin one,
+  /// and must never be presented as a payjoin.
+  OrderPayjoinOutcome get payjoinOutcome {
+    final endpoint = payjoinBip21;
+    final details = payjoin;
+    if (endpoint == null && details == null) return OrderPayjoinOutcome.none;
+    if (details?.txid != null) return OrderPayjoinOutcome.succeeded;
+    // A settled order that never produced a payjoin txid was paid plainly,
+    // whether because nobody answered or because the customer opted out.
+    if (transactionId != null) return OrderPayjoinOutcome.plainSend;
+    return OrderPayjoinOutcome.inProgress;
   }
 
   String? get toAddress {

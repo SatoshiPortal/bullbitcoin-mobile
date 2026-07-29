@@ -43,6 +43,14 @@ class OrderModel {
   final String? securityAnswer;
   final String? paymentDescription;
   final double? unbatchedBuyOnchainFees;
+  // The customer's payjoin BIP21 URI. On a buy the app generates it and sends
+  // it with the order; on a sell or a payment the backend produces it. Kept as
+  // the raw string: it is handed to the payjoin PDK verbatim, and re-encoding a
+  // canonical URI is how it gets corrupted.
+  final String? bip21URI;
+  // Raw JSON, like `message` and `payinAmountChanged` above; turned into
+  // OrderPayjoinDetails in toEntity.
+  final Map<String, dynamic>? payjoinDetails;
   final String? referenceNumber;
   final String? originName;
   final String? originCedula;
@@ -90,6 +98,8 @@ class OrderModel {
     this.securityAnswer,
     this.paymentDescription,
     this.unbatchedBuyOnchainFees,
+    this.bip21URI,
+    this.payjoinDetails,
     this.referenceNumber,
     this.originName,
     this.originCedula,
@@ -144,6 +154,8 @@ class OrderModel {
       securityAnswer: json['securityAnswer'] as String?,
       paymentDescription: json['paymentDescription'] as String?,
       unbatchedBuyOnchainFees: json['unbatchedBuyOnchainFees'] as double?,
+      bip21URI: json['bip21URI'] as String?,
+      payjoinDetails: json['payjoinDetails'] as Map<String, dynamic>?,
       referenceNumber: json['referenceNumber'] as String?,
       originName: json['originName'] as String?,
       originCedula: json['originCedula'] as String?,
@@ -193,10 +205,23 @@ class OrderModel {
     'securityAnswer': securityAnswer,
     'paymentDescription': paymentDescription,
     'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
+    'bip21URI': bip21URI,
+    'payjoinDetails': payjoinDetails,
     'referenceNumber': referenceNumber,
     'originName': originName,
     'originCedula': originCedula,
   };
+
+  /// Whether this order settled through [txId].
+  ///
+  /// A payjoin replaces the transaction the customer originally built, so the
+  /// order's own payin/payout txid and the transaction that actually reached the
+  /// chain can differ. Both are checked, otherwise a payjoin stops being linked
+  /// back to its order.
+  bool matchesTxId(String txId) =>
+      bitcoinTransactionId == txId ||
+      liquidTransactionId == txId ||
+      payjoinDetails?['txid'] == txId;
 
   Order toEntity({required bool isTestnet}) {
     final orderMsg = message != null && message is Map<String, dynamic>
@@ -235,6 +260,11 @@ class OrderModel {
             receivedAmount:
                 (payinAmountChanged['receivedAmount'] as num?)?.toDouble() ?? 0,
           )
+        : null;
+    // txid is the only field mapped — see OrderPayjoinDetails for why. It stays
+    // null until the exchange has actually seen the payjoin transaction.
+    final payjoinDetailsObj = payjoinDetails != null
+        ? OrderPayjoinDetails(txid: payjoinDetails!['txid'] as String?)
         : null;
 
     switch (orderTypeEnum) {
@@ -277,6 +307,8 @@ class OrderModel {
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
           unbatchedBuyOnchainFees: unbatchedBuyOnchainFees,
+          bip21URI: bip21URI,
+          payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
         );
       case OrderType.sell:
@@ -321,6 +353,8 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
+          bip21URI: bip21URI,
+          payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
         );
       case OrderType.fiatPayment:
@@ -363,6 +397,8 @@ class OrderModel {
           payinAmountChanged: payinAmountChangedObj,
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
+          bip21URI: bip21URI,
+          payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
           referenceNumber: referenceNumber,
           originName: originName,
