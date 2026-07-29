@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
@@ -32,6 +33,8 @@ void main() {
   late _MockPayjoinRepository payjoinRepository;
   late _MockExchangeOrderRepository mainnetOrderRepository;
   late _MockExchangeOrderRepository testnetOrderRepository;
+  late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
+  late List<Order> orders;
   late GetTransactionsUsecase usecase;
 
   PayjoinReceiver receiver(PayjoinStatus status) =>
@@ -54,6 +57,8 @@ void main() {
     payjoinRepository = _MockPayjoinRepository();
     mainnetOrderRepository = _MockExchangeOrderRepository();
     testnetOrderRepository = _MockExchangeOrderRepository();
+    labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
+    orders = [];
 
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
@@ -72,7 +77,12 @@ void main() {
     when(
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => []);
-    when(() => mainnetOrderRepository.getOrders()).thenAnswer((_) async => []);
+    when(
+      () => mainnetOrderRepository.getOrders(),
+    ).thenAnswer((_) async => orders);
+    when(
+      () => labelExchangeOrdersUsecase.execute(orders: orders),
+    ).thenAnswer((_) async {});
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -81,7 +91,7 @@ void main() {
       payjoinRepository: payjoinRepository,
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
-      labelExchangeOrdersUsecase: _MockLabelExchangeOrdersUsecase(),
+      labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
     );
   });
 
@@ -113,5 +123,26 @@ void main() {
 
     expect(transactions, hasLength(1));
     expect(transactions.single.payjoin?.status, PayjoinStatus.requested);
+  });
+
+  test('labels exchange orders before loading wallet transactions', () async {
+    when(
+      () => payjoinRepository.getPayjoins(
+        walletId: any(named: 'walletId'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer((_) async => []);
+
+    await usecase.execute();
+
+    verifyInOrder([
+      () => mainnetOrderRepository.getOrders(),
+      () => labelExchangeOrdersUsecase.execute(orders: orders),
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: any(named: 'walletId'),
+        sync: any(named: 'sync'),
+        environment: any(named: 'environment'),
+      ),
+    ]);
   });
 }
