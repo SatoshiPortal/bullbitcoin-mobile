@@ -238,28 +238,45 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     );
   }
 
-  Future<List<OrderModel>> listOrderSummaries({required String apiKey}) async {
-    final resp = await _http.post(
-      _ordersPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'listOrderSummaries',
-        'params': {
-          "sortBy": {"id": "createdAt", "sort": "desc"},
-          "paginator": {"page": 1, "pageSize": 50},
+  Future<List<OrderModel>> listOrderSummaries({
+    required String apiKey,
+    int pageSize = 50,
+  }) async {
+    final ordersById = <String, OrderModel>{};
+
+    for (var page = 1; ; page++) {
+      final resp = await _http.post(
+        _ordersPath,
+        data: {
+          'jsonrpc': '2.0',
+          'id': '0',
+          'method': 'listOrderSummaries',
+          'params': {
+            'sortBy': {'id': 'createdAt', 'sort': 'desc'},
+            'paginator': {'page': page, 'pageSize': pageSize},
+          },
         },
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to list order summaries');
+        options: Options(headers: {'X-API-Key': apiKey}),
+      );
+      if (resp.statusCode != 200) {
+        throw Exception('Failed to list order summaries');
+      }
+
+      final elements = resp.data['result']['elements'] as List<dynamic>?;
+      if (elements == null || elements.isEmpty) break;
+
+      final previousLength = ordersById.length;
+      for (final element in elements) {
+        final order = OrderModel.fromJson(element as Map<String, dynamic>);
+        ordersById.putIfAbsent(order.orderId, () => order);
+      }
+
+      if (elements.length < pageSize || ordersById.length == previousLength) {
+        break;
+      }
     }
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
-    return elements
-        .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+
+    return ordersById.values.toList();
   }
 
   Future<OrderModel> refreshOrder({
