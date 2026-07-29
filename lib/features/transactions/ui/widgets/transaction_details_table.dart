@@ -359,9 +359,14 @@ class TransactionDetailsTable extends StatelessWidget {
                     label: context.loc.transactionDetailLabelPaymentDescription,
                     displayValue: order.paymentDescription,
                   ),
+                if (order.recipientToDisplay != null)
+                  DetailsTableItem(
+                    label: context.loc.transactionDetailLabelRecipient,
+                    displayValue: order.recipientToDisplay,
+                  ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: order.payoutAmountToDisplay,
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
