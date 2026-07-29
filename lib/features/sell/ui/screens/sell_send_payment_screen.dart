@@ -309,6 +309,11 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is SellPaymentState &&
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
+    final isPayinBroadcast = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState &&
+          (bloc.state as SellPaymentState).isPayinBroadcast,
+    );
     final wallet = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
           ? (bloc.state as SellPaymentState).selectedWallet
@@ -317,9 +322,13 @@ class _BottomButtons extends StatelessWidget {
     return Column(
       children: [
         const _SellError(),
+        const _PaymentInFlightStatus(),
         if (wallet != null && !wallet.isLiquid) ...[
           BBButton.big(
             label: context.loc.sellAdvancedSettings,
+            // Changing coin selection or RBF mid-confirmation would rebuild the
+            // transaction under the payment being sent.
+            disabled: isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
               BlurredBottomSheet.show(
                 context: context,
@@ -338,12 +347,62 @@ class _BottomButtons extends StatelessWidget {
         ],
         BBButton.big(
           label: context.loc.sellSendPaymentContinue,
-          disabled: isConfirmingPayment,
+          disabled: isConfirmingPayment || isPayinBroadcast,
           onPressed: onContinuePressed,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,
         ),
       ],
+    );
+  }
+}
+
+/// Spinner and status text right above the confirm button, so the in-flight
+/// payment is visible where the user is looking (#2522).
+class _PaymentInFlightStatus extends StatelessWidget {
+  const _PaymentInFlightStatus();
+
+  @override
+  Widget build(BuildContext context) {
+    final (isConfirmingPayment, isPayinBroadcast) = context.select((
+      SellBloc bloc,
+    ) {
+      final state = bloc.state;
+      if (state is! SellPaymentState) return (false, false);
+      return (state.isConfirmingPayment, state.isPayinBroadcast);
+    });
+
+    if (!isConfirmingPayment && !isPayinBroadcast) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        mainAxisAlignment: .center,
+        children: [
+          SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: context.appColors.primary,
+            ),
+          ),
+          const Gap(8),
+          Flexible(
+            child: Text(
+              isPayinBroadcast
+                  ? context.loc.sellPaymentSentRefreshingOrder
+                  : context.loc.sellSendingPayment,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.outline,
+              ),
+              textAlign: .center,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

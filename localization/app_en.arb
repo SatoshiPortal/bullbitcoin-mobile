@@ -2076,6 +2076,18 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
+  "sellYouSold": "You sold {amount} for {fiatAmount}",
+  "@sellYouSold": {
+    "description": "Success message with the amount sold and the fiat amount received",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
+        "type": "String"
+      }
+    }
+  },
   "payTitle": "Pay",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -11513,6 +11525,14 @@
   "sellSendPaymentContinue": "Continue",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
+  },
+  "sellSendingPayment": "Sending payment…",
+  "@sellSendingPayment": {
+    "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
+  },
+  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@sellPaymentSentRefreshingOrder": {
+    "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
   },
   "sellSendPaymentAboveMax": "You are trying to sell above the maximum amount that can be sold with this wallet.",
   "@sellSendPaymentAboveMax": {
