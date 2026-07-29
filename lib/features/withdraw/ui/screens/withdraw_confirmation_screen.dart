@@ -51,7 +51,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                     (bloc.state as WithdrawConfirmationState)
                         .isConfirmingWithdrawal,
               ),
-              backgroundColor: context.appColors.onPrimary,
+              backgroundColor: context.appColors.surface,
               foregroundColor: context.appColors.primary,
             ),
             Expanded(

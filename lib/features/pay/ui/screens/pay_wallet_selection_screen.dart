@@ -39,7 +39,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isCreatingPayOrder,
-              backgroundColor: context.appColors.onPrimary,
+              backgroundColor: context.appColors.surface,
               foregroundColor: context.appColors.primary,
             ),
             Expanded(

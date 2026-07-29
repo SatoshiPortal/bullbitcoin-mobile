@@ -33,7 +33,7 @@ class TransactionsScreen extends StatelessWidget {
           onAction: () =>
               context.pushNamed(TransactionsRoute.exportTransactions.name),
         ),
-        backgroundColor: context.appColors.onPrimary,
+        backgroundColor: context.appColors.surface,
         elevation: 0,
       ),
       body: const _Screen(),

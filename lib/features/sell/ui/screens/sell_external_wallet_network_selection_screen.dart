@@ -27,7 +27,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isCreatingSellOrder,
-              backgroundColor: context.appColors.onPrimary,
+              backgroundColor: context.appColors.surface,
               foregroundColor: context.appColors.primary,
             ),
             Expanded(

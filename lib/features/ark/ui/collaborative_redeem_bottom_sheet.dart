@@ -33,7 +33,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.4,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: BlocBuilder<ArkCubit, ArkState>(

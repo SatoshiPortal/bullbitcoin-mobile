@@ -22,7 +22,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(

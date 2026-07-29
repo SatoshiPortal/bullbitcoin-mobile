@@ -27,7 +27,7 @@ class BalanceCard extends StatelessWidget {
         child: Material(
           clipBehavior: .antiAlias,
           elevation: 2,
-          color: context.appColors.onPrimary,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2),
           child: Row(
             children: [

@@ -70,7 +70,7 @@ class ArkTxWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: context.appColors.onPrimary,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2.0),
           boxShadow: const [],
         ),
@@ -79,9 +79,9 @@ class ArkTxWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: context.appColors.onPrimary,
+                color: context.appColors.surface,
                 borderRadius: BorderRadius.circular(2.0),
-                border: Border.all(color: context.appColors.surface),
+                border: Border.all(color: context.appColors.border),
               ),
               child: Icon(icon, color: context.appColors.secondary),
             ),
