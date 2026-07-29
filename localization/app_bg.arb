@@ -1582,10 +1582,6 @@
   "@arkTransaction": {
     "description": "Singular form for transaction count"
   },
-  "dcaFrequencyMonthly": "месец",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "buyKYCLevel": "Ниво KYC",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
@@ -1707,10 +1703,6 @@
   "bitboxErrorOperationCancelled": "Операцията беше прекъсната. Моля, опитайте отново.",
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
-  },
-  "dcaOrderTypeLabel": "Тип на поръчката",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
   },
   "dcaSuccessMessageHourly": "Ще купите {amount} на всеки час",
   "@dcaSuccessMessageHourly": {
@@ -2613,10 +2605,6 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "dcaFrequencyHourly": "час",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "swapValidationSelectFromWallet": "Моля, изберете портфейл, от който да прехвърлите",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
@@ -3043,10 +3031,6 @@
   "transactionStatusConfirmed": "Потвърдено",
   "@transactionStatusConfirmed": {
     "description": "Status label for confirmed transactions"
-  },
-  "dcaFrequencyDaily": "ден",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
   },
   "transactionLabelSendAmount": "Сума за изпращане",
   "@transactionLabelSendAmount": {
@@ -3685,10 +3669,6 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "dcaConfirmRecurringBuyTitle": "Потвърди редовна покупка",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "@transactionSwapBitcoinToLiquid": {
     "description": "Label for Bitcoin to Liquid swap"
@@ -3874,10 +3854,6 @@
   "hwPassport": "Foundation Passport",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
-  },
-  "dcaFrequencyWeekly": "седмица",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €30 000",
   "@fundExchangeMethodRegularSepaSubtitle": {
@@ -4556,10 +4532,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "dcaContinueButton": "Продължи",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "fundExchangeCrIbanUsdTitle": "Банков превод (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -4667,10 +4639,6 @@
   "swapExternalAddressHint": "Въведете адрес на външен портфейл",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "dcaConfirmationDescription": "Поръчките за покупка ще се изпълняват автоматично според тези настройки. Можете да ги деактивирате по всяко време.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
   },
   "appleICloudProvider": "iCloud на Apple",
   "@appleICloudProvider": {
@@ -5053,10 +5021,6 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "dcaNetworkLiquid": "Liquid мрежа",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
   "fundExchangeMethodSinpeTransfer": "SINPE превод",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
@@ -5218,10 +5182,6 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "dcaNetworkBitcoin": "Биткойн мрежа",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "swapTransferRefundInProgressMessage": "Възникна грешка при трансфера. Вашето възстановяване е в процес",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
@@ -5299,10 +5259,6 @@
   "buyConfirmationTimeValue": "~10 минути",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
-  },
-  "dcaOrderTypeValue": "Повтаряща се покупка",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
   },
   "exchangeFileUploadUploading": "Качване...",
   "@exchangeFileUploadUploading": {
@@ -5721,10 +5677,6 @@
   "@onboardingBullBitcoin": {
     "description": "Brand name displayed in onboarding"
   },
-  "dcaNetworkLightning": "Лайтнинг мрежа",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
   "backupWalletHowToDecideVaultCloudRecommendationText": "Искате да се уверите, че никога няма да загубите достъп до vault файла, дори ако загубите вашите устройства.",
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
@@ -5841,15 +5793,6 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "dcaPaymentMethodValue": "{currency} баланс",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "Преводът завърши",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
@@ -5869,10 +5812,6 @@
   "physicalBackupDescription": "Запишете 12 думи на лист хартия. Дръжте ги на сигурно място и се уверете, че няма да ги изгубите.",
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
-  },
-  "dcaConfirmButton": "Продължи",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "dcaBackToHomeButton": "Назад към началната страница",
   "@dcaBackToHomeButton": {
@@ -7197,10 +7136,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "dcaAmountLabel": "Сума",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
   "walletNetworkLiquid": "Liquid мрежа",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
@@ -7364,15 +7299,6 @@
   "payPayeeAccountNumberHint": "Въведете номер на сметка",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "dcaConfirmationError": "Възникна грешка: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusSettingUpDescription": "Настройване на вашия PIN код",
   "@pinStatusSettingUpDescription": {
@@ -8840,10 +8766,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "Мрежа",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
   "sendScanBitcoinQRCode": "Сканирайте QR код за Bitcoin или Lightning, за да платите с биткойн.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -9085,10 +9007,6 @@
   "@transactionOrderLabelPayinAmount": {
     "description": "Label for order payin amount"
   },
-  "dcaLightningAddressLabel": "Lightning адрес",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "payCustomFee": "Персонализирана такса",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -9124,10 +9042,6 @@
   "autoswapRecipientWalletDefaultLabel": "Bitcoin портфейл",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
-  },
-  "dcaPaymentMethodLabel": "Начин на плащане",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
   },
   "walletDetailsNetworkLabel": "Мрежа",
   "@walletDetailsNetworkLabel": {
@@ -9254,10 +9168,6 @@
   "comingSoonDefaultMessage": "Тази функция е в процес на разработка и ще бъде достъпна скоро.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "dcaFrequencyLabel": "Честота",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "enterBackupKeyManuallyTitle": "Въведете резервния ключ ръчно",
   "@enterBackupKeyManuallyTitle": {
@@ -10178,12 +10088,6 @@
   "usePasswordInsteadButton": "Използвай {pinOrPassword} вместо това >>",
   "connectingToKeyServer": "Свързване с ключовия сървър през Tor.\nТова може да отнеме до минута.",
   "anErrorOccurred": "Възникна грешка",
-  "dcaSetRecurringBuyTitle": "Настрой периодична покупка",
-  "dcaInsufficientBalanceTitle": "Недостатъчен баланс",
-  "dcaInsufficientBalanceDescription": "Нямате достатъчен баланс, за да създадете тази поръчка.",
-  "dcaFundAccountButton": "Захрани сметката си",
-  "dcaScheduleDescription": "Покупките на Bitcoin ще се извършват автоматично според този график.",
-  "dcaFrequencyValidationError": "Моля, изберете честота",
   "autoswapActiveCardTitle": "Автообменът е активен",
   "autoswapWarningExplanationBold": "автоматично",
   "autoswapInfoConsentMessage": "Автообменът в момента е активиран, но няма да се задейства, докато не дадете съгласие. Искате ли да го оставите включен?",
@@ -10403,19 +10307,6 @@
   "exchangeKycLimited": "Ограничен",
   "exchangeKycComplete": "Завършете своя KYC",
   "exchangeKycRemoveLimits": "За премахване на лимитите за транзакции",
-  "dcaActivate": "Активирай периодична покупка",
-  "dcaDeactivate": "Деактивирай периодична покупка",
-  "dcaViewSettings": "Виж настройките",
-  "dcaHideSettings": "Скрий настройките",
-  "dcaCancelTitle": "Отмяна на периодична покупка на Bitcoin?",
-  "dcaCancelMessage": "Планът ви за периодична покупка на Bitcoin ще бъде спрян и планираните покупки ще приключат. За да рестартирате, ще трябва да настроите нов план.",
-  "dcaCancelButton": "Отмени",
-  "dcaConfirmDeactivate": "Да, деактивирай",
-  "dcaUnableToGetConfig": "Конфигурацията за DCA не можа да бъде получена",
-  "dcaAddressBitcoin": "Bitcoin адрес",
-  "dcaAddressLightning": "Lightning адрес",
-  "dcaAddressLiquid": "Liquid адрес",
-  "dcaBuyingMessage": "Купувате {amount} на всеки {frequency} през {network}, докато има средства в сметката ви.",
   "exchangeAuthLoginFailed": "Неуспешен вход",
   "exchangeAuthErrorMessage": "Възникна грешка, моля, опитайте да влезете отново.",
   "exchangeAuthOk": "ОК",
@@ -10482,7 +10373,6 @@
   "dcaConfirmNetworkLightning": "Lightning",
   "dcaConfirmNetworkLiquid": "Liquid",
   "dcaConfirmLightningAddress": "Lightning адрес",
-  "dcaConfirmError": "Възникна проблем: {error}",
   "dcaConfirmContinue": "Продължи",
   "buyInputTitle": "Купи Bitcoin",
   "buyInputMinAmountError": "Трябва да купите поне",
@@ -10966,5 +10856,9 @@
   "transactionStatusPayjoinAborted": "Payjoin отменен",
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "dcaAccountUnavailableError": "Профилът ви не можа да бъде зареден. Уверете се, че сте влезли, и опитайте отново.",
+  "dcaLightningAddressRequiredError": "Въведете Lightning адрес, за да получавате покупките си.",
+  "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
+  "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно."
 }

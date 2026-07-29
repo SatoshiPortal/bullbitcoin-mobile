@@ -1718,10 +1718,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "dcaActivate": "گزینه Recurring Buy",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
   "labelInputLabel": "برچسب",
   "@labelInputLabel": {
     "description": "Label for wallet label input field"
@@ -1792,15 +1788,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "سریع ترین - فقط برای معاملات زیر 30،000 یورو",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
-  },
-  "dcaConfirmError": "مشکلی پیش آمد: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeSepaDescription": "ارسال یک انتقال SEPA از حساب بانکی خود با استفاده از جزئیات زیر ",
   "@fundExchangeSepaDescription": {
@@ -1874,10 +1861,6 @@
   "walletAddressTypeNestedSegwit": "دانلود بازی نستله",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
-  },
-  "dcaConfirmDeactivate": "بله، غیرفعال کردن",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
   },
   "exchangeLandingFeature2": "DCA، سفارشات محدودیت و خرید خودکار",
   "@exchangeLandingFeature2": {
@@ -2211,10 +2194,6 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "dcaUnableToGetConfig": "عدم توانایی برای پیکربندی DCA",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
   "exchangeAuthLoginFailed": "ورود شکست خورده",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -2387,10 +2366,6 @@
   "buyConfirmPayoutMethod": "روش پرداخت",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
-  },
-  "dcaCancelButton": "لغو",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
   },
   "durationMinutes": "{minutes} minutes",
   "@durationMinutes": {
@@ -2696,10 +2671,6 @@
   "@arkTransaction": {
     "description": "Singular form for transaction count"
   },
-  "dcaFrequencyMonthly": "ماه",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "buyKYCLevel": "KYC سطح سطح",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
@@ -2842,10 +2813,6 @@
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
   },
-  "dcaOrderTypeLabel": "نوع سفارش",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
   "withdrawConfirmCard": "کارت",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
@@ -2936,10 +2903,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "dcaAddressBitcoin": "Bitcoin Address",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
   "sendErrorAmountBelowMinimum": "مقدار کمتر از حد مبادله: {minLimit}",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
@@ -2984,10 +2947,6 @@
   "bitboxErrorNoActiveConnection": "هیچ اتصال فعال با دستگاه BitBox.",
   "@bitboxErrorNoActiveConnection": {
     "description": "Error when there is no active connection to BitBox"
-  },
-  "dcaFundAccountButton": "بودجه حساب شما",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
   },
   "transactionFilterAll": "همه چیز",
   "@transactionFilterAll": {
@@ -3845,10 +3804,6 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "dcaFrequencyHourly": "ساعت",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "swapValidationSelectFromWallet": "یک کیف پول برای انتقال انتخاب کنید",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
@@ -4351,10 +4306,6 @@
   "@transactionStatusConfirmed": {
     "description": "Status label for confirmed transactions"
   },
-  "dcaFrequencyDaily": "روز",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
   "testedStatus": "آزمون",
   "@testedStatus": {
     "description": "Status text indicating backup has been tested"
@@ -4419,10 +4370,6 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
-  "dcaViewSettings": "تنظیمات View",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
   "withdrawAmountContinue": "ادامه",
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
@@ -4458,10 +4405,6 @@
   "payWhichWalletQuestion": "از کدام کیف پول می خواهید پرداخت کنید؟?",
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "dcaHideSettings": "تنظیمات Hide",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
   },
   "payValidating": "اعتبارسنجی ...",
   "@payValidating": {
@@ -4615,10 +4558,6 @@
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
   },
-  "dcaInsufficientBalanceDescription": "شما تعادل کافی برای ایجاد این دستور ندارید.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
   "pinButtonContinue": "ادامه",
   "@pinButtonContinue": {
     "description": "Button label to proceed after entering new PIN"
@@ -4686,21 +4625,6 @@
   "sellIBAN": "IBAN",
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
-  },
-  "dcaBuyingMessage": "شما {amount} را هر {frequency} از طریق {network} خریداری می‌کنید، تا زمانی که در حساب شما پول وجود داشته باشد.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
   },
   "withdrawConfirmTitle": "تایید خروج",
   "@withdrawConfirmTitle": {
@@ -5101,10 +5025,6 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "dcaConfirmRecurringBuyTitle": "تایید مجدد خرید",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "transactionSwapBitcoinToLiquid": "بیت کوین L-BTC",
   "@transactionSwapBitcoinToLiquid": {
     "description": "Label for Bitcoin to Liquid swap"
@@ -5352,10 +5272,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaFrequencyWeekly": "هفته",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "fundExchangeMethodRegularSepaSubtitle": "فقط برای معاملات بزرگتر بالای 30،000 یورو استفاده کنید",
   "@fundExchangeMethodRegularSepaSubtitle": {
@@ -5630,10 +5546,6 @@
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "dcaInsufficientBalanceTitle": "عدم تعادل",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
   },
   "arkType": "نوع",
   "@arkType": {
@@ -6106,10 +6018,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "dcaContinueButton": "ادامه",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "fundExchangeCrIbanUsdTitle": "انتقال بانک (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -6225,10 +6133,6 @@
   "swapExternalAddressHint": "آدرس کیف پول خارجی",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "dcaConfirmationDescription": "سفارش خرید به طور خودکار در هر این تنظیمات قرار می گیرد. شما می توانید آنها را در هر زمان غیرفعال کنید.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
   },
   "exchangeAccountInfoVerificationNotVerified": "تایید نشده",
   "@exchangeAccountInfoVerificationNotVerified": {
@@ -6354,10 +6258,6 @@
   "recoverbullSelectAppleIcloud": "Apple iCloud",
   "@recoverbullSelectAppleIcloud": {
     "description": "Name label for Apple iCloud backup provider option"
-  },
-  "dcaAddressLightning": "آدرس Lightning",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
   },
   "keystoneStep13": "این معامله در کیف پول Bitcoin بول وارد خواهد شد.",
   "@keystoneStep13": {
@@ -6684,17 +6584,9 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "dcaNetworkLiquid": "شبکه نقدینگی",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
   "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "dcaCancelTitle": "خرید Bitcoin Recurring?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
   },
   "payFromAnotherWallet": "پرداخت از کیف پول Bitcoin دیگر",
   "@payFromAnotherWallet": {
@@ -6861,10 +6753,6 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "dcaNetworkBitcoin": "شبکه Bitcoin Network",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "swapTransferRefundInProgressMessage": "خطایی با انتقال وجود داشت. بازپرداخت شما در حال پیشرفت است.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
@@ -6950,10 +6838,6 @@
   "buyConfirmationTimeValue": "10 دقیقه",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
-  },
-  "dcaOrderTypeValue": "خرید مجدد",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
   },
   "exchangeFileUploadUploading": "آپلود ...",
   "@exchangeFileUploadUploading": {
@@ -7199,10 +7083,6 @@
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
   },
-  "dcaFrequencyValidationError": "لطفا یک فرکانس انتخاب کنید",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
   "walletsListTitle": "جزئیات کیف پول",
   "@walletsListTitle": {
     "description": "Title for the wallet details list screen"
@@ -7416,10 +7296,6 @@
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "dcaNetworkLightning": "شبکه Lightning Network",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
   "backupWalletHowToDecideVaultCloudRecommendationText": "شما می خواهید مطمئن شوید که هرگز دسترسی به فایل ذخیره خود را از دست ندهید حتی اگر دستگاه های خود را از دست بدهید.",
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
@@ -7544,15 +7420,6 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "dcaPaymentMethodValue": "{currency} تعادل",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "انتقال تکمیل شده",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
@@ -7565,10 +7432,6 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "dcaScheduleDescription": "خرید بیت کوین به طور خودکار در این برنامه قرار می گیرد.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
   "keystoneInstructionsTitle": "دستورالعمل های Keystone",
   "@keystoneInstructionsTitle": {
     "description": "Title for Keystone signing instructions modal"
@@ -7580,10 +7443,6 @@
   "physicalBackupDescription": "12 کلمه را روی یک تکه کاغذ بنویسید. آنها را امن نگه دارید و مطمئن شوید که آنها را از دست ندهید.",
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
-  },
-  "dcaConfirmButton": "ادامه",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "dcaBackToHomeButton": "بازگشت به خانه",
   "@dcaBackToHomeButton": {
@@ -7662,10 +7521,6 @@
   "pinStatusProcessing": "پردازش",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "dcaCancelMessage": "برنامه خرید مکرر Bitcoin شما متوقف خواهد شد و خرید برنامه ریزی شده پایان خواهد یافت. برای شروع مجدد، شما باید یک برنامه جدید ایجاد کنید.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
   },
   "fundExchangeHelpPaymentDescription": "کد انتقال شما.",
   "@fundExchangeHelpPaymentDescription": {
@@ -8053,10 +7908,6 @@
   "testBackupCreatedAt": "ساخته شده در:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "dcaSetRecurringBuyTitle": "خرید Recurring Buy",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
   },
   "transactionStatusPending": "امتناع",
   "@transactionStatusPending": {
@@ -9047,10 +8898,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "dcaAmountLabel": "مبلغ",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
   "walletNetworkLiquid": "شبکه نقدینگی",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
@@ -9122,10 +8969,6 @@
   "recoverbullTestSuccessDescription": "شما می توانید دسترسی به کیف پول از دست رفته بیت کوین را بازیابی کنید",
   "@recoverbullTestSuccessDescription": {
     "description": "Description shown after successful recovery test"
-  },
-  "dcaDeactivate": "Recurring Buy",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
   },
   "autoswapRecipientWallet": "راهنمای Bitcoin Wallet",
   "@autoswapRecipientWallet": {
@@ -9246,15 +9089,6 @@
   "payPayeeAccountNumberHint": "شماره حساب ورودی",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "dcaConfirmationError": "مشکلی پیش آمد: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
   "bip85NoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
@@ -10170,10 +10004,6 @@
   "@sendSigningTransaction": {
     "description": "Status while hardware wallet signs"
   },
-  "dcaAddressLiquid": "آدرس مایع",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
   "buyVerificationInProgress": "توسعه در پیشرفت ...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
@@ -10883,10 +10713,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "شبکه Network",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
   "sendScanBitcoinQRCode": "هر کد Bitcoin یا Lightning QR را برای پرداخت با Bitcoin اسکن کنید.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -11134,10 +10960,6 @@
   "@transactionOrderLabelPayinAmount": {
     "description": "Label for order payin amount"
   },
-  "dcaLightningAddressLabel": "آدرس Lightning",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "electrumEnableSsl": "فعال کردن SSL",
   "@electrumEnableSsl": {
     "description": "SSL toggle label in add custom server sheet"
@@ -11182,10 +11004,6 @@
   "seedsignerStep13": "این معامله در کیف پول Bitcoin بول وارد خواهد شد.",
   "@seedsignerStep13": {
     "description": "SeedSigner instruction about import completion"
-  },
-  "dcaPaymentMethodLabel": "روش پرداخت",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
   },
   "swapProgressPendingMessage": "انتقال در حال پیشرفت است. معاملات بیت کوین می تواند مدتی طول بکشد تا تایید شود. می توانید به خانه برگردید و صبر کنید.",
   "@swapProgressPendingMessage": {
@@ -11326,10 +11144,6 @@
   "comingSoonDefaultMessage": "این ویژگی در حال حاضر در حال توسعه است و به زودی در دسترس خواهد بود.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "dcaFrequencyLabel": "فرکانس",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "enterBackupKeyManuallyTitle": "کلید پشتیبان گیری را به صورت دستی وارد کنید",
   "@enterBackupKeyManuallyTitle": {
@@ -13277,5 +13091,9 @@
   "transactionStatusPayjoinAborted": "Payjoin لغو شد",
   "transactionDetailLabelPayjoinAborted": "لغو شده",
   "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78).",
+  "dcaAccountUnavailableError": "بارگیری حساب شما امکان‌پذیر نبود. مطمئن شوید وارد شده‌اید و دوباره تلاش کنید.",
+  "dcaLightningAddressRequiredError": "برای دریافت خریدهای خود یک آدرس Lightning وارد کنید.",
+  "dcaReceiveAddressError": "آماده‌سازی آدرس دریافت در کیف پول شما امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+  "dcaOrderCreationError": "ایجاد خرید تکرارشونده امکان‌پذیر نبود. لطفاً بعداً دوباره تلاش کنید."
 }

@@ -308,22 +308,9 @@
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
-  "dcaConfirmError": "Algo correu mal: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletErrorSaveBackup": "Falhado para salvar o backup",
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
-  },
-  "dcaActivate": "Ativar a recuperação",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
   },
   "transactionSwapDescLnSendPending": "A tua troca foi iniciada. Estamos a transmitir a transação em cadeia para bloquear os seus fundos.",
   "@transactionSwapDescLnSendPending": {
@@ -619,10 +606,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaConfirmDeactivate": "Sim, desactivar",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
   },
   "importColdcardInstructionsTitle": "Instruções do Coldcard Q",
   "@importColdcardInstructionsTitle": {
@@ -1032,10 +1015,6 @@
   "@bitboxScreenConnectingSubtext": {
     "description": "Subtext when connecting"
   },
-  "dcaUnableToGetConfig": "Incapaz de obter configuração DCA",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
   "bitboxActionImportWalletSuccessSubtext": "Sua carteira BitBox foi importada com sucesso.",
   "@bitboxActionImportWalletSuccessSubtext": {
     "description": "Success subtext for import wallet"
@@ -1208,10 +1187,6 @@
   "payNoActiveWallet": "Sem carteira ativa",
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
-  },
-  "dcaCancelButton": "Cancelar",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
   },
   "transactionSwapDescLnSendDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescLnSendDefault": {
@@ -1638,10 +1613,6 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "dcaOrderTypeLabel": "Tipo de ordem",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
   "coreScreensTotalFeesLabel": "Taxas totais",
   "@coreScreensTotalFeesLabel": {
     "description": "Label for total fees field"
@@ -1988,10 +1959,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaAddressBitcoin": "Endereço de Bitcoin",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
   },
   "sellAmount": "Montante para venda",
   "@sellAmount": {
@@ -3321,10 +3288,6 @@
   "@testedStatus": {
     "description": "Status text indicating backup has been tested"
   },
-  "dcaViewSettings": "Ver configurações",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
   "backupSettingsRecoverBullSettings": "Recuperação",
   "@backupSettingsRecoverBullSettings": {
     "description": "Button text for Recoverbull"
@@ -3397,10 +3360,6 @@
   "payMediumPriority": "Média",
   "@payMediumPriority": {
     "description": "Medium fee priority option"
-  },
-  "dcaHideSettings": "Ocultar configurações",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
   },
   "arkReceiveUnifiedCopied": "Endereço unificado copiado",
   "@arkReceiveUnifiedCopied": {
@@ -4172,21 +4131,6 @@
   "settingsRecoverbullTitle": "Recuperação",
   "@settingsRecoverbullTitle": {
     "description": "Title for the Recoverbull backup section in app settings"
-  },
-  "dcaBuyingMessage": "Você está comprando {amount} cada {frequency} via {network} desde que haja fundos em sua conta.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
   },
   "broadcastSignedTxTitle": "Transação de transmissão",
   "@broadcastSignedTxTitle": {
@@ -5842,10 +5786,6 @@
   "@arkTxTypeRedeem": {
     "description": "Transaction type label for redeem transactions"
   },
-  "dcaAddressLightning": "Endereço de iluminação",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
-  },
   "seedsignerStep9": "Revise o endereço de destino e o valor, e confirme a assinatura no SeedSigner.",
   "@seedsignerStep9": {
     "description": "SeedSigner instruction for reviewing and signing"
@@ -6051,10 +5991,6 @@
       }
     }
   },
-  "dcaOrderTypeValue": "Recorrer comprar",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
-  },
   "buyConfirmAwaitingConfirmation": "Aguardando confirmação ",
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
@@ -6163,10 +6099,6 @@
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "dcaNetworkLiquid": "Rede líquida",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
   },
   "arkSetupExperimentalWarning": "A arca ainda é experimental.\n\nSua carteira Ark é derivada da frase de semente da sua carteira principal. Nenhum backup adicional é necessário, seu backup de carteira existente restaura seus fundos Ark também.\n\nAo continuar, você reconhece a natureza experimental da Arca e o risco de perder fundos.\n\nNota do desenvolvedor : O segredo da arca é derivado da principal semente da carteira usando uma derivação arbitrária BIP-85 (index 11811).",
   "@arkSetupExperimentalWarning": {
@@ -6333,10 +6265,6 @@
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
   },
-  "dcaCancelTitle": "Cancelar Bitcoin Recurring Comprar?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
-  },
   "buyConfirmPurchase": "Confirme a compra",
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
@@ -6421,10 +6349,6 @@
   "@autoswapAlwaysBlockLabel": {
     "description": "Label for toggle to always block high fee transfers"
   },
-  "dcaNetworkBitcoin": "Rede de Bitcoin",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "bitboxScreenConnecting": "Ligação ao BitBox",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
@@ -6501,10 +6425,6 @@
   "payInProgressDescription": "O seu pagamento foi iniciado e o destinatário receberá os fundos após a sua transação receber 1 confirmação de compra.",
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
-  },
-  "dcaNetworkLightning": "Rede de relâmpago",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
   },
   "importQrDeviceKeystoneStep9": "Digite um rótulo para sua carteira Keystone e toque em \"Importar\"",
   "@importQrDeviceKeystoneStep9": {
@@ -6586,15 +6506,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "dcaPaymentMethodValue": "{currency} equilíbrio",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "enterPinAgainMessage": "Insira seu {pinOrPassword} novamente para continuar.",
   "@enterPinAgainMessage": {
     "description": "Message asking to re-enter PIN/password",
@@ -6624,10 +6535,6 @@
   "transactionDetailLabelBitcoinTxId": "ID de transação de Bitcoin",
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
-  },
-  "dcaConfirmButton": "Continue",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "arkSendConfirm": "Confirmação",
   "@arkSendConfirm": {
@@ -7059,10 +6966,6 @@
   "pinButtonRemove": "Remover PIN de Segurança",
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
-  },
-  "dcaCancelMessage": "Seu plano de compra Bitcoin recorrente vai parar, e as compras programadas terminarão. Para reiniciar, você precisará criar um novo plano.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
   },
   "importQrDevicePassportStep6": "Selecione \"Single-sig\"",
   "@importQrDevicePassportStep6": {
@@ -8292,10 +8195,6 @@
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
   },
-  "dcaDeactivate": "Desativar a recuperação",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
-  },
   "payLiquidNetwork": "Rede líquida",
   "@payLiquidNetwork": {
     "description": "Option for Liquid Network payment"
@@ -8415,15 +8314,6 @@
   "ledgerImportTitle": "Carteira de LED de importação",
   "@ledgerImportTitle": {
     "description": "Title for importing a Ledger hardware wallet"
-  },
-  "dcaConfirmationError": "Algo correu mal: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "recoverbullGoogleDriveErrorGeneric": "Um erro ocorreu. Por favor, tente novamente.",
   "@recoverbullGoogleDriveErrorGeneric": {
@@ -8900,10 +8790,6 @@
   "arkTotal": "Total",
   "@arkTotal": {
     "description": "Label for total balance in breakdown"
-  },
-  "dcaAddressLiquid": "Endereço líquido",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
   },
   "mempoolSettingsUseForFeeEstimationDescription": "Quando ativado, este servidor será usado para estimativa de taxa. Quando desativado, o servidor de mempool do Bull Bitcoin será usado em vez disso.",
   "@mempoolSettingsUseForFeeEstimationDescription": {
@@ -9657,10 +9543,6 @@
   "ledgerScanningTitle": "Digitalização de Dispositivos",
   "@ledgerScanningTitle": {
     "description": "Title shown while scanning for Ledger devices"
-  },
-  "dcaNetworkLabel": "Rede",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
   },
   "testBackupEnterKeyManually": "Digite a tecla de backup manualmente >>",
   "@testBackupEnterKeyManually": {
@@ -11120,10 +11002,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "dcaLightningAddressLabel": "Endereço de iluminação",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "autoswapRecipientWalletDefaultLabel": "Carteira Bitcoin",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
@@ -11510,10 +11388,6 @@
   "@shareLogsLabel": {
     "description": "List tile label to share application logs"
   },
-  "dcaFrequencyMonthly": "mês",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "recoverbullEnterToDecrypt": "Digite seu {inputType} para descriptografar seu cofre.",
   "@recoverbullEnterToDecrypt": {
     "description": "Instruction to enter PIN or password for vault decryption",
@@ -11542,10 +11416,6 @@
   "bip85NextMnemonic": "Próximo Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "dcaFundAccountButton": "Fina sua conta",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
   },
   "importWatchOnlyImport": "Importação",
   "@importWatchOnlyImport": {
@@ -11623,10 +11493,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "dcaFrequencyHourly": "hora da hora",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "recoverbullEnterToTest": "Digite seu {inputType} para testar seu cofre.",
   "@recoverbullEnterToTest": {
     "description": "Instruction to enter PIN or password to test vault recovery",
@@ -11668,10 +11534,6 @@
   "@importWatchOnlyScanQR": {
     "description": "Button to scan QR code for watch-only import"
   },
-  "dcaFrequencyDaily": "dia",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
   "importWatchOnlyFingerprint": "Impressão digital",
   "@importWatchOnlyFingerprint": {
     "description": "Label for wallet fingerprint field"
@@ -11687,10 +11549,6 @@
   "storeItSafelyMessage": "Armazená-lo em algum lugar seguro.",
   "@storeItSafelyMessage": {
     "description": "Instruction to store recovery phrase safely"
-  },
-  "dcaInsufficientBalanceDescription": "Você não tem equilíbrio suficiente para criar esta ordem.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
   },
   "anErrorOccurred": "Um erro ocorreu",
   "@anErrorOccurred": {
@@ -11747,10 +11605,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "dcaConfirmRecurringBuyTitle": "Confirmação Comprar",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "errorLabel": "Erro",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -11766,10 +11620,6 @@
   "importWatchOnlySelectDerivation": "Selecione a derivação",
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
-  },
-  "dcaFrequencyWeekly": "semana",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "walletDetailsSignerDeviceNotSupported": "Não suportado",
   "@walletDetailsSignerDeviceNotSupported": {
@@ -11798,10 +11648,6 @@
   "importWatchOnlyXpub": "x pub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "dcaInsufficientBalanceTitle": "Balança insuficiente",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
   },
   "recoverbullEnterToView": "Digite seu {inputType} para ver sua chave do cofre.",
   "@recoverbullEnterToView": {
@@ -11865,10 +11711,6 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "dcaContinueButton": "Continue",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "cancelButton": "Cancelar",
   "@cancelButton": {
     "description": "Button to cancel logout action"
@@ -11876,10 +11718,6 @@
   "recoverbullConnecting": "Conexão",
   "@recoverbullConnecting": {
     "description": "Status label indicating connection in progress"
-  },
-  "dcaConfirmationDescription": "Comprar ordens serão colocadas automaticamente por estas configurações. Você pode desabilitá-los a qualquer momento.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
   },
   "transactionSwapProgressFundsClaimed": "Fundos\nCláusula",
   "@transactionSwapProgressFundsClaimed": {
@@ -11946,10 +11784,6 @@
   "@recoverbullConnectionFailed": {
     "description": "Status label indicating connection failure"
   },
-  "dcaFrequencyValidationError": "Por favor, selecione uma frequência",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
   "walletDetailsDeletingMessage": "Excluindo a carteira...",
   "@walletDetailsDeletingMessage": {
     "description": "Message displayed while a wallet is being deleted"
@@ -11969,10 +11803,6 @@
   "bip85NextHex": "Próximo HEX",
   "@bip85NextHex": {
     "description": "Button to derive next hex entropy"
-  },
-  "dcaScheduleDescription": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
   },
   "importWatchOnlyBuyDevice": "Compre um dispositivo",
   "@importWatchOnlyBuyDevice": {
@@ -12018,10 +11848,6 @@
   "walletDetailsWalletFingerprintLabel": "Carteira digital",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "dcaSetRecurringBuyTitle": "Definir Recorrer Comprar",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
   },
   "legacySeedViewEmptyPassphrase": "(empty)",
   "@legacySeedViewEmptyPassphrase": {
@@ -12080,10 +11906,6 @@
   "backupKeyWarningMessage": "Atenção: Tenha cuidado onde você salvar a chave de backup.",
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
-  },
-  "dcaAmountLabel": "Montante",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
   },
   "transactionSwapStatusTransferStatus": "Status de transferência",
   "@transactionSwapStatusTransferStatus": {
@@ -12285,17 +12107,9 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "dcaPaymentMethodLabel": "Método de pagamento",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
-  },
   "walletDetailsNetworkLabel": "Rede",
   "@walletDetailsNetworkLabel": {
     "description": "Label for the network field in wallet details"
-  },
-  "dcaFrequencyLabel": "Frequência",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "enterBackupKeyManuallyTitle": "Digite a tecla de backup manualmente",
   "@enterBackupKeyManuallyTitle": {
@@ -13274,5 +13088,9 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique se você está conectado e tente novamente.",
+  "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
+  "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
+  "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde."
 }

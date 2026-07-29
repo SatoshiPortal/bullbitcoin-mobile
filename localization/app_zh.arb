@@ -205,7 +205,6 @@
   "swapInsufficientFunds": "资金不足",
   "arkContinueButton": "继续",
   "ledgerImportButton": "开始导入",
-  "dcaActivate": "主动同意",
   "labelInputLabel": "Label",
   "bitboxActionPairDeviceButton": "启动",
   "importQrDeviceSpecterName": "专栏",
@@ -234,14 +233,6 @@
   "transactionStatusSwapExpired": "页: 1",
   "swapAmountPlaceholder": "页: 1",
   "fundExchangeMethodInstantSepaSubtitle": "最长――只有不到30 000欧元的交易",
-  "dcaConfirmError": "有些错误:{error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLiquid": "流动网络",
   "fundExchangeSepaDescription": "请根据以下详情，从您的银行账户发起一笔 SEPA 转账。",
   "sendAddress": "地址: ",
@@ -276,7 +267,6 @@
   },
   "fundExchangeLabelBankAccountCountry": "银行账户",
   "walletAddressTypeNestedSegwit": "Nest",
-  "dcaConfirmDeactivate": "是的,中止",
   "exchangeLandingFeature2": "DCA, Limit Order and Auto-buy",
   "payPaymentPending": "待付款",
   "payConfirmHighFee": "这项付款的收费为{percentage}%。 继续?",
@@ -402,7 +392,6 @@
   },
   "receiveShareInvoice": "份额",
   "buyCantBuyMoreThan": "买不起",
-  "dcaUnableToGetConfig": "无法获得发展中国家的组合",
   "exchangeAuthLoginFailed": "旅行",
   "arkAvailable": "现有",
   "transactionSwapDescChainFailed": "你的移交是一个问题。 如果资金没有在24小时内返还,请联系支助.",
@@ -464,7 +453,6 @@
   "backupCompletedDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
   "sendErrorInsufficientFundsForFees": "资金不足以支付数额和费用",
   "buyConfirmPayoutMethod": "薪酬办法",
-  "dcaCancelButton": "Cancel",
   "durationMinutes": "{minutes}分钟",
   "@durationMinutes": {
     "placeholders": {
@@ -593,7 +581,6 @@
   "transactionSwapDescLnReceiveExpired": "该轮车已经过期。 寄出的任何资金将自动退还给发方.",
   "sellKYCApproved": "KYC 核准",
   "arkTransaction": "交易",
-  "dcaFrequencyMonthly": "月 本",
   "buyKYCLevel": "KYC 职等",
   "passportInstructionsTitle": "基金会 护照指示",
   "ledgerSuccessImportTitle": "进口",
@@ -635,7 +622,6 @@
   "sendFrom": "摘自",
   "sendTransactionBuilt": "随时可采取的行动",
   "bitboxErrorOperationCancelled": "该行动被取消。 请再次审判.",
-  "dcaOrderTypeLabel": "命令类型",
   "withdrawConfirmCard": "文件",
   "dcaSuccessMessageHourly": "您将每小时购买{amount}",
   "@dcaSuccessMessageHourly": {
@@ -673,7 +659,6 @@
   "scanNfcButton": "页: 1",
   "testBackupChooseVaultLocation": "颜色",
   "torSettingsInfoDescription": "•  • 代理仅适用于(不包括液体)\n•  • Default Orbot港9050\n• 确保Orbot在获得授权之前能够运行\n•  • 联系可能较慢,通过托拉斯进行",
-  "dcaAddressBitcoin": "页: 1",
   "sendErrorAmountBelowMinimum": "低于最低互换限额的数额: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "placeholders": {
@@ -701,7 +686,6 @@
   "importWalletImportMnemonic": "导入助记词",
   "bip85NextMnemonic": "接下来的Mnemonic",
   "bitboxErrorNoActiveConnection": "与BitBox装置没有积极的联系.",
-  "dcaFundAccountButton": "基金",
   "transactionFilterAll": "所有人",
   "arkSendTitle": "修正",
   "transactionDetailLabelAmountReceived": "收到的资金",
@@ -1042,7 +1026,6 @@
   "transcribeLabel": "说明",
   "pinCodeProcessing": "处理",
   "transactionDetailLabelRefunded": "重建资金",
-  "dcaFrequencyHourly": "小时",
   "swapValidationSelectFromWallet": "请选择一个转出的钱包",
   "sendSwapInitiated": "启动",
   "backupSettingsKeyWarningMessage": "至关重要的是,你不要在你拯救了你的后备档案的同一地点节省备用钥匙。 管道将其储存在单独的装置或单独的云层供应商上.",
@@ -1244,7 +1227,6 @@
   "electrumAdvancedOptions": "A. 先进选择",
   "autoswapWarningCardSubtitle": "如果你的经常付款余额超过0.02BTC,则将启动交换.",
   "transactionStatusConfirmed": "1. 确认",
-  "dcaFrequencyDaily": "日 本",
   "transactionLabelSendAmount": "数额",
   "testedStatus": "测试",
   "fundExchangeWarningTactic6": "他们希望分享你的屏幕",
@@ -1263,7 +1245,6 @@
   "fundExchangeArsBankTransferDescription": "根据以下阿根廷银行详细情况,从贵国银行账户转账.",
   "importWatchOnlyFingerprint": "Print",
   "exchangeBitcoinWalletsEnterAddressHint": "出入地址",
-  "dcaViewSettings": "观点环境",
   "withdrawAmountContinue": "继续",
   "allSeedViewSecurityWarningMessage": "显示种子短语是一种安全风险。 任何人如果看到你的种子,就可以获得你们的资金。 确保你位于一个私人地点,没有人能够看到你的屏幕.",
   "walletNetworkBitcoinTestnet": "测试网",
@@ -1274,7 +1255,6 @@
   "backupSettingsLabelsButton": "Labels",
   "payMediumPriority": "中 国",
   "payWhichWalletQuestion": "你们想要从哪条墙上花钱?",
-  "dcaHideSettings": "良好做法",
   "exchangeDcaCancelDialogMessage": "您的经常性采购计划将停止,计划购买将结束。 为了重新启动,你需要制定新的计划.",
   "transactionSwapDescChainExpired": "这笔转账已过期，资金将会自动返还至您的钱包",
   "payValidating": "审定......",
@@ -1319,7 +1299,6 @@
   "swapTransferRefundedTitle": "转拨资金",
   "bitboxErrorConnectionFailed": "未能与BitBox装置连接。 请检查您的联系.",
   "exchangeFileUploadDocumentTitle": "卸载文件",
-  "dcaInsufficientBalanceDescription": "你们没有足够的平衡来建立这一秩序.",
   "pinButtonContinue": "继续",
   "importColdcardSuccess": "Coldcard 钱包已导入",
   "withdrawUnauthenticatedError": "你没有认证。 请继续发言.",
@@ -1343,20 +1322,6 @@
   "howToDecideBackupText2": "被加密的过失使你无法looking望偷走。 这也使你无法意外地失去支持,因为它将储存在你的云层。 谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 储存你的后备加密钥匙的网络服务器可能受到削弱。 在这种情况下,贵云层账户的备份安全可能受到威胁.",
   "sellIBAN": "IBAN",
   "allSeedViewPassphraseLabel": "通行证:",
-  "dcaBuyingMessage": "只要你的账户有资金,你就每{frequency}次通过{network}购买{amount}.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeCurrencyDropdownValidation": "请选择货币",
   "withdrawConfirmTitle": "2. 肯定撤回",
   "importQrDeviceSpecterStep3": "进入你的种子/钥匙(永远选择适合你的工作)",
@@ -1503,7 +1468,6 @@
   "priceChartFetchingHistory": "Fetching Price History...",
   "sellDone": "Done",
   "payFromWallet": "From Wallet",
-  "dcaConfirmRecurringBuyTitle": "同意 1. 采购",
   "transactionSwapBitcoinToLiquid": "BTC - L-BTC",
   "sellBankDetails": "银行详细情况",
   "pinStatusCheckingDescription": "D. 检查个人信息网络的状况",
@@ -1592,7 +1556,6 @@
       }
     }
   },
-  "dcaFrequencyWeekly": "每周",
   "fundExchangeMethodRegularSepaSubtitle": "只使用30 000欧元以上的大宗交易",
   "settingsTelegramLabel": "电报",
   "walletDetailsSignerDeviceNotSupported": "未获得支持",
@@ -1714,7 +1677,6 @@
   "arkUnilateralExitDelay": "单方面撤出拖延",
   "arkStatusPending": "待决",
   "importWatchOnlyXpub": "x 共和国",
-  "dcaInsufficientBalanceTitle": "平衡不足",
   "arkType": "类型",
   "backupImportanceMessage": "如果没有支持,你最终将失去获得你的钱的机会。 提供支持至关重要.",
   "testBackupGoogleDrivePermission": "谷歌将请你与本信分享个人信息.",
@@ -1902,7 +1864,6 @@
   "torSettingsDescUnknown": "无法确定 身份。 确保Orbot安装和运行.",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "在 BULL 钱包中，选择您偏好的派生类型。如果不确定，请选择「Segwit (BIP84)」",
-  "dcaContinueButton": "继续",
   "fundExchangeCrIbanUsdTitle": "银行转账(美元)",
   "buyStandardWithdrawalDesc": "收到付款后(1-3天)",
   "psbtFlowColdcardTitle": "冷卡加指示",
@@ -1960,7 +1921,6 @@
   "swapExternalAddressHint": "输入外部钱包地址",
   "torSettingsDescConnecting": "成立 联系",
   "ledgerWalletTypeLegacyDescription": "P2PKH - 旧格式",
-  "dcaConfirmationDescription": "定购单将自动置于这些环境中。 无论何时,你都可以消除这些障碍.",
   "appleICloudProvider": "页: 1",
   "exchangeAccountInfoVerificationNotVerified": "未核实",
   "fundExchangeWarningDescription": "如果有人要求你买“帮助你”的话,他们可能会试图cam你!",
@@ -2003,7 +1963,6 @@
   "importQrDeviceKruxStep1": "页: 1",
   "transactionSwapProgressFundsClaimed": "资金\n索赔",
   "recoverbullSelectAppleIcloud": "页: 1",
-  "dcaAddressLightning": "照明地址",
   "keystoneStep13": "该交易将被导入到 Bull Bitcoin 钱包中",
   "receiveGenerationFailed": "未能产生{type}",
   "@receiveGenerationFailed": {
@@ -2125,9 +2084,7 @@
   "nextButton": "下一步",
   "ledgerSignButton": "开始签署",
   "recoverbullPassword": "密码",
-  "dcaNetworkLiquid": "流动网络",
   "fundExchangeMethodSinpeTransfer": "SINPE 转让",
-  "dcaCancelTitle": "Cancel 购物?",
   "payFromAnotherWallet": "从其他比特币钱包支付",
   "importMnemonicHasBalance": "1. 平衡",
   "dcaLightningAddressEmptyError": "请进入电灯地址",
@@ -2191,7 +2148,6 @@
   "importWatchOnlyLabel": "标签",
   "settingsAppSettingsTitle": "申请情况",
   "dcaWalletLightningSubtitle": "要求兼容的钱包，最大限额 0.25 BTC",
-  "dcaNetworkBitcoin": "比特币网络",
   "swapTransferRefundInProgressMessage": "转让有错误。 你的退款正在进行之中.",
   "importQrDevicePassportName": "护照",
   "fundExchangeMethodCanadaPostSubtitle": "更愿意亲自支付报酬的人",
@@ -2228,7 +2184,6 @@
     }
   },
   "buyConfirmationTimeValue": "大约10分钟",
-  "dcaOrderTypeValue": "重复购买",
   "ledgerConnectingMessage": "连接{deviceName}",
   "@ledgerConnectingMessage": {
     "placeholders": {
@@ -2341,7 +2296,6 @@
   "ledgerConnectTitle": "3. 连接你的液化装置",
   "withdrawAmountTitle": "2. 草签",
   "coreScreensServerNetworkFeesLabel": "服务器网",
-  "dcaFrequencyValidationError": "请选择频率",
   "walletsListTitle": "钱包详情",
   "payAllCountries": "所有国家",
   "sellCopBalance": "缔约方会议 结余",
@@ -2423,7 +2377,6 @@
   "transactionSwapDescChainDefault": "你的移交工作正在进行之中。 这一过程是自动化的,可能需要一些时间才能完成.",
   "onboardingBullBitcoin": "页: 1",
   "coreSwapsChainClaimable": "转让可以提出.",
-  "dcaNetworkLightning": "照明网络",
   "backupWalletHowToDecideVaultCloudRecommendationText": "你们想要确保,即使你失去装置,你也永远不会失去接触你的ault.",
   "arkAboutEsploraUrl": "Esplora URL",
   "backupKeyExampleWarning": "例如,如果你用谷歌驱使你的备份,就不使用谷歌驱使的主机.",
@@ -2472,24 +2425,14 @@
   "rbfEstimatedDelivery": "大约10分钟",
   "sendSwapCancelled": "取消",
   "backupWalletGoogleDrivePrivacyMessage4": "永远 ",
-  "dcaPaymentMethodValue": "{currency} 结余",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "已完成的移交",
   "torSettingsStatusDisconnected": "互不关联",
   "exchangeDcaCancelDialogTitle": "Cancel 购物?",
   "sellSendPaymentMxnBalance": "MXN 结余",
   "fundExchangeSinpeLabelRecipientName": "客户名称",
-  "dcaScheduleDescription": "将根据这一时间表自动进行采购.",
   "keystoneInstructionsTitle": "主要指示",
   "hwLedger": "分类账",
   "physicalBackupDescription": "在一份文件上写了12字。 让他们安全,并确保他们不会失去.",
-  "dcaConfirmButton": "继续",
   "dcaBackToHomeButton": "返家",
   "importQrDeviceKruxInstructionsTitle": "Krux号指令",
   "transactionOrderLabelOriginName": "出生地名称",
@@ -2528,7 +2471,6 @@
   "importColdcardTitle": "连接式冷漠 问题",
   "ledgerSuccessImportDescription": "您的 Ledger 钱包导入成功",
   "pinStatusProcessing": "处理",
-  "dcaCancelMessage": "您的经常性采购计划将停止,计划购买将结束。 为了重新启动,你需要制定新的计划.",
   "fundExchangeHelpPaymentDescription": "你的转让法.",
   "sellSendPaymentFastest": "快速",
   "dcaConfirmNetwork": "网络",
@@ -2706,7 +2648,6 @@
   "arkPending": "待决",
   "transactionOrderLabelOrderStatus": "身份",
   "testBackupCreatedAt": "创建:",
-  "dcaSetRecurringBuyTitle": "2. 约定的变更",
   "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the trade on their {device}.",
   "@psbtFlowSignTransactionOnDevice": {
     "placeholders": {
@@ -3125,7 +3066,6 @@
   "bitboxActionSignTransactionTitle": "交易",
   "testBackupGoogleDrivePrivacyPart3": "页: 1 ",
   "logSettingsErrorLoadingMessage": "负载记录: ",
-  "dcaAmountLabel": "数额",
   "walletNetworkLiquid": "流动网络",
   "receiveArkNetwork": "方 法",
   "swapMaxButton": "最大",
@@ -3148,7 +3088,6 @@
   "payPrivatePayment": "私人支付",
   "autoswapDefaultWalletLabel": "页: 1",
   "recoverbullTestSuccessDescription": "你们能够恢复使用丢失的“红外墙”",
-  "dcaDeactivate": "2. 启动",
   "exchangeAuthLoginFailedTitle": "旅行",
   "autoswapRecipientWallet": "Recipient Wallet",
   "arkUnifiedAddressBip21": "统一地址(BIP21)",
@@ -3198,14 +3137,6 @@
   "importQrDeviceJadeStep10": "这!",
   "payPayeeAccountNumberHint": "账面编号",
   "importQrDevicePassportStep8": "在您的移动装置上,主机是“开放式照相机”",
-  "dcaConfirmationError": "有些错误:{error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "oopsSomethingWentWrong": "Oops! 某些错误",
   "bip85NoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
   "pinStatusSettingUpDescription": "1. 制定您的《个人资料》",
@@ -3589,7 +3520,6 @@
   "payAdvancedOptions": "A. 先进选择",
   "sendSigningTransaction": "签署交易......",
   "sellErrorFeesNotCalculated": "未计算的交易费。 请再次审判.",
-  "dcaAddressLiquid": "流动资金",
   "buyVerificationInProgress": "正在进行的核查......",
   "transactionSwapDescChainPaid": "你的交易已经播放。 我们现在等待着锁定交易得到确认.",
   "mempoolSettingsUseForFeeEstimation": "估算",
@@ -3882,7 +3812,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "网络",
   "sendScanBitcoinQRCode": "页: 1.",
   "toLabel": "致",
   "passportStep7": "   -  device把你的装置退回一小块",
@@ -3981,7 +3910,6 @@
   "sellKYCPending": "KYC 有待核查",
   "buyGetConfirmedFaster": "更快",
   "transactionOrderLabelPayinAmount": "薪酬数额",
-  "dcaLightningAddressLabel": "照明地址",
   "electrumEnableSsl": "Enable SSL",
   "payCustomFee": "习俗税",
   "backupInstruction5": "您的备份未受到密码短语的保护。稍后可以通过创建新钱包的方式为您的备份添加一个密码短语",
@@ -4002,7 +3930,6 @@
   "seedsignerStep13": "该交易将被导入到 Bull Bitcoin 钱包中",
   "autoswapRecipientWalletDefaultLabel": "页: 1",
   "transactionSwapDescLnReceiveClaimable": "链式交易得到了确认。 我们现在要求这些资金来完成你们的交换.",
-  "dcaPaymentMethodLabel": "支付方法",
   "swapProgressPendingMessage": "移交工作正在进行之中。 交易可在确认时进行。 你可以回家,等待.",
   "walletDetailsNetworkLabel": "网络",
   "broadcastSignedTxBroadcasting": "广播.",
@@ -4071,7 +3998,6 @@
   "ledgerProcessingImport": "导入钱包中...",
   "coldcardStep15": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "comingSoonDefaultMessage": "这一特点目前正在发展之中,不久将出台.",
-  "dcaFrequencyLabel": "频率",
   "ledgerErrorMissingAddress": "核查需要解决",
   "enterBackupKeyManuallyTitle": "手工操作",
   "transactionDetailLabelRecipientAddress": "客户地址",
@@ -5271,5 +5197,9 @@
   "transactionStatusPayjoinAborted": "Payjoin 已中止",
   "transactionDetailLabelPayjoinAborted": "已中止",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 手续费分摊",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。",
+  "dcaAccountUnavailableError": "无法加载您的账户。请确认您已登录，然后重试。",
+  "dcaLightningAddressRequiredError": "输入 Lightning 地址以接收您购买的比特币。",
+  "dcaReceiveAddressError": "无法在您的钱包中准备接收地址。请重试。",
+  "dcaOrderCreationError": "无法创建定期买入。请稍后重试。"
 }

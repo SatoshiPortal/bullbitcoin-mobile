@@ -1596,120 +1596,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSetRecurringBuyTitle": "পুনৰাবৃত্তি ক্ৰয় নিৰ্ধাৰণ কৰক",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
-  },
-  "dcaInsufficientBalanceTitle": "অপৰ্যাপ্ত বেলেঞ্চ",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
-  },
-  "dcaInsufficientBalanceDescription": "এই অৰ্ডাৰ সৃষ্টি কৰিবলৈ আপোনাৰ যথেষ্ট বেলেঞ্চ নাই।",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
-  "dcaFundAccountButton": "আপোনাৰ একাউণ্ট পুঁজি যোগান ধৰক",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
-  },
-  "dcaScheduleDescription": "এই সময়সূচী অনুযায়ী Bitcoin ক্ৰয় স্বয়ংক্ৰিয়ভাৱে কৰা হ'ব।",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
-  "dcaFrequencyValidationError": "অনুগ্ৰহ কৰি এটা কম্পাঙ্ক বাছনি কৰক",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
-  "dcaContinueButton": "অব্যাহত ৰাখক",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
-  "dcaConfirmRecurringBuyTitle": "পুনৰাবৃত্তি ক্ৰয় নিশ্চিত কৰক",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
-  "dcaConfirmationDescription": "এই ছেটিংছ অনুযায়ী ক্ৰয় অৰ্ডাৰ স্বয়ংক্ৰিয়ভাৱে ৰখা হ'ব। আপুনি যিকোনো সময়তে নিষ্ক্ৰিয় কৰিব পাৰিব।",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
-  "dcaFrequencyLabel": "কম্পাঙ্ক",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
-  },
-  "dcaFrequencyHourly": "ঘণ্টা",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
-  "dcaFrequencyDaily": "দিন",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
-  "dcaFrequencyWeekly": "সপ্তাহ",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
-  },
-  "dcaFrequencyMonthly": "মাহ",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
-  "dcaAmountLabel": "পৰিমাণ",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
-  "dcaPaymentMethodLabel": "পৰিশোধ পদ্ধতি",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
-  },
-  "dcaPaymentMethodValue": "{currency} বেলেঞ্চ",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "অৰ্ডাৰৰ ধৰণ",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
-  "dcaOrderTypeValue": "পুনৰাবৃত্তি ক্ৰয়",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
-  },
-  "dcaNetworkLabel": "নেটৱৰ্ক",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
-  "dcaNetworkBitcoin": "Bitcoin নেটৱৰ্ক",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
-  "dcaNetworkLightning": "Lightning নেটৱৰ্ক",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
-  "dcaNetworkLiquid": "Liquid নেটৱৰ্ক",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
-  "dcaLightningAddressLabel": "Lightning ঠিকনা",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
-  "dcaConfirmationError": "কিবা সমস্যা হৈছে: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "অব্যাহত ৰাখক",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
-  },
   "dcaSuccessTitle": "পুনৰাবৃত্তি ক্ৰয় সক্ৰিয় হৈছে!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -7363,69 +7249,6 @@
   "@exchangeKycRemoveLimits": {
     "description": "KYC card subtitle"
   },
-  "dcaActivate": "Recurring Buy সক্ৰিয় কৰক",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
-  "dcaDeactivate": "Recurring Buy নিষ্ক্ৰিয় কৰক",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
-  },
-  "dcaViewSettings": "ছেটিংছ চাওক",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
-  "dcaHideSettings": "ছেটিংছ লুকুৱাওক",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
-  },
-  "dcaCancelTitle": "Bitcoin Recurring Buy বাতিল কৰিবনে?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
-  },
-  "dcaCancelMessage": "আপোনাৰ নিয়মিত Bitcoin ক্ৰয় পৰিকল্পনা বন্ধ হ'ব, আৰু নিৰ্ধাৰিত ক্ৰয়সমূহ শেষ হ'ব। পুনৰ আৰম্ভ কৰিবলৈ, আপুনি এটা নতুন পৰিকল্পনা স্থাপন কৰিব লাগিব।",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
-  },
-  "dcaCancelButton": "বাতিল",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
-  },
-  "dcaConfirmDeactivate": "হয়, নিষ্ক্ৰিয় কৰক",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
-  },
-  "dcaUnableToGetConfig": "DCA কনফিগাৰেচন পাবলৈ অসমৰ্থ",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
-  "dcaAddressBitcoin": "Bitcoin ঠিকনা",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
-  "dcaAddressLightning": "Lightning ঠিকনা",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
-  },
-  "dcaAddressLiquid": "Liquid ঠিকনা",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
-  "dcaBuyingMessage": "আপোনাৰ একাউণ্টত পুঁজি থকালৈকে আপুনি প্ৰতি {frequency} তে {network} ৰ জৰিয়তে {amount} ক্ৰয় কৰি আছে।",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "লগইন ব্যৰ্থ হৈছে",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -7655,15 +7478,6 @@
   "dcaConfirmLightningAddress": "Lightning ঠিকনা",
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
-  },
-  "dcaConfirmError": "কিবা সমস্যা হৈছে: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "dcaConfirmContinue": "অব্যাহত ৰাখক",
   "@dcaConfirmContinue": {
@@ -10318,5 +10132,9 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "dcaAccountUnavailableError": "আপোনাৰ একাউণ্ট ল'ড কৰিব পৰা নগ'ল। আপুনি লগ ইন কৰা আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "dcaLightningAddressRequiredError": "আপোনাৰ ক্ৰয়সমূহ লাভ কৰিবলৈ এটা Lightning ঠিকনা দিয়ক।",
+  "dcaReceiveAddressError": "আপোনাৰ ৱালেটত এটা গ্ৰহণ কৰা ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।"
 }
