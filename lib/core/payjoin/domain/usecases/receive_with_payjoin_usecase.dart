@@ -16,6 +16,7 @@ class ReceiveWithPayjoinUsecase {
     required String walletId,
     required String address,
     int? expireAfterSec,
+    int? amountSat,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -29,6 +30,7 @@ class ReceiveWithPayjoinUsecase {
         // The user-configured session lifetime (see the payjoin settings
         // screen) unless the caller explicitly overrides it (e.g. tests).
         expireAfterSec: expireAfterSec ?? settings.payjoinExpireAfterSec,
+        amountSat: amountSat,
       );
 
       return payjoinReceiver;

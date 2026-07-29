@@ -260,6 +260,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
+    int? amountSat,
   }) async {
     final initialSettings = await _settingsRepository.fetch();
     if (!initialSettings.isPayjoinEnabled) {
@@ -272,6 +273,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       isTestnet: isTestnet,
       maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       expireAfterSec: expireAfterSec,
+      amountSat: amountSat,
     );
 
     return _withSessionLock(model.id, () async {
@@ -416,6 +418,20 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
     return result;
   });
+
+  @override
+  Future<void> cancelReceiver(String payjoinId) =>
+      _withSessionLock(payjoinId, () async {
+        final fresh = await _localPayjoinDatasource.fetchReceiver(payjoinId);
+        if (fresh == null || fresh.isCompleted || fresh.isAborted) return;
+
+        // Same three outcomes as a global disable — drop an idle session,
+        // decline and broadcast the sender's original when we already hold it,
+        // leave a committed proposal to the sender — but scoped to one session
+        // and driven by the user rather than by the setting.
+        final settled = await _settleReceiverAfterDisable(fresh);
+        if (settled != null) _payjoinStreamController.add(settled);
+      });
 
   @override
   Future<void> disableReceivers() async {
@@ -817,6 +833,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (!recorded) return;
 
     final payjoin = payjoinModel.toEntity() as PayjoinSender;
+    log.info('Processing payjoin proposal for ${payjoin.logRef}');
 
     _payjoinStreamController.add(payjoin);
 
@@ -828,6 +845,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         payjoin.proposalPsbt!,
         wallet: wallet,
       );
+      log.info('Payjoin proposal signed for ${payjoin.logRef}');
       result = await _broadcastPsbt(
         payjoinModel: payjoinModel,
         finalizedPsbt: finalizedPsbt,

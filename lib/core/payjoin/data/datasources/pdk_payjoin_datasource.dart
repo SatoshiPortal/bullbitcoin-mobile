@@ -121,12 +121,21 @@ class PdkPayjoinDatasource {
     return (null, null);
   }
 
+  /// [amountSat] pins the amount inside the generated BIP21 URI.
+  ///
+  /// The receive flow leaves it null: the user types the amount after the
+  /// session exists, and the URI is composed again on every keystroke. A caller
+  /// that already knows the amount — the exchange buy flow, whose URI is handed
+  /// to the backend once and can never be updated afterwards — passes it here
+  /// so the PDK writes it into the URI itself, which avoids re-encoding a
+  /// canonical URI by hand.
   Future<PayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
+    int? amountSat,
   }) async {
     try {
       final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
@@ -147,6 +156,10 @@ class PdkPayjoinDatasource {
               .withMaxFeeRate(
                 maxEffectiveFeeRateSatPerVb: maxFeeRateSatPerVb.toInt(),
               );
+
+      if (amountSat != null) {
+        receiverBuilder = receiverBuilder.withAmount(amountSats: amountSat);
+      }
 
       final persister = InMemoryJsonReceiverSessionPersister();
       final initialized = receiverBuilder.build().save(persister: persister);
@@ -193,6 +206,10 @@ class PdkPayjoinDatasource {
     int? expireAfterSec,
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
+    final senderLogRef = Payjoin.logRefForId(bip21);
+    logger.log.info(
+      '[sender] creating $senderLogRef with expirySec=$expirySec',
+    );
 
     PjUri pjUri;
     final Uri parsedUri;
@@ -216,6 +233,7 @@ class PdkPayjoinDatasource {
     }
 
     await postOriginalProposal(withReplyKey, persister);
+    logger.log.info('[sender] original proposal posted for $senderLogRef');
 
     // Create and store the model with the data needed to keep track of the
     // payjoin session
@@ -237,6 +255,7 @@ class PdkPayjoinDatasource {
     // ordering caveat as startListeningForRequest above: this runs before
     // the repository persists `model`, benign given the polling interval.
     startListeningForProposal(model);
+    logger.log.info('[sender poll] started for $senderLogRef');
 
     return model;
   }
@@ -813,7 +832,7 @@ class PdkPayjoinDatasource {
       final proposalPsbt = await _getProposalPsbt(state.inner, persister);
       if (proposalPsbt == null) return;
 
-      log('[sender poll] proposal found for $senderLogRef');
+      logger.log.info('[sender poll] proposal found for $senderLogRef');
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
         sender: persister.toJson(),
