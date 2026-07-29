@@ -231,6 +231,21 @@ enum OrderPaymentMethod {
   final String value;
   const OrderPaymentMethod(this.value);
 
+  /// The payin/payout methods that debit or credit one of the user's in-app
+  /// fiat balances instead of an external account. Refund-to-balance methods
+  /// are deliberately excluded: they are not selectable as a payout.
+  static const balanceMethods = <OrderPaymentMethod>{
+    cadBalance,
+    eurBalance,
+    mxnBalance,
+    arsBalance,
+    copBalance,
+    crcBalance,
+    usdBalance,
+  };
+
+  bool get isBalance => balanceMethods.contains(this);
+
   static OrderPaymentMethod fromValue(String value) {
     return OrderPaymentMethod.values.firstWhere(
       (e) => e.value == value,
@@ -561,6 +576,10 @@ sealed class Order with _$Order {
 
   bool get isPayinCompleted => payinStatus == OrderPayinStatus.completed;
   bool get isPayoutCompleted => payoutStatus == OrderPayoutStatus.completed;
+
+  /// Whether the payout credits one of the user's in-app fiat balances rather
+  /// than an external recipient.
+  bool get isBalancePayout => payoutMethod.isBalance;
 
   bool isCompleted() => orderStatus == OrderStatus.completed;
   bool isProcessing() => orderStatus == OrderStatus.inProgress;

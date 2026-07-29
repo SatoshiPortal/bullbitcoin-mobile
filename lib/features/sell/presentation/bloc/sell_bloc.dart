@@ -342,7 +342,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     Emitter<SellState> emit,
   ) async {
     // We should be on a SellPaymentState
-    final paymentState = state.toCleanPaymentState;
+    final paymentState = _currentPaymentState;
     if (paymentState == null) {
       log.severe(
         error: 'Expected to be on SellPaymentState',
@@ -351,14 +351,35 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       return;
     }
 
+    // Never refresh the price lock while a payment is in flight: the pending
+    // transaction pays the current order's amount, and going through
+    // toCleanPaymentState would clear isConfirmingPayment and visually re-arm
+    // the Confirm button mid-confirmation (#2522).
+    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+      return;
+    }
+
     try {
       final refreshedOrder = await _refreshSellOrderUsecase.execute(
         orderId: paymentState.sellOrder.orderId,
       );
 
-      emit(paymentState.copyWith(sellOrder: refreshedOrder));
+      // A confirmation may have started while the refresh was in flight, so
+      // work from the current state instead of the snapshot above.
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+      // The error is kept: when this refresh was triggered by a failed send
+      // (see _emitSendPaymentError) clearing it would erase the only
+      // explanation the user has. The next confirmation clears it anyway.
+      emit(current.copyWith(sellOrder: refreshedOrder));
     } on SellError catch (e) {
-      emit(paymentState.copyWith(error: e));
+      // Same re-read as the success path: a refresh failure must not paint an
+      // error over a confirmation that started while it was in flight.
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+      emit(current.copyWith(error: e));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
     }
@@ -375,6 +396,19 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         error: 'Expected to be on SellPaymentState',
         trace: StackTrace.current,
       );
+      return;
+    }
+
+    // The payin is already on the wire. Re-running prepare/sign/broadcast could
+    // pay the order a second time from different UTXOs, so only wait for the
+    // order to catch up (#2522).
+    if (sellPaymentState.isPayinBroadcast) {
+      emit(sellPaymentState.copyWith(isConfirmingPayment: true));
+      try {
+        await _completeAfterBroadcast(emit);
+      } catch (e) {
+        log.severe(error: e, trace: StackTrace.current);
+      }
       return;
     }
 
@@ -402,9 +436,12 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           pset: pset,
           walletId: wallet.id,
         );
-        await _broadcastLiquidTransactionUsecase.execute(signedPset);
+        // Derived before broadcasting so the latch can be set on the very next
+        // line: nothing may run between the broadcast and the latch.
         final tx = await LiquidTx.fromPset(signedPset);
         final txid = tx.txid;
+        await _broadcastLiquidTransactionUsecase.execute(signedPset);
+        _latchBroadcast(emit, txid);
         await _labelsFacade.store(
           NewLabel.tx(
             transactionId: txid,
@@ -432,17 +469,24 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         final absoluteFeesUpdated = await _calculateBitcoinAbsoluteFeesUsecase
             .execute(psbt: preparedSend.unsignedPsbt);
-        emit(sellPaymentState.copyWith(absoluteFees: absoluteFeesUpdated));
+        emit(
+          (_currentPaymentState ?? sellPaymentState).copyWith(
+            absoluteFees: absoluteFeesUpdated,
+          ),
+        );
         final signedTx = await _signBitcoinTxUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
           walletId: wallet.id,
         );
+        // Derived before broadcasting so the latch can be set on the very next
+        // line: nothing may run between the broadcast and the latch.
+        final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
+        final txid = tx.txid;
         await _broadcastBitcoinTransactionUsecase.execute(
           signedTx.signedPsbt,
           isPsbt: true,
         );
-        final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
-        final txid = tx.txid;
+        _latchBroadcast(emit, txid);
         await _labelsFacade.store(
           NewLabel.tx(
             transactionId: txid,
@@ -451,63 +495,86 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           ),
         );
       }
-      // 5s delay gives backend time to register the 0 conf
-      await Future.delayed(const Duration(seconds: 5));
-      final latestOrder = await _getOrderUsecase.execute(
-        orderId: sellPaymentState.sellOrder.orderId,
-      );
-
-      if (latestOrder is! SellOrder) {
-        throw const SellError.unexpected(
-          message: 'Expected SellOrder but received a different order type',
-        );
-      }
-
-      emit(
-        sellPaymentState.toSuccessState(sellOrder: sellPaymentState.sellOrder),
-      );
+      await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.message),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, SellError.unexpected(message: e.message));
     } on PrepareBitcoinSendException catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
     } on SignLiquidTxException catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
     } on SignBitcoinTxException catch (e) {
       // Handle SellError and emit error state
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
     } catch (e) {
       // Log unexpected errors
       log.severe(error: e, trace: StackTrace.current);
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
+      _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
     } finally {
-      if (state is SellPaymentState) {
-        emit((state as SellPaymentState).copyWith(isConfirmingPayment: false));
+      final current = _currentPaymentState;
+      // Once broadcast, the confirmation stays in flight until the order
+      // reflects the payment; polling takes it to the success state.
+      if (current != null && !current.isPayinBroadcast) {
+        emit(current.copyWith(isConfirmingPayment: false));
       }
+    }
+  }
+
+  SellPaymentState? get _currentPaymentState {
+    final currentState = state;
+    return currentState is SellPaymentState ? currentState : null;
+  }
+
+  void _latchBroadcast(Emitter<SellState> emit, String txid) {
+    final current = _currentPaymentState;
+    if (current == null) return;
+    emit(
+      current.copyWith(
+        payinBroadcastTxid: txid,
+        isConfirmingPayment: true,
+        error: null,
+      ),
+    );
+  }
+
+  /// Waits for the order to reflect the broadcast payin and moves to the
+  /// success state with the refreshed order (#2530).
+  Future<void> _completeAfterBroadcast(Emitter<SellState> emit) async {
+    // 5s delay gives backend time to register the 0 conf
+    await Future.delayed(const Duration(seconds: 5));
+
+    final paymentState = _currentPaymentState;
+    if (paymentState == null) return;
+
+    final latestOrder = await _getOrderUsecase.execute(
+      orderId: paymentState.sellOrder.orderId,
+    );
+
+    if (latestOrder is! SellOrder) {
+      throw const SellError.unexpected(
+        message: 'Expected SellOrder but received a different order type',
+      );
+    }
+
+    emit(paymentState.toSuccessState(sellOrder: latestOrder));
+  }
+
+  void _emitSendPaymentError(Emitter<SellState> emit, SellError error) {
+    final current = _currentPaymentState;
+    if (current == null) return;
+    if (current.isPayinBroadcast) {
+      // The transaction is already on the wire. Showing a retryable error here
+      // would re-arm Confirm and risk a second payment (#2522), so stay in the
+      // "payment sent, refreshing order" state and let polling finish the job.
+      return;
+    }
+    emit(current.copyWith(error: error, isConfirmingPayment: false));
+
+    // Confirm is live again, but the price-lock countdown fires onTimeout only
+    // once. If the deadline elapsed during this failed attempt, the skip in
+    // _onOrderRefreshTimePassed dropped that one refresh and nothing else will
+    // ask for it, leaving the user retrying against a stale quote.
+    if (!current.sellOrder.confirmationDeadline.isAfter(DateTime.now())) {
+      add(const SellEvent.orderRefreshTimePassed());
     }
   }
 
@@ -544,9 +611,13 @@ class SellBloc extends Bloc<SellEvent, SellState> {
               .toSuccessState(sellOrder: latestOrder),
         );
       } else {
-        emit(
-          sellPaymentState.copyWith(sellOrder: latestOrder, isPolling: true),
-        );
+        // The fetch takes seconds and the poll runs for the life of the screen,
+        // so it routinely spans the broadcast. Emitting the pre-await snapshot
+        // would drop the latch and re-arm Confirm (#2522), so merge into the
+        // current state instead.
+        final current = _currentPaymentState;
+        if (current == null) return;
+        emit(current.copyWith(sellOrder: latestOrder, isPolling: true));
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -601,10 +672,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
 
     try {
       final utxos = await _getWalletUtxosUsecase.execute(walletId: wallet.id);
-      emit(sellPaymentState.copyWith(utxos: utxos));
+      emit((_currentPaymentState ?? sellPaymentState).copyWith(utxos: utxos));
     } catch (e) {
       emit(
-        sellPaymentState.copyWith(
+        (_currentPaymentState ?? sellPaymentState).copyWith(
           error: SellError.unexpected(message: 'Failed to load UTXOs: $e'),
         ),
       );
@@ -636,7 +707,11 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,
         );
-        emit(sellPaymentState.copyWith(absoluteFees: absoluteFees));
+        emit(
+          (_currentPaymentState ?? sellPaymentState).copyWith(
+            absoluteFees: absoluteFees,
+          ),
+        );
       } else {
         final bitcoinFees = await _getNetworkFeesUsecase.execute(
           isLiquid: false,
@@ -658,11 +733,15 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
         );
-        emit(sellPaymentState.copyWith(absoluteFees: absoluteFees));
+        emit(
+          (_currentPaymentState ?? sellPaymentState).copyWith(
+            absoluteFees: absoluteFees,
+          ),
+        );
       }
     } catch (e) {
       emit(
-        sellPaymentState.copyWith(
+        (_currentPaymentState ?? sellPaymentState).copyWith(
           error: SellError.unexpected(
             message: 'Failed to recalculate fees: $e',
           ),
