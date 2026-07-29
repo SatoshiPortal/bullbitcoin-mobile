@@ -2777,14 +2777,6 @@
   "psbtFlowSignTransaction": "Allekirjoita transaktio",
   "psbtFlowInstructions": "Ohjeet",
   "psbtFlowDone": "Valmis",
-  "psbtFlowError": "Virhe: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowNoPartsToDisplay": "Ei osia näytettäväksi",
   "psbtFlowPartProgress": "Osa {current}/{total}",
   "@psbtFlowPartProgress": {
@@ -2797,21 +2789,8 @@
       }
     }
   },
-  "psbtFlowKruxTitle": "Krux-ohjeet",
-  "psbtFlowKeystoneTitle": "Keystone-ohjeet",
-  "psbtFlowPassportTitle": "Foundation Passport -ohjeet",
-  "psbtFlowSeedSignerTitle": "SeedSigner-ohjeet",
   "psbtFlowSpecterTitle": "Specter-ohjeet",
   "psbtFlowColdcardTitle": "Coldcard Q -ohjeet",
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT -ohjeet",
-  "psbtFlowLoginToDevice": "Kirjaudu {device}-laitteeseesi",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTurnOnDevice": "Käynnistä {device}-laitteesi",
   "@psbtFlowTurnOnDevice": {
     "placeholders": {
@@ -2820,21 +2799,12 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "Lisää salasanalause, jos sinulla on (valinnainen)",
   "psbtFlowClickScan": "Valitse Skannaa",
-  "psbtFlowClickSign": "Valitse Allekirjoita",
-  "psbtFlowClickPsbt": "Valitse PSBT",
-  "psbtFlowLoadFromCamera": "Valitse Lataa kamerasta",
-  "psbtFlowScanQrOption": "Valitse \"Skannaa QR\" -vaihtoehto",
-  "psbtFlowScanAnyQr": "Valitse \"Skannaa mikä tahansa QR-koodi\" -vaihtoehto",
-  "psbtFlowSignWithQr": "Valitse Allekirjoita QR-koodilla",
   "psbtFlowScanQrShown": "Skannaa Bull-lompakossa näytetty QR-koodi",
   "psbtFlowTroubleScanningTitle": "Jos sinulla on ongelmia skannauksen kanssa:",
   "psbtFlowIncreaseBrightness": "Lisää laitteen näytön kirkkautta",
   "psbtFlowMoveLaser": "Siirrä punaista lasersädettä QR-koodin yli ylös ja alas",
   "psbtFlowMoveBack": "Kokeile siirtää laitetta hieman taaksepäin",
-  "psbtFlowHoldSteady": "Pidä QR-koodi vakaana ja keskellä",
-  "psbtFlowMoveCloserFurther": "Kokeile siirtää laitetta lähemmäs tai kauemmas",
   "psbtFlowReviewTransaction": "Kun transaktio on tuotu {device}-laitteeseesi, tarkista vastaanottajan osoite ja määrä.",
   "@psbtFlowReviewTransaction": {
     "placeholders": {
@@ -5263,5 +5233,7 @@
   "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
   "transactionDetailLabelPayjoinAborted": "Keskeytetty",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
+  "psbtFlowInvalidPsbtError": "Tätä tapahtumaa ei voitu lukea. Palaa takaisin ja luo se uudelleen.",
+  "psbtFlowQrEncodingError": "Tätä tapahtumaa ei voitu muuntaa QR-koodiksi."
 }

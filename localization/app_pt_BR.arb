@@ -808,10 +808,6 @@
   "@payPendingPayments": {
     "description": "Filter for pending payments"
   },
-  "psbtFlowKeystoneTitle": "Instruções de Keystone",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "connectHardwareWalletKrux": "Krux",
   "@connectHardwareWalletKrux": {
     "description": "Krux hardware wallet option"
@@ -1803,10 +1799,6 @@
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
   },
-  "psbtFlowClickSign": "Clique em Sinalizar",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1966,15 +1958,6 @@
   "transactionDetailLabelTransferId": "ID de transferência",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
-  },
-  "psbtFlowLoginToDevice": "Entre no seu dispositivo {device}",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "dcaConfirmPaymentMethod": "Método de pagamento",
   "@dcaConfirmPaymentMethod": {
@@ -4095,10 +4078,6 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
-  "psbtFlowSeedSignerTitle": "Instruções do SeedSigner",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "payFromWallet": "Da carteira",
   "@payFromWallet": {
     "description": "Label showing source wallet"
@@ -4219,10 +4198,6 @@
   "bitboxActionImportWalletProcessing": "Carteira de importação",
   "@bitboxActionImportWalletProcessing": {
     "description": "Processing text for import wallet"
-  },
-  "psbtFlowScanQrOption": "Selecione \"Scan QR\" opção",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
   },
   "ledgerWalletTypeSegwitDescription": "Nativo SegWit - Recomendado",
   "@ledgerWalletTypeSegwitDescription": {
@@ -5168,10 +5143,6 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "psbtFlowHoldSteady": "Mantenha o código QR estável e centralizado",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "psbtFlowSelectSeed": "Uma vez que a transação é importada em seu {device}, você deve selecionar a semente que deseja assinar com.",
   "@psbtFlowSelectSeed": {
     "description": "Instruction to select seed on device for signing",
@@ -5580,10 +5551,6 @@
   "sendBroadcastTransaction": "Transação de transmissão",
   "@sendBroadcastTransaction": {
     "description": "Button label for broadcasting a transaction to the network"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Instruções",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "payPriceWillRefreshIn": "Preço irá refrescar-se ",
   "@payPriceWillRefreshIn": {
@@ -6102,10 +6069,6 @@
   "onboardingRecover": "Recuperar",
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
-  },
-  "psbtFlowKruxTitle": "Instruções de Krux",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullFetchingVaultKey": "Fetching Vault Chaveiro",
   "@recoverbullFetchingVaultKey": {
@@ -6970,10 +6933,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "psbtFlowScanAnyQr": "Selecione \"Scan any QR code\" opção",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
-  },
   "transactionLabelNetworkFee": "Taxa de rede",
   "@transactionLabelNetworkFee": {
     "description": "Label for network fee component"
@@ -7574,15 +7533,6 @@
   "sellExchangeRate": "Taxa de câmbio",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "psbtFlowError": "Erro: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyProofOfAddress": "Prova de Endereço",
   "@buyProofOfAddress": {
@@ -8680,10 +8630,6 @@
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
   },
-  "psbtFlowLoadFromCamera": "Clique em Carregar da câmera",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
-  },
   "payInvalidAmount": "Montante inválido",
   "@payInvalidAmount": {
     "description": "Error when entered amount is invalid"
@@ -8921,10 +8867,6 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
-  "psbtFlowMoveCloserFurther": "Tente mover seu dispositivo mais perto ou mais longe",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
-  },
   "coreScreensLogsTitle": "Logs",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
@@ -8971,10 +8913,6 @@
   "ledgerProcessingVerify": "Mostrando endereço no Ledger...",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
-  },
-  "psbtFlowClickPsbt": "Clique em PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -9326,10 +9264,6 @@
   "autoswapMaxFeeInfoText": "Se a taxa de transferência total estiver acima da porcentagem definida, a transferência automática será bloqueada",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "psbtFlowPassportTitle": "Instruções do passaporte da Fundação",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "appUnlockIncorrectPinError": "PIN incorreto. Por favor, tente novamente. {failedAttempts} {attemptsWord}",
   "@appUnlockIncorrectPinError": {
@@ -10030,10 +9964,6 @@
   "exchangeFeatureBankTransfers": "• Enviar transferências bancárias e pagar contas",
   "@exchangeFeatureBankTransfers": {
     "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
-  "psbtFlowSignWithQr": "Clique em assinar com o código QR",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
   },
   "allSeedViewLoadingMessage": "Isso pode levar algum tempo para carregar se você tiver muitas sementes neste dispositivo.",
   "@allSeedViewLoadingMessage": {
@@ -10883,10 +10813,6 @@
   "mempoolSettingsUseForFeeEstimation": "Uso para estimativa de taxas",
   "@mempoolSettingsUseForFeeEstimation": {
     "description": "Label for use for fee estimation toggle"
-  },
-  "psbtFlowAddPassphrase": "Adicionar uma senha se você tiver um (opcional)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
   },
   "passportStep5": "   - Aumente o brilho da tela em seu dispositivo",
   "@passportStep5": {
@@ -13274,5 +13200,7 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "psbtFlowInvalidPsbtError": "Não foi possível ler esta transação. Volte e crie-a novamente.",
+  "psbtFlowQrEncodingError": "Não foi possível converter esta transação em um código QR."
 }

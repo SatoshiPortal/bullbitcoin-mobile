@@ -2825,14 +2825,6 @@
   "psbtFlowSignTransaction": "Signer la transaction",
   "psbtFlowInstructions": "Instructions",
   "psbtFlowDone": "J'ai terminé",
-  "psbtFlowError": "Erreur : {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowNoPartsToDisplay": "Aucune partie à afficher",
   "psbtFlowPartProgress": "Partie {current} de {total}",
   "@psbtFlowPartProgress": {
@@ -2845,21 +2837,8 @@
       }
     }
   },
-  "psbtFlowKruxTitle": "Instructions Krux",
-  "psbtFlowKeystoneTitle": "Instructions Keystone",
-  "psbtFlowPassportTitle": "Instructions Foundation Passport",
-  "psbtFlowSeedSignerTitle": "Instructions SeedSigner",
   "psbtFlowSpecterTitle": "Instructions Specter",
   "psbtFlowColdcardTitle": "Instructions Coldcard Q",
-  "psbtFlowJadeTitle": "Instructions PSBT Blockstream Jade",
-  "psbtFlowLoginToDevice": "Connectez-vous à votre appareil {device}",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTurnOnDevice": "Allumez votre appareil {device}",
   "@psbtFlowTurnOnDevice": {
     "placeholders": {
@@ -2868,21 +2847,12 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "Ajoutez une phrase de passe si vous en avez une (optionnel)",
   "psbtFlowClickScan": "Cliquez sur Scanner",
-  "psbtFlowClickSign": "Cliquez sur Signer",
-  "psbtFlowClickPsbt": "Cliquez sur PSBT",
-  "psbtFlowLoadFromCamera": "Cliquez sur Charger depuis la caméra",
-  "psbtFlowScanQrOption": "Sélectionnez l'option « Scanner le QR »",
-  "psbtFlowScanAnyQr": "Sélectionnez l'option « Scanner n'importe quel code QR »",
-  "psbtFlowSignWithQr": "Cliquez sur Signer avec un code QR",
   "psbtFlowScanQrShown": "Scannez le code QR affiché dans le portefeuille Bull",
   "psbtFlowTroubleScanningTitle": "Si vous avez du mal à scanner :",
   "psbtFlowIncreaseBrightness": "Augmentez la luminosité de l'écran de votre appareil",
   "psbtFlowMoveLaser": "Déplacez le laser rouge de haut en bas sur le code QR",
   "psbtFlowMoveBack": "Essayez de reculer légèrement votre appareil",
-  "psbtFlowHoldSteady": "Maintenez le code QR stable et centré",
-  "psbtFlowMoveCloserFurther": "Essayez de rapprocher ou d'éloigner votre appareil",
   "psbtFlowReviewTransaction": "Une fois la transaction importée dans votre {device}, vérifiez l'adresse de destination et le montant.",
   "@psbtFlowReviewTransaction": {
     "placeholders": {
@@ -5283,5 +5253,7 @@
   "announcementDismissConfirmTitle": "Ignorer cette annonce ?",
   "announcementDismissConfirmBody": "Lisez pour en savoir plus, ou ignorez pour la masquer. Les annonces ignorées ne réapparaîtront plus.",
   "announcementDismissConfirmAction": "Ignorer",
-  "announcementDismissConfirmRead": "Lire"
+  "announcementDismissConfirmRead": "Lire",
+  "psbtFlowInvalidPsbtError": "Cette transaction n'a pas pu être lue. Retournez en arrière et créez-la à nouveau.",
+  "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR."
 }

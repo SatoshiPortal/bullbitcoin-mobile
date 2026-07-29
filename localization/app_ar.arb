@@ -819,10 +819,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone Instructions",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "حالة النقل",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1829,15 +1825,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "لوجين إلى جهاز {device} الخاص بك",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "? كوستاريكا كوستاريكا",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -1999,10 +1986,6 @@
   "electrumAddCustomServer": "مضافا إليه",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "الإشارة",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "الجلستان/المكتب",
   "@rbfSatsPerVbyte": {
@@ -3988,10 +3971,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "تعليمات البذور",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "محاولة فاشلة",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4547,10 +4526,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "اختيار خيار \"إسكان QR\"",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "coreSwapsLnReceiveFailed": "تفرقوا.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
@@ -5080,10 +5055,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "اثبتوا وركزوا",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "التحويل",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5454,10 +5425,6 @@
   "sendErrorInsufficientBalanceForSwap": "ليس هناك رصيد كافي لدفع هذا التبديل عن طريق السائل وليس ضمن حدود التبديل للدفع عبر بيتكوين.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT التعليمات",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "torSettingsDescUnknown": "غير قادر على تحديد حالة تور ضمان تركيب أوربوت وتشغيله.",
   "@torSettingsDescUnknown": {
@@ -5930,10 +5897,6 @@
   "walletTypeWatchOnly": "شاهد فقط",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "التعليمات الكيروية",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "الخزنة المشفرة",
   "@recoverbullDecryptVault": {
@@ -6820,10 +6783,6 @@
   "bitboxScreenConnecting": "Connecting to BitBox",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "\"اختار \"إمسح أيّ رمز للأشعة السينية",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "شبكة السيرفر",
   "@transactionLabelServerNetworkFees": {
@@ -8088,15 +8047,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "الخطأ: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "الإنجاز المقدر: 10 دقائق",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -8711,10 +8661,6 @@
   "coldcardStep4": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
-  },
-  "psbtFlowClickPsbt": "Click PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "فاتورة",
   "@sendInvoicePaid": {
@@ -9358,10 +9304,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "اشارة لرمز QR",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "تم",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -9675,10 +9617,6 @@
   "recoverbullSelectFetchDriveFilesError": "فشل في جلب كل الدعم",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "كليك لود من الكاميرا",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "التحقق المحدود",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -10106,10 +10044,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "أضف مرارة إذا كان لديك واحدة (اختيارية)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "الخيارات المتقدمة",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -10145,10 +10079,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "حاول أن تحرك جهازك أقرب أو أبعد",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "arkAboutDurationMinutes": "{minutes}دقائق",
   "@arkAboutDurationMinutes": {
@@ -10535,10 +10465,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "مؤسسة تعليمات جوازات السفر",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "سيل بيتكين، الحصول على دفع مع بيتكوين",
   "@exchangeLandingFeature3": {
@@ -13280,5 +13206,7 @@
   "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
   "transactionDetailLabelPayjoinAborted": "ملغى",
   "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78).",
+  "psbtFlowInvalidPsbtError": "لا يمكن قراءة هذه المعاملة. ارجع وأنشئها مرة أخرى.",
+  "psbtFlowQrEncodingError": "لا يمكن تحويل هذه المعاملة إلى رمز QR."
 }

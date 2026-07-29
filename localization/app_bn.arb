@@ -855,10 +855,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone নির্দেশনা",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "হস্তান্তর অবস্থা",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1920,15 +1916,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "আপনার {device} ডিভাইসে লগইন করুন",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "==WEBLATE_PART==\n🇨🇷 কোস্টা রিকা",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -2094,10 +2081,6 @@
   "electrumAddCustomServer": "কাস্টম সার্ভার যোগ করুন",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "সাইন ক্লিক করুন",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
@@ -4144,10 +4127,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "SeedSigner নির্দেশনা",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "ব্যর্থ প্রচেষ্টা",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4698,10 +4677,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "'Scan QR' অপশন নির্বাচন করুন",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "coreSwapsLnReceiveFailed": "Swap ব্যর্থ হয়েছে।",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
@@ -5243,10 +5218,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "QR কোডটি স্থির ও কেন্দ্রে রাখুন",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "স্থানান্তর নিশ্চিত করুন",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5633,10 +5604,6 @@
   "sendErrorInsufficientBalanceForSwap": "Liquid-এর মাধ্যমে এই স্যুইপটি পরিশোধ করার জন্য পর্যাপ্ত ব্যালেন্স নেই এবং Bitcoin-এর মাধ্যমে পরিশোধ করার জন্য স্যুইপ সীমার মধ্যে নয়।",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT নির্দেশনা",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "torSettingsDescUnknown": "Tor অবস্থা নির্ধারণ করা যাচ্ছে না। নিশ্চিত করুন Orbot ইনস্টল করা আছে এবং চালু রয়েছে।",
   "@torSettingsDescUnknown": {
@@ -6140,10 +6107,6 @@
   "walletTypeWatchOnly": "শুধু পর্যবেক্ষণ",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Krux নির্দেশনা",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "ভল্ট ডিক্রিপ্ট করুন",
   "@recoverbullDecryptVault": {
@@ -7071,10 +7034,6 @@
   "bitboxScreenConnecting": "BitBox-এ সংযোগ করা হচ্ছে",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "'Scan any QR code' অপশন নির্বাচন করুন",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "সার্ভার নেটওয়ার্ক ফি",
   "@transactionLabelServerNetworkFees": {
@@ -8383,15 +8342,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "ত্রুটি: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "আনুমানিক পৌঁছানোর সময় ~ ১০ মিনিট",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -9051,10 +9001,6 @@
   "importQrDevicePassportStep5": "বিকল্প হিসেবে \"Sparrow\" নির্বাচন করুন",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "psbtFlowClickPsbt": "PSBT-এ ক্লিক করুন",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "চালান পরিশোধ হয়েছে",
   "@sendInvoicePaid": {
@@ -9736,10 +9682,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "QR কোড দিয়ে সাইন করুন",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "সম্পন্ন",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -10083,10 +10025,6 @@
   "recoverbullSelectFetchDriveFilesError": "সমস্ত ড্রাইভ ব্যাকআপ আনতে ব্যর্থ হয়েছে",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "ক্যামেরা থেকে লোড করুন",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "সীমিত যাচাইকরণ",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -10526,10 +10464,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "যদি আপনার একটি পাসফ্রেজ থাকে তবে যোগ করুন (ঐচ্ছিক)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -10569,10 +10503,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": "ফান্ডগুলি আপনার অ্যাকাউন্ট ব্যালান্সে যোগ হবে।",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "ডিভাইসটি কাছে বা দূরে নেয়ার চেষ্টা করুন",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "arkAboutDurationMinutes": "{minutes} মিনিট",
   "@arkAboutDurationMinutes": {
@@ -10967,10 +10897,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "Foundation Passport নির্দেশনা",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "Bitcoin বিক্রি করুন, Bitcoin-এ পেমেন্ট পান",
   "@exchangeLandingFeature3": {
@@ -13487,5 +13413,7 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
+  "psbtFlowInvalidPsbtError": "এই লেনদেনটি পড়া যায়নি। ফিরে গিয়ে এটি আবার তৈরি করুন।",
+  "psbtFlowQrEncodingError": "এই লেনদেনটি QR কোডে রূপান্তর করা যায়নি।"
 }

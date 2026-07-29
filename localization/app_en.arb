@@ -9190,15 +9190,6 @@
       }
     }
   },
-  "psbtFlowError": "Error: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowNoPartsToDisplay": "No parts to display",
   "@psbtFlowNoPartsToDisplay": {
     "description": "Message when there are no QR code parts to show"
@@ -9214,22 +9205,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowKruxTitle": "Krux Instructions",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
-  },
-  "psbtFlowKeystoneTitle": "Keystone Instructions",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
-  "psbtFlowPassportTitle": "Foundation Passport Instructions",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
-  },
-  "psbtFlowSeedSignerTitle": "SeedSigner Instructions",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
   },
   "psbtFlowSpecterTitle": "Specter Instructions",
   "@psbtFlowSpecterTitle": {
@@ -9387,19 +9362,6 @@
   "@psbtFlowColdcardMk4Step13": {
     "description": "Coldcard Mk4 PSBT signing instruction step 13"
   },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Instructions",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
-  "psbtFlowLoginToDevice": "Login to your {device} device",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTurnOnDevice": "Turn on your {device} device",
   "@psbtFlowTurnOnDevice": {
     "description": "Instruction to power on hardware device",
@@ -9409,37 +9371,9 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "Add a passphrase if you have one (optional)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "psbtFlowClickScan": "Click Scan",
   "@psbtFlowClickScan": {
     "description": "Instruction to click scan button on device"
-  },
-  "psbtFlowClickSign": "Click Sign",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
-  "psbtFlowClickPsbt": "Click PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
-  },
-  "psbtFlowLoadFromCamera": "Click Load from camera",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
-  },
-  "psbtFlowScanQrOption": "Select \"Scan QR\" option",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
-  "psbtFlowScanAnyQr": "Select \"Scan any QR code\" option",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
-  },
-  "psbtFlowSignWithQr": "Click Sign with QR Code",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
   },
   "psbtFlowScanQrShown": "Scan the QR code shown in the Bull wallet",
   "@psbtFlowScanQrShown": {
@@ -9460,14 +9394,6 @@
   "psbtFlowMoveBack": "Try moving your device back a little bit",
   "@psbtFlowMoveBack": {
     "description": "Troubleshooting tip to adjust scanning distance"
-  },
-  "psbtFlowHoldSteady": "Hold the QR code steady and centered",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
-  "psbtFlowMoveCloserFurther": "Try moving your device closer or further away",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "psbtFlowReviewTransaction": "Once the transaction is imported in your {device}, review the destination address and the amount.",
   "@psbtFlowReviewTransaction": {
@@ -15008,5 +14934,13 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "psbtFlowInvalidPsbtError": "This transaction could not be read. Go back and create it again.",
+  "@psbtFlowInvalidPsbtError": {
+    "description": "Shown when the PSBT to sign cannot be decoded, so no QR can be built."
+  },
+  "psbtFlowQrEncodingError": "This transaction could not be turned into a QR code.",
+  "@psbtFlowQrEncodingError": {
+    "description": "Shown when a readable PSBT could not be encoded into animated QR parts."
   }
 }

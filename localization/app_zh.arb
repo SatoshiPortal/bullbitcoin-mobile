@@ -315,7 +315,6 @@
   "bitcoinSettingsWalletsTitle": "钱包",
   "arkReceiveSegmentBoarding": "董事会",
   "seedsignerStep12": "土木板将请你扫描西德西尼的QR代码。 缩略语.",
-  "psbtFlowKeystoneTitle": "主要指示",
   "transactionLabelTransferStatus": "转让状况",
   "arkSessionDuration": "会期",
   "buyAboveMaxAmountError": "你试图购买最高数额.",
@@ -651,14 +650,6 @@
   "payLastName": "姓 名",
   "transactionPayjoinStatusExpired": "过期",
   "fundExchangeMethodBankTransferWire": "银行转账 (Wire or EFT)",
-  "psbtFlowLoginToDevice": "your{device} 装置",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa 哥斯达黎加",
   "payCalculating": "计算......",
   "transactionDetailLabelTransferId": "转账证明",
@@ -714,7 +705,6 @@
   "psbtFlowIncreaseBrightness": "3. 提高你的器具的亮度",
   "payCoinjoinCompleted": "联 合 国",
   "electrumAddCustomServer": "添加习俗服务器",
-  "psbtFlowClickSign": "浮标",
   "rbfSatsPerVbyte": "注",
   "broadcastSignedTxDoneButton": "Done",
   "sendRecommendedFee": "建议:{rate} sat/vB",
@@ -1403,7 +1393,6 @@
   "bitcoinSettingsMempoolServerTitle": "Memrix服务器设置",
   "transactionSwapDescLnReceiveDefault": "你们的雕刻正在进行之中。 这一过程是自动化的,可能需要一些时间才能完成.",
   "selectCoinsManuallyLabel": "手工选编",
-  "psbtFlowSeedSignerTitle": "见dSigner 指示",
   "appUnlockAttemptSingular": "失败",
   "importQrDevicePassportStep2": "进入日本",
   "transactionOrderLabelPayoutMethod": "薪酬办法",
@@ -1574,7 +1563,6 @@
   "recoverbullSelectNoBackupsFound": "没有发现的支持",
   "importMnemonicNestedSegwit": "Nest",
   "sendReplaceByFeeActivated": "替换",
-  "psbtFlowScanQrOption": "选择“Scan QR”办法",
   "coreSwapsLnReceiveFailed": "Swap Failed.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "美元转账资金",
   "transactionDetailLabelPayinStatus": "Payin Status",
@@ -1758,7 +1746,6 @@
   "sellInsufficientBalanceError": "当前钱包的余额不足以支付这笔卖出",
   "transactionSwapDescLnReceivePending": "您的宣誓就职。 我们正在等待电灯网付款.",
   "tryAgainButton": "再次",
-  "psbtFlowHoldSteady": "D. 稳定集中管理法典",
   "swapConfirmTitle": "1. 集体转让",
   "testBackupGoogleDrivePrivacyPart1": "这些资料 ",
   "connectHardwareWalletKeystone": "Keystone",
@@ -1898,7 +1885,6 @@
   "recoverbullErrorServiceUnavailable": "无法提供的服务。 请检查您的联系.",
   "arkSettleTitle": "定居者交易",
   "sendErrorInsufficientBalanceForSwap": "没有足够的余额通过流动资金支付这笔冲销,而不是通过蒸汽支付.",
-  "psbtFlowJadeTitle": "段 次 页 次 指示",
   "torSettingsDescUnknown": "无法确定 身份。 确保Orbot安装和运行.",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "在 BULL 钱包中，选择您偏好的派生类型。如果不确定，请选择「Segwit (BIP84)」",
@@ -2060,7 +2046,6 @@
   "sendBroadcastTransaction": "广播交易",
   "receiveBitcoinConfirmationMessage": "交易将同时确认.",
   "walletTypeWatchOnly": "Watch-Only",
-  "psbtFlowKruxTitle": "Krux号指令",
   "recoverbullDecryptVault": "加密",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "转账随时可以退款.",
@@ -2366,7 +2351,6 @@
   "testBackupBackupId": "Backup ID:",
   "walletDeletionErrorOngoingSwaps": "当前钱包有进行中的交易，您无法删除",
   "bitboxScreenConnecting": "连接BitBox",
-  "psbtFlowScanAnyQr": "选择“扫描任何QR代码”",
   "transactionLabelServerNetworkFees": "服务器网",
   "importQrDeviceSeedsignerStep10": "完成",
   "sendReceive": "收 款",
@@ -2838,14 +2822,6 @@
   "exchangeLegacyTransactionsComingSoon": "遗产交易 -  So",
   "buyProofOfAddress": "地址证明",
   "backupWalletInstructionNoDigitalCopies": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
-  "psbtFlowError": "Rror: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "大约10分钟",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "importQrDeviceSeedsignerStep2": "开放“种子”菜单",
@@ -3066,7 +3042,6 @@
   "jadeStep2": "添加一个字句,如果你有的话(选择)",
   "coldcardStep4": "扫描 Bull 钱包中显示的二维码",
   "importQrDevicePassportStep5": "选择“箭”办法",
-  "psbtFlowClickPsbt": "Click PSBT",
   "sendInvoicePaid": "Invoice Paid",
   "buyKycPendingDescription": "您必须首先完成身份证明核查",
   "payBelowMinAmountError": "您支付的金额低于此钱包可支付的最小金额",
@@ -3304,7 +3279,6 @@
   "importWalletLedger": "Ledger",
   "recoverbullCheckingConnection": "RecoverBull检查连接",
   "exchangeLandingTitle": "BUL BITCOIN",
-  "psbtFlowSignWithQr": "Click sign with QR Code",
   "doneButton": "Done",
   "withdrawSuccessTitle": "撤回",
   "paySendAll": "附录",
@@ -3427,7 +3401,6 @@
   "coreSwapsLnReceiveExpired": "页: 1.",
   "fundExchangeOnlineBillPaymentLabelBillerName": "• 寻找贵国银行的账单人名单以证明这一名称",
   "recoverbullSelectFetchDriveFilesError": "未能抓住所有的动力",
-  "psbtFlowLoadFromCamera": "Click Load",
   "exchangeAccountInfoVerificationLimitedVerification": "有限的核查",
   "addressViewErrorLoadingMoreAddresses": "{error}",
   "@addressViewErrorLoadingMoreAddresses": {
@@ -3585,7 +3558,6 @@
     }
   },
   "bitboxErrorInvalidResponse": "BiBox装置的无效反应。 请再次审判.",
-  "psbtFlowAddPassphrase": "添加一个字句,如果你有的话(选择)",
   "payAdvancedOptions": "A. 先进选择",
   "sendSigningTransaction": "签署交易......",
   "sellErrorFeesNotCalculated": "未计算的交易费。 请再次审判.",
@@ -3596,7 +3568,6 @@
   "buyPaymentMethod": "支付方法",
   "coreSwapsStatusCompleted": "完成",
   "fundExchangeCrIbanUsdDescriptionEnd": "。 资金将计入你的账户结余.",
-  "psbtFlowMoveCloserFurther": "Ry  device  device",
   "arkAboutDurationMinutes": "{minutes}分钟",
   "@arkAboutDurationMinutes": {
     "placeholders": {
@@ -3760,7 +3731,6 @@
       }
     }
   },
-  "psbtFlowPassportTitle": "基金会 护照指示",
   "exchangeLandingFeature3": "Sell, 获得薪水",
   "notLoggedInMessage": "请登录在您的“Bu”账户中,以便进入交换环境.",
   "swapTotalFees": "总费用 ",
@@ -5271,5 +5241,7 @@
   "transactionStatusPayjoinAborted": "Payjoin 已中止",
   "transactionDetailLabelPayjoinAborted": "已中止",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 手续费分摊",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。",
+  "psbtFlowInvalidPsbtError": "无法读取此交易。请返回并重新创建。",
+  "psbtFlowQrEncodingError": "无法将此交易转换为二维码。"
 }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bs58check/bs58check.dart' as base58;
 import 'package:cbor/cbor.dart';
 import 'package:satoshifier/satoshifier.dart';
@@ -11,27 +10,18 @@ import 'package:ur/ur_encoder.dart';
 
 class UrQrGenerator {
   static List<String> generatePsbtUr(String psbt, {int fragmentLength = 100}) {
-    try {
-      final psbtBytes = base64.decode(psbt);
-      final cryptoPsbt = CryptoPsbt.fromPayload(psbtBytes);
-      final ur = cryptoPsbt.toUR();
-      final encoder = UREncoder(ur, fragmentLength);
+    final psbtBytes = base64.decode(psbt);
+    final cryptoPsbt = CryptoPsbt.fromPayload(psbtBytes);
+    final ur = cryptoPsbt.toUR();
+    final encoder = UREncoder(ur, fragmentLength);
 
-      final parts = <String>[];
-      while (!encoder.isComplete) {
-        final part = encoder.nextPart();
-        parts.add(part);
-      }
-
-      return parts;
-    } catch (e) {
-      log.severe(
-        message: 'Failed to generate PSBT UR',
-        error: e,
-        trace: StackTrace.current,
-      );
-      return [];
+    final parts = <String>[];
+    while (!encoder.isComplete) {
+      final part = encoder.nextPart();
+      parts.add(part);
     }
+
+    return parts;
   }
 }
 

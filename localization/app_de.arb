@@ -309,7 +309,6 @@
   "bitcoinSettingsWalletsTitle": "Wallets",
   "arkReceiveSegmentBoarding": "Einzahlung",
   "seedsignerStep12": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf dem SeedSigner zu scannen. Scannen Sie ihn.",
-  "psbtFlowKeystoneTitle": "Keystone-Anleitung",
   "transactionLabelTransferStatus": "Übertragungsstatus",
   "arkSessionDuration": "Sitzungsdauer",
   "buyAboveMaxAmountError": "Sie versuchen, über dem Höchstbetrag zu kaufen.",
@@ -636,14 +635,6 @@
   "payLastName": "Nachname",
   "transactionPayjoinStatusExpired": "Abgelaufen",
   "fundExchangeMethodBankTransferWire": "Banküberweisung (Wire oder EFT)",
-  "psbtFlowLoginToDevice": "Melden Sie sich bei Ihrem {device}-Gerät an",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "payCalculating": "Berechnung läuft…",
   "transactionDetailLabelTransferId": "Transfer-ID",
@@ -697,7 +688,6 @@
   "psbtFlowIncreaseBrightness": "Erhöhen Sie die Bildschirmhelligkeit auf Ihrem Gerät",
   "payCoinjoinCompleted": "CoinJoin abgeschlossen",
   "electrumAddCustomServer": "Benutzerdefinierter Server",
-  "psbtFlowClickSign": "Klicken Sie auf",
   "rbfSatsPerVbyte": "Sats/vB",
   "broadcastSignedTxDoneButton": "Fertig",
   "sendRecommendedFee": "Empfohlen: {rate} Sat/vB",
@@ -1370,7 +1360,6 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server-Einstellungen",
   "transactionSwapDescLnReceiveDefault": "Ihr Swap wird gerade durchgeführt. Dieser Vorgang läuft automatisch ab und kann einige Zeit in Anspruch nehmen",
   "selectCoinsManuallyLabel": "Coins manuell auswählen",
-  "psbtFlowSeedSignerTitle": "SeedSigner-Anleitung",
   "appUnlockAttemptSingular": "fehlgeschlagen",
   "importQrDevicePassportStep2": "Geben Sie Ihre PIN ein",
   "transactionOrderLabelPayoutMethod": "Auszahlungsmethode",
@@ -1537,7 +1526,6 @@
   "recoverbullSelectNoBackupsFound": "Keine Backups gefunden",
   "importMnemonicNestedSegwit": "Eingebettetes SegWit",
   "sendReplaceByFeeActivated": "Gebührenerhöhung aktiviert",
-  "psbtFlowScanQrOption": "Wählen Sie die Option „QR-Code scannen“",
   "coreSwapsLnReceiveFailed": "Swap fehlgeschlagen",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Überweisung in US-Dollar (USD)",
   "transactionDetailLabelPayinStatus": "Zahlungsstatus",
@@ -1717,7 +1705,6 @@
   "sellInsufficientBalanceError": "Das Guthaben in der ausgewählten Wallet reicht nicht aus, um diesen Verkaufsauftrag auszuführen.",
   "transactionSwapDescLnReceivePending": "Ihr Swap wurde initiiert. Wir warten auf den Zahlungseingang im Lightning-Netzwerk",
   "tryAgainButton": "Erneut versuchen",
-  "psbtFlowHoldSteady": "Halten Sie den QR-Code stabil und zentriert",
   "swapConfirmTitle": "Bestätigen",
   "testBackupGoogleDrivePrivacyPart1": "Diese Informationen",
   "connectHardwareWalletKeystone": "Keystone",
@@ -1855,7 +1842,6 @@
   "recoverbullErrorServiceUnavailable": "Service nicht verfügbar. Bitte überprüfen Sie Ihre Verbindung.",
   "arkSettleTitle": "Transaktionen abwickeln",
   "sendErrorInsufficientBalanceForSwap": "Nicht genug Guthaben, um diesen Swap über Liquid zu bezahlen, und nicht innerhalb der Swap-Grenzwerte, um über Bitcoin zu zahlen.",
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT-Anleitung",
   "torSettingsDescUnknown": "Tor-Status konnte nicht bestimmt werden. Stellen Sie sicher, dass Orbot installiert ist und läuft",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "Wählen Sie in der Bull Bitcoin-App Ihren bevorzugten Ableitungstyp. Wenn Sie unsicher sind, wählen Sie „SegWit (BIP84)“",
@@ -2012,7 +1998,6 @@
   "sendBroadcastTransaction": "Transaktion senden",
   "receiveBitcoinConfirmationMessage": "Die Bestätigung der Bitcoin-Transaktion kann eine Weile dauern.",
   "walletTypeWatchOnly": "Watch-Only",
-  "psbtFlowKruxTitle": "Krux-Anleitung",
   "recoverbullDecryptVault": "Tresor entschlüsseln",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "Die Überweisung kann zurückerstattet werden",
@@ -2313,7 +2298,6 @@
   "testBackupBackupId": "Backup-ID:",
   "walletDeletionErrorOngoingSwaps": "Sie können keine Wallet löschen, in der noch ein Swap stattfindet.",
   "bitboxScreenConnecting": "Wird mit BitBox verbunden…",
-  "psbtFlowScanAnyQr": "Wählen Sie die Option „Jeden QR-Code scannen“",
   "transactionLabelServerNetworkFees": "Server-Netzwerkgebühren",
   "importQrDeviceSeedsignerStep10": "Einrichtung abgeschlossen",
   "sendReceive": "Empfangen",
@@ -2775,14 +2759,6 @@
   "exchangeLegacyTransactionsComingSoon": "Legacy-Transaktionen – Demnächst verfügbar",
   "buyProofOfAddress": "Adressnachweis",
   "backupWalletInstructionNoDigitalCopies": "Machen Sie keine digitalen Kopien Ihrer Sicherung. Schreiben Sie diese auf einem Stück Papier oder gravieren Sie sie in Metall.",
-  "psbtFlowError": "Fehler: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Geschätzte Lieferung ~ 10 Minuten.",
   "backupKeyHint": "a8b7b12daf06412f45a90b7fd2…",
   "importQrDeviceSeedsignerStep2": "Öffnen Sie das Menü „Seeds“",
@@ -3002,7 +2978,6 @@
   "bip329LabelsHeading": "BIP329-Labels importieren/exportieren",
   "jadeStep2": "Fügen Sie eine Passphrase hinzu, wenn Sie eine haben (optional)",
   "importQrDevicePassportStep5": "Wählen Sie die Option „Sparrow“",
-  "psbtFlowClickPsbt": "Klicken Sie auf PSBT",
   "sendInvoicePaid": "Rechnung bezahlt",
   "buyKycPendingDescription": "Sie müssen zuerst die Identitätsprüfung abschließen.",
   "payBelowMinAmountError": "Sie versuchen, einen Betrag zu zahlen, der unter dem Mindestbetrag liegt, der mit dieser Wallet gezahlt werden kann.",
@@ -3240,7 +3215,6 @@
   "importWalletBitBoxNova": "BitBox02 Nova",
   "recoverbullCheckingConnection": "RecoverBull-Verbindung wird geprüft",
   "exchangeLandingTitle": "BITCOIN",
-  "psbtFlowSignWithQr": "Klicken Sie auf QR-Code unterschreiben",
   "doneButton": "Fertig",
   "withdrawSuccessTitle": "Abhebung eingeleitet",
   "paySendAll": "Alle anzeigen",
@@ -3367,7 +3341,6 @@
   "coreSwapsLnReceiveExpired": "Swap abgelaufen",
   "fundExchangeOnlineBillPaymentLabelBillerName": "Suchen Sie die Liste der Biller Ihrer Bank für diesen Namen",
   "recoverbullSelectFetchDriveFilesError": "Nicht alle Laufwerkssicherungen abrufen.",
-  "psbtFlowLoadFromCamera": "Von Kamera laden",
   "exchangeAccountInfoVerificationLimitedVerification": "Begrenzte Überprüfung",
   "addressViewErrorLoadingMoreAddresses": "Fehler beim Laden von mehr Adressen: {error}.",
   "@addressViewErrorLoadingMoreAddresses": {
@@ -3525,7 +3498,6 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "Fügen Sie eine Passphrase hinzu, falls Sie eine verwenden (optional)",
   "payAdvancedOptions": "Erweiterte Optionen",
   "sendSigningTransaction": "Transaktion wird signiert…",
   "sellErrorFeesNotCalculated": "Transaktionsgebühren konnten nicht berechnet werden. Bitte versuchen Sie es erneut.",
@@ -3535,7 +3507,6 @@
   "mempoolSettingsUseForFeeEstimation": "Für Gebührenschätzung verwenden",
   "buyPaymentMethod": "Zahlungsmethode",
   "fundExchangeCrIbanUsdDescriptionEnd": "Die Mittel werden Ihrem Kontostand gutgeschrieben.",
-  "psbtFlowMoveCloserFurther": "Bewegen Sie Ihr Gerät näher oder weiter entfernt",
   "arkAboutDurationMinutes": "{minutes} Minuten",
   "@arkAboutDurationMinutes": {
     "placeholders": {
@@ -3696,7 +3667,6 @@
       }
     }
   },
-  "psbtFlowPassportTitle": "Foundation Passport – Anleitung",
   "exchangeLandingFeature3": "Bitcoin verkaufen, mit Bitcoin bezahlt werden",
   "notLoggedInMessage": "Bitte melden Sie sich in Ihr Bull Bitcoin-Konto an, um die Wallet-Einstellungen zu erreichen.",
   "swapTotalFees": "Gesamtkosten",
@@ -5214,5 +5184,7 @@
   "transactionStatusPayjoinAborted": "Payjoin abgebrochen",
   "transactionDetailLabelPayjoinAborted": "Abgebrochen",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-Gebührenbeitrag",
-  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78).",
+  "psbtFlowInvalidPsbtError": "Diese Transaktion konnte nicht gelesen werden. Gehen Sie zurück und erstellen Sie sie erneut.",
+  "psbtFlowQrEncodingError": "Diese Transaktion konnte nicht in einen QR-Code umgewandelt werden."
 }

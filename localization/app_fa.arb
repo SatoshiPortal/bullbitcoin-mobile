@@ -1986,10 +1986,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "دستورالعمل های Keystone",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "انتقال وضعیت",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -2878,15 +2874,6 @@
   "fundExchangeMethodBankTransferWire": "انتقال بانک (Wire or EFT)",
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
-  },
-  "psbtFlowLoginToDevice": "به دستگاه {device} خود وارد شوید",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 🇨🇷 کاستاریکا کاستاریکا",
   "@fundExchangeJurisdictionCostaRica": {
@@ -4798,10 +4785,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "دستورالعمل های ناظر",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "تلاش شکست خورده",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -6098,10 +6081,6 @@
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
   },
-  "psbtFlowJadeTitle": "بازی Blockstream Jade PSBT دستورالعمل ها",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -6526,10 +6505,6 @@
   "walletTypeWatchOnly": "Watch- Only",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "دستورالعمل های Krux",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "آرشیوهای برچسب: Decrypt",
   "@recoverbullDecryptVault": {
@@ -8397,15 +8372,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "خطای: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "تحویل تخمین زده شده – 10 دقیقه",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -10158,10 +10124,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "اضافه کردن یک passphrase اگر شما یک (اختیاری)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "گزینه های پیشرفته",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -10549,10 +10511,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "دستورالعمل های پایه پاسپورت",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "فروش Bitcoin، پرداخت با Bitcoin",
   "@exchangeLandingFeature3": {
@@ -11649,10 +11607,6 @@
       }
     }
   },
-  "psbtFlowClickSign": "Click Sign",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
   "transactionSwapDescChainFailed": "مسئله ای با انتقال شما وجود داشت. لطفا پشتیبانی تماس بگیرید اگر وجوه در عرض 24 ساعت بازگردانده نشده باشد.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -11804,10 +11758,6 @@
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
   },
-  "psbtFlowScanQrOption": "گزینه “Scan QR” را انتخاب کنید",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "transactionSwapDescLnReceiveDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
@@ -11878,10 +11828,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowHoldSteady": "کد QR را ثابت و متمرکز نگه دارید",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
   },
   "fundExchangeCanadaPostStep2": "2. از صندوقدار بخواهید کد QR “Loadhub” را اسکن کند",
   "@fundExchangeCanadaPostStep2": {
@@ -11992,10 +11938,6 @@
   "transactionLabelServerNetworkFees": "هزینه های شبکه سرور",
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
-  },
-  "psbtFlowScanAnyQr": "گزینه “Scan Any QR code” را انتخاب کنید",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionSwapDescLnReceiveCompleted": "معامله شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
   "@transactionSwapDescLnReceiveCompleted": {
@@ -12145,10 +12087,6 @@
       }
     }
   },
-  "psbtFlowClickPsbt": "روی PSBT کلیک کنید",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
-  },
   "quickAndEasyTag": "سریع و آسان",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
@@ -12220,10 +12158,6 @@
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "psbtFlowSignWithQr": "گزینه Click Sign with QR Code",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "importQrDeviceKeystoneStep4": "گزینه “Connect Software Wallet” را بزنید",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
@@ -12239,10 +12173,6 @@
   "never": "هرگز ",
   "@never": {
     "description": "Bold part of privacy assurance (never)"
-  },
-  "psbtFlowLoadFromCamera": "روی Load از دوربین",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "autoswapWarningDescription": "Autoswap تضمین می کند که شما به طور تصادفی پول زیادی را در کیف پول پرداخت فوری نگه ندارید، که برای ذخیره سازی طولانی مدت امن نیست.",
   "@autoswapWarningDescription": {
@@ -12287,10 +12217,6 @@
   "autoswapSaveButton": "Save",
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
-  },
-  "psbtFlowMoveCloserFurther": "سعی کنید دستگاه خود را نزدیک تر یا بیشتر حرکت دهید",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "اضافه کردن این به عنوان شماره حساب",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
@@ -13277,5 +13203,7 @@
   "transactionStatusPayjoinAborted": "Payjoin لغو شد",
   "transactionDetailLabelPayjoinAborted": "لغو شده",
   "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78).",
+  "psbtFlowInvalidPsbtError": "این تراکنش خوانده نشد. بازگردید و آن را دوباره ایجاد کنید.",
+  "psbtFlowQrEncodingError": "تبدیل این تراکنش به کد QR امکان‌پذیر نبود."
 }
