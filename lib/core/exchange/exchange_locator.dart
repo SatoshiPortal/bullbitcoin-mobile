@@ -30,7 +30,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
@@ -511,13 +510,6 @@ class ExchangeLocator {
 
     locator.registerFactory<CreateLogAttachmentUsecase>(
       () => CreateLogAttachmentUsecase(),
-    );
-
-    locator.registerFactory<LabelExchangeOrdersUsecase>(
-      () => LabelExchangeOrdersUsecase(
-        labelsFacade: locator<LabelsFacade>(),
-        listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
-      ),
     );
   }
 
