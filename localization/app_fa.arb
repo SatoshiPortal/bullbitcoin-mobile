@@ -1121,6 +1121,7 @@
   "@buyOrderNotFoundError": {
     "description": "Error message for order not found during buy"
   },
+  "buyUnexpectedError": "سفارش شما در حال حاضر ایجاد نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "buyOrderAlreadyConfirmedError": "این سفارش خرید قبلا تایید شده است.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -2383,6 +2384,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "کیف پول پرداخت",
+  "buyPayoutMethodLiquid": "L-BTC در Liquid",
+  "buyPayoutMethodBitcoin": "BTC در زنجیره بیت‌کوین",
   "buyConfirmPayoutMethod": "روش پرداخت",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -4178,7 +4182,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "You bought {amount}",
+  "buyYouBought": "شما {amount} را با {fiatAmount} خریدید",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

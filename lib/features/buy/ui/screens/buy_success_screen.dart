@@ -32,6 +32,10 @@ class BuySuccessScreen extends StatelessWidget {
     final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(payoutAmountSat)
         : FormatAmount.btc(buyOrder.payoutAmount);
+    final formattedPayInAmount = FormatAmount.fiat(
+      buyOrder.payinAmount,
+      buyOrder.payinCurrency,
+    );
     final payoutTime = buyOrder.scheduledPayoutTime;
 
     return PopScope(
@@ -67,8 +71,12 @@ class BuySuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  context.loc.buyYouBought(formattedPayOutAmount),
+                  context.loc.buyYouBought(
+                    formattedPayOutAmount,
+                    formattedPayInAmount,
+                  ),
                   style: context.font.titleLarge,
+                  textAlign: .center,
                 ),
                 const SizedBox(height: 10),
                 if (payoutTime != null)

@@ -1342,6 +1342,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "กระเป๋าเงินรับการจ่าย",
+  "buyPayoutMethodLiquid": "L-BTC บน Liquid",
+  "buyPayoutMethodBitcoin": "BTC บนเชน Bitcoin",
   "buyConfirmPayoutMethod": "วิธีการชําระเงิน",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -2146,6 +2149,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "ไม่สามารถสร้างคำสั่งซื้อของคุณได้ในขณะนี้ กรุณาลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "buyOrderAlreadyConfirmedError": "ซื้อการสั่งซื้อนี้ได้รับการยืนยัน.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -3482,7 +3486,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "You bought {amount}",
+  "buyYouBought": "คุณซื้อ {amount} ด้วย {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

@@ -1808,11 +1808,14 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "buyYouBought": "You bought {amount}",
+  "buyYouBought": "You bought {amount} with {fiatAmount}",
   "@buyYouBought": {
-    "description": "Success message with amount bought",
+    "description": "Success message with amount bought and the fiat amount debited",
     "placeholders": {
       "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
         "type": "String"
       }
     }
@@ -11306,9 +11309,21 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
+  "buyConfirmPayoutWallet": "Payout wallet",
+  "@buyConfirmPayoutWallet": {
+    "description": "Field label for the wallet a buy pays out to"
+  },
   "buyConfirmPayoutMethod": "Payout method",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
+  },
+  "buyPayoutMethodLiquid": "L-BTC on Liquid",
+  "@buyPayoutMethodLiquid": {
+    "description": "Payout method for buys paid out over the Liquid network"
+  },
+  "buyPayoutMethodBitcoin": "BTC on Bitcoin chain",
+  "@buyPayoutMethodBitcoin": {
+    "description": "Payout method for buys paid out over the Bitcoin network"
   },
   "buyConfirmExternalWallet": "External Bitcoin wallet",
   "@buyConfirmExternalWallet": {
@@ -12990,6 +13005,10 @@
   "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
+  },
+  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
+  "@buyUnexpectedError": {
+    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
   },
   "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@withdrawUnauthenticatedError": {

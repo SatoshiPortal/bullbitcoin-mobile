@@ -688,7 +688,7 @@
   "buyPayoutMethod": "পেআউট পদ্ধতি",
   "buyAwaitingConfirmation": "নিশ্চিতকৰণৰ বাবে অপেক্ষা কৰা হৈছে ",
   "buyConfirmPurchase": "কেনাকাটা নিশ্চিত কৰক",
-  "buyYouBought": "আপুনি {amount} কিনিলে",
+  "buyYouBought": "আপুনি {fiatAmount}ৰ বিনিময়ত {amount} কিনিলে",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -7724,6 +7724,9 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
+  "buyConfirmPayoutWallet": "পৰিশোধ ৱালেট",
+  "buyPayoutMethodLiquid": "Liquid-ত L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin শৃংখলত BTC",
   "buyConfirmPayoutMethod": "Payout পদ্ধতি",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -9397,6 +9400,7 @@
   "@buyOrderNotFoundError": {
     "description": "Error message for order not found during buy"
   },
+  "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
   "buyOrderAlreadyConfirmedError": "এই ক্ৰয় অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"

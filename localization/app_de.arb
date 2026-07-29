@@ -455,6 +455,9 @@
   "backupWalletGoogleDrivePrivacyMessage3": "Ihr Telefon verlassen und ist.",
   "backupCompletedDescription": "Jetzt testen wir Ihr Backup, um sicherzustellen, dass alles korrekt durchgeführt wurde.",
   "sendErrorInsufficientFundsForFees": "Nicht genügend Guthaben, um Betrag und Gebühren zu decken.",
+  "buyConfirmPayoutWallet": "Auszahlungs-Wallet",
+  "buyPayoutMethodLiquid": "L-BTC auf Liquid",
+  "buyPayoutMethodBitcoin": "BTC auf der Bitcoin-Blockchain",
   "buyConfirmPayoutMethod": "Auszahlungsmethode",
   "durationMinutes": "{minutes} Minuten",
   "@durationMinutes": {
@@ -712,6 +715,7 @@
     }
   },
   "mempoolCustomServerUrl": "Server-URL",
+  "buyUnexpectedError": "Ihre Order konnte derzeit nicht erstellt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
   "buyOrderAlreadyConfirmedError": "Diese Kauforder wurde bereits bestätigt.",
   "fundExchangeArsBankTransferTitle": "Banküberweisung",
   "transactionLabelReceiveAmount": "Empfangsbetrag",
@@ -1143,7 +1147,7 @@
   "testCompletedSuccessMessage": "Sie können den Zugang zu einer verlorenen Bitcoin-Wallet wiederherstellen.",
   "importWatchOnlyScanQR": "QR scannen",
   "selectAmountTitle": "Betrag auswählen",
-  "buyYouBought": "Sie haben {amount} gekauft",
+  "buyYouBought": "Sie haben {amount} für {fiatAmount} gekauft",
   "@buyYouBought": {
     "placeholders": {
       "amount": {

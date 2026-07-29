@@ -1,4 +1,8 @@
 {
+  "buyUnexpectedError": "Oda yako haikuweza kuundwa kwa sasa. Tafadhali jaribu tena au wasiliana na usaidizi.",
+  "buyConfirmPayoutWallet": "Pochi ya malipo",
+  "buyPayoutMethodLiquid": "L-BTC kwenye Liquid",
+  "buyPayoutMethodBitcoin": "BTC kwenye chaini ya Bitcoin",
   "fundExchangeRestrictedTitle": "Ufadhili haupatikani",
   "fundExchangeRestrictedMessage": "Ufadhili haupatikani kwenye akaunti yako. Tafadhali wasiliana na usaidizi kwa maelezo zaidi.",
   "recipientsListLoadError": "Imeshindwa kupakia wapokeaji. Vuta chini ili ujaribu tena.",

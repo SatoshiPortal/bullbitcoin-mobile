@@ -7,10 +7,17 @@ part 'buy_error.freezed.dart';
 @freezed
 sealed class BuyError with _$BuyError {
   const factory BuyError.unauthenticated() = UnauthenticatedBuyError;
-  const factory BuyError.belowMinAmount({required int minAmountSat}) =
-      BelowMinAmountBuyError;
-  const factory BuyError.aboveMaxAmount({required int maxAmountSat}) =
-      AboveMaxAmountBuyError;
+
+  /// [minAmount] is denominated in [currency], which the api picks and can be
+  /// either a fiat currency or BTC/LBTC.
+  const factory BuyError.belowMinAmount({
+    required double minAmount,
+    required String currency,
+  }) = BelowMinAmountBuyError;
+  const factory BuyError.aboveMaxAmount({
+    required double maxAmount,
+    required String currency,
+  }) = AboveMaxAmountBuyError;
   const factory BuyError.insufficientFunds() = InsufficientFundsBuyError;
   const factory BuyError.orderNotFound() = OrderNotFoundBuyError;
   const factory BuyError.orderAlreadyConfirmed() =
@@ -23,11 +30,12 @@ sealed class BuyError with _$BuyError {
   /// Returns the localized error message.
   String toTranslated(BuildContext context) => when(
     unauthenticated: () => context.loc.buyUnauthenticatedError,
-    belowMinAmount: (_) => context.loc.buyBelowMinAmountError,
-    aboveMaxAmount: (_) => context.loc.buyAboveMaxAmountError,
+    belowMinAmount: (_, _) => context.loc.buyBelowMinAmountError,
+    aboveMaxAmount: (_, _) => context.loc.buyAboveMaxAmountError,
     insufficientFunds: () => context.loc.buyInsufficientFundsError,
     orderNotFound: () => context.loc.buyOrderNotFoundError,
     orderAlreadyConfirmed: () => context.loc.buyOrderAlreadyConfirmedError,
-    unexpected: (message) => message,
+    // The raw message is logged by the bloc; it is never fit to show to a user.
+    unexpected: (_) => context.loc.buyUnexpectedError,
   );
 }
