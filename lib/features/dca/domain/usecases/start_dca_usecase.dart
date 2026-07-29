@@ -2,8 +2,18 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
+import 'package:meta/meta.dart';
+
+typedef DcaStartData = ({
+  List<UserBalance> balances,
+  FiatCurrency? currency,
+  String? lightningAddress,
+  Map<String, dynamic> buyLimits,
+});
 
 class StartDcaUsecase {
   final SettingsRepository _settingsRepository;
@@ -21,24 +31,31 @@ class StartDcaUsecase {
   }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
        _testnetDcaRepository = testnetExchangeOrderRepository;
 
-  Future<
-    ({
-      List<UserBalance> balances,
-      FiatCurrency? currency,
-      String? lightningAddress,
-      Map<String, dynamic> buyLimits,
-    })
-  >
-  execute() async {
-    final settings = await _settingsRepository.fetch();
-    final environment = settings.environment;
+  @useResult
+  Future<Result<DcaStartData, DcaFailure>> execute() async {
+    final bool isMainnet;
+    try {
+      final settings = await _settingsRepository.fetch();
+      isMainnet = settings.environment.isMainnet;
+    } catch (e, st) {
+      log.severe(message: 'Failed to load settings', error: e, trace: st);
+      return Err(DcaUnexpectedFailure(e.toString()));
+    }
 
-    final userSummary = environment.isMainnet
-        ? await _mainnetExchangeUserRepository.getUserSummary()
-        : await _testnetExchangeUserRepository.getUserSummary();
-
-    if (userSummary == null) {
-      throw GetExchangeUserSummaryException('User summary is null');
+    final UserSummary userSummary;
+    try {
+      final summary = isMainnet
+          ? await _mainnetExchangeUserRepository.getUserSummary()
+          : await _testnetExchangeUserRepository.getUserSummary();
+      if (summary == null) {
+        // Null also covers "no API key stored" — the repository returns null
+        // instead of throwing in that case.
+        return const Err(DcaAccountUnavailableFailure());
+      }
+      userSummary = summary;
+    } catch (e, st) {
+      log.warning('Failed to fetch user summary', error: e, trace: st);
+      return Err(DcaAccountUnavailableFailure(e.toString()));
     }
 
     final balances = userSummary.balances.where((b) => b.amount > 0).toList();
@@ -56,15 +73,21 @@ class StartDcaUsecase {
         : FiatCurrency.fromCode(currencyCode);
     final defaultLightningAddress = userSummary.autoBuy.addresses.lightning;
 
-    final buyLimits = environment.isMainnet
-        ? await _mainnetDcaRepository.getBuyLimits()
-        : await _testnetDcaRepository.getBuyLimits();
+    final Map<String, dynamic> buyLimits;
+    try {
+      buyLimits = isMainnet
+          ? await _mainnetDcaRepository.getBuyLimits()
+          : await _testnetDcaRepository.getBuyLimits();
+    } catch (e, st) {
+      log.warning('Failed to fetch buy limits', error: e, trace: st);
+      return Err(DcaAccountUnavailableFailure(e.toString()));
+    }
 
-    return (
+    return Ok((
       balances: balances,
       currency: currency,
       lightningAddress: defaultLightningAddress,
       buyLimits: buyLimits,
-    );
+    ));
   }
 }

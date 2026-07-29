@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
+import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_amount_input_fields.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
@@ -67,6 +68,23 @@ class _DcaScreenState extends State<DcaScreen> {
                   crossAxisAlignment: .start,
                   children: [
                     const Gap(24),
+                    // A failed account load previously left this screen with
+                    // no feedback at all; surface the sanitized failure.
+                    if (context.select(
+                          (DcaBloc bloc) => switch (bloc.state) {
+                            DcaInitialState(:final failure) => failure,
+                            _ => null,
+                          },
+                        )
+                        case final failure?) ...[
+                      Text(
+                        failure.toTranslated(context),
+                        style: context.font.bodySmall?.copyWith(
+                          color: context.appColors.error,
+                        ),
+                      ),
+                      const Gap(16),
+                    ],
                     if (!_hasFunds) ...[
                       const Spacer(),
                       InfoCard(

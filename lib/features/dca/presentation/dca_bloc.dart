@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,11 +16,8 @@ part 'dca_event.dart';
 part 'dca_state.dart';
 
 class DcaBloc extends Bloc<DcaEvent, DcaState> {
-  DcaBloc({
-    required this._startDcaUsecase,
-    required this._setDcaUsecase,
-    required this._saveUserPreferencesUsecase,
-  }) : super(const DcaState.initial()) {
+  DcaBloc({required this._startDcaUsecase, required this._setDcaUsecase})
+    : super(const DcaState.initial()) {
     on<DcaStarted>(_onStarted);
     on<DcaBuyInputContinuePressed>(_onBuyInputContinuePressed);
     on<DcaWalletSelected>(_onWalletSelected);
@@ -29,21 +26,22 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
 
   final StartDcaUsecase _startDcaUsecase;
   final SetDcaUsecase _setDcaUsecase;
-  final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
 
   Future<void> _onStarted(DcaStarted event, Emitter<DcaState> emit) async {
-    try {
-      final startData = await _startDcaUsecase.execute();
+    final result = await _startDcaUsecase.execute();
+    if (isClosed) return;
 
-      emit(
-        DcaState.buyInput(
-          balances: startData.balances,
-          currency: startData.currency,
-          defaultLightningAddress: startData.lightningAddress,
-        ),
-      );
-    } on GetExchangeUserSummaryException catch (e) {
-      emit(DcaState.initial(getUserSummaryException: e));
+    switch (result) {
+      case Ok(value: final startData):
+        emit(
+          DcaState.buyInput(
+            balances: startData.balances,
+            currency: startData.currency,
+            defaultLightningAddress: startData.lightningAddress,
+          ),
+        );
+      case Err(:final failure):
+        emit(DcaState.initial(failure: failure));
     }
   }
 
@@ -107,38 +105,32 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     }
 
     emit(dcaConfirmationState.copyWith(isConfirmingDca: true));
-    try {
-      final dca = await _setDcaUsecase.execute(
-        amount: dcaConfirmationState.amount,
-        currency: dcaConfirmationState.currency,
-        frequency: dcaConfirmationState.frequency,
-        network: dcaConfirmationState.network,
-        lightningAddress: dcaConfirmationState.lightningAddress,
-      );
 
-      // Now that the configuration was stored successfully,
-      // We can activate DCA again.
-      await _saveUserPreferencesUsecase.execute(dcaEnabled: true);
+    final result = await _setDcaUsecase.execute(
+      amount: dcaConfirmationState.amount,
+      currency: dcaConfirmationState.currency,
+      frequency: dcaConfirmationState.frequency,
+      network: dcaConfirmationState.network,
+      lightningAddress: dcaConfirmationState.lightningAddress,
+    );
+    if (isClosed) return;
 
-      emit(
-        dcaConfirmationState.toSuccessState(
-          amount: dca.amount,
-          currency: dca.currency,
-          frequency: dca.frequency,
-        ),
-      );
-    } catch (e) {
-      // Log unexpected errors
-      emit(dcaConfirmationState.copyWith(error: e));
-      log.severe(
-        message: 'Unexpected error in DcaBloc',
-        error: e,
-        trace: StackTrace.current,
-      );
-    } finally {
-      if (state is DcaConfirmationState) {
-        emit((state as DcaConfirmationState).copyWith(isConfirmingDca: false));
-      }
+    switch (result) {
+      case Ok(value: final dca):
+        emit(
+          dcaConfirmationState.toSuccessState(
+            amount: dca.amount,
+            currency: dca.currency,
+            frequency: dca.frequency,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          dcaConfirmationState.copyWith(
+            isConfirmingDca: false,
+            failure: failure,
+          ),
+        );
     }
   }
 }

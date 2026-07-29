@@ -44,6 +44,7 @@ class DcaLocator {
         wallet: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         walletAddressRepository: locator<WalletAddressRepository>(),
+        saveUserPreferencesUsecase: locator<SaveUserPreferencesUsecase>(),
       ),
     );
   }
@@ -53,7 +54,6 @@ class DcaLocator {
       () => DcaBloc(
         startDcaUsecase: locator<StartDcaUsecase>(),
         setDcaUsecase: locator<SetDcaUsecase>(),
-        saveUserPreferencesUsecase: locator<SaveUserPreferencesUsecase>(),
       ),
     );
   }

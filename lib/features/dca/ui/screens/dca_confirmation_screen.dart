@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
+import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_confirmation_detail_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,11 +99,9 @@ class DcaConfirmationScreen extends StatelessWidget {
               ),
             ],
             const Spacer(),
-            if (confirmationState.error != null) ...[
+            if (confirmationState.failure case final failure?) ...[
               Text(
-                context.loc.dcaConfirmError(
-                  confirmationState.error!.toString(),
-                ),
+                failure.toTranslated(context),
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: context.appColors.error),
