@@ -35,6 +35,27 @@ sealed class SellState with _$SellState {
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(true) bool replaceByFee,
     double? exchangeRateEstimate,
+    // Bitcoin fee selection (#2521). The payin is built at the rate the user
+    // picked in the shared fee modal, not at a hardcoded Fastest.
+    FeeOptions? bitcoinFees,
+    NetworkFee? customFee,
+    @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    // Arm/disarm snapshot, internal to the custom-fee field: typing eagerly
+    // commits `selectedFeeOption: custom` so the preset tiles deselect, and
+    // dismissing the modal either finalizes that value or rolls back to these.
+    // Same contract as SendState — the UI must not read them.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real fees read from unsigned PSBTs built per preset / typed rate, so the
+    // modal never shows rate × vsize arithmetic. Display only here: unlike
+    // send, the confirmation rebuilds the payin at the committed rate rather
+    // than broadcasting a cached PSBT, because the order's payin amount can
+    // change under a price-lock refresh.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
+    // vsize of the last payin build — the floor checks on an absolute custom
+    // fee need a size to express it as a rate.
+    int? bitcoinTxSize,
   }) = SellPaymentState;
   const factory SellState.success({
     required BitcoinUnit bitcoinUnit,
@@ -181,6 +202,8 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
     int? absoluteFees,
     List<WalletUtxo>? utxos,
     double? exchangeRateEstimate,
+    FeeOptions? bitcoinFees,
+    int? bitcoinTxSize,
   }) {
     return SellPaymentState(
       userSummary: userSummary,
@@ -192,6 +215,8 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
       absoluteFees: absoluteFees,
       exchangeRateEstimate: exchangeRateEstimate,
       utxos: utxos ?? [],
+      bitcoinFees: bitcoinFees,
+      bitcoinTxSize: bitcoinTxSize,
     );
   }
 
@@ -214,6 +239,27 @@ extension SellPaymentStateX on SellPaymentState {
   /// The payin transaction is already broadcast, so preparing, signing and
   /// broadcasting again would risk paying the order twice.
   bool get isPayinBroadcast => payinBroadcastTxid != null;
+
+  /// Fee the payin must be built at, resolved from the committed selection.
+  /// Null while the presets have not loaded (or a custom fee was selected
+  /// without a value) — the caller decides what to do rather than silently
+  /// falling back to Fastest, which is the bug #2521 describes.
+  NetworkFee? get selectedFee => switch (selectedFeeOption) {
+    FeeSelection.fastest => bitcoinFees?.fastest,
+    FeeSelection.economic => bitcoinFees?.economic,
+    FeeSelection.slow => bitcoinFees?.slow,
+    FeeSelection.custom => customFee,
+  };
+
+  /// Fee selection is only editable before the confirmation starts: the tx on
+  /// its way to the network was built from the committed rate, so rebuilding
+  /// under it — or after the broadcast latch — is the #2522 double-payment
+  /// window. Liquid payins have no fee choice at all.
+  bool get canEditFees =>
+      !isConfirmingPayment &&
+      !isPayinBroadcast &&
+      selectedWallet != null &&
+      !selectedWallet!.isLiquid;
 
   SellSuccessState toSuccessState({required SellOrder sellOrder}) {
     return SellSuccessState(bitcoinUnit: bitcoinUnit, sellOrder: sellOrder);

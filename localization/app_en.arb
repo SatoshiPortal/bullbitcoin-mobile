@@ -6564,6 +6564,10 @@
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
   },
+  "feePrioritySlow": "Slow",
+  "@feePrioritySlow": {
+    "description": "Name of the slow (cheapest) network fee tier"
+  },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
     "description": "Label for swap transfer ID"
