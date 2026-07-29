@@ -15,10 +15,15 @@ class CreateSellOrderUsecase {
     required this._settingsRepository,
   });
 
+  /// [usePayjoin] is a request, not an instruction: it is resolved here against
+  /// the global payjoin setting and the network, so a caller can pass the user's
+  /// intent without also having to re-check the policy. The exchange applies its
+  /// own pilot gate on top.
   Future<SellOrder> execute({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
+    bool usePayjoin = false,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -26,10 +31,24 @@ class CreateSellOrderUsecase {
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
+      final resolvedUsePayjoin =
+          usePayjoin &&
+          settings.isPayjoinEnabled &&
+          network == OrderBitcoinNetwork.bitcoin;
+      log.info(
+        'Sell Payjoin order request: requested=$usePayjoin, '
+        'globalEnabled=${settings.isPayjoinEnabled}, '
+        'network=${network.value}, sent=$resolvedUsePayjoin',
+      );
       final order = await repo.placeSellOrder(
         orderAmount: orderAmount,
         currency: currency,
         network: network,
+        usePayjoin: resolvedUsePayjoin,
+      );
+      log.info(
+        'Sell Payjoin order response: requested=$resolvedUsePayjoin, '
+        'bip21Present=${order.bip21URI != null}',
       );
       return order;
     } on SellError {

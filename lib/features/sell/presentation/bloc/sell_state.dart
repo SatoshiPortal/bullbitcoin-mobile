@@ -34,6 +34,7 @@ sealed class SellState with _$SellState {
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(true) bool replaceByFee,
+    @Default(true) bool isPayjoinEnabled,
     double? exchangeRateEstimate,
     // Bitcoin fee selection (#2521). The payin is built at the rate the user
     // picked in the shared fee modal, not at a hardcoded Fastest.

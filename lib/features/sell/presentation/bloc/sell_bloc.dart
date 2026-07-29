@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/payjoin_session_window.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -56,6 +58,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._signLiquidTxUsecase,
     required this._broadcastBitcoinTransactionUsecase,
     required this._broadcastLiquidTransactionUsecase,
+    required this._sendWithPayjoinUsecase,
     required this._getNetworkFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
@@ -77,6 +80,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       transformer: droppable(), // Prevent multiple simultaneous confirmations
     );
     on<SellPollOrderStatus>(_onPollOrderStatus);
+    on<SellPayjoinToggled>(_onPayjoinToggled);
     on<SellReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<SellUtxosSelected>(_onUtxosSelected);
     on<SellLoadUtxos>(_onLoadUtxos);
@@ -99,6 +103,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
+  final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -269,6 +274,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
         network: event.wallet.isLiquid
             ? OrderBitcoinNetwork.liquid
             : OrderBitcoinNetwork.bitcoin,
+        // Asking for payjoin only makes the exchange publish a bip21URI on the
+        // order; whether the payin actually uses it is decided at confirmation
+        // time. So requesting it here costs nothing when the payment ends up
+        // being an ordinary one — the exchange credits a plain transaction to
+        // the same address either way.
+        usePayjoin:
+            !event.wallet.isLiquid &&
+            walletSelectionState.userSummary.payjoinReceiveEnabled,
       );
 
       if (!event.wallet.isLiquid) {
@@ -536,26 +549,88 @@ class SellBloc extends Bloc<SellEvent, SellState>
             bitcoinTxSize: preparedSend.txSize,
           ),
         );
-        final signedTx = await _signBitcoinTxUsecase.execute(
-          psbt: preparedSend.unsignedPsbt,
-          walletId: wallet.id,
+
+        // The exchange published a payjoin endpoint for this order, and there is
+        // still enough of the order's window left for a negotiation to finish.
+        // The window is bounded by the order, never by the user's global session
+        // setting: a payjoin that outlived the order would land the payin
+        // against a dead order.
+        final payjoinBip21 = sellPaymentState.sellOrder.bip21URI;
+        final confirmationDeadline =
+            sellPaymentState.sellOrder.confirmationDeadline;
+        final payjoinWindow =
+            payjoinBip21 == null || confirmationDeadline == null
+            ? null
+            : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+        log.info(
+          'Sell Payjoin confirmation: '
+          'toggle=${sellPaymentState.isPayjoinEnabled}, '
+          'bip21Present=${payjoinBip21 != null}, '
+          'windowSec=${payjoinWindow ?? 0}',
         );
-        // Derived before broadcasting so the latch can be set on the very next
-        // line: nothing may run between the broadcast and the latch.
-        final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
-        final txid = tx.txid;
-        await _broadcastBitcoinTransactionUsecase.execute(
-          signedTx.signedPsbt,
-          isPsbt: true,
-        );
-        _latchBroadcast(emit, txid);
-        await _labelsFacade.store(
-          NewLabel.tx(
-            transactionId: txid,
-            label: LabelSystem.exchangeSell.label,
-            origin: wallet.id,
-          ),
-        );
+
+        if (sellPaymentState.isPayjoinEnabled &&
+            payjoinBip21 != null &&
+            payjoinWindow != null) {
+          log.info('Sell Payjoin sender creation started');
+          final payjoinSender = await _sendWithPayjoinUsecase.execute(
+            walletId: wallet.id,
+            isTestnet: wallet.network.isTestnet,
+            bip21: payjoinBip21,
+            unsignedOriginalPsbt: preparedSend.unsignedPsbt,
+            amountSat: payinAmountSat,
+            networkFeesSatPerVb: networkFee.isRelative
+                ? networkFee.value as double
+                : absoluteFeesUpdated / preparedSend.txSize,
+            expireAfterSec: payjoinWindow,
+          );
+          log.info(
+            'Sell Payjoin sender active: ${payjoinSender.logRef}, '
+            'status=${payjoinSender.status.name}',
+          );
+          // The session now owns eventual broadcast of either the proposal or
+          // the original transaction. Re-entering Confirm would create a second
+          // session against different UTXOs, so latch immediately.
+          _latchBroadcast(emit, payjoinSender.originalTxId);
+          // The original transaction is what reaches the chain whenever the
+          // negotiation does not complete, and the payjoin repository labels the
+          // payjoin transaction itself once it does. Order polling resolves the
+          // order either way.
+          await _labelsFacade.store(
+            NewLabel.tx(
+              transactionId: payjoinSender.originalTxId,
+              label: LabelSystem.exchangeSell.label,
+              origin: wallet.id,
+            ),
+          );
+        } else {
+          log.info(
+            'Sell Payjoin skipped; broadcasting plain transaction: '
+            'toggle=${sellPaymentState.isPayjoinEnabled}, '
+            'bip21Present=${payjoinBip21 != null}, '
+            'windowAvailable=${payjoinWindow != null}',
+          );
+          final signedTx = await _signBitcoinTxUsecase.execute(
+            psbt: preparedSend.unsignedPsbt,
+            walletId: wallet.id,
+          );
+          // Derived before broadcasting so the latch can be set on the very next
+          // line: nothing may run between the broadcast and the latch.
+          final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
+          final txid = tx.txid;
+          await _broadcastBitcoinTransactionUsecase.execute(
+            signedTx.signedPsbt,
+            isPsbt: true,
+          );
+          _latchBroadcast(emit, txid);
+          await _labelsFacade.store(
+            NewLabel.tx(
+              transactionId: txid,
+              label: LabelSystem.exchangeSell.label,
+              origin: wallet.id,
+            ),
+          );
+        }
       }
       await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
@@ -617,6 +692,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
     }
 
+    await _labelPayjoinSellTransaction(
+      latestOrder,
+      paymentState.selectedWallet?.id,
+    );
     emit(paymentState.toSuccessState(sellOrder: latestOrder));
   }
 
@@ -635,18 +714,51 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // once. If the deadline elapsed during this failed attempt, the skip in
     // _onOrderRefreshTimePassed dropped that one refresh and nothing else will
     // ask for it, leaving the user retrying against a stale quote.
-    if (!current.sellOrder.confirmationDeadline.isAfter(DateTime.now())) {
+    final confirmationDeadline = current.sellOrder.confirmationDeadline;
+    if (confirmationDeadline != null &&
+        !confirmationDeadline.isAfter(DateTime.now())) {
       add(const SellEvent.orderRefreshTimePassed());
     }
+  }
+
+  void _onPayjoinToggled(SellPayjoinToggled event, Emitter<SellState> emit) {
+    final paymentState = _currentPaymentState;
+    if (paymentState == null || paymentState.selectedWallet?.isLiquid == true) {
+      return;
+    }
+    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+      return;
+    }
+    emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
   }
 
   Future<void> _onPollOrderStatus(
     SellPollOrderStatus event,
     Emitter<SellState> emit,
   ) async {
-    if (state is! SellPaymentState) return;
-
-    final sellPaymentState = state as SellPaymentState;
+    if (state is SellSuccessState) {
+      final sellSuccessState = state as SellSuccessState;
+      try {
+        final latestOrder = await _getOrderUsecase.execute(
+          orderId: sellSuccessState.sellOrder.orderId,
+        );
+        if (latestOrder is! SellOrder) {
+          log.severe(
+            error: 'Expected SellOrder but received a different order type',
+            trace: StackTrace.current,
+          );
+          return;
+        }
+        await _labelPayjoinSellTransaction(latestOrder, null);
+        if (!latestOrder.payjoinOutcome.isOngoing) _stopPolling();
+        emit(sellSuccessState.copyWith(sellOrder: latestOrder));
+      } catch (e) {
+        log.severe(error: e, trace: StackTrace.current);
+      }
+      return;
+    }
+    final sellPaymentState = _currentPaymentState;
+    if (sellPaymentState == null) return;
 
     try {
       final latestOrder = await _getOrderUsecase.execute(
@@ -667,6 +779,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           payinStatus == OrderPayinStatus.awaitingConfirmation ||
           payinStatus == OrderPayinStatus.completed) {
         _stopPolling();
+        await _labelPayjoinSellTransaction(
+          latestOrder,
+          sellPaymentState.selectedWallet?.id,
+        );
         emit(
           sellPaymentState
               .copyWith(sellOrder: latestOrder, isPolling: false)
@@ -686,6 +802,25 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
   }
 
+  /// The original transaction keeps its label for a plain-send fallback. Once
+  /// the exchange reports a completed payjoin, tag its final transaction too.
+  /// The payjoin repository supplies the separate `payjoin` system label.
+  Future<void> _labelPayjoinSellTransaction(
+    SellOrder order,
+    String? walletId,
+  ) async {
+    final payjoinTxId = order.payjoin?.txid;
+    if (payjoinTxId == null) return;
+
+    await _labelsFacade.store(
+      NewLabel.tx(
+        transactionId: payjoinTxId,
+        label: LabelSystem.exchangeSell.label,
+        origin: walletId,
+      ),
+    );
+  }
+
   void _startPolling() {
     _pollingTimer?.cancel();
     _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -702,9 +837,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellReplaceByFeeChanged event,
     Emitter<SellState> emit,
   ) async {
-    if (state is! SellPaymentState) return;
-
-    final sellPaymentState = state as SellPaymentState;
+    final sellPaymentState = _feeEditablePaymentState;
+    if (sellPaymentState == null) return;
     // RBF changes the sequence numbers, so every cached preview PSBT is for a
     // different transaction now.
     emit(
@@ -719,9 +853,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellUtxosSelected event,
     Emitter<SellState> emit,
   ) async {
-    if (state is! SellPaymentState) return;
-
-    final sellPaymentState = state as SellPaymentState;
+    final sellPaymentState = _feeEditablePaymentState;
+    if (sellPaymentState == null) return;
     final selectedUtxos = event.utxos;
 
     // Coin selection changed — the previews were priced on the old input set.
@@ -868,9 +1001,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// price the modal for a transaction we are no longer building.
   SellPaymentState _clearedFeePreviews(SellPaymentState paymentState) {
     _bitcoinPreviewEpoch++;
-    return paymentState.copyWith(
-      feePreviewCache: BitcoinFeePreviewCache.empty,
-    );
+    return paymentState.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty);
   }
 
   /// Payment state while fee selection is still allowed, or null when the

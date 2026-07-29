@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_advanced_options_bottom_sheet.dart';
@@ -46,6 +47,11 @@ class SellSendPaymentScreen extends StatelessWidget {
       (SellBloc bloc) => bloc.state is SellPaymentState
           ? (bloc.state as SellPaymentState).sellOrder
           : null,
+    );
+    final isPayjoinEnabled = context.select(
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).isPayjoinEnabled
+          : false,
     );
 
     return Scaffold(
@@ -168,6 +174,27 @@ class SellSendPaymentScreen extends StatelessWidget {
                 return context.loc.sellCalculating;
               }),
             ),
+            if (wallet != null &&
+                !wallet.isLiquid &&
+                order?.payjoinBip21 != null)
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.loc.payjoinUseToggle,
+                      style: context.font.bodyMedium,
+                    ),
+                  ),
+                  BBSwitch(
+                    value: isPayjoinEnabled,
+                    onChanged: isConfirmingPayment
+                        ? null
+                        : (enabled) => context.read<SellBloc>().add(
+                            SellEvent.payjoinToggled(enabled),
+                          ),
+                  ),
+                ],
+              ),
             const Spacer(),
             _BottomButtons(
               onContinuePressed: () {
