@@ -203,7 +203,6 @@
   "swapInsufficientFunds": "Недостаточно средств",
   "arkContinueButton": "Продолжить",
   "ledgerImportButton": "Начало",
-  "dcaActivate": "Активировать покупку",
   "labelInputLabel": "Этикетки",
   "bitboxActionPairDeviceButton": "Путеводитель",
   "importQrDeviceSpecterName": "Specter",
@@ -232,14 +231,6 @@
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",
   "fundExchangeMethodInstantSepaSubtitle": "Самый быстрый - только для транзакций ниже €30,000",
-  "dcaConfirmError": "Что-то пошло не так: {error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLiquid": "Жидкая сеть",
   "fundExchangeSepaDescription": "Отправка SEPA с вашего банковского счета с использованием деталей ниже ",
   "sendAddress": "Адрес: ",
@@ -274,7 +265,6 @@
   },
   "fundExchangeLabelBankAccountCountry": "Страна с банковским счетом",
   "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "dcaConfirmDeactivate": "Да, деактивация",
   "exchangeLandingFeature2": "DCA, лимитные заказы и автоматическая покупка",
   "payPaymentPending": "Оплата не завершена",
   "payConfirmHighFee": "Плата за этот платеж {percentage}% от суммы. Продолжать?",
@@ -400,7 +390,6 @@
   },
   "receiveShareInvoice": "Счет-фактура",
   "buyCantBuyMoreThan": "Вы не можете купить больше, чем",
-  "dcaUnableToGetConfig": "Невозможно получить конфигурацию DCA",
   "exchangeAuthLoginFailed": "Не удалось",
   "arkAvailable": "Доступный",
   "transactionSwapDescChainFailed": "Была проблема с вашим переводом. Пожалуйста, свяжитесь с поддержкой, если средства не были возвращены в течение 24 часов.",
@@ -462,7 +451,6 @@
   "backupCompletedDescription": "Теперь давайте проверим вашу резервную копию, чтобы убедиться, что все было сделано правильно.",
   "sendErrorInsufficientFundsForFees": "Недостаточно средств для покрытия суммы и сборов",
   "buyConfirmPayoutMethod": "Метод выплаты",
-  "dcaCancelButton": "Отмена",
   "durationMinutes": "{minutes}",
   "@durationMinutes": {
     "placeholders": {
@@ -589,7 +577,6 @@
   "transactionSwapDescLnReceiveExpired": "Этот обмен истек. Любые отправленные средства будут автоматически возвращены отправителю.",
   "sellKYCApproved": "KYC одобрен",
   "arkTransaction": "сделка",
-  "dcaFrequencyMonthly": "месяц",
   "buyKYCLevel": "KYC Уровень",
   "passportInstructionsTitle": "Паспортные инструкции Фонда",
   "ledgerSuccessImportTitle": "Кошелек импортируется успешно",
@@ -631,7 +618,6 @@
   "sendFrom": "Из",
   "sendTransactionBuilt": "Готово",
   "bitboxErrorOperationCancelled": "Операция была отменена. Попробуй еще раз.",
-  "dcaOrderTypeLabel": "Тип заказа",
   "withdrawConfirmCard": "Карта",
   "dcaSuccessMessageHourly": "Вы будете покупать {amount} каждый час",
   "@dcaSuccessMessageHourly": {
@@ -669,7 +655,6 @@
   "scanNfcButton": "Scan NFC",
   "testBackupChooseVaultLocation": "Выберите местоположение хранилища",
   "torSettingsInfoDescription": "• Прокси Tor применяется только к Bitcoin (не ликвидный)\n• Порт Default Orbot - 9050\n• Убедитесь, что Орбот работает, прежде чем включить\n• Подключение может быть медленнее через Tor",
-  "dcaAddressBitcoin": "Bitcoin адрес",
   "sendErrorAmountBelowMinimum": "Сумма ниже минимального предела свопа: {minLimit}",
   "@sendErrorAmountBelowMinimum": {
     "placeholders": {
@@ -697,7 +682,6 @@
   "importWalletImportMnemonic": "Импорт Mnemonic",
   "bip85NextMnemonic": "Следующий Mnemonic",
   "bitboxErrorNoActiveConnection": "Нет активного подключения к устройству BitBox.",
-  "dcaFundAccountButton": "Фонд вашего счета",
   "transactionFilterAll": "Все",
   "arkSendTitle": "Отправить",
   "transactionDetailLabelAmountReceived": "Полученная сумма",
@@ -1038,7 +1022,6 @@
   "transcribeLabel": "Transcribe",
   "pinCodeProcessing": "Обработка",
   "transactionDetailLabelRefunded": "Рефинансирование",
-  "dcaFrequencyHourly": "час",
   "swapValidationSelectFromWallet": "Пожалуйста, выберите кошелек для перевода из",
   "sendSwapInitiated": "Свап Инициированный",
   "backupSettingsKeyWarningMessage": "Крайне важно, чтобы вы не сохранили резервный ключ в том же месте, где вы сохраняете резервный файл. Всегда храните их на отдельных устройствах или отдельных облачных провайдерах.",
@@ -1240,7 +1223,6 @@
   "electrumAdvancedOptions": "Дополнительные параметры",
   "autoswapWarningCardSubtitle": "Свопа будет срабатывать, если ваш баланс Instant Payments превысит 0,02 BTC.",
   "transactionStatusConfirmed": "Подтверждено",
-  "dcaFrequencyDaily": "день",
   "transactionLabelSendAmount": "Отправить",
   "testedStatus": "Испытываемые",
   "fundExchangeWarningTactic6": "Они хотят, чтобы вы делились своим экраном",
@@ -1259,7 +1241,6 @@
   "fundExchangeArsBankTransferDescription": "Отправьте банковский перевод с вашего банковского счета, используя точные банковские данные Аргентины ниже.",
   "importWatchOnlyFingerprint": "Fingerprint",
   "exchangeBitcoinWalletsEnterAddressHint": "Введите адрес",
-  "dcaViewSettings": "Параметры просмотра",
   "withdrawAmountContinue": "Продолжить",
   "allSeedViewSecurityWarningMessage": "Отображение семенных фраз - это риск безопасности. Любой, кто видит вашу семенную фразу, может получить доступ к вашим средствам. Убедитесь, что вы находитесь в частном месте и что никто не может увидеть ваш экран.",
   "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
@@ -1270,7 +1251,6 @@
   "backupSettingsLabelsButton": "Этикетки",
   "payMediumPriority": "Средний",
   "payWhichWalletQuestion": "От какого кошелька вы хотите заплатить?",
-  "dcaHideSettings": "Настройки вызова",
   "exchangeDcaCancelDialogMessage": "Ваш повторяющийся план покупки Bitcoin прекратится, и запланированные покупки закончатся. Чтобы перезапустить, вам нужно будет настроить новый план.",
   "transactionSwapDescChainExpired": "Этот перевод истек. Ваши средства будут автоматически возвращены в ваш кошелек.",
   "payValidating": "Доказательство...",
@@ -1315,7 +1295,6 @@
   "swapTransferRefundedTitle": "Перевод",
   "bitboxErrorConnectionFailed": "Не удалось подключиться к устройству BitBox. Пожалуйста, проверьте ваше соединение.",
   "exchangeFileUploadDocumentTitle": "Загрузить любой документ",
-  "dcaInsufficientBalanceDescription": "У вас нет достаточного баланса для создания этого порядка.",
   "pinButtonContinue": "Продолжить",
   "importColdcardSuccess": "Холодный кошелёк импортный",
   "withdrawUnauthenticatedError": "Вы не проверены. Пожалуйста, зайдите, чтобы продолжить.",
@@ -1339,20 +1318,6 @@
   "howToDecideBackupText2": "Зашифрованное хранилище предотвращает вас от воров, стремящихся украсть вашу резервную копию. Это также мешает вам случайно потерять резервную копию, поскольку она будет храниться в вашем облаке. Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Существует небольшая вероятность того, что веб-сервер, который хранит ключ шифрования вашего резервного копирования, может быть скомпрометирован. В этом случае безопасность резервного копирования в вашем облачном аккаунте может быть под угрозой.",
   "sellIBAN": "IBAN",
   "allSeedViewPassphraseLabel": "Пасфаза:",
-  "dcaBuyingMessage": "Вы покупаете {amount} каждый {frequency} через {network}, если на вашем счете есть средства.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeCurrencyDropdownValidation": "Пожалуйста, выберите валюту",
   "withdrawConfirmTitle": "Подтвердить вывод",
   "importQrDeviceSpecterStep3": "Введите свое семя / ключ (коше, что когда-либо подходит вам вариант)",
@@ -1499,7 +1464,6 @@
   "priceChartFetchingHistory": "Получение истории цен...",
   "sellDone": "Дон",
   "payFromWallet": "От Wallet",
-  "dcaConfirmRecurringBuyTitle": "Подтверждение Купить",
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "sellBankDetails": "Банковские данные",
   "pinStatusCheckingDescription": "Проверка состояния PIN",
@@ -1588,7 +1552,6 @@
       }
     }
   },
-  "dcaFrequencyWeekly": "неделя",
   "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €30,000",
   "settingsTelegramLabel": "Telegram",
   "walletDetailsSignerDeviceNotSupported": "Не поддерживается",
@@ -1710,7 +1673,6 @@
   "arkUnilateralExitDelay": "Односторонняя задержка выхода",
   "arkStatusPending": "Завершение",
   "importWatchOnlyXpub": "xpub",
-  "dcaInsufficientBalanceTitle": "Недостаточный баланс",
   "arkType": "Тип",
   "backupImportanceMessage": "Без резервного копирования вы в конечном итоге потеряете доступ к своим деньгам. Крайне важно сделать резервную копию.",
   "testBackupGoogleDrivePermission": "Google попросит вас поделиться личной информацией с этим приложением.",
@@ -1898,7 +1860,6 @@
   "torSettingsDescUnknown": "Невозможно определить Статус Тора. Убедитесь, что Orbot установлен и работает.",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "В кошельке BULL выберите предпочитаемый тип деривации. Если вы не уверены, выберите \"Segwit (BIP84)\"",
-  "dcaContinueButton": "Продолжить",
   "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
   "buyStandardWithdrawalDesc": "Получить биткойн после расчистки оплаты (1-3 дня)",
   "psbtFlowColdcardTitle": "Инструкции Coldcard Q",
@@ -1956,7 +1917,6 @@
   "swapExternalAddressHint": "Введите адрес внешнего кошелька",
   "torSettingsDescConnecting": "Создание Соединение",
   "ledgerWalletTypeLegacyDescription": "P2PKH - Старый формат",
-  "dcaConfirmationDescription": "Заказы на покупку будут размещены автоматически в этих настройках. Вы можете отключить их в любое время.",
   "appleICloudProvider": "Apple iCloud",
   "exchangeAccountInfoVerificationNotVerified": "Не подтверждена",
   "fundExchangeWarningDescription": "Если кто-то просит вас купить биткойн или «помочь вам», будьте осторожны, они могут попытаться обмануть вас!",
@@ -1999,7 +1959,6 @@
   "importQrDeviceKruxStep1": "Включите устройство Krux",
   "transactionSwapProgressFundsClaimed": "Фонды\nПретензия",
   "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "dcaAddressLightning": "Адрес освещения",
   "keystoneStep13": "Сделка будет импортирована в кошельке Bull Bitcoin.",
   "receiveGenerationFailed": "Не удалось создать {type}",
   "@receiveGenerationFailed": {
@@ -2121,9 +2080,7 @@
   "nextButton": "Следующий",
   "ledgerSignButton": "Зарегистрироваться",
   "recoverbullPassword": "Пароль",
-  "dcaNetworkLiquid": "Жидкая сеть",
   "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "dcaCancelTitle": "Отменить покупку Bitcoin?",
   "payFromAnotherWallet": "Оплата за другой биткойн-кошелек",
   "importMnemonicHasBalance": "Имеет баланс",
   "dcaLightningAddressEmptyError": "Пожалуйста, введите адрес Lightning",
@@ -2187,7 +2144,6 @@
   "importWatchOnlyLabel": "Этикетки",
   "settingsAppSettingsTitle": "Параметры приложения",
   "dcaWalletLightningSubtitle": "Требует совместимого кошелька, максимум 0,25 BTC",
-  "dcaNetworkBitcoin": "Bitcoin Network",
   "swapTransferRefundInProgressMessage": "С переводом произошла ошибка. Ваш возврат идет.",
   "importQrDevicePassportName": "Паспорт",
   "fundExchangeMethodCanadaPostSubtitle": "Лучшее для тех, кто предпочитает платить лично",
@@ -2224,7 +2180,6 @@
     }
   },
   "buyConfirmationTimeValue": "10 минут",
-  "dcaOrderTypeValue": "Приобретение",
   "ledgerConnectingMessage": "Подключение к {deviceName}",
   "@ledgerConnectingMessage": {
     "placeholders": {
@@ -2337,7 +2292,6 @@
   "ledgerConnectTitle": "Подключите устройство Ledger",
   "withdrawAmountTitle": "Цикл:",
   "coreScreensServerNetworkFeesLabel": "Фейсы сети сервера",
-  "dcaFrequencyValidationError": "Выберите частоту",
   "walletsListTitle": "Подробности Wallet",
   "payAllCountries": "Все страны",
   "sellCopBalance": "КС Баланс",
@@ -2419,7 +2373,6 @@
   "transactionSwapDescChainDefault": "Ваш перевод идет. Этот процесс автоматизирован и может занять некоторое время для завершения.",
   "onboardingBullBitcoin": "Bitcoin",
   "coreSwapsChainClaimable": "Перенос готов к утверждению.",
-  "dcaNetworkLightning": "Сеть освещения",
   "backupWalletHowToDecideVaultCloudRecommendationText": "вы хотите убедиться, что вы никогда не потеряете доступ к файлу хранилища, даже если вы потеряете свои устройства.",
   "arkAboutEsploraUrl": "URL",
   "backupKeyExampleWarning": "Например, если вы использовали Google Drive для резервного файла, не используйте Google Drive для резервного ключа.",
@@ -2468,24 +2421,14 @@
   "rbfEstimatedDelivery": "Предполагаемая доставка ~ 10 минут",
   "sendSwapCancelled": "Отменено",
   "backupWalletGoogleDrivePrivacyMessage4": "никогда ",
-  "dcaPaymentMethodValue": "{currency}",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "Завершение перевода",
   "torSettingsStatusDisconnected": "Отключение",
   "exchangeDcaCancelDialogTitle": "Отменить покупку Bitcoin?",
   "sellSendPaymentMxnBalance": "MXN Баланс",
   "fundExchangeSinpeLabelRecipientName": "Имя получателя",
-  "dcaScheduleDescription": "Покупки Bitcoin будут размещены автоматически в соответствии с этим графиком.",
   "keystoneInstructionsTitle": "Инструкции по кистоне",
   "hwLedger": "Ledger",
   "physicalBackupDescription": "Запишите 12 слов на бумаге. Держите их в безопасности и убедитесь, что не потерять их.",
-  "dcaConfirmButton": "Продолжить",
   "dcaBackToHomeButton": "Назад домой",
   "importQrDeviceKruxInstructionsTitle": "Инструкции Krux",
   "transactionOrderLabelOriginName": "Название происхождения",
@@ -2524,7 +2467,6 @@
   "importColdcardTitle": "Соединение с Coldcard Q",
   "ledgerSuccessImportDescription": "Ваш кошелек Ledger был успешно импортирован.",
   "pinStatusProcessing": "Обработка",
-  "dcaCancelMessage": "Ваш повторяющийся план покупки Bitcoin прекратится, и запланированные покупки закончатся. Чтобы перезапустить, вам нужно будет настроить новый план.",
   "fundExchangeHelpPaymentDescription": "Ваш код передачи.",
   "sellSendPaymentFastest": "Самый быстрый",
   "dcaConfirmNetwork": "Сеть",
@@ -2702,7 +2644,6 @@
   "arkPending": "Завершение",
   "transactionOrderLabelOrderStatus": "Статус заказа",
   "testBackupCreatedAt": "Создано:",
-  "dcaSetRecurringBuyTitle": "Купить",
   "psbtFlowSignTransactionOnDevice": "Нажмите на кнопки, чтобы подписать транзакцию на вашем {device}.",
   "@psbtFlowSignTransactionOnDevice": {
     "placeholders": {
@@ -3121,7 +3062,6 @@
   "bitboxActionSignTransactionTitle": "Подписание",
   "testBackupGoogleDrivePrivacyPart3": "оставьте свой телефон и ",
   "logSettingsErrorLoadingMessage": "Загрузка журналов: ",
-  "dcaAmountLabel": "Сумма",
   "walletNetworkLiquid": "Жидкая сеть",
   "receiveArkNetwork": "Ковчег",
   "swapMaxButton": "MAX",
@@ -3144,7 +3084,6 @@
   "payPrivatePayment": "Частная оплата",
   "autoswapDefaultWalletLabel": "Bitcoin Wallet",
   "recoverbullTestSuccessDescription": "Вы можете восстановить доступ к потерянному кошельку Bitcoin",
-  "dcaDeactivate": "Отключение покупки",
   "exchangeAuthLoginFailedTitle": "Не удалось",
   "autoswapRecipientWallet": "Реципиент Bitcoin Wallet",
   "arkUnifiedAddressBip21": "Единый адрес (BIP21)",
@@ -3194,14 +3133,6 @@
   "importQrDeviceJadeStep10": "Вот так!",
   "payPayeeAccountNumberHint": "Номер счета",
   "importQrDevicePassportStep8": "На вашем мобильном устройстве нажмите «открытая камера»",
-  "dcaConfirmationError": "Что-то пошло не так: {error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "oopsSomethingWentWrong": "Упс! Что-то не так",
   "bip85NoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
   "pinStatusSettingUpDescription": "Настройка PIN-кода",
@@ -3587,7 +3518,6 @@
   "payAdvancedOptions": "Дополнительные варианты",
   "sendSigningTransaction": "Подписание сделки...",
   "sellErrorFeesNotCalculated": "Плата за операции не рассчитана. Попробуй еще раз.",
-  "dcaAddressLiquid": "Жидкий адрес",
   "buyVerificationInProgress": "Проводится проверка...",
   "transactionSwapDescChainPaid": "Ваша сделка была передана. Сейчас мы ждем подтверждения транзакции блокировки.",
   "mempoolSettingsUseForFeeEstimation": "Использование для оценки фея",
@@ -3880,7 +3810,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "Сеть",
   "sendScanBitcoinQRCode": "Сканируйте любой код Bitcoin или Lightning QR, чтобы заплатить с биткойном.",
   "toLabel": "В",
   "passportStep7": "   - Попробуйте переместить устройство назад",
@@ -3980,7 +3909,6 @@
   "sellKYCPending": "Проверка КИК еще не завершена",
   "buyGetConfirmedFaster": "Получить подтверждение быстрее",
   "transactionOrderLabelPayinAmount": "Сумма выплат",
-  "dcaLightningAddressLabel": "Адрес освещения",
   "electrumEnableSsl": "Включить SSL",
   "payCustomFee": "Пользовательские феи",
   "backupInstruction5": "Ваша резервная копия не защищена фразой. Добавьте пароль в резервную копию позже, создав новый кошелек.",
@@ -4001,7 +3929,6 @@
   "seedsignerStep13": "Сделка будет импортирована в кошельке Bull Bitcoin.",
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
   "transactionSwapDescLnReceiveClaimable": "Сделка на цепи подтверждена. Теперь мы претендуем на средства, чтобы завершить ваш обмен.",
-  "dcaPaymentMethodLabel": "Метод оплаты",
   "swapProgressPendingMessage": "Перенос продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
   "walletDetailsNetworkLabel": "Сеть",
   "broadcastSignedTxBroadcasting": "Вещание...",
@@ -4070,7 +3997,6 @@
   "ledgerProcessingImport": "Импорт кошелька",
   "coldcardStep15": "Теперь он готов к трансляции! Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin и средства будут отправлены.",
   "comingSoonDefaultMessage": "Эта функция в настоящее время находится в стадии разработки и вскоре будет доступна.",
-  "dcaFrequencyLabel": "Частота",
   "ledgerErrorMissingAddress": "Адрес требуется для проверки",
   "enterBackupKeyManuallyTitle": "Введите ключ резервного копирования вручную",
   "transactionDetailLabelRecipientAddress": "Адрес получателя",
@@ -5280,5 +5206,9 @@
   "transactionStatusPayjoinAborted": "Payjoin отменён",
   "transactionDetailLabelPayjoinAborted": "Отменено",
   "transactionDetailLabelPayjoinFeeContribution": "Комиссия за участие в Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78).",
+  "dcaAccountUnavailableError": "Не удалось загрузить ваш аккаунт. Убедитесь, что вы вошли в систему, и попробуйте снова.",
+  "dcaLightningAddressRequiredError": "Введите Lightning-адрес для получения ваших покупок.",
+  "dcaReceiveAddressError": "Не удалось подготовить адрес для получения в вашем кошельке. Попробуйте снова.",
+  "dcaOrderCreationError": "Не удалось создать регулярную покупку. Попробуйте позже."
 }

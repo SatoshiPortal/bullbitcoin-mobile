@@ -1223,46 +1223,6 @@
   "bip85NoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
   "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "anErrorOccurred": "Tapahtui virhe",
-  "dcaSetRecurringBuyTitle": "Määritä toistuva osto",
-  "dcaInsufficientBalanceTitle": "Saldo ei riitä",
-  "dcaInsufficientBalanceDescription": "Sinulla ei ole tarpeeksi saldoa luodaksesi tämän pyynnön.",
-  "dcaFundAccountButton": "Talletus",
-  "dcaScheduleDescription": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
-  "dcaFrequencyValidationError": "Valitse aikataulu",
-  "dcaContinueButton": "Jatka",
-  "dcaConfirmRecurringBuyTitle": "Vahvista toistuva osto",
-  "dcaConfirmationDescription": "Ostot tehdään automaattisesti näiden asetusten mukaan. Voit poistaa ne käytöstä milloin tahansa.",
-  "dcaFrequencyLabel": "Aikataulu",
-  "dcaFrequencyHourly": "tunti",
-  "dcaFrequencyDaily": "päivä",
-  "dcaFrequencyWeekly": "viikko",
-  "dcaFrequencyMonthly": "kuukausi",
-  "dcaAmountLabel": "Määrä",
-  "dcaPaymentMethodLabel": "Maksutapa",
-  "dcaPaymentMethodValue": "{currency} saldo",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "Tilaustyyppi",
-  "dcaOrderTypeValue": "Toistuva osto",
-  "dcaNetworkLabel": "Verkko",
-  "dcaNetworkBitcoin": "Bitcoin-verkko",
-  "dcaNetworkLightning": "Lightning-verkko",
-  "dcaNetworkLiquid": "Liquid-verkko",
-  "dcaLightningAddressLabel": "Lightning-osoite",
-  "dcaConfirmationError": "Jotain meni pieleen: {error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "Jatka",
   "dcaSuccessTitle": "Toistuva osto on aktiivinen!",
   "dcaSuccessMessageHourly": "Ostat {amount} joka tunti",
   "@dcaSuccessMessageHourly": {
@@ -3281,32 +3241,6 @@
   "exchangeKycLimited": "Rajoitettu",
   "exchangeKycComplete": "Suorita KYC",
   "exchangeKycRemoveLimits": "Poista tapahtumien rajoitukset",
-  "dcaActivate": "Aktivoi toistuva osto",
-  "dcaDeactivate": "Poista toistuva osto käytöstä",
-  "dcaViewSettings": "Näytä asetukset",
-  "dcaHideSettings": "Piilota asetukset",
-  "dcaCancelTitle": "Peruutetaanko Bitcoin-toistuva osto?",
-  "dcaCancelMessage": "Bitcoinin toistuva ostosuunnitelmasi lopetetaan, ja tulevat toimeksiannot perutaan. Käynnistääksesi sen uudelleen sinun tulee luoda uusi suunnitelma.",
-  "dcaCancelButton": "Peruuta",
-  "dcaConfirmDeactivate": "Kyllä, poista käytöstä",
-  "dcaUnableToGetConfig": "DCA-asetuksia ei voitu hakea",
-  "dcaAddressBitcoin": "Bitcoin-osoite",
-  "dcaAddressLightning": "Lightning-osoite",
-  "dcaAddressLiquid": "Liquid-osoite",
-  "dcaBuyingMessage": "Ostat {amount} joka {frequency} verkossa {network}, niin kauan kuin tililläsi on varoja.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Kirjautuminen epäonnistui",
   "exchangeAuthErrorMessage": "Tapahtui virhe. Yritä kirjautua uudelleen.",
   "exchangeAuthOk": "OK",
@@ -3375,14 +3309,6 @@
   "dcaConfirmNetworkLightning": "Lightning",
   "dcaConfirmNetworkLiquid": "Liquid",
   "dcaConfirmLightningAddress": "Lightning-osoite",
-  "dcaConfirmError": "Jokin meni pieleen: {error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmContinue": "Jatka",
   "buyInputTitle": "Osta Bitcoinia",
   "buyInputMinAmountError": "Sinun tulee ostaa vähintään",
@@ -5263,5 +5189,9 @@
   "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
   "transactionDetailLabelPayjoinAborted": "Keskeytetty",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
+  "dcaAccountUnavailableError": "Tiliäsi ei voitu ladata. Varmista, että olet kirjautunut sisään, ja yritä uudelleen.",
+  "dcaLightningAddressRequiredError": "Anna Lightning-osoite ostojesi vastaanottamista varten.",
+  "dcaReceiveAddressError": "Lompakkoosi ei voitu valmistella vastaanotto-osoitetta. Yritä uudelleen.",
+  "dcaOrderCreationError": "Toistuvaa ostoa ei voitu luoda. Yritä myöhemmin uudelleen."
 }

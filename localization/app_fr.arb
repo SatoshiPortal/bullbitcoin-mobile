@@ -1261,46 +1261,6 @@
   "bip85NoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "connectingToKeyServer": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
   "anErrorOccurred": "Une erreur s'est produite",
-  "dcaSetRecurringBuyTitle": "Configurer un achat récurrent",
-  "dcaInsufficientBalanceTitle": "Solde insuffisant",
-  "dcaInsufficientBalanceDescription": "Vous n'avez pas assez de solde pour créer cette commande.",
-  "dcaFundAccountButton": "Alimenter votre compte",
-  "dcaScheduleDescription": "Les achats de Bitcoin seront effectués automatiquement selon ce calendrier.",
-  "dcaFrequencyValidationError": "Veuillez sélectionner une fréquence",
-  "dcaContinueButton": "Continuer",
-  "dcaConfirmRecurringBuyTitle": "Confirmer l'achat récurrent",
-  "dcaConfirmationDescription": "Les ordres d'achat seront placés automatiquement selon ces paramètres. Vous pouvez les désactiver à tout moment.",
-  "dcaFrequencyLabel": "Fréquence",
-  "dcaFrequencyHourly": "heure",
-  "dcaFrequencyDaily": "jour",
-  "dcaFrequencyWeekly": "semaine",
-  "dcaFrequencyMonthly": "mois",
-  "dcaAmountLabel": "Montant",
-  "dcaPaymentMethodLabel": "Méthode de paiement",
-  "dcaPaymentMethodValue": "Solde {currency}",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "Type de commande",
-  "dcaOrderTypeValue": "Achat récurrent",
-  "dcaNetworkLabel": "Réseau",
-  "dcaNetworkBitcoin": "Réseau Bitcoin",
-  "dcaNetworkLightning": "Réseau Lightning",
-  "dcaNetworkLiquid": "Réseau Liquid",
-  "dcaLightningAddressLabel": "Adresse Lightning",
-  "dcaConfirmationError": "Une erreur s'est produite : {error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "Continuer",
   "dcaSuccessTitle": "Achat récurrent activé !",
   "dcaSuccessMessageHourly": "Vous achèterez {amount} chaque heure",
   "@dcaSuccessMessageHourly": {
@@ -3333,32 +3293,6 @@
   "exchangeKycLimited": "Limité",
   "exchangeKycComplete": "Complétez votre KYC",
   "exchangeKycRemoveLimits": "Pour supprimer les limites de transaction",
-  "dcaActivate": "Activer l'achat récurrent",
-  "dcaDeactivate": "Désactiver l'achat récurrent",
-  "dcaViewSettings": "Voir les paramètres",
-  "dcaHideSettings": "Masquer les paramètres",
-  "dcaCancelTitle": "Annuler l'achat récurrent de Bitcoin ?",
-  "dcaCancelMessage": "Votre plan d'achat récurrent de Bitcoin s'arrêtera et les achats programmés prendront fin. Pour redémarrer, vous devrez configurer un nouveau plan.",
-  "dcaCancelButton": "Annuler",
-  "dcaConfirmDeactivate": "Oui, désactiver",
-  "dcaUnableToGetConfig": "Impossible d'obtenir la configuration DCA",
-  "dcaAddressBitcoin": "Adresse Bitcoin",
-  "dcaAddressLightning": "Adresse Lightning",
-  "dcaAddressLiquid": "Adresse Liquid",
-  "dcaBuyingMessage": "Vous achetez {amount} chaque {frequency} via {network} tant qu'il y a des fonds sur votre compte.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Échec de la connexion",
   "exchangeAuthErrorMessage": "Une erreur s'est produite, veuillez réessayer de vous connecter.",
   "exchangeAuthOk": "OK",
@@ -3427,14 +3361,6 @@
   "dcaConfirmNetworkLightning": "Lightning",
   "dcaConfirmNetworkLiquid": "Liquid",
   "dcaConfirmLightningAddress": "Adresse Lightning",
-  "dcaConfirmError": "Une erreur s'est produite : {error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmContinue": "Continuer",
   "buyInputTitle": "Acheter du Bitcoin",
   "buyInputMinAmountError": "Vous devez acheter au moins",
@@ -5283,5 +5209,9 @@
   "announcementDismissConfirmTitle": "Ignorer cette annonce ?",
   "announcementDismissConfirmBody": "Lisez pour en savoir plus, ou ignorez pour la masquer. Les annonces ignorées ne réapparaîtront plus.",
   "announcementDismissConfirmAction": "Ignorer",
-  "announcementDismissConfirmRead": "Lire"
+  "announcementDismissConfirmRead": "Lire",
+  "dcaAccountUnavailableError": "Impossible de charger votre compte. Vérifiez que vous êtes connecté et réessayez.",
+  "dcaLightningAddressRequiredError": "Saisissez une adresse Lightning pour recevoir vos achats.",
+  "dcaReceiveAddressError": "Impossible de préparer une adresse de réception dans votre portefeuille. Veuillez réessayer.",
+  "dcaOrderCreationError": "L'achat récurrent n'a pas pu être créé. Veuillez réessayer plus tard."
 }

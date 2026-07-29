@@ -4852,120 +4852,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSetRecurringBuyTitle": "Set Recurring Buy",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
-  },
-  "dcaInsufficientBalanceTitle": "Insufficient Balance",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
-  },
-  "dcaInsufficientBalanceDescription": "You do not have enough balance to create this order.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
-  "dcaFundAccountButton": "Fund your account",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
-  },
-  "dcaScheduleDescription": "Bitcoin purchases will be placed automatically per this schedule.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
-  "dcaFrequencyValidationError": "Please select a frequency",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
-  "dcaContinueButton": "Continue",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
-  "dcaConfirmRecurringBuyTitle": "Confirm Recurring Buy",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
-  "dcaConfirmationDescription": "Buy orders will be placed automatically per these settings. You can disable them anytime.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
-  "dcaFrequencyLabel": "Frequency",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
-  },
-  "dcaFrequencyHourly": "hour",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
-  "dcaFrequencyDaily": "day",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
-  "dcaFrequencyWeekly": "week",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
-  },
-  "dcaFrequencyMonthly": "month",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
-  "dcaAmountLabel": "Amount",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
-  "dcaPaymentMethodLabel": "Payment method",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
-  },
-  "dcaPaymentMethodValue": "{currency} balance",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "Order type",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
-  "dcaOrderTypeValue": "Recurring buy",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
-  },
-  "dcaNetworkLabel": "Network",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
-  "dcaNetworkBitcoin": "Bitcoin Network",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
-  "dcaNetworkLightning": "Lightning Network",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
-  "dcaNetworkLiquid": "Liquid Network",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
-  "dcaLightningAddressLabel": "Lightning address",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
-  "dcaConfirmationError": "Something went wrong: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "Continue",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
-  },
   "dcaSuccessTitle": "Recurring Buy is Active!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -10977,69 +10863,6 @@
   "@exchangeKycRemoveLimits": {
     "description": "KYC card subtitle"
   },
-  "dcaActivate": "Activate Recurring Buy",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
-  "dcaDeactivate": "Deactivate Recurring Buy",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
-  },
-  "dcaViewSettings": "View settings",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
-  "dcaHideSettings": "Hide settings",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
-  },
-  "dcaCancelTitle": "Cancel Bitcoin Recurring Buy?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
-  },
-  "dcaCancelMessage": "Your recurring Bitcoin purchase plan will stop, and scheduled buys will end. To restart, you'll need to set up a new plan.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
-  },
-  "dcaCancelButton": "Cancel",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
-  },
-  "dcaConfirmDeactivate": "Yes, deactivate",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
-  },
-  "dcaUnableToGetConfig": "Unable to get DCA configuration",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
-  "dcaAddressBitcoin": "Bitcoin address",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
-  "dcaAddressLightning": "Lightning address",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
-  },
-  "dcaAddressLiquid": "Liquid address",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
-  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Login Failed",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -11313,15 +11136,6 @@
   "dcaConfirmLightningAddress": "Lightning address",
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
-  },
-  "dcaConfirmError": "Something went wrong: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "dcaConfirmContinue": "Continue",
   "@dcaConfirmContinue": {
@@ -15008,5 +14822,21 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "dcaAccountUnavailableError": "Could not load your account. Make sure you are logged in and try again.",
+  "@dcaAccountUnavailableError": {
+    "description": "Shown when the exchange account summary cannot be loaded (incl. not logged in), so DCA setup cannot start."
+  },
+  "dcaLightningAddressRequiredError": "Enter a Lightning address to receive your purchases.",
+  "@dcaLightningAddressRequiredError": {
+    "description": "Shown when Lightning was chosen as the DCA payout network but no lightning address was provided."
+  },
+  "dcaReceiveAddressError": "Could not prepare a receiving address in your wallet. Please try again.",
+  "@dcaReceiveAddressError": {
+    "description": "Shown when no default wallet exists for the chosen DCA network or generating a receive address failed."
+  },
+  "dcaOrderCreationError": "The recurring buy could not be created. Please try again later.",
+  "@dcaOrderCreationError": {
+    "description": "Shown when the exchange rejects creating the recurring buy order."
   }
 }

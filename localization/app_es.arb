@@ -1264,46 +1264,6 @@
   "bip85NoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
   "connectingToKeyServer": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
   "anErrorOccurred": "Ocurrió un error",
-  "dcaSetRecurringBuyTitle": "Configurar Compra Recurrente",
-  "dcaInsufficientBalanceTitle": "Saldo Insuficiente",
-  "dcaInsufficientBalanceDescription": "No tiene suficiente saldo para crear esta orden.",
-  "dcaFundAccountButton": "Fondear su cuenta",
-  "dcaScheduleDescription": "Las compras de Bitcoin se realizarán automáticamente según este calendario.",
-  "dcaFrequencyValidationError": "Por favor seleccione una frecuencia",
-  "dcaContinueButton": "Continuar",
-  "dcaConfirmRecurringBuyTitle": "Confirmar Compra Recurrente",
-  "dcaConfirmationDescription": "Las órdenes de compra se realizarán automáticamente según esta configuración. Puede desactivarlas en cualquier momento.",
-  "dcaFrequencyLabel": "Frecuencia",
-  "dcaFrequencyHourly": "hora",
-  "dcaFrequencyDaily": "día",
-  "dcaFrequencyWeekly": "semana",
-  "dcaFrequencyMonthly": "mes",
-  "dcaAmountLabel": "Cantidad",
-  "dcaPaymentMethodLabel": "Método de pago",
-  "dcaPaymentMethodValue": "Saldo en {currency}",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "Tipo de orden",
-  "dcaOrderTypeValue": "Compra recurrente",
-  "dcaNetworkLabel": "Red",
-  "dcaNetworkBitcoin": "Red Bitcoin",
-  "dcaNetworkLightning": "Red Lightning",
-  "dcaNetworkLiquid": "Red Liquid",
-  "dcaLightningAddressLabel": "Dirección Lightning",
-  "dcaConfirmationError": "Algo salió mal: {error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "Continuar",
   "dcaSuccessTitle": "¡Compra Recurrente Activada!",
   "dcaSuccessMessageHourly": "Comprará {amount} cada hora",
   "@dcaSuccessMessageHourly": {
@@ -3336,32 +3296,6 @@
   "exchangeKycLimited": "Limitado",
   "exchangeKycComplete": "Complete su KYC",
   "exchangeKycRemoveLimits": "Para eliminar límites de transacción",
-  "dcaActivate": "Activar compra recurrente",
-  "dcaDeactivate": "Desactivar compra recurrente",
-  "dcaViewSettings": "Ver configuración",
-  "dcaHideSettings": "Ocultar configuración",
-  "dcaCancelTitle": "¿Cancelar compra recurrente de Bitcoin?",
-  "dcaCancelMessage": "Su plan de compra recurrente de Bitcoin se detendrá y las compras programadas finalizarán. Para reiniciar, deberá configurar un nuevo plan.",
-  "dcaCancelButton": "Cancelar",
-  "dcaConfirmDeactivate": "Sí, desactivar",
-  "dcaUnableToGetConfig": "No se puede obtener la configuración DCA",
-  "dcaAddressBitcoin": "Dirección Bitcoin",
-  "dcaAddressLightning": "Dirección Lightning",
-  "dcaAddressLiquid": "Dirección Liquid",
-  "dcaBuyingMessage": "Está comprando {amount} cada {frequency} a través de {network} mientras haya fondos en su cuenta.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Inicio de sesión fallido",
   "exchangeAuthErrorMessage": "Ocurrió un error, por favor intente iniciar sesión nuevamente.",
   "exchangeAuthOk": "OK",
@@ -3441,14 +3375,6 @@
   "dcaConfirmNetworkLightning": "Lightning",
   "dcaConfirmNetworkLiquid": "Liquid",
   "dcaConfirmLightningAddress": "Dirección Lightning",
-  "dcaConfirmError": "Algo salió mal: {error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmContinue": "Continuar",
   "buyInputTitle": "Comprar Bitcoin",
   "buyInputMinAmountError": "Debe comprar al menos",
@@ -5263,5 +5189,9 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribución a la comisión de Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78).",
+  "dcaAccountUnavailableError": "No se pudo cargar tu cuenta. Asegúrate de haber iniciado sesión e inténtalo de nuevo.",
+  "dcaLightningAddressRequiredError": "Introduce una dirección Lightning para recibir tus compras.",
+  "dcaReceiveAddressError": "No se pudo preparar una dirección de recepción en tu monedero. Vuelve a intentarlo.",
+  "dcaOrderCreationError": "No se pudo crear la compra recurrente. Vuelve a intentarlo más tarde."
 }

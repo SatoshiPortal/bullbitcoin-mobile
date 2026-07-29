@@ -828,10 +828,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "dcaActivate": "Aktivace opakovaného nákupu",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
   "labelInputLabel": "Čeština",
   "@labelInputLabel": {
     "description": "Label for wallet label input field"
@@ -910,15 +906,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
-  },
-  "dcaConfirmError": "Něco šlo špatně: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLiquid": "Tekutý síť",
   "@exchangeDcaNetworkLiquid": {
@@ -1009,10 +996,6 @@
   "walletAddressTypeNestedSegwit": "Nested Segwit",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
-  },
-  "dcaConfirmDeactivate": "Ano, deaktivovat",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
   },
   "exchangeLandingFeature2": "DCA, Limitní objednávky a Auto-buy",
   "@exchangeLandingFeature2": {
@@ -1384,10 +1367,6 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "dcaUnableToGetConfig": "Nelze získat konfiguraci DCA",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
   "exchangeAuthLoginFailed": "Přihlášení",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -1596,10 +1575,6 @@
   "buyConfirmPayoutMethod": "Metoda výplaty",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
-  },
-  "dcaCancelButton": "Hledat",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
   },
   "dcaConfirmNetworkLiquid": "Čeština",
   "@dcaConfirmNetworkLiquid": {
@@ -1968,10 +1943,6 @@
   "@arkTransaction": {
     "description": "Singular form for transaction count"
   },
-  "dcaFrequencyMonthly": "měsíc",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "buyKYCLevel": "KYC Úroveň",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
@@ -2118,10 +2089,6 @@
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
   },
-  "dcaOrderTypeLabel": "Typ objednávky",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
   "withdrawConfirmCard": "Čeština",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
@@ -2216,10 +2183,6 @@
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
-  "dcaAddressBitcoin": "Bitcoin adresa",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
   "sendErrorAmountBelowMinimum": "Množství pod minimálním limitem výměny: {minLimit} seděly",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
@@ -2281,10 +2244,6 @@
   "bitboxErrorNoActiveConnection": "Žádné aktivní připojení k zařízení BitBox.",
   "@bitboxErrorNoActiveConnection": {
     "description": "Error when there is no active connection to BitBox"
-  },
-  "dcaFundAccountButton": "Fond vašeho účtu",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
   },
   "transactionFilterAll": "Vše",
   "@transactionFilterAll": {
@@ -3238,10 +3197,6 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "dcaFrequencyHourly": "hodina",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "swapValidationSelectFromWallet": "Prosím vyberte peněženku pro přenos z",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
@@ -3807,10 +3762,6 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "dcaFrequencyDaily": "den",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
   "transactionLabelSendAmount": "Odeslat částku",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3883,10 +3834,6 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
-  "dcaViewSettings": "Zobrazit nastavení",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
   "allSeedViewSecurityWarningMessage": "Zobrazení seed frází je bezpečnostní riziko. Každý, kdo vidí své semeno fráze, může získat přístup k vašim prostředkům. Ujistěte se, že jste v soukromém místě a že nikdo nemůže vidět svou obrazovku.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
@@ -3918,10 +3865,6 @@
   "payWhichWalletQuestion": "Která peněženka chcete platit?",
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "dcaHideSettings": "Skrýt nastavení",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
   },
   "exchangeDcaCancelDialogMessage": "Váš opakovaný plán nákupu Bitcoin se zastaví a naplánované nákupy skončí. Chcete-li restartovat, budete muset nastavit nový plán.",
   "@exchangeDcaCancelDialogMessage": {
@@ -4091,10 +4034,6 @@
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
   },
-  "dcaInsufficientBalanceDescription": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
   "importColdcardSuccess": "Dovážené peněženky",
   "@importColdcardSuccess": {
     "description": "Success message"
@@ -4194,21 +4133,6 @@
   "allSeedViewErrorDelete": "Nepodařilo se smazat seed. Zkuste to prosím znovu.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
-  },
-  "dcaBuyingMessage": "Kupujete {amount} každý {frequency} prostřednictvím {network}, pokud máte prostředky ve vašem účtu.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
   },
   "exchangeCurrencyDropdownValidation": "Vyberte měnu",
   "@exchangeCurrencyDropdownValidation": {
@@ -4643,10 +4567,6 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "dcaConfirmRecurringBuyTitle": "Potvrzení opakování Koupit",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "@transactionSwapBitcoinToLiquid": {
     "description": "Label for Bitcoin to Liquid swap"
@@ -4906,10 +4826,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaFrequencyWeekly": "týden",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
@@ -5251,10 +5167,6 @@
   "importWatchOnlyXpub": "čeština",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "dcaInsufficientBalanceTitle": "Nedostatečná rovnováha",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
   },
   "arkType": "Typ",
   "@arkType": {
@@ -5963,10 +5875,6 @@
   "@ledgerWalletTypeLegacyDescription": {
     "description": "Description for Legacy wallet type"
   },
-  "dcaConfirmationDescription": "Koupit objednávky budou automaticky umístěny na tyto nastavení. Můžete je kdykoli vypnout.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
     "description": "Name of Apple iCloud provider"
@@ -6107,10 +6015,6 @@
   "recoverbullSelectAppleIcloud": "Apple iCloud",
   "@recoverbullSelectAppleIcloud": {
     "description": "Name label for Apple iCloud backup provider option"
-  },
-  "dcaAddressLightning": "Blesková adresa",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
   },
   "keystoneStep13": "Transakce bude dovážena v peněžence Bull Bitcoin.",
   "@keystoneStep13": {
@@ -6472,17 +6376,9 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "dcaNetworkLiquid": "Tekutý síť",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
   "fundExchangeMethodSinpeTransfer": "SINPE přenos",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "dcaCancelTitle": "Zrušit nákup Bitcoinu?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
   },
   "payFromAnotherWallet": "Platit z jiné Bitcoin peněženky",
   "@payFromAnotherWallet": {
@@ -6673,10 +6569,6 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "dcaNetworkBitcoin": "Bitcoin sítě",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "swapTransferRefundInProgressMessage": "Byla chyba s převodem. Vaše náhrada je v průběhu.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
@@ -6769,10 +6661,6 @@
   "buyConfirmationTimeValue": "~10 minut",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
-  },
-  "dcaOrderTypeValue": "Nákup",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
   },
   "ledgerConnectingMessage": "Připojení k {deviceName}",
   "@ledgerConnectingMessage": {
@@ -7078,10 +6966,6 @@
   "@coreScreensServerNetworkFeesLabel": {
     "description": "Label for server network fees field"
   },
-  "dcaFrequencyValidationError": "Vyberte frekvenci",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
   "walletsListTitle": "Detaily peněženky",
   "@walletsListTitle": {
     "description": "Title for the wallet details list screen"
@@ -7358,10 +7242,6 @@
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "dcaNetworkLightning": "Bleskové sítě",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
   "backupWalletHowToDecideVaultCloudRecommendationText": "chcete se ujistit, že nikdy neztratíte přístup k souboru klenby, i když ztratíte zařízení.",
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
@@ -7523,15 +7403,6 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "dcaPaymentMethodValue": "{currency} rovnováhu",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "Transfer dokončeno",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
@@ -7551,10 +7422,6 @@
   "fundExchangeSinpeLabelRecipientName": "Název příjemce",
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
-  },
-  "dcaScheduleDescription": "Nákupy Bitcoin budou umístěny automaticky na tento plán.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
   },
   "keystoneInstructionsTitle": "Keystone Pokyny",
   "@keystoneInstructionsTitle": {
@@ -7645,10 +7512,6 @@
   "ledgerSuccessImportDescription": "Vaše peněženka Ledger úspěšně doveze.",
   "@ledgerSuccessImportDescription": {
     "description": "Success message description after importing Ledger wallet"
-  },
-  "dcaCancelMessage": "Váš opakovaný plán nákupu Bitcoin se zastaví a naplánované nákupy skončí. Chcete-li restartovat, budete muset nastavit nový plán.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
   },
   "fundExchangeHelpPaymentDescription": "Váš převodový kód.",
   "@fundExchangeHelpPaymentDescription": {
@@ -8115,10 +7978,6 @@
   "testBackupCreatedAt": "Vytvořeno na:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "dcaSetRecurringBuyTitle": "Sada opakování nákupu",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
   },
   "psbtFlowSignTransactionOnDevice": "Kliknutím na tlačítko pro přihlášení do transakce na {device}.",
   "@psbtFlowSignTransactionOnDevice": {
@@ -9256,10 +9115,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "dcaAmountLabel": "Množství",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
   "walletNetworkLiquid": "Tekutý síť",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
@@ -9335,10 +9190,6 @@
   "recoverbullTestSuccessDescription": "Jste schopni obnovit přístup k ztracené Bitcoin peněženku",
   "@recoverbullTestSuccessDescription": {
     "description": "Description shown after successful recovery test"
-  },
-  "dcaDeactivate": "Deactivate Recurring Koupit",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
   },
   "exchangeAuthLoginFailedTitle": "Přihlášení",
   "@exchangeAuthLoginFailedTitle": {
@@ -9509,15 +9360,6 @@
   "importQrDevicePassportStep8": "Na mobilním zařízení klepněte na \"open camera\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
-  },
-  "dcaConfirmationError": "Něco šlo špatně: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
   "bip85NoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
@@ -10543,10 +10385,6 @@
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
-  "dcaAddressLiquid": "Liquid adresa",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
   "buyVerificationInProgress": "Ověření v průběhu...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
@@ -11320,10 +11158,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "Čeština",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
   "sendScanBitcoinQRCode": "Skenovat libovolný kód Bitcoin nebo blesku QR platit s Bitcoin.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -11601,10 +11435,6 @@
   "@transactionOrderLabelPayinAmount": {
     "description": "Label for order payin amount"
   },
-  "dcaLightningAddressLabel": "Blesková adresa",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "electrumEnableSsl": "Povolit SSL",
   "@electrumEnableSsl": {
     "description": "SSL toggle label in add custom server sheet"
@@ -11661,10 +11491,6 @@
   "transactionSwapDescLnReceiveClaimable": "Byla potvrzena transakce na řetězci. Nyní prohlašujeme, že finanční prostředky dokončí váš swap.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
-  },
-  "dcaPaymentMethodLabel": "Způsob platby",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
   },
   "swapProgressPendingMessage": "Přenos je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
   "@swapProgressPendingMessage": {
@@ -11843,10 +11669,6 @@
   "comingSoonDefaultMessage": "Tato funkce je v současné době k dispozici podle vývoje a bude k dispozici brzy.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "dcaFrequencyLabel": "Čeština",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "ledgerErrorMissingAddress": "Adresa je vyžadováno pro ověření",
   "@ledgerErrorMissingAddress": {
@@ -12237,10 +12059,6 @@
   "@electrumCloseTooltip": {
     "description": "Close button tooltip"
   },
-  "dcaContinueButton": "Pokračovat",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "pinButtonCreate": "Vytvořit PIN",
   "@pinButtonCreate": {
     "description": "Button label when no PIN exists"
@@ -12285,10 +12103,6 @@
   "transactionStatusInProgress": "Zpracovávám",
   "@transactionStatusInProgress": {
     "description": "Status label for transactions in progress"
-  },
-  "dcaConfirmButton": "Pokračovat",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "pinStatusProcessing": "Zpracovávám",
   "@pinStatusProcessing": {
@@ -13277,5 +13091,9 @@
   "transactionStatusPayjoinAborted": "Payjoin přerušen",
   "transactionDetailLabelPayjoinAborted": "Přerušeno",
   "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Ujistěte se, že jste přihlášeni, a zkuste to znovu.",
+  "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
+  "dcaReceiveAddressError": "V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.",
+  "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později."
 }

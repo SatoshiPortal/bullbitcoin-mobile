@@ -3895,120 +3895,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSetRecurringBuyTitle": "Recurring Buy Set Karo",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
-  },
-  "dcaInsufficientBalanceTitle": "Balance Kam Hai",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
-  },
-  "dcaInsufficientBalanceDescription": "Yeh order banane ke liye aapke paas enough balance nahi hai.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
-  "dcaFundAccountButton": "Account mein paise daalo",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
-  },
-  "dcaScheduleDescription": "Bitcoin khareedari is schedule ke anusar apne aap hogi.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
-  "dcaFrequencyValidationError": "Kripya ek frequency chuniye",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
-  "dcaContinueButton": "Aage Badho",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
-  "dcaConfirmRecurringBuyTitle": "Recurring Buy Confirm Karo",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
-  "dcaConfirmationDescription": "Buy orders in settings ke anusar apne aap lagenge. Aap inhe kisi bhi waqt band kar sakte ho.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
-  "dcaFrequencyLabel": "Frequency",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
-  },
-  "dcaFrequencyHourly": "ghanta",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
-  "dcaFrequencyDaily": "din",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
-  "dcaFrequencyWeekly": "hafta",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
-  },
-  "dcaFrequencyMonthly": "mahina",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
-  "dcaAmountLabel": "Raashi",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
-  "dcaPaymentMethodLabel": "Payment ka tarika",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
-  },
-  "dcaPaymentMethodValue": "{currency} balance",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "Order ka prakar",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
-  "dcaOrderTypeValue": "Recurring buy",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
-  },
-  "dcaNetworkLabel": "Network",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
-  "dcaNetworkBitcoin": "Bitcoin Network",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
-  "dcaNetworkLightning": "Lightning Network",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
-  "dcaNetworkLiquid": "Liquid Network",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
-  "dcaLightningAddressLabel": "Lightning address",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
-  "dcaConfirmationError": "Kuch galat ho gaya: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "Aage Badho",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
-  },
   "dcaSuccessTitle": "Recurring Buy Chalu Ho Gaya!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -9539,69 +9425,6 @@
   "@exchangeKycRemoveLimits": {
     "description": "KYC card subtitle"
   },
-  "dcaActivate": "Recurring Buy Activate Karo",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
-  "dcaDeactivate": "Recurring Buy Deactivate Karo",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
-  },
-  "dcaViewSettings": "Settings dekho",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
-  "dcaHideSettings": "Settings chhupao",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
-  },
-  "dcaCancelTitle": "Bitcoin Recurring Buy Cancel Karein?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
-  },
-  "dcaCancelMessage": "Aapka recurring Bitcoin purchase plan band ho jayega, aur scheduled buys khatam ho jayengi. Restart karne ke liye, aapko naya plan setup karna hoga.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
-  },
-  "dcaCancelButton": "Cancel",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
-  },
-  "dcaConfirmDeactivate": "Haan, deactivate karo",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
-  },
-  "dcaUnableToGetConfig": "DCA configuration nahi mil raha",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
-  "dcaAddressBitcoin": "Bitcoin address",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
-  "dcaAddressLightning": "Lightning address",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
-  },
-  "dcaAddressLiquid": "Liquid address",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
-  "dcaBuyingMessage": "Aap jab tak account mein funds hain, har {frequency} mein {amount} {network} ke zariye kharid rahe hain.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Login Fail Hua",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -9831,15 +9654,6 @@
   "dcaConfirmLightningAddress": "Lightning address",
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
-  },
-  "dcaConfirmError": "Kuch gadbad ho gayi: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "dcaConfirmContinue": "Continue",
   "@dcaConfirmContinue": {
@@ -13672,5 +13486,9 @@
   "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
   "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
-  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78).",
+  "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Sunishchit karein ki aap logged in hain aur phir se koshish karein.",
+  "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
+  "dcaReceiveAddressError": "Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.",
+  "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein."
 }

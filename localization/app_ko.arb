@@ -546,10 +546,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "dcaActivate": "Recurring 구매",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
   "labelInputLabel": "이름 *",
   "@labelInputLabel": {
     "description": "Label for wallet label input field"
@@ -632,15 +628,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "Fastest - € 30,000 미만의 거래 만",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
-  },
-  "dcaConfirmError": "뭔가 잘못되었는지: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLiquid": "액체 네트워크",
   "@exchangeDcaNetworkLiquid": {
@@ -731,10 +718,6 @@
   "walletAddressTypeNestedSegwit": "연락처",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
-  },
-  "dcaConfirmDeactivate": "예, 비활성화",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
   },
   "exchangeLandingFeature2": "DCA, 제한 주문 및 자동 구매",
   "@exchangeLandingFeature2": {
@@ -1122,10 +1105,6 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "dcaUnableToGetConfig": "DCA 구성을 얻을 수 없음",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
   "exchangeAuthLoginFailed": "로그인 실패",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -1346,10 +1325,6 @@
   "buyConfirmPayoutMethod": "Payout 방법",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
-  },
-  "dcaCancelButton": "이름 *",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
   },
   "durationMinutes": "{minutes} 분",
   "@durationMinutes": {
@@ -1748,10 +1723,6 @@
   "@arkTransaction": {
     "description": "Singular form for transaction count"
   },
-  "dcaFrequencyMonthly": "1 개월",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "buyKYCLevel": "사이트맵 1 단계",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
@@ -1902,10 +1873,6 @@
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
   },
-  "dcaOrderTypeLabel": "주문 유형",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
   "withdrawConfirmCard": "(주)",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
@@ -2004,10 +1971,6 @@
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
-  "dcaAddressBitcoin": "Bitcoin 주소",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
   "sendErrorAmountBelowMinimum": "최소 스왑 제한 아래의 금액: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
@@ -2069,10 +2032,6 @@
   "bitboxErrorNoActiveConnection": "BitBox 장치에 대한 활성 연결이 없습니다.",
   "@bitboxErrorNoActiveConnection": {
     "description": "Error when there is no active connection to BitBox"
-  },
-  "dcaFundAccountButton": "계정 생성",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
   },
   "transactionFilterAll": "모든 것",
   "@transactionFilterAll": {
@@ -3084,10 +3043,6 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "dcaFrequencyHourly": "1시간",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "swapValidationSelectFromWallet": "지갑을 선택해 주세요",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
@@ -3691,10 +3646,6 @@
   "@transactionStatusConfirmed": {
     "description": "Status label for confirmed transactions"
   },
-  "dcaFrequencyDaily": "일 시",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
   "transactionLabelSendAmount": "결제하기",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3767,10 +3718,6 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
-  "dcaViewSettings": "설정 보기",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
   "withdrawAmountContinue": "계속하기",
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
@@ -3810,10 +3757,6 @@
   "payWhichWalletQuestion": "어떤 지갑에서 지불 하시겠습니까?",
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "dcaHideSettings": "설정 숨기기",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
   },
   "exchangeDcaCancelDialogMessage": "Bitcoin 구매 계획은 중지되며, 예약 된 구매가 종료됩니다. 다시 시작하려면 새로운 계획을 설정해야합니다.",
   "@exchangeDcaCancelDialogMessage": {
@@ -3995,10 +3938,6 @@
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
   },
-  "dcaInsufficientBalanceDescription": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
   "pinButtonContinue": "계속하기",
   "@pinButtonContinue": {
     "description": "Button label to proceed after entering new PIN"
@@ -4102,21 +4041,6 @@
   "allSeedViewErrorDelete": "시드를 삭제하지 못했습니다. 다시 시도해 주세요.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
-  },
-  "dcaBuyingMessage": "{amount} 모든 {frequency}를 구입하고 있습니다. {network} 귀하의 계정에 자금이 있습니다.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
   },
   "exchangeCurrencyDropdownValidation": "통화 선택",
   "@exchangeCurrencyDropdownValidation": {
@@ -4571,10 +4495,6 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "dcaConfirmRecurringBuyTitle": "자주 묻는 질문 구매하기",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "transactionSwapBitcoinToLiquid": "비트코인",
   "@transactionSwapBitcoinToLiquid": {
     "description": "Label for Bitcoin to Liquid swap"
@@ -4858,10 +4778,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaFrequencyWeekly": "주 메뉴",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "fundExchangeMethodRegularSepaSubtitle": "만 € 30,000 이상의 거래에 사용",
   "@fundExchangeMethodRegularSepaSubtitle": {
@@ -5231,10 +5147,6 @@
   "importWatchOnlyXpub": "xpub 파일",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "dcaInsufficientBalanceTitle": "충분한 균형",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
   },
   "arkType": "제품정보",
   "@arkType": {
@@ -5804,10 +5716,6 @@
   "@importQrDeviceKeystoneStep8": {
     "description": "Keystone instruction step 8"
   },
-  "dcaContinueButton": "계속하기",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "fundExchangeCrIbanUsdTitle": "은행 송금 (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -5967,10 +5875,6 @@
   "@ledgerWalletTypeLegacyDescription": {
     "description": "Description for Legacy wallet type"
   },
-  "dcaConfirmationDescription": "주문은 이 설정에 따라 자동으로 배치됩니다. 언제든지 비활성화 할 수 있습니다.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
   "appleICloudProvider": "애플 iCloud",
   "@appleICloudProvider": {
     "description": "Name of Apple iCloud provider"
@@ -6115,10 +6019,6 @@
   "recoverbullSelectAppleIcloud": "애플 iCloud",
   "@recoverbullSelectAppleIcloud": {
     "description": "Name label for Apple iCloud backup provider option"
-  },
-  "dcaAddressLightning": "연락처",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
   },
   "keystoneStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
   "@keystoneStep13": {
@@ -6500,17 +6400,9 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "dcaNetworkLiquid": "액체 네트워크",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
   "fundExchangeMethodSinpeTransfer": "SINPE 전송",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "dcaCancelTitle": "Bitcoin Recurring 구매를 취소합니까?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
   },
   "payFromAnotherWallet": "다른 Bitcoin 지갑에서 지불",
   "@payFromAnotherWallet": {
@@ -6713,10 +6605,6 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "dcaNetworkBitcoin": "Bitcoin 네트워크",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "swapTransferRefundInProgressMessage": "전송에 오류가 있었습니다. 환불은 진행 중입니다.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
@@ -6818,10 +6706,6 @@
   "buyConfirmationTimeValue": "~10분",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
-  },
-  "dcaOrderTypeValue": "Recurring 구매",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
   },
   "ledgerConnectingMessage": "{deviceName}에 연결",
   "@ledgerConnectingMessage": {
@@ -7147,10 +7031,6 @@
   "@coreScreensServerNetworkFeesLabel": {
     "description": "Label for server network fees field"
   },
-  "dcaFrequencyValidationError": "주파수 선택",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
   "walletsListTitle": "Wallet 세부사항",
   "@walletsListTitle": {
     "description": "Title for the wallet details list screen"
@@ -7439,10 +7319,6 @@
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "dcaNetworkLightning": "Lightning 네트워크",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
   "backupWalletHowToDecideVaultCloudRecommendationText": "당신은 당신이 당신의 장치를 잃더라도 당신의 볼트 파일에 접근을 결코 잃지 않도록 원합니다.",
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
@@ -7612,15 +7488,6 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "dcaPaymentMethodValue": "{currency} 밸런스",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "결제 완료",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
@@ -7641,10 +7508,6 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "dcaScheduleDescription": "Bitcoin 구매는이 일정 당 자동으로 배치됩니다.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
   "keystoneInstructionsTitle": "Keystone 지침",
   "@keystoneInstructionsTitle": {
     "description": "Title for Keystone signing instructions modal"
@@ -7656,10 +7519,6 @@
   "physicalBackupDescription": "종이 조각에 12 단어를 쓰기. 그들을 안전하게 유지하고 그들을 잃지 않도록하십시오.",
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
-  },
-  "dcaConfirmButton": "계속하기",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "dcaBackToHomeButton": "집으로 돌아가기",
   "@dcaBackToHomeButton": {
@@ -7742,10 +7601,6 @@
   "pinStatusProcessing": "제품정보",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "dcaCancelMessage": "Bitcoin 구매 계획은 중지되며, 예약 된 구매가 종료됩니다. 다시 시작하려면 새로운 계획을 설정해야합니다.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
   },
   "fundExchangeHelpPaymentDescription": "전송 코드.",
   "@fundExchangeHelpPaymentDescription": {
@@ -8224,10 +8079,6 @@
   "testBackupCreatedAt": "에 게시:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "dcaSetRecurringBuyTitle": "Recurring 구매",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
   },
   "psbtFlowSignTransactionOnDevice": "{device}에서 거래에 서명하는 버튼을 클릭합니다.",
   "@psbtFlowSignTransactionOnDevice": {
@@ -9430,10 +9281,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "dcaAmountLabel": "계정 정보",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
   "walletNetworkLiquid": "액체 네트워크",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
@@ -9517,10 +9364,6 @@
   "recoverbullTestSuccessDescription": "Bitcoin 지갑에 액세스 할 수 있습니다",
   "@recoverbullTestSuccessDescription": {
     "description": "Description shown after successful recovery test"
-  },
-  "dcaDeactivate": "Recurring 구매",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
   },
   "exchangeAuthLoginFailedTitle": "로그인 실패",
   "@exchangeAuthLoginFailedTitle": {
@@ -9695,15 +9538,6 @@
   "importQrDevicePassportStep8": "모바일 장치에서 \"오픈 카메라\"를 탭",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
-  },
-  "dcaConfirmationError": "뭔가 잘못되었는지: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
   "bip85NoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
@@ -10801,10 +10635,6 @@
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
-  "dcaAddressLiquid": "액체 주소",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
   "buyVerificationInProgress": "진행 중...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
@@ -11620,10 +11450,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "회사연혁",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
   "sendScanBitcoinQRCode": "Bitcoin 또는 Lightning QR 코드를 스캔하여 Bitcoin으로 지불하십시오.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -11909,10 +11735,6 @@
   "@transactionOrderLabelPayinAmount": {
     "description": "Label for order payin amount"
   },
-  "dcaLightningAddressLabel": "연락처",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "electrumEnableSsl": "SSL 사용",
   "@electrumEnableSsl": {
     "description": "SSL toggle label in add custom server sheet"
@@ -11969,10 +11791,6 @@
   "transactionSwapDescLnReceiveClaimable": "On-chain 거래가 확인되었습니다. 우리는 지금 당신의 스왑을 완료하기 위해 자금 주장.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
-  },
-  "dcaPaymentMethodLabel": "지불 방법",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
   },
   "swapProgressPendingMessage": "전송은 진행 중입니다. Bitcoin 거래는 확인하는 동안 걸릴 수 있습니다. 집과 대기를 반환 할 수 있습니다.",
   "@swapProgressPendingMessage": {
@@ -12155,10 +11973,6 @@
   "comingSoonDefaultMessage": "이 기능은 현재 개발 중이며 곧 사용할 수 있습니다.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "dcaFrequencyLabel": "주파수 영역",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "ledgerErrorMissingAddress": "인증에 대한 문의",
   "@ledgerErrorMissingAddress": {
@@ -13277,5 +13091,9 @@
   "transactionStatusPayjoinAborted": "Payjoin 중단됨",
   "transactionDetailLabelPayjoinAborted": "중단됨",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 수수료 기여분",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78).",
+  "dcaAccountUnavailableError": "계정을 불러올 수 없습니다. 로그인 상태를 확인하고 다시 시도하세요.",
+  "dcaLightningAddressRequiredError": "구매한 비트코인을 받을 Lightning 주소를 입력하세요.",
+  "dcaReceiveAddressError": "지갑에서 수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
+  "dcaOrderCreationError": "반복 구매를 생성할 수 없습니다. 나중에 다시 시도해 주세요."
 }

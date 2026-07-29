@@ -463,10 +463,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "dcaActivate": "Ενεργοποίηση Recuring Buy",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
   "labelInputLabel": "Label",
   "@labelInputLabel": {
     "description": "Label for wallet label input field"
@@ -550,15 +546,6 @@
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
-  "dcaConfirmError": "Κάτι πήγε στραβά: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLiquid": "Liquid Network",
   "@exchangeDcaNetworkLiquid": {
     "description": "DCA network option: Liquid"
@@ -631,10 +618,6 @@
   "walletAddressTypeNestedSegwit": "Nested Segwit",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
-  },
-  "dcaConfirmDeactivate": "Ναι, απενεργοποιημένη",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
   },
   "exchangeLandingFeature2": "DCA, εντολές περιορισμού και αυτόματη αγορά",
   "@exchangeLandingFeature2": {
@@ -992,10 +975,6 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "dcaUnableToGetConfig": "Δεν είναι σε θέση να πάρει τη διαμόρφωση DCA",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
   "exchangeAuthLoginFailed": "Εμπορία",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -1164,10 +1143,6 @@
   "buyConfirmPayoutMethod": "Μέθοδος πληρωμής",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
-  },
-  "dcaCancelButton": "Ακύρωση",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
   },
   "durationMinutes": "{minutes} λεπτά",
   "@durationMinutes": {
@@ -1713,10 +1688,6 @@
   "torSettingsInfoDescription": "• • · Το Tor proxy ισχύει μόνο για το Bitcoin (δεν είναι ρευστό)\n• • · Το προεπιλεγμένο λιμάνι Orbot είναι 9050\nΒεβαιωθείτε ότι το Orbot τρέχει πριν επιτρέψει\n• • · Η σύνδεση μπορεί να είναι πιο αργή μέσω Tor",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
-  },
-  "dcaAddressBitcoin": "Bitcoin διεύθυνση",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
   },
   "sendErrorAmountBelowMinimum": "Ποσό κάτω από το ελάχιστο όριο ανταλλαγής: {minLimit} καθόταν",
   "@sendErrorAmountBelowMinimum": {
@@ -3159,10 +3130,6 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
-  "dcaViewSettings": "Ρυθμίσεις προβολής",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
   "withdrawAmountContinue": "Συνεχίστε να συνεχίζετε",
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
@@ -3198,10 +3165,6 @@
   "payWhichWalletQuestion": "Ποιο πορτοφόλι θέλετε να πληρώσετε από?",
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "dcaHideSettings": "Κρυμμένες ρυθμίσεις",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
   },
   "exchangeDcaCancelDialogMessage": "Το επαναλαμβανόμενο σχέδιο αγοράς Bitcoin θα σταματήσει και οι προγραμματισμένες αγορές θα τελειώσουν. Για να επανεκκινήσετε, θα πρέπει να δημιουργήσετε ένα νέο σχέδιο.",
   "@exchangeDcaCancelDialogMessage": {
@@ -3430,21 +3393,6 @@
   "allSeedViewErrorDelete": "Αποτυχία διαγραφής του seed. Παρακαλώ δοκιμάστε ξανά.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
-  },
-  "dcaBuyingMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
   },
   "exchangeCurrencyDropdownValidation": "Επιλέξτε ένα νόμισμα",
   "@exchangeCurrencyDropdownValidation": {
@@ -5095,10 +5043,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "dcaAddressLightning": "Lightning διεύθυνση Lightning",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
-  },
   "keystoneStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -5432,10 +5376,6 @@
   "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "dcaCancelTitle": "Ακυρώστε Bitcoin Recurring Buy?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
   },
   "payFromAnotherWallet": "Πληρώστε από ένα άλλο πορτοφόλι Bitcoin",
   "@payFromAnotherWallet": {
@@ -6446,10 +6386,6 @@
   "pinStatusProcessing": "Επεξεργασία επεξεργασίας",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "dcaCancelMessage": "Το επαναλαμβανόμενο σχέδιο αγοράς Bitcoin θα σταματήσει και οι προγραμματισμένες αγορές θα τελειώσουν. Για να επανεκκινήσετε, θα πρέπει να δημιουργήσετε ένα νέο σχέδιο.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
   },
   "fundExchangeHelpPaymentDescription": "Ο κωδικός μεταφοράς σας.",
   "@fundExchangeHelpPaymentDescription": {
@@ -7887,10 +7823,6 @@
   "@recoverbullTestSuccessDescription": {
     "description": "Description shown after successful recovery test"
   },
-  "dcaDeactivate": "Απενεργοποιήστε το Recuring Buy",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
-  },
   "autoswapRecipientWallet": "Recipient Bitcoin Wallet",
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
@@ -8880,10 +8812,6 @@
   "sellErrorFeesNotCalculated": "Τα τέλη συναλλαγών δεν υπολογίζονται. Παρακαλώ δοκιμάστε ξανά.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
-  },
-  "dcaAddressLiquid": "Liquid διεύθυνση",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
   },
   "buyVerificationInProgress": "Εποπτεία στην πρόοδο...",
   "@buyVerificationInProgress": {
@@ -10480,10 +10408,6 @@
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
   },
-  "dcaFrequencyMonthly": "μήνα",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "testBackupDecryptVault": "Decrypt Monkey",
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
@@ -10504,10 +10428,6 @@
   "recoverbullSelectTakeYourTime": "Πάρτε το χρόνο σας",
   "@recoverbullSelectTakeYourTime": {
     "description": "Description tag for custom location provider option"
-  },
-  "dcaOrderTypeLabel": "Τύπος τύπου παραγγελίας",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
   },
   "dcaSuccessMessageHourly": "Θα αγοράζετε {amount} κάθε ώρα",
   "@dcaSuccessMessageHourly": {
@@ -10534,10 +10454,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaFundAccountButton": "Χρηματοδότηση του λογαριασμού σας",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
   },
   "arkSendTitle": "Αποστολή αποστολής",
   "@arkSendTitle": {
@@ -10725,10 +10641,6 @@
       }
     }
   },
-  "dcaFrequencyHourly": "ώρα",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "recoverbullEnterToTest": "Παρακαλώ μπείτε στο {inputType} για να δοκιμάσετε το θύλακα σας.",
   "@recoverbullEnterToTest": {
     "description": "Instruction to enter PIN or password to test vault recovery",
@@ -10828,10 +10740,6 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "dcaFrequencyDaily": "μέρα",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
   "transactionLabelSendAmount": "Στείλε ποσό",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -10875,10 +10783,6 @@
   "arkForfeitAddress": "Forfeit διεύθυνση",
   "@arkForfeitAddress": {
     "description": "Label for forfeit address field"
-  },
-  "dcaInsufficientBalanceDescription": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
   },
   "arkBtcAddress": "BTC διεύθυνση διεύθυνση",
   "@arkBtcAddress": {
@@ -10970,10 +10874,6 @@
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
   },
-  "dcaConfirmRecurringBuyTitle": "Επιβεβαίωση Αγοράστε αγορά αγορά",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "autoswapTriggerAtBalanceInfoText": "Το Autoswap θα προκαλέσει όταν η ισορροπία σας υπερβαίνει αυτή τη μέγιστη ισορροπία.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
@@ -11009,10 +10909,6 @@
   "psbtFlowScanQrOption": "Επιλέξτε \"Scan QR\" επιλογή",
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
-  },
-  "dcaFrequencyWeekly": "εβδομάδα",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "exchangeLandingDisclaimerLegal": "Η πρόσβαση σε υπηρεσίες ανταλλαγής θα περιορίζεται σε χώρες όπου το Bull Bitcoin μπορεί να λειτουργήσει νόμιμα και μπορεί να απαιτήσει KYC.",
   "@exchangeLandingDisclaimerLegal": {
@@ -11090,10 +10986,6 @@
   "arkUnilateralExitDelay": "Unilateral καθυστέρηση εξόδου",
   "@arkUnilateralExitDelay": {
     "description": "Label for unilateral exit delay field"
-  },
-  "dcaInsufficientBalanceTitle": "Ανεπαρκή ισορροπία",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
   },
   "testBackupGoogleDrivePermission": "Η Google θα σας ζητήσει να μοιραστείτε προσωπικές πληροφορίες με αυτή την εφαρμογή.",
   "@testBackupGoogleDrivePermission": {
@@ -11189,10 +11081,6 @@
   "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "dcaContinueButton": "Συνεχίστε να συνεχίζετε",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "fundExchangeETransferLabelBeneficiaryName": "Χρησιμοποιήστε αυτό ως δικαιούχο όνομα ηλεκτρονικού ταχυδρομείου",
   "@fundExchangeETransferLabelBeneficiaryName": {
     "description": "Label for E-transfer beneficiary name"
@@ -11220,10 +11108,6 @@
   "recoverbullConnecting": "Συνδέοντας",
   "@recoverbullConnecting": {
     "description": "Status label indicating connection in progress"
-  },
-  "dcaConfirmationDescription": "Οι παραγγελίες αγοράς θα τοποθετηθούν αυτόματα ανά αυτές τις ρυθμίσεις. Μπορείτε να τα απενεργοποιήσετε οποιαδήποτε στιγμή.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
   },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
@@ -11303,10 +11187,6 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "dcaNetworkLiquid": "Liquid Network",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
   "googleAppleCloudRecommendationText": "θέλετε να βεβαιωθείτε ότι ποτέ δεν χάνετε την πρόσβαση στο αρχείο σας, ακόμη και αν χάσετε τις συσκευές σας.",
   "@googleAppleCloudRecommendationText": {
     "description": "Text explaining when to use Google/Apple cloud"
@@ -11336,10 +11216,6 @@
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
   },
-  "dcaNetworkBitcoin": "Bitcoin Network",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "passphraseLabel": "Passphrase",
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
@@ -11364,10 +11240,6 @@
   "transactionSwapInfoClaimableSwap": "Η ανταλλαγή θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική αξίωση κάνοντας κλικ στο κουμπί \"Retry Swap Claim\".",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
-  },
-  "dcaOrderTypeValue": "Recuring buy",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
   },
   "fundExchangeCanadaPostStep4": "4. Το ταμείο θα ζητήσει να δει ένα κομμάτι της κυβερνητικής ταυτότητας και να επαληθεύσει ότι το όνομα στο ID σας ταιριάζει με το λογαριασμό Bitcoin της Bull σας",
   "@fundExchangeCanadaPostStep4": {
@@ -11412,10 +11284,6 @@
   "recoverbullConnectionFailed": "Η σύνδεση απέτυχε",
   "@recoverbullConnectionFailed": {
     "description": "Status label indicating connection failure"
-  },
-  "dcaFrequencyValidationError": "Επιλέξτε μια συχνότητα",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
   },
   "arkBoardingExitDelay": "Διοικητική καθυστέρηση εξόδου",
   "@arkBoardingExitDelay": {
@@ -11475,10 +11343,6 @@
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
-  "dcaNetworkLightning": "Δίκτυο Lightning Network",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
   "backupWalletHowToDecideVaultCloudRecommendationText": "θέλετε να βεβαιωθείτε ότι ποτέ δεν χάνετε την πρόσβαση στο αρχείο σας, ακόμη και αν χάσετε τις συσκευές σας.",
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
@@ -11502,23 +11366,6 @@
   "backupWalletGoogleDrivePrivacyMessage4": "ποτέ ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
-  },
-  "dcaPaymentMethodValue": "{currency} ισορροπία",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaScheduleDescription": "Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
-  "dcaConfirmButton": "Συνεχίστε να συνεχίζετε",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "dcaBackToHomeButton": "Επιστροφή στο σπίτι",
   "@dcaBackToHomeButton": {
@@ -11612,10 +11459,6 @@
   "testBackupCreatedAt": "Δημιουργήθηκε στο:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "dcaSetRecurringBuyTitle": "Set Recuring Buy",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
   },
   "psbtFlowSignTransactionOnDevice": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο {device}.",
   "@psbtFlowSignTransactionOnDevice": {
@@ -11851,10 +11694,6 @@
   "@testBackupGoogleDrivePrivacyPart3": {
     "description": "Third part of privacy message"
   },
-  "dcaAmountLabel": "Ποσο Ποσό Ποσο",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
   "quickAndEasyTag": "Γρήγορη και εύκολη",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
@@ -11912,15 +11751,6 @@
   "transactionDetailLabelPayoutAmount": "Ποσό πληρωμής",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
-  },
-  "dcaConfirmationError": "Κάτι πήγε στραβά: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
   "bip85NoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
@@ -12270,10 +12100,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "dcaNetworkLabel": "Network",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
   "createdAtLabel": "Δημιουργήθηκε στο:",
   "@createdAtLabel": {
     "description": "Label for creation date"
@@ -12295,10 +12121,6 @@
       }
     }
   },
-  "dcaLightningAddressLabel": "Lightning διεύθυνση Lightning",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
@@ -12306,10 +12128,6 @@
   "transactionSwapDescLnReceiveClaimable": "Η συναλλαγή on-chain έχει επιβεβαιωθεί. Υποστηρίζουμε τώρα τα κεφάλαια για να ολοκληρώσουμε την ανταλλαγή σας.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
-  },
-  "dcaPaymentMethodLabel": "Μέθοδος πληρωμής",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
   },
   "recoverbullSelectRecoverWallet": "Ανακαλύψτε το Wallet",
   "@recoverbullSelectRecoverWallet": {
@@ -12347,10 +12165,6 @@
   "testBackupPhysicalBackupTitle": "Φυσικό backup",
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
-  },
-  "dcaFrequencyLabel": "Συχνότητα συχνότητας",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "enterBackupKeyManuallyTitle": "Εισάγετε το εφεδρικό κλειδί",
   "@enterBackupKeyManuallyTitle": {
@@ -13277,5 +13091,9 @@
   "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
   "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
   "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "dcaAccountUnavailableError": "Δεν ήταν δυνατή η φόρτωση του λογαριασμού σας. Βεβαιωθείτε ότι έχετε συνδεθεί και δοκιμάστε ξανά.",
+  "dcaLightningAddressRequiredError": "Εισαγάγετε μια διεύθυνση Lightning για να λαμβάνετε τις αγορές σας.",
+  "dcaReceiveAddressError": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης στο πορτοφόλι σας. Δοκιμάστε ξανά.",
+  "dcaOrderCreationError": "Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα."
 }
