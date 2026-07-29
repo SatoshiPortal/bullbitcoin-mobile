@@ -1,9 +1,13 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/core/widgets/success_screen_scaffold.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,78 +17,48 @@ class SellSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final order = context.select(
+    final successState = context.select(
       (SellBloc bloc) => bloc.state is SellSuccessState
-          ? (bloc.state as SellSuccessState).sellOrder
+          ? bloc.state as SellSuccessState
           : null,
     );
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return; // Don't allow back navigation
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.sellTitle),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                context.goNamed(ExchangeRoute.exchangeHome.name);
-              },
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: .center,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 100,
-                  color: context.appColors.success,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  context.loc.sellOrderCompleted,
-                  style: context.font.titleLarge,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  context.loc.sellBalanceWillBeCredited,
-                  style: context.font.bodyMedium,
-                  textAlign: .center,
-                ),
-              ],
-            ),
+    final order = successState?.sellOrder;
+
+    String? amountLine;
+    if (successState != null && order != null) {
+      final formattedPayinAmount = successState.bitcoinUnit == BitcoinUnit.sats
+          ? FormatAmount.sats(ConvertAmount.btcToSats(order.payinAmount))
+          : FormatAmount.btc(order.payinAmount);
+      amountLine = context.loc.sellYouSold(
+        formattedPayinAmount,
+        FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
+      );
+    }
+
+    return SuccessScreenScaffold(
+      title: context.loc.sellTitle,
+      headline: context.loc.sellOrderCompleted,
+      // Same exit as buy: back to the wallet home, including on a back gesture.
+      onClose: () => context.goNamed(WalletRoute.walletHome.name),
+      amountLine: amountLine,
+      message: order != null && order.isBalancePayout
+          ? Text(context.loc.sellBalanceWillBeCredited)
+          : null,
+      actions: [
+        if (order != null)
+          BBButton.big(
+            label: context.loc.sellViewDetailsButton,
+            onPressed: () {
+              context.pushNamed(
+                TransactionsRoute.orderTransactionDetails.name,
+                pathParameters: {'orderId': order.orderId},
+                queryParameters: {'returnToExchange': 'true'},
+              );
+            },
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: .min,
-              children: [
-                if (order != null)
-                  BBButton.big(
-                    label: context.loc.sellViewDetailsButton,
-                    onPressed: () {
-                      context.pushNamed(
-                        TransactionsRoute.orderTransactionDetails.name,
-                        pathParameters: {'orderId': order.orderId},
-                        queryParameters: {'returnToExchange': 'true'},
-                      );
-                    },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      ],
     );
   }
 }

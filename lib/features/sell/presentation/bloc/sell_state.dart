@@ -26,6 +26,9 @@ sealed class SellState with _$SellState {
     required SellOrder sellOrder,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
+    // Txid of the payin transaction once it is on the wire. Acts as a latch:
+    // the send path must never run again for this order (#2522).
+    String? payinBroadcastTxid,
     SellError? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
@@ -208,6 +211,10 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
 }
 
 extension SellPaymentStateX on SellPaymentState {
+  /// The payin transaction is already broadcast, so preparing, signing and
+  /// broadcasting again would risk paying the order twice.
+  bool get isPayinBroadcast => payinBroadcastTxid != null;
+
   SellSuccessState toSuccessState({required SellOrder sellOrder}) {
     return SellSuccessState(bitcoinUnit: bitcoinUnit, sellOrder: sellOrder);
   }
