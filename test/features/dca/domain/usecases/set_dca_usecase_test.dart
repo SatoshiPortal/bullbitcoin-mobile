@@ -146,7 +146,12 @@ void main() {
         network: DcaNetwork.bitcoin,
       );
 
-      expect(failureOf(result), isA<DcaReceiveAddressFailure>());
+      final failure = failureOf(result);
+      expect(failure, isA<DcaReceiveAddressFailure>());
+      // logMessage is logged by consumers too, so the identifier must be
+      // absent from it as well as from the log call.
+      expect(failure.logMessage, isNot(contains(_sentinelWalletId)));
+      expect(failure.logMessage, 'WalletNotFound');
     });
 
     test('maps an exchange rejection to OrderCreationFailure; the raw reason '

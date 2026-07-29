@@ -78,7 +78,7 @@ class SetDcaUsecase {
           error: e.runtimeType,
           trace: st,
         );
-        return Err(DcaReceiveAddressFailure(e.toString()));
+        return Err(DcaReceiveAddressFailure(e.runtimeType.toString()));
       }
     }
 
