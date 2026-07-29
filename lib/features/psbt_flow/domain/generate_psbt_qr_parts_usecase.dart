@@ -46,16 +46,16 @@ class GeneratePsbtQrPartsUsecase {
         trace: st,
       );
       return const Err(PsbtFlowInvalidPsbtFailure());
-    } on bdk.PsbtException catch (e, st) {
+    } on bdk.PsbtParseException catch (e, st) {
       log.warning('PSBT rejected by the parser', error: e, trace: st);
       return const Err(PsbtFlowInvalidPsbtFailure());
     } catch (e, st) {
       log.severe(
-        message: 'Failed to encode PSBT as $qrType QR',
+        message: 'Unexpected failure encoding PSBT as $qrType QR',
         error: e,
         trace: st,
       );
-      return const Err(PsbtFlowQrEncodingFailure());
+      return Err(PsbtFlowUnexpectedFailure(e.toString()));
     }
   }
 }

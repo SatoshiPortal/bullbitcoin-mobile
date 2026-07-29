@@ -29,6 +29,10 @@ class ShowAnimatedQrCubit extends Cubit<ShowAnimatedQrState> {
       fragmentLength: state.fragmentLength,
     );
 
+    // The screen can be popped while the encoder runs (BBQr splits are async
+    // FFI work); emitting on a closed cubit throws a StateError.
+    if (isClosed) return;
+
     switch (result) {
       case Ok(:final value):
         emit(
@@ -41,6 +45,9 @@ class ShowAnimatedQrCubit extends Cubit<ShowAnimatedQrState> {
         );
         if (value.isNotEmpty) _startCycling();
       case Err(:final failure):
+        // Stop a timer from an earlier success cycling stale parts behind
+        // the error screen.
+        _timer?.cancel();
         emit(state.copyWith(isLoading: false, failure: failure));
     }
   }
