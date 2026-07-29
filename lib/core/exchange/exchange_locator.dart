@@ -37,6 +37,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_us
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/cancel_payjoin_receiver_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -369,6 +371,8 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+        receiveWithPayjoinUsecase: locator<ReceiveWithPayjoinUsecase>(),
+        cancelPayjoinReceiverUsecase: locator<CancelPayjoinReceiverUsecase>(),
       ),
     );
 

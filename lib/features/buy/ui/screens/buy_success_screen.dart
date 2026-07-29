@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -13,11 +16,38 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart';
 
-class BuySuccessScreen extends StatelessWidget {
+class BuySuccessScreen extends StatefulWidget {
   const BuySuccessScreen({super.key});
+
+  @override
+  State<BuySuccessScreen> createState() => _BuySuccessScreenState();
+}
+
+class _BuySuccessScreenState extends State<BuySuccessScreen> {
+  Timer? _payjoinRefreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _payjoinRefreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final bloc = context.read<BuyBloc>();
+      final state = bloc.state;
+      if (state.buyOrder?.payjoinOutcome.isOngoing != true) {
+        _payjoinRefreshTimer?.cancel();
+        return;
+      }
+      if (!state.isRefreshingOrder) bloc.add(const BuyEvent.refreshOrder());
+    });
+  }
+
+  @override
+  void dispose() {
+    _payjoinRefreshTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +108,26 @@ class BuySuccessScreen extends StatelessWidget {
                   textAlign: .center,
                 ),
                 const SizedBox(height: 10),
+                // Between the confirmation and the details button: the payout
+                // may still be negotiating a payjoin, and the customer should
+                // learn how it ended without opening the transaction.
+                BullAsyncStatus(
+                  state: switch (buyOrder.payjoinOutcome) {
+                    OrderPayjoinOutcome.none => BullAsyncStatusState.hidden,
+                    OrderPayjoinOutcome.inProgress =>
+                      BullAsyncStatusState.inProgress,
+                    OrderPayjoinOutcome.succeeded =>
+                      BullAsyncStatusState.succeeded,
+                    OrderPayjoinOutcome.plainSend =>
+                      BullAsyncStatusState.fallback,
+                  },
+                  inProgressLabel: context.loc.payjoinInProgress,
+                  succeededLabel: context.loc.payjoinSucceeded,
+                  fallbackLabel: context.loc.payjoinBuyRegularSend,
+                  inProgressColor: context.appColors.secondary,
+                  successColor: context.appColors.success,
+                  textStyle: context.font.bodyMedium,
+                ),
                 if (payoutTime != null)
                   Row(
                     mainAxisAlignment: .center,
@@ -124,10 +174,18 @@ class BuySuccessScreen extends StatelessWidget {
                 BBButton.big(
                   label: context.loc.buyViewDetails,
                   onPressed: () {
-                    context.pushNamed(
-                      TransactionsRoute.orderTransactionDetails.name,
-                      pathParameters: {'orderId': buyOrder.orderId},
-                    );
+                    final txId = buyOrder.payjoin?.txid;
+                    if (txId != null) {
+                      context.pushNamed(
+                        TransactionsRoute.payjoinTransactionDetailsByTxId.name,
+                        pathParameters: {'txId': txId},
+                      );
+                    } else {
+                      context.pushNamed(
+                        TransactionsRoute.orderTransactionDetails.name,
+                        pathParameters: {'orderId': buyOrder.orderId},
+                      );
+                    }
                   },
                   bgColor: context.appColors.secondary,
                   textColor: context.appColors.onSecondary,

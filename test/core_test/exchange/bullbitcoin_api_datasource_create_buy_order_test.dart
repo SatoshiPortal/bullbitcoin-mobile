@@ -38,6 +38,50 @@ void main() {
     datasource = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: dio);
   });
 
+  group('BullbitcoinApiDatasource.createBuyOrder destination', () {
+    test('rejects a missing address and BIP21 URI', () async {
+      await expectLater(
+        datasource.createBuyOrder(
+          apiKey: 'key',
+          fiatCurrency: FiatCurrency.cad,
+          orderAmount: const FiatAmount(5),
+          network: OrderBitcoinNetwork.bitcoin,
+          isOwner: true,
+        ),
+        throwsArgumentError,
+      );
+      verifyNever(
+        () => dio.post<dynamic>(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      );
+    });
+
+    test('rejects an address and BIP21 URI together', () async {
+      await expectLater(
+        datasource.createBuyOrder(
+          apiKey: 'key',
+          fiatCurrency: FiatCurrency.cad,
+          orderAmount: const FiatAmount(5),
+          network: OrderBitcoinNetwork.bitcoin,
+          isOwner: true,
+          address: 'bc1address',
+          bip21URI: 'bitcoin:bc1address?pj=https://payjo.in/session',
+        ),
+        throwsArgumentError,
+      );
+      verifyNever(
+        () => dio.post<dynamic>(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      );
+    });
+  });
+
   Future<OrderModel> createBuyOrder() => datasource.createBuyOrder(
     apiKey: 'key',
     fiatCurrency: FiatCurrency.cad,

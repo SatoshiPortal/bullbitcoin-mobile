@@ -62,7 +62,6 @@ class BuyConfirmScreen extends StatelessWidget {
     final isRefreshingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isRefreshingOrder,
     );
-
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.buyConfirmTitle)),
       body: SafeArea(

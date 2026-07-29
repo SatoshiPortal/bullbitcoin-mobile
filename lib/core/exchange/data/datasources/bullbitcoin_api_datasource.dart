@@ -149,11 +149,12 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     String? address,
     String? bip21URI,
   }) async {
-    assert(
-      (address == null) != (bip21URI == null),
-      'createOrderBuy takes an address or a bip21URI, never both and never '
-      'neither',
-    );
+    if ((address == null) == (bip21URI == null)) {
+      throw ArgumentError(
+        'createOrderBuy takes an address or a bip21URI, never both and never '
+        'neither',
+      );
+    }
     final params = {
       'fiatCurrency': fiatCurrency.code,
       'network': network.value,

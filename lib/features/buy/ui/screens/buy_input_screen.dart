@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
@@ -115,6 +116,12 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
     final showInsufficientBalanceError = context.select(
       (BuyBloc bloc) => bloc.state.showInsufficientBalanceError,
     );
+    final canOfferPayjoin = context.select(
+      (BuyBloc bloc) => bloc.state.canOfferPayjoin,
+    );
+    final isPayjoinEnabled = context.select(
+      (BuyBloc bloc) => bloc.state.isPayjoinEnabled,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -141,6 +148,27 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
               BuyAmountInputFields(focusNode: _amountNode),
               const Gap(16.0),
               const BuyDestinationInputFields(),
+              if (canOfferPayjoin) ...[
+                const Gap(16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        context.loc.payjoinUseToggle,
+                        style: context.font.bodyMedium,
+                      ),
+                    ),
+                    BBSwitch(
+                      value: isPayjoinEnabled,
+                      onChanged: isCreatingOrder
+                          ? null
+                          : (enabled) => context.read<BuyBloc>().add(
+                              BuyEvent.payjoinToggled(enabled),
+                            ),
+                    ),
+                  ],
+                ),
+              ],
               const Spacer(),
               Column(
                 mainAxisSize: .min,

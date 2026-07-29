@@ -1,14 +1,11 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 
-/// Abandons a receiver session the user no longer wants.
+/// Abandons a receiver session that cannot be used anymore.
 ///
-/// The exchange buy flow is the caller that needs this: its BIP21 URI is handed
-/// to the exchange when the order is created, before the confirmation screen
-/// where the payjoin toggle lives, and no endpoint can revise it afterwards.
-/// Turning the toggle off therefore cannot un-send the URI — it abandons our
-/// side of the protocol instead, which makes the exchange fall back to paying
-/// the address inside that URI with a plain transaction.
+/// The exchange buy flow creates its receiver before placing the order because
+/// the BIP21 URI must travel in that request. This removes an orphaned receiver
+/// when placement fails or an unconfirmed order is later abandoned.
 ///
 /// The payment lands either way: an abandoned session that still receives a
 /// request declines it and broadcasts the sender's own original transaction.
