@@ -15095,5 +15095,29 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "payjoinInProgress": "Payjoin in progress",
+  "@payjoinInProgress": {
+    "description": "Shown while a payjoin negotiation is still running, before its outcome is known"
+  },
+  "payjoinSucceeded": "Payjoin succeeded",
+  "@payjoinSucceeded": {
+    "description": "Shown when the payjoin negotiation completed and the payjoin transaction was broadcast"
+  },
+  "payjoinBuyRegularSend": "Bitcoin sent to your wallet via regular send",
+  "@payjoinBuyRegularSend": {
+    "description": "Shown on a buy when the payout did not use payjoin and arrived as a plain transaction"
+  },
+  "payjoinViaPayjoin": "via Payjoin",
+  "@payjoinViaPayjoin": {
+    "description": "Suffix appended to a completed order summary when the payment used payjoin"
+  },
+  "payjoinViaRegularSend": "via regular send",
+  "@payjoinViaRegularSend": {
+    "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
+  },
+  "payjoinUseToggle": "Use payjoin",
+  "@payjoinUseToggle": {
+    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
   }
 }

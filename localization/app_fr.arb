@@ -5293,5 +5293,11 @@
   "receiveAdditionalInformationPlaceholder": "Ajouter un montant ou un message pour l'expéditeur",
   "receiveMessageForSender": "Message pour l'expéditeur",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds."
+  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds.",
+  "payjoinInProgress": "Payjoin en cours",
+  "payjoinSucceeded": "Payjoin réussi",
+  "payjoinBuyRegularSend": "Bitcoin envoyé à votre portefeuille par une transaction ordinaire",
+  "payjoinViaPayjoin": "via Payjoin",
+  "payjoinViaRegularSend": "par une transaction ordinaire",
+  "payjoinUseToggle": "Utiliser Payjoin"
 }
