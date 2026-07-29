@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
@@ -207,15 +209,8 @@ class PaySendPaymentScreen extends StatelessWidget {
                           : context.loc.paySecureBitcoinWallet
                       : ''),
             ),
-            if (wallet != null && !wallet.isLiquid) ...[
-              _DetailRow(
-                title: context.loc.payFeePriority,
-                value: context.loc.payFastest,
-                onTap: () {
-                  debugPrint('Tapped Fee Priority');
-                },
-              ),
-            ],
+            // Liquid payins pay the network minimum, so there is nothing to pick.
+            if (wallet != null && !wallet.isLiquid) const _FeePriorityRow(),
             _DetailRow(
               title: context.loc.payNetworkFees,
               value: context.select((PayBloc bloc) {
@@ -232,10 +227,7 @@ class PaySendPaymentScreen extends StatelessWidget {
             _BottomButtons(
               onContinuePressed: () {
                 context.read<PayBloc>().add(
-                  const PayEvent.sendPaymentConfirmed(
-                    feeSelection: FeeSelection.fastest,
-                    customFee: null,
-                  ),
+                  const PayEvent.sendPaymentConfirmed(),
                 );
               },
             ),
@@ -275,6 +267,69 @@ class PaySendPaymentScreen extends StatelessWidget {
       case RecipientType.sinpeMovilCrc:
         return _formatSinpePhoneNumber(recipient.phoneNumber);
     }
+  }
+}
+
+/// "Fee Priority" row: opens the shared fee modal and shows the committed
+/// selection (#2521). The row goes inert — plain text, no chevron — once the
+/// confirmation starts, since the payin being signed was built at the rate
+/// showing here.
+class _FeePriorityRow extends StatelessWidget {
+  const _FeePriorityRow();
+
+  @override
+  Widget build(BuildContext context) {
+    final (selectedFeeOption, customFee, canEditFees) = context.select((
+      PayBloc bloc,
+    ) {
+      final state = bloc.state;
+      if (state is! PayPaymentState) {
+        return (FeeSelection.fastest, null as NetworkFee?, false);
+      }
+      return (state.selectedFeeOption, state.customFee, state.canEditFees);
+    });
+
+    return _DetailRow(
+      title: context.loc.payFeePriority,
+      value: feeSelectionRowLabel(
+        context,
+        selection: selectedFeeOption,
+        customFee: customFee,
+        fastestLabel: context.loc.payFastest,
+      ),
+      onTap: canEditFees
+          ? () async {
+              final bloc = context.read<PayBloc>();
+              final selected = await BlurredBottomSheet.show<String>(
+                context: context,
+                child: FeeOptionsModal(
+                  viewState: bloc,
+                  actions: bloc,
+                  defaultAbsoluteCustomFee: false,
+                  customFeeColors: FeeModalCustomFeeColors(
+                    tile: context.appColors.surface,
+                    shadow: context.appColors.border,
+                    unselectedIcon: context.appColors.textMuted,
+                  ),
+                ),
+              );
+              if (selected != null) {
+                // A preset tile was tapped; the handler discards any arm left
+                // over from typing in the custom field.
+                bloc.add(
+                  PayEvent.feeOptionSelected(
+                    FeeSelectionName.fromString(selected),
+                  ),
+                );
+              } else {
+                // Dismissed without picking. Typing IS the selection and
+                // dismissing IS the apply, so a typed rate is committed here
+                // (or rolled back when it is below the relay floor).
+                bloc.add(const PayEvent.customFeeFinalized());
+              }
+            }
+          : null,
+    );
   }
 }
 
