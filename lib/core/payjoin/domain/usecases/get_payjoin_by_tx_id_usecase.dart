@@ -14,6 +14,8 @@ class GetPayjoinByTxIdUsecase {
         throw GetPayjoinByTxIdException('Payjoin not found');
       }
       return payjoins.first;
+    } on GetPayjoinByTxIdException {
+      rethrow;
     } catch (e) {
       throw GetPayjoinByTxIdException('$e');
     }

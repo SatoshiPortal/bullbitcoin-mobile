@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_us
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -115,6 +116,7 @@ class TransactionsLocator {
             locator<WatchWalletTransactionByTxIdUsecase>(),
         getSwapUsecase: locator<GetSwapUsecase>(),
         getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
+        getPayjoinByTxIdUsecase: locator<GetPayjoinByTxIdUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),

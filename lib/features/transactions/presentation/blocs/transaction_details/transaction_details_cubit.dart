@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
@@ -34,6 +35,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required this._watchWalletTransactionByTxIdUsecase,
     required this._getSwapUsecase,
     required this._getPayjoinByIdUsecase,
+    required this._getPayjoinByTxIdUsecase,
     required this._getOrderUsecase,
     required this._watchSwapUsecase,
     required this._watchPayjoinUsecase,
@@ -49,6 +51,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   _watchWalletTransactionByTxIdUsecase;
   final GetSwapUsecase _getSwapUsecase;
   final GetPayjoinByIdUsecase _getPayjoinByIdUsecase;
+  final GetPayjoinByTxIdUsecase _getPayjoinByTxIdUsecase;
   final GetOrderUsecase _getOrderUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
@@ -356,6 +359,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     await _loadDetailsByPayjoinId(payjoinId);
 
     _reload ??= () => _loadDetailsByPayjoinId(payjoinId);
+  }
+
+  Future<void> initByPayjoinTxId(String txId) async {
+    try {
+      final payjoin = await _getPayjoinByTxIdUsecase.execute(txId);
+      await initByPayjoinId(payjoin.id);
+    } catch (e) {
+      emit(state.copyWith(err: e));
+    }
   }
 
   Future<void> _loadDetailsByPayjoinId(String payjoinId) async {
