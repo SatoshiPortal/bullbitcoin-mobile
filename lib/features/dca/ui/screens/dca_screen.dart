@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_amount_input_fields.dart';
@@ -59,117 +60,144 @@ class _DcaScreenState extends State<DcaScreen> {
         child: Scaffold(
           appBar: AppBar(title: Text(context.loc.dcaSetupTitle)),
           body: SafeArea(
-            child: BBKeyboardActions(
-              disableScroll: true,
-              focusNodes: [_amountNode],
-              child: Form(
-                key: _formKey,
-                child: ScrollableColumn(
-                  crossAxisAlignment: .start,
-                  children: [
-                    const Gap(24),
-                    // A failed account load previously left this screen with
-                    // no feedback at all; surface the sanitized failure.
-                    if (context.select(
-                          (DcaBloc bloc) => switch (bloc.state) {
-                            DcaInitialState(:final failure) => failure,
-                            _ => null,
-                          },
-                        )
-                        case final failure?) ...[
-                      Text(
-                        failure.toTranslated(context),
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.error,
-                        ),
-                      ),
-                      const Gap(16),
-                    ],
-                    if (!_hasFunds) ...[
-                      const Spacer(),
-                      InfoCard(
-                        title: context.loc.dcaSetupInsufficientBalance,
-                        description:
-                            context.loc.dcaSetupInsufficientBalanceMessage,
-                        bgColor: context.appColors.tertiary.withValues(
-                          alpha: 0.1,
-                        ),
-                        tagColor: context.appColors.onTertiary,
-                      ),
-                      const Gap(16.0),
-                      BBButton.big(
-                        label: context.loc.dcaSetupFundAccount,
-                        onPressed: () {
-                          context.pushReplacementNamed(
-                            FundExchangeRoute.fundExchange.name,
-                          );
-                        },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
-                      ),
-                    ] else ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 48),
-                        child: Text(
-                          context.loc.dcaSetupScheduleMessage,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: .center,
-                        ),
-                      ),
+            child: switch (context.watch<DcaBloc>().state) {
+              DcaInitialState(:final failure) => _DcaInitialContent(
+                failure: failure,
+              ),
+              _ => BBKeyboardActions(
+                disableScroll: true,
+                focusNodes: [_amountNode],
+                child: Form(
+                  key: _formKey,
+                  child: ScrollableColumn(
+                    crossAxisAlignment: .start,
+                    children: [
                       const Gap(24),
-                      DcaAmountInputFields(
-                        amountController: _amountController,
-                        focusNode: _amountNode,
-                        fiatCurrency: _fiatCurrency,
-                        onFiatCurrencyChanged: (fiatCurrency) {
-                          setState(() {
-                            _fiatCurrency = fiatCurrency;
-                          });
-                        },
-                      ),
-                      const Gap(24),
-                      FormField<DcaBuyFrequency>(
-                        initialValue: _frequency,
-                        validator: (val) => val == null
-                            ? context.loc.dcaSetupFrequencyError
-                            : null,
-                        builder: (field) {
-                          return DcaFrequencyRadioList(
-                            selectedFrequency: field.value,
-                            onChanged: (freq) {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              field.reset();
-                              setState(() => _frequency = freq);
-                              field.didChange(freq);
-                            },
-                            errorText: field.errorText,
-                          );
-                        },
-                      ),
-                      const Spacer(),
-                      BBButton.big(
-                        label: context.loc.dcaSetupContinue,
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            context.read<DcaBloc>().add(
-                              DcaEvent.buyInputContinuePressed(
-                                amountInput: _amountController.text,
-                                currency: _fiatCurrency!,
-                                frequency: _frequency!,
-                              ),
+                      if (!_hasFunds) ...[
+                        const Spacer(),
+                        InfoCard(
+                          title: context.loc.dcaSetupInsufficientBalance,
+                          description:
+                              context.loc.dcaSetupInsufficientBalanceMessage,
+                          bgColor: context.appColors.tertiary.withValues(
+                            alpha: 0.1,
+                          ),
+                          tagColor: context.appColors.onTertiary,
+                        ),
+                        const Gap(16.0),
+                        BBButton.big(
+                          label: context.loc.dcaSetupFundAccount,
+                          onPressed: () {
+                            context.pushReplacementNamed(
+                              FundExchangeRoute.fundExchange.name,
                             );
-                          }
-                        },
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
-                      ),
+                          },
+                          bgColor: context.appColors.primary,
+                          textColor: context.appColors.onPrimary,
+                        ),
+                      ] else ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Text(
+                            context.loc.dcaSetupScheduleMessage,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            textAlign: .center,
+                          ),
+                        ),
+                        const Gap(24),
+                        DcaAmountInputFields(
+                          amountController: _amountController,
+                          focusNode: _amountNode,
+                          fiatCurrency: _fiatCurrency,
+                          onFiatCurrencyChanged: (fiatCurrency) {
+                            setState(() {
+                              _fiatCurrency = fiatCurrency;
+                            });
+                          },
+                        ),
+                        const Gap(24),
+                        FormField<DcaBuyFrequency>(
+                          initialValue: _frequency,
+                          validator: (val) => val == null
+                              ? context.loc.dcaSetupFrequencyError
+                              : null,
+                          builder: (field) {
+                            return DcaFrequencyRadioList(
+                              selectedFrequency: field.value,
+                              onChanged: (freq) {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                field.reset();
+                                setState(() => _frequency = freq);
+                                field.didChange(freq);
+                              },
+                              errorText: field.errorText,
+                            );
+                          },
+                        ),
+                        const Spacer(),
+                        BBButton.big(
+                          label: context.loc.dcaSetupContinue,
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<DcaBloc>().add(
+                                DcaEvent.buyInputContinuePressed(
+                                  amountInput: _amountController.text,
+                                  currency: _fiatCurrency!,
+                                  frequency: _frequency!,
+                                ),
+                              );
+                            }
+                          },
+                          bgColor: context.appColors.secondary,
+                          textColor: context.appColors.onSecondary,
+                        ),
+                      ],
+                      const Gap(16.0),
                     ],
-                    const Gap(16.0),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            },
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DcaInitialContent extends StatelessWidget {
+  const _DcaInitialContent({this.failure});
+
+  final DcaFailure? failure;
+
+  @override
+  Widget build(BuildContext context) {
+    if (failure == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              failure!.toTranslated(context),
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.error,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Gap(16),
+            BBButton.big(
+              label: context.loc.retry,
+              onPressed: () =>
+                  context.read<DcaBloc>().add(const DcaEvent.started()),
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
+            ),
+          ],
         ),
       ),
     );

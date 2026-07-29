@@ -28,6 +28,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
   final SetDcaUsecase _setDcaUsecase;
 
   Future<void> _onStarted(DcaStarted event, Emitter<DcaState> emit) async {
+    emit(const DcaState.initial());
     final result = await _startDcaUsecase.execute();
     if (isClosed) return;
 
