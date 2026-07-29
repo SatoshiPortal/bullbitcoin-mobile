@@ -378,17 +378,26 @@ class SpeiCardMxnDetails extends RecipientDetails {
 }
 
 // ── SINPE (CRC/USD)
+//
+// The owner name comes from a Ridivi lookup on the server, which can fail or be
+// empty on older records, so it is nullable by design (#2529). Display sites
+// fall back to the label and then to the account identifier.
+String? _nullIfBlank(String? value) {
+  final trimmed = value?.trim();
+  return trimmed == null || trimmed.isEmpty ? null : trimmed;
+}
+
 @immutable
 class SinpeIbanUsdDetails extends RecipientDetails {
   final String iban;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeIbanUsdDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
     required this.iban,
-    required this.ownerName,
+    this.ownerName,
   });
 
   factory SinpeIbanUsdDetails.create({
@@ -396,13 +405,10 @@ class SinpeIbanUsdDetails extends RecipientDetails {
     bool isDefault = false,
     bool? isOwner,
     required String iban,
-    required String ownerName,
+    String? ownerName,
   }) {
     if (iban.trim().isEmpty) {
       throw ArgumentError('IBAN cannot be empty');
-    }
-    if (ownerName.trim().isEmpty) {
-      throw ArgumentError('Owner name cannot be empty');
     }
 
     return SinpeIbanUsdDetails._(
@@ -410,7 +416,7 @@ class SinpeIbanUsdDetails extends RecipientDetails {
       isDefault: isDefault,
       isOwner: isOwner,
       iban: iban.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: _nullIfBlank(ownerName),
     );
   }
 
@@ -421,14 +427,14 @@ class SinpeIbanUsdDetails extends RecipientDetails {
 @immutable
 class SinpeIbanCrcDetails extends RecipientDetails {
   final String iban;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeIbanCrcDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
     required this.iban,
-    required this.ownerName,
+    this.ownerName,
   });
 
   factory SinpeIbanCrcDetails.create({
@@ -436,13 +442,10 @@ class SinpeIbanCrcDetails extends RecipientDetails {
     bool isDefault = false,
     bool? isOwner,
     required String iban,
-    required String ownerName,
+    String? ownerName,
   }) {
     if (iban.trim().isEmpty) {
       throw ArgumentError('IBAN cannot be empty');
-    }
-    if (ownerName.trim().isEmpty) {
-      throw ArgumentError('Owner name cannot be empty');
     }
 
     return SinpeIbanCrcDetails._(
@@ -450,7 +453,7 @@ class SinpeIbanCrcDetails extends RecipientDetails {
       isDefault: isDefault,
       isOwner: isOwner,
       iban: iban.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: _nullIfBlank(ownerName),
     );
   }
 
@@ -461,14 +464,14 @@ class SinpeIbanCrcDetails extends RecipientDetails {
 @immutable
 class SinpeMovilCrcDetails extends RecipientDetails {
   final String phoneNumber;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeMovilCrcDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
     required this.phoneNumber,
-    required this.ownerName,
+    this.ownerName,
   });
 
   factory SinpeMovilCrcDetails.create({
@@ -476,13 +479,10 @@ class SinpeMovilCrcDetails extends RecipientDetails {
     bool isDefault = false,
     bool? isOwner,
     required String phoneNumber,
-    required String ownerName,
+    String? ownerName,
   }) {
     if (phoneNumber.trim().isEmpty) {
       throw ArgumentError('Phone number cannot be empty');
-    }
-    if (ownerName.trim().isEmpty) {
-      throw ArgumentError('Owner name cannot be empty');
     }
 
     return SinpeMovilCrcDetails._(
@@ -490,7 +490,7 @@ class SinpeMovilCrcDetails extends RecipientDetails {
       isDefault: isDefault,
       isOwner: isOwner,
       phoneNumber: phoneNumber.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: _nullIfBlank(ownerName),
     );
   }
 
