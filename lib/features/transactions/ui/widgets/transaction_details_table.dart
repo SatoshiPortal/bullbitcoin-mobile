@@ -55,7 +55,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
-    final txFee = walletTransaction?.feeSat;
+    final txFee = transaction?.payjoinSenderFeeSat ?? walletTransaction?.feeSat;
     final swapSendNetworkFee = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapSendNetworkFeeSat,
     );

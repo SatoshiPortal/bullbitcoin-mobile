@@ -114,6 +114,20 @@ sealed class Transaction with _$Transaction {
     return gap > 0 ? gap : null;
   }
 
+  /// The sender's own fee share in a Payjoin transaction.
+  ///
+  /// BDK reports the whole transaction fee even though the receiver pays for
+  /// some of the inputs it contributes. Reconstruct the sender's wallet debit
+  /// and remove the negotiated payment amount so the UI never attributes the
+  /// receiver's fee contribution to the sender.
+  int? get payjoinSenderFeeSat {
+    final p = payjoin;
+    final wt = walletTransaction;
+    if (p is! PayjoinSender || wt == null || !wt.isOutgoing) return null;
+    final senderFee = wt.amountSat + wt.feeSat - p.amountSat;
+    return senderFee >= 0 ? senderFee : null;
+  }
+
   bool get isOrder => order != null;
   bool get isBuyOrder => order is BuyOrder;
   bool get isSellOrder => order is SellOrder;
@@ -149,10 +163,11 @@ sealed class Transaction with _$Transaction {
       walletTransaction?.confirmationTime;
 
   int get amountSat =>
+      payjoin?.amountSat ??
       walletTransaction?.amountSat ??
       (swap != null
           ? swap!.amountSat - (swap!.fees?.totalFees(swap!.amountSat) ?? 0)
-          : payjoin?.amountSat ?? 0);
+          : 0);
 
   /// Headline amount for a swap on the transaction-details screen. A recovered
   /// swap shows the net on-chain [amountSat]; otherwise the directional figure
