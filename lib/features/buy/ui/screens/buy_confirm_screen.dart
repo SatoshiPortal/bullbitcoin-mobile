@@ -34,9 +34,12 @@ class BuyConfirmScreen extends StatelessWidget {
     final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(payoutAmountSat)
         : FormatAmount.btc(buyOrder.payoutAmount);
+    // A buy order always carries a rate, but the model no longer guarantees one,
+    // so derive it from the two amounts rather than crash the screen.
     final formattedExchangeRate = FormatAmount.fiat(
-      buyOrder.exchangeRateAmount!,
-      buyOrder.exchangeRateCurrency!,
+      buyOrder.exchangeRateAmount ??
+          (payoutAmountBtc > 0 ? buyOrder.payinAmount / payoutAmountBtc : 0.0),
+      buyOrder.exchangeRateCurrency ?? buyOrder.payinCurrency,
     );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
     final selectedWallet = context.select(
@@ -124,14 +127,15 @@ class BuyConfirmScreen extends StatelessWidget {
                       ),
                     ),
                     const Gap(4),
-                    Countdown(
-                      until: buyOrder.confirmationDeadline,
-                      onTimeout: () {
-                        context.read<BuyBloc>().add(
-                          const BuyEvent.refreshOrder(),
-                        );
-                      },
-                    ),
+                    if (buyOrder.confirmationDeadline case final deadline?)
+                      Countdown(
+                        until: deadline,
+                        onTimeout: () {
+                          context.read<BuyBloc>().add(
+                            const BuyEvent.refreshOrder(),
+                          );
+                        },
+                      ),
                   ],
                 ),
               const Gap(16),

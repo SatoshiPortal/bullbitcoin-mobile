@@ -749,10 +749,12 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
               ];
             } else {
+              // Order types with no dedicated section land here, so this must
+              // report the server-sent name rather than 'Unknown'.
               return [
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order?.orderType.value,
+                  displayValue: order?.orderTypeLabel,
                 ),
               ];
             }

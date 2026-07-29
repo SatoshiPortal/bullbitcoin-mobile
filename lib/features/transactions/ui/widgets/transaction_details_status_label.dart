@@ -44,7 +44,7 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
                       ? context.loc.transactionStatusTransferExpired
                       : context.loc.transactionStatusSwapExpired)
           : isOrder == true && order != null
-          ? order.orderType.value
+          ? order.orderTypeLabel
           : payjoinStatus == PayjoinStatus.completed
           ? context.loc.transactionStatusPayjoinCompleted
           : payjoinStatus == PayjoinStatus.requested

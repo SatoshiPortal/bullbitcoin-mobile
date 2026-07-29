@@ -5,8 +5,8 @@ class OrderModel {
   final String orderType;
   final String? orderSubtype;
   final int orderNumber;
-  final double exchangeRateAmount;
-  final String exchangeRateCurrency;
+  final double? exchangeRateAmount;
+  final String? exchangeRateCurrency;
   final double? indexRateAmount;
   final String? indexRateCurrency;
   final double payinAmount;
@@ -24,7 +24,7 @@ class OrderModel {
   final String payinMethod;
   final String payoutMethod;
   final String triggerType;
-  final String confirmationDeadline;
+  final String? confirmationDeadline;
   final String? bitcoinTransactionId;
   final String? lnUrl;
   final String? lightningVoucherExpiresAt;
@@ -52,8 +52,8 @@ class OrderModel {
     required this.orderType,
     this.orderSubtype,
     required this.orderNumber,
-    required this.exchangeRateAmount,
-    required this.exchangeRateCurrency,
+    this.exchangeRateAmount,
+    this.exchangeRateCurrency,
     this.indexRateAmount,
     this.indexRateCurrency,
     required this.payinAmount,
@@ -71,7 +71,7 @@ class OrderModel {
     required this.payinMethod,
     required this.payoutMethod,
     required this.triggerType,
-    required this.confirmationDeadline,
+    this.confirmationDeadline,
     this.bitcoinTransactionId,
     this.lnUrl,
     this.lightningVoucherExpiresAt,
@@ -101,26 +101,30 @@ class OrderModel {
       orderType: json['orderType'] as String,
       orderSubtype: json['orderSubtype'] as String?,
       orderNumber: json['orderNumber'] as int,
-      exchangeRateAmount: (json['exchangeRateAmount'] as num).toDouble(),
-      exchangeRateCurrency: json['exchangeRateCurrency'] as String,
+      // Nullable per the server contract: reward, funding, refund and
+      // balance-adjustment orders carry no exchange rate and no deadline. The
+      // amounts and the status strings are read defensively for the same
+      // reason — an admin-initiated order has no real pay-in side.
+      exchangeRateAmount: (json['exchangeRateAmount'] as num?)?.toDouble(),
+      exchangeRateCurrency: json['exchangeRateCurrency'] as String?,
       indexRateAmount: (json['indexRateAmount'] as num?)?.toDouble(),
       indexRateCurrency: json['indexRateCurrency'] as String?,
-      payinAmount: (json['payinAmount'] as num).toDouble(),
-      payinCurrency: json['payinCurrency'] as String,
-      payoutAmount: (json['payoutAmount'] as num).toDouble(),
-      payoutCurrency: json['payoutCurrency'] as String,
-      orderStatus: json['orderStatus'] as String,
-      payinStatus: json['payinStatus'] as String,
-      payoutStatus: json['payoutStatus'] as String,
+      payinAmount: (json['payinAmount'] as num?)?.toDouble() ?? 0,
+      payinCurrency: json['payinCurrency'] as String? ?? '',
+      payoutAmount: (json['payoutAmount'] as num?)?.toDouble() ?? 0,
+      payoutCurrency: json['payoutCurrency'] as String? ?? '',
+      orderStatus: json['orderStatus'] as String? ?? '',
+      payinStatus: json['payinStatus'] as String? ?? '',
+      payoutStatus: json['payoutStatus'] as String? ?? '',
       scheduledPayoutTime: json['scheduledPayoutTime'] as String?,
       createdAt: json['createdAt'] as String,
       completedAt: json['completedAt'] as String?,
       message: json['message'] as Map<String, dynamic>?,
       sentAt: json['sentAt'] as String?,
-      payinMethod: json['payinMethod'] as String,
-      payoutMethod: json['payoutMethod'] as String,
+      payinMethod: json['payinMethod'] as String? ?? '',
+      payoutMethod: json['payoutMethod'] as String? ?? '',
       triggerType: json['triggerType'] as String,
-      confirmationDeadline: json['confirmationDeadline'] as String,
+      confirmationDeadline: json['confirmationDeadline'] as String?,
       bitcoinTransactionId: json['bitcoinTransactionId'] as String?,
       lnUrl: json['lnUrl'] as String?,
       lightningVoucherExpiresAt: json['lightningVoucherExpiresAt'] as String?,
@@ -209,7 +213,9 @@ class OrderModel {
     final orderStatusEnum = OrderStatus.fromValue(orderStatus);
     final payinStatusEnum = OrderPayinStatus.fromValue(payinStatus);
     final payoutStatusEnum = OrderPayoutStatus.fromValue(payoutStatus);
-    final confirmationDeadlineDt = DateTime.parse(confirmationDeadline);
+    final confirmationDeadlineDt = confirmationDeadline != null
+        ? DateTime.tryParse(confirmationDeadline!)
+        : null;
     final createdAtDt = DateTime.parse(createdAt);
     final completedAtDt =
         completedAt != null ? DateTime.tryParse(completedAt!) : null;
@@ -529,6 +535,34 @@ class OrderModel {
           beneficiaryName: beneficiaryName,
           beneficiaryLabel: beneficiaryLabel,
           beneficiaryAccountNumber: beneficiaryAccountNumber,
+          paymentDescription: paymentDescription,
+          completedAt: completedAtDt,
+          sentAt: sentAtDt,
+          isTestnet: isTestnet,
+        );
+      case OrderType.sellUsdt:
+      case OrderType.unknown:
+        return Order.generic(
+          orderId: orderId,
+          orderType: orderTypeEnum,
+          orderTypeName: orderType,
+          orderSubtype: orderSubtype,
+          message: orderMsg,
+          orderNumber: orderNumber,
+          payinAmount: payinAmount,
+          payinCurrency: payinCurrency,
+          payoutAmount: payoutAmount,
+          payoutCurrency: payoutCurrency,
+          exchangeRateAmount: exchangeRateAmount,
+          exchangeRateCurrency: exchangeRateCurrency,
+          payinMethod: payinMethodEnum,
+          payoutMethod: payoutMethodEnum,
+          orderStatus: orderStatusEnum,
+          payinStatus: payinStatusEnum,
+          payoutStatus: payoutStatusEnum,
+          confirmationDeadline: confirmationDeadlineDt,
+          createdAt: createdAtDt,
+          scheduledPayoutTime: scheduledPayoutTimeDt,
           paymentDescription: paymentDescription,
           completedAt: completedAtDt,
           sentAt: sentAtDt,

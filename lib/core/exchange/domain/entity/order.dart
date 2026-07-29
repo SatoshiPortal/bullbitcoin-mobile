@@ -18,6 +18,16 @@ enum FiatCurrency {
   final String symbol;
 
   static FiatCurrency fromCode(String code) {
+    final currency = tryFromCode(code);
+    if (currency == null) throw Exception('Unknown FiatCurrency: $code');
+    return currency;
+  }
+
+  // Nullable counterpart of [fromCode], for parsing server payloads where a
+  // currency this build doesn't support must not fail the whole response.
+  // There is deliberately no `unknown` member: [FiatCurrency.values] populates
+  // the user-facing currency pickers.
+  static FiatCurrency? tryFromCode(String code) {
     switch (code.toUpperCase()) {
       case 'USD':
         return FiatCurrency.usd;
@@ -34,7 +44,7 @@ enum FiatCurrency {
       case 'COP':
         return FiatCurrency.cop;
       default:
-        throw Exception('Unknown FiatCurrency: $code');
+        return null;
     }
   }
 }
@@ -42,12 +52,17 @@ enum FiatCurrency {
 enum OrderType {
   buy('Buy Bitcoin'),
   sell('Sell Bitcoin'),
+  sellUsdt('Sell USDT'),
   fiatPayment('Fiat Payment'),
   funding('Funding'),
   withdraw('Withdraw'),
   reward('Reward'),
   refund('Refund'),
-  balanceAdjustment('Balance Adjustment');
+  balanceAdjustment('Balance Adjustment'),
+  // Order types added server-side after this build shipped. The raw string is
+  // carried on [GenericOrder.orderTypeName] instead of here, since an enum
+  // member can't be parameterized — same trade-off as [OrderPaymentMethod].
+  unknown('Unknown');
 
   final String value;
   const OrderType(this.value);
@@ -55,7 +70,7 @@ enum OrderType {
   static OrderType fromValue(String value) {
     return OrderType.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderType: $value'),
+      orElse: () => OrderType.unknown,
     );
   }
 }
@@ -98,12 +113,16 @@ class BitcoinAmount extends OrderAmount {
 
 enum OrderStatus {
   canceled('Canceled'),
+  // The server sends both of these as distinct statuses: `expired` is the
+  // pay-in deadline lapsing, `orderExpired` the order itself expiring.
   expired('Payment deadline expired'),
+  orderExpired('Expired'),
   inProgress('In progress'),
   awaitingConfirmation('Awaiting confirmation'),
   completed('Completed'),
   rejected('Rejected'),
-  failed('Failed');
+  failed('Failed'),
+  unknown('Unknown');
 
   final String value;
   const OrderStatus(this.value);
@@ -111,7 +130,7 @@ enum OrderStatus {
   static OrderStatus fromValue(String value) {
     return OrderStatus.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderStatus: $value'),
+      orElse: () => OrderStatus.unknown,
     );
   }
 }
@@ -123,7 +142,8 @@ enum OrderPayinStatus {
   underReview('Under review'),
   awaitingConfirmation('Awaiting confirmation'),
   completed('Completed'),
-  rejected('Rejected');
+  rejected('Rejected'),
+  unknown('Unknown');
 
   final String value;
   const OrderPayinStatus(this.value);
@@ -131,7 +151,7 @@ enum OrderPayinStatus {
   static OrderPayinStatus fromValue(String value) {
     return OrderPayinStatus.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderPayinStatus: $value'),
+      orElse: () => OrderPayinStatus.unknown,
     );
   }
 }
@@ -142,7 +162,9 @@ enum OrderPayoutStatus {
   scheduled('Scheduled'),
   awaitingClaim('Awaiting claim'),
   completed('Completed'),
-  canceled('Canceled');
+  canceled('Canceled'),
+  failed('Failed'),
+  unknown('Unknown');
 
   final String value;
   const OrderPayoutStatus(this.value);
@@ -150,7 +172,7 @@ enum OrderPayoutStatus {
   static OrderPayoutStatus fromValue(String value) {
     return OrderPayoutStatus.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderPayoutStatus: $value'),
+      orElse: () => OrderPayoutStatus.unknown,
     );
   }
 }
@@ -277,7 +299,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? lightningInvoice,
@@ -318,7 +340,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? lightningInvoice,
@@ -362,7 +384,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? lightningInvoice,
@@ -405,7 +427,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? beneficiaryName,
@@ -438,7 +460,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? beneficiaryName,
@@ -470,7 +492,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? lightningInvoice,
@@ -514,7 +536,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? beneficiaryName,
@@ -546,7 +568,7 @@ sealed class Order with _$Order {
     required OrderStatus orderStatus,
     required OrderPayinStatus payinStatus,
     required OrderPayoutStatus payoutStatus,
-    required DateTime confirmationDeadline,
+    DateTime? confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
     String? lnUrl,
@@ -559,14 +581,58 @@ sealed class Order with _$Order {
     required bool isTestnet,
   }) = BalanceAdjustmentOrder;
 
+  /// Order types that have no dedicated flow in the app: ones we know of but
+  /// don't handle specially ('Sell USDT'), and ones added server-side after this
+  /// build shipped ([OrderType.unknown]). They still render in the transaction
+  /// list — with [orderTypeName], the amount and the status — instead of being
+  /// dropped, which is what an unparseable order used to cost us.
+  const factory Order.generic({
+    required String orderId,
+    required OrderType orderType,
+    required String orderTypeName,
+    String? orderSubtype,
+    required OrderMessage message,
+    required int orderNumber,
+    required double payinAmount,
+    required String payinCurrency,
+    required double payoutAmount,
+    required String payoutCurrency,
+    double? exchangeRateAmount,
+    String? exchangeRateCurrency,
+    required OrderPaymentMethod payinMethod,
+    required OrderPaymentMethod payoutMethod,
+    required OrderStatus orderStatus,
+    required OrderPayinStatus payinStatus,
+    required OrderPayoutStatus payoutStatus,
+    DateTime? confirmationDeadline,
+    required DateTime createdAt,
+    DateTime? scheduledPayoutTime,
+    String? paymentDescription,
+    DateTime? completedAt,
+    DateTime? sentAt,
+    required bool isTestnet,
+  }) = GenericOrder;
+
   bool get isPayinCompleted => payinStatus == OrderPayinStatus.completed;
   bool get isPayoutCompleted => payoutStatus == OrderPayoutStatus.completed;
 
   bool isCompleted() => orderStatus == OrderStatus.completed;
   bool isProcessing() => orderStatus == OrderStatus.inProgress;
   bool isCancelled() => orderStatus == OrderStatus.canceled;
-  bool isExpired() => orderStatus == OrderStatus.expired;
+  bool isExpired() =>
+      orderStatus == OrderStatus.expired ||
+      orderStatus == OrderStatus.orderExpired;
   bool isPending() => orderStatus == OrderStatus.awaitingConfirmation;
+
+  /// Label for the order type. A [GenericOrder] reports the server-sent string,
+  /// so a type this build doesn't know still reads correctly in the UI.
+  String get orderTypeLabel => switch (this) {
+    final GenericOrder order => order.orderTypeName,
+    _ => orderType.value,
+  };
+
+  /// Whether [amountAndCurrencyToDisplay] returns a fiat amount rather than sats.
+  bool get displaysFiatAmount => amountAndCurrencyToDisplay().$2 != 'sats';
 
   (num, String) amountAndCurrencyToDisplay() {
     if (orderType == OrderType.buy) {
@@ -577,7 +643,9 @@ sealed class Order with _$Order {
     }
 
     final (amount, currency) = switch (orderType) {
-      OrderType.reward => (payinAmount, payinCurrency),
+      // Rewards are admin-initiated: there is no real pay-in, so the credit is
+      // only on the payout side.
+      OrderType.reward => (payoutAmount, payoutCurrency),
       OrderType.refund => (payoutAmount, payoutCurrency),
       _ => (payoutAmount, payoutCurrency),
     };
@@ -665,6 +733,9 @@ sealed class Order with _$Order {
       case OrderType.sell:
       case OrderType.withdraw:
       case OrderType.fiatPayment:
+      // Direction isn't known for these, so they stay out of the Receive filter.
+      case OrderType.sellUsdt:
+      case OrderType.unknown:
         return false;
     }
   }
