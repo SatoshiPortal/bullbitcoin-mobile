@@ -1681,7 +1681,7 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "buyYouBought": "Aapne {amount} kharida",
+  "buyYouBought": "Aapne {fiatAmount} mein {amount} kharida",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -9893,6 +9893,9 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
+  "buyConfirmPayoutWallet": "Bhugtaan wallet",
+  "buyPayoutMethodLiquid": "Liquid par L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin chain par BTC",
   "buyConfirmPayoutMethod": "Payout method",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -11567,6 +11570,7 @@
   "@buyOrderNotFoundError": {
     "description": "Error message for order not found during buy"
   },
+  "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
   "buyOrderAlreadyConfirmedError": "Ye buy order pehle se confirm ho chuka hai.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"

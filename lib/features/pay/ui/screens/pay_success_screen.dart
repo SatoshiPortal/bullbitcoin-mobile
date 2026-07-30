@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -55,15 +56,20 @@ class PaySuccessScreen extends StatelessWidget {
                 ),
                 const Gap(20),
                 Text(context.loc.payCompleted, style: context.font.titleLarge),
-                const Gap(10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                  child: Text(
-                    context.loc.payCompletedDescription,
-                    style: context.font.bodyMedium,
-                    textAlign: .center,
+                if (order != null) ...[
+                  const Gap(10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Text(
+                      context.loc.payCompletedDescriptionDetails(
+                        order.payoutAmountToDisplay,
+                        order.recipientToDisplay ?? context.loc.payNotAvailable,
+                      ),
+                      style: context.font.bodyMedium,
+                      textAlign: .center,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -78,11 +84,22 @@ class PaySuccessScreen extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.payViewDetails,
                     onPressed: () {
-                      context.pushNamed(
-                        TransactionsRoute.orderTransactionDetails.name,
-                        pathParameters: {'orderId': order.orderId},
-                        queryParameters: {'returnToExchange': 'true'},
-                      );
+                      final txId = order.payjoin?.txid;
+                      if (txId != null) {
+                        context.pushNamed(
+                          TransactionsRoute
+                              .payjoinTransactionDetailsByTxId
+                              .name,
+                          pathParameters: {'txId': txId},
+                          queryParameters: {'returnToExchange': 'true'},
+                        );
+                      } else {
+                        context.pushNamed(
+                          TransactionsRoute.orderTransactionDetails.name,
+                          pathParameters: {'orderId': order.orderId},
+                          queryParameters: {'returnToExchange': 'true'},
+                        );
+                      }
                     },
                     bgColor: context.appColors.secondary,
                     textColor: context.appColors.onSecondary,

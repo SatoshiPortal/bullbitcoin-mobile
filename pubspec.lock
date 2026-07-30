@@ -118,10 +118,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip21_uri
-      sha256: f6df9f5ac5f53c70871cb23b16864ec4c8493bb74b26ee3cb6f314f8743e1c27
+      sha256: ecf94765830e3859b04be49a9cf02a3a92079b2606a1323171a661e2c225e123
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.2.0"
   bip329_labels:
     dependency: "direct main"
     description:

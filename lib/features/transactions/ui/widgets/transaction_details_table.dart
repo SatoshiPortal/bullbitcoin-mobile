@@ -55,7 +55,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
-    final txFee = walletTransaction?.feeSat;
+    final txFee = transaction?.payjoinSenderFeeSat ?? walletTransaction?.feeSat;
     final swapSendNetworkFee = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapSendNetworkFeeSat,
     );
@@ -359,9 +359,14 @@ class TransactionDetailsTable extends StatelessWidget {
                     label: context.loc.transactionDetailLabelPaymentDescription,
                     displayValue: order.paymentDescription,
                   ),
+                if (order.recipientToDisplay != null)
+                  DetailsTableItem(
+                    label: context.loc.transactionDetailLabelRecipient,
+                    displayValue: order.recipientToDisplay,
+                  ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: order.payoutAmountToDisplay,
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -749,10 +754,12 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
               ];
             } else {
+              // Order types with no dedicated section land here, so this must
+              // report the server-sent name rather than 'Unknown'.
               return [
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order?.orderType.value,
+                  displayValue: order?.orderTypeLabel,
                 ),
               ];
             }

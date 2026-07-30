@@ -5,9 +5,11 @@ import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.d
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/cancel_payjoin_receiver_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/check_payjoin_relay_health_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/disable_payjoin_receivers_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoins_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
@@ -86,6 +88,9 @@ class PayjoinLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<GetPayjoinByTxIdUsecase>(
+      () => GetPayjoinByTxIdUsecase(locator<PayjoinRepository>()),
+    );
     locator.registerFactory<CheckPayjoinRelayHealthUsecase>(
       () => CheckPayjoinRelayHealthUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
@@ -98,6 +103,11 @@ class PayjoinLocator {
     );
     locator.registerFactory<DisablePayjoinReceiversUsecase>(
       () => DisablePayjoinReceiversUsecase(
+        payjoinRepository: locator<PayjoinRepository>(),
+      ),
+    );
+    locator.registerFactory<CancelPayjoinReceiverUsecase>(
+      () => CancelPayjoinReceiverUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
       ),
     );

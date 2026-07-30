@@ -384,7 +384,7 @@
   "buyPayoutMethod": "Méthode de paiement",
   "buyAwaitingConfirmation": "En attente de confirmation ",
   "buyConfirmPurchase": "Confirmer l'achat",
-  "buyYouBought": "Vous avez acheté {amount}",
+  "buyYouBought": "Vous avez acheté {amount} pour {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -3448,6 +3448,9 @@
   "buyConfirmYouPay": "Vous payez",
   "buyConfirmYouReceive": "Vous recevez",
   "buyConfirmBitcoinPrice": "Prix du Bitcoin",
+  "buyConfirmPayoutWallet": "Portefeuille de paiement",
+  "buyPayoutMethodLiquid": "L-BTC sur Liquid",
+  "buyPayoutMethodBitcoin": "BTC sur la chaîne Bitcoin",
   "buyConfirmPayoutMethod": "Méthode de paiement",
   "buyConfirmExternalWallet": "Portefeuille Bitcoin externe",
   "buyConfirmAwaitingConfirmation": "En attente de confirmation ",
@@ -4094,6 +4097,7 @@
   "buyAboveMaxAmountError": "Vous essayez d'acheter au-dessus du montant maximum.",
   "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
   "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
+  "buyUnexpectedError": "Votre ordre n'a pas pu être créé pour le moment. Veuillez réessayer ou contacter le support.",
   "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée.",
   "withdrawUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
   "withdrawBelowMinAmountError": "Vous essayez de retirer en dessous du montant minimum.",
@@ -5289,5 +5293,11 @@
   "receiveAdditionalInformationPlaceholder": "Ajouter un montant ou un message pour l'expéditeur",
   "receiveMessageForSender": "Message pour l'expéditeur",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds."
+  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds.",
+  "payjoinInProgress": "Payjoin en cours",
+  "payjoinSucceeded": "Payjoin réussi",
+  "payjoinBuyRegularSend": "Bitcoin envoyé à votre portefeuille par une transaction ordinaire",
+  "payjoinViaPayjoin": "via Payjoin",
+  "payjoinViaRegularSend": "par une transaction ordinaire",
+  "payjoinUseToggle": "Utiliser Payjoin"
 }

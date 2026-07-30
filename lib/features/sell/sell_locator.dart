@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -17,6 +18,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:get_it/get_it.dart';
@@ -72,6 +75,7 @@ class SellLocator {
             locator<BroadcastBitcoinTransactionUsecase>(),
         broadcastLiquidTransactionUsecase:
             locator<BroadcastLiquidTransactionUsecase>(),
+        sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),
@@ -83,6 +87,9 @@ class SellLocator {
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
+        previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
+        previewBitcoinFeePresetsUsecase:
+            locator<PreviewBitcoinFeePresetsUsecase>(),
       ),
     );
   }

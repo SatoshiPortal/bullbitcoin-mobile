@@ -460,6 +460,9 @@
   "backupWalletGoogleDrivePrivacyMessage3": "deixar seu telefone e é ",
   "backupCompletedDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "sendErrorInsufficientFundsForFees": "Não há fundos suficientes para cobrir o montante e as taxas",
+  "buyConfirmPayoutWallet": "Carteira de pagamento",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na cadeia Bitcoin",
   "buyConfirmPayoutMethod": "Método de pagamento",
   "dcaCancelButton": "Cancelar",
   "durationMinutes": "{minutes}",
@@ -721,6 +724,7 @@
     }
   },
   "mempoolCustomServerUrl": "URL do servidor",
+  "buyUnexpectedError": "Não foi possível criar a sua ordem neste momento. Tente novamente ou contacte o suporte.",
   "buyOrderAlreadyConfirmedError": "Esta ordem de compra já foi confirmada.",
   "fundExchangeArsBankTransferTitle": "Transferência bancária",
   "transactionLabelReceiveAmount": "Receber valor",
@@ -1158,7 +1162,7 @@
   "importWatchOnlyScanQR": "Digitalização QR",
   "walletBalanceUnconfirmedIncoming": "Em progresso",
   "selectAmountTitle": "Selecione o valor",
-  "buyYouBought": "Você comprou {amount}",
+  "buyYouBought": "Você comprou {amount} por {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {

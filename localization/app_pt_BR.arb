@@ -1084,6 +1084,9 @@
   "@transactionLabelStatus": {
     "description": "Label for transaction status"
   },
+  "buyConfirmPayoutWallet": "Carteira de pagamento",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na cadeia Bitcoin",
   "buyConfirmPayoutMethod": "Método de pagamento",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -3112,7 +3115,7 @@
   "@exchangeKycLight": {
     "description": "Light KYC level label"
   },
-  "buyYouBought": "Você comprou {amount}",
+  "buyYouBought": "Você comprou {amount} por {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -12380,6 +12383,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
+  "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
   "buyOrderAlreadyConfirmedError": "Esta ordem de compra já foi confirmada.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"

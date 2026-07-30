@@ -12,18 +12,20 @@ class LabelExchangeOrdersUsecase {
     required this._listAllOrdersUsecase,
   });
 
-  Future<void> execute() async {
+  Future<void> execute({List<Order>? orders}) async {
     try {
-      final hasExchangeLabels = await _hasExistingExchangeSystemLabels();
-      if (hasExchangeLabels) return; // orders likely already labeled
+      final ordersToLabel = orders ?? await _listAllOrdersUsecase.execute();
+      if (ordersToLabel.isEmpty) return;
 
-      final orders = await _listAllOrdersUsecase.execute();
-      if (orders.isEmpty) return; // no orders to label
+      final existingLabels = await _labelsFacade.fetchAll();
+      final existingLabelReferences = {
+        for (final label in existingLabels) (label.label, label.reference),
+      };
 
       log.config('$LabelExchangeOrdersUsecase is labeling exchange orders');
 
       final labels = <NewLabel>[];
-      for (final order in orders) {
+      for (final order in ordersToLabel) {
         try {
           final isBuyOrder = order is BuyOrder;
           final systemLabel = isBuyOrder
@@ -36,7 +38,9 @@ class LabelExchangeOrdersUsecase {
               label: systemLabel,
               origin: null,
             );
-            labels.add(label);
+            if (existingLabelReferences.add((label.label, label.reference))) {
+              labels.add(label);
+            }
           }
 
           if (order.transactionId != null) {
@@ -45,7 +49,9 @@ class LabelExchangeOrdersUsecase {
               label: systemLabel,
               origin: null,
             );
-            labels.add(label);
+            if (existingLabelReferences.add((label.label, label.reference))) {
+              labels.add(label);
+            }
           }
         } catch (e) {
           log.warning('$LabelExchangeOrdersUsecase order ${order.orderId}: $e');
@@ -57,24 +63,10 @@ class LabelExchangeOrdersUsecase {
       }
 
       log.fine(
-        '$LabelExchangeOrdersUsecase labeled ${orders.length} exchange orders',
+        '$LabelExchangeOrdersUsecase stored ${labels.length} exchange labels',
       );
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-    }
-  }
-
-  Future<bool> _hasExistingExchangeSystemLabels() async {
-    try {
-      final allLabels = await _labelsFacade.fetchAll();
-      return allLabels.any(
-        (label) =>
-            LabelSystem.isSystemLabel(label.label) &&
-            LabelSystem.fromLabel(label.label).isExchangeRelated(),
-      );
-    } catch (e) {
-      log.warning('$LabelExchangeOrdersUsecase: $e');
-      return false;
     }
   }
 }

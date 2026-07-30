@@ -1,5 +1,9 @@
 {
   "settingsBtcMapTitle": "რუკა",
+  "buyUnexpectedError": "თქვენი შეკვეთის შექმნა ამჟამად ვერ მოხერხდა. სცადეთ ხელახლა ან დაუკავშირდით მხარდაჭერას.",
+  "buyConfirmPayoutWallet": "გადახდის საფულე",
+  "buyPayoutMethodLiquid": "L-BTC Liquid-ზე",
+  "buyPayoutMethodBitcoin": "BTC Bitcoin-ის ჯაჭვზე",
   "fundExchangeRestrictedTitle": "დაფინანსება მიუწვდომელია",
   "fundExchangeRestrictedMessage": "დაფინანსება მიუწვდომელია თქვენს ანგარიშზე. დამატებითი ინფორმაციისთვის დაუკავშირდით მხარდაჭერას.",
   "recipientsListLoadError": "მიმღებების ჩატვირთვა ვერ მოხერხდა. ხელახლა საცდელად ჩამოწიეთ ქვემოთ.",

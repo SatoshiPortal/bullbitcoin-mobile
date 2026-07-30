@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
@@ -38,6 +39,9 @@ class _MockGetSwapUsecase extends Mock implements GetSwapUsecase {}
 
 class _MockGetPayjoinByIdUsecase extends Mock
     implements GetPayjoinByIdUsecase {}
+
+class _MockGetPayjoinByTxIdUsecase extends Mock
+    implements GetPayjoinByTxIdUsecase {}
 
 class _MockGetOrderUsecase extends Mock implements GetOrderUsecase {}
 
@@ -105,6 +109,7 @@ void main() {
   late _MockGetTransactionsByTxIdUsecase getTransactionsByTxId;
   late _MockGetWalletTransactionUsecase getWalletTransaction;
   late _MockGetPayjoinByIdUsecase getPayjoinById;
+  late _MockGetPayjoinByTxIdUsecase getPayjoinByTxId;
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByTxIdUsecase watchWalletTransactionByTxId;
   late _MockBroadcastOriginalTransactionUsecase broadcastOriginalTransaction;
@@ -116,6 +121,7 @@ void main() {
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxId,
     getSwapUsecase: _MockGetSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
+    getPayjoinByTxIdUsecase: getPayjoinByTxId,
     getOrderUsecase: _MockGetOrderUsecase(),
     watchSwapUsecase: _MockWatchSwapUsecase(),
     watchPayjoinUsecase: watchPayjoin,
@@ -133,6 +139,7 @@ void main() {
     getTransactionsByTxId = _MockGetTransactionsByTxIdUsecase();
     getWalletTransaction = _MockGetWalletTransactionUsecase();
     getPayjoinById = _MockGetPayjoinByIdUsecase();
+    getPayjoinByTxId = _MockGetPayjoinByTxIdUsecase();
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransactionByTxId = _MockWatchWalletTransactionByTxIdUsecase();
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();

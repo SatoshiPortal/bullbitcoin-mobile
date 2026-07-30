@@ -15,11 +15,14 @@ class PlacePayOrderUsecase {
     required this._settingsRepository,
   });
 
+  /// [usePayjoin] behaves as in CreateSellOrderUsecase: a payment is a sell to a
+  /// recipient, and the request is resolved here against the same policy.
   Future<FiatPaymentOrder> execute({
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    bool usePayjoin = false,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -33,6 +36,10 @@ class PlacePayOrderUsecase {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
+        usePayjoin:
+            usePayjoin &&
+            settings.isPayjoinEnabled &&
+            network == OrderBitcoinNetwork.bitcoin,
       );
 
       return order;

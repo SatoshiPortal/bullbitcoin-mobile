@@ -372,6 +372,66 @@ void main() {
       },
     );
 
+    // The buy flow hands its BIP21 URI to the exchange once, at order creation,
+    // and no endpoint can revise it afterwards — so the amount has to be inside
+    // the URI the PDK generates, not appended to it later. The receive flow is
+    // the opposite: the amount is typed after the session exists, so it stays
+    // null here and the URI is composed on the fly.
+    Future<int?> capturePinnedAmount({int? amountSat}) async {
+      final receiver = _receiverModel(
+        hasRequest: false,
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _testSettings(isPayjoinEnabled: true));
+      when(
+        () => pdkDatasource.createReceiver(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          isTestnet: any(named: 'isTestnet'),
+          maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          amountSat: any(named: 'amountSat'),
+        ),
+      ).thenAnswer((_) async => receiver);
+      when(
+        () => localDatasource.storeReceiver(receiver),
+      ).thenAnswer((_) async {});
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await repository.createPayjoinReceiver(
+        walletId: receiver.walletId,
+        address: receiver.address,
+        isTestnet: receiver.isTestnet,
+        maxFeeRateSatPerVb: receiver.maxFeeRateSatPerVb,
+        expireAfterSec: receiver.expireAfterSec,
+        amountSat: amountSat,
+      );
+
+      return verify(
+            () => pdkDatasource.createReceiver(
+              walletId: any(named: 'walletId'),
+              address: any(named: 'address'),
+              isTestnet: any(named: 'isTestnet'),
+              maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+              expireAfterSec: any(named: 'expireAfterSec'),
+              amountSat: captureAny(named: 'amountSat'),
+            ),
+          ).captured.single
+          as int?;
+    }
+
+    test('pins the amount into the URI when the caller knows it', () async {
+      expect(await capturePinnedAmount(amountSat: 50000), 50000);
+    });
+
+    test('leaves the URI amountless when the caller does not', () async {
+      expect(await capturePinnedAmount(), isNull);
+    });
+
     test(
       'removes a receiver when Payjoin is disabled during creation',
       () async {
@@ -675,6 +735,97 @@ void main() {
         expect(emitted.single.status, PayjoinStatus.expired);
       },
     );
+  });
+
+  // The exchange buy flow hands its BIP21 URI over when the order is created,
+  // before the confirmation screen that carries the payjoin toggle, and no
+  // endpoint can revise it. Turning the toggle off therefore cannot un-send the
+  // URI: it abandons our side, and the exchange falls back to paying the address
+  // inside that URI with a plain transaction.
+  group('cancelReceiver (the user opted out of a payjoin)', () {
+    test('drops a session no sender has contacted yet', () async {
+      final idle = _receiverModel(hasRequest: false);
+      when(
+        () => localDatasource.fetchReceiver(idle.id),
+      ).thenAnswer((_) async => idle);
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await repository.cancelReceiver(idle.id);
+
+      verify(() => localDatasource.deleteIdleReceiver(idle.id)).called(1);
+      verify(() => pdkDatasource.stopPolling(idle.id)).called(greaterThan(0));
+      verifyNever(() => pdkDatasource.declineReceiverSession(any()));
+    });
+
+    test(
+      'declines and broadcasts the original when a request already arrived',
+      () async {
+        // The exchange got there first: it has posted its own transaction. The
+        // payment must still land, so it is broadcast as a plain send rather
+        // than left in limbo.
+        final request = _receiverModel(
+          amountSat: 50000,
+          expireAfterSec: 9999999999,
+        );
+        when(
+          () => localDatasource.fetchReceiver(request.id),
+        ).thenAnswer((_) async => request);
+        when(
+          () => pdkDatasource.declineReceiverSession(request),
+        ).thenReturn('["cancelled"]');
+        when(
+          () => serversPort.runWithFallback<void>(
+            network: any(named: 'network'),
+            operation: any(named: 'operation'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        await repository.cancelReceiver(request.id);
+
+        verify(() => pdkDatasource.declineReceiverSession(request)).called(1);
+        verify(() => localDatasource.markAborted(any())).called(1);
+        verifyNever(() => localDatasource.deleteIdleReceiver(any()));
+      },
+    );
+
+    test('leaves an already terminal session untouched', () async {
+      // Whichever path got there first owns the outcome; opting out afterwards
+      // must not resurrect or re-settle it.
+      final aborted = _receiverModel(
+        amountSat: 50000,
+      ).copyWith(isAborted: true);
+      when(
+        () => localDatasource.fetchReceiver(aborted.id),
+      ).thenAnswer((_) async => aborted);
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await repository.cancelReceiver(aborted.id);
+
+      verifyNever(() => pdkDatasource.declineReceiverSession(any()));
+      verifyNever(() => localDatasource.deleteIdleReceiver(any()));
+      verifyNever(() => localDatasource.markAborted(any()));
+    });
+
+    test('is a no-op for an unknown session', () async {
+      when(
+        () => localDatasource.fetchReceiver('gone'),
+      ).thenAnswer((_) async => null);
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await repository.cancelReceiver('gone');
+
+      verifyNever(() => pdkDatasource.declineReceiverSession(any()));
+      verifyNever(() => localDatasource.deleteIdleReceiver(any()));
+    });
   });
 
   group('below-minimum decline', () {

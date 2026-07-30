@@ -1593,6 +1593,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "Peněženka pro výplatu",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na blockchainu Bitcoin",
   "buyConfirmPayoutMethod": "Metoda výplaty",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -2355,6 +2358,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "buyOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -3625,7 +3629,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Koupili jste {amount}",
+  "buyYouBought": "Koupili jste {amount} za {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

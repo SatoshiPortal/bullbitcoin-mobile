@@ -384,7 +384,7 @@
   "buyPayoutMethod": "Método de pago",
   "buyAwaitingConfirmation": "Esperando confirmación ",
   "buyConfirmPurchase": "Confirmar compra",
-  "buyYouBought": "Ha comprado {amount}",
+  "buyYouBought": "Ha comprado {amount} por {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -3462,6 +3462,9 @@
   "buyConfirmYouPay": "Usted paga",
   "buyConfirmYouReceive": "Usted recibe",
   "buyConfirmBitcoinPrice": "Precio de Bitcoin",
+  "buyConfirmPayoutWallet": "Cartera de pago",
+  "buyPayoutMethodLiquid": "L-BTC en Liquid",
+  "buyPayoutMethodBitcoin": "BTC en la cadena de Bitcoin",
   "buyConfirmPayoutMethod": "Método de pago",
   "buyConfirmExternalWallet": "Billetera Bitcoin externo",
   "buyConfirmAwaitingConfirmation": "Esperando confirmación ",
@@ -4108,6 +4111,7 @@
   "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
   "buyInsufficientFundsError": "Fondos insuficientes en su cuenta Bull Bitcoin para completar esta compra.",
   "buyOrderNotFoundError": "No se encontró la orden de compra. Por favor, inténtelo de nuevo.",
+  "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
   "buyOrderAlreadyConfirmedError": "Esta orden de compra ya ha sido confirmada.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",

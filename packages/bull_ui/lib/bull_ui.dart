@@ -121,6 +121,7 @@ export 'src/controls/bull_switch.dart';
 
 // Feedback.
 export 'src/feedback/bull_countdown.dart';
+export 'src/feedback/bull_async_status.dart';
 export 'src/feedback/bull_fading_linear_progress.dart';
 export 'src/feedback/bull_refresh_indicator.dart';
 export 'src/feedback/bull_shimmer.dart';

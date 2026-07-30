@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
 class GetTransactionsUsecase {
@@ -40,8 +40,11 @@ class GetTransactionsUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      // Fetch wallet transactions, payjoins, orders and swaps
-      final (walletTransactions, payjoins, orders, swaps) = await (
+      final orders = await orderRepository.getOrders();
+      await _labelExchangeOrdersUsecase.execute(orders: orders);
+
+      // Labels must exist before wallet transactions are hydrated.
+      final (walletTransactions, payjoins, swaps) = await (
         _walletTransactionRepository.getWalletTransactions(
           walletId: walletId,
           sync: sync,
@@ -51,11 +54,8 @@ class GetTransactionsUsecase {
           walletId: walletId,
           environment: environment,
         ),
-        orderRepository.getOrders(),
         _boltzSwapRepository.getAllSwaps(walletId: walletId),
       ).wait;
-
-      if (orders.isNotEmpty) await _labelExchangeOrdersUsecase.execute();
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions
       //  as they should be linked and form a single Transaction entity.

@@ -8,6 +8,7 @@ WalletTransaction _walletTx({
   required String txId,
   WalletTransactionDirection direction = WalletTransactionDirection.outgoing,
   int amountSat = 50000,
+  int feeSat = 500,
 }) => WalletTransaction(
   walletId: 'w1',
   network: Network.bitcoinMainnet,
@@ -15,7 +16,7 @@ WalletTransaction _walletTx({
   status: WalletTransactionStatus.pending,
   txId: txId,
   amountSat: amountSat,
-  feeSat: 500,
+  feeSat: feeSat,
   vsize: 150,
   inputs: const [],
   outputs: const [],
@@ -26,6 +27,7 @@ Payjoin _senderPayjoin({
   PayjoinStatus status = PayjoinStatus.requested,
   String originalTxId = 'orig-txid',
   String? txId,
+  int amountSat = 50000,
 }) => Payjoin.sender(
   status: status,
   uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
@@ -33,13 +35,69 @@ Payjoin _senderPayjoin({
   walletId: 'w1',
   originalPsbt: 'cHNidP8=',
   originalTxId: originalTxId,
-  amountSat: 50000,
+  amountSat: amountSat,
   createdAt: DateTime(2026),
   expiresAt: DateTime(2026, 1, 1, 0, 5),
   txId: txId,
 );
 
 void main() {
+  group('Transaction Payjoin sender amounts', () {
+    test(
+      'displays the negotiated amount instead of BDK receiver-net amount',
+      () {
+        final transaction = Transaction(
+          walletTransaction: _walletTx(
+            txId: 'payjoin-txid',
+            amountSat: 99705,
+            feeSat: 2381,
+          ),
+          payjoin: _senderPayjoin(
+            status: PayjoinStatus.completed,
+            txId: 'payjoin-txid',
+            amountSat: 100001,
+          ),
+        );
+
+        expect(transaction.amountSat, 100001);
+      },
+    );
+
+    test('attributes only the sender fee share to the sender', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'payjoin-txid',
+          amountSat: 99705,
+          feeSat: 2381,
+        ),
+        payjoin: _senderPayjoin(
+          status: PayjoinStatus.completed,
+          txId: 'payjoin-txid',
+          amountSat: 100001,
+        ),
+      );
+
+      expect(transaction.payjoinSenderFeeSat, 2085);
+    });
+
+    test('keeps the full sender fee for a plain fallback', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'orig-txid',
+          amountSat: 100001,
+          feeSat: 500,
+        ),
+        payjoin: _senderPayjoin(
+          status: PayjoinStatus.aborted,
+          amountSat: 100001,
+        ),
+      );
+
+      expect(transaction.amountSat, 100001);
+      expect(transaction.payjoinSenderFeeSat, 500);
+    });
+  });
+
   group('Transaction.displayPayjoinStatus', () {
     test('is null when the transaction has no payjoin', () {
       expect(const Transaction().displayPayjoinStatus, isNull);
