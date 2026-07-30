@@ -2997,14 +2997,6 @@
   "transactionLabelRecipientAddress": "客户地址",
   "backupWalletVaultProviderGoogleDrive": "谷歌运动",
   "bitboxCubitDeviceNotFound": "没有发现任何BitBox装置。 请把你的装置连接起来,再次尝试.",
-  "autoswapSaveError": "未能挽救环境:{error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "标准退出",
   "swapContinue": "继续",
   "arkSettleButton": "定居者",
@@ -3254,7 +3246,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "未能挽救环境",
   "exchangeAccountInfoVerificationLightVerification": "轻型核查",
   "exchangeFeatureBankTransfers": "•  • 银行转账和付款账单",
   "sellSendPaymentInstantPayments": "经常付款",
@@ -3964,14 +3955,6 @@
   "torSettingsTitle": "三、背景",
   "backupSettingsRevealing": "修订......",
   "payTotal": "共计",
-  "autoswapSaveErrorMessage": "未能挽救环境:{error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "照明地址",
   "addressViewTitle": "地址细节",
   "payCompleted": "支付!",

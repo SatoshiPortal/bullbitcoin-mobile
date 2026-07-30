@@ -1447,18 +1447,9 @@
   "autoswapAlwaysBlockInfoEnabled": "Kun tämä on käytössä, automaattiset swapit, joiden kulut ylittävät asetetun rajan, estetään aina",
   "autoswapAlwaysBlockInfoDisabled": "Kun tämä on pois käytöstä, sinulle tarjotaan mahdollisuus sallia automaattiset swapit, jotka on estetty korkeiden kulujen vuoksi",
   "autoswapSaveButton": "Tallenna",
-  "autoswapSaveErrorMessage": "Asetusten tallennus epäonnistui: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapLoadSettingsError": "Automaattisen swapin asetusten lataus epäonnistui",
   "autoswapUpdateSettingsError": "Automaattisen swapin asetusten päivitys epäonnistui",
   "autoswapSelectWalletError": "Valitse vastaanottajan Bitcoin-lompakko",
-  "autoswapAutoSaveError": "Asetusten tallennus epäonnistui",
   "autoswapMinimumThresholdErrorBtc": "Minimisaldon raja on {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -3457,14 +3448,6 @@
   "autoswapRecipientWalletInfo": "Valitse, mihin Bitcoin-lompakkoon siirretyt varat vastaanotetaan (pakollinen)",
   "autoswapDefaultWalletLabel": "Bitcoin-lompakko",
   "autoswapSave": "Tallenna",
-  "autoswapSaveError": "Asetusten tallennus epäonnistui: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum-palvelinasetukset",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",

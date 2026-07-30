@@ -4352,15 +4352,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "Settings save karne mein dikkat aayi: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap recommend kiya jaata hai",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -4432,10 +4423,6 @@
   "autoswapSelectWalletError": "Kripya ek recipient Bitcoin wallet chuniye",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "Settings save karne mein dikkat aayi",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold {amount} BTC hai",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -10136,15 +10123,6 @@
   "autoswapSave": "Save",
   "@autoswapSave": {
     "description": "Save button label"
-  },
-  "autoswapSaveError": "Settings save karne mein fail: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumTitle": "Electrum Server Settings",
   "@electrumTitle": {

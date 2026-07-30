@@ -8550,15 +8550,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "فشل في توفير الأماكن: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "المسح المعياري",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -12244,10 +12235,6 @@
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "autoswapAutoSaveError": "فشل في إنقاذ البيئات",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
   "@exchangeFeatureBankTransfers": {
     "description": "Feature bullet point describing bank transfer and bill payment features"
@@ -12347,15 +12334,6 @@
     "description": "Validation error shown when amount threshold is below minimum (BTC display)",
     "placeholders": {
       "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "autoswapSaveErrorMessage": "فشل في توفير الأماكن: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
         "type": "String"
       }
     }

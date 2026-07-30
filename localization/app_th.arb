@@ -9100,15 +9100,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "บันทึกการตั้งค่าไม่สำเร็จ: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "การถอนเงินมาตรฐาน",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -9836,10 +9827,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "ตรวจสอบการตั้งค่า",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "การตรวจสอบแสง",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -11855,15 +11842,6 @@
   "payTotal": "ทั้งหมด",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "บันทึกการตั้งค่าไม่สำเร็จ: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "ที่อยู่",
   "@exchangeDcaAddressLabelLightning": {

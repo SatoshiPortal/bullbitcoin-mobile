@@ -9108,15 +9108,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "सेटिंग्स को बचाने में विफल: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "मानक निकासी",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -9844,10 +9835,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "सेटिंग्स को बचाने में विफल",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "हल्का सत्यापन",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -11863,15 +11850,6 @@
   "payTotal": "कुल",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "सेटिंग्स को बचाने में विफल: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "बिजली का पता",
   "@exchangeDcaAddressLabelLightning": {

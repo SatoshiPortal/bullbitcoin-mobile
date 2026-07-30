@@ -2995,14 +2995,6 @@
   "transactionLabelRecipientAddress": "Indirizzo utile",
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "bitboxCubitDeviceNotFound": "Nessun dispositivo BitBox trovato. Si prega di collegare il dispositivo e riprovare.",
-  "autoswapSaveError": "Non salvare le impostazioni: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Ritiro standard",
   "swapContinue": "Continua",
   "arkSettleButton": "Settle",
@@ -3252,7 +3244,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Non riuscita a salvare le impostazioni",
   "exchangeAccountInfoVerificationLightVerification": "Verifica della luce",
   "exchangeFeatureBankTransfers": "• Trasferimenti bancari e bollette di pagamento",
   "sellSendPaymentInstantPayments": "Pagamenti istantiani",
@@ -3965,14 +3956,6 @@
   "torSettingsTitle": "Impostazioni Tor",
   "backupSettingsRevealing": "Rivelazione...",
   "payTotal": "Totale",
-  "autoswapSaveErrorMessage": "Non salvare le impostazioni: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Indirizzo fulmine",
   "addressViewTitle": "Indirizzo dettagli",
   "payCompleted": "Pagamento completato!",

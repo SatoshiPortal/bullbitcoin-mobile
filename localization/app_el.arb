@@ -7552,15 +7552,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "Απέτυχε να σώσει τις ρυθμίσεις: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Πρότυπο απόσυρση",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -8131,10 +8122,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "Αποζημιωμένος για να σώσει τις ρυθμίσεις",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "Επαλήθευση φωτός",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -12277,15 +12264,6 @@
   "arkConfirmedBalance": "Επιβεβαιωμένη ισορροπία",
   "@arkConfirmedBalance": {
     "description": "Label for confirmed balance row"
-  },
-  "autoswapSaveErrorMessage": "Απέτυχε να σώσει τις ρυθμίσεις: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "dcaLightningAddressLabel": "Lightning διεύθυνση Lightning",
   "@dcaLightningAddressLabel": {

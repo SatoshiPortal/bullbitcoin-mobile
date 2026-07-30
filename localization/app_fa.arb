@@ -8811,15 +8811,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "شکست برای ذخیره تنظیمات: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "خروج استاندارد",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -12220,10 +12211,6 @@
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "autoswapAutoSaveError": "شکست برای ذخیره تنظیمات",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "googleAppleCloudRecommendation": "گوگل یا Apple Cloud : ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
@@ -12326,15 +12313,6 @@
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
-  },
-  "autoswapSaveErrorMessage": "شکست برای ذخیره تنظیمات: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "googleDriveSignInMessage": "شما باید به Google Drive وارد شوید",
   "@googleDriveSignInMessage": {

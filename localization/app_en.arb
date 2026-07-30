@@ -5453,15 +5453,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "Failed to save settings: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -5533,10 +5524,6 @@
   "autoswapSelectWalletError": "Please select a recipient Bitcoin wallet",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "Failed to save settings",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold is {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -11618,15 +11605,6 @@
   "autoswapSave": "Save",
   "@autoswapSave": {
     "description": "Save button label"
-  },
-  "autoswapSaveError": "Failed to save settings: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumTitle": "Electrum Server Settings",
   "@electrumTitle": {
