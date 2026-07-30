@@ -11,7 +11,3 @@ final class SettingsStorageFailure extends SettingsFailure {
 final class SettingsConsentFailure extends SettingsFailure {
   const SettingsConsentFailure([super.logMessage]);
 }
-
-final class SettingsPayjoinFailure extends SettingsFailure {
-  const SettingsPayjoinFailure([super.logMessage]);
-}

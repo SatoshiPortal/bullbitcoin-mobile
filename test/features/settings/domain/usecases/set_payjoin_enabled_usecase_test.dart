@@ -67,7 +67,24 @@ void main() {
     verifyNever(() => getDisclaimerShown.execute());
   });
 
-  test('keeps the setting enabled if active receivers cannot stop', () async {
+  test(
+    'does not settle receivers when the disabled setting cannot persist',
+    () async {
+      when(
+        () => settingsRepository.setPayjoinEnabled(false),
+      ).thenThrow(Exception('storage unavailable'));
+
+      final result = await usecase.execute(
+        false,
+        requestConsent: () async => true,
+      );
+
+      expect(result, isA<Err<bool, SettingsFailure>>());
+      verifyNever(() => disablePayjoinReceivers.execute());
+    },
+  );
+
+  test('keeps Payjoin disabled when receiver settlement must retry', () async {
     when(
       () => disablePayjoinReceivers.execute(),
     ).thenThrow(StateError('fallback failed'));
@@ -77,12 +94,8 @@ void main() {
       requestConsent: () async => true,
     );
 
-    expect(result, isA<Err<bool, SettingsFailure>>());
-    expect(
-      (result as Err<bool, SettingsFailure>).failure,
-      isA<SettingsPayjoinFailure>(),
-    );
-    verifyNever(() => settingsRepository.setPayjoinEnabled(false));
+    expect((result as Ok<bool, SettingsFailure>).value, isFalse);
+    verify(() => settingsRepository.setPayjoinEnabled(false)).called(1);
   });
 
   test('enables immediately when consent was previously recorded', () async {

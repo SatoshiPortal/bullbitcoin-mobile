@@ -24,17 +24,22 @@ class SetPayjoinEnabledUsecase {
     required Future<bool> Function() requestConsent,
   }) async {
     if (!enabled) {
+      final persistResult = await _persist(false);
+      if (persistResult case Err(:final failure)) return Err(failure);
+
       try {
         await _disablePayjoinReceiversUsecase.execute();
       } catch (e, stackTrace) {
+        // The user intent is already persisted and remains authoritative.
+        // Unsettled receivers stay in SQLite and are retried at foreground
+        // startup without accepting new requests.
         log.warning(
-          'Failed to stop active Payjoin receivers',
+          'Payjoin disabled; active receiver settlement will be retried',
           error: e,
           trace: stackTrace,
         );
-        return Err(SettingsPayjoinFailure(e.toString()));
       }
-      return _persist(false);
+      return const Ok(false);
     }
 
     final shownResult = await _getPayjoinDisclaimerShownUsecase.execute();

@@ -12,7 +12,7 @@ class LocalPayjoinDatasource {
   Future<void> storeReceiver(PayjoinReceiverModel receiver) async {
     try {
       final row = receiver.toSqlite();
-      await _db.into(_db.payjoinReceivers).insertOnConflictUpdate(row);
+      await _db.into(_db.payjoinReceivers).insert(row);
     } catch (e) {
       throw CreateReceiverException('$e');
     }
@@ -21,11 +21,42 @@ class LocalPayjoinDatasource {
   Future<void> storeSender(PayjoinSenderModel sender) async {
     try {
       final row = sender.toSqlite();
-      await _db.into(_db.payjoinSenders).insertOnConflictUpdate(row);
+      await _db.into(_db.payjoinSenders).insert(row);
     } catch (e) {
       throw CreateSenderException('$e');
     }
   }
+
+  /// Replaces only a sender that expired without a known broadcast outcome.
+  /// Completed and aborted payments remain immutable so retry cannot create a
+  /// second payment for an already-resolved request.
+  Future<bool> replaceExpiredSender(PayjoinSenderModel sender) =>
+      _writeTransition(() {
+        return (_db.update(_db.payjoinSenders)..where(
+              (row) =>
+                  row.uri.equals(sender.id) &
+                  row.isExpired.equals(true) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(
+              PayjoinSendersCompanion(
+                isTestnet: Value(sender.isTestnet),
+                sender: Value(sender.sender),
+                walletId: Value(sender.walletId),
+                originalPsbt: Value(sender.originalPsbt),
+                originalTxId: Value(sender.originalTxId),
+                amountSat: Value(sender.amountSat),
+                createdAt: Value(sender.createdAt),
+                expireAfterSec: Value(sender.expireAfterSec),
+                proposalPsbt: Value(sender.proposalPsbt),
+                txId: Value(sender.txId),
+                isExpired: Value(sender.isExpired),
+                isCompleted: Value(sender.isCompleted),
+                isAborted: Value(sender.isAborted),
+              ),
+            );
+      });
 
   Future<PayjoinReceiverModel?> fetchReceiver(String id) async {
     final receiver = await _db.managers.payjoinReceivers
@@ -47,8 +78,177 @@ class LocalPayjoinDatasource {
     return PayjoinModel.fromSenderTable(sender) as PayjoinSenderModel;
   }
 
-  Future<void> deleteReceiver(String id) async {
-    await _db.managers.payjoinReceivers.filter((f) => f.id(id)).delete();
+  Future<bool> deleteIdleReceiver(String id) => _writeTransition(() {
+    return (_db.delete(_db.payjoinReceivers)..where(
+          (row) =>
+              row.id.equals(id) &
+              row.originalTxBytes.isNull() &
+              row.proposalPsbt.isNull() &
+              row.isCompleted.equals(false) &
+              row.isAborted.equals(false),
+        ))
+        .go();
+  });
+
+  Future<bool> recordReceiverRequest(PayjoinReceiverModel receiver) =>
+      _writeTransition(() {
+        return (_db.update(_db.payjoinReceivers)..where(
+              (row) =>
+                  row.id.equals(receiver.id) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(
+              PayjoinReceiversCompanion(
+                receiver: Value(receiver.receiver),
+                originalTxBytes: Value(receiver.originalTxBytes),
+                originalTxId: Value(receiver.originalTxId),
+                amountSat: Value(receiver.amountSat),
+              ),
+            );
+      });
+
+  Future<bool> recordReceiverProposal(PayjoinReceiverModel receiver) =>
+      _writeTransition(() {
+        return (_db.update(_db.payjoinReceivers)..where(
+              (row) =>
+                  row.id.equals(receiver.id) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(
+              PayjoinReceiversCompanion(
+                receiver: Value(receiver.receiver),
+                proposalPsbt: Value(receiver.proposalPsbt),
+                txId: Value(receiver.txId),
+              ),
+            );
+      });
+
+  Future<bool> recordSenderProposal(PayjoinSenderModel sender) =>
+      _writeTransition(() {
+        return (_db.update(_db.payjoinSenders)..where(
+              (row) =>
+                  row.uri.equals(sender.id) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(
+              PayjoinSendersCompanion(
+                sender: Value(sender.sender),
+                proposalPsbt: Value(sender.proposalPsbt),
+                txId: Value(sender.txId),
+              ),
+            );
+      });
+
+  Future<bool> markCompleted(PayjoinModel payjoin) {
+    if (payjoin is PayjoinReceiverModel) {
+      return _writeTransition(() {
+        return (_db.update(_db.payjoinReceivers)..where(
+              (row) =>
+                  row.id.equals(payjoin.id) & row.isCompleted.equals(false),
+            ))
+            .write(
+              PayjoinReceiversCompanion(
+                txId: payjoin.txId == null
+                    ? const Value.absent()
+                    : Value(payjoin.txId),
+                isExpired: const Value(false),
+                isCompleted: const Value(true),
+                isAborted: const Value(false),
+              ),
+            );
+      });
+    }
+
+    return _writeTransition(() {
+      return (_db.update(_db.payjoinSenders)..where(
+            (row) => row.uri.equals(payjoin.id) & row.isCompleted.equals(false),
+          ))
+          .write(
+            PayjoinSendersCompanion(
+              txId: payjoin.txId == null
+                  ? const Value.absent()
+                  : Value(payjoin.txId),
+              isExpired: const Value(false),
+              isCompleted: const Value(true),
+              isAborted: const Value(false),
+            ),
+          );
+    });
+  }
+
+  Future<bool> markAborted(PayjoinModel payjoin) {
+    if (payjoin is PayjoinReceiverModel) {
+      return _writeTransition(() {
+        return (_db.update(_db.payjoinReceivers)..where(
+              (row) =>
+                  row.id.equals(payjoin.id) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(
+              const PayjoinReceiversCompanion(
+                txId: Value(null),
+                isExpired: Value(false),
+                isAborted: Value(true),
+              ),
+            );
+      });
+    }
+
+    return _writeTransition(() {
+      return (_db.update(_db.payjoinSenders)..where(
+            (row) =>
+                row.uri.equals(payjoin.id) &
+                row.isCompleted.equals(false) &
+                row.isAborted.equals(false),
+          ))
+          .write(
+            const PayjoinSendersCompanion(
+              txId: Value(null),
+              isExpired: Value(false),
+              isAborted: Value(true),
+            ),
+          );
+    });
+  }
+
+  Future<bool> markExpired(PayjoinModel payjoin, {bool clearTxId = false}) {
+    if (payjoin is PayjoinReceiverModel) {
+      return _writeTransition(() {
+        return (_db.update(_db.payjoinReceivers)..where(
+              (row) =>
+                  row.id.equals(payjoin.id) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false) &
+                  row.isExpired.equals(false),
+            ))
+            .write(
+              PayjoinReceiversCompanion(
+                txId: clearTxId ? const Value(null) : const Value.absent(),
+                isExpired: const Value(true),
+              ),
+            );
+      });
+    }
+
+    return _writeTransition(() {
+      return (_db.update(_db.payjoinSenders)..where(
+            (row) =>
+                row.uri.equals(payjoin.id) &
+                row.isCompleted.equals(false) &
+                row.isAborted.equals(false) &
+                row.isExpired.equals(false),
+          ))
+          .write(
+            PayjoinSendersCompanion(
+              txId: clearTxId ? const Value(null) : const Value.absent(),
+              isExpired: const Value(true),
+            ),
+          );
+    });
   }
 
   Future<List<PayjoinModel>> fetchAll({
@@ -143,20 +343,11 @@ class LocalPayjoinDatasource {
     ];
   }
 
-  Future<List<PayjoinReceiverModel>> fetchReceivers({
-    bool onlyOngoing = false,
-  }) async {
-    final receiversTable = _db.managers.payjoinReceivers;
-    List<PayjoinReceiverRow> receivers;
-    if (onlyOngoing) {
-      receivers = await receiversTable
-          .filter((f) => f.isExpired(false))
-          .filter((f) => f.isCompleted(false))
-          .filter((f) => f.isAborted(false))
-          .get();
-    } else {
-      receivers = await receiversTable.get();
-    }
+  /// Every receiver row, terminal ones included: the callers are the disable
+  /// sweep and startup recovery, which both decide what to settle from the
+  /// freshest row under a session lock. Filtered reads go through [fetchAll].
+  Future<List<PayjoinReceiverModel>> fetchReceivers() async {
+    final receivers = await _db.managers.payjoinReceivers.get();
 
     return receivers
         .map(
@@ -166,21 +357,9 @@ class LocalPayjoinDatasource {
         .toList();
   }
 
-  Future<List<PayjoinSenderModel>> fetchSenders({
-    bool onlyOngoing = false,
-  }) async {
-    final sendersTable = _db.managers.payjoinSenders;
-    List<PayjoinSenderRow> senders;
-
-    if (onlyOngoing) {
-      senders = await sendersTable
-          .filter((f) => f.isExpired(false))
-          .filter((f) => f.isCompleted(false))
-          .filter((f) => f.isAborted(false))
-          .get();
-    } else {
-      senders = await sendersTable.get();
-    }
+  /// Every sender row — same rationale as [fetchReceivers].
+  Future<List<PayjoinSenderModel>> fetchSenders() async {
+    final senders = await _db.managers.payjoinSenders.get();
 
     return senders
         .map(
@@ -190,13 +369,9 @@ class LocalPayjoinDatasource {
         .toList();
   }
 
-  Future<void> update(PayjoinModel payjoin) async {
+  Future<bool> _writeTransition(Future<int> Function() write) async {
     try {
-      if (payjoin is PayjoinReceiverModel) {
-        await storeReceiver(payjoin);
-      } else if (payjoin is PayjoinSenderModel) {
-        await storeSender(payjoin);
-      }
+      return await write() == 1;
     } catch (e) {
       throw UpdateException('$e');
     }

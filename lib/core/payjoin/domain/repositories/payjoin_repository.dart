@@ -36,10 +36,8 @@ abstract class PayjoinRepository {
   Future<void> disableReceivers();
 
   /// Resumes polling/watching for every unfinished payjoin session left over
-  /// from a previous app run. A composition-root lifecycle hook: the
-  /// repository is constructed as an eager singleton before every dependency
-  /// it needs (wallet repositories, the labels facade) is registered, so this
-  /// must be called explicitly once every core dependency it needs is
-  /// registered, rather than fired from the constructor — see AppLocator.setup.
+  /// from a previous app run. The foreground composition root calls this
+  /// explicitly after dependency registration; background locators must not
+  /// start protocol work.
   Future<void> resumePayjoinsOnStartup();
 }

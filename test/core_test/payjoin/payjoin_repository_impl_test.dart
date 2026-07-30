@@ -104,6 +104,7 @@ PayjoinSenderModel _senderModel({
   String walletId = 'w1',
   String originalTxId = 'sender-orig-txid',
   String? proposalPsbt,
+  String? txId,
 }) {
   return PayjoinModel.sender(
         uri: uri,
@@ -116,17 +117,21 @@ PayjoinSenderModel _senderModel({
         createdAt: 0,
         expireAfterSec: 300,
         proposalPsbt: proposalPsbt,
+        txId: txId,
       )
       as PayjoinSenderModel;
 }
 
-SettingsEntity _testSettings({int payjoinMinAmountSat = 10000}) =>
-    SettingsEntity(
-      environment: Environment.mainnet,
-      bitcoinUnit: BitcoinUnit.sats,
-      currencyCode: 'USD',
-      payjoinMinAmountSat: payjoinMinAmountSat,
-    );
+SettingsEntity _testSettings({
+  int payjoinMinAmountSat = 10000,
+  bool isPayjoinEnabled = true,
+}) => SettingsEntity(
+  environment: Environment.mainnet,
+  bitcoinUnit: BitcoinUnit.sats,
+  currencyCode: 'USD',
+  isPayjoinEnabled: isPayjoinEnabled,
+  payjoinMinAmountSat: payjoinMinAmountSat,
+);
 
 Wallet _testWallet({String origin = 'w1'}) => Wallet(
   origin: origin,
@@ -177,10 +182,12 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(ElectrumServerNetwork.bitcoinTestnet);
+    registerFallbackValue(BigInt.zero);
     registerFallbackValue(_FakeNewLabel());
     // PayjoinModel is sealed and can't be Fake-implemented from outside its
     // library — register a real (throwaway) instance instead.
     registerFallbackValue(_receiverModel());
+    registerFallbackValue(_senderModel());
     // Fallback for any() matchers against BdkWalletDatasource.signPsbt's
     // `wallet` param in the real-signing-stack tests.
     registerFallbackValue(
@@ -233,12 +240,40 @@ void main() {
     // empty by default, overridden in the sweep tests. Only runs from
     // resumePayjoinsOnStartup, never the constructor.
     when(() => localDatasource.fetchReceivers()).thenAnswer((_) async => []);
-    when(
-      () => localDatasource.fetchReceivers(onlyOngoing: true),
-    ).thenAnswer((_) async => []);
     when(() => localDatasource.fetchSenders()).thenAnswer((_) async => []);
-    when(() => localDatasource.update(any())).thenAnswer((_) async {});
-    when(() => localDatasource.deleteReceiver(any())).thenAnswer((_) async {});
+    when(
+      () => localDatasource.recordReceiverRequest(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.recordReceiverProposal(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.recordSenderProposal(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.markCompleted(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.markAborted(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.markExpired(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.markExpired(
+        any(),
+        clearTxId: any(named: 'clearTxId'),
+      ),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.deleteIdleReceiver(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => localDatasource.replaceExpiredSender(any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _testSettings());
 
     // Passive watchers must never fire spuriously: an empty sync stream and
     // a not-found transaction lookup keep _watchForFallback/_watchForBroadcast
@@ -304,6 +339,198 @@ void main() {
           )
           as PayjoinReceiverModel;
 
+  group('session creation persistence boundaries', () {
+    test(
+      'does not create a receiver while Payjoin is already disabled',
+      () async {
+        when(
+          () => settingsRepository.fetch(),
+        ).thenAnswer((_) async => _testSettings(isPayjoinEnabled: false));
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        await expectLater(
+          repository.createPayjoinReceiver(
+            walletId: 'w1',
+            address: 'tb1qtest',
+            isTestnet: true,
+            maxFeeRateSatPerVb: BigInt.from(10),
+            expireAfterSec: 300,
+          ),
+          throwsStateError,
+        );
+
+        verifyNever(
+          () => pdkDatasource.createReceiver(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            isTestnet: any(named: 'isTestnet'),
+            maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'removes a receiver when Payjoin is disabled during creation',
+      () async {
+        final receiver = _receiverModel(
+          hasRequest: false,
+          expireAfterSec: 9999999999,
+        );
+        var settingsRead = 0;
+        when(() => settingsRepository.fetch()).thenAnswer(
+          (_) async => _testSettings(isPayjoinEnabled: settingsRead++ == 0),
+        );
+        when(
+          () => pdkDatasource.createReceiver(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            isTestnet: any(named: 'isTestnet'),
+            maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer((_) async => receiver);
+        when(
+          () => localDatasource.storeReceiver(receiver),
+        ).thenAnswer((_) async {});
+
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        await expectLater(
+          repository.createPayjoinReceiver(
+            walletId: receiver.walletId,
+            address: receiver.address,
+            isTestnet: receiver.isTestnet,
+            maxFeeRateSatPerVb: receiver.maxFeeRateSatPerVb,
+            expireAfterSec: receiver.expireAfterSec,
+          ),
+          throwsStateError,
+        );
+
+        verify(
+          () => pdkDatasource.stopPolling(receiver.id),
+        ).called(greaterThan(0));
+        verify(() => localDatasource.deleteIdleReceiver(receiver.id)).called(1);
+      },
+    );
+
+    test('stops a sender poll when the initial insert fails', () async {
+      final sender = _senderModel();
+      when(
+        () => localDatasource.fetchSender(sender.id),
+      ).thenAnswer((_) async => null);
+      when(
+        () => pdkDatasource.createSender(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          originalPsbt: any(named: 'originalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer((_) async => sender);
+      when(
+        () => localDatasource.storeSender(sender),
+      ).thenThrow(Exception('disk full'));
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await expectLater(
+        repository.createPayjoinSender(
+          walletId: sender.walletId,
+          isTestnet: sender.isTestnet,
+          bip21: sender.id,
+          originalPsbt: sender.originalPsbt,
+          amountSat: sender.amountSat,
+          networkFeesSatPerVb: 1,
+        ),
+        throwsException,
+      );
+
+      verify(() => pdkDatasource.stopPolling(sender.id)).called(1);
+    });
+
+    test(
+      'rejects a duplicate sender before posting to the directory',
+      () async {
+        final sender = _senderModel();
+        when(
+          () => localDatasource.fetchSender(sender.id),
+        ).thenAnswer((_) async => sender);
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        await expectLater(
+          repository.createPayjoinSender(
+            walletId: sender.walletId,
+            isTestnet: sender.isTestnet,
+            bip21: sender.id,
+            originalPsbt: sender.originalPsbt,
+            amountSat: sender.amountSat,
+            networkFeesSatPerVb: 1,
+          ),
+          throwsStateError,
+        );
+
+        verifyNever(
+          () => pdkDatasource.createSender(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            originalPsbt: any(named: 'originalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'replaces an expired sender so the failed payment can retry',
+      () async {
+        final expired = _senderModel().copyWith(isExpired: true);
+        final retry = _senderModel().copyWith(
+          sender: '["retry"]',
+          createdAt: 1,
+        );
+        when(
+          () => localDatasource.fetchSender(expired.id),
+        ).thenAnswer((_) async => expired);
+        when(
+          () => pdkDatasource.createSender(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            originalPsbt: any(named: 'originalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer((_) async => retry);
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        final result = await repository.createPayjoinSender(
+          walletId: retry.walletId,
+          isTestnet: retry.isTestnet,
+          bip21: retry.id,
+          originalPsbt: retry.originalPsbt,
+          amountSat: retry.amountSat,
+          networkFeesSatPerVb: 1,
+        );
+
+        expect(result.isExpired, isFalse);
+        verify(() => localDatasource.replaceExpiredSender(retry)).called(1);
+        verifyNever(() => localDatasource.storeSender(any()));
+      },
+    );
+  });
+
   group('disabling receivers', () {
     test(
       'stops and deletes an endpoint that no sender has contacted',
@@ -313,7 +540,7 @@ void main() {
           expireAfterSec: 9999999999,
         );
         when(
-          () => localDatasource.fetchReceivers(onlyOngoing: true),
+          () => localDatasource.fetchReceivers(),
         ).thenAnswer((_) async => [receiver]);
         when(
           () => localDatasource.fetchReceiver(receiver.id),
@@ -324,7 +551,7 @@ void main() {
         await repository.disableReceivers();
 
         verify(() => pdkDatasource.stopPolling(receiver.id)).called(1);
-        verify(() => localDatasource.deleteReceiver(receiver.id)).called(1);
+        verify(() => localDatasource.deleteIdleReceiver(receiver.id)).called(1);
         verifyNever(
           () => serversPort.runWithFallback<void>(
             network: any(named: 'network'),
@@ -340,7 +567,7 @@ void main() {
         expireAfterSec: 9999999999,
       );
       when(
-        () => localDatasource.fetchReceivers(onlyOngoing: true),
+        () => localDatasource.fetchReceivers(),
       ).thenAnswer((_) async => [receiver]);
       when(
         () => localDatasource.fetchReceiver(receiver.id),
@@ -350,13 +577,81 @@ void main() {
 
       await repository.disableReceivers();
 
-      verifyNever(() => localDatasource.deleteReceiver(any()));
+      verifyNever(() => localDatasource.deleteIdleReceiver(any()));
       verifyNever(
         () => serversPort.runWithFallback<void>(
           network: any(named: 'network'),
           operation: any(named: 'operation'),
         ),
       );
+    });
+
+    test('attempts every receiver even when one settlement fails', () async {
+      final failing = _receiverModel(id: 'bad', amountSat: 50000);
+      final idle = _receiverModel(
+        id: 'idle',
+        hasRequest: false,
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => localDatasource.fetchReceivers(),
+      ).thenAnswer((_) async => [failing, idle]);
+      when(
+        () => localDatasource.fetchReceiver('bad'),
+      ).thenAnswer((_) async => failing);
+      when(
+        () => localDatasource.fetchReceiver('idle'),
+      ).thenAnswer((_) async => idle);
+      when(
+        () => pdkDatasource.declineReceiverSession(failing),
+      ).thenThrow(Exception('PDK unavailable'));
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await expectLater(repository.disableReceivers(), throwsException);
+
+      verify(() => localDatasource.deleteIdleReceiver('idle')).called(1);
+      verify(() => pdkDatasource.stopPolling('idle')).called(1);
+    });
+
+    test('declines a queued request after Payjoin was disabled', () async {
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _testSettings(isPayjoinEnabled: false));
+      final request = _receiverModel(
+        amountSat: 50000,
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => localDatasource.fetchReceiver(request.id),
+      ).thenAnswer((_) async => request);
+      when(
+        () => pdkDatasource.declineReceiverSession(request),
+      ).thenReturn('["cancelled"]');
+      when(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      requestsController.add(request);
+      await pumpEventQueue();
+
+      verify(() => pdkDatasource.declineReceiverSession(request)).called(1);
+      verifyNever(
+        () => pdkDatasource.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          hasOwnedInputs: any(named: 'hasOwnedInputs'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+        ),
+      );
+      verify(() => localDatasource.markAborted(any())).called(1);
     });
 
     test(
@@ -375,8 +670,8 @@ void main() {
         expiredController.add(receiver.copyWith(isExpired: true));
         await pumpEventQueue();
 
-        verify(() => localDatasource.deleteReceiver(receiver.id)).called(1);
-        verifyNever(() => localDatasource.update(any()));
+        verify(() => localDatasource.deleteIdleReceiver(receiver.id)).called(1);
+        verifyNever(() => localDatasource.markExpired(any()));
         expect(emitted.single.status, PayjoinStatus.expired);
       },
     );
@@ -506,7 +801,7 @@ void main() {
         ),
       ).called(1);
       final updated = verify(
-        () => localDatasource.update(captureAny()),
+        () => localDatasource.markAborted(captureAny()),
       ).captured;
       expect(
         updated.whereType<PayjoinReceiverModel>().any((m) => m.isAborted),
@@ -908,14 +1203,6 @@ void main() {
       expect(result, isNotNull);
       expect(result!.isAborted, isTrue);
     });
-
-    // SKIP: the _broadcastPsbt real-payjoin sync test. The work tree's
-    // _processPayjoinProposal re-derives the label txid via
-    // BitcoinTx.fromPsbt('signed-psbt'), which throws under FFI in a unit
-    // context and routes into the fallback path — the getWallet(sync: true)
-    // call inside _broadcastPsbt is not cleanly isolatable from the fallback
-    // path's own sync. The two fallback-side sync tests above cover the same
-    // _syncWalletAfterBroadcast machinery.
   });
 
   group('_processExpiredPayjoin sender terminal emission (#2246)', () {
@@ -1011,7 +1298,7 @@ void main() {
           operation: any(named: 'operation'),
         ),
       );
-      verifyNever(() => localDatasource.update(any()));
+      verifyNever(() => localDatasource.markExpired(any()));
       expect(emitted, isEmpty);
       await sub.cancel();
     });
@@ -1038,7 +1325,7 @@ void main() {
           operation: any(named: 'operation'),
         ),
       );
-      verifyNever(() => localDatasource.update(any()));
+      verifyNever(() => localDatasource.markExpired(any()));
       expect(emitted, isEmpty);
       await sub.cancel();
     });
@@ -1096,11 +1383,12 @@ void main() {
             operation: any(named: 'operation'),
           ),
         );
-        // The expired marker is persisted on the FRESH row: persisting the
-        // stale copy would clobber the proposal (insertOnConflictUpdate
-        // replaces the whole row).
+        // The expiry transition uses the fresh row and updates only the status
+        // column, so the persisted proposal cannot be clobbered.
         final persisted =
-            verify(() => localDatasource.update(captureAny())).captured.single
+            verify(
+                  () => localDatasource.markExpired(captureAny()),
+                ).captured.single
                 as PayjoinSenderModel;
         expect(persisted.proposalPsbt, 'cHNidP9wcm9wb3NhbA==');
         expect(persisted.isExpired, isTrue);
@@ -1194,6 +1482,72 @@ void main() {
       },
     );
 
+    test('does not broadcast the original after the payjoin broadcast succeeds '
+        'but completion persistence fails', () async {
+      final model = _senderModel(
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        txId: 'payjoin-txid',
+      );
+      when(
+        () => localDatasource.fetchSender(model.id),
+      ).thenAnswer((_) async => model);
+      when(
+        () => localDatasource.markCompleted(any()),
+      ).thenThrow(Exception('database unavailable'));
+      when(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final origin = WalletMetadataService.encodeOrigin(
+        fingerprint: '00000000',
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+      );
+      when(() => walletMetadataDatasource.fetch('w1')).thenAnswer(
+        (_) async => WalletMetadataModel(
+          id: origin,
+          masterFingerprint: '00000000',
+          xpubFingerprint: '00000000',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: false,
+        ),
+      );
+      when(() => seedDatasource.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(mnemonicWords: ['abandon'])
+                as MnemonicSeedModel,
+      );
+      when(
+        () => bdkWalletDatasource.signPsbt(any(), wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async => 'signed-psbt');
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+      addTearDown(sub.cancel);
+
+      proposalsController.add(model);
+      await pumpEventQueue();
+
+      verify(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).called(1);
+      verify(() => walletRepository.getWallet('w1', sync: true)).called(1);
+      expect(emitted.last.isCompleted, isTrue);
+    });
+
     test('bails out when the persisted session already aborted — a proposal '
         'event arriving after the counterparty fell back must not resurrect '
         'the row nor sign/broadcast', () async {
@@ -1225,7 +1579,7 @@ void main() {
           operation: any(named: 'operation'),
         ),
       );
-      verifyNever(() => localDatasource.update(any()));
+      verifyNever(() => localDatasource.recordSenderProposal(any()));
       expect(emitted, isEmpty);
       await sub.cancel();
     });
@@ -1276,6 +1630,76 @@ void main() {
   });
 
   group('resumePayjoinsOnStartup', () {
+    test('serializes overlapping cold-start and app-resume recovery', () async {
+      final firstFetchStarted = Completer<void>();
+      final releaseFirstFetch = Completer<void>();
+      var settingsFetches = 0;
+      when(() => settingsRepository.fetch()).thenAnswer((_) async {
+        settingsFetches++;
+        if (settingsFetches == 1) {
+          firstFetchStarted.complete();
+          await releaseFirstFetch.future;
+        }
+        return _testSettings();
+      });
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      final coldStart = repository.resumePayjoinsOnStartup();
+      await firstFetchStarted.future;
+      final appResume = repository.resumePayjoinsOnStartup();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(settingsFetches, 1);
+      releaseFirstFetch.complete();
+      await Future.wait([coldStart, appResume]);
+      expect(settingsFetches, 2);
+    });
+
+    test(
+      'does not restart an idle receiver when Payjoin is disabled',
+      () async {
+        final receiver = _receiverModel(
+          hasRequest: false,
+          expireAfterSec: 9999999999,
+        );
+        when(
+          () => settingsRepository.fetch(),
+        ).thenAnswer((_) async => _testSettings(isPayjoinEnabled: false));
+        when(
+          () => localDatasource.fetchReceivers(),
+        ).thenAnswer((_) async => [receiver]);
+        when(
+          () => localDatasource.fetchReceiver(receiver.id),
+        ).thenAnswer((_) async => receiver);
+
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        await repository.resumePayjoinsOnStartup();
+
+        verify(() => localDatasource.deleteIdleReceiver(receiver.id)).called(1);
+        verifyNever(() => pdkDatasource.startListeningForRequest(any()));
+      },
+    );
+
+    test('still resumes a sender when Payjoin is disabled', () async {
+      final sender = _senderModel().copyWith(expireAfterSec: 9999999999);
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _testSettings(isPayjoinEnabled: false));
+      when(
+        () => localDatasource.fetchAll(onlyUnfinished: true),
+      ).thenAnswer((_) async => [sender]);
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await repository.resumePayjoinsOnStartup();
+
+      verify(() => pdkDatasource.startListeningForProposal(sender)).called(1);
+    });
+
     test(
       'one session failing to resume does not stop the others from resuming',
       () async {
@@ -1307,15 +1731,15 @@ void main() {
         // "bad"'s persist throws (e.g. a transient DB failure); "ok"'s must
         //  still go through despite "bad" throwing first in the loop.
         when(
-          () => localDatasource.update(
+          () => localDatasource.markExpired(
             any(that: predicate<PayjoinModel>((m) => m.id == 'bad')),
           ),
         ).thenThrow(Exception('boom'));
         when(
-          () => localDatasource.update(
+          () => localDatasource.markExpired(
             any(that: predicate<PayjoinModel>((m) => m.id == 'ok')),
           ),
-        ).thenAnswer((_) async {});
+        ).thenAnswer((_) async => true);
 
         final repository = buildRepository();
         addTearDown(repository.dispose);
@@ -1332,6 +1756,64 @@ void main() {
         await sub.cancel();
       },
     );
+
+    test('an expired sender proposal converges when its payjoin transaction '
+        'is on-chain despite resume recovery reporting failure', () async {
+      final syncController = StreamController<Wallet>.broadcast();
+      addTearDown(syncController.close);
+      when(
+        () => walletRepository.walletSyncFinishedStream,
+      ).thenAnswer((_) => syncController.stream);
+      final sender = _senderModel(
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        txId: 'payjoin-txid',
+      ).copyWith(isExpired: true);
+      when(
+        () => localDatasource.fetchSenders(),
+      ).thenAnswer((_) async => [sender]);
+      when(
+        () => localDatasource.fetchSender(sender.id),
+      ).thenAnswer((_) async => sender);
+      when(
+        () => localDatasource.fetchReceiver(sender.id),
+      ).thenAnswer((_) async => null);
+      when(
+        () => walletMetadataDatasource.fetch(sender.walletId),
+      ).thenAnswer((_) async => null);
+      when(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenThrow(Exception('already known'));
+      when(
+        () => walletTransactionRepository.getWalletTransaction(
+          sender.txId!,
+          walletId: sender.walletId,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            _testWalletTx(txId: sender.txId!, walletId: sender.walletId),
+      );
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+      addTearDown(sub.cancel);
+
+      await repository.resumePayjoinsOnStartup();
+      syncController.add(_testWallet(origin: sender.walletId));
+      await pumpEventQueue();
+
+      expect(emitted.any((payjoin) => payjoin.isCompleted), isTrue);
+      verify(
+        () => localDatasource.markCompleted(
+          any(
+            that: predicate<PayjoinModel>((model) => model.txId == sender.txId),
+          ),
+        ),
+      ).called(1);
+    });
   });
 
   group('_watchForBroadcast active polling', () {
@@ -1421,6 +1903,42 @@ void main() {
             sync: true,
           ),
         );
+      });
+    });
+
+    test('keeps polling when the transaction is visible but the completion '
+        'write fails transiently', () {
+      fakeAsync((async) {
+        when(
+          () => walletTransactionRepository.getWalletTransaction(
+            'payjoin-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).thenAnswer(
+          (_) async => _testWalletTx(txId: 'payjoin-txid', walletId: 'w1'),
+        );
+        var writes = 0;
+        when(() => localDatasource.markCompleted(any())).thenAnswer((_) async {
+          writes++;
+          if (writes == 1) throw Exception('database busy');
+          return true;
+        });
+
+        final repo = buildRepository();
+        unawaited(repo.resumePayjoinsOnStartup());
+        async.flushMicrotasks();
+        final emitted = <Payjoin>[];
+        repo.payjoinStream.listen(emitted.add);
+
+        async.elapse(PayjoinRepositoryImpl.broadcastPollInitialDelay);
+        async.flushMicrotasks();
+        expect(emitted, isEmpty);
+
+        async.elapse(PayjoinRepositoryImpl.broadcastPollInitialDelay * 2);
+        async.flushMicrotasks();
+        expect(writes, 2);
+        expect(emitted.single.isCompleted, isTrue);
       });
     });
 
@@ -1533,10 +2051,11 @@ void main() {
         when(
           () => localDatasource.fetchReceiver('pj1'),
         ).thenAnswer((_) async => row);
-        when(() => localDatasource.update(any())).thenAnswer((
+        when(() => localDatasource.markAborted(any())).thenAnswer((
           invocation,
         ) async {
           row = invocation.positionalArguments.single as PayjoinReceiverModel;
+          return true;
         });
 
         final repo = buildRepository();
@@ -1742,19 +2261,32 @@ void main() {
       when(
         () => localDatasource.fetchReceiver(requestModel.id),
       ).thenAnswer((_) async => persistedModel);
-      when(() => localDatasource.update(any())).thenAnswer((invocation) async {
-        final model = invocation.positionalArguments.single as PayjoinModel;
-        if (model case final PayjoinReceiverModel receiver
-            when receiver.id == requestModel.id) {
-          persistedModel = receiver;
-          persistedUpdates.add(receiver);
-          if (receiver.proposalPsbt != null && !receiver.isAborted) {
-            if (!proposalPersisted.isCompleted) proposalPersisted.complete();
-          }
-          if (receiver.isAborted && !fallbackPersisted.isCompleted) {
-            fallbackPersisted.complete();
-          }
-        }
+      when(() => localDatasource.recordReceiverRequest(any())).thenAnswer((
+        invocation,
+      ) async {
+        persistedModel =
+            invocation.positionalArguments.single as PayjoinReceiverModel;
+        return true;
+      });
+      when(() => localDatasource.recordReceiverProposal(any())).thenAnswer((
+        invocation,
+      ) async {
+        final receiver =
+            invocation.positionalArguments.single as PayjoinReceiverModel;
+        persistedModel = receiver;
+        persistedUpdates.add(receiver);
+        if (!proposalPersisted.isCompleted) proposalPersisted.complete();
+        return true;
+      });
+      when(() => localDatasource.markAborted(any())).thenAnswer((
+        invocation,
+      ) async {
+        final receiver =
+            invocation.positionalArguments.single as PayjoinReceiverModel;
+        persistedModel = receiver;
+        persistedUpdates.add(receiver);
+        if (!fallbackPersisted.isCompleted) fallbackPersisted.complete();
+        return true;
       });
 
       final proposalStarted = Completer<void>();
@@ -1859,7 +2391,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(emitted, isEmpty);
-      verifyNever(() => localDatasource.update(any()));
+      verifyNever(() => localDatasource.markAborted(any()));
       await sub.cancel();
     });
 
@@ -1886,12 +2418,18 @@ void main() {
       when(
         () => localDatasource.fetchReceiver('pj1'),
       ).thenAnswer((_) async => model);
+      var broadcastAttempts = 0;
+      final fallbackAttemptsFinished = Completer<void>();
       when(
         () => serversPort.runWithFallback<void>(
           network: any(named: 'network'),
           operation: any(named: 'operation'),
         ),
-      ).thenThrow(Exception('no network'));
+      ).thenAnswer((_) async {
+        broadcastAttempts++;
+        if (broadcastAttempts == 3) fallbackAttemptsFinished.complete();
+        throw Exception('no network');
+      });
       when(
         () => walletTransactionRepository.getWalletTransaction(
           'orig-txid',
@@ -1903,7 +2441,8 @@ void main() {
       final sub = repo.payjoinStream.listen(emitted.add);
 
       requestsController.add(model);
-      await Future<void>.delayed(Duration.zero);
+      await fallbackAttemptsFinished.future;
+      await pumpEventQueue();
 
       // Own attempt failed: _processPayjoinRequest's below-minimum branch
       // only emits on success, so just the initial "requested" event is on
@@ -1924,7 +2463,7 @@ void main() {
         (_) async => _testWalletTx(txId: 'orig-txid', walletId: 'w1'),
       );
       syncController.add(_testWallet(origin: 'w1'));
-      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
 
       expect(emitted, hasLength(2));
       expect(emitted.last.status, PayjoinStatus.aborted);
@@ -2114,9 +2653,9 @@ void main() {
       ).thenAnswer((_) async => Ok<Label, LabelFailure>(_MockLabel()));
     });
 
-    test('_processPayjoinRequest arms _watchForBroadcast after a successful '
-        'propose — the receiver session completes once the sender broadcasts '
-        'the payjoin transaction', () {
+    test('_processPayjoinRequest never falls back after a proposal was posted, '
+        'even if proposal persistence fails; the broadcast watcher still '
+        'completes the receiver', () {
       fakeAsync((async) {
         // A request AT the minimum, so _processPayjoinRequest takes the
         // propose path (not the below-minimum decline).
@@ -2218,6 +2757,9 @@ void main() {
             txId: 'payjoin-txid',
           ),
         );
+        when(
+          () => localDatasource.recordReceiverProposal(any()),
+        ).thenThrow(Exception('database unavailable'));
 
         var txSeen = false;
         when(
@@ -2231,13 +2773,11 @@ void main() {
               ? _testWalletTx(txId: 'payjoin-txid', walletId: 'w1')
               : null,
         );
-        // The completion handler re-fetches the receiver row.
-        when(() => localDatasource.fetchReceiver('pj1')).thenAnswer(
-          (_) async => requestModel.copyWith(
-            proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-            txId: 'payjoin-txid',
-          ),
-        );
+        // Persistence failed, so the completion handler sees the pre-proposal
+        // row and must recover the observed txid through markCompleted.
+        when(
+          () => localDatasource.fetchReceiver('pj1'),
+        ).thenAnswer((_) async => requestModel);
 
         final repo = buildRepository();
         final emitted = <Payjoin>[];
@@ -2259,6 +2799,12 @@ void main() {
           reason:
               'the armed _watchForBroadcast should complete the session '
               'once the payjoin txid becomes visible via a forced sync',
+        );
+        verifyNever(
+          () => serversPort.runWithFallback<void>(
+            network: any(named: 'network'),
+            operation: any(named: 'operation'),
+          ),
         );
       });
     });
@@ -2364,7 +2910,7 @@ void main() {
 
         // The expired marker was persisted...
         verify(
-          () => localDatasource.update(
+          () => localDatasource.markExpired(
             any(that: predicate<PayjoinModel>((m) => m.isExpired)),
           ),
         ).called(greaterThanOrEqualTo(1));

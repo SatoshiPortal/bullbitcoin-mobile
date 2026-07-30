@@ -4,6 +4,7 @@ import 'dart:io' show Platform;
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -38,6 +39,7 @@ Future<void> main({bool isInitialized = false}) async {
   final utxoRepository = locator<WalletUtxoRepository>();
   final payjoinRepository = locator<PayjoinRepository>();
   final localPayjoinDatasource = locator<LocalPayjoinDatasource>();
+  final pdkPayjoinDatasource = locator<PdkPayjoinDatasource>();
   final receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
   final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
   final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
@@ -112,9 +114,9 @@ Future<void> main({bool isInitialized = false}) async {
     // Drain any persisted payjoin state so the test starts clean. Ongoing
     // payjoins left behind by a previous (possibly crashed) run keep their
     // inputs frozen via getUtxosFrozenByOngoingPayjoins(), which would starve
-    // the sender wallet. _resumePayjoins in PayjoinRepositoryImpl's
-    // constructor runs unawaited and writes its own updates concurrently, so
-    // we expire + recheck until the ongoing set stays empty for several polls.
+    // the sender wallet. Foreground recovery starts unawaited in Bull.init, so
+    // stop each recovered poll before expiring its row and require the ongoing
+    // set to remain empty for several checks.
     const pollInterval = Duration(milliseconds: 500);
     const requiredStableChecks = 3;
     const maxIterations = 40;
@@ -129,7 +131,8 @@ Future<void> main({bool isInitialized = false}) async {
       } else {
         stableChecks = 0;
         for (final payjoin in ongoing) {
-          await localPayjoinDatasource.update(
+          pdkPayjoinDatasource.stopPolling(payjoin.id);
+          await localPayjoinDatasource.markExpired(
             payjoin.copyWith(isExpired: true),
           );
         }
@@ -309,11 +312,23 @@ Future<void> main({bool isInitialized = false}) async {
         timeout: const Timeout(Duration(seconds: 120)),
       );
 
-      test('should successfully resume after a restart', () {});
+      test(
+        'should successfully resume after a restart',
+        () {},
+        skip: 'Requires an integration harness that restarts the app and DB',
+      );
 
-      test('should fail if the receiver does not have enough funds', () {});
+      test(
+        'should fail if the receiver does not have enough funds',
+        () {},
+        skip: 'Requires a funded sender and an underfunded receiver fixture',
+      );
 
-      test('should fail if the sender does not have enough funds', () {});
+      test(
+        'should fail if the sender does not have enough funds',
+        () {},
+        skip: 'Requires an underfunded sender fixture',
+      );
 
       test('should expire if time to wait for a request is over', () async {
         // Make the payjoin receiver expire before it polls the
