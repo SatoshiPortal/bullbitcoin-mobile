@@ -60,6 +60,25 @@ void main() {
       verifyNever(() => saveCore.execute(any()));
     });
 
+    test(
+      'writes disabled settings even when their thresholds are invalid',
+      () async {
+        when(() => saveCore.execute(any())).thenAnswer((_) async {});
+        final disabled = _settings.copyWith(
+          enabled: false,
+          recipientWalletId: null,
+          balanceThresholdSats: 1,
+          triggerBalanceSats: 1,
+          feeThresholdPercent: 99,
+        );
+
+        final result = await usecase.execute(disabled);
+
+        expect(result, isA<Ok<void, AutoswapFailure>>());
+        verify(() => saveCore.execute(disabled)).called(1);
+      },
+    );
+
     test('maps each violation to its failure', () async {
       expect(
         failureOf(

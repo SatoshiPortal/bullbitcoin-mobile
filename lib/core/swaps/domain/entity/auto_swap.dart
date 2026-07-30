@@ -59,8 +59,10 @@ sealed class AutoSwap with _$AutoSwap {
   /// persisted and deserialized, so a row written by an older version must
   /// still load even if it would no longer be accepted.
   AutoSwapSettingsViolation? get violation {
-    // Only required while enabled: switching auto swap off needs no recipient.
-    if (enabled && recipientWalletId == null) {
+    // Disabled settings are inert. Re-enabling validates the complete form.
+    if (!enabled) return null;
+
+    if (recipientWalletId == null) {
       return AutoSwapSettingsViolation.recipientWalletMissing;
     }
     if (isBalanceThresholdTooLow(balanceThresholdSats)) {

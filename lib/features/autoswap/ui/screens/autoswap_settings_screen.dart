@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -65,6 +66,14 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
                             children: [
                               const Gap(16),
                               _EnabledToggle(),
+                              if (state.failure case final failure?) ...[
+                                const Gap(16),
+                                InfoCard(
+                                  description: failure.toTranslated(context),
+                                  tagColor: context.appColors.error,
+                                  bgColor: context.appColors.errorContainer,
+                                ),
+                              ],
                               if (enabled) ...[
                                 const Gap(16),
                                 _AmountThresholdField(focusNode: _amountNode),

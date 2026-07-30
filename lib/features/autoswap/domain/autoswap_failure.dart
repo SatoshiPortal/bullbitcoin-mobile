@@ -45,9 +45,3 @@ final class AutoswapFeeThresholdTooHighFailure extends AutoswapFailure {
 
   const AutoswapFeeThresholdTooHighFailure(this.maximumPercent);
 }
-
-/// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI — the
-/// presentation extension returns the shared generic string.
-final class AutoswapUnexpectedFailure extends AutoswapFailure {
-  const AutoswapUnexpectedFailure([super.logMessage]);
-}

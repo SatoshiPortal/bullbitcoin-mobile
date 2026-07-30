@@ -30,6 +30,18 @@ void main() {
       );
     });
 
+    test('accepts invalid thresholds while disabled', () {
+      final disabled = _valid.copyWith(
+        enabled: false,
+        recipientWalletId: null,
+        balanceThresholdSats: 1,
+        triggerBalanceSats: 1,
+        feeThresholdPercent: 99,
+      );
+
+      expect(disabled.violation, isNull);
+    });
+
     test('rejects a target balance below the minimum', () {
       expect(
         _valid.copyWith(balanceThresholdSats: 49999).violation,
