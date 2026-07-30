@@ -948,7 +948,6 @@
   "receiveLightningInvoice": "Hóa đơn Lightning",
   "receiveLiquidRiskDisclosureLabel": "Khoản thanh toán sẽ được chuyển đổi sang Liquid L-BTC (không phải BTC). Tìm hiểu thêm.",
   "receiveAddress": "Địa chỉ nhận",
-  "receiveAmount": "Số tiền (tùy chọn)",
   "receiveNoteLabel": "Ghi chú",
   "receiveEnterHere": "Nhập tại đây...",
   "receiveSwapID": "Mã swap",
@@ -972,7 +971,6 @@
   "receiveCopyAddressOnly": "Chỉ sao chép hoặc quét địa chỉ",
   "receiveError": "Lỗi: {error}",
   "receiveFeeExplanation": "Khoản phí này sẽ được trừ từ số tiền được gửi",
-  "receiveNotePlaceholder": "Ghi chú",
   "receiveReceiveAmount": "Số tiền nhận được",
   "receiveSendNetworkFee": "Phí mạng gửi",
   "receiveServerNetworkFees": "Phí mạng của máy chủ",
@@ -3741,5 +3739,14 @@
   "transactionStatusPayjoinAborted": "Payjoin đã bị hủy",
   "transactionDetailLabelPayjoinAborted": "Đã hủy",
   "transactionDetailLabelPayjoinFeeContribution": "Khoản phí đóng góp Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin thêm một trong các đồng coin của bạn làm đầu vào bổ sung cho khoản thanh toán để cải thiện quyền riêng tư. Phí khai thác cho đầu vào bổ sung đó sẽ được trừ vào số tiền bạn nhận được (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin thêm một trong các đồng coin của bạn làm đầu vào bổ sung cho khoản thanh toán để cải thiện quyền riêng tư. Phí khai thác cho đầu vào bổ sung đó sẽ được trừ vào số tiền bạn nhận được (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Lưu ý về Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Lưu ý về Payjoin",
+  "settingsPayjoinAdvancedTitle": "Cài đặt Payjoin nâng cao",
+  "receiveAdditionalInformation": "Thông tin bổ sung",
+  "receiveAdditionalInformationPlaceholder": "Thêm số tiền hoặc lời nhắn cho người gửi",
+  "receiveMessageForSender": "Lời nhắn cho người gửi",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin đã được bật, nhưng ví này chưa có số dư để đóng góp. Tính năng sẽ hoạt động khi bạn nhận được tiền.",
+  "announcementAutoswapDescription": "Liquid của bạn được tự động đổi sang Bitcoin."
 }

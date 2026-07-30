@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -32,6 +34,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
     this.suggestionsFuture,
     this.hint,
     this.disclosure,
+    this.allowEmpty = false,
   });
 
   final String title;
@@ -42,6 +45,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
   /// Privacy notice rendered under the title when non-null.
   /// Set by [LabelEntryBottomSheet.note]; null for [LabelEntryBottomSheet.label].
   final String? disclosure;
+  final bool allowEmpty;
 
   /// Open the sheet for a counterparty-visible note. The disclosure copy is
   /// resolved from `context.loc.noteVisibleToSenderNotice`.
@@ -59,6 +63,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
       suggestionsFuture: suggestionsFuture,
       hint: hint,
       disclosure: context.loc.noteVisibleToSenderNotice,
+      allowEmpty: true,
     );
   }
 
@@ -77,6 +82,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
       suggestionsFuture: suggestionsFuture,
       hint: hint,
       disclosure: null,
+      allowEmpty: false,
     );
   }
 
@@ -87,6 +93,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
     Future<Set<String>>? suggestionsFuture,
     String? hint,
     String? disclosure,
+    required bool allowEmpty,
   }) {
     return BlurredBottomSheet.show<String>(
       context: context,
@@ -96,6 +103,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
         suggestionsFuture: suggestionsFuture,
         hint: hint,
         disclosure: disclosure,
+        allowEmpty: allowEmpty,
       ),
     );
   }
@@ -109,7 +117,8 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
   String? _errorMessage;
 
   String get _trimmed => _controller.text.trim();
-  bool get _canSave => _errorMessage == null && _trimmed.isNotEmpty;
+  bool get _canSave =>
+      _errorMessage == null && (widget.allowEmpty || _trimmed.isNotEmpty);
 
   @override
   void initState() {
@@ -150,11 +159,17 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
     final hPad = Device.screen.width * 0.04;
 
     return Padding(
+      // max(): the keyboard inset already covers the home-indicator area
+      // when open; when closed, the indicator inset keeps the save button
+      // off the screen edge.
       padding: EdgeInsets.fromLTRB(
         hPad,
         0,
         hPad,
-        MediaQuery.of(context).viewInsets.bottom,
+        math.max(
+          MediaQuery.of(context).viewInsets.bottom,
+          MediaQuery.of(context).viewPadding.bottom,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

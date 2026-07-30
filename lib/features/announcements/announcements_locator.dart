@@ -1,9 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/announcements/data/announcement_dismissal_repository_impl.dart';
 import 'package:bb_mobile/features/announcements/data/datasources/announcement_dismissal_datasource.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
@@ -27,9 +22,6 @@ class AnnouncementsLocator {
     // Use-cases
     locator.registerFactory<GetVisibleAnnouncementsUsecase>(
       () => GetVisibleAnnouncementsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        getWalletTransactionsUsecase: locator<GetWalletTransactionsUsecase>(),
-        getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
         dismissalRepository: locator<AnnouncementDismissalRepository>(),
       ),
     );
@@ -45,10 +37,6 @@ class AnnouncementsLocator {
         getVisibleAnnouncementsUsecase:
             locator<GetVisibleAnnouncementsUsecase>(),
         dismissAnnouncementUsecase: locator<DismissAnnouncementUsecase>(),
-        watchPayjoinEnabledChangesUsecase:
-            locator<WatchPayjoinEnabledChangesUsecase>(),
-        watchFinishedWalletSyncsUsecase:
-            locator<WatchFinishedWalletSyncsUsecase>(),
       ),
     );
   }

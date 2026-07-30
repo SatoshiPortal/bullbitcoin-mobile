@@ -1006,6 +1006,9 @@ class _OnchainTransactionReview extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
     final label = context.select((SendCubit cubit) => cubit.state.label);
+    final isPayjoinAvailable = context.select(
+      (SendCubit cubit) => cubit.state.isPayjoinAvailable,
+    );
     final willAttemptPayjoin = context.select(
       (SendCubit cubit) => cubit.state.willAttemptPayjoin,
     );
@@ -1013,14 +1016,6 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (willAttemptPayjoin) ...[
-          InfoCard(
-            description: context.loc.sendPayjoinWillBeAttempted,
-            tagColor: context.appColors.secondary,
-            bgColor: context.appColors.onSecondary,
-          ),
-          const Gap(16),
-        ],
         CommonOnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
@@ -1029,6 +1024,9 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: selectedFeeOption.title(),
           isToSelf: isToSelf,
+          payjoinToggleValue: isPayjoinAvailable ? willAttemptPayjoin : null,
+          onPayjoinToggleChanged: (attempt) =>
+              context.read<SendCubit>().togglePayjoin(attempt),
           note: label,
           onFeePriorityTap: hasFinalizedTx
               ? null

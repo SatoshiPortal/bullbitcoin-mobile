@@ -264,7 +264,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
-  }) async {
+  }) => _lock.synchronized(() async {
     final model = await _pdkPayjoinDatasource.createReceiver(
       walletId: walletId,
       address: address,
@@ -273,13 +273,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       expireAfterSec: expireAfterSec,
     );
 
-    // Store the payjoin receiver in the local database
+    final settings = await _settingsRepository.fetch();
+    if (!settings.isPayjoinEnabled) {
+      _pdkPayjoinDatasource.stopPolling(model.id);
+      throw StateError('Payjoin was disabled while creating the receiver');
+    }
+
     await _localPayjoinDatasource.storeReceiver(model);
-
-    final payjoin = model.toEntity() as PayjoinReceiver;
-
-    return payjoin;
-  }
+    return model.toEntity() as PayjoinReceiver;
+  });
 
   @override
   Future<PayjoinSender> createPayjoinSender({
@@ -322,7 +324,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   @override
-  Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin) async {
+  Future<Payjoin?> tryBroadcastOriginalTransaction(
+    Payjoin payjoin,
+  ) => _lock.synchronized(() async {
     // Idempotency/safety guard for MANUAL/external callers only (the
     // BroadcastOriginalTransactionUsecase invoked from
     // ReceiveBloc._onPayjoinOriginalTxBroadcasted and
@@ -373,7 +377,33 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _payjoinStreamController.add(result);
     }
     return result;
-  }
+  });
+
+  @override
+  Future<void> disableReceivers() => _lock.synchronized(() async {
+    final receivers = await _localPayjoinDatasource.fetchReceivers(
+      onlyOngoing: true,
+    );
+    for (final receiver in receivers) {
+      final fresh = await _localPayjoinDatasource.fetchReceiver(receiver.id);
+      if (fresh == null || fresh.isCompleted || fresh.isAborted) continue;
+
+      // Once a proposal has been posted, the sender owns the final
+      // transaction. Keep its broadcast/fallback watchers alive.
+      if (fresh.proposalPsbt != null) continue;
+
+      if (fresh.originalTxBytes != null) {
+        final result = await _broadcastOriginalWithRetry(fresh.toEntity());
+        if (result == null) {
+          throw StateError('Failed to fall back an active Payjoin receiver');
+        }
+        continue;
+      }
+
+      _stopWatching(fresh.id);
+      await _localPayjoinDatasource.deleteReceiver(fresh.id);
+    }
+  });
 
   /// The actual original-transaction broadcast mechanism, shared by the
   /// public (guarded) [tryBroadcastOriginalTransaction] entry point and this
@@ -800,6 +830,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     // TODO: Unfreeze the utxo used in the payjoin
 
+    if (expiredModel is PayjoinReceiverModel &&
+        expiredModel.originalTxBytes == null) {
+      // No sender ever contacted this endpoint. It is not a transaction and
+      // must not leave a terminal 0-sat row in history. Notify the live
+      // receive flow so it can rotate to a fresh endpoint, then remove it.
+      _stopWatching(expiredModel.id);
+      await _localPayjoinDatasource.deleteReceiver(expiredModel.id);
+      _payjoinStreamController.add(payjoin);
+      return;
+    }
+
     if (payjoin is PayjoinReceiver &&
         payjoin.originalTxBytes != null &&
         payjoin.proposalPsbt == null) {
@@ -1091,7 +1132,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ) {
     return _lock.synchronized(() async {
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
-      final inputPairs = _filterAvailableUtxos(unspentUtxos, lockedUtxos);
+      final inputPairs = _filterAvailableUtxos(
+        unspentUtxos,
+        lockedUtxos,
+        requestedAmountSat: payjoin.amountSat,
+      );
 
       if (inputPairs.isEmpty) {
         throw NoInputsToPayjoinException(
@@ -1134,13 +1179,45 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     });
   }
 
+  /// The candidate set handed to PDK's `tryPreservingPrivacy`, minus the UTXOs
+  /// already committed to another live payjoin.
+  ///
+  /// Confirmed candidates are preferred, because a payjoin spending our
+  /// unconfirmed input can be invalidated by an RBF of that input's parent
+  /// after both sides consider the payment done. PDK selects on privacy
+  /// heuristics alone, so the narrowing must happen here.
+  ///
+  /// The preference is bounded by [requestedAmountSat]: narrowing only happens
+  /// when a confirmed candidate is at least as large as the payment, i.e. the
+  /// order of magnitude `avoid_uih` needs to produce a proposal that does not
+  /// scream "unnecessary input". Without that floor, a confirmed dust UTXO
+  /// would outrank a well-sized unconfirmed one, `avoid_uih` would find no
+  /// acceptable selection and `select_first_candidate` would contribute the
+  /// dust — payjoin "active" but UIH-revealing, which is the privacy gain it
+  /// exists for. When no confirmed candidate clears the floor, the whole set
+  /// is handed over and PDK picks: a fresh wallet whose balance is still
+  /// unconfirmed keeps payjoining immediately (see
+  /// ReceiveBloc._isPayjoinEligible for the accepted residual risk).
+  ///
+  /// A null [requestedAmountSat] (the amount is read from the original
+  /// transaction when the request arrives, so this only happens if a session
+  /// somehow reaches here before that) disables the floor and keeps the plain
+  /// confirmed-first preference: without an amount there is no mismatch to
+  /// detect, while the RBF argument still holds.
   List<PayjoinInputPairModel> _filterAvailableUtxos(
     List<WalletUtxoModel> unspent,
-    List<({String txId, int vout})> locked,
-  ) {
-    return unspent
+    List<({String txId, int vout})> locked, {
+    required int? requestedAmountSat,
+  }) {
+    final candidates = unspent
         .where((u) => !locked.any((l) => l.txId == u.txId && l.vout == u.vout))
         .whereType<BitcoinWalletUtxoModel>()
+        .toList();
+    final confirmed = candidates.where((u) => u.confirmations > 0).toList();
+    final preferConfirmed = requestedAmountSat == null
+        ? confirmed.isNotEmpty
+        : confirmed.any((u) => u.amountSat >= BigInt.from(requestedAmountSat));
+    return (preferConfirmed ? confirmed : candidates)
         .map((u) => PayjoinInputPairModel.fromWalletUtxoModel(u))
         .toList();
   }
@@ -1459,7 +1536,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// a real payjoin. `txId` is cleared for the same reason
   /// [_broadcastOriginalTransaction] clears it. Never labels the transaction
   /// "payjoin" — this is by definition not a real one.
-  Future<void> _onOriginalTransactionSeen(String payjoinId) async {
+  Future<void> _onOriginalTransactionSeen(
+    String payjoinId,
+  ) => _lock.synchronized(() async {
     // Stop first: the watch stream re-emits on every sync, and completion is
     // a one-shot side effect. Whichever of the real payjoin txid or this
     // original txid lands first resolves the session, so both watchers are
@@ -1485,7 +1564,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       'transaction observed on-chain (fallback, not necessarily broadcast '
       'by this device)',
     );
-  }
+  });
 
   /// Stops every watcher of a session — the real-payjoin broadcast watch
   /// ([_watchForBroadcast]), the original-transaction fallback watch

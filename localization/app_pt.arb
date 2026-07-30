@@ -477,7 +477,6 @@
   "testBackupTapWordsInOrder": "Toque nas palavras de recuperação no\nordem certa",
   "transactionSwapDescLnSendExpired": "Esta troca expirou. Os seus fundos serão automaticamente devolvidos à sua carteira.",
   "testBackupButton": "Teste de backup",
-  "receiveNotePlaceholder": "Nota",
   "sendChange": "Variação",
   "coreScreensInternalTransfer": "Transferência interna",
   "sendSwapWillTakeTime": "Levará algum tempo para confirmar",
@@ -3846,7 +3845,6 @@
   "allWordsSelectedMessage": "Selecionou todas as palavras",
   "bitboxActionPairDeviceTitle": "Dispositivo de BitBox de par",
   "buyKYCLevel2": "Nível 2 - Melhorado",
-  "receiveAmount": "Montante (opcional)",
   "testBackupErrorSelectAllWords": "Por favor, selecione todas as palavras",
   "buyLevel1Limit": "Limite de nível 1: {amount}",
   "@buyLevel1Limit": {
@@ -5326,5 +5324,14 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
+  "settingsPayjoinAdvancedTitle": "Configurações avançadas de Payjoin",
+  "receiveAdditionalInformation": "Informações adicionais",
+  "receiveAdditionalInformationPlaceholder": "Adicione um montante ou uma mensagem para o remetente",
+  "receiveMessageForSender": "Mensagem para o remetente",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Será ativado assim que receber fundos.",
+  "announcementAutoswapDescription": "O seu Liquid é convertido automaticamente em Bitcoin."
 }

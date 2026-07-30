@@ -1318,10 +1318,6 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "receiveNotePlaceholder": "Nota",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sellServiceFee": "Taxa de serviço",
   "@sellServiceFee": {
     "description": "Label for Bull Bitcoin service fee"
@@ -11036,10 +11032,6 @@
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
   },
-  "receiveAmount": "Montante (opcional)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "sendHardwareWallet": "Carteira de hardware",
   "@sendHardwareWallet": {
     "description": "Option to sign with hardware device"
@@ -13274,5 +13266,14 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
+  "settingsPayjoinAdvancedTitle": "Configurações avançadas do Payjoin",
+  "receiveAdditionalInformation": "Informações adicionais",
+  "receiveAdditionalInformationPlaceholder": "Adicione um valor ou uma mensagem para o remetente",
+  "receiveMessageForSender": "Mensagem para o remetente",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Ele será ativado assim que você receber fundos.",
+  "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin."
 }

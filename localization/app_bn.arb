@@ -1378,10 +1378,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "নোট",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "চেঞ্জ",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -11311,10 +11307,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "পরিমাণ (ঐচ্ছিক)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "অনুগ্রহ করে সব শব্দ বেছে নিন।",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -13487,5 +13479,14 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
+  "settingsPayjoinDisclaimerTitle": "Payjoin দাবিত্যাগ",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবিত্যাগ",
+  "settingsPayjoinAdvancedTitle": "উন্নত Payjoin সেটিংস",
+  "receiveAdditionalInformation": "অতিরিক্ত তথ্য",
+  "receiveAdditionalInformationPlaceholder": "একটি পরিমাণ বা প্রেরকের জন্য বার্তা যোগ করুন",
+  "receiveMessageForSender": "প্রেরকের জন্য বার্তা",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin চালু আছে, কিন্তু এই ওয়ালেটে অবদান রাখার মতো কোনো ব্যালেন্স নেই। অর্থ পাওয়ার পর এটি সক্রিয় হবে।",
+  "announcementAutoswapDescription": "আপনার Liquid স্বয়ংক্রিয়ভাবে Bitcoin-এ রূপান্তরিত হয়।"
 }

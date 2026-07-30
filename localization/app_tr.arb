@@ -1384,10 +1384,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Not",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Change",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -11507,10 +11503,6 @@
   "@bitboxActionPairDeviceTitle": {
     "description": "Title for pair device action"
   },
-  "receiveAmount": "(Selam)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Lütfen tüm kelimeleri seçin",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -13277,5 +13269,14 @@
   "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
   "transactionDetailLabelPayjoinAborted": "İptal edildi",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin bilgilendirmesi",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
+  "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
+  "receiveAdditionalInformation": "Ek bilgiler",
+  "receiveAdditionalInformationPlaceholder": "Bir tutar veya gönderen için mesaj ekleyin",
+  "receiveMessageForSender": "Gönderen için mesaj",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
+  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür."
 }

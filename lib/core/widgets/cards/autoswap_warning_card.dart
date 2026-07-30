@@ -44,10 +44,28 @@ class AutoSwapWarningCard extends StatelessWidget {
             const Gap(14),
             Expanded(
               child: isActiveMode
-                  ? BBText(
-                      context.loc.autoswapActiveCardTitle,
-                      style: context.font.bodyMedium,
-                      color: context.appColors.onSurface,
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText(
+                          context.loc.autoswapActiveCardTitle,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                        const Gap(2),
+                        GestureDetector(
+                          onTap: () {
+                            onTap();
+                          },
+                          child: Text(
+                            context.loc.autoswapWarningCardSubtitle,
+                            style: context.font.bodySmall?.copyWith(
+                              decoration: TextDecoration.underline,
+                              color: context.appColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,15 +5,7 @@ import 'package:bb_mobile/features/announcements/domain/entities/announcement.da
 /// Extend this (and the gathering in `GetVisibleAnnouncementsUsecase`) as new
 /// announcements need new signals.
 class AnnouncementSignals {
-  final bool isPayjoinEnabled;
-  final bool hasTransactionHistory;
-  final bool isAutoswapEnabled;
-
-  const AnnouncementSignals({
-    required this.isPayjoinEnabled,
-    required this.hasTransactionHistory,
-    required this.isAutoswapEnabled,
-  });
+  const AnnouncementSignals();
 }
 
 /// A catalog entry: an [Announcement] definition paired with the predicate that
@@ -38,28 +30,12 @@ class AnnouncementCatalogEntry {
 /// To add an announcement: append an [AnnouncementId] value, add a catalog
 /// entry here with its trigger, and add the title/description l10n mapping in
 /// `presentation/announcement_l10n.dart`.
-final List<AnnouncementCatalogEntry> announcementCatalog = [
-  AnnouncementCatalogEntry(
-    announcement: Announcement(
-      id: AnnouncementId.payjoinPrivacy,
-      priority: 0,
-      tone: AnnouncementTone.info,
-      action: const NavigateAction(),
-      dismissPolicy: const PermanentDismiss(),
-    ),
-    // Show once the wallet has received/transacted (first UTXO or history after
-    // create/recover) AND payjoin is still off — nudging the privacy upgrade.
-    trigger: (s) => s.hasTransactionHistory && !s.isPayjoinEnabled,
-  ),
-  AnnouncementCatalogEntry(
-    announcement: Announcement(
-      id: AnnouncementId.autoswapActive,
-      priority: 1,
-      tone: AnnouncementTone.success,
-      action: const NavigateAction(),
-      dismissPolicy: const PermanentDismiss(),
-    ),
-    // Show while autoswap is enabled, letting the user learn what it does.
-    trigger: (s) => s.isAutoswapEnabled,
-  ),
-];
+///
+/// Currently EMPTY on purpose. The payjoin-privacy nudge was removed
+/// (product decision 2026-07-25): payjoin education lives in the enable-time
+/// disclaimer and the payjoin settings screen, not on home. The autoswap
+/// card was removed too (product decision 2026-07-28): autoswap's home
+/// surface is the pre-existing AutoSwapWarningCard driven by WalletBloc, as
+/// in the last release — not an announcement. Both [AnnouncementId] values
+/// stay so persisted dismissals keep mapping cleanly.
+final List<AnnouncementCatalogEntry> announcementCatalog = [];

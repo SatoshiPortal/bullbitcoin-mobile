@@ -1,3 +1,4 @@
+import '../theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class BullBorderedTile extends StatelessWidget {
     final colors = context.bull;
     final decoration = BoxDecoration(
       color: backgroundColor ?? colors.onSecondary,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(BullRadius.xxs),
       border: Border.all(color: colors.secondaryFixedDim),
     );
     final body = Padding(padding: padding, child: child);
@@ -52,7 +53,7 @@ class BullBorderedTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
         child: Ink(decoration: decoration, child: body),
       ),
     );

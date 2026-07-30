@@ -251,10 +251,13 @@ abstract class ReceiveState with _$ReceiveState {
   /// excluded: a fresh receiver session with no request yet means a plain
   /// send to this address, unrelated to payjoin, which must still navigate
   /// via the generic listener.
-  bool get isPayjoinFlowOwningNavigation =>
-      type == ReceiveType.bitcoin &&
-      payjoin != null &&
-      payjoin!.status != PayjoinStatus.started;
+  bool get isPayjoinFlowOwningNavigation {
+    final receiver = payjoin;
+    if (type != ReceiveType.bitcoin || receiver == null) return false;
+    if (receiver.status == PayjoinStatus.started) return false;
+    return !(receiver.status == PayjoinStatus.expired &&
+        receiver.originalTxBytes == null);
+  }
 
   /// True when the payjoin session resolved via the plain-broadcast fallback
   /// specifically because the sender's amount fell below the configured
@@ -285,7 +288,7 @@ abstract class ReceiveState with _$ReceiveState {
       // would create the session.
       //
       // Also gated on [hasUtxos]: ReceiveBloc only creates a session for a
-      // wallet with a confirmed balance to contribute (see
+      // wallet with a balance to contribute (unconfirmed counts, see
       // ReceiveBloc._isPayjoinEligible — a payjoin proposal needs at least
       // one UTXO), so an empty wallet would otherwise hit the exact same
       // "stuck loading forever" bug as the disabled case.
@@ -300,7 +303,7 @@ abstract class ReceiveState with _$ReceiveState {
   }
 
   /// True when payjoin is enabled globally and this wallet can sign
-  /// locally, but it has no confirmed balance yet — so ReceiveBloc did not
+  /// locally, but it has no balance yet — so ReceiveBloc did not
   /// create a payjoin receiver session (see ReceiveBloc._isPayjoinEligible).
   /// Lets the receive screen explain why payjoin isn't active despite being
   /// turned on, instead of silently doing nothing.
@@ -320,15 +323,11 @@ abstract class ReceiveState with _$ReceiveState {
     return false;
   }
 
-  // Gated on the CONFIRMED component of the balance, not the total: a payjoin
-  // proposal needs a real, already-confirmed UTXO to contribute as an input
-  // (an unconfirmed one is not filtered out anywhere downstream and could be
-  // replaced/invalidated). Fail-closed on a wallet whose confirmedBalanceSat
-  // hasn't been populated (null) rather than falling back to balanceSat,
-  // which would silently reintroduce the total-vs-confirmed gap this exists
-  // to close.
-  bool get hasUtxos =>
-      (wallet?.confirmedBalanceSat ?? BigInt.zero) > BigInt.zero;
+  // Total balance, unconfirmed included: the contribution path draws from
+  // BDK's listUnspent (which includes unconfirmed outputs), so an unconfirmed
+  // UTXO is contributable — gating on confirmations would only delay payjoin
+  // activation on fresh wallets (see ReceiveBloc._isPayjoinEligible).
+  bool get hasUtxos => (wallet?.balanceSat ?? BigInt.zero) > BigInt.zero;
 
   /// Whether a payjoin on/off toggle should be offered on the receive screen
   /// for this wallet: it must be a bitcoin receive with a locally-signing,

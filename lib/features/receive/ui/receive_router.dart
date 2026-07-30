@@ -78,10 +78,18 @@ class ReceiveRouter {
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
                       state.isPayjoinFlowOwningNavigation) {
-                    context.goNamed(
-                      ReceiveRoute.payjoinInProgress.name,
-                      extra: bloc,
-                    );
+                    if (state.payjoin?.isCompleted == true) {
+                      context.goNamed(
+                        TransactionsRoute.payjoinTransactionDetails.name,
+                        pathParameters: {'payjoinId': state.payjoin!.id},
+                        queryParameters: {'returnHome': 'true'},
+                      );
+                    } else {
+                      context.goNamed(
+                        ReceiveRoute.payjoinInProgress.name,
+                        extra: bloc,
+                      );
+                    }
                   } else if (type == ReceiveType.lightning) {
                     context.goNamed(
                       ReceiveRoute.lightningPaymentInProgress.name,
@@ -144,8 +152,17 @@ class ReceiveRouter {
           //  in the bitcoin flow.
           final bloc = context.read<ReceiveBloc>();
           final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
-          bloc.add(ReceiveBitcoinStarted(wallet));
-          return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
+          // Same guard as the lightning and liquid routes: this pageBuilder
+          // re-runs when popping back from the child amount route, and an
+          // unconditional restart wipes the confirmed amount and message the
+          // user just entered there. Type mismatch only — comparing the
+          // route-extra wallet would revert an in-flow dropdown switch on
+          // pop-back (the extra still holds the wallet the flow was entered
+          // with), and a fresh entry always has a null type anyway.
+          if (bloc.state.type != ReceiveType.bitcoin) {
+            bloc.add(ReceiveBitcoinStarted(wallet));
+          }
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(
@@ -195,12 +212,8 @@ class ReceiveRouter {
           GoRoute(
             name: ReceiveRoute.lightningQr.name,
             path: ReceiveRoute.lightningQr.path,
-            pageBuilder: (context, state) {
-              final wallet = state.extra is Wallet
-                  ? state.extra! as Wallet
-                  : null;
-              return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
-            },
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveQrPage()),
             routes: [
               GoRoute(
                 name: ReceiveRoute.lightningAmount.name,
@@ -252,8 +265,7 @@ class ReceiveRouter {
             bloc.add(const ReceiveLiquidStarted());
           }
 
-          final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
-          return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(

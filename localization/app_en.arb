@@ -1559,10 +1559,6 @@
   "@receiveAddress": {
     "description": "Label for generated address"
   },
-  "receiveAmount": "Amount (optional)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "receiveNoteLabel": "Note",
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
@@ -1659,10 +1655,6 @@
   "receiveFeeExplanation": "This fee will be deducted from the amount sent",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
-  },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
   },
   "receiveReceiveAmount": "Receive Amount",
   "@receiveReceiveAmount": {
@@ -14829,13 +14821,25 @@
   "@settingsPayjoinTitle": {
     "description": "Title of the payjoin settings screen"
   },
-  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to the person you are transacting with — someone you are already paying anyway.",
+  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to your counterparty.",
   "@settingsPayjoinPrivacyGainExplanation": {
     "description": "First disclosure paragraph on the payjoin settings screen: the privacy benefit and the UTXO-exposure risk it trades against"
   },
-  "settingsPayjoinV1DirectoryLeakExplanation": "If the person you are paying uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
+  "settingsPayjoinV1DirectoryLeakExplanation": "If your counterparty uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
   "@settingsPayjoinV1DirectoryLeakExplanation": {
     "description": "Second disclosure paragraph on the payjoin settings screen: a v1 (non-v2) counterparty leaks the same UTXO to the payjoin directory"
+  },
+  "settingsPayjoinDisclaimerTitle": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerTitle": {
+    "description": "Title of the one-time payjoin disclaimer pop-up (also reachable from the payjoin settings screen)."
+  },
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerRowLabel": {
+    "description": "Settings row that re-opens the payjoin disclaimer pop-up."
+  },
+  "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
+  "@settingsPayjoinAdvancedTitle": {
+    "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
   "settingsPayjoinEnabledLabel": "Payjoin enabled",
   "@settingsPayjoinEnabledLabel": {
@@ -14913,9 +14917,9 @@
   "@transactionPayjoinFeeContributionExplanation": {
     "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
   },
-  "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
-  "@sendPayjoinWillBeAttempted": {
-    "description": "Confirm-screen indicator shown when a payjoin will be attempted for the send."
+  "sendPayjoinLabel": "Payjoin",
+  "@sendPayjoinLabel": {
+    "description": "Row title on the send confirmation details showing (with a tick) that this send will attempt a payjoin."
   },
   "sendSentWithoutPayjoin": "Sent without Payjoin: the recipient did not complete the Payjoin, so a standard transaction was broadcast instead.",
   "@sendSentWithoutPayjoin": {
@@ -14977,7 +14981,7 @@
   "@announcementAutoswapTitle": {
     "description": "Title of the home announcement informing the user that autoswap is currently enabled."
   },
-  "announcementAutoswapDescription": "Your Bitcoin is automatically swapped to Liquid.",
+  "announcementAutoswapDescription": "Your Liquid is automatically swapped to Bitcoin.",
   "@announcementAutoswapDescription": {
     "description": "Description of the home announcement informing the user that autoswap is enabled."
   },
@@ -14997,9 +15001,21 @@
   "@announcementDismissConfirmRead": {
     "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
   },
-  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no confirmed balance yet to contribute. It will activate once you receive funds.",
+  "receiveAdditionalInformation": "Additional Information",
+  "receiveMessageForSender": "Message For Sender",
+  "@receiveMessageForSender": {
+    "description": "Field on the receive additional-information page for the counterparty-visible message — becomes the BIP21 message= parameter (and the lightning swap description). Formerly called Note."
+  },
+  "receiveAdditionalInformationPlaceholder": "Add an amount or message for sender",
+  "@receiveAdditionalInformationPlaceholder": {
+    "description": "Placeholder on the Additional Information receive tile when neither amount nor message is set yet."
+  },
+  "@receiveAdditionalInformation": {
+    "description": "Receive-screen tile unifying the optional amount and message; tapping opens the additional-information page to edit both."
+  },
+  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no balance yet to contribute. It will activate once you receive funds.",
   "@receivePayjoinAwaitingFunds": {
-    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no confirmed balance."
+    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no balance."
   },
   "receivePayjoinQrBadge": "Payjoin",
   "@receivePayjoinQrBadge": {

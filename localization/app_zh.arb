@@ -480,7 +480,6 @@
   "testBackupTapWordsInOrder": "恢复语\n权利保护令",
   "transactionSwapDescLnSendExpired": "这笔交易已过期，资金将会自动返还至您的钱包",
   "testBackupButton": "退约",
-  "receiveNotePlaceholder": "说明",
   "sendChange": "变化",
   "coreScreensInternalTransfer": "内部转让",
   "sendSwapWillTakeTime": "待确认",
@@ -3872,7 +3871,6 @@
   "allWordsSelectedMessage": "你选择了所有字句",
   "bitboxActionPairDeviceTitle": "Pair BiBox 设备",
   "buyKYCLevel2": "2级:强化",
-  "receiveAmount": "数额(备选案文)",
   "testBackupErrorSelectAllWords": "请选择所有语文",
   "buyLevel1Limit": "1级限制:{amount}",
   "@buyLevel1Limit": {
@@ -5271,5 +5269,14 @@
   "transactionStatusPayjoinAborted": "Payjoin 已中止",
   "transactionDetailLabelPayjoinAborted": "已中止",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 手续费分摊",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。",
+  "settingsPayjoinDisclaimerTitle": "Payjoin 说明",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin 说明",
+  "settingsPayjoinAdvancedTitle": "Payjoin 高级设置",
+  "receiveAdditionalInformation": "附加信息",
+  "receiveAdditionalInformationPlaceholder": "添加金额或给付款方的留言",
+  "receiveMessageForSender": "给付款方的留言",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
+  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。"
 }

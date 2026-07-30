@@ -1388,10 +1388,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "* 이름",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "- 기타",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -11603,10 +11599,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "(선택 사항)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "모든 단어를 선택",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -13277,5 +13269,14 @@
   "transactionStatusPayjoinAborted": "Payjoin 중단됨",
   "transactionDetailLabelPayjoinAborted": "중단됨",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 수수료 기여분",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin 고지사항",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin 고지사항",
+  "settingsPayjoinAdvancedTitle": "Payjoin 고급 설정",
+  "receiveAdditionalInformation": "추가 정보",
+  "receiveAdditionalInformationPlaceholder": "금액 또는 보내는 사람에게 전할 메시지를 추가하세요",
+  "receiveMessageForSender": "보내는 사람에게 전할 메시지",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
+  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다."
 }

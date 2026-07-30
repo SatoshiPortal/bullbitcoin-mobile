@@ -134,10 +134,6 @@
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
   },
-  "receiveNotePlaceholder": "შენიშვნა",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "transactionDetailAddNote": "შენიშვნის დამატება",
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"
@@ -1153,7 +1149,6 @@
   "receiveLightningInvoice": "Lightning ინვოისი",
   "receiveLiquidRiskDisclosureLabel": "გადახდები კონვერტირდება Liquid L-BTC-ში (არა BTC). გაიგეთ მეტი.",
   "receiveAddress": "მიღების მისამართი",
-  "receiveAmount": "თანხა (არასავალდებულო)",
   "receiveEnterHere": "შეიყვანეთ აქ...",
   "receiveSwapID": "სვაპის ID",
   "receiveTotalFee": "ჯამური საკომისიო",
@@ -3900,5 +3895,14 @@
   "transactionStatusPayjoinAborted": "Payjoin გაუქმდა",
   "transactionDetailLabelPayjoinAborted": "გაუქმებულია",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin საკომისიოს შენატანი",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin-ი კონფიდენციალურობის გასაუმჯობესებლად ამატებს თქვენს ერთ მონეტას გადახდაში, როგორც დამატებით შენატანს. ამ დამატებული შენატანის მოპოვების საკომისიო აკლდება თანხას, რომელსაც იღებთ (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ი კონფიდენციალურობის გასაუმჯობესებლად ამატებს თქვენს ერთ მონეტას გადახდაში, როგორც დამატებით შენატანს. ამ დამატებული შენატანის მოპოვების საკომისიო აკლდება თანხას, რომელსაც იღებთ (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin-ის გაფრთხილება",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin-ის გაფრთხილება",
+  "settingsPayjoinAdvancedTitle": "Payjoin-ის დამატებითი პარამეტრები",
+  "receiveAdditionalInformation": "დამატებითი ინფორმაცია",
+  "receiveAdditionalInformationPlaceholder": "დაამატეთ თანხა ან შეტყობინება გამგზავნისთვის",
+  "receiveMessageForSender": "შეტყობინება გამგზავნს",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin ჩართულია, მაგრამ ამ საფულეს ჯერ არ აქვს ბალანსი მონაწილეობის მისაღებად. ის გააქტიურდება თანხის მიღებისთანავე.",
+  "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში."
 }

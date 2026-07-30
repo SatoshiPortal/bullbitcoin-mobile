@@ -468,7 +468,6 @@
   "testBackupTapWordsInOrder": "Tippen Sie auf die Wiederherstellungswörter in der\nrichtigen Reihenfolge",
   "transactionSwapDescLnSendExpired": "Dieser Swap ist abgelaufen. Ihr Geld wird automatisch an Ihre Wallet zurücküberwiesen",
   "testBackupButton": "Backup testen",
-  "receiveNotePlaceholder": "Anmerkung",
   "coreScreensInternalTransfer": "Interne Übertragung",
   "sendSwapWillTakeTime": "Die Bestätigung kann einige Zeit dauern",
   "autoswapSelectWalletError": "Bitte wählen Sie eine Bitcoin-Empfänger-Wallet aus.",
@@ -3807,7 +3806,6 @@
   "allWordsSelectedMessage": "Sie haben alle Wörter ausgewählt.",
   "bitboxActionPairDeviceTitle": "BitBox-Gerät",
   "buyKYCLevel2": "Stufe 2 – Erweitert",
-  "receiveAmount": "Betrag (optional)",
   "testBackupErrorSelectAllWords": "Bitte wählen Sie alle Wörter.",
   "buyLevel1Limit": "Grenzwert: {amount}",
   "@buyLevel1Limit": {
@@ -5214,5 +5212,14 @@
   "transactionStatusPayjoinAborted": "Payjoin abgebrochen",
   "transactionDetailLabelPayjoinAborted": "Abgebrochen",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-Gebührenbeitrag",
-  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin-Hinweis",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin-Hinweis",
+  "settingsPayjoinAdvancedTitle": "Erweiterte Payjoin-Einstellungen",
+  "receiveAdditionalInformation": "Zusätzliche Informationen",
+  "receiveAdditionalInformationPlaceholder": "Betrag oder Nachricht an den Sender hinzufügen",
+  "receiveMessageForSender": "Nachricht an den Sender",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin ist aktiviert, aber dieses Wallet hat noch kein Guthaben für einen Beitrag. Es wird aktiv, sobald du Guthaben empfängst.",
+  "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht."
 }

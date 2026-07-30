@@ -1198,10 +1198,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Σημείωση",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Αλλαγή αλλαγής",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -9569,10 +9565,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Ποσό (προαιρετικό)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "buyLevel1Limit": "Επίπεδο 1 όριο: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -13277,5 +13269,14 @@
   "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
   "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
   "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Ενημέρωση για το Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
+  "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
+  "receiveAdditionalInformation": "Πρόσθετες πληροφορίες",
+  "receiveAdditionalInformationPlaceholder": "Προσθέστε ποσό ή μήνυμα για τον αποστολέα",
+  "receiveMessageForSender": "Μήνυμα για τον αποστολέα",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
+  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin."
 }

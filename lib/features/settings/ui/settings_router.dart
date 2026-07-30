@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
@@ -83,6 +84,7 @@ enum SettingsRoute {
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),
+  payjoinAdvancedSettings('payjoin-advanced-settings'),
   appSettings('app-settings'),
   theme('theme'),
   autoswapSettings('autoswap-settings'),
@@ -191,6 +193,11 @@ class SettingsRouter {
         name: SettingsRoute.payjoinSettings.name,
         path: SettingsRoute.payjoinSettings.path,
         builder: (context, state) => const PayjoinSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.payjoinAdvancedSettings.name,
+        path: SettingsRoute.payjoinAdvancedSettings.path,
+        builder: (context, state) => const PayjoinAdvancedSettingsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.swapRestore.name,

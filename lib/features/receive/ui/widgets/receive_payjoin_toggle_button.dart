@@ -1,23 +1,29 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-/// Payjoin on/off toggle chip for the receive TopBar. Green (success) =
-/// enabled, red (error) = disabled; tapping flips the GLOBAL payjoin setting;
-/// long-pressing opens the payjoin settings screen (min amount, expiry).
+/// Payjoin on/off toggle row for the bitcoin receive screen, shown under the
+/// receive address (product decision 2026-07-25 — previously a TopBar chip).
+/// The switch flips the GLOBAL payjoin setting; long-pressing the row opens
+/// the payjoin settings screen.
 ///
 /// Renders nothing unless this is a Bitcoin receive with a payjoin-capable
 /// wallet ([ReceiveState.isPayjoinToggleable] — funded + locally-signing), so
 /// it never shows on Liquid/Lightning receives or for wallets that could
-/// never payjoin.
-class ReceivePayjoinToggleButton extends StatelessWidget {
-  const ReceivePayjoinToggleButton({super.key});
+/// never payjoin. Carries its own top gap so the surrounding layout doesn't
+/// reserve space when hidden.
+class ReceivePayjoinToggleTile extends StatelessWidget {
+  const ReceivePayjoinToggleTile({super.key, required this.topGap});
+
+  final double topGap;
 
   @override
   Widget build(BuildContext context) {
@@ -30,41 +36,44 @@ class ReceivePayjoinToggleButton extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.payjoinGloballyEnabled ?? false,
     );
 
-    final bgColor = enabled
-        ? context.appColors.success
-        : context.appColors.error;
-    final fgColor = enabled
-        ? context.appColors.onSuccess
-        : context.appColors.onError;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => context.read<ReceiveBloc>().add(
-          ReceiveEvent.receivePayjoinToggled(!enabled),
-        ),
-        onLongPress: () =>
-            context.pushNamed(SettingsRoute.payjoinSettings.name),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
+    // A slim single-line box (product decision 2026-07-26): bordered like
+    // the other tiles but with minimal vertical padding, so the whole
+    // receive screen — QR, address, additional info, this box and the
+    // bottom button — fits without scrolling. Long-press opens the payjoin
+    // settings screen.
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen: (previous, current) =>
+          current.error is SettingsFailure && previous.error != current.error,
+      listener: (context, state) {
+        final failure = state.error! as SettingsFailure;
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      },
+      child: Padding(
+        padding: EdgeInsets.only(top: topGap / 2),
+        child: BorderedTappableTile(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+          backgroundColor: context.appColors.surfaceContainerHighest,
+          onLongPress: () =>
+              context.pushNamed(SettingsRoute.payjoinSettings.name),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                enabled ? Icons.check_circle : Icons.cancel,
-                size: 18,
-                color: fgColor,
+              Expanded(
+                child: BBText(
+                  context.loc.receivePayjoinQrBadge,
+                  style: context.font.bodyMedium,
+                  color: context.appColors.secondary,
+                ),
               ),
-              const Gap(6),
-              BBText(
-                context.loc.receivePayjoinQrBadge,
-                style: context.font.bodyMedium,
-                color: fgColor,
+              BBSwitch(
+                value: enabled,
+                onChanged: (value) {
+                  context.read<ReceiveBloc>().add(
+                    ReceiveEvent.receivePayjoinToggled(value, () async {
+                      if (!context.mounted) return false;
+                      return PayjoinDisclaimerDialog.show(context);
+                    }),
+                  );
+                },
               ),
             ],
           ),

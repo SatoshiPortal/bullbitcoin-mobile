@@ -74,6 +74,10 @@ abstract class SendState with _$SendState {
     // fetched settings at least once, no payjoin is attempted. Mirrors
     // SettingsEntity.isPayjoinEnabled.
     @Default(false) bool payjoinGloballyEnabled,
+    // The sender's per-send opt-out: payjoin can be available for this send
+    // (see [isPayjoinAvailable]) and still deliberately not attempted. Reset
+    // is not needed — the cubit lives per send flow.
+    @Default(false) bool payjoinOptedOut,
     @Default('') String amount,
     int? confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
@@ -176,24 +180,29 @@ abstract class SendState with _$SendState {
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
 
-  /// Single source of truth for whether a payjoin will actually be attempted
-  /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],
-  /// which unifies a button's visibility and its action guard. Used BOTH to
-  /// gate `signTransaction`'s payjoin branch and to show the "a payjoin will
-  /// be attempted" indicator on the confirm screen, so the two can never
-  /// disagree.
+  /// Whether a payjoin is structurally possible for this send: the setting
+  /// is on, the wallet signs locally, and the recipient's BIP21 advertises a
+  /// pj= endpoint. Drives whether the confirm screen offers the payjoin
+  /// toggle at all — [willAttemptPayjoin] adds the sender's choice on top.
   ///
   /// Gated on [Wallet.signsLocally]: a hardware/remote-signer wallet
   /// (Ledger/BitBox) never reaches `signTransaction`'s payjoin branch (the
   /// confirm screen swaps in a device-specific sign button for those
-  /// wallets instead), so without this check the indicator could promise a
+  /// wallets instead), so without this check the toggle could promise a
   /// payjoin that structurally can never happen for that wallet class.
-  bool get willAttemptPayjoin =>
+  bool get isPayjoinAvailable =>
       payjoinGloballyEnabled &&
       (selectedWallet?.signsLocally ?? false) &&
       isToSelf != true &&
       paymentRequest is Bip21PaymentRequest &&
       (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
+
+  /// Single source of truth for whether a payjoin will actually be attempted
+  /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],
+  /// which unifies a control's state and its action guard. Used BOTH to
+  /// gate `signTransaction`'s payjoin branch and as the confirm screen's
+  /// toggle value, so the two can never disagree.
+  bool get willAttemptPayjoin => isPayjoinAvailable && !payjoinOptedOut;
 
   String get paymentRequestAddress {
     if (paymentRequest == null) {

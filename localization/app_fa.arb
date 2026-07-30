@@ -2421,10 +2421,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "تغییر",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -10866,10 +10862,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "مقدار (اختیاری)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "همه کلمات را انتخاب کنید",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -13277,5 +13269,14 @@
   "transactionStatusPayjoinAborted": "Payjoin لغو شد",
   "transactionDetailLabelPayjoinAborted": "لغو شده",
   "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "اطلاعیه Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "اطلاعیه Payjoin",
+  "settingsPayjoinAdvancedTitle": "تنظیمات پیشرفته Payjoin",
+  "receiveAdditionalInformation": "اطلاعات تکمیلی",
+  "receiveAdditionalInformationPlaceholder": "مبلغ یا پیامی برای فرستنده اضافه کنید",
+  "receiveMessageForSender": "پیام برای فرستنده",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin فعال است، اما این کیف پول هنوز موجودی‌ای برای مشارکت ندارد. پس از دریافت وجه فعال خواهد شد.",
+  "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود."
 }

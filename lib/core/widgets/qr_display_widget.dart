@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullRadius;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class QrDisplayWidget extends StatelessWidget {
       constraints: BoxConstraints(maxHeight: size, maxWidth: size),
       decoration: BoxDecoration(
         color: context.appColors.surfaceFixed,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
       ),
       child: QrImageView(data: data),
     );

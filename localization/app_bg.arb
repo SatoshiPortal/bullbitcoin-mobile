@@ -1303,10 +1303,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Бележка",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Промяна",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -8823,10 +8819,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Сума (по избор)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Моля, изберете всички думи.",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -10966,5 +10958,14 @@
   "transactionStatusPayjoinAborted": "Payjoin отменен",
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Уведомление за Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
+  "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
+  "receiveAdditionalInformation": "Допълнителна информация",
+  "receiveAdditionalInformationPlaceholder": "Добавете сума или съобщение за изпращача",
+  "receiveMessageForSender": "Съобщение за изпращача",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
+  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin."
 }

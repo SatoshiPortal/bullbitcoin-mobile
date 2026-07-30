@@ -621,7 +621,6 @@
   "receivePayjoinActivated": "Payjoin সক্ৰিয় কৰা হৈছে",
   "receiveLightningInvoice": "Lightning invoice",
   "receiveAddress": "গ্ৰহণ ঠিকনা",
-  "receiveAmount": "পৰিমাণ (ঐচ্ছিক)",
   "receiveNoteLabel": "টোকা",
   "receiveEnterHere": "ইয়াত দিয়ক...",
   "receiveSwapID": "Swap ID",
@@ -652,7 +651,6 @@
     }
   },
   "receiveFeeExplanation": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
-  "receiveNotePlaceholder": "টোকা",
   "receiveReceiveAmount": "গ্ৰহণ কৰা পৰিমাণ",
   "receiveSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
   "receiveServerNetworkFees": "চাৰ্ভাৰ নেটৱৰ্ক মাচুল",
@@ -10318,5 +10316,14 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "settingsPayjoinDisclaimerTitle": "Payjoin দাবীত্যাগ",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবীত্যাগ",
+  "settingsPayjoinAdvancedTitle": "Payjoin ৰ উন্নত ছেটিংছ",
+  "receiveAdditionalInformation": "অতিৰিক্ত তথ্য",
+  "receiveAdditionalInformationPlaceholder": "পৰিমাণ বা প্ৰেৰকৰ বাবে বাৰ্তা যোগ কৰক",
+  "receiveMessageForSender": "প্ৰেৰকৰ বাবে বাৰ্তা",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin সক্ৰিয় কৰা হৈছে, কিন্তু এই ৱালেটত এতিয়াও অৱদান দিবলৈ কোনো বেলেঞ্চ নাই। আপুনি ধন লাভ কৰিলেই ই সক্ৰিয় হ’ব।",
+  "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।"
 }
