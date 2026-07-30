@@ -37,10 +37,6 @@ class WalletDeleted extends WalletEvent {
   const WalletDeleted(this.walletId);
 }
 
-class StartTorInitialization extends WalletEvent {
-  const StartTorInitialization();
-}
-
 class BlockAutoSwapUntilNextExecution extends WalletEvent {
   const BlockAutoSwapUntilNextExecution();
 }

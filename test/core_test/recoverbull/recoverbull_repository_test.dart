@@ -2,23 +2,22 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
-import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:tor/tor.dart';
 
 class _MockRemote extends Mock implements RecoverBullRemoteDatasource {}
 
 class _MockSettings extends Mock implements RecoverbullSettingsDatasource {}
 
-class _MockTorConfig extends Mock implements TorConfigPort {}
-
 void main() {
+  final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 9050);
+
   setUpAll(() {
     registerFallbackValue(<int>[]);
-    registerFallbackValue(const TorProxyConfig(port: 0));
+    registerFallbackValue(endpoint);
   });
 
   late _MockRemote remote;
@@ -26,31 +25,21 @@ void main() {
 
   setUp(() {
     remote = _MockRemote();
-    final torConfig = _MockTorConfig();
-    when(
-      () => torConfig.getAvailableExternalTorConfig(),
-    ).thenAnswer((_) async => null);
     repository = RecoverBullRepository(
       remoteDatasource: remote,
       recoverbullSettingsDatasource: _MockSettings(),
-      torConfigPort: torConfig,
     );
   });
 
   void stubFetchThrows(Object error) {
     when(
-      () => remote.fetch(
-        any(),
-        any(),
-        any(),
-        externalProxy: any(named: 'externalProxy'),
-      ),
+      () => remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
     ).thenThrow(error);
   }
 
   // identifier/salt must be valid hex (the repo HEX-decodes them).
   Future<Result<String, RecoverBullCoreFailure>> fetch() =>
-      repository.fetchVaultKey('00', 'password', '00');
+      repository.fetchVaultKey('00', 'password', '00', endpoint);
 
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
     test('401 -> KeyServerInvalidCredentialsFailure (no raw leak)', () async {
@@ -136,12 +125,7 @@ void main() {
 
   test('success -> Ok with hex-encoded key', () async {
     when(
-      () => remote.fetch(
-        any(),
-        any(),
-        any(),
-        externalProxy: any(named: 'externalProxy'),
-      ),
+      () => remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
     ).thenAnswer((_) async => [0xab, 0xcd]);
 
     final result = await fetch();

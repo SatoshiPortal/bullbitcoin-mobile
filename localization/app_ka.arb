@@ -3666,7 +3666,7 @@
   "torSettingsDescDisconnected": "Tor პროქსი გაშვებული არ არის",
   "torSettingsDescUnknown": "Tor-ის სტატუსის დადგენა ვერ მოხერხდა. დარწმუნდით, რომ Orbot დაინსტალირებული და გაშვებულია.",
   "torSettingsInfoTitle": "მნიშვნელოვანი ინფორმაცია",
-  "torSettingsInfoDescription": "• Tor პროქსი მოქმედებს მხოლოდ Bitcoin-ზე (არა Liquid-ზე)\n• ნაგულისხმევი Orbot პორტია 9050\n• დარწმუნდით, რომ Orbot გაშვებულია ჩართვამდე\n• Tor-ის მეშვეობით კავშირი შესაძლოა უფრო ნელი იყოს",
+  "torSettingsInfoDescription": "• ჩაშენებულ Tor-ს მხოლოდ RecoverBull იყენებს\n• Orbot გამოიყენება მხოლოდ Bitcoin Electrum .onion სერვერებისთვის\n• Bull-ის სხვა ქსელური ტრაფიკი უცვლელი რჩება\n• Orbot-ის ნაგულისხმევი პორტია 9050\n• ჩართვამდე დარწმუნდით, რომ Orbot გაშვებულია\n• Tor-ის მეშვეობით კავშირი შეიძლება უფრო ნელი იყოს",
   "withdrawSuccessTitle": "გატანა დაწყებულია",
   "withdrawSuccessOrderDetails": "შეკვეთის დეტალები",
   "withdrawConfirmBankAccount": "საბანკო ანგარიში",

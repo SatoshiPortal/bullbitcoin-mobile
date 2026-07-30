@@ -1074,7 +1074,7 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• Tor پروکسی فقط در مورد Bitcoin (نه نقدینگی)\n• پورت Orbot 9050\nاطمینان حاصل کنید که Orbot قبل از فعال شدن در حال اجرا است.\n• اتصال ممکن است از طریق Tor کندتر باشد",
+  "torSettingsInfoDescription": "• Tor داخلی فقط توسط RecoverBull استفاده می‌شود\n• Orbot فقط برای سرورهای Bitcoin Electrum با نشانی .onion استفاده می‌شود\n• سایر ترافیک شبکه Bull تغییری نمی‌کند\n• پورت پیش‌فرض Orbot برابر 9050 است\n• پیش از فعال‌سازی مطمئن شوید Orbot در حال اجرا است\n• اتصال از طریق Tor ممکن است کندتر باشد",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

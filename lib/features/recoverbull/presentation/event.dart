@@ -41,7 +41,24 @@ class OnServerCheck extends RecoverBullEvent {
 }
 
 class OnTorInitialization extends RecoverBullEvent {
-  const OnTorInitialization();
+  /// Discard a client that is running but stuck, instead of adopting it.
+  ///
+  /// Only set from an explicit retry: restarting on a rebuild would tear down a
+  /// healthy bootstrap in progress.
+  final bool restart;
+
+  const OnTorInitialization({this.restart = false});
+}
+
+/// Carries a pushed Tor readiness change into the bloc.
+///
+/// Internal: emitted by the bloc's own subscription, never by the UI. A bloc
+/// may only `emit` from inside a handler, so an external stream has to be
+/// funnelled through an event rather than calling `emit` from the listener.
+class _OnTorConnectionChanged extends RecoverBullEvent {
+  final tor.TorConnectionState state;
+
+  const _OnTorConnectionChanged(this.state);
 }
 
 class OnClearError extends RecoverBullEvent {

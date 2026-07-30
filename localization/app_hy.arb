@@ -3538,7 +3538,7 @@
   "torSettingsDescDisconnected": "Tor proxy-ն չի աշխատում",
   "torSettingsDescUnknown": "Հնարավոր չէ որոշել Tor-ի կարգավիճակը։ Համոզվեք, որ Orbot-ը տեղադրված է և աշխատում է։",
   "torSettingsInfoTitle": "Կարևոր տեղեկություն",
-  "torSettingsInfoDescription": "• Tor proxy-ն վերաբերում է միայն Bitcoin-ին (ոչ Liquid-ին)\n• Կանխադրված Orbot նավահանգիստն է 9050\n• Համոզվեք, որ Orbot-ն աշխատում է նախքան միացնելը\n• Կապը կարող է ավելի դանդաղ լինել Tor-ի միջոցով",
+  "torSettingsInfoDescription": "• Ներկառուցված Tor-ն օգտագործվում է միայն RecoverBull-ի կողմից\n• Orbot-ն օգտագործվում է միայն Bitcoin Electrum .onion սերվերների համար\n• Bull-ի մյուս ցանցային երթևեկությունը չի փոխվում\n• Orbot-ի կանխադրված պորտը 9050 է\n• Միացնելուց առաջ համոզվեք, որ Orbot-ն աշխատում է\n• Tor-ի միջոցով կապերը կարող են ավելի դանդաղ լինել",
   "withdrawSuccessTitle": "Հանումը սկսվել է",
   "withdrawSuccessOrderDetails": "Պատվերի մանրամասներ",
   "withdrawConfirmBankAccount": "Բանկային հաշիվ",

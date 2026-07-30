@@ -1710,7 +1710,7 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "torSettingsInfoDescription": "• • · Το Tor proxy ισχύει μόνο για το Bitcoin (δεν είναι ρευστό)\n• • · Το προεπιλεγμένο λιμάνι Orbot είναι 9050\nΒεβαιωθείτε ότι το Orbot τρέχει πριν επιτρέψει\n• • · Η σύνδεση μπορεί να είναι πιο αργή μέσω Tor",
+  "torSettingsInfoDescription": "• Το ενσωματωμένο Tor χρησιμοποιείται μόνο από το RecoverBull\n• Το Orbot χρησιμοποιείται μόνο για διακομιστές Bitcoin Electrum .onion\n• Η υπόλοιπη δικτυακή κίνηση του Bull δεν αλλάζει\n• Η προεπιλεγμένη θύρα του Orbot είναι 9050\n• Βεβαιωθείτε ότι το Orbot εκτελείται πριν το ενεργοποιήσετε\n• Οι συνδέσεις μέσω Tor μπορεί να είναι πιο αργές",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

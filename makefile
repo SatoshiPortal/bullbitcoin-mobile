@@ -34,8 +34,7 @@ deps-update:
 
 # Melos workspace bootstrap (pub get across the workspace + package linking).
 # Wraps `fvm dart run melos` so the pinned SDK (.fvmrc) is used — never bare
-# `melos`. Single root package today (useRootAsPackage), so this is ~equivalent
-# to `make deps`; it becomes meaningful once packages/ + features/ gain members.
+# `melos`. The root app and extracted packages share one workspace resolution.
 bootstrap:
 	@echo "🧩 Melos bootstrap"
 	@fvm dart run melos bootstrap
@@ -252,7 +251,7 @@ android: container-app
 # read the live pin out of bull-app. Keep in sync with the `channel` in
 # bdk-dart's native/rust-toolchain.toml (bdk_dart is transitive via bull_sdk).
 BDK_RUST_VERSION ?= 1.85.1
-TRACKED_RUST_LIBS := libbdk_dart_ffi.so libtor.so libpayjoin_flutter.so librust_lib_bull_sdk.so
+TRACKED_RUST_LIBS := libbdk_dart_ffi.so libonion.so libpayjoin_flutter.so librust_lib_bull_sdk.so
 verify-rustc-pins:
 	@command -v strings >/dev/null 2>&1 || { echo "❌ 'strings' (binutils) not found — cannot verify rustc pins. Install binutils; failing closed rather than skipping the check (a skipped check must never read as green)."; exit 1; }
 	@tmpdir=$$(mktemp -d); \
@@ -276,7 +275,7 @@ verify-rustc-pins:
 			name=$$(basename "$$so"); \
 			case "$$name" in \
 				libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
-				libtor.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
+				libonion.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
 				*) expected="" ;; \
 			esac; \
 			embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \

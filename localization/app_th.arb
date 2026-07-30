@@ -2000,7 +2000,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• • • TorDB ใช้ได้เฉพาะ Bitcoin (ไม่ใช่ของเหลว)\n• • • ค่าเริ่มต้นหรือพอร์ตดิจิตอลคือ 9050\n• ตรวจสอบให้แน่ใจหรือหรือบัญชี\n• • • การเชื่อมต่ออาจช้าผ่าน Tor",
+  "torSettingsInfoDescription": "• Tor ในตัวใช้โดย RecoverBull เท่านั้น\n• Orbot ใช้เฉพาะกับเซิร์ฟเวอร์ Bitcoin Electrum .onion\n• การรับส่งข้อมูลเครือข่ายอื่นของ Bull ไม่เปลี่ยนแปลง\n• พอร์ตเริ่มต้นของ Orbot คือ 9050\n• ตรวจสอบว่า Orbot กำลังทำงานก่อนเปิดใช้งาน\n• การเชื่อมต่อผ่าน Tor อาจช้าลง",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

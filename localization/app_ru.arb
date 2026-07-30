@@ -668,7 +668,7 @@
   "jadeInstructionsTitle": "Blockstream Jade PSBT Инструкции",
   "scanNfcButton": "Scan NFC",
   "testBackupChooseVaultLocation": "Выберите местоположение хранилища",
-  "torSettingsInfoDescription": "• Прокси Tor применяется только к Bitcoin (не ликвидный)\n• Порт Default Orbot - 9050\n• Убедитесь, что Орбот работает, прежде чем включить\n• Подключение может быть медленнее через Tor",
+  "torSettingsInfoDescription": "• Встроенный Tor используется только RecoverBull\n• Orbot используется только для серверов Bitcoin Electrum .onion\n• Остальной сетевой трафик Bull не изменяется\n• Порт Orbot по умолчанию: 9050\n• Перед включением убедитесь, что Orbot запущен\n• Соединения через Tor могут быть медленнее",
   "dcaAddressBitcoin": "Bitcoin адрес",
   "sendErrorAmountBelowMinimum": "Сумма ниже минимального предела свопа: {minLimit}",
   "@sendErrorAmountBelowMinimum": {

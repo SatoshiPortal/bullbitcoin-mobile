@@ -12981,9 +12981,9 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• Tor proxy only applies to Bitcoin (not Liquid)\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connection may be slower through Tor",
+  "torSettingsInfoDescription": "• Embedded Tor is used only by RecoverBull\n• Orbot is used only for Bitcoin Electrum .onion servers\n• Other Bull network traffic is unchanged\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connections may be slower through Tor",
   "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
+    "description": "Explains that embedded Tor is limited to RecoverBull, while this Orbot setting applies only to Bitcoin Electrum .onion servers."
   },
   "withdrawSuccessTitle": "Withdrawal Initiated",
   "@withdrawSuccessTitle": {
@@ -15008,5 +15008,99 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsBootstrapProgress": "Connecting… {percent}%",
+  "@torSettingsBootstrapProgress": {
+    "description": "Bootstrap progress percentage while Tor is connecting.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullPhaseNetworkInfo": "Retrieving network information",
+  "@recoverbullPhaseNetworkInfo": {
+    "description": "Caption shown while Tor downloads directory information. Covers the whole directory phase, which is 85% of bootstrap."
+  },
+  "recoverbullLongestStep": "This is the longest step. A first start can take over a minute.",
+  "@recoverbullLongestStep": {
+    "description": "Reassurance shown once bootstrap has been running a while without visible progress."
+  },
+  "recoverbullTorOffline": "There seems to be no internet connection.",
+  "@recoverbullTorOffline": {
+    "description": "Shown when Tor reports the device has no TCP connectivity. Hedged wording: the upstream diagnostic is best-effort."
+  },
+  "recoverbullTorClockSkewed": "Your device clock is off, so Tor cannot verify relay certificates. Check your date and time settings.",
+  "@recoverbullTorClockSkewed": {
+    "description": "Shown when Tor reports clock skew, which breaks certificate validation. Actionable: the user can fix the clock."
+  },
+  "recoverbullTorCantStart": "Tor could not connect right now. Please try again.",
+  "@recoverbullTorCantStart": {
+    "description": "Generic Tor bootstrap failure, for blockages with no actionable cause."
+  },
+  "recoverbullServerUnreachableTorOk": "Tor is working, but the backup server did not answer. This can take a moment right after a first start.",
+  "@recoverbullServerUnreachableTorOk": {
+    "description": "Shown when Tor is up but the RecoverBull onion service did not answer, so the failure is localised to the server."
+  },
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "@torSettingsEmbeddedTitle": {
+    "description": "Heading for embedded Tor settings"
+  },
+  "torSettingsEmbeddedDescription": "Embedded Tor is used by RecoverBull and Bitcoin Electrum .onion servers. Other app traffic remains direct.",
+  "@torSettingsEmbeddedDescription": {
+    "description": "Explains which traffic uses embedded Tor"
+  },
+  "torSettingsTransportMode": "Connection method",
+  "@torSettingsTransportMode": {
+    "description": "Label for the embedded Tor transport selector"
+  },
+  "torSettingsModeAutomatic": "Automatic",
+  "@torSettingsModeAutomatic": {
+    "description": "Automatic Tor transport mode label"
+  },
+  "torSettingsModeDirect": "Direct",
+  "@torSettingsModeDirect": {
+    "description": "Direct Tor transport mode label"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsExternalProxyTitle": "External Tor proxy (advanced)",
+  "@torSettingsExternalProxyTitle": {
+    "description": "Heading for the optional Orbot override"
+  },
+  "torSettingsExternalProxyDescription": "When enabled, Bitcoin Electrum .onion servers use Orbot at the configured port instead of embedded Tor.",
+  "@torSettingsExternalProxyDescription": {
+    "description": "Explains the scope of the external Tor proxy override"
   }
 }

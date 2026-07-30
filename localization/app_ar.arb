@@ -1886,7 +1886,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• لا ينطبق هذا إلا على بيتكوين (ليس السائل)\n• ميناء أوربوت المغلق 9050\n• Ensure Orbot is running before enabling\n• الاتصال قد يكون أبطأ من خلال تور",
+  "torSettingsInfoDescription": "• يُستخدم Tor المدمج فقط بواسطة RecoverBull\n• يُستخدم Orbot فقط لخوادم Bitcoin Electrum التي تنتهي بـ .onion\n• تبقى حركة الشبكة الأخرى في Bull دون تغيير\n• منفذ Orbot الافتراضي هو 9050\n• تأكد من تشغيل Orbot قبل التفعيل\n• قد تكون الاتصالات عبر Tor أبطأ",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

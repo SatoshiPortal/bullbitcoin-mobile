@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
@@ -14,15 +16,13 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:tor/tor.dart';
 
 class _MockPickVault extends Mock implements PickVaultUsecase {}
 
@@ -45,7 +45,9 @@ class _MockConnectDrive extends Mock implements ConnectToGoogleDriveUsecase {}
 
 class _MockSaveDrive extends Mock implements SaveVaultToGoogleDriveUsecase {}
 
-class _MockInitTor extends Mock implements InitTorUsecase {}
+class _MockEnsureTor extends Mock implements EnsureTorReadyUsecase {}
+
+class _MockRetryTor extends Mock implements RetryTorConnectionUsecase {}
 
 class _MockWalletBloc extends Mock implements WalletBloc {}
 
@@ -55,9 +57,8 @@ class _MockFetchLatestDrive extends Mock
 class _MockUpdateLatest extends Mock
     implements UpdateLatestEncryptedVaultTestUsecase {}
 
-class _MockTorStatus extends Mock implements TorStatusUsecase {}
-
-class _MockTorConfig extends Mock implements TorConfigPort {}
+class _MockWatchTorConnection extends Mock
+    implements WatchTorConnectionUsecase {}
 
 class _MockEncryptedVault extends Mock implements EncryptedVault {}
 
@@ -72,12 +73,12 @@ void main() {
   late _MockRestore restore;
   late _MockConnectDrive connectDrive;
   late _MockSaveDrive saveDrive;
-  late _MockInitTor initTor;
+  late _MockEnsureTor ensureTor;
+  late _MockRetryTor retryTor;
   late _MockWalletBloc walletBloc;
   late _MockFetchLatestDrive fetchLatestDrive;
   late _MockUpdateLatest updateLatest;
-  late _MockTorStatus torStatus;
-  late _MockTorConfig torConfig;
+  late _MockWatchTorConnection watchTor;
 
   setUpAll(() {
     registerFallbackValue(_MockEncryptedVault());
@@ -94,16 +95,19 @@ void main() {
     restore = _MockRestore();
     connectDrive = _MockConnectDrive();
     saveDrive = _MockSaveDrive();
-    initTor = _MockInitTor();
+    ensureTor = _MockEnsureTor();
+    retryTor = _MockRetryTor();
     walletBloc = _MockWalletBloc();
     fetchLatestDrive = _MockFetchLatestDrive();
     updateLatest = _MockUpdateLatest();
-    torStatus = _MockTorStatus();
-    torConfig = _MockTorConfig();
+    watchTor = _MockWatchTorConnection();
+    when(
+      () => watchTor.execute(),
+    ).thenAnswer((_) => const Stream<TorConnectionState>.empty());
   });
 
-  // The bloc constructor does not auto-dispatch any event, so unstubbed mocks
-  // stay untouched unless a test drives the matching flow.
+  // No event is auto-dispatched, so unstubbed mocks stay untouched unless a
+  // test drives the matching flow — the Tor subscription above excepted.
   RecoverBullBloc buildBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
@@ -120,12 +124,12 @@ void main() {
     restoreVaultUsecase: restore,
     connectToGoogleDriveUsecase: connectDrive,
     saveToGoogleDriveUsecase: saveDrive,
-    initializeTorUsecase: initTor,
+    ensureTorReadyUsecase: ensureTor,
+    retryTorConnectionUsecase: retryTor,
     walletBloc: walletBloc,
     fetchLatestGoogleDriveVaultUsecase: fetchLatestDrive,
     updateLatestEncryptedVaultTestUsecase: updateLatest,
-    torStatusUsecase: torStatus,
-    torConfigPort: torConfig,
+    watchTorConnectionUsecase: watchTor,
   );
 
   group('OnVaultPasswordSet guard', () {
@@ -231,5 +235,31 @@ void main() {
         await bloc.close();
       },
     );
+  });
+
+  group('Tor retry concurrency', () {
+    test('drops a second retry while the first one is in flight', () async {
+      final pending = Completer<TorConnectionState>();
+      when(() => retryTor.execute()).thenAnswer((_) => pending.future);
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+
+      bloc.add(const OnTorInitialization(restart: true));
+      await pumpEventQueue();
+      bloc.add(const OnTorInitialization(restart: true));
+      await pumpEventQueue();
+
+      verify(() => retryTor.execute()).called(1);
+
+      pending.complete(
+        const TorUnavailable(
+          source: TorSource.embedded,
+          failure: TorBootstrapFailure('bootstrap failed'),
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isA<TorNotStartedFailure>());
+      await bloc.close();
+    });
   });
 }

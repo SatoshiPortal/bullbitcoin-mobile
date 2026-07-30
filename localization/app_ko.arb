@@ -2000,7 +2000,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "· Tor 프록시는 Bitcoin (Liquid)에만 적용됩니다.\n· 과태 Orbot 항구는 9050입니다\n• Ensure Orbot은 활성화하기 전에 실행됩니다.\n· 연결은 Tor를 통해 더 느릴 수 있습니다",
+  "torSettingsInfoDescription": "• 내장 Tor는 RecoverBull에서만 사용됩니다\n• Orbot은 Bitcoin Electrum .onion 서버에만 사용됩니다\n• Bull의 다른 네트워크 트래픽은 변경되지 않습니다\n• Orbot 기본 포트는 9050입니다\n• 활성화하기 전에 Orbot이 실행 중인지 확인하세요\n• Tor를 통한 연결은 더 느릴 수 있습니다",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

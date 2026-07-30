@@ -4,7 +4,7 @@ PODS:
     - Flutter
   - rust_lib_bull_sdk (0.0.1):
     - Flutter
-  - tor (0.0.1):
+  - onion (0.0.1):
     - Flutter
   - universal_ble (0.0.1):
     - Flutter
@@ -18,7 +18,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_secure_storage_legacy (from `.symlinks/plugins/flutter_secure_storage_legacy/ios`)
   - rust_lib_bull_sdk (from `.symlinks/plugins/rust_lib_bull_sdk/ios`)
-  - tor (from `.symlinks/plugins/tor/ios`)
+  - onion (from `.symlinks/plugins/onion/ios`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
   - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
   - workmanager_apple (from `.symlinks/plugins/workmanager_apple/ios`)
@@ -30,8 +30,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage_legacy/ios"
   rust_lib_bull_sdk:
     :path: ".symlinks/plugins/rust_lib_bull_sdk/ios"
-  tor:
-    :path: ".symlinks/plugins/tor/ios"
+  onion:
+    :path: ".symlinks/plugins/onion/ios"
   universal_ble:
     :path: ".symlinks/plugins/universal_ble/darwin"
   webview_cookie_manager:
@@ -43,7 +43,7 @@ SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_secure_storage_legacy: 2b1517bd98433d760370884d3e2cc3ed8eeb2538
   rust_lib_bull_sdk: 160980033dfde220ad447a6dffa22d4269f8ea6c
-  tor: 767208930250ef7be241963b75568c55c0a81890
+  onion: 4876b9b0120d40a2817eac0903dfb9bd59832755
   universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
   webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
   workmanager_apple: 904529ae31e97fc5be632cf628507652294a0778

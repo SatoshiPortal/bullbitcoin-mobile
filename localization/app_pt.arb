@@ -4116,7 +4116,7 @@
   "@withdrawOwnershipQuestion": {
     "description": "Question asking about account ownership"
   },
-  "torSettingsInfoDescription": "• O proxy Tor se aplica apenas ao Bitcoin (não ao Liquid)\n• A porta padrão do Orbot é 9050\n• Certifique-se de que o Orbot esteja em execução antes de ativar\n• A conexão pode ser mais lenta ao usar o Tor",
+  "torSettingsInfoDescription": "• O Tor integrado é usado apenas pelo RecoverBull\n• O Orbot é usado apenas para servidores Electrum Bitcoin .onion\n• O restante tráfego de rede da Bull não é alterado\n• A porta predefinida do Orbot é 9050\n• Certifique-se de que o Orbot está em execução antes de ativar\n• As ligações através do Tor podem ser mais lentas",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -5326,5 +5326,8 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "torSettingsStatusCensored": "A ligação parece filtrada",
+  "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isto indica muitas vezes uma ligação filtrada.",
+  "torSettingsBootstrapProgress": "A ligar… {percent}%"
 }

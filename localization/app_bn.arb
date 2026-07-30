@@ -1977,7 +1977,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor প্রক্সি কেবল বিটকয়েন-এ প্রযোজ্য (লিকুইড-এ নয়)\n• ডিফল্ট অরবট পোর্ট হলো 9050\n• সক্রিয় করার আগে নিশ্চিত করুন যে অরবট চালু রয়েছে\n• Tor-এর মাধ্যমে সংযোগ ধীর হতে পারে",
+  "torSettingsInfoDescription": "• এমবেডেড Tor শুধু RecoverBull ব্যবহার করে\n• Orbot শুধু Bitcoin Electrum .onion সার্ভারের জন্য ব্যবহার করা হয়\n• Bull-এর অন্যান্য নেটওয়ার্ক ট্রাফিক অপরিবর্তিত থাকে\n• Orbot-এর ডিফল্ট পোর্ট 9050\n• চালু করার আগে নিশ্চিত করুন যে Orbot চলছে\n• Tor-এর মাধ্যমে সংযোগ ধীর হতে পারে",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

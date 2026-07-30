@@ -12,11 +12,13 @@ workspace:
   # lockfile resolves it; the app NEVER lists bull_ui_catalogue as a
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
+  - packages/tor
 
 dependencies:
   flutter:
     sdk: flutter
   bull_ui:
+  tor:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -47,17 +49,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
+      ref: 9a39efafc0897fb2653f874b80c88117a00ecbef
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
+      ref: 9a39efafc0897fb2653f874b80c88117a00ecbef
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
+      ref: 9a39efafc0897fb2653f874b80c88117a00ecbef
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   hex: ^0.2.0
@@ -112,7 +114,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
+      ref: 9a39efafc0897fb2653f874b80c88117a00ecbef
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -129,10 +131,6 @@ dependencies:
       ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
   bitcoin_base: ^7.0.0
   socks5_proxy: ^2.1.1
-  tor:
-    git:
-      url: https://github.com/Foundation-Devices/tor
-      ref: b92e2bc
   meta: ^1.17.0
   workmanager: ^0.9.0
   path: ^1.9.1
@@ -162,10 +160,9 @@ dev_dependencies:
   drift_dev: ^2.29.0
   melos: ^7.8.1
 
-# Melos monorepo workspace. Today the app is a single package living at the repo
-# root (useRootAsPackage), so this is a skeleton: no workspace members yet. As
-# core/feature code is extracted incrementally into packages/ and features/,
-# each becomes a `resolution: workspace` member listed under a `workspace:` key.
+# Melos monorepo workspace. The app remains at the root (useRootAsPackage) while
+# shared modules are extracted incrementally into packages/ and features/ as
+# `resolution: workspace` members listed under the `workspace:` key above.
 # Invoke via `make bootstrap` (wraps `fvm dart run melos` so the pinned SDK in
 # .fvmrc is used); never run bare `melos`.
 melos:

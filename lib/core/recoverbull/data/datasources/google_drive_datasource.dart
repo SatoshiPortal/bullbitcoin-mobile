@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:http/http.dart' as http;
 
 class GoogleDriveAppDatasource {
   static final _google = GoogleSignIn(
@@ -13,7 +14,7 @@ class GoogleDriveAppDatasource {
   );
 
   drive.DriveApi? _driveApi;
-
+  http.Client? _client;
   void _checkConnection() {
     if (_driveApi == null) throw 'unauthenticated';
   }
@@ -26,6 +27,7 @@ class GoogleDriveAppDatasource {
       final client = await _google.authenticatedClient();
       if (client == null) throw 'Failed to get authenticated client';
 
+      _client = client;
       _driveApi = drive.DriveApi(client);
     } catch (e) {
       log.severe(
@@ -39,8 +41,10 @@ class GoogleDriveAppDatasource {
   }
 
   Future<void> disconnect() async {
-    await _google.disconnect();
+    _client?.close();
+    _client = null;
     _driveApi = null;
+    await _google.disconnect();
   }
 
   Future<List<DriveFileMetadataModel>> fetchAllMetadata() async {

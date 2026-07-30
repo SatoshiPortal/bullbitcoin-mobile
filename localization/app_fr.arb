@@ -4065,7 +4065,7 @@
   "torSettingsDescDisconnected": "Le proxy Tor n'est pas actif",
   "torSettingsDescUnknown": "Impossible de déterminer l'état de Tor. Assurez-vous qu'Orbot est installé et en cours d'exécution.",
   "torSettingsInfoTitle": "Informations importantes",
-  "torSettingsInfoDescription": "• Le proxy Tor s'applique uniquement à Bitcoin (pas Liquid)\n• Le port Orbot par défaut est 9050\n• Assurez-vous qu'Orbot est en cours d'exécution avant d'activer\n• La connexion peut être plus lente via Tor",
+  "torSettingsInfoDescription": "• Le Tor intégré est utilisé uniquement par RecoverBull\n• Orbot est utilisé uniquement pour les serveurs Electrum Bitcoin en .onion\n• Les autres connexions réseau de Bull restent inchangées\n• Le port Orbot par défaut est 9050\n• Vérifiez qu'Orbot fonctionne avant de l'activer\n• Les connexions peuvent être plus lentes via Tor",
   "withdrawSuccessTitle": "Retrait initié",
   "withdrawSuccessOrderDetails": "Détails de la commande",
   "withdrawConfirmBankAccount": "Compte bancaire",
@@ -5283,5 +5283,14 @@
   "announcementDismissConfirmTitle": "Ignorer cette annonce ?",
   "announcementDismissConfirmBody": "Lisez pour en savoir plus, ou ignorez pour la masquer. Les annonces ignorées ne réapparaîtront plus.",
   "announcementDismissConfirmAction": "Ignorer",
-  "announcementDismissConfirmRead": "Lire"
+  "announcementDismissConfirmRead": "Lire",
+  "torSettingsStatusCensored": "Connexion semble filtrée",
+  "torSettingsDescCensored": "Tor n’a pas pu joindre le réseau. Cela indique souvent une connexion filtrée.",
+  "torSettingsBootstrapProgress": "Connexion… {percent} %",
+  "recoverbullPhaseNetworkInfo": "Récupération des informations du réseau",
+  "recoverbullLongestStep": "C'est l'étape la plus longue. Un premier démarrage peut dépasser une minute.",
+  "recoverbullTorOffline": "Il semble n'y avoir aucune connexion Internet.",
+  "recoverbullTorClockSkewed": "L'horloge de l'appareil est décalée, Tor ne peut donc pas vérifier les certificats des relais. Vérifie tes réglages de date et d'heure.",
+  "recoverbullTorCantStart": "Tor n'a pas réussi à se connecter pour le moment. Réessaie.",
+  "recoverbullServerUnreachableTorOk": "Tor fonctionne, mais le serveur de sauvegarde n'a pas répondu. Cela peut prendre un moment juste après un premier démarrage."
 }

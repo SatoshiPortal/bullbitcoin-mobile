@@ -2212,7 +2212,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor proxy se vztahuje pouze na Bitcoin (ne Liquid)\n• Výchozí port Orbot je 9050\n• Ujistěte se, že Orbot běží před povolením\n• Připojení může být pomalejší přes Tor",
+  "torSettingsInfoDescription": "• Vestavěný Tor používá pouze RecoverBull\n• Orbot se používá pouze pro servery Bitcoin Electrum .onion\n• Ostatní síťový provoz aplikace Bull zůstává beze změny\n• Výchozí port Orbotu je 9050\n• Před zapnutím ověřte, že je Orbot spuštěný\n• Připojení přes Tor mohou být pomalejší",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

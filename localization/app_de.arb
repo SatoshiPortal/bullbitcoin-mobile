@@ -657,7 +657,7 @@
   "jadeInstructionsTitle": "Blockstream Jade PSBT-Anleitung",
   "scanNfcButton": "NFC scannen",
   "testBackupChooseVaultLocation": "Speicherort wählen",
-  "torSettingsInfoDescription": "Tor-Proxy gilt nur für Bitcoin (nicht für Liquid)\n• Der Standard-Port für Orbot ist 9050.\n• Stellen Sie sicher, dass Orbot ausgeführt wird, bevor Sie die Funktion aktivieren.\n• Die Verbindung über Tor kann langsamer sein.",
+  "torSettingsInfoDescription": "• Das integrierte Tor wird nur von RecoverBull verwendet\n• Orbot wird nur für Bitcoin-Electrum-Server mit .onion-Adresse verwendet\n• Anderer Netzwerkverkehr von Bull bleibt unverändert\n• Der Standardport von Orbot ist 9050\n• Stellen Sie vor dem Aktivieren sicher, dass Orbot ausgeführt wird\n• Verbindungen über Tor können langsamer sein",
   "dcaAddressBitcoin": "Bitcoin-Adresse",
   "sendErrorAmountBelowMinimum": "Betrag unterhalb der Mindest-Swap-Grenze: {minLimit} Sats.",
   "@sendErrorAmountBelowMinimum": {
@@ -5214,5 +5214,8 @@
   "transactionStatusPayjoinAborted": "Payjoin abgebrochen",
   "transactionDetailLabelPayjoinAborted": "Abgebrochen",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-Gebührenbeitrag",
-  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78).",
+  "torSettingsStatusCensored": "Verbindung scheint gefiltert",
+  "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
+  "torSettingsBootstrapProgress": "Verbinden… {percent}%"
 }

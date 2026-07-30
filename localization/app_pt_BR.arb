@@ -13223,7 +13223,7 @@
   "priceFailedToLoad": "Falha ao carregar o preço",
   "statusScreenTryAgain": "Tente novamente",
   "statusScreenContinue": "Continue",
-  "torSettingsInfoDescription": "• O proxy Tor se aplica apenas ao Bitcoin (não ao Liquid)\n• A porta padrão do Orbot é 9050\n• Certifique-se de que o Orbot esteja em execução antes de ativar\n• A conexão pode ficar mais lenta através do Tor",
+  "torSettingsInfoDescription": "• O Tor integrado é usado apenas pelo RecoverBull\n• O Orbot é usado apenas para servidores Electrum Bitcoin .onion\n• O restante do tráfego de rede da Bull não é alterado\n• A porta padrão do Orbot é 9050\n• Verifique se o Orbot está em execução antes de ativar\n• As conexões pelo Tor podem ser mais lentas",
   "noteVisibleToSenderNotice": "Esta nota ficará visível para o destinatário do seu QR ou fatura.",
   "viewerAddressTab": "Endereço",
   "viewerPaymentUriTab": "URI de pagamento",

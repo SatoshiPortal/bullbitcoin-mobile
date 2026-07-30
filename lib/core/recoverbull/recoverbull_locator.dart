@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usec
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -28,40 +29,34 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypt
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
-import 'package:bb_mobile/core/tor/infrastructure/services/tor_connectivity_service.dart';
-import 'package:bb_mobile/core/tor/interface_adapters/adapters/tor_config_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:get_it/get_it.dart';
+import 'package:tor/tor.dart';
 
 class RecoverbullLocator {
-  static Future<void> registerDatasources(GetIt locator) async {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<GoogleDriveAppDatasource>(
-      () => GoogleDriveAppDatasource(),
+      GoogleDriveAppDatasource.new,
     );
 
     locator.registerLazySingleton<RecoverbullSettingsDatasource>(
       () => RecoverbullSettingsDatasource(sqlite: locator<SqliteDatabase>()),
     );
 
-    locator.registerSingletonWithDependencies<RecoverBullRemoteDatasource>(
+    locator.registerLazySingleton<RecoverBullRemoteDatasource>(
       () => RecoverBullRemoteDatasource(
         recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
-        torDatasource: locator<TorDatasource>(),
+        torHttpClientFactory: locator<TorHttpClientFactory>(),
       ),
-      dependsOn: [TorDatasource],
     );
 
     locator.registerLazySingleton<FileStorageDatasource>(
       () => FileStorageDatasource(),
     );
-
-    await locator.isReady<RecoverBullRemoteDatasource>();
   }
 
-  static Future<void> registerRepositories(GetIt locator) async {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<GoogleDriveRepository>(
       () => GoogleDriveRepository(
         datasource: locator<GoogleDriveAppDatasource>(),
@@ -72,26 +67,18 @@ class RecoverbullLocator {
       () => FileSystemRepository(datasource: locator<FileStorageDatasource>()),
     );
 
-    locator.registerLazySingleton<TorConfigPort>(
-      () => TorConfigAdapter(
-        settingsRepository: locator<SettingsRepository>(),
-        torConnectivityService: locator<TorConnectivityService>(),
-      ),
-    );
-
-    locator.registerSingletonWithDependencies<RecoverBullRepository>(
+    locator.registerLazySingleton<RecoverBullRepository>(
       () => RecoverBullRepository(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
-        torConfigPort: locator<TorConfigPort>(),
       ),
-      dependsOn: [RecoverBullRemoteDatasource],
     );
-
-    await locator.isReady<RecoverBullRepository>();
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<EnsureRecoverBullTorSessionUsecase>(
+      () => EnsureRecoverBullTorSessionUsecase(locator<Tor>().embedded),
+    );
     locator.registerFactory<CreateEncryptedVaultUsecase>(
       () => CreateEncryptedVaultUsecase(
         seedRepository: locator<SeedRepository>(),
@@ -149,19 +136,22 @@ class RecoverbullLocator {
 
     locator.registerFactory<StoreVaultKeyIntoServerUsecase>(
       () => StoreVaultKeyIntoServerUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
+        locator<RecoverBullRepository>(),
+        locator<EnsureRecoverBullTorSessionUsecase>(),
       ),
     );
 
     locator.registerFactory<CheckServerConnectionUsecase>(
       () => CheckServerConnectionUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
+        locator<RecoverBullRepository>(),
+        locator<EnsureRecoverBullTorSessionUsecase>(),
       ),
     );
 
     locator.registerFactory<FetchVaultKeyFromServerUsecase>(
       () => FetchVaultKeyFromServerUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
+        locator<RecoverBullRepository>(),
+        locator<EnsureRecoverBullTorSessionUsecase>(),
       ),
     );
     locator.registerFactory<SaveVaultToGoogleDriveUsecase>(

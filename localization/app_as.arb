@@ -9315,7 +9315,7 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• Tor proxy কেৱল Bitcoin-ত প্ৰযোজ্য (Liquid-ত নহয়)\n• ডিফল্ট Orbot port হৈছে 9050\n• সামৰ্থ্য কৰাৰ আগতে Orbot চলি আছে নিশ্চিত কৰক\n• Tor-ৰ জৰিয়তে সংযোগ লেহেমীয়া হ'ব পাৰে",
+  "torSettingsInfoDescription": "• এম্বেড কৰা Tor কেৱল RecoverBull-এ ব্যৱহাৰ কৰে\n• Orbot কেৱল Bitcoin Electrum .onion ছাৰ্ভাৰৰ বাবে ব্যৱহাৰ কৰা হয়\n• Bull-ৰ অন্য নেটৱৰ্ক ট্ৰেফিক অপৰিৱৰ্তিত থাকে\n• Orbot-ৰ ডিফল্ট প'ৰ্ট 9050\n• সক্ৰিয় কৰাৰ আগতে Orbot চলি থকাটো নিশ্চিত কৰক\n• Tor-ৰ জৰিয়তে সংযোগ ধীৰ হ'ব পাৰে",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

@@ -3522,7 +3522,7 @@
   "torSettingsDescDisconnected": "Tor proxy haiendeshi",
   "torSettingsDescUnknown": "Imeshindwa kubaini hali ya Tor. Hakikisha Orbot imesakinishwa na inaendesha.",
   "torSettingsInfoTitle": "Taarifa Muhimu",
-  "torSettingsInfoDescription": "• Tor proxy inatumika kwa Bitcoin pekee (siyo Liquid)\n• Mlango chaguo-msingi wa Orbot ni 9050\n• Hakikisha Orbot inaendesha kabla ya kuwasha\n• Muunganisho unaweza kuwa wa polepole zaidi kupitia Tor",
+  "torSettingsInfoDescription": "• Tor iliyopachikwa inatumiwa tu na RecoverBull\n• Orbot inatumika tu kwa seva za Bitcoin Electrum .onion\n• Trafiki nyingine ya mtandao ya Bull haibadilishwi\n• Mlango chaguo-msingi wa Orbot ni 9050\n• Hakikisha Orbot inaendeshwa kabla ya kuiwasha\n• Miunganisho kupitia Tor inaweza kuwa ya polepole",
   "withdrawSuccessTitle": "Uondoaji Umeanzishwa",
   "withdrawSuccessOrderDetails": "Maelezo ya agizo",
   "withdrawConfirmBankAccount": "Akaunti ya benki",

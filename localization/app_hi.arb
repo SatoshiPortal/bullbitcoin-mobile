@@ -2000,7 +2000,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor प्रॉक्सी केवल बिटकॉइन पर लागू होता है (तरल नहीं)\n• डिफ़ॉल्ट Orbot बंदरगाह 9050 है\n• सुनिश्चित करें कि ऑर्बोट सक्षम होने से पहले चल रहा है\n• Tor के माध्यम से कनेक्शन धीमा हो सकता है",
+  "torSettingsInfoDescription": "• एम्बेडेड Tor का उपयोग केवल RecoverBull करता है\n• Orbot का उपयोग केवल Bitcoin Electrum .onion सर्वर के लिए किया जाता है\n• Bull का अन्य नेटवर्क ट्रैफ़िक नहीं बदलता\n• Orbot का डिफ़ॉल्ट पोर्ट 9050 है\n• सक्षम करने से पहले सुनिश्चित करें कि Orbot चल रहा है\n• Tor के माध्यम से कनेक्शन धीमे हो सकते हैं",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

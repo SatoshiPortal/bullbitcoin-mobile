@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/electrum/adapters/electrum_servers_adapter.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:tor/tor.dart';
 
 class _MockServerRepository extends Mock implements ElectrumServerRepository {}
 
@@ -17,6 +19,8 @@ class _MockSettingsRepository extends Mock
     implements ElectrumSettingsRepository {}
 
 class _MockAppSettingsRepository extends Mock implements SettingsRepository {}
+
+class _MockTorSessionPort extends Mock implements ElectrumTorSessionPort {}
 
 const _network = ElectrumServerNetwork.bitcoinMainnet;
 const _liquidNetwork = ElectrumServerNetwork.liquidMainnet;
@@ -58,6 +62,7 @@ void main() {
   late _MockServerRepository serverRepo;
   late _MockSettingsRepository settingsRepo;
   late _MockAppSettingsRepository appSettingsRepo;
+  late _MockTorSessionPort torSessionPort;
   late ElectrumServersAdapter adapter;
 
   setUpAll(() {
@@ -68,10 +73,20 @@ void main() {
     serverRepo = _MockServerRepository();
     settingsRepo = _MockSettingsRepository();
     appSettingsRepo = _MockAppSettingsRepository();
+    torSessionPort = _MockTorSessionPort();
+    when(
+      () => torSessionPort.open(
+        network: any(named: 'network'),
+        serverUrl: any(named: 'serverUrl'),
+        externalProxyEnabled: any(named: 'externalProxyEnabled'),
+        externalProxyPort: any(named: 'externalProxyPort'),
+      ),
+    ).thenAnswer((_) async => null);
     adapter = ElectrumServersAdapter(
       serverRepository: serverRepo,
       settingsRepository: settingsRepo,
       appSettingsRepository: appSettingsRepo,
+      torSessionPort: torSessionPort,
     );
   });
 
@@ -254,7 +269,40 @@ void main() {
       },
     );
 
-    test('Tor enabled on Bitcoin → injects 127.0.0.1:<port>', () async {
+    test('an onion server uses the resolved isolated Tor route', () async {
+      var closed = false;
+      when(
+        () => torSessionPort.open(
+          network: _network,
+          serverUrl: 'ssl://hidden.onion:50002',
+          externalProxyEnabled: true,
+          externalProxyPort: 9050,
+        ),
+      ).thenAnswer(
+        (_) async => ElectrumTorRoute(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41234),
+          () async => closed = true,
+        ),
+      );
+      stub(
+        servers: [_server('ssl://hidden.onion:50002')],
+        settings: _settings(),
+        appSettings: _appSettings(useTorProxy: true, torProxyPort: 9050),
+      );
+
+      late final String? socks5;
+      await adapter.runWithFallback<void>(
+        network: _network,
+        operation: (connection) async {
+          socks5 = connection.socks5;
+        },
+      );
+
+      expect(socks5, '127.0.0.1:41234');
+      expect(closed, isTrue);
+    });
+
+    test('Orbot enabled leaves a clearnet Bitcoin server direct', () async {
       stub(
         servers: [_server('ssl://a:50002')],
         settings: _settings(),
@@ -269,10 +317,10 @@ void main() {
         },
       );
 
-      expect(socks5, '127.0.0.1:9150');
+      expect(socks5, isNull);
     });
 
-    test('Tor enabled but persisted socks5 set → persisted wins', () async {
+    test('a persisted custom SOCKS setting remains available', () async {
       stub(
         servers: [_server('ssl://a:50002')],
         settings: _settings(socks5: 'proxy.example:9999'),
@@ -290,7 +338,7 @@ void main() {
       expect(socks5, 'proxy.example:9999');
     });
 
-    test('Tor enabled on Liquid → socks5 is NOT applied', () async {
+    test('Orbot enabled is not applied to Liquid Electrum', () async {
       when(
         () => serverRepo.fetchActiveServers(network: any(named: 'network')),
       ).thenAnswer(

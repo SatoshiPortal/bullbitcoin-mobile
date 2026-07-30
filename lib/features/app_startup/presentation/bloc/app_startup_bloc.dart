@@ -4,11 +4,10 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keycha
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -33,8 +32,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
     required this._requiresMigrationUsecase,
     required this._checkBackupUsecase,
-    required this._isTorRequiredUsecase,
-    required this._initTorUsecase,
+    required this._initializeRequiredTorUsecase,
   }) : _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
        super(const AppStartupState.initial()) {
@@ -50,8 +48,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
   final RequiresMigrationUsecase _requiresMigrationUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
-  final IsTorRequiredUsecase _isTorRequiredUsecase;
-  final InitTorUsecase _initTorUsecase;
+  final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -149,17 +146,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         await _resetAppDataUsecase.execute();
       }
 
-      // Run Tor initialization in background
-      try {
-        final isTorRequired = await _isTorRequiredUsecase.execute();
-        if (isTorRequired) unawaited(_initTorUsecase.execute());
-      } catch (e) {
-        log.severe(
-          message: 'Tor initialization check failed',
-          error: e,
-          trace: StackTrace.current,
-        );
-      }
+      // Warm the embedded client without delaying the startup screen. The
+      // coordinator makes this single-flight with any concurrent consumer.
+      unawaited(_initializeTorInBackground());
 
       emit(
         AppStartupState.success(
@@ -198,6 +187,18 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         hasBackup = false;
       }
       emit(AppStartupState.failure(e, hasBackup: hasBackup));
+    }
+  }
+
+  Future<void> _initializeTorInBackground() async {
+    try {
+      await _initializeRequiredTorUsecase.execute();
+    } catch (error, stackTrace) {
+      log.severe(
+        message: 'Required Tor initialization failed',
+        error: error,
+        trace: stackTrace,
+      );
     }
   }
 }

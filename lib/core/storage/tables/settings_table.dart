@@ -13,6 +13,9 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   BoolColumn get useTorProxy => boolean().withDefault(const Constant(false))();
   IntColumn get torProxyPort => integer().withDefault(const Constant(9050))();
+  TextColumn get torTransportMode =>
+      text().withDefault(const Constant('automatic'))();
+  TextColumn get lastSuccessfulTorTransport => text().nullable()();
   TextColumn get themeMode => text().withDefault(const Constant('system'))();
   BoolColumn get isErrorReportingEnabled =>
       boolean().withDefault(const Constant(false))();

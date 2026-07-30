@@ -4013,7 +4013,7 @@
   "torSettingsDescDisconnected": "Tor-välityspalvelin ei ole käynnissä",
   "torSettingsDescUnknown": "Tor-tilaa ei voida määrittää. Varmista, että Orbot on asennettu ja käynnissä.",
   "torSettingsInfoTitle": "Tärkeää tietoa",
-  "torSettingsInfoDescription": "• Tor-välityspalvelin koskee vain Bitcoinia (ei Liquidia)\n• Orbotin oletusportti on 9050\n• Varmista, että Orbot on käynnissä ennen käyttöönottoa\n• Yhteys saattaa olla hitaampi Torin kautta",
+  "torSettingsInfoDescription": "• Upotettua Toria käyttää vain RecoverBull\n• Orbotia käytetään vain Bitcoin Electrumin .onion-palvelimille\n• Bullin muu verkkoliikenne ei muutu\n• Orbotin oletusportti on 9050\n• Varmista ennen käyttöönottoa, että Orbot on käynnissä\n• Tor-yhteydet voivat olla hitaampia",
   "withdrawSuccessTitle": "Nosto aloitettu",
   "withdrawSuccessOrderDetails": "Tilaustiedot",
   "withdrawConfirmBankAccount": "Pankkitili",

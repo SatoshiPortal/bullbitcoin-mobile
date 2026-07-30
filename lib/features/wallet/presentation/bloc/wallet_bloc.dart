@@ -15,8 +15,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
@@ -47,8 +45,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchFinishedWalletSyncsUsecase,
     required this._watchElectrumSyncResultsUsecase,
     required this._syncCoordinator,
-    required this._initializeTorUsecase,
-    required this._checkForTorInitializationOnStartupUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
     required this._getAutoSwapSettingsUsecase,
     required this._saveAutoSwapSettingsUsecase,
@@ -67,7 +63,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
-    on<StartTorInitialization>(_onStartTorInitialization);
     on<BlockAutoSwapUntilNextExecution>(_onBlockAutoSwapUntilNextExecution);
     on<ExecuteAutoSwap>(_onExecuteAutoSwap);
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
@@ -86,8 +81,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final WatchElectrumSyncResultsUsecase _watchElectrumSyncResultsUsecase;
   final SyncCoordinator _syncCoordinator;
-  final InitTorUsecase _initializeTorUsecase;
-  final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
@@ -433,19 +426,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } finally {
       emit(state.copyWith(isDeletingWallet: false));
-    }
-  }
-
-  Future<void> _onStartTorInitialization(
-    StartTorInitialization event,
-    Emitter<WalletState> emit,
-  ) async {
-    emit(state.copyWith(status: WalletStatus.loading));
-    final isTorIniatizationEnabled =
-        await _checkForTorInitializationOnStartupUsecase.execute();
-
-    if (isTorIniatizationEnabled) {
-      await _initializeTorUsecase.execute();
     }
   }
 

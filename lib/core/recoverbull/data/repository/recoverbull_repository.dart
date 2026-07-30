@@ -6,11 +6,11 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:tor/tor.dart';
 
 /// Data boundary for the RecoverBull key server and vault crypto. Catches the
 /// foreign exceptions the datasources/SDK throw, logs the raw reason, and
@@ -18,12 +18,10 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 class RecoverBullRepository {
   final RecoverBullRemoteDatasource remoteDatasource;
   final RecoverbullSettingsDatasource recoverbullSettingsDatasource;
-  final TorConfigPort torConfigPort;
 
   RecoverBullRepository({
     required this.remoteDatasource,
     required this.recoverbullSettingsDatasource,
-    required this.torConfigPort,
   });
 
   /// Builds an encrypted vault file for [plaintext] under [vaultKey] and stamps
@@ -73,15 +71,15 @@ class RecoverBullRepository {
     String password,
     String salt,
     String vaultKey,
+    TorProxyEndpoint endpoint,
   ) async {
     try {
-      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
       await remoteDatasource.store(
         HEX.decode(identifier),
         utf8.encode(password),
         HEX.decode(salt),
         HEX.decode(vaultKey),
-        externalProxy: externalProxy,
+        endpoint: endpoint,
       );
       return const Ok(null);
     } on recoverbull.KeyServerException catch (e, st) {
@@ -97,14 +95,14 @@ class RecoverBullRepository {
     String identifier,
     String password,
     String salt,
+    TorProxyEndpoint endpoint,
   ) async {
     try {
-      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
       final vaultKey = await remoteDatasource.fetch(
         HEX.decode(identifier),
         utf8.encode(password),
         HEX.decode(salt),
-        externalProxy: externalProxy,
+        endpoint: endpoint,
       );
       return Ok(HEX.encode(vaultKey));
     } on recoverbull.KeyServerException catch (e, st) {
@@ -120,13 +118,13 @@ class RecoverBullRepository {
     String identifier,
     String password,
     String salt,
+    TorProxyEndpoint endpoint,
   ) async {
-    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.trash(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
-      externalProxy: externalProxy,
+      endpoint: endpoint,
     );
   }
 
@@ -134,9 +132,8 @@ class RecoverBullRepository {
   /// otherwise. Kept throwing (not Result) on purpose so the shared status
   /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
   /// into the bool — is unaffected by the Result migration.
-  Future<void> checkConnection() async {
-    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
-    await remoteDatasource.checkConnection(externalProxy: externalProxy);
+  Future<void> checkConnection(TorProxyEndpoint endpoint) async {
+    await remoteDatasource.checkConnection(endpoint);
   }
 
   Future<Uri> fetchUrl() async {

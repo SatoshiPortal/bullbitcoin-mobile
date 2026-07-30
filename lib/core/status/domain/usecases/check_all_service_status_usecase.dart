@@ -5,17 +5,16 @@ import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
-import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:tor/tor.dart';
 
 class CheckAllServiceStatusUsecase {
   final ElectrumConnectivityPort _electrumConnectivityPort;
@@ -23,11 +22,11 @@ class CheckAllServiceStatusUsecase {
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinRepository _payjoinRepository;
   final FeesRepository _feesRepository;
-  final RecoverBullRepository _recoverBullRepository;
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final FetchArkSecretUsecase _fetchArkSecretUsecase;
-  final TorStatusUsecase _torStatusUsecase;
+  final EnsureTorReadyUsecase _ensureTorReadyUsecase;
+  final CheckServerConnectionUsecase _checkServerConnectionUsecase;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -35,11 +34,11 @@ class CheckAllServiceStatusUsecase {
     required this._exchangeRateRepository,
     required this._payjoinRepository,
     required this._feesRepository,
-    required this._recoverBullRepository,
     required this._walletRepository,
     required this._settingsRepository,
     required this._fetchArkSecretUsecase,
-    required this._torStatusUsecase,
+    required this._ensureTorReadyUsecase,
+    required this._checkServerConnectionUsecase,
   });
 
   Future<AllServicesStatus> execute({required Network network}) async {
@@ -238,44 +237,48 @@ class CheckAllServiceStatusUsecase {
     }
   }
 
+  /// `unknown` — not `offline` — when this wallet has no encrypted backup:
+  /// Tor is then unused, so there is nothing to report either way.
+  ///
+  /// For a wallet that does use it, answering means starting the client. That
+  /// is the point of a connectivity screen, and it costs nothing in practice:
+  /// app startup already warms Tor for exactly these wallets, so this adopts
+  /// the running client instead of booting a second one.
   Future<ServiceStatusInfo> _checkTorConnection() async {
-    var status = ServiceStatusInfo(
+    final status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
       name: 'Tor',
       lastChecked: DateTime.now(),
     );
 
-    final torStatus = await _torStatusUsecase.execute();
-    switch (torStatus) {
-      case TorStatus.online:
-        status = status.copyWith(status: ServiceStatus.online);
-      case TorStatus.offline:
-        status = status.copyWith(status: ServiceStatus.offline);
-      default:
-        status = status.copyWith(status: ServiceStatus.unknown);
-    }
-    return status;
+    if (!await _walletRepository.isTorRequired()) return status;
+
+    return status.copyWith(
+      status: switch (await _ensureTorReadyUsecase.execute()) {
+        TorReady(:final route) when route.source == TorSource.embedded =>
+          ServiceStatus.online,
+        _ => ServiceStatus.offline,
+      },
+    );
   }
 
   Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
-    var status = ServiceStatusInfo(
+    final status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
       name: 'Recoverbull',
       lastChecked: DateTime.now(),
     );
 
-    final isTorRequired = await _walletRepository.isTorRequired();
-    final torStatus = await _torStatusUsecase.execute();
-    if (isTorRequired && torStatus == TorStatus.online) {
-      try {
-        await _recoverBullRepository.checkConnection();
-        status = status.copyWith(status: ServiceStatus.online);
-      } catch (e) {
-        status = status.copyWith(status: ServiceStatus.offline);
-      }
-    }
+    if (!await _walletRepository.isTorRequired()) return status;
 
-    return status;
+    // Delegated rather than reimplemented: this is the same "can we reach the
+    // key server over Tor" question the RecoverBull flow asks, and one answer
+    // for both keeps the screen and the flow from disagreeing.
+    return status.copyWith(
+      status: await _checkServerConnectionUsecase.execute()
+          ? ServiceStatus.online
+          : ServiceStatus.offline,
+    );
   }
 
   Future<ServiceStatusInfo> _checkArkConnection() async {

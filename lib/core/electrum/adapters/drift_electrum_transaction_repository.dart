@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
@@ -11,10 +12,14 @@ class DriftElectrumTransactionRepository
 
   @override
   Future<BitcoinTx> fetch({
-    required String serverUrl,
+    required ElectrumConnection connection,
     required String txid,
   }) async {
-    final model = await _datasource.fetch(serverUrl: serverUrl, txid: txid);
+    final model = await _datasource.fetch(
+      serverUrl: connection.url,
+      txid: txid,
+      socks5: connection.socks5,
+    );
     return TransactionModelExtension.toEntity(model);
   }
 }

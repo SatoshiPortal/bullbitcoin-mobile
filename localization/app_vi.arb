@@ -3507,7 +3507,7 @@
   "torSettingsDescDisconnected": "Proxy Tor không đang chạy",
   "torSettingsDescUnknown": "Không thể xác định trạng thái Tor. Hãy đảm bảo Orbot đã được cài đặt và đang chạy.",
   "torSettingsInfoTitle": "Thông tin quan trọng",
-  "torSettingsInfoDescription": "• Proxy Tor chỉ áp dụng cho Bitcoin (không áp dụng cho Liquid)\n• Cổng Orbot mặc định là 9050\n• Hãy đảm bảo Orbot đang chạy trước khi bật\n• Kết nối qua Tor có thể chậm hơn",
+  "torSettingsInfoDescription": "• Tor tích hợp chỉ được RecoverBull sử dụng\n• Orbot chỉ được dùng cho máy chủ Bitcoin Electrum .onion\n• Lưu lượng mạng khác của Bull không thay đổi\n• Cổng Orbot mặc định là 9050\n• Hãy đảm bảo Orbot đang chạy trước khi bật\n• Kết nối qua Tor có thể chậm hơn",
   "withdrawSuccessTitle": "Đã khởi tạo rút tiền",
   "withdrawSuccessOrderDetails": "Chi tiết đơn hàng",
   "withdrawConfirmBankAccount": "Tài khoản ngân hàng",

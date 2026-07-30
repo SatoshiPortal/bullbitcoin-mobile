@@ -671,7 +671,7 @@
   "jadeInstructionsTitle": "Blockstream Jade PSBT Istruzioni",
   "scanNfcButton": "Scansione NFC",
   "testBackupChooseVaultLocation": "Scegli la posizione del caveau",
-  "torSettingsInfoDescription": "• Il proxy Tor si applica solo a Bitcoin (non liquido)\n• Predefinita porta Orbot è 9050\n• Assicurarsi che Orbot sia in esecuzione prima di abilitare\n• La connessione può essere più lenta attraverso Tor",
+  "torSettingsInfoDescription": "• Tor integrato viene usato solo da RecoverBull\n• Orbot viene usato solo per i server Electrum Bitcoin .onion\n• L'altro traffico di rete di Bull rimane invariato\n• La porta predefinita di Orbot è 9050\n• Assicurati che Orbot sia in esecuzione prima di attivarlo\n• Le connessioni tramite Tor possono essere più lente",
   "dcaAddressBitcoin": "Indirizzo Bitcoin",
   "sendErrorAmountBelowMinimum": "Importo sotto limite minimo di swap: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
@@ -5271,5 +5271,8 @@
   "transactionStatusPayjoinAborted": "Payjoin annullato",
   "transactionDetailLabelPayjoinAborted": "Annullato",
   "transactionDetailLabelPayjoinFeeContribution": "Contributo commissione Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Un payjoin aggiunge una delle tue monete come input aggiuntivo al pagamento per migliorare la privacy. La commissione di mining per quell'input aggiunto viene detratta dall'importo che ricevi (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin aggiunge una delle tue monete come input aggiuntivo al pagamento per migliorare la privacy. La commissione di mining per quell'input aggiunto viene detratta dall'importo che ricevi (BIP78).",
+  "torSettingsStatusCensored": "La connessione sembra filtrata",
+  "torSettingsDescCensored": "Tor non è riuscito a raggiungere la rete. Spesso indica una connessione filtrata.",
+  "torSettingsBootstrapProgress": "Connessione… {percent}%"
 }

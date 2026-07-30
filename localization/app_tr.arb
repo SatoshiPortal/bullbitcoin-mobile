@@ -1992,7 +1992,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• • Tor sadece Bitcoin için geçerlidir (orijin değil)\n• • Varsayılan Orbot limanı 9050\n• Emin Orbot daha önce çalışıyor\n• • Bağlantı, Tor aracılığıyla daha yavaş olabilir",
+  "torSettingsInfoDescription": "• Yerleşik Tor yalnızca RecoverBull tarafından kullanılır\n• Orbot yalnızca Bitcoin Electrum .onion sunucuları için kullanılır\n• Bull'un diğer ağ trafiği değişmez\n• Varsayılan Orbot bağlantı noktası 9050'dir\n• Etkinleştirmeden önce Orbot'un çalıştığından emin olun\n• Tor üzerinden bağlantılar daha yavaş olabilir",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

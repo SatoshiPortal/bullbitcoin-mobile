@@ -11,14 +11,12 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tor/tor.dart';
 
 enum RecoverBullRoute {
   recoverbullFlows('/recoverbull-flows');
@@ -59,14 +57,14 @@ class RecoverBullRouter {
           restoreVaultUsecase: locator<RestoreVaultUsecase>(),
           connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
           saveToGoogleDriveUsecase: locator<SaveVaultToGoogleDriveUsecase>(),
-          initializeTorUsecase: locator<InitTorUsecase>(),
+          ensureTorReadyUsecase: locator<EnsureTorReadyUsecase>(),
+          retryTorConnectionUsecase: locator<RetryTorConnectionUsecase>(),
           walletBloc: context.read(),
           fetchLatestGoogleDriveVaultUsecase:
               locator<FetchLatestGoogleDriveVaultUsecase>(),
           updateLatestEncryptedVaultTestUsecase:
               locator<UpdateLatestEncryptedVaultTestUsecase>(),
-          torStatusUsecase: locator<TorStatusUsecase>(),
-          torConfigPort: locator<TorConfigPort>(),
+          watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
         ),
         child: const RecoverBullFlowNavigator(),
       );

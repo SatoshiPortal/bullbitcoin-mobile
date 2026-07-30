@@ -39,7 +39,7 @@ class ElectrumTransactionPortAdapter implements TransactionPort {
         network: network,
         operation: (server) async {
           final bitcoinTx = await _repository.fetch(
-            serverUrl: server.url,
+            connection: server,
             txid: txid,
           );
           return TransactionMapper.fromBitcoinTx(

@@ -1,20 +1,18 @@
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:tor/tor.dart';
 
 class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
-  final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumServersPort _electrumServersPort;
   final ServerStatusPort _serverStatusPort;
-  final SettingsRepository _settingsRepository;
 
   ElectrumConnectivityAdapter({
-    required this._electrumServerRepository,
+    required this._electrumServersPort,
     required this._serverStatusPort,
-    required this._settingsRepository,
   });
 
   @override
@@ -24,39 +22,33 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
       isLiquid: network.isLiquid,
     );
 
-    final (serversResult, _) = await (
-      _electrumServerRepository.fetchAll(
-        isTestnet: serverNetwork.isTestnet,
-        isLiquid: serverNetwork.isLiquid,
-      ),
-      _settingsRepository.fetch(),
-    ).wait;
-
-    final servers = serversResult.fold(
-      (value) => value,
-      (failure) => throw Exception(
-        failure.logMessage ?? 'Failed to fetch electrum servers',
-      ),
-    );
-
-    if (servers.isEmpty) return false;
-
-    // Prefer custom servers if any are configured
-    final customServers = servers.where((s) => s.isCustom).toList();
-    final serversToCheck = customServers.isNotEmpty ? customServers : servers;
-
-    // Check all servers concurrently by fetching a known historical tx —
-    // proves the server actually serves chain data, not just that it speaks
-    // the Electrum protocol. Online if at least one server responds correctly.
-    final statuses = await Future.wait(
-      serversToCheck.map(
-        (server) => _serverStatusPort.checkElectrum(
-          url: server.url,
-          network: serverNetwork,
-        ),
-      ),
-    );
-
-    return statuses.any((s) => s == ElectrumServerStatus.online);
+    try {
+      return await _electrumServersPort.runWithFallback<bool>(
+        network: serverNetwork,
+        operation: (connection) async {
+          final proxyEndpoint = switch (connection.socks5) {
+            null => null,
+            final proxy =>
+              TorProxyEndpoint.tryParse(proxy) ??
+                  (throw const _ElectrumServerOfflineException()),
+          };
+          final status = await _serverStatusPort.checkElectrum(
+            url: connection.url,
+            network: serverNetwork,
+            timeout: connection.timeout,
+            proxyEndpoint: proxyEndpoint,
+          );
+          if (status == ElectrumServerStatus.online) return true;
+          throw const _ElectrumServerOfflineException();
+        },
+        isTransient: (error) => error is _ElectrumServerOfflineException,
+      );
+    } on Exception {
+      return false;
+    }
   }
+}
+
+final class _ElectrumServerOfflineException implements Exception {
+  const _ElectrumServerOfflineException();
 }

@@ -1,21 +1,19 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
-import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
-import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
-import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
+import 'package:tor/tor.dart';
 
 class RecoverBullRemoteDatasource {
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
-  final TorDatasource _torDatasource;
+  final TorHttpClientFactory _torHttpClientFactory;
 
   RecoverBullRemoteDatasource({
     required this._recoverbullSettingsDatasource,
-    required this._torDatasource,
+    required this._torHttpClientFactory,
   });
 
-  Future<void> info({TorProxyConfig? externalProxy}) async {
-    final client = _torDatasource.httpClient(externalProxy: externalProxy);
+  Future<void> info(TorProxyEndpoint endpoint) async {
+    final client = _torHttpClientFactory.create(endpoint);
     final url = await _recoverbullSettingsDatasource.fetch();
     try {
       final info = await KeyServer(address: url, client: client).infos();
@@ -23,6 +21,8 @@ class RecoverBullRemoteDatasource {
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       rethrow;
+    } finally {
+      client.close(force: true);
     }
   }
 
@@ -31,10 +31,10 @@ class RecoverBullRemoteDatasource {
     List<int> password,
     List<int> salt,
     List<int> backupKey, {
-    TorProxyConfig? externalProxy,
+    required TorProxyEndpoint endpoint,
   }) async {
+    final client = _torHttpClientFactory.create(endpoint);
     try {
-      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(address: url, client: client).storeBackupKey(
         backupId: backupId,
@@ -49,6 +49,8 @@ class RecoverBullRemoteDatasource {
         trace: StackTrace.current,
       );
       rethrow;
+    } finally {
+      client.close(force: true);
     }
   }
 
@@ -56,10 +58,10 @@ class RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt, {
-    TorProxyConfig? externalProxy,
+    required TorProxyEndpoint endpoint,
   }) async {
+    final client = _torHttpClientFactory.create(endpoint);
     try {
-      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       return await KeyServer(
         address: url,
@@ -72,6 +74,8 @@ class RecoverBullRemoteDatasource {
         trace: StackTrace.current,
       );
       rethrow;
+    } finally {
+      client.close(force: true);
     }
   }
 
@@ -79,10 +83,10 @@ class RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt, {
-    TorProxyConfig? externalProxy,
+    required TorProxyEndpoint endpoint,
   }) async {
+    final client = _torHttpClientFactory.create(endpoint);
     try {
-      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(
         address: url,
@@ -95,16 +99,14 @@ class RecoverBullRemoteDatasource {
         trace: StackTrace.current,
       );
       rethrow;
+    } finally {
+      client.close(force: true);
     }
   }
 
-  Future<void> checkConnection({TorProxyConfig? externalProxy}) async {
+  Future<void> checkConnection(TorProxyEndpoint endpoint) async {
+    final client = _torHttpClientFactory.create(endpoint);
     try {
-      if (externalProxy == null) {
-        await _waitForInternalTor();
-      }
-
-      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(address: url, client: client).infos();
     } catch (e) {
@@ -114,19 +116,8 @@ class RecoverBullRemoteDatasource {
         trace: StackTrace.current,
       );
       rethrow;
-    }
-  }
-
-  Future<void> _waitForInternalTor() async {
-    const maxWaitTime = Duration(minutes: 2);
-    final startTime = DateTime.now();
-
-    while (_torDatasource.status == TorStatus.connecting) {
-      if (DateTime.now().difference(startTime) > maxWaitTime) {
-        throw Exception('Timeout waiting for Tor to be ready');
-      }
-      log.info('Waiting for Tor to be ready...');
-      await Future.delayed(const Duration(seconds: 3));
+    } finally {
+      client.close(force: true);
     }
   }
 }

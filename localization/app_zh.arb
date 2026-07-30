@@ -672,7 +672,7 @@
   "jadeInstructionsTitle": "段 次 页 次 指示",
   "scanNfcButton": "页: 1",
   "testBackupChooseVaultLocation": "颜色",
-  "torSettingsInfoDescription": "•  • 代理仅适用于(不包括液体)\n•  • Default Orbot港9050\n• 确保Orbot在获得授权之前能够运行\n•  • 联系可能较慢,通过托拉斯进行",
+  "torSettingsInfoDescription": "• 嵌入式 Tor 仅由 RecoverBull 使用\n• Orbot 仅用于 Bitcoin Electrum .onion 服务器\n• Bull 的其他网络流量保持不变\n• Orbot 默认端口为 9050\n• 启用前请确保 Orbot 正在运行\n• 通过 Tor 的连接可能较慢",
   "dcaAddressBitcoin": "页: 1",
   "sendErrorAmountBelowMinimum": "低于最低互换限额的数额: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {

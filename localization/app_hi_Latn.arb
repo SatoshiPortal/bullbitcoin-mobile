@@ -11492,7 +11492,7 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• Tor proxy sirf Bitcoin par apply hota hai (Liquid par nahi)\n• Default Orbot port 9050 hai\n• Enable karne se pehle Orbot chal raha hona chahiye\n• Tor ke zariye connection slow ho sakta hai",
+  "torSettingsInfoDescription": "• Embedded Tor sirf RecoverBull istemal karta hai\n• Orbot sirf Bitcoin Electrum .onion server ke liye istemal hota hai\n• Bull ka baaki network traffic nahi badalta\n• Orbot ka default port 9050 hai\n• Chalu karne se pehle pakka karein ki Orbot chal raha hai\n• Tor ke zariye connection dheeme ho sakte hain",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },

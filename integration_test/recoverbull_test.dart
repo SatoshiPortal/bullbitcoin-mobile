@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
@@ -18,12 +17,13 @@ import 'package:bb_mobile/main.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tor/tor.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final initializeTorUsecase = locator<InitTorUsecase>();
+  final ensureTorReadyUsecase = locator<EnsureTorReadyUsecase>();
   final restoreVaultUsecase = locator<RestoreVaultUsecase>();
   final decryptVaultUsecase = locator<DecryptVaultUsecase>();
   final fetchVaultKeyFromServerUsecase =
@@ -65,7 +65,10 @@ Future<void> main({bool isInitialized = false}) async {
     Network.bitcoinMainnet,
   );
 
-  setUpAll(() async => await initializeTorUsecase.execute());
+  setUpAll(() async {
+    final state = await ensureTorReadyUsecase.execute();
+    expect(state, isA<TorReady>());
+  });
 
   group('Recoverbull', () {
     // Fetches the vault key over Tor from the RecoverBull key server. Tor can

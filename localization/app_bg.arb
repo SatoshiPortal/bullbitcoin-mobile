@@ -10843,7 +10843,7 @@
   "torSettingsDescDisconnected": "Tor прокси не работи",
   "torSettingsDescUnknown": "Не може да се определи статусът на Tor. Уверете се, че Orbot е инсталиран и работи.",
   "torSettingsInfoTitle": "Важна информация",
-  "torSettingsInfoDescription": "• Tor прокси се прилага само за Bitcoin (не за Liquid)\n• Портът по подразбиране на Orbot е 9050\n• Уверете се, че Orbot работи преди активиране\n• Връзката може да бъде по-бавна през Tor",
+  "torSettingsInfoDescription": "• Вграденият Tor се използва само от RecoverBull\n• Orbot се използва само за Bitcoin Electrum сървъри .onion\n• Останалият мрежов трафик на Bull не се променя\n• Портът по подразбиране на Orbot е 9050\n• Уверете се, че Orbot работи, преди да го активирате\n• Връзките през Tor може да са по-бавни",
   "withdrawSuccessTitle": "Тегленето е инициирано",
   "withdrawSuccessOrderDetails": "Детайли за поръчката",
   "withdrawConfirmBankAccount": "Банкова сметка",

@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:tor/tor.dart';
 
 abstract class ServerStatusPort {
   Future<ElectrumServerStatus> checkSocket({
     required String url,
     int? timeout,
-    bool useTorProxy = false,
-    int torProxyPort = 9050,
+    TorProxyEndpoint? proxyEndpoint,
   });
 
   /// Verifies the server actually serves real chain data by fetching a known
@@ -18,5 +18,6 @@ abstract class ServerStatusPort {
     required String url,
     required ElectrumServerNetwork network,
     int? timeout,
+    TorProxyEndpoint? proxyEndpoint,
   });
 }
