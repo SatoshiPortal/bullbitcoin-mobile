@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
+import 'package:bb_mobile/features/address_view/presentation/address_view_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -108,22 +109,21 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   final hasReachedEnd = showChangeAddresses
                       ? state.hasReachedEndOfChangeAddresses
                       : state.hasReachedEndOfReceiveAddresses;
-                  final error = showChangeAddresses
-                      ? state.changeAddressesError
-                      : state.receiveAddressesError;
+                  final failure = showChangeAddresses
+                      ? state.changeAddressesFailure
+                      : state.receiveAddressesFailure;
                   final isLiquid = state.isLiquid;
 
                   if (state.isLoading && addresses.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (error != null && addresses.isEmpty) {
+                  } else if (failure != null && addresses.isEmpty) {
                     return Center(
                       child: Text(
-                        context.loc.addressViewErrorLoadingAddresses(
-                          error.toString(),
-                        ),
+                        failure.toTranslated(context),
                         style: context.font.bodyMedium?.copyWith(
                           color: context.appColors.error,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     );
                   } else if (addresses.isEmpty) {
@@ -145,7 +145,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       itemCount:
                           addresses.length +
                           (hasReachedEnd ? 0 : 1) +
-                          (error != null ? 1 : 0),
+                          (failure != null ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index < addresses.length) {
                           final address = addresses[index];
@@ -157,16 +157,14 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             labels: address.labels,
                           );
                         } else {
-                          if (error != null && index == addresses.length) {
+                          if (failure != null && index == addresses.length) {
                             return Center(
                               child: Text(
-                                context.loc
-                                    .addressViewErrorLoadingMoreAddresses(
-                                      error.toString(),
-                                    ),
+                                failure.toTranslated(context),
                                 style: context.font.bodyMedium?.copyWith(
                                   color: context.appColors.error,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             );
                           }
