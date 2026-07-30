@@ -144,7 +144,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       separatorBuilder: (context, index) => const Gap(16),
                       itemCount:
                           addresses.length +
-                          (hasReachedEnd ? 0 : 1) +
+                          (hasReachedEnd || failure != null ? 0 : 1) +
                           (failure != null ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index < addresses.length) {

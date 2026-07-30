@@ -39,7 +39,7 @@ class GetAddressListUsecase {
     } catch (e, st) {
       log.severe(
         message: 'Failed to list wallet addresses',
-        error: e.runtimeType,
+        error: e,
         trace: st,
       );
       return Err(

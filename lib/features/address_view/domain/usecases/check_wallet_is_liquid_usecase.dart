@@ -19,7 +19,7 @@ class CheckWalletIsLiquidUsecase {
     } catch (e, st) {
       log.warning(
         'Failed to resolve the wallet kind for the address view',
-        error: e.runtimeType,
+        error: e,
         trace: st,
       );
       return Err(AddressViewUnexpectedFailure(e.runtimeType.toString()));

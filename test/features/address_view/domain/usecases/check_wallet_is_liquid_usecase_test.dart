@@ -16,8 +16,13 @@ class FakeWallet extends Fake implements Wallet {
 }
 
 /// A wallet id is the descriptor origin, so it embeds the master key
-/// fingerprint. Routed through the failing path below so the test output and
-/// the failure can both be searched for it: it must appear in neither.
+/// fingerprint. Routed through the failing path below so the failure can be
+/// searched for it: it must never reach [Failure.logMessage], which any
+/// consumer may log or render.
+///
+/// It *does* appear in the local log line, deliberately: the raw exception is
+/// handed to the logger for field diagnosis, and Sentry's `beforeSend` nulls
+/// `exception.value` so the message never leaves the device.
 const _sentinelWalletId = 'wpkh([da7ab10b/84h/0h/0h])';
 
 void main() {
@@ -40,9 +45,7 @@ void main() {
       // GetWalletException stringifies whatever the wallet layer threw, so its
       // message carries the wallet id and anything else that was in scope.
       when(() => getWallet.execute(any())).thenThrow(
-        GetWalletException(
-          'lookup failed for $_sentinelWalletId xprv9sSecret',
-        ),
+        GetWalletException('lookup failed for $_sentinelWalletId xprv9sSecret'),
       );
 
       final failure = failureOf(await usecase.execute(_sentinelWalletId));
