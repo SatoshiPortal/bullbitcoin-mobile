@@ -74,9 +74,17 @@ class SwapWatcherService {
           ChainSwap(:final refundTxid) => refundTxid,
           _ => null,
         };
+        final refundAddr = switch (s) {
+          LnSendSwap(:final refundAddress) => refundAddress,
+          ChainSwap(:final refundAddress) => refundAddress,
+          _ => null,
+        };
         log.info(
           '[SwapCensus] ${s.id} ${s.type.name} ${s.status.name}'
-          ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}',
+          ' keyIndex=${s.keyIndex}'
+          ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}'
+          ' refundAddr=${refundAddr ?? '-'}'
+          ' completedAt=${s.completionTime?.toIso8601String() ?? '-'}',
         );
       }
     } catch (e) {
