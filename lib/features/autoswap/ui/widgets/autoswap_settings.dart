@@ -9,9 +9,9 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/autoswap/presentation/autoswap_failure_l10n.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -237,8 +237,8 @@ class _AmountThresholdField extends StatelessWidget {
     final bitcoinUnit = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
-    final amountThresholdError = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
+    final amountThresholdFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdFailure,
     );
     return Column(
       crossAxisAlignment: .start,
@@ -270,7 +270,7 @@ class _AmountThresholdField extends StatelessWidget {
                       color: context.appColors.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: context.appColors.border),
-                    ),
+                  ),
                     child: BBText(
                       bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
                       style: context.font.bodyMedium,
@@ -286,10 +286,10 @@ class _AmountThresholdField extends StatelessWidget {
             ),
           ],
         ),
-        if (amountThresholdError != null) ...[
+        if (amountThresholdFailure != null) ...[
           const Gap(8),
           BBText(
-            amountThresholdError.displayMessage(context.loc),
+            amountThresholdFailure.toTranslated(context, unit: bitcoinUnit),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -320,8 +320,8 @@ class _TriggerBalanceField extends StatelessWidget {
     final bitcoinUnit = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
-    final error = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.error,
+    final triggerBalanceFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceFailure,
     );
 
     return Column(
@@ -370,10 +370,10 @@ class _TriggerBalanceField extends StatelessWidget {
             ),
           ],
         ),
-        if (error == 'autoswapTriggerBalanceError') ...[
+        if (triggerBalanceFailure != null) ...[
           const Gap(8),
           BBText(
-            context.loc.autoswapTriggerBalanceError,
+            triggerBalanceFailure.toTranslated(context, unit: bitcoinUnit),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -401,8 +401,8 @@ class _FeeThresholdField extends StatelessWidget {
     final feeThresholdInput = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdInput,
     );
-    final feeThresholdError = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdError,
+    final feeThresholdFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdFailure,
     );
 
     return Column(
@@ -443,10 +443,10 @@ class _FeeThresholdField extends StatelessWidget {
             ),
           ],
         ),
-        if (feeThresholdError != null) ...[
+        if (feeThresholdFailure != null) ...[
           const Gap(8),
           BBText(
-            feeThresholdError.displayMessage(context.loc),
+            feeThresholdFailure.toTranslated(context),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -631,18 +631,7 @@ class _SaveButton extends StatelessWidget {
       disabled: isDisabled,
       onPressed: isDisabled
           ? () {}
-          : () {
-              context.read<AutoSwapSettingsCubit>().updateSettings().catchError(
-                (e) {
-                  if (context.mounted) {
-                    SnackBarUtils.showSnackBar(
-                      context,
-                      context.loc.autoswapSaveErrorMessage(e.toString()),
-                    );
-                  }
-                },
-              );
-            },
+          : () => context.read<AutoSwapSettingsCubit>().updateSettings(),
       bgColor: context.appColors.onSurface,
       textStyle: context.font.headlineLarge,
       textColor: context.appColors.surface,

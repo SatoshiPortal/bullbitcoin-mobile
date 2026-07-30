@@ -1,13 +1,11 @@
-import 'package:bb_mobile/core/errors/autoswap_errors.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
+import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
+import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -16,260 +14,162 @@ part 'autoswap_settings_cubit.freezed.dart';
 part 'autoswap_settings_state.dart';
 
 class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
-  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
-  final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
-  final WalletRepository _walletRepository;
-
-  static const int _minimumAmountThresholdSats = 50000;
-  static const int _maximumFeeThreshold = 10;
+  final LoadAutoswapSettingsUsecase _loadAutoswapSettingsUsecase;
+  final SaveAutoswapSettingsUsecase _saveAutoswapSettingsUsecase;
 
   AutoSwapSettingsCubit({
-    required this._getAutoSwapSettingsUsecase,
-    required this._saveAutoSwapSettingsUsecase,
-    required this._getSettingsUsecase,
-    required this._walletRepository,
+    required this._loadAutoswapSettingsUsecase,
+    required this._saveAutoswapSettingsUsecase,
   }) : super(const AutoSwapSettingsState());
 
   Future<void> loadSettings() async {
-    try {
-      emit(state.copyWith(loading: true, error: null));
-      final settings = await _getSettingsUsecase.execute();
-      final isTestnet = settings.environment == Environment.testnet;
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
+    emit(state.copyWith(loading: true, failure: null));
 
-      // Load Bitcoin wallets for selection
-      final environment = isTestnet ? Environment.testnet : Environment.mainnet;
-      final allWallets = await _walletRepository.getWallets(
-        environment: environment,
-      );
-      final bitcoinWallets = allWallets.where((w) => !w.isLiquid).toList();
-      final defaultBitcoinWallet = bitcoinWallets
-          .where((w) => w.isDefault)
-          .firstOrNull;
-      String amountThresholdInput;
-      if (settings.bitcoinUnit == BitcoinUnit.btc) {
-        // Convert sats to BTC for display
-        final btcAmount = ConvertAmount.satsToBtc(
-          autoSwapSettings.balanceThresholdSats,
-        );
-        amountThresholdInput = btcAmount.toString();
-      } else {
-        amountThresholdInput = autoSwapSettings.balanceThresholdSats.toString();
-      }
+    final result = await _loadAutoswapSettingsUsecase.execute();
+    if (isClosed) return;
 
-      String triggerBalanceSatsInput;
-      if (settings.bitcoinUnit == BitcoinUnit.btc) {
-        // Convert sats to BTC for display
-        final btcAmount = ConvertAmount.satsToBtc(
-          autoSwapSettings.triggerBalanceSats,
-        );
-        triggerBalanceSatsInput = btcAmount.toString();
-      } else {
-        triggerBalanceSatsInput = autoSwapSettings.triggerBalanceSats
-            .toString();
-      }
-
-      emit(
-        state.copyWith(
-          loading: false,
-          settings: autoSwapSettings,
-          amountThresholdInput: amountThresholdInput,
-          triggerBalanceSatsInput: triggerBalanceSatsInput,
-          feeThresholdInput: autoSwapSettings.feeThresholdPercent.toString(),
-          enabledToggle: autoSwapSettings.enabled,
-          alwaysBlock: autoSwapSettings.alwaysBlock,
-          bitcoinUnit: settings.bitcoinUnit,
-          availableBitcoinWallets: bitcoinWallets,
-          selectedBitcoinWalletId:
-              autoSwapSettings.recipientWalletId ?? defaultBitcoinWallet?.id,
-        ),
-      );
-    } catch (e) {
-      log.severe(
-        message: 'Error loading auto swap settings',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(state.copyWith(loading: false, error: 'autoswapLoadSettingsError'));
-    }
-  }
-
-  Future<void> updateSettings() async {
-    try {
-      emit(state.copyWith(saving: true, error: null, successfullySaved: false));
-      final settings = await _getSettingsUsecase.execute();
-
-      // Validate recipient wallet selection if auto swap is enabled
-      if (state.enabledToggle && state.selectedBitcoinWalletId == null) {
-        emit(state.copyWith(saving: false, error: 'autoswapSelectWalletError'));
-        return;
-      }
-
-      // Convert amount based on unit
-      final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
-      int balanceThresholdSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        // Convert BTC to sats for storage
-        final btcAmount =
-            double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        balanceThresholdSats =
-            int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-      }
-
-      // Validate minimum amount threshold
-      if (balanceThresholdSats < _minimumAmountThresholdSats) {
-        final exception = MinimumAmountThresholdException(
-          _minimumAmountThresholdSats,
-          currentUnit,
-        );
-        emit(state.copyWith(saving: false, amountThresholdError: exception));
-        return;
-      }
-
-      // Convert trigger balance based on unit
-      int triggerBalanceSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        // Convert BTC to sats for storage
-        final btcAmount =
-            double.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
-        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        triggerBalanceSats =
-            int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
-      }
-
-      // Validate maximum balance is at least 2x the target balance
-      if (triggerBalanceSats < 2 * balanceThresholdSats) {
+    switch (result) {
+      case Ok(value: final data):
+        final settings = data.settings;
         emit(
-          state.copyWith(saving: false, error: 'autoswapTriggerBalanceError'),
+          state.copyWith(
+            loading: false,
+            settings: settings,
+            amountThresholdInput: _formatAmount(
+              settings.balanceThresholdSats,
+              data.bitcoinUnit,
+            ),
+            triggerBalanceSatsInput: _formatAmount(
+              settings.triggerBalanceSats,
+              data.bitcoinUnit,
+            ),
+            feeThresholdInput: settings.feeThresholdPercent.toString(),
+            enabledToggle: settings.enabled,
+            alwaysBlock: settings.alwaysBlock,
+            bitcoinUnit: data.bitcoinUnit,
+            availableBitcoinWallets: data.bitcoinWallets,
+            selectedBitcoinWalletId: data.recipientWalletId,
+          ),
         );
-        return;
-      }
-
-      // Validate fee threshold
-      final feeThreshold =
-          double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
-      if (feeThreshold > _maximumFeeThreshold) {
-        final exception = MaximumFeeThresholdException(_maximumFeeThreshold);
-        emit(state.copyWith(saving: false, feeThresholdError: exception));
-        return;
-      }
-
-      await _saveAutoSwapSettingsUsecase.execute(
-        AutoSwap(
-          enabled: state.enabledToggle,
-          balanceThresholdSats: balanceThresholdSats,
-          triggerBalanceSats: triggerBalanceSats,
-          feeThresholdPercent: feeThreshold,
-          alwaysBlock: state.alwaysBlock,
-          recipientWalletId: state.selectedBitcoinWalletId,
-          showWarning: state.enabledToggle
-              ? state.settings?.showWarning ?? true
-              : false,
-        ),
-      );
-      emit(
-        state.copyWith(
-          saving: false,
-          settings: state.settings,
-          successfullySaved: true,
-          amountThresholdError: null,
-          feeThresholdError: null,
-        ),
-      );
-    } catch (e) {
-      log.severe(
-        message: 'Error updating auto swap settings',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(
-          saving: false,
-          error: 'autoswapUpdateSettingsError',
-          successfullySaved: false,
-        ),
-      );
+      case Err(:final failure):
+        emit(state.copyWith(loading: false, failure: failure));
     }
   }
 
-  Future<void> onAmountThresholdChanged(String value) async {
+  Future<void> updateSettings() => _save(enabled: state.enabledToggle);
+
+  Future<void> _save({required bool enabled}) async {
+    emit(
+      state.copyWith(
+        saving: true,
+        successfullySaved: false,
+        failure: null,
+        amountThresholdFailure: null,
+        triggerBalanceFailure: null,
+        feeThresholdFailure: null,
+      ),
+    );
+
+    final unit = state.unit;
+    final result = await _saveAutoswapSettingsUsecase.execute(
+      AutoSwap(
+        enabled: enabled,
+        balanceThresholdSats: _toSats(state.amountThresholdInput ?? '0', unit),
+        triggerBalanceSats: _toSats(state.triggerBalanceSatsInput ?? '0', unit),
+        feeThresholdPercent: _toFeePercent(state.feeThresholdInput ?? ''),
+        alwaysBlock: state.alwaysBlock,
+        recipientWalletId: state.selectedBitcoinWalletId,
+        // Keep the warning pending only while auto swap stays on; disabling
+        // clears it so re-enabling shows it again.
+        showWarning: enabled ? state.settings?.showWarning ?? true : false,
+      ),
+    );
+    if (isClosed) return;
+
+    switch (result) {
+      case Ok():
+        emit(state.copyWith(saving: false, successfullySaved: true));
+      case Err(:final failure):
+        emit(_withFailurePlaced(failure));
+    }
+  }
+
+  /// Puts a failure next to the field it is about, so the form can render it
+  /// inline. Anything not field-specific goes to the shared slot.
+  AutoSwapSettingsState _withFailurePlaced(AutoswapFailure failure) =>
+      switch (failure) {
+        AutoswapBalanceThresholdTooLowFailure() => state.copyWith(
+          saving: false,
+          amountThresholdFailure: failure,
+        ),
+        AutoswapTriggerBalanceTooLowFailure() => state.copyWith(
+          saving: false,
+          triggerBalanceFailure: failure,
+        ),
+        AutoswapFeeThresholdTooHighFailure() => state.copyWith(
+          saving: false,
+          feeThresholdFailure: failure,
+        ),
+        _ => state.copyWith(saving: false, failure: failure),
+      };
+
+  void onAmountThresholdChanged(String value) {
     // Remove decimal points if unit is sats
     final sanitizedValue = state.bitcoinUnit == BitcoinUnit.sats
         ? value.replaceAll(RegExp(r'[^\d]'), '')
         : value;
+    final unit = state.unit;
 
-    // Validate minimum threshold in real-time
-    if (sanitizedValue.isNotEmpty) {
-      final settings = await _getSettingsUsecase.execute();
-      final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
-      int balanceThresholdSats;
+    // Only nag once something has actually been entered: an empty or zero
+    // field is still being typed, not yet wrong.
+    final amountSats = _toSats(sanitizedValue, unit);
+    final triggerSats = _toSats(state.triggerBalanceSatsInput ?? '', unit);
 
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(sanitizedValue) ?? 0;
-        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        balanceThresholdSats = int.tryParse(sanitizedValue) ?? 0;
-      }
-
-      if (balanceThresholdSats > 0 &&
-          balanceThresholdSats < _minimumAmountThresholdSats) {
-        final exception = MinimumAmountThresholdException(
-          _minimumAmountThresholdSats,
-          currentUnit,
-        );
-        emit(
-          state.copyWith(
-            amountThresholdInput: sanitizedValue,
-            amountThresholdError: exception,
-          ),
-        );
-        return;
-      }
-    }
-
-    final updatedState = state.copyWith(
-      amountThresholdInput: sanitizedValue,
-      amountThresholdError: null,
+    emit(
+      state.copyWith(
+        amountThresholdInput: sanitizedValue,
+        amountThresholdFailure:
+            amountSats > 0 && AutoSwap.isBalanceThresholdTooLow(amountSats)
+            ? const AutoswapBalanceThresholdTooLowFailure(
+                AutoSwap.minimumBalanceThresholdSats,
+              )
+            : null,
+        triggerBalanceFailure:
+            amountSats > 0 &&
+                triggerSats > 0 &&
+                AutoSwap.isTriggerBalanceTooLow(
+                  balanceThresholdSats: amountSats,
+                  triggerBalanceSats: triggerSats,
+                )
+            ? const AutoswapTriggerBalanceTooLowFailure()
+            : null,
+      ),
     );
+  }
 
-    // Re-validate trigger balance if it exists
-    String? triggerBalanceError;
-    if (updatedState.triggerBalanceSatsInput != null &&
-        updatedState.triggerBalanceSatsInput!.isNotEmpty &&
-        sanitizedValue.isNotEmpty) {
-      final settings = await _getSettingsUsecase.execute();
-      final currentUnit = updatedState.bitcoinUnit ?? settings.bitcoinUnit;
+  void onTriggerBalanceChanged(String value) {
+    final sanitizedValue = state.bitcoinUnit == BitcoinUnit.sats
+        ? value.replaceAll(RegExp(r'[^\d]'), '')
+        : value;
+    final unit = state.unit;
 
-      int balanceThresholdSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(sanitizedValue) ?? 0;
-        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        balanceThresholdSats = int.tryParse(sanitizedValue) ?? 0;
-      }
+    final triggerSats = _toSats(sanitizedValue, unit);
+    final amountSats = _toSats(state.amountThresholdInput ?? '', unit);
 
-      int triggerBalanceSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount =
-            double.tryParse(updatedState.triggerBalanceSatsInput ?? '0') ?? 0;
-        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        triggerBalanceSats =
-            int.tryParse(updatedState.triggerBalanceSatsInput ?? '0') ?? 0;
-      }
-
-      if (triggerBalanceSats > 0 &&
-          balanceThresholdSats > 0 &&
-          triggerBalanceSats < 2 * balanceThresholdSats) {
-        triggerBalanceError = 'autoswapTriggerBalanceError';
-      }
-    }
-
-    emit(updatedState.copyWith(error: triggerBalanceError));
+    emit(
+      state.copyWith(
+        triggerBalanceSatsInput: sanitizedValue,
+        triggerBalanceFailure:
+            triggerSats > 0 &&
+                amountSats > 0 &&
+                AutoSwap.isTriggerBalanceTooLow(
+                  balanceThresholdSats: amountSats,
+                  triggerBalanceSats: triggerSats,
+                )
+            ? const AutoswapTriggerBalanceTooLowFailure()
+            : null,
+      ),
+    );
   }
 
   void onFeeThresholdChanged(String value) {
@@ -278,7 +178,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     emit(
       state.copyWith(
         feeThresholdInput: sanitizedValue,
-        feeThresholdError: null,
+        feeThresholdFailure: null,
       ),
     );
   }
@@ -287,100 +187,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     emit(state.copyWith(enabledToggle: value));
 
     // Auto-save and close when disabled
-    if (!value) {
-      _autoSaveDisabledSettings();
-    }
-  }
-
-  Future<void> _autoSaveDisabledSettings() async {
-    try {
-      emit(state.copyWith(saving: true, error: null, successfullySaved: false));
-      final settings = await _getSettingsUsecase.execute();
-
-      // Convert amount based on unit
-      final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
-      int balanceThresholdSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount =
-            double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        balanceThresholdSats =
-            int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-      }
-
-      // Validate minimum amount threshold
-      if (balanceThresholdSats < _minimumAmountThresholdSats) {
-        final exception = MinimumAmountThresholdException(
-          _minimumAmountThresholdSats,
-          currentUnit,
-        );
-        emit(state.copyWith(saving: false, amountThresholdError: exception));
-        return;
-      }
-
-      // Convert trigger balance based on unit
-      int triggerBalanceSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount =
-            double.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
-        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        triggerBalanceSats =
-            int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
-      }
-
-      // Validate maximum balance is at least 2x the target balance
-      if (triggerBalanceSats < 2 * balanceThresholdSats) {
-        emit(
-          state.copyWith(saving: false, error: 'autoswapTriggerBalanceError'),
-        );
-        return;
-      }
-
-      // Validate fee threshold
-      final feeThreshold =
-          double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
-      if (feeThreshold > _maximumFeeThreshold) {
-        final exception = MaximumFeeThresholdException(_maximumFeeThreshold);
-        emit(state.copyWith(saving: false, feeThresholdError: exception));
-        return;
-      }
-
-      await _saveAutoSwapSettingsUsecase.execute(
-        AutoSwap(
-          enabled: false,
-          balanceThresholdSats: balanceThresholdSats,
-          triggerBalanceSats: triggerBalanceSats,
-          feeThresholdPercent: feeThreshold,
-          alwaysBlock: state.alwaysBlock,
-          recipientWalletId: state.selectedBitcoinWalletId,
-          showWarning: false,
-        ),
-      );
-
-      emit(
-        state.copyWith(
-          saving: false,
-          successfullySaved: true,
-          amountThresholdError: null,
-          feeThresholdError: null,
-        ),
-      );
-    } catch (e) {
-      log.severe(
-        message: 'Error auto-saving disabled auto swap settings',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(
-          saving: false,
-          error: 'autoswapAutoSaveError',
-          successfullySaved: false,
-        ),
-      );
-    }
+    if (!value) _save(enabled: false);
   }
 
   void onInfoToggleChanged() {
@@ -395,7 +202,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     emit(
       state.copyWith(
         selectedBitcoinWalletId: walletId,
-        error: null, // Clear any previous error when wallet is selected
+        // Clear any previous failure when a wallet is selected
+        failure: null,
       ),
     );
   }
@@ -404,14 +212,15 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     emit(state.toggleBitcoinUnit());
   }
 
-  Future<void> onTriggerBalanceChanged(String value) async {
-    final sanitizedValue = state.bitcoinUnit == BitcoinUnit.sats
-        ? value.replaceAll(RegExp(r'[^\d]'), '')
-        : value;
+  static int _toSats(String input, BitcoinUnit unit) => unit == BitcoinUnit.btc
+      ? ConvertAmount.btcToSats(double.tryParse(input) ?? 0)
+      : int.tryParse(input) ?? 0;
 
-    final settings = await _getSettingsUsecase.execute();
-    final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
+  static double _toFeePercent(String input) =>
+      double.tryParse(input) ?? AutoSwap.defaultFeeThresholdPercent;
 
-    emit(state.updateTriggerBalance(sanitizedValue, currentUnit));
-  }
+  static String _formatAmount(int sats, BitcoinUnit unit) =>
+      unit == BitcoinUnit.btc
+      ? ConvertAmount.satsToBtc(sats).toString()
+      : sats.toString();
 }
