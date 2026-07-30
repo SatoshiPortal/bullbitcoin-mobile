@@ -9680,15 +9680,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "نسخ",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -9814,15 +9805,6 @@
   "pickPinInsteadButton": "اختر (بين) بدلاً من ذلك",
   "@pickPinInsteadButton": {
     "description": "Button label to switch to PIN input"
-  },
-  "addressViewErrorLoadingAddresses": "عناوين تحميل الأخطاء: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "نوع الإتصال غير مبدئي.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13281,5 +13263,7 @@
   "receiveMessageForSender": "رسالة إلى المرسل",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
-  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin."
+  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
+  "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
+  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى."
 }

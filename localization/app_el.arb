@@ -8500,15 +8500,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Error φόρτωσης περισσότερες διευθύνσεις: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Αντιγραφή",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -8613,15 +8604,6 @@
   "settingsSuperuserModeUnlockedMessage": "Η λειτουργία Superuser ξεκλειδώθηκε!",
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
-  },
-  "addressViewErrorLoadingAddresses": "Error φόρτωσης διευθύνσεων: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "Ο τύπος σύνδεσης που δεν έχει οριστικοποιηθεί.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13278,5 +13260,7 @@
   "receiveMessageForSender": "Μήνυμα για τον αποστολέα",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
-  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin."
+  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
+  "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
+  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά."
 }

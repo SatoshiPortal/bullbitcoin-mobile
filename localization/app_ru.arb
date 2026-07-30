@@ -3427,14 +3427,6 @@
   "recoverbullSelectFetchDriveFilesError": "Не удалось получить все накопители",
   "psbtFlowLoadFromCamera": "Нажмите кнопку Загрузка с камеры",
   "exchangeAccountInfoVerificationLimitedVerification": "Ограниченная проверка",
-  "addressViewErrorLoadingMoreAddresses": "Ошибка загрузки больше адресов: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Копировать",
   "sendBuildingTransaction": "Строительная сделка...",
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
@@ -3474,14 +3466,6 @@
   "settingsSuperuserModeUnlockedMessage": "Режим Superuser разблокирован!",
   "pickPinInsteadButton": "Выберите PIN вместо >>",
   "backupWalletVaultProviderCustomLocation": "Пользовательское местоположение",
-  "addressViewErrorLoadingAddresses": "Адреса загрузки ошибки: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Тип подключения не инициализируется.",
   "transactionListOngoingTransfersDescription": "Эти переводы в настоящее время осуществляются. Ваши средства безопасны и будут доступны, когда передача завершится.",
   "ledgerErrorUnknown": "Неизвестная ошибка",
@@ -5284,5 +5268,7 @@
   "receiveMessageForSender": "Сообщение для отправителя",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin включён, но в этом кошельке пока нет средств для участия. Он активируется, как только вы получите средства.",
-  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin."
+  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin.",
+  "addressViewErrorWalletNotFound": "Не удалось найти этот кошелёк.",
+  "addressViewErrorLoadFailed": "Не удалось загрузить ваши адреса. Пожалуйста, попробуйте снова."
 }

@@ -3368,14 +3368,6 @@
   "recoverbullSelectFetchDriveFilesError": "Nicht alle Laufwerkssicherungen abrufen.",
   "psbtFlowLoadFromCamera": "Von Kamera laden",
   "exchangeAccountInfoVerificationLimitedVerification": "Begrenzte Überprüfung",
-  "addressViewErrorLoadingMoreAddresses": "Fehler beim Laden von mehr Adressen: {error}.",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Kopieren",
   "sendBuildingTransaction": "Transaktion wird erstellt…",
   "fundExchangeMethodEmailETransfer": "E-Mail E-Transfer",
@@ -3416,14 +3408,6 @@
   "settingsSuperuserModeUnlockedMessage": "Superuser-Modus entsperrt!",
   "pickPinInsteadButton": "PIN wählen",
   "backupWalletVaultProviderCustomLocation": "Benutzerdefinierter Speicherort",
-  "addressViewErrorLoadingAddresses": "Fehler beim Laden von Adressen: {error}.",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Verbindungstyp nicht initialisiert.",
   "transactionListOngoingTransfersDescription": "Diese Überweisungen werden derzeit durchgeführt. Ihr Geld ist sicher und wird nach Abschluss der Überweisung verfügbar sein.",
   "ledgerErrorUnknown": "Unbekannter Fehler",
@@ -5221,5 +5205,7 @@
   "receiveMessageForSender": "Nachricht an den Sender",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin ist aktiviert, aber dieses Wallet hat noch kein Guthaben für einen Beitrag. Es wird aktiv, sobald du Guthaben empfängst.",
-  "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht."
+  "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht.",
+  "addressViewErrorWalletNotFound": "Diese Wallet konnte nicht gefunden werden.",
+  "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut."
 }

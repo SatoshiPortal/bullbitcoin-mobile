@@ -3367,9 +3367,7 @@
   "arkAboutSecretKey": "Գաղտնի բանալի",
   "arkAboutShow": "Ցուցադրել",
   "arkAboutHide": "Թաքցնել",
-  "addressViewErrorLoadingAddresses": "Հասցեների բեռնման սխալ․ {error}",
   "addressViewNoAddressesFound": "Հասցեներ չեն գտնվել",
-  "addressViewErrorLoadingMoreAddresses": "Լրացուցիչ հասցեների բեռնման սխալ․ {error}",
   "addressViewChangeAddressesComingSoon": "Մանրադրամի հասցեները շուտով",
   "addressViewChangeAddressesDescription": "Ցուցադրել դրամապանակի մանրադրամի հասցեները",
   "appStartupErrorTitle": "Գործարկման սխալ",
@@ -3748,5 +3746,7 @@
   "receiveMessageForSender": "Հաղորդագրություն ուղարկողին",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin-ը միացված է, սակայն այս դրամապանակը դեռ ներդրման համար մնացորդ չունի։ Այն կակտիվանա միջոցներ ստանալուն պես։",
-  "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։"
+  "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։",
+  "addressViewErrorWalletNotFound": "Այս դրամապանակը չի գտնվել։",
+  "addressViewErrorLoadFailed": "Ձեր հասցեները չհաջողվեց բեռնել։ Խնդրում ենք կրկին փորձել։"
 }

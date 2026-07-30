@@ -10335,15 +10335,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "เกิดข้อผิดพลาดในการโหลดที่อยู่เพิ่มเติม: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "คัดลอก",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10473,15 +10464,6 @@
   "backupWalletVaultProviderCustomLocation": "สถานที่ที่กําหนดเอง",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "เกิดข้อผิดพลาดในการโหลดที่อยู่: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "ประเภทการเชื่อมต่อไม่เริ่มต้น.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13278,5 +13260,7 @@
   "receiveMessageForSender": "ข้อความสำหรับผู้ส่ง",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
-  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ"
+  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
+  "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง"
 }

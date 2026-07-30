@@ -8488,27 +8488,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "ঠিকনা লোড কৰাত ত্ৰুটি: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "কোনো ঠিকনা পোৱা নগ'ল",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "অধিক ঠিকনা লোড কৰাত ত্ৰুটি: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "পৰিৱৰ্তন ঠিকনা শীঘ্ৰে আহিছে",
   "@addressViewChangeAddressesComingSoon": {
@@ -10325,5 +10307,7 @@
   "receiveMessageForSender": "প্ৰেৰকৰ বাবে বাৰ্তা",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin সক্ৰিয় কৰা হৈছে, কিন্তু এই ৱালেটত এতিয়াও অৱদান দিবলৈ কোনো বেলেঞ্চ নাই। আপুনি ধন লাভ কৰিলেই ই সক্ৰিয় হ’ব।",
-  "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।"
+  "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
+  "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
+  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

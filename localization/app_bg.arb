@@ -10653,9 +10653,7 @@
   "arkAboutShow": "Покажи",
   "arkAboutHide": "Скрий",
   "arkContinueButton": "Продължи",
-  "addressViewErrorLoadingAddresses": "Грешка при зареждане на адресите: {error}",
   "addressViewNoAddressesFound": "Не са намерени адреси",
-  "addressViewErrorLoadingMoreAddresses": "Грешка при зареждане на повече адреси: {error}",
   "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
   "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",
   "appStartupErrorTitle": "Грешка при стартиране",
@@ -10967,5 +10965,7 @@
   "receiveMessageForSender": "Съобщение за изпращача",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
-  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin."
+  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
+  "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
+  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново."
 }
