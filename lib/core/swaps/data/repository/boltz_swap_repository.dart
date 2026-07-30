@@ -517,9 +517,7 @@ class BoltzSwapRepository {
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: _isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
     // The index counter is keyed by the swap master key's OWN fingerprint —
     // NOT the default wallet's fingerprint (which keys the master key blob).
     // Both are 1:1 with the seed, so they stay consistent.
@@ -557,6 +555,8 @@ class BoltzSwapRepository {
   }
 
   Future<void> updateSwap({required Swap swap}) {
+    // Debug: full-model writes must be as visible as updateSwapFields ones.
+    log.info('[SwapStore] ${swap.id} full-write status=${swap.status.name}');
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 
@@ -770,9 +770,7 @@ class BoltzSwapRepository {
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
     log.info(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
@@ -855,9 +853,7 @@ class BoltzSwapRepository {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
   }) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: _isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
     final creationTime = restored.createdAt.millisecondsSinceEpoch;
     // A refund-action swap with funds still locked on-chain is stored as
     // refundable (not the terminal failed/expired/refunded the restore status
@@ -1090,8 +1086,9 @@ class BoltzSwapRepository {
   }
 
   Future<Invoice> decodeInvoice({required String invoice}) async {
-    final (sats, expired, bip21, description) =
-        await _boltz.decodeInvoice(invoice);
+    final (sats, expired, bip21, description) = await _boltz.decodeInvoice(
+      invoice,
+    );
     return Invoice(
       sats: sats,
       isExpired: expired,
