@@ -358,6 +358,33 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferSwapCreated event,
     Emitter<TransferState> emit,
   ) async {
+    // Authoritative guard: re-validate the external receive address against
+    // the counter network here — before anything is created and before
+    // continueClicked is set. Don't trust only the UI error flag; a rejected
+    // address returns early and leaves Continue re-enabled once corrected.
+    String resolvedExternalAddress = '';
+    if (state.sendToExternal) {
+      if (state.externalAddress.isEmpty) {
+        emit(
+          state.copyWith(
+            swapCreationException: SwapCreationException(
+              'Enter an external address',
+            ),
+          ),
+        );
+        return;
+      }
+      try {
+        final resolved = await _resolveCounterNetworkAddress(
+          state.externalAddress,
+          state.fromWallet!,
+        );
+        resolvedExternalAddress = resolved.address;
+      } on FormatException catch (e) {
+        emit(state.copyWith(externalAddressError: e.message));
+        return;
+      }
+    }
     emit(
       state.copyWith(
         swap: null,
@@ -429,24 +456,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       int? liquidAbsoluteFeesSat;
 
       if (state.sendToExternal) {
-        if (state.externalAddress.isEmpty) {
-          emit(
-            state.copyWith(
-              swapCreationException: SwapCreationException(
-                'Enter an external address',
-              ),
-            ),
-          );
-          return;
-        }
-
         final swapType = state.fromWallet!.isLiquid
             ? SwapType.liquidToBitcoin
             : SwapType.bitcoinToLiquid;
 
         swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.fromWallet!.id,
-          receiveAddress: state.externalAddress,
+          receiveAddress: resolvedExternalAddress,
           type: swapType,
           amountSat: paymentAmountSat,
         );
@@ -744,147 +760,114 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       return;
     }
 
-    try {
-      final sanitizedText = event.address.trim().replaceAll(
-        RegExp(r'^["\"]+|["\"]+$'),
-        '',
-      );
-
-      final fromWallet = state.fromWallet;
-      if (fromWallet == null) {
-        emit(
-          state.copyWith(
-            externalAddress: sanitizedText,
-            externalAddressError: 'Please select a wallet first',
-          ),
-        );
-        return;
-      }
-
-      PaymentRequest paymentRequest;
-      try {
-        paymentRequest = await _detectBitcoinStringUsecase.execute(
-          data: sanitizedText,
-        );
-      } catch (e) {
-        final errorMessage = fromWallet.isLiquid == true
-            ? 'Please enter a valid Bitcoin address'
-            : 'Please enter a valid Liquid address';
-        emit(
-          state.copyWith(
-            externalAddress: sanitizedText,
-            externalAddressError: errorMessage,
-          ),
-        );
-        return;
-      }
-
-      try {
-        String address = '';
-        int? bip21AmountSat;
-
-        if (paymentRequest.isBip21) {
-          final bip21 = paymentRequest as Bip21PaymentRequest;
-          address = bip21.address;
-          bip21AmountSat = bip21.amountSat;
-
-          if (fromWallet.isLiquid) {
-            if (!bip21.network.isBitcoin) {
-              emit(
-                state.copyWith(
-                  externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Bitcoin address',
-                ),
-              );
-              return;
-            }
-          } else {
-            if (!bip21.network.isLiquid) {
-              emit(
-                state.copyWith(
-                  externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Liquid address',
-                ),
-              );
-              return;
-            }
-          }
-        } else {
-          if (fromWallet.isLiquid) {
-            if (!paymentRequest.isBitcoinAddress) {
-              emit(
-                state.copyWith(
-                  externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Bitcoin address',
-                ),
-              );
-              return;
-            }
-            final bitcoinAddress = paymentRequest as BitcoinPaymentRequest;
-            address = bitcoinAddress.address;
-          } else {
-            if (!paymentRequest.isLiquidAddress) {
-              emit(
-                state.copyWith(
-                  externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Liquid address',
-                ),
-              );
-              return;
-            }
-            final liquidAddress = paymentRequest as LiquidPaymentRequest;
-            address = liquidAddress.address;
-          }
-        }
-
-        String? bip21AmountText;
-        if (bip21AmountSat != null) {
-          try {
-            bip21AmountText = state.bitcoinUnit == BitcoinUnit.sats
-                ? bip21AmountSat.toString()
-                : ConvertAmount.satsToBtc(bip21AmountSat).toString();
-          } catch (e) {
-            bip21AmountText = null;
-          }
-        }
-
-        emit(
-          state.copyWith(
-            externalAddress: address,
-            externalAddressError: null,
-            receiveExactAmount:
-                // ignore: avoid_bool_literals_in_conditional_expressions
-                bip21AmountSat != null ? true : state.receiveExactAmount,
-            amount: bip21AmountText ?? state.amount,
-          ),
-        );
-      } catch (e) {
-        final errorMessage = fromWallet.isLiquid == true
-            ? 'Please enter a valid Bitcoin address'
-            : 'Please enter a valid Liquid address';
-        emit(
-          state.copyWith(
-            externalAddress: sanitizedText,
-            externalAddressError: errorMessage,
-          ),
-        );
-        return;
-      }
-    } catch (e) {
-      final sanitizedText = event.address.trim().replaceAll(
-        RegExp(r'^["\"]+|["\"]+$'),
-        '',
-      );
-      final fromWallet = state.fromWallet;
-      final errorMessage = fromWallet?.isLiquid == true
-          ? 'Please enter a valid Bitcoin address'
-          : 'Please enter a valid Liquid address';
+    final fromWallet = state.fromWallet;
+    if (fromWallet == null) {
       emit(
         state.copyWith(
-          externalAddress: sanitizedText,
-          externalAddressError: errorMessage,
+          externalAddress: _sanitizeAddress(event.address),
+          externalAddressError: 'Please select a wallet first',
         ),
       );
+      return;
+    }
+
+    try {
+      final resolved = await _resolveCounterNetworkAddress(
+        event.address,
+        fromWallet,
+      );
+
+      String? bip21AmountText;
+      final bip21AmountSat = resolved.bip21AmountSat;
+      if (bip21AmountSat != null) {
+        try {
+          bip21AmountText = state.bitcoinUnit == BitcoinUnit.sats
+              ? bip21AmountSat.toString()
+              : ConvertAmount.satsToBtc(bip21AmountSat).toString();
+        } catch (e) {
+          bip21AmountText = null;
+        }
+      }
+
+      emit(
+        state.copyWith(
+          externalAddress: resolved.address,
+          externalAddressError: null,
+          receiveExactAmount:
+              // ignore: avoid_bool_literals_in_conditional_expressions
+              bip21AmountSat != null ? true : state.receiveExactAmount,
+          amount: bip21AmountText ?? state.amount,
+        ),
+      );
+    } on FormatException catch (e) {
+      emit(
+        state.copyWith(
+          externalAddress: _sanitizeAddress(event.address),
+          externalAddressError: e.message,
+        ),
+      );
+    }
+  }
+
+  String _sanitizeAddress(String input) =>
+      input.trim().replaceAll(RegExp(r'^["\"]+|["\"]+$'), '');
+
+  /// Validates [input] against the counter network of [fromWallet] — a swap to
+  /// an external wallet must receive on the opposite chain (Bitcoin wallet →
+  /// Liquid address, and vice versa). Returns the normalized on-chain address
+  /// plus any BIP21 amount, or throws [FormatException] with a user-facing
+  /// message when the input is unparseable or on the wrong network. Single
+  /// source of truth for both the inline field error and the swap-creation
+  /// guard in [_onSwapCreated].
+  Future<({String address, int? bip21AmountSat})> _resolveCounterNetworkAddress(
+    String input,
+    Wallet fromWallet,
+  ) async {
+    final sanitizedText = _sanitizeAddress(input);
+    final expectedMessage = fromWallet.isLiquid
+        ? 'Please enter a valid Bitcoin address'
+        : 'Please enter a valid Liquid address';
+
+    final PaymentRequest paymentRequest;
+    try {
+      paymentRequest = await _detectBitcoinStringUsecase.execute(
+        data: sanitizedText,
+      );
+    } catch (_) {
+      throw FormatException(expectedMessage);
+    }
+
+    try {
+      if (paymentRequest.isBip21) {
+        final bip21 = paymentRequest as Bip21PaymentRequest;
+        final onCounterNetwork = fromWallet.isLiquid
+            ? bip21.network.isBitcoin
+            : bip21.network.isLiquid;
+        if (!onCounterNetwork) throw FormatException(expectedMessage);
+        return (address: bip21.address, bip21AmountSat: bip21.amountSat);
+      }
+
+      if (fromWallet.isLiquid) {
+        if (!paymentRequest.isBitcoinAddress) {
+          throw FormatException(expectedMessage);
+        }
+        return (
+          address: (paymentRequest as BitcoinPaymentRequest).address,
+          bip21AmountSat: null,
+        );
+      }
+
+      if (!paymentRequest.isLiquidAddress) {
+        throw FormatException(expectedMessage);
+      }
+      return (
+        address: (paymentRequest as LiquidPaymentRequest).address,
+        bip21AmountSat: null,
+      );
+    } on FormatException {
+      rethrow;
+    } catch (_) {
+      throw FormatException(expectedMessage);
     }
   }
 
