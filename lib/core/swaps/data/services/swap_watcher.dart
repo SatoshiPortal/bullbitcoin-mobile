@@ -47,7 +47,45 @@ class SwapWatcherService {
     }
   }
 
+  /// One census per process: a compact line for every stored swap, so a
+  /// single user log export shows exactly which local state (status /
+  /// recorded txids) keeps a swap out of [getOngoingSwaps]' watch set.
+  static bool _censusLogged = false;
+
+  Future<void> _logSwapCensus() async {
+    if (_censusLogged) return;
+    _censusLogged = true;
+    try {
+      final swaps = await _boltzRepo.getAllSwaps();
+      log.info('[SwapCensus] ${swaps.length} stored swaps');
+      for (final s in swaps) {
+        final send = switch (s) {
+          LnSendSwap(:final sendTxid) => sendTxid,
+          ChainSwap(:final sendTxid) => sendTxid,
+          _ => null,
+        };
+        final recv = switch (s) {
+          LnReceiveSwap(:final receiveTxid) => receiveTxid,
+          ChainSwap(:final receiveTxid) => receiveTxid,
+          _ => null,
+        };
+        final refund = switch (s) {
+          LnSendSwap(:final refundTxid) => refundTxid,
+          ChainSwap(:final refundTxid) => refundTxid,
+          _ => null,
+        };
+        log.info(
+          '[SwapCensus] ${s.id} ${s.type.name} ${s.status.name}'
+          ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}',
+        );
+      }
+    } catch (e) {
+      log.warning('[SwapCensus] failed: $e');
+    }
+  }
+
   Future<void> startWatching() async {
+    unawaited(_logSwapCensus());
     await _swapStreamSubscription?.cancel();
     _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
@@ -85,7 +123,12 @@ class SwapWatcherService {
     _reconciling = true;
     try {
       final swaps = await _boltzRepo.getOngoingSwaps();
-      if (swaps.isEmpty) return;
+      if (swaps.isEmpty) {
+        // Not noise: "no ongoing swaps" on a device with a stuck swap proves
+        // the local row's state excludes it from the watch set.
+        log.fine('[SwapWatcher] heartbeat reconcile: no ongoing swaps');
+        return;
+      }
       final ids = swaps.map((s) => s.id).toSet().toList();
       log.fine('[SwapWatcher] heartbeat reconcile of ${ids.length} swaps');
       _boltzRepo.subscribeToSwaps(ids);
@@ -103,6 +146,10 @@ class SwapWatcherService {
     }
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toSet().toList();
+    log.info(
+      '[SwapWatcher] restart with ongoing swaps: '
+      '${swapIdsToWatch.isEmpty ? 'none' : swapIdsToWatch.join(',')}',
+    );
 
     for (final swapId in swapIdsToWatch) {
       _clearRetries(swapId);
@@ -429,6 +476,10 @@ class SwapWatcherService {
 
   Future<void> _refundLnSend(LnSendSwap swap) async {
     if (swap.refundTxid != null) {
+      log.info(
+        '[SwapWatcher] skip ln refund for ${swap.id}: refundTxid already '
+        'recorded (${swap.refundTxid}) — verify it exists on-chain',
+      );
       return;
     }
     final isLiquid = swap.type == SwapType.liquidToLightning;
@@ -516,6 +567,10 @@ class SwapWatcherService {
 
   Future<void> _refundChain(ChainSwap swap) async {
     if (swap.refundTxid != null) {
+      log.info(
+        '[SwapWatcher] skip chain refund for ${swap.id}: refundTxid already '
+        'recorded (${swap.refundTxid}) — verify it exists on-chain',
+      );
       return;
     }
     // Refund happens on the sending chain.

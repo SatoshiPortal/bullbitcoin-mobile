@@ -612,6 +612,15 @@ class BoltzSwapRepository {
       ),
     };
 
+    // Debug: every field mutation in one greppable line — the audit trail
+    // for how a swap reached a state the watcher no longer acts on.
+    log.info(
+      '[SwapStore] $swapId'
+      '${status != null ? ' status=${swap.status.name}->${status.name}' : ''}'
+      '${receiveTxid != null ? ' receiveTxid=$receiveTxid' : ''}'
+      '${refundTxid != null ? ' refundTxid=$refundTxid' : ''}'
+      '${completionTime != null ? ' completed' : ''}',
+    );
     await _boltz.storage.store(SwapModel.fromEntity(updated));
     return updated;
   }
