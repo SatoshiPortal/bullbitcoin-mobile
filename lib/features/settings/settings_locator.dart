@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as domain;
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
@@ -21,13 +19,12 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_min_amount_changes_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/disable_payjoin_receivers_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
@@ -105,36 +102,31 @@ class SettingsLocator {
     );
     locator.registerFactory<SetPayjoinEnabledUsecase>(
       () => SetPayjoinEnabledUsecase(
-        settingsRepository: locator<domain.SettingsRepository>(),
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
         getPayjoinDisclaimerShownUsecase:
             locator<GetPayjoinDisclaimerShownUsecase>(),
         markPayjoinDisclaimerShownUsecase:
             locator<MarkPayjoinDisclaimerShownUsecase>(),
-        disablePayjoinReceiversUsecase:
-            locator<DisablePayjoinReceiversUsecase>(),
       ),
     );
     locator.registerFactory<SetPayjoinMinAmountUsecase>(
       () => SetPayjoinMinAmountUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
     );
     locator.registerFactory<SetPayjoinExpireAfterSecUsecase>(
       () => SetPayjoinExpireAfterSecUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
     );
-    locator.registerFactory<WatchPayjoinMinAmountChangesUsecase>(
-      () => WatchPayjoinMinAmountChangesUsecase(
-        settingsRepository: locator<domain.SettingsRepository>(),
-      ),
+    locator.registerFactory<WatchPayjoinPolicyUsecase>(
+      () => WatchPayjoinPolicyUsecase(locator<PayjoinPolicyAccess>()),
     );
 
     locator.registerLazySingleton<SettingsFacade>(
       () => SettingsFacade(
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
-        watchPayjoinMinAmountChangesUsecase:
-            locator<WatchPayjoinMinAmountChangesUsecase>(),
+        watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
       ),
     );
 
@@ -156,8 +148,7 @@ class SettingsLocator {
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
-        watchPayjoinEnabledChangesUsecase:
-            locator<WatchPayjoinEnabledChangesUsecase>(),
+        watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
         setPayjoinMinAmountUsecase: locator<SetPayjoinMinAmountUsecase>(),
         setPayjoinExpireAfterSecUsecase:
             locator<SetPayjoinExpireAfterSecUsecase>(),

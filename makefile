@@ -49,10 +49,10 @@ fix-check:
 	@echo "🧹 dart fix should have nothing to suggest"
 	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
 
-# Formatting gate scoped to git-tracked source via git ls-files: untracked generated code never trips it, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0).
+# Formatting gate scoped to existing git-tracked source via git ls-files: untracked generated code never trips it, deleted files are skipped, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0).
 format-check:
 	@echo "🎨 dart format should have nothing to change"
-	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | xargs -r fvm dart format --output=none --set-exit-if-changed'
+	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r fvm dart format --output=none --set-exit-if-changed'
 
 bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
@@ -63,10 +63,11 @@ checks: analyze bull-ui-check fix-check format-check unit-test
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
+	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@fvm dart run build_runner watch --delete-conflicting-outputs --force-jit
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --delete-conflicting-outputs --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
 
 translations:
 	@echo "🌐 Generating translations files"
@@ -84,6 +85,7 @@ hooks:
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	fvm dart run drift_dev make-migrations
+	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 
 ios-pod-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
@@ -351,10 +353,14 @@ test: unit-test integration-test
 unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
-	@for p in packages/*/; do \
+	@set -e; for p in packages/*/; do \
 		if [ -d "$${p}test" ]; then \
 			echo "🏃‍ running $${p}test"; \
-			( cd "$$p" && fvm flutter test --reporter=compact ); \
+			if grep -qE '^  flutter:$$' "$${p}pubspec.yaml"; then \
+				( cd "$$p" && fvm flutter test --reporter=compact ); \
+			else \
+				( cd "$$p" && fvm dart test --reporter=compact ); \
+			fi; \
 		fi; \
 	done
 

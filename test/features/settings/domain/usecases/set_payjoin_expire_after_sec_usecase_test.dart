@@ -1,46 +1,46 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Ok;
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 
 void main() {
-  late _MockSettingsRepository settingsRepository;
+  late _MockPayjoinPolicyAccess policy;
   late SetPayjoinExpireAfterSecUsecase usecase;
 
+  setUpAll(() => registerFallbackValue(Duration.zero));
+
   setUp(() {
-    settingsRepository = _MockSettingsRepository();
+    policy = _MockPayjoinPolicyAccess();
     when(
-      () => settingsRepository.setPayjoinExpireAfterSec(any()),
-    ).thenAnswer((_) async {});
-    usecase = SetPayjoinExpireAfterSecUsecase(
-      settingsRepository: settingsRepository,
-    );
+      () => policy.setSessionLifetime(any()),
+    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+    usecase = SetPayjoinExpireAfterSecUsecase(payjoinPolicy: policy);
   });
 
   test('persists a value within bounds', () async {
     await usecase.execute(3600);
 
-    verify(() => settingsRepository.setPayjoinExpireAfterSec(3600)).called(1);
+    verify(
+      () => policy.setSessionLifetime(const Duration(seconds: 3600)),
+    ).called(1);
   });
 
   test('throws and never persists below the minimum bound', () async {
-    await expectLater(
-      () => usecase.execute(PayjoinConstants.minExpireAfterSec - 1),
-      throwsArgumentError,
-    );
+    final lifetime = PayjoinPolicy.minimumSessionLifetime.inSeconds - 1;
 
-    verifyNever(() => settingsRepository.setPayjoinExpireAfterSec(any()));
+    await expectLater(() => usecase.execute(lifetime), throwsArgumentError);
+
+    verifyNever(() => policy.setSessionLifetime(any()));
   });
 
   test('throws and never persists above the maximum bound', () async {
-    await expectLater(
-      () => usecase.execute(PayjoinConstants.maxExpireAfterSec + 1),
-      throwsArgumentError,
-    );
+    final lifetime = PayjoinPolicy.maximumSessionLifetime.inSeconds + 1;
 
-    verifyNever(() => settingsRepository.setPayjoinExpireAfterSec(any()));
+    await expectLater(() => usecase.execute(lifetime), throwsArgumentError);
+
+    verifyNever(() => policy.setSessionLifetime(any()));
   });
 }

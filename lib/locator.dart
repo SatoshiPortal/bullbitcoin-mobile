@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
+import 'package:bb_mobile/payjoin_setup.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
@@ -50,7 +51,11 @@ final GetIt locator = GetIt.instance;
 
 class AppLocator {
   /// Call this in the `main` function **before** `runApp()`
-  static Future<void> setup(GetIt locator, SqliteDatabase database) async {
+  static Future<void> setup(
+    GetIt locator,
+    SqliteDatabase database, {
+    String? payjoinDatabasePath,
+  }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
     // Register core dependencies first
@@ -66,6 +71,7 @@ class AppLocator {
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
     CoreLocator.registerFacades(locator);
+    PayjoinSetup.setup(locator, database, databasePath: payjoinDatabasePath);
 
     SyncLocator.setup(locator);
 

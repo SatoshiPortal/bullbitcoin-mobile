@@ -1,45 +1,27 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/disable_payjoin_receivers_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' as payjoin;
 
 class SetPayjoinEnabledUsecase {
-  final SettingsRepository _settingsRepository;
+  final payjoin.PayjoinPolicyAccess _policy;
   final GetPayjoinDisclaimerShownUsecase _getPayjoinDisclaimerShownUsecase;
   final MarkPayjoinDisclaimerShownUsecase _markPayjoinDisclaimerShownUsecase;
-  final DisablePayjoinReceiversUsecase _disablePayjoinReceiversUsecase;
 
   SetPayjoinEnabledUsecase({
-    required this._settingsRepository,
+    required payjoin.PayjoinPolicyAccess payjoinPolicy,
     required this._getPayjoinDisclaimerShownUsecase,
     required this._markPayjoinDisclaimerShownUsecase,
-    required this._disablePayjoinReceiversUsecase,
-  });
+  }) : _policy = payjoinPolicy;
 
   Future<Result<bool, SettingsFailure>> execute(
     bool enabled, {
     required Future<bool> Function() requestConsent,
   }) async {
     if (!enabled) {
-      final persistResult = await _persist(false);
-      if (persistResult case Err(:final failure)) return Err(failure);
-
-      try {
-        await _disablePayjoinReceiversUsecase.execute();
-      } catch (e, stackTrace) {
-        // The user intent is already persisted and remains authoritative.
-        // Unsettled receivers stay in SQLite and are retried at foreground
-        // startup without accepting new requests.
-        log.warning(
-          'Payjoin disabled; active receiver settlement will be retried',
-          error: e,
-          trace: stackTrace,
-        );
-      }
-      return const Ok(false);
+      return _persist(false);
     }
 
     final shownResult = await _getPayjoinDisclaimerShownUsecase.execute();
@@ -82,15 +64,18 @@ class SetPayjoinEnabledUsecase {
 
   Future<Result<bool, SettingsFailure>> _persist(bool enabled) async {
     try {
-      await _settingsRepository.setPayjoinEnabled(enabled);
-      return Ok(enabled);
-    } catch (e, stackTrace) {
-      log.warning(
-        'Failed to persist the Payjoin setting',
-        error: e,
-        trace: stackTrace,
+      final result = await _policy.setEnabled(enabled);
+      return switch (result) {
+        Ok() => Ok(enabled),
+        Err() => const Err(
+          SettingsStorageFailure('Failed to update Payjoin policy'),
+        ),
+      };
+    } catch (_) {
+      log.warning('Failed to persist the Payjoin setting');
+      return const Err(
+        SettingsStorageFailure('Failed to update Payjoin policy'),
       );
-      return Err(SettingsStorageFailure(e.toString()));
     }
   }
 }

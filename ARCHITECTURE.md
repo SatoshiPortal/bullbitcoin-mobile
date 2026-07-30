@@ -341,7 +341,7 @@ While the architecture described above represents our current standards, the cod
 
 The codebase is migrating, incrementally, from a single Flutter package to a [melos](https://melos.invertase.dev/) pub-workspace. This is an organizational change layered on top of the architecture above — it does not alter the feature-based / layered rules, it gives them a stronger, compile-time boundary.
 
-**Current state (skeleton).** The app remains a single package at the repo root, declared as the workspace package via `useRootAsPackage: true` in the `melos:` block of `pubspec.yaml`. No code has moved yet. `packages/` and `features/` exist as reserved, empty homes.
+**Current state.** The app remains at the repo root and is declared as a workspace package through `useRootAsPackage: true`. `packages/bull_ui` owns the design system, `packages/bull_ui_catalogue` is its dev-only Widgetbook, `packages/primitives` owns shared pure-Dart value types and results, and `packages/bull_payjoin` owns the pure-Dart Payjoin contract, engine, and persistence. User-facing feature packages have not moved into `features/` yet.
 
 **Target layout.** As modules are extracted (one at a time, never a big-bang), they become pub-workspace members:
 

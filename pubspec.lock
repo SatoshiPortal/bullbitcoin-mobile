@@ -1534,7 +1534,7 @@ packages:
     source: hosted
     version: "2.3.0"
   payjoin:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
       ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"

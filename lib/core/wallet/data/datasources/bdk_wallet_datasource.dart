@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -824,10 +825,6 @@ class FailedToSignPsbtException extends BullException {
 
 class UnsupportedBdkNetworkException extends BullException {
   UnsupportedBdkNetworkException(super.message);
-}
-
-class NoSpendableUtxoException extends BullException {
-  NoSpendableUtxoException(super.message);
 }
 
 /// Confirmation count for an output confirmed at [height], given the current

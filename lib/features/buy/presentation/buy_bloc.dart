@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart'
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -39,6 +40,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._accelerateBuyOrderUsecase,
     required this._getSettingsUsecase,
     required this._cancelAbandonedBuyPayjoinUsecase,
+    required this._getBuyPayjoinEnabledUsecase,
   }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -65,11 +67,13 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
+  final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
       final settings = await _getSettingsUsecase.execute();
+      final payjoinEnabled = await _getBuyPayjoinEnabledUsecase.execute();
       final preferredCurrency = summary.currency ?? settings.currencyCode;
       final balances = summary.balances.fold<Map<String, double>>({}, (
         map,
@@ -94,7 +98,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           currencyInput: currencyInput,
           bitcoinUnit: settings.bitcoinUnit,
           balances: balances,
-          payjoinGloballyEnabled: settings.isPayjoinEnabled,
+          payjoinGloballyEnabled: payjoinEnabled,
         ),
       );
 

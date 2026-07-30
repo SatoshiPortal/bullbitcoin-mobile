@@ -73,6 +73,14 @@ void main() {
   });
 
   group('OrderModel nullable server fields', () {
+    test('an integer unbatched buy fee parses as a double', () {
+      final model = OrderModel.fromJson(
+        orderJsonFixture(overrides: const {'unbatchedBuyOnchainFees': 125}),
+      );
+
+      expect(model.unbatchedBuyOnchainFees, 125.0);
+    });
+
     test('a null exchange rate and deadline parse', () {
       final order =
           OrderModel.fromJson(

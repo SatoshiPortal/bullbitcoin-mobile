@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/payjoin_session_window.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -22,6 +20,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
@@ -34,6 +34,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -54,6 +56,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._broadcastBitcoinTransactionUsecase,
     required this._broadcastLiquidTransactionUsecase,
     required this._sendWithPayjoinUsecase,
+    required this._watchPayjoinUsecase,
     required this._getNetworkFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
@@ -76,6 +79,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     );
     on<PayPollOrderStatus>(_onPollOrderStatus);
     on<PayPayjoinToggled>(_onPayjoinToggled);
+    on<PayPayjoinSessionUpdated>(_onPayjoinSessionUpdated);
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<PayUtxosSelected>(_onUtxosSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
@@ -100,6 +104,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
+  final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -111,6 +116,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   Timer? _pollingTimer;
+  StreamSubscription<PayjoinSession>? _payjoinSubscription;
+  String? _activePayjoinSessionId;
 
   /// Bumped whenever the cached previews stop describing the payin being built
   /// (typed rate, coin selection, RBF, a refreshed payin amount). A preview
@@ -465,7 +472,18 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
+    // Second half of the #2522 latch, for the payjoin path: the txid only
+    // lands once the session resolves, so until then the *session* is what
+    // says this order's payin is already committed. Its original transaction
+    // is in the receiver's hands and can be broadcast at any moment, so
+    // building a second one here would pay the order twice.
+    if (_activePayjoinSessionId != null) {
+      emit(payPaymentState.copyWith(isConfirmingPayment: true));
+      return;
+    }
+
     emit(payPaymentState.copyWith(isConfirmingPayment: true));
+    var waitingForPayjoin = false;
     try {
       final wallet = payPaymentState.selectedWallet;
       if (wallet == null) {
@@ -557,9 +575,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
             networkFeesSatPerVb: networkFee.isRelative
                 ? networkFee.value as double
                 : absoluteFeesUpdated / preparedSend.txSize,
-            expireAfterSec: payjoinWindow,
+            expireAfterSec: payjoinWindow.inSeconds,
           );
-          _latchBroadcast(emit, payjoinSender.originalTxId);
+          _watchPayjoin(payjoinSender.id);
+          waitingForPayjoin = true;
         } else {
           final signedTx = await _signBitcoinTxUsecase.execute(
             psbt: preparedSend.unsignedPsbt,
@@ -572,7 +591,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           _latchBroadcast(emit, txid);
         }
       }
-      await _completeAfterBroadcast(emit);
+      if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
       _emitSendPaymentError(emit, PayError.unexpected(message: e.message));
     } on PrepareBitcoinSendException catch (e) {
@@ -586,9 +605,67 @@ class PayBloc extends Bloc<PayEvent, PayState>
       _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
     } finally {
       final current = _currentPaymentState;
-      if (current != null && !current.isPayinBroadcast) {
+      if (current != null &&
+          !current.isPayinBroadcast &&
+          _activePayjoinSessionId == null) {
         emit(current.copyWith(isConfirmingPayment: false));
       }
+    }
+  }
+
+  void _watchPayjoin(String sessionId) {
+    _activePayjoinSessionId = sessionId;
+    unawaited(_payjoinSubscription?.cancel());
+    _payjoinSubscription = _watchPayjoinUsecase
+        .execute(sessionId)
+        .listen(
+          (session) => add(PayEvent.payjoinSessionUpdated(session)),
+          onError: (Object error, StackTrace stackTrace) {
+            log.warning('Payjoin session watch failed');
+            Future<void>.delayed(const Duration(seconds: 5), () {
+              if (!isClosed && _activePayjoinSessionId == sessionId) {
+                _watchPayjoin(sessionId);
+              }
+            });
+          },
+        );
+  }
+
+  Future<void> _onPayjoinSessionUpdated(
+    PayPayjoinSessionUpdated event,
+    Emitter<PayState> emit,
+  ) async {
+    final session = event.session;
+    if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+
+    final subscription = _payjoinSubscription;
+    _payjoinSubscription = null;
+    _activePayjoinSessionId = null;
+    await subscription?.cancel();
+    final current = _currentPaymentState;
+    if (current == null) return;
+
+    if (session.isExpired) {
+      emit(current.copyWith(isConfirmingPayment: false, error: null));
+      return;
+    }
+
+    final txid = session.isCompleted
+        ? session.txId ?? session.originalTxId
+        : session.originalTxId;
+    if (txid == null) {
+      log.severe(
+        error: 'Resolved Payjoin has no transaction id',
+        trace: StackTrace.current,
+      );
+      return;
+    }
+
+    _latchBroadcast(emit, txid);
+    try {
+      await _completeAfterBroadcast(emit);
+    } catch (error) {
+      log.severe(error: error, trace: StackTrace.current);
     }
   }
 
@@ -1152,8 +1229,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _stopPolling();
+    await _payjoinSubscription?.cancel();
     return super.close();
   }
 }

@@ -24,6 +24,8 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.sendPaymentConfirmed() = PaySendPaymentConfirmed;
   const factory PayEvent.pollOrderStatus() = PayPollOrderStatus;
   const factory PayEvent.payjoinToggled(bool enabled) = PayPayjoinToggled;
+  const factory PayEvent.payjoinSessionUpdated(PayjoinSession session) =
+      PayPayjoinSessionUpdated;
   const factory PayEvent.replaceByFeeChanged({required bool replaceByFee}) =
       PayReplaceByFeeChanged;
   const factory PayEvent.utxosSelected({required List<WalletUtxo> utxos}) =

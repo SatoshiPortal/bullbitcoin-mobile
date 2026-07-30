@@ -153,7 +153,8 @@ class OrderModel {
       securityQuestion: json['securityQuestion'] as String?,
       securityAnswer: json['securityAnswer'] as String?,
       paymentDescription: json['paymentDescription'] as String?,
-      unbatchedBuyOnchainFees: json['unbatchedBuyOnchainFees'] as double?,
+      unbatchedBuyOnchainFees: (json['unbatchedBuyOnchainFees'] as num?)
+          ?.toDouble(),
       bip21URI: json['bip21URI'] as String?,
       payjoinDetails: json['payjoinDetails'] as Map<String, dynamic>?,
       referenceNumber: json['referenceNumber'] as String?,

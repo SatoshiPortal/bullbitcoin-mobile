@@ -11,8 +11,9 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 
-class BitcoinWalletRepository {
+class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
@@ -24,6 +25,7 @@ class BitcoinWalletRepository {
   }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource;
 
+  @override
   Future<String> buildPsbt({
     required String walletId,
     required String address,
@@ -102,6 +104,7 @@ class BitcoinWalletRepository {
     return isFromWallet;
   }
 
+  @override
   Future<bool> isAddressOfWallet(
     String address, {
     required String walletId,
@@ -133,6 +136,7 @@ class BitcoinWalletRepository {
     return isFromWallet;
   }
 
+  @override
   Future<int> getTxSize({required String psbt}) async {
     final txSize = await _bdkWallet.decodeTxSize(psbt);
     return txSize;

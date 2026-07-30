@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -20,7 +19,9 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -65,8 +66,8 @@ class _MockSetPayjoinMinAmountUsecase extends Mock
 class _MockSetPayjoinExpireAfterSecUsecase extends Mock
     implements SetPayjoinExpireAfterSecUsecase {}
 
-class _MockWatchPayjoinEnabledChangesUsecase extends Mock
-    implements WatchPayjoinEnabledChangesUsecase {}
+class _MockWatchPayjoinPolicyUsecase extends Mock
+    implements WatchPayjoinPolicyUsecase {}
 
 class _TestSettingsCubit extends SettingsCubit {
   _TestSettingsCubit({
@@ -84,25 +85,25 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setErrorReportingUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
-    required super.watchPayjoinEnabledChangesUsecase,
+    required super.watchPayjoinPolicyUsecase,
     required super.setPayjoinMinAmountUsecase,
     required super.setPayjoinExpireAfterSecUsecase,
   });
 
-  void seed(SettingsEntity settings) {
-    emit(SettingsState(storedSettings: settings));
+  void seed(SettingsEntity settings, PayjoinPolicy policy) {
+    emit(SettingsState(storedSettings: settings, payjoinPolicy: policy));
   }
 }
 
 void main() {
-  late StreamController<bool> changes;
+  late StreamController<PayjoinPolicy> changes;
   late _MockSetPayjoinEnabledUsecase setPayjoinEnabled;
   late _TestSettingsCubit cubit;
 
   setUp(() {
-    changes = StreamController<bool>.broadcast();
+    changes = StreamController<PayjoinPolicy>.broadcast();
     setPayjoinEnabled = _MockSetPayjoinEnabledUsecase();
-    final watchChanges = _MockWatchPayjoinEnabledChangesUsecase();
+    final watchChanges = _MockWatchPayjoinPolicyUsecase();
     when(() => watchChanges.execute()).thenAnswer((_) => changes.stream);
     cubit = _TestSettingsCubit(
       getSettingsUsecase: _MockGetSettingsUsecase(),
@@ -120,7 +121,7 @@ void main() {
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: setPayjoinEnabled,
-      watchPayjoinEnabledChangesUsecase: watchChanges,
+      watchPayjoinPolicyUsecase: watchChanges,
       setPayjoinMinAmountUsecase: _MockSetPayjoinMinAmountUsecase(),
       setPayjoinExpireAfterSecUsecase: _MockSetPayjoinExpireAfterSecUsecase(),
     );
@@ -129,8 +130,8 @@ void main() {
         environment: Environment.mainnet,
         bitcoinUnit: BitcoinUnit.sats,
         currencyCode: 'USD',
-        isPayjoinEnabled: true,
       ),
+      PayjoinPolicy.defaults().copyWith(enabled: true),
     );
   });
 
@@ -153,7 +154,7 @@ void main() {
   });
 
   test('external persisted changes keep the cubit in sync', () async {
-    changes.add(false);
+    changes.add(PayjoinPolicy.defaults());
     await Future<void>.delayed(Duration.zero);
 
     expect(cubit.state.isPayjoinEnabled, isFalse);

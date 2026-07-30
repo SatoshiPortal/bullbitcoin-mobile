@@ -1,11 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_tx_id_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
@@ -21,6 +16,11 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -362,6 +362,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> initByPayjoinTxId(String txId) async {
+    _reload ??= () => initByPayjoinTxId(txId);
     try {
       final payjoin = await _getPayjoinByTxIdUsecase.execute(txId);
       await initByPayjoinId(payjoin.id);
@@ -479,7 +480,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   /// transaction when the session fell back to a plain broadcast. Null while
   /// neither is visible yet (session still ongoing, or the wallet hasn't
   /// synced the broadcast in).
-  Future<String?> _broadcastTxIdForPayjoin(Payjoin payjoin) async {
+  Future<String?> _broadcastTxIdForPayjoin(PayjoinSession payjoin) async {
     for (final txId in [payjoin.txId, payjoin.originalTxId]) {
       if (txId == null) continue;
       try {
@@ -501,7 +502,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   /// into the local wallet database on demand. Bounded by one sync per
   /// candidate; best-effort — a failed lookup just means the watchers armed
   /// by the caller resolve it later.
-  Future<String?> _syncBroadcastTxForPayjoin(Payjoin payjoin) async {
+  Future<String?> _syncBroadcastTxForPayjoin(PayjoinSession payjoin) async {
     for (final txId in [payjoin.txId, payjoin.originalTxId]) {
       if (txId == null) continue;
       final result = await _getWalletTransactionUsecase.execute(

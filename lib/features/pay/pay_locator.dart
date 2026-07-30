@@ -5,12 +5,13 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
@@ -21,6 +22,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
 class PayLocator {
@@ -30,6 +32,12 @@ class PayLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<SendWithPayjoinUsecase>(
+      () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
+    );
+    locator.registerFactory<WatchPayjoinUsecase>(
+      () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
+    );
     locator.registerFactory<PlacePayOrderUsecase>(
       () => PlacePayOrderUsecase(
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
@@ -39,6 +47,7 @@ class PayLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator(),
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
     );
 
@@ -70,6 +79,7 @@ class PayLocator {
         broadcastLiquidTransactionUsecase:
             locator<BroadcastLiquidTransactionUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
+        watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),

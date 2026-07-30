@@ -94,6 +94,7 @@ export 'src/theme/bull_tokens.dart';
 // Chrome.
 export 'src/chrome/bull_scaffold.dart';
 export 'src/chrome/bull_selection_action_bar.dart';
+export 'src/chrome/bull_success_screen.dart';
 export 'src/chrome/bull_top_bar.dart';
 
 // Buttons.

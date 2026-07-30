@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -13,8 +12,10 @@ import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Ok;
 
 class _MockElectrumConnectivityPort extends Mock
     implements ElectrumConnectivityPort {}
@@ -24,7 +25,9 @@ class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 class _MockExchangeRateRepository extends Mock
     implements ExchangeRateRepository {}
 
-class _MockPayjoinRepository extends Mock implements PayjoinRepository {}
+class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
+
+class _MockPayjoinDiagnostics extends Mock implements PayjoinDiagnostics {}
 
 class _MockFeesRepository extends Mock implements FeesRepository {}
 
@@ -42,7 +45,8 @@ class _MockTorStatusUsecase extends Mock implements TorStatusUsecase {}
 
 void main() {
   test('disabled Payjoin is not probed or reported offline', () async {
-    final payjoinRepository = _MockPayjoinRepository();
+    final payjoinPolicy = _MockPayjoinPolicyAccess();
+    final payjoinDiagnostics = _MockPayjoinDiagnostics();
     final settingsRepository = _MockSettingsRepository();
     final walletRepository = _MockWalletRepository();
     final torStatusUsecase = _MockTorStatusUsecase();
@@ -51,16 +55,19 @@ void main() {
         environment: Environment.mainnet,
         bitcoinUnit: BitcoinUnit.btc,
         currencyCode: 'CAD',
-        isPayjoinEnabled: false,
       ),
     );
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     when(torStatusUsecase.execute).thenAnswer((_) async => TorStatus.unknown);
+    when(
+      payjoinPolicy.load,
+    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: _MockElectrumConnectivityPort(),
       boltzSwapRepository: _MockBoltzSwapRepository(),
       exchangeRateRepository: _MockExchangeRateRepository(),
-      payjoinRepository: payjoinRepository,
+      payjoinPolicy: payjoinPolicy,
+      payjoinDiagnostics: payjoinDiagnostics,
       feesRepository: _MockFeesRepository(),
       recoverBullRepository: _MockRecoverBullRepository(),
       walletRepository: walletRepository,
@@ -73,6 +80,6 @@ void main() {
 
     expect(status.payjoin.status, ServiceStatus.disabled);
     expect(status.payjoin.isOffline, isFalse);
-    verifyNever(payjoinRepository.checkOhttpRelayHealth);
+    verifyNever(payjoinDiagnostics.relayHealth);
   });
 }

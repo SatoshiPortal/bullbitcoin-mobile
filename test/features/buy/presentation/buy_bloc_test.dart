@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart'
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +46,9 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockCancelAbandonedBuyPayjoinUsecase extends Mock
     implements CancelAbandonedBuyPayjoinUsecase {}
 
+class _MockGetBuyPayjoinEnabledUsecase extends Mock
+    implements GetBuyPayjoinEnabledUsecase {}
+
 class _SeedableBuyBloc extends BuyBloc {
   _SeedableBuyBloc({
     required super.getWalletsUsecase,
@@ -58,6 +62,7 @@ class _SeedableBuyBloc extends BuyBloc {
     required super.accelerateBuyOrderUsecase,
     required super.getSettingsUsecase,
     required super.cancelAbandonedBuyPayjoinUsecase,
+    required super.getBuyPayjoinEnabledUsecase,
   });
 
   void seed(BuyState state) => emit(state);
@@ -87,6 +92,7 @@ void main() {
         accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
         getSettingsUsecase: _MockGetSettingsUsecase(),
         cancelAbandonedBuyPayjoinUsecase: cancelAbandonedPayjoin,
+        getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
       );
       bloc.seed(BuyState(buyOrder: order));
 

@@ -4,13 +4,8 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -22,12 +17,19 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
@@ -67,8 +69,11 @@ class _MockLabel extends Mock implements Label {}
 
 class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
 
-class _MockWatchPayjoinEnabledChangesUsecase extends Mock
-    implements WatchPayjoinEnabledChangesUsecase {}
+class _MockWatchReceivePayjoinEnabledUsecase extends Mock
+    implements WatchReceivePayjoinEnabledUsecase {}
+
+class _MockGetReceivePayjoinPolicyUsecase extends Mock
+    implements GetReceivePayjoinPolicyUsecase {}
 
 class _MockSetReceivePayjoinEnabledUsecase extends Mock
     implements SetReceivePayjoinEnabledUsecase {}
@@ -113,25 +118,23 @@ WalletAddress _testAddress({String walletId = 'w1'}) => WalletAddress(
   updatedAt: DateTime(2026),
 );
 
-PayjoinReceiver _receiver({
+PayjoinReceiverSession _receiver({
   String id = 'pj1',
   String walletId = 'w1',
   Uint8List? originalTxBytes,
   String? proposalPsbt,
   PayjoinStatus status = PayjoinStatus.started,
-}) =>
-    Payjoin.receiver(
-          status: status,
-          id: id,
-          isTestnet: false,
-          walletId: walletId,
-          pjUri: 'bitcoin:bc1qtest?pj=https://payjo.in',
-          createdAt: DateTime(2026),
-          expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
-          originalTxBytes: originalTxBytes,
-          proposalPsbt: proposalPsbt,
-        )
-        as PayjoinReceiver;
+}) => PayjoinReceiverSession(
+  status: status,
+  id: id,
+  network: BitcoinNetwork.mainnet,
+  walletId: walletId,
+  payjoinUri: 'bitcoin:bc1qtest?pj=https://payjo.in',
+  createdAt: DateTime(2026),
+  expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+  hasOriginalTransaction: originalTxBytes != null,
+  hasProposal: proposalPsbt != null,
+);
 
 void main() {
   late _MockGetWalletsUsecase getWallets;
@@ -144,7 +147,8 @@ void main() {
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByAddressUsecase watchWalletTransaction;
   late _MockLabelsFacade labels;
-  late _MockWatchPayjoinEnabledChangesUsecase watchPayjoinEnabledChanges;
+  late _MockWatchReceivePayjoinEnabledUsecase watchPayjoinEnabledChanges;
+  late _MockGetReceivePayjoinPolicyUsecase getPayjoinPolicy;
   late _MockSetReceivePayjoinEnabledUsecase setPayjoinEnabled;
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
   late StreamController<bool> payjoinEnabledChangeController;
@@ -169,8 +173,9 @@ void main() {
     watchSwapUsecase: _MockWatchSwapUsecase(),
     labelsFacade: labels,
     getSwapLimitsUsecase: _MockGetSwapLimitsUsecase(),
-    watchPayjoinEnabledChangesUsecase: watchPayjoinEnabledChanges,
+    watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
     watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
+    getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
     setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
     wallet: wallet ?? _testWallet(),
   );
@@ -189,12 +194,16 @@ void main() {
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
     labels = _MockLabelsFacade();
-    watchPayjoinEnabledChanges = _MockWatchPayjoinEnabledChangesUsecase();
+    watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
+    getPayjoinPolicy = _MockGetReceivePayjoinPolicyUsecase();
     payjoinEnabledChangeController = StreamController<bool>.broadcast();
     payjoinMinAmountChangeController = StreamController<int>.broadcast();
     when(
       () => watchPayjoinEnabledChanges.execute(),
     ).thenAnswer((_) => payjoinEnabledChangeController.stream);
+    when(
+      () => getPayjoinPolicy.execute(),
+    ).thenAnswer((_) async => (enabled: true, minimumAmountSat: 10000));
     watchPayjoinMinAmount = _MockWatchReceivePayjoinMinAmountUsecase();
     when(
       () => watchPayjoinMinAmount.execute(),
@@ -217,7 +226,6 @@ void main() {
         environment: Environment.mainnet,
         bitcoinUnit: BitcoinUnit.sats,
         currencyCode: 'USD',
-        isPayjoinEnabled: true,
       ),
     );
     when(() => getAvailableCurrencies.execute()).thenAnswer((_) async => []);
@@ -237,10 +245,10 @@ void main() {
       ),
     ).thenAnswer((_) async => _receiver());
     when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
-    // WatchPayjoinUsecase.execute returns a Stream<Payjoin> in the work tree.
+    // WatchPayjoinUsecase.execute returns package session updates.
     when(
       () => watchPayjoin.execute(ids: any(named: 'ids')),
-    ).thenAnswer((_) => const Stream<Payjoin>.empty());
+    ).thenAnswer((_) => const Stream<PayjoinSession>.empty());
     when(
       () => watchWalletTransaction.execute(
         walletId: any(named: 'walletId'),
@@ -316,7 +324,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       verify(
-        () => broadcastOriginalTransaction.execute(requestedPayjoin),
+        () => broadcastOriginalTransaction.execute(requestedPayjoin.id),
       ).called(1);
       expect(bloc.state.payjoin, completedPayjoin);
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
@@ -326,14 +334,9 @@ void main() {
   group('payjoin gated on the global setting', () {
     test('does NOT create a payjoin receiver session when payjoin is '
         'disabled globally', () async {
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isPayjoinEnabled: false,
-        ),
-      );
+      when(
+        () => getPayjoinPolicy.execute(),
+      ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
 
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -377,7 +380,7 @@ void main() {
       () async {
         // Session creation blocks until we complete it, simulating the
         // directory round trip during which the user flips the setting off.
-        final creation = Completer<PayjoinReceiver>();
+        final creation = Completer<PayjoinReceiverSession>();
         when(
           () => receiveWithPayjoin.execute(
             walletId: any(named: 'walletId'),
@@ -458,14 +461,9 @@ void main() {
     test('creates a payjoin receiver session as soon as the setting is '
         'flipped on, without needing to leave and re-enter the receive '
         'screen', () async {
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isPayjoinEnabled: false,
-        ),
-      );
+      when(
+        () => getPayjoinPolicy.execute(),
+      ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
       final createdPayjoin = _receiver();
       when(
         () => receiveWithPayjoin.execute(
@@ -514,14 +512,9 @@ void main() {
 
     test('does NOT create a session on enable if the wallet still has no '
         'balance', () async {
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isPayjoinEnabled: false,
-        ),
-      );
+      when(
+        () => getPayjoinPolicy.execute(),
+      ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
 
       final bloc = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
       addTearDown(bloc.close);

@@ -1,14 +1,15 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/disable_payjoin_receivers_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' as payjoin;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' as primitives;
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockPayjoinPolicyAccess extends Mock
+    implements payjoin.PayjoinPolicyAccess {}
 
 class _MockGetPayjoinDisclaimerShownUsecase extends Mock
     implements GetPayjoinDisclaimerShownUsecase {}
@@ -16,40 +17,40 @@ class _MockGetPayjoinDisclaimerShownUsecase extends Mock
 class _MockMarkPayjoinDisclaimerShownUsecase extends Mock
     implements MarkPayjoinDisclaimerShownUsecase {}
 
-class _MockDisablePayjoinReceiversUsecase extends Mock
-    implements DisablePayjoinReceiversUsecase {}
-
 void main() {
-  late _MockSettingsRepository settingsRepository;
+  late _MockPayjoinPolicyAccess payjoinPolicy;
   late _MockGetPayjoinDisclaimerShownUsecase getDisclaimerShown;
   late _MockMarkPayjoinDisclaimerShownUsecase markDisclaimerShown;
-  late _MockDisablePayjoinReceiversUsecase disablePayjoinReceivers;
   late SetPayjoinEnabledUsecase usecase;
 
   setUp(() {
-    settingsRepository = _MockSettingsRepository();
+    payjoinPolicy = _MockPayjoinPolicyAccess();
     getDisclaimerShown = _MockGetPayjoinDisclaimerShownUsecase();
     markDisclaimerShown = _MockMarkPayjoinDisclaimerShownUsecase();
-    disablePayjoinReceivers = _MockDisablePayjoinReceiversUsecase();
-    when(
-      () => settingsRepository.setPayjoinEnabled(any()),
-    ).thenAnswer((_) async {});
+    when(() => payjoinPolicy.setEnabled(any())).thenAnswer((invocation) async {
+      final enabled = invocation.positionalArguments.single as bool;
+      return primitives.Ok(
+        payjoin.PayjoinPolicy(
+          enabled: enabled,
+          minimumAmount: primitives.Sats.fromInt(10000),
+          sessionLifetime: const Duration(hours: 24),
+        ),
+      );
+    });
     when(
       () => getDisclaimerShown.execute(),
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(true));
     when(
       () => markDisclaimerShown.execute(),
     ).thenAnswer((_) async => const Ok<void, SettingsFailure>(null));
-    when(() => disablePayjoinReceivers.execute()).thenAnswer((_) async {});
     usecase = SetPayjoinEnabledUsecase(
-      settingsRepository: settingsRepository,
+      payjoinPolicy: payjoinPolicy,
       getPayjoinDisclaimerShownUsecase: getDisclaimerShown,
       markPayjoinDisclaimerShownUsecase: markDisclaimerShown,
-      disablePayjoinReceiversUsecase: disablePayjoinReceivers,
     );
   });
 
-  test('persists disabling without requesting consent', () async {
+  test('disables through package policy without requesting consent', () async {
     var requestedConsent = false;
 
     final result = await usecase.execute(
@@ -62,40 +63,23 @@ void main() {
 
     expect((result as Ok<bool, SettingsFailure>).value, isFalse);
     expect(requestedConsent, isFalse);
-    verify(() => settingsRepository.setPayjoinEnabled(false)).called(1);
-    verify(() => disablePayjoinReceivers.execute()).called(1);
+    verify(() => payjoinPolicy.setEnabled(false)).called(1);
     verifyNever(() => getDisclaimerShown.execute());
   });
 
-  test(
-    'does not settle receivers when the disabled setting cannot persist',
-    () async {
-      when(
-        () => settingsRepository.setPayjoinEnabled(false),
-      ).thenThrow(Exception('storage unavailable'));
-
-      final result = await usecase.execute(
-        false,
-        requestConsent: () async => true,
-      );
-
-      expect(result, isA<Err<bool, SettingsFailure>>());
-      verifyNever(() => disablePayjoinReceivers.execute());
-    },
-  );
-
-  test('keeps Payjoin disabled when receiver settlement must retry', () async {
-    when(
-      () => disablePayjoinReceivers.execute(),
-    ).thenThrow(StateError('fallback failed'));
+  test('returns a settings failure when policy persistence fails', () async {
+    when(() => payjoinPolicy.setEnabled(false)).thenAnswer(
+      (_) async => const primitives.Err(
+        payjoin.PayjoinStorageFailure('storage unavailable'),
+      ),
+    );
 
     final result = await usecase.execute(
       false,
       requestConsent: () async => true,
     );
 
-    expect((result as Ok<bool, SettingsFailure>).value, isFalse);
-    verify(() => settingsRepository.setPayjoinEnabled(false)).called(1);
+    expect(result, isA<Err<bool, SettingsFailure>>());
   });
 
   test('enables immediately when consent was previously recorded', () async {
@@ -111,7 +95,7 @@ void main() {
 
     expect((result as Ok<bool, SettingsFailure>).value, isTrue);
     expect(requestedConsent, isFalse);
-    verify(() => settingsRepository.setPayjoinEnabled(true)).called(1);
+    verify(() => payjoinPolicy.setEnabled(true)).called(1);
     verifyNever(() => markDisclaimerShown.execute());
   });
 
@@ -120,10 +104,15 @@ void main() {
       () => getDisclaimerShown.execute(),
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
     final calls = <String>[];
-    when(() => settingsRepository.setPayjoinEnabled(true)).thenAnswer((
-      _,
-    ) async {
+    when(() => payjoinPolicy.setEnabled(true)).thenAnswer((_) async {
       calls.add('persist');
+      return primitives.Ok(
+        payjoin.PayjoinPolicy(
+          enabled: true,
+          minimumAmount: primitives.Sats.fromInt(10000),
+          sessionLifetime: const Duration(hours: 24),
+        ),
+      );
     });
     when(() => markDisclaimerShown.execute()).thenAnswer((_) async {
       calls.add('mark');
@@ -153,7 +142,7 @@ void main() {
     );
 
     expect((result as Ok<bool, SettingsFailure>).value, isFalse);
-    verifyNever(() => settingsRepository.setPayjoinEnabled(any()));
+    verifyNever(() => payjoinPolicy.setEnabled(any()));
     verifyNever(() => markDisclaimerShown.execute());
   });
 
@@ -161,9 +150,9 @@ void main() {
     when(
       () => getDisclaimerShown.execute(),
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
-    when(
-      () => settingsRepository.setPayjoinEnabled(true),
-    ).thenThrow(Exception('storage unavailable'));
+    when(() => payjoinPolicy.setEnabled(true)).thenAnswer(
+      (_) async => const primitives.Err(payjoin.PayjoinStorageFailure()),
+    );
 
     final result = await usecase.execute(
       true,
@@ -185,7 +174,7 @@ void main() {
     );
 
     expect(result, isA<Err<bool, SettingsFailure>>());
-    verifyNever(() => settingsRepository.setPayjoinEnabled(any()));
+    verifyNever(() => payjoinPolicy.setEnabled(any()));
   });
 
   test('keeps Payjoin enabled if recording consent fails', () async {
@@ -202,6 +191,6 @@ void main() {
     );
 
     expect((result as Ok<bool, SettingsFailure>).value, isTrue);
-    verify(() => settingsRepository.setPayjoinEnabled(true)).called(1);
+    verify(() => payjoinPolicy.setEnabled(true)).called(1);
   });
 }

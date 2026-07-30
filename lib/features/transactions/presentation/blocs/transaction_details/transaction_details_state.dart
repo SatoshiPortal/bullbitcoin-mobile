@@ -27,7 +27,7 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
 
   WalletTransaction? get walletTransaction => transaction?.walletTransaction;
   Swap? get swap => transaction?.swap;
-  Payjoin? get payjoin => transaction?.payjoin;
+  PayjoinSession? get payjoin => transaction?.payjoin;
 
   bool get isOngoingSwap => transaction?.isOngoingSwap == true;
 

@@ -10,11 +10,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -24,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_useca
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -33,6 +31,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok, Sats;
 
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -344,18 +344,16 @@ void main() {
           expireAfterSec: any(named: 'expireAfterSec'),
         ),
       ).thenAnswer(
-        (_) async =>
-            Payjoin.sender(
-                  uri: bip21,
-                  isTestnet: false,
-                  walletId: 'wallet-1',
-                  originalPsbt: unsignedPsbt,
-                  originalTxId: expectedTxid,
-                  amountSat: 100000,
-                  createdAt: DateTime(2026),
-                  expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-                )
-                as PayjoinSender,
+        (_) async => PayjoinSenderSession(
+          status: PayjoinStatus.requested,
+          uri: bip21,
+          network: BitcoinNetwork.mainnet,
+          walletId: 'wallet-1',
+          originalTransactionId: expectedTxid,
+          amount: Sats.fromInt(100000),
+          createdAt: DateTime(2026),
+          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        ),
       );
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -394,18 +392,16 @@ void main() {
             expireAfterSec: any(named: 'expireAfterSec'),
           ),
         ).thenAnswer(
-          (_) async =>
-              Payjoin.sender(
-                    uri: bip21,
-                    isTestnet: false,
-                    walletId: 'wallet-1',
-                    originalPsbt: unsignedPsbt,
-                    originalTxId: expectedTxid,
-                    amountSat: 100000,
-                    createdAt: DateTime(2026),
-                    expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-                  )
-                  as PayjoinSender,
+          (_) async => PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
         );
         when(
           () => getOrder.execute(orderId: any(named: 'orderId')),

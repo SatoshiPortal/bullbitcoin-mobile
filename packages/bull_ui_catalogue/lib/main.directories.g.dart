@@ -145,6 +145,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullSuccessScreen',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullSuccessScreenUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullTopBar',
         useCases: [
           _widgetbook.WidgetbookUseCase(

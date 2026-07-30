@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 class _ExportRow {
   const _ExportRow({
@@ -168,9 +168,11 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     );
   }
 
-  String _resolveType(Transaction tx, Swap? swap, Payjoin? payjoin) {
+  String _resolveType(Transaction tx, Swap? swap, PayjoinSession? payjoin) {
     if (payjoin != null) {
-      return payjoin is PayjoinSender ? 'payjoin_send' : 'payjoin_receive';
+      return payjoin is PayjoinSenderSession
+          ? 'payjoin_send'
+          : 'payjoin_receive';
     }
     if (swap != null) {
       if (swap.isLnSendSwap) return 'lightning_send';
@@ -191,7 +193,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     Transaction tx,
     Swap? swap,
     WalletTransaction? wt,
-    Payjoin? payjoin,
+    PayjoinSession? payjoin,
   ) {
     if (swap != null) {
       return switch (swap.status) {

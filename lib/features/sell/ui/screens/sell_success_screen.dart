@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/success_screen_scaffold.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -70,7 +69,7 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
     final showPayjoinStatus =
         order != null && order.payjoinOutcome != OrderPayjoinOutcome.none;
 
-    return SuccessScreenScaffold(
+    return BullSuccessScreen(
       title: context.loc.sellTitle,
       headline: context.loc.sellOrderCompleted,
       onClose: () => context.goNamed(WalletRoute.walletHome.name),

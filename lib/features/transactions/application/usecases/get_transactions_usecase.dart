@@ -1,20 +1,20 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart';
 
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final BoltzSwapRepository _boltzSwapRepository;
-  final PayjoinRepository _payjoinRepository;
+  final SwapHistoryRepository _boltzSwapRepository;
+  final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
@@ -23,7 +23,7 @@ class GetTransactionsUsecase {
     required this._settingsRepository,
     required this._walletTransactionRepository,
     required this._boltzSwapRepository,
-    required this._payjoinRepository,
+    required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
     required this._labelExchangeOrdersUsecase,
@@ -44,18 +44,26 @@ class GetTransactionsUsecase {
       await _labelExchangeOrdersUsecase.execute(orders: orders);
 
       // Labels must exist before wallet transactions are hydrated.
-      final (walletTransactions, payjoins, swaps) = await (
+      final (walletTransactions, payjoinResult, swaps) = await (
         _walletTransactionRepository.getWalletTransactions(
           walletId: walletId,
           sync: sync,
           environment: environment,
         ),
-        _payjoinRepository.getPayjoins(
-          walletId: walletId,
-          environment: environment,
+        _payjoinSessions.list(
+          PayjoinSessionFilter(
+            walletId: walletId,
+            network: environment.isTestnet
+                ? BitcoinNetwork.testnet
+                : BitcoinNetwork.mainnet,
+          ),
         ),
         _boltzSwapRepository.getAllSwaps(walletId: walletId),
       ).wait;
+      final payjoins = switch (payjoinResult) {
+        Ok(:final value) => value,
+        Err() => <PayjoinSession>[],
+      };
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions
       //  as they should be linked and form a single Transaction entity.
@@ -78,7 +86,7 @@ class GetTransactionsUsecase {
           // If no swap is found, it means the transaction is not a swap
           swap = null;
         }
-        Payjoin? payjoin;
+        PayjoinSession? payjoin;
         try {
           payjoin = payjoins.firstWhere(
             (pj) =>
@@ -87,7 +95,7 @@ class GetTransactionsUsecase {
                 //  both a sender and receiver payjoin can exist for the
                 //  same transaction if it was done between two wallets in
                 //  the app.
-                wt.isOutgoing == pj is PayjoinSender,
+                wt.isOutgoing == pj is PayjoinSenderSession,
           );
           // Remove the payjoin from the list of payjoins to avoid duplication
           //  since it's already included in the broadcasted transaction

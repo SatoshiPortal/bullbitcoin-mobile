@@ -1,15 +1,13 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/cancel_payjoin_receiver_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoins_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 
-class _MockGetPayjoinsUsecase extends Mock implements GetPayjoinsUsecase {}
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockCancelPayjoinReceiverUsecase extends Mock
-    implements CancelPayjoinReceiverUsecase {}
+class _MockPayjoinReceiver extends Mock implements PayjoinReceiver {}
 
 BuyOrder _order({required OrderPayinStatus payinStatus, String? bip21URI}) =>
     Order.buy(
@@ -36,40 +34,40 @@ void main() {
   const uri =
       'bitcoin:bc1q0000000000000000000000000000000000000'
       '?amount=0.001&pj=https://payjo.in/session';
-  late _MockGetPayjoinsUsecase getPayjoins;
-  late _MockCancelPayjoinReceiverUsecase cancelReceiver;
+  late _MockPayjoinSessions sessions;
+  late _MockPayjoinReceiver receiver;
   late CancelAbandonedBuyPayjoinUsecase usecase;
 
+  setUpAll(() {
+    registerFallbackValue(PayjoinSessionFilter());
+  });
+
   setUp(() {
-    getPayjoins = _MockGetPayjoinsUsecase();
-    cancelReceiver = _MockCancelPayjoinReceiverUsecase();
-    usecase = CancelAbandonedBuyPayjoinUsecase(
-      getPayjoins,
-      cancelReceiver,
-    );
+    sessions = _MockPayjoinSessions();
+    receiver = _MockPayjoinReceiver();
+    usecase = CancelAbandonedBuyPayjoinUsecase(sessions, receiver);
   });
 
   test('cancels the ongoing receiver matching an unconfirmed order', () async {
-    final receiver =
-        Payjoin.receiver(
-              id: 'receiver-1',
-              isTestnet: false,
-              walletId: 'wallet-1',
-              pjUri: uri,
-              createdAt: DateTime(2026),
-              expiresAt: DateTime(2026).add(const Duration(hours: 24)),
-            )
-            as PayjoinReceiver;
+    final session = PayjoinReceiverSession(
+      status: PayjoinStatus.started,
+      id: 'receiver-1',
+      network: BitcoinNetwork.mainnet,
+      walletId: 'wallet-1',
+      payjoinUri: uri,
+      createdAt: DateTime(2026),
+      expiresAt: DateTime(2026).add(const Duration(hours: 24)),
+    );
+    when(() => sessions.list(any())).thenAnswer((_) async => Ok([session]));
     when(
-      () => getPayjoins.execute(onlyOngoing: true),
-    ).thenAnswer((_) async => [receiver]);
-    when(() => cancelReceiver.execute('receiver-1')).thenAnswer((_) async {});
+      () => receiver.cancel('receiver-1'),
+    ).thenAnswer((_) async => const Ok(null));
 
     await usecase.execute(
       _order(payinStatus: OrderPayinStatus.awaitingPayment, bip21URI: uri),
     );
 
-    verify(() => cancelReceiver.execute('receiver-1')).called(1);
+    verify(() => receiver.cancel('receiver-1')).called(1);
   });
 
   test('does not cancel a receiver for a completed order', () async {
@@ -77,31 +75,76 @@ void main() {
       _order(payinStatus: OrderPayinStatus.completed, bip21URI: uri),
     );
 
-    verifyNever(
-      () => getPayjoins.execute(onlyOngoing: any(named: 'onlyOngoing')),
-    );
-    verifyNever(() => cancelReceiver.execute(any()));
+    verifyNever(() => sessions.list(any()));
+    verifyNever(() => receiver.cancel(any()));
   });
 
+  for (final status in [
+    OrderPayinStatus.inProgress,
+    OrderPayinStatus.underReview,
+    OrderPayinStatus.awaitingConfirmation,
+  ]) {
+    test(
+      'does not cancel a receiver when the payin is ${status.value}',
+      () async {
+        await usecase.execute(_order(payinStatus: status, bip21URI: uri));
+
+        verifyNever(() => sessions.list(any()));
+        verifyNever(() => receiver.cancel(any()));
+      },
+    );
+  }
+
   test('does not cancel an unrelated receiver', () async {
-    final receiver =
-        Payjoin.receiver(
-              id: 'receiver-2',
-              isTestnet: false,
-              walletId: 'wallet-1',
-              pjUri: 'bitcoin:bc1qother?pj=https://payjo.in/other',
-              createdAt: DateTime(2026),
-              expiresAt: DateTime(2026).add(const Duration(hours: 24)),
-            )
-            as PayjoinReceiver;
-    when(
-      () => getPayjoins.execute(onlyOngoing: true),
-    ).thenAnswer((_) async => [receiver]);
+    final session = PayjoinReceiverSession(
+      status: PayjoinStatus.started,
+      id: 'receiver-2',
+      network: BitcoinNetwork.mainnet,
+      walletId: 'wallet-1',
+      payjoinUri: 'bitcoin:bc1qother?pj=https://payjo.in/other',
+      createdAt: DateTime(2026),
+      expiresAt: DateTime(2026).add(const Duration(hours: 24)),
+    );
+    when(() => sessions.list(any())).thenAnswer((_) async => Ok([session]));
 
     await usecase.execute(
       _order(payinStatus: OrderPayinStatus.awaitingPayment, bip21URI: uri),
     );
 
-    verifyNever(() => cancelReceiver.execute(any()));
+    verifyNever(() => receiver.cancel(any()));
   });
+
+  test(
+    'cancels by stable Payjoin endpoint when the exchange rewrites the amount',
+    () async {
+      const sessionUri =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      const rewrittenOrderUri =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?pj=https://payjo.in/session&amount=0.00098';
+      final session = PayjoinReceiverSession(
+        status: PayjoinStatus.started,
+        id: 'receiver-1',
+        network: BitcoinNetwork.mainnet,
+        walletId: 'wallet-1',
+        payjoinUri: sessionUri,
+        createdAt: DateTime(2026),
+        expiresAt: DateTime(2026).add(const Duration(hours: 24)),
+      );
+      when(() => sessions.list(any())).thenAnswer((_) async => Ok([session]));
+      when(
+        () => receiver.cancel('receiver-1'),
+      ).thenAnswer((_) async => const Ok(null));
+
+      await usecase.execute(
+        _order(
+          payinStatus: OrderPayinStatus.awaitingPayment,
+          bip21URI: rewrittenOrderUri,
+        ),
+      );
+
+      verify(() => receiver.cancel('receiver-1')).called(1);
+    },
+  );
 }

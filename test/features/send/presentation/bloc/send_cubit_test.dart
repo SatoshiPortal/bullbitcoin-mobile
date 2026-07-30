@@ -7,9 +7,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
@@ -31,12 +28,15 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolut
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -44,6 +44,8 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
@@ -137,6 +139,9 @@ class _MockPreviewBitcoinFeePresetsUsecase extends Mock
 class _MockCheckLiquidConsolidationUsecase extends Mock
     implements CheckLiquidConsolidationUsecase {}
 
+class _MockGetSendPayjoinEnabledUsecase extends Mock
+    implements GetSendPayjoinEnabledUsecase {}
+
 class _FakeNewLabel extends Fake implements NewLabel {}
 
 /// Test seam: [SendCubit]'s payjoin watcher ([_watchPayjoin]) is private and
@@ -181,6 +186,7 @@ class _TestableSendCubit extends SendCubit {
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
+    required super.getSendPayjoinEnabledUsecase,
   });
 
   void setStateForTest(SendState state) => emit(state);
@@ -209,24 +215,21 @@ Bip21PaymentRequest _payjoinBip21() =>
         )
         as Bip21PaymentRequest;
 
-PayjoinSender _sender({
+PayjoinSenderSession _sender({
   required PayjoinStatus status,
   String? txId,
   String originalTxId = 'sender-orig-txid',
-}) =>
-    Payjoin.sender(
-          status: status,
-          uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
-          isTestnet: false,
-          walletId: 'w1',
-          originalPsbt: 'cHNidP8=',
-          originalTxId: originalTxId,
-          amountSat: 50000,
-          createdAt: DateTime(2026),
-          expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
-          txId: txId,
-        )
-        as PayjoinSender;
+}) => PayjoinSenderSession(
+  status: status,
+  uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
+  network: BitcoinNetwork.mainnet,
+  walletId: 'w1',
+  originalTransactionId: originalTxId,
+  amount: Sats.fromInt(50000),
+  createdAt: DateTime(2026),
+  expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+  transactionId: txId,
+);
 
 void main() {
   late _MockLabelsFacade labelsFacade;
@@ -267,7 +270,7 @@ void main() {
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
 
-  late StreamController<Payjoin> payjoinEvents;
+  late StreamController<PayjoinSession> payjoinEvents;
 
   _TestableSendCubit buildCubit() => _TestableSendCubit(
     labelsFacade: labelsFacade,
@@ -304,6 +307,7 @@ void main() {
     previewBitcoinFeeUsecase: previewBitcoinFeeUsecase,
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
+    getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
   );
 
   /// Precondition state that makes [SendState.willAttemptPayjoin] true and
@@ -368,7 +372,7 @@ void main() {
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
 
-    payjoinEvents = StreamController<Payjoin>.broadcast();
+    payjoinEvents = StreamController<PayjoinSession>.broadcast();
 
     // Benign default stubs for everything the payjoin branch (or its
     // aftermath) touches.

@@ -5,36 +5,21 @@ import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
-  final StreamController<bool> _payjoinEnabledChangeController;
-  final StreamController<int> _payjoinMinAmountChangeController;
 
   SettingsRepository({required this._settingsDatasource})
-    : _currencyChangeController = StreamController<String>.broadcast(),
-      _payjoinEnabledChangeController = StreamController<bool>.broadcast(),
-      _payjoinMinAmountChangeController = StreamController<int>.broadcast();
+    : _currencyChangeController = StreamController<String>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
 
   @override
-  Stream<bool> get payjoinEnabledChangeStream =>
-      _payjoinEnabledChangeController.stream;
-
-  @override
-  Stream<int> get payjoinMinAmountChangeStream =>
-      _payjoinMinAmountChangeController.stream;
-
-  @override
   Future<void> close() async {
     await _currencyChangeController.close();
-    await _payjoinEnabledChangeController.close();
-    await _payjoinMinAmountChangeController.close();
   }
 
   @override
@@ -53,9 +38,6 @@ class SettingsRepository implements domain.SettingsRepository {
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
-    bool isPayjoinEnabled = false,
-    int payjoinMinAmountSat = PayjoinConstants.defaultMinAmountSat,
-    int payjoinExpireAfterSec = PayjoinConstants.defaultExpireAfterSec,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -73,9 +55,9 @@ class SettingsRepository implements domain.SettingsRepository {
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
         exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
-        payjoinEnabled: isPayjoinEnabled,
-        payjoinMinAmountSat: payjoinMinAmountSat,
-        payjoinExpireAfterSec: payjoinExpireAfterSec,
+        payjoinEnabled: false,
+        payjoinMinAmountSat: 10000,
+        payjoinExpireAfterSec: 86400,
       ),
     );
   }
@@ -98,9 +80,6 @@ class SettingsRepository implements domain.SettingsRepository {
       isErrorReportingEnabled: s.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
-      isPayjoinEnabled: s.payjoinEnabled,
-      payjoinMinAmountSat: s.payjoinMinAmountSat,
-      payjoinExpireAfterSec: s.payjoinExpireAfterSec,
     );
   }
 
@@ -153,23 +132,6 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _settingsDatasource.setThemeMode(themeMode);
-  }
-
-  @override
-  Future<void> setPayjoinEnabled(bool enabled) async {
-    await _settingsDatasource.setPayjoinEnabled(enabled);
-    _payjoinEnabledChangeController.add(enabled);
-  }
-
-  @override
-  Future<void> setPayjoinMinAmountSat(int amountSat) async {
-    await _settingsDatasource.setPayjoinMinAmountSat(amountSat);
-    _payjoinMinAmountChangeController.add(amountSat);
-  }
-
-  @override
-  Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
-    await _settingsDatasource.setPayjoinExpireAfterSec(expireAfterSec);
   }
 
   @override

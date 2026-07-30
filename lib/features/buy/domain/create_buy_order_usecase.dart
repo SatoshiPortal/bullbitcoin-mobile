@@ -1,25 +1,24 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/cancel_payjoin_receiver_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart';
 
 class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
-  final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
-  final CancelPayjoinReceiverUsecase _cancelPayjoinReceiverUsecase;
+  final PayjoinReceiver _payjoinReceiver;
+  final PayjoinPolicyAccess _payjoinPolicy;
 
   CreateBuyOrderUsecase({
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
     required this._settingsRepository,
-    required this._receiveWithPayjoinUsecase,
-    required this._cancelPayjoinReceiverUsecase,
+    required this._payjoinReceiver,
+    required this._payjoinPolicy,
   });
 
   /// Places a buy order, paying out through payjoin when it is possible.
@@ -52,9 +51,14 @@ class CreateBuyOrderUsecase {
           ? OrderBitcoinNetwork.liquid
           : OrderBitcoinNetwork.bitcoin;
 
+      final policyResult = await _payjoinPolicy.load();
+      final payjoinEnabled = switch (policyResult) {
+        Ok(:final value) => value.enabled,
+        Err() => false,
+      };
       final wantsPayjoin =
           !isLiquid &&
-          settings.isPayjoinEnabled &&
+          payjoinEnabled &&
           payjoinWalletId != null &&
           payjoinAmountSat != null;
 
@@ -62,16 +66,25 @@ class CreateBuyOrderUsecase {
       String? payjoinBip21;
       if (wantsPayjoin) {
         try {
-          final receiver = await _receiveWithPayjoinUsecase.execute(
-            walletId: payjoinWalletId,
-            address: toAddress,
-            amountSat: payjoinAmountSat,
-            // The protocol maximum on purpose, never the user's session-lifetime
-            // setting: that setting can be as low as 60 seconds, the payout can
-            // be hours away, and the URI cannot be revised once the order holds
-            // it. A dead endpoint would cost the customer a payout.
-            expireAfterSec: PayjoinConstants.maxExpireAfterSec,
+          final result = await _payjoinReceiver.start(
+            StartPayjoinReceiver(
+              walletId: payjoinWalletId,
+              network: isTestnet
+                  ? BitcoinNetwork.testnet
+                  : BitcoinNetwork.mainnet,
+              address: toAddress,
+              amount: Sats.fromInt(payjoinAmountSat),
+              // The URI cannot be revised after order placement, so the
+              // exchange payout uses the protocol maximum lifetime.
+              expiresAt: DateTime.now().add(
+                PayjoinPolicy.maximumSessionLifetime,
+              ),
+            ),
           );
+          final receiver = switch (result) {
+            Ok(:final value) => value,
+            Err() => throw StateError('Failed to start Payjoin receiver'),
+          };
           payjoinId = receiver.id;
           payjoinBip21 = receiver.pjUri;
         } catch (e) {
@@ -103,11 +116,10 @@ class CreateBuyOrderUsecase {
         // The session would otherwise sit and poll the directory for a day for
         // an order that never existed.
         if (payjoinId != null) {
-          await _cancelPayjoinReceiverUsecase
-              .execute(payjoinId)
-              .onError<Object>(
-                (e, _) => log.warning('Failed to drop an orphan session: $e'),
-              );
+          final result = await _payjoinReceiver.cancel(payjoinId);
+          if (result case Err()) {
+            log.warning('Failed to drop an orphan Payjoin session');
+          }
         }
         rethrow;
       }

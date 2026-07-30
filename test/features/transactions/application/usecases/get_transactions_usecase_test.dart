@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -10,6 +8,8 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -18,7 +18,7 @@ class _MockWalletTransactionRepository extends Mock
 
 class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 
-class _MockPayjoinRepository extends Mock implements PayjoinRepository {}
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
@@ -30,31 +30,34 @@ void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockBoltzSwapRepository boltzSwapRepository;
-  late _MockPayjoinRepository payjoinRepository;
+  late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository mainnetOrderRepository;
   late _MockExchangeOrderRepository testnetOrderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late List<Order> orders;
   late GetTransactionsUsecase usecase;
 
-  PayjoinReceiver receiver(PayjoinStatus status) =>
-      Payjoin.receiver(
-            status: status,
-            id: 'pj1',
-            isTestnet: false,
-            walletId: 'w1',
-            pjUri: 'bitcoin:bc1qtest?pj=https://payjo.in',
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
-            originalTxId: 'original-txid',
-          )
-          as PayjoinReceiver;
+  PayjoinReceiverSession receiver(PayjoinStatus status) =>
+      PayjoinReceiverSession(
+        status: status,
+        id: 'pj1',
+        network: BitcoinNetwork.mainnet,
+        walletId: 'w1',
+        payjoinUri: 'bitcoin:bc1qtest?pj=https://payjo.in',
+        createdAt: DateTime(2026),
+        expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+        originalTransactionId: 'original-txid',
+      );
+
+  setUpAll(() {
+    registerFallbackValue(PayjoinSessionFilter());
+  });
 
   setUp(() {
     settingsRepository = _MockSettingsRepository();
     walletTransactionRepository = _MockWalletTransactionRepository();
     boltzSwapRepository = _MockBoltzSwapRepository();
-    payjoinRepository = _MockPayjoinRepository();
+    payjoinSessions = _MockPayjoinSessions();
     mainnetOrderRepository = _MockExchangeOrderRepository();
     testnetOrderRepository = _MockExchangeOrderRepository();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
@@ -88,7 +91,7 @@ void main() {
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
       boltzSwapRepository: boltzSwapRepository,
-      payjoinRepository: payjoinRepository,
+      payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
@@ -99,11 +102,8 @@ void main() {
     'hides an aborted Payjoin until its original wallet tx is synced',
     () async {
       when(
-        () => payjoinRepository.getPayjoins(
-          walletId: any(named: 'walletId'),
-          environment: any(named: 'environment'),
-        ),
-      ).thenAnswer((_) async => [receiver(PayjoinStatus.aborted)]);
+        () => payjoinSessions.list(any()),
+      ).thenAnswer((_) async => Ok([receiver(PayjoinStatus.aborted)]));
 
       final transactions = await usecase.execute();
 
@@ -113,11 +113,8 @@ void main() {
 
   test('keeps a genuinely pending Payjoin in the transaction list', () async {
     when(
-      () => payjoinRepository.getPayjoins(
-        walletId: any(named: 'walletId'),
-        environment: any(named: 'environment'),
-      ),
-    ).thenAnswer((_) async => [receiver(PayjoinStatus.requested)]);
+      () => payjoinSessions.list(any()),
+    ).thenAnswer((_) async => Ok([receiver(PayjoinStatus.requested)]));
 
     final transactions = await usecase.execute();
 
@@ -127,11 +124,8 @@ void main() {
 
   test('labels exchange orders before loading wallet transactions', () async {
     when(
-      () => payjoinRepository.getPayjoins(
-        walletId: any(named: 'walletId'),
-        environment: any(named: 'environment'),
-      ),
-    ).thenAnswer((_) async => []);
+      () => payjoinSessions.list(any()),
+    ).thenAnswer((_) async => const Ok([]));
 
     await usecase.execute();
 
@@ -145,4 +139,23 @@ void main() {
       ),
     ]);
   });
+
+  test(
+    'keeps ordinary transaction history available when Payjoin is unavailable',
+    () async {
+      when(() => payjoinSessions.list(any())).thenAnswer(
+        (_) async => const Err(
+          PayjoinUnavailableFailure('Payjoin failed to initialize'),
+        ),
+      );
+
+      final transactions = await usecase.execute();
+
+      expect(
+        transactions,
+        isEmpty,
+        reason: 'Payjoin is optional enrichment for ordinary transactions',
+      );
+    },
+  );
 }

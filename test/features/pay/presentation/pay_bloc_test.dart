@@ -10,8 +10,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -20,6 +18,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
@@ -31,6 +31,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -73,6 +75,8 @@ class _MockGetOrder extends Mock implements GetOrderUsecase {}
 
 class _MockSendWithPayjoin extends Mock implements SendWithPayjoinUsecase {}
 
+class _MockWatchPayjoin extends Mock implements WatchPayjoinUsecase {}
+
 class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
 class _MockPreviewBitcoinFeePresets extends Mock
@@ -97,6 +101,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.broadcastBitcoinTransactionUsecase,
     required super.broadcastLiquidTransactionUsecase,
     required super.sendWithPayjoinUsecase,
+    required super.watchPayjoinUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -153,6 +158,7 @@ void main() {
   late _MockGetOrder getOrder;
   late _MockRefreshPayOrder refreshPayOrder;
   late _MockSendWithPayjoin sendWithPayjoin;
+  late _MockWatchPayjoin watchPayjoin;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockPayOrder payOrder;
   late _MockWallet wallet;
@@ -220,6 +226,7 @@ void main() {
     getOrder = _MockGetOrder();
     refreshPayOrder = _MockRefreshPayOrder();
     sendWithPayjoin = _MockSendWithPayjoin();
+    watchPayjoin = _MockWatchPayjoin();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     payOrder = _MockPayOrder();
     wallet = _MockWallet();
@@ -262,6 +269,9 @@ void main() {
     when(
       () => getOrder.execute(orderId: any(named: 'orderId')),
     ).thenAnswer((_) async => payOrder);
+    when(
+      () => watchPayjoin.execute(any()),
+    ).thenAnswer((_) => const Stream.empty());
 
     bloc = _SeedablePayBloc(
       getExchangeUserSummaryUsecase: _MockGetUserSummary(),
@@ -274,6 +284,7 @@ void main() {
       broadcastBitcoinTransactionUsecase: broadcastBitcoin,
       broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
       sendWithPayjoinUsecase: sendWithPayjoin,
+      watchPayjoinUsecase: watchPayjoin,
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
@@ -291,6 +302,139 @@ void main() {
   tearDown(() => bloc.close());
 
   group('PayBloc — broadcast latch', () {
+    test(
+      'does not report success while a Payjoin is only requested',
+      () async {
+        const bip21 =
+            'bitcoin:bc1q0000000000000000000000000000000000000'
+            '?amount=0.001&pj=https://payjo.in/session';
+        when(() => payOrder.bip21URI).thenReturn(bip21);
+        when(
+          () => payOrder.confirmationDeadline,
+        ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+        when(
+          () => sendWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer(
+          (_) async => PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
+        );
+        final updates = StreamController<PayjoinSession>();
+        addTearDown(updates.close);
+        when(
+          () => watchPayjoin.execute(bip21),
+        ).thenAnswer((_) => updates.stream);
+
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await untilCalled(() => watchPayjoin.execute(bip21));
+        await Future<void>.delayed(const Duration(seconds: 6));
+
+        expect(bloc.state, isA<PayPaymentState>());
+        expect((bloc.state as PayPaymentState).payinBroadcastTxid, isNull);
+        expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
+
+        updates.add(
+          PayjoinSenderSession(
+            status: PayjoinStatus.expired,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
+        );
+        await pumpEventQueue();
+
+        final expired = bloc.state as PayPaymentState;
+        expect(expired.payinBroadcastTxid, isNull);
+        expect(expired.isConfirmingPayment, isFalse);
+        expect(expired.error, isNull);
+      },
+      timeout: const Timeout(Duration(seconds: 10)),
+    );
+
+    test('a second confirmation cannot start a second Payjoin', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => payOrder.bip21URI).thenReturn(bip21);
+      when(
+        () => payOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async => PayjoinSenderSession(
+          status: PayjoinStatus.requested,
+          uri: bip21,
+          network: BitcoinNetwork.mainnet,
+          walletId: 'wallet-1',
+          originalTransactionId: expectedTxid,
+          amount: Sats.fromInt(100000),
+          createdAt: DateTime(2026),
+          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        ),
+      );
+      final updates = StreamController<PayjoinSession>();
+      addTearDown(updates.close);
+      when(() => watchPayjoin.execute(bip21)).thenAnswer((_) => updates.stream);
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await untilCalled(() => watchPayjoin.execute(bip21));
+
+      // The original transaction is already committed to the receiver, so a
+      // second confirmation must not build and hand over another one.
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      verify(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).called(1);
+      verify(
+        () => prepareBitcoinSend.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).called(1);
+    });
+
     test(
       'a post-broadcast failure never allows a second broadcast',
       () async {
@@ -438,18 +582,31 @@ void main() {
           expireAfterSec: any(named: 'expireAfterSec'),
         ),
       ).thenAnswer(
-        (_) async =>
-            Payjoin.sender(
-                  uri: bip21,
-                  isTestnet: false,
-                  walletId: 'wallet-1',
-                  originalPsbt: unsignedPsbt,
-                  originalTxId: expectedTxid,
-                  amountSat: 100000,
-                  createdAt: DateTime(2026),
-                  expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-                )
-                as PayjoinSender,
+        (_) async => PayjoinSenderSession(
+          status: PayjoinStatus.requested,
+          uri: bip21,
+          network: BitcoinNetwork.mainnet,
+          walletId: 'wallet-1',
+          originalTransactionId: expectedTxid,
+          amount: Sats.fromInt(100000),
+          createdAt: DateTime(2026),
+          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        ),
+      );
+      when(() => watchPayjoin.execute(bip21)).thenAnswer(
+        (_) => Stream.value(
+          PayjoinSenderSession(
+            status: PayjoinStatus.completed,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: 'original-txid',
+            transactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
+        ),
       );
       bloc.seed(
         paymentState().copyWith(

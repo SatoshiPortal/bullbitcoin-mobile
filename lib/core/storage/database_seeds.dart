@@ -24,8 +24,8 @@ class DatabaseSeeds {
             themeMode: 'system',
             isErrorReportingEnabled: false,
             payjoinEnabled: false,
-            payjoinMinAmountSat: PayjoinConstants.defaultMinAmountSat,
-            payjoinExpireAfterSec: PayjoinConstants.defaultExpireAfterSec,
+            payjoinMinAmountSat: 10000,
+            payjoinExpireAfterSec: 86400,
           ),
         );
   }
