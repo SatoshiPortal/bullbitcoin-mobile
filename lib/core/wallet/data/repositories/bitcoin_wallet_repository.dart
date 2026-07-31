@@ -36,24 +36,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     List<WalletUtxo>? selected,
     bool? replaceByFee,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = await _publicWallet(walletId);
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,
       address: address,
@@ -80,24 +63,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String walletId,
     required Uint8List script,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = await _publicWallet(walletId);
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
 
@@ -109,24 +75,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     String address, {
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = await _publicWallet(walletId);
 
     final isFromWallet = await _bdkWallet.isAddressMine(
       address,
@@ -152,18 +101,41 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String address,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
+    final metadata = await _bitcoinMetadata(walletId);
     return await _bdkWallet.getAmountSentToAddress(
       psbt,
       address,
       isTestnet: metadata.isTestnet,
     );
+  }
+
+  /// [walletId]'s metadata, refusing anything that isn't a Bitcoin wallet.
+  Future<WalletMetadataModel> _bitcoinMetadata(String walletId) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+
+    return metadata;
+  }
+
+  /// The watch-only BDK wallet for [walletId]. Everything but signing runs on
+  /// the public descriptors, so no seed is touched to build or inspect a tx.
+  Future<PublicBdkWalletModel> _publicWallet(String walletId) async {
+    final metadata = await _bitcoinMetadata(walletId);
+
+    return WalletModel.publicBdk(
+          externalDescriptor: metadata.externalPublicDescriptor,
+          internalDescriptor: metadata.internalPublicDescriptor,
+          isTestnet: metadata.isTestnet,
+          id: metadata.id,
+        )
+        as PublicBdkWalletModel;
   }
 
   Future<PrivateBdkWalletModel> getPrivateWallet({
