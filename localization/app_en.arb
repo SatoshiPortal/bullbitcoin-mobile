@@ -15119,5 +15119,293 @@
   "payjoinUseToggle": "Use payjoin",
   "@payjoinUseToggle": {
     "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
+  },
+  "coinsSweep": "Sweep",
+  "@coinsSweep": {
+    "description": "Sweep action in the coins selection action bar: spend the selected coins entirely"
+  },
+  "sweepTitle": "Sweep coins",
+  "@sweepTitle": {
+    "description": "Title of the sweep screen"
+  },
+  "sweepCoinsCount": "{count, plural, =1{1 coin selected} other{{count} coins selected}}",
+  "@sweepCoinsCount": {
+    "description": "How many coins the sweep will spend",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sweepSpentEntirely": "These coins will be spent entirely",
+  "@sweepSpentEntirely": {
+    "description": "Explains that a sweep consumes the selected coins in full"
+  },
+  "sweepRecipientLabel": "Recipient {number}",
+  "@sweepRecipientLabel": {
+    "description": "Header of a recipient row in the sweep allocation form",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sweepAddressHint": "Address, or a bitcoin: URI",
+  "@sweepAddressHint": {
+    "description": "Placeholder of the sweep recipient address field"
+  },
+  "sweepAmountHint": "Amount in {unit}",
+  "@sweepAmountHint": {
+    "description": "Placeholder of the sweep recipient amount field",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "sweepMax": "Max",
+  "@sweepMax": {
+    "description": "Makes a sweep recipient absorb everything the other rows leave"
+  },
+  "sweepTakesRemainderWithAmount": "Takes the rest — {amount} before fees",
+  "@sweepTakesRemainderWithAmount": {
+    "description": "Shown on the sweep recipient row that absorbs the remainder",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sweepUndoMax": "Undo",
+  "@sweepUndoMax": {
+    "description": "Gives the sweep remainder back to the wallet change output"
+  },
+  "sweepAddRecipient": "Add a recipient",
+  "@sweepAddRecipient": {
+    "description": "Adds a row to the sweep allocation form"
+  },
+  "sweepNetworkFee": "Network fee",
+  "@sweepNetworkFee": {
+    "description": "Label of the fee row on the sweep allocation screen"
+  },
+  "sweepFeeRate": "{rate} sat/vB",
+  "@sweepFeeRate": {
+    "description": "A fee rate in satoshis per virtual byte",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "sweepAllocated": "Allocated",
+  "@sweepAllocated": {
+    "description": "Sum of the pinned recipient amounts in the sweep summary"
+  },
+  "sweepChangeBackToWallet": "Returns to this wallet",
+  "@sweepChangeBackToWallet": {
+    "description": "Where the sweep remainder goes when no recipient takes it"
+  },
+  "sweepRemainderToRecipient": "Goes to the recipient taking the rest",
+  "@sweepRemainderToRecipient": {
+    "description": "Where the sweep remainder goes when a recipient absorbs it"
+  },
+  "sweepChangeExplainer": "Whatever is left after fees returns to this wallet as change. Tap Max on a recipient to send it there instead.",
+  "@sweepChangeExplainer": {
+    "description": "Explains the default destination of the sweep remainder"
+  },
+  "sweepOverAllocatedWarning": "The amounts add up to more than the selected coins hold.",
+  "@sweepOverAllocatedWarning": {
+    "description": "Warns that the sweep allocation exceeds the selected balance"
+  },
+  "sweepReviewAction": "Review",
+  "@sweepReviewAction": {
+    "description": "Builds the sweep transaction and moves to the review step"
+  },
+  "sweepBuilding": "Building…",
+  "@sweepBuilding": {
+    "description": "Shown on the review button while the sweep PSBT is being built"
+  },
+  "sweepReviewTitle": "Review sweep",
+  "@sweepReviewTitle": {
+    "description": "Title of the sweep review screen"
+  },
+  "sweepReviewSpending": "{count, plural, =1{Spending 1 coin} other{Spending {count} coins}}",
+  "@sweepReviewSpending": {
+    "description": "How many coins the reviewed sweep spends",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sweepReviewRecipients": "Recipients",
+  "@sweepReviewRecipients": {
+    "description": "Section header listing the sweep outputs"
+  },
+  "sweepReviewRemainderNote": "Receives the rest, after fees",
+  "@sweepReviewRemainderNote": {
+    "description": "Marks the sweep output that absorbs the remainder"
+  },
+  "sweepReviewFee": "Network fee",
+  "@sweepReviewFee": {
+    "description": "The real fee read off the built sweep PSBT"
+  },
+  "sweepReviewChange": "Change back to this wallet",
+  "@sweepReviewChange": {
+    "description": "The change output of the sweep, returning to the spending wallet"
+  },
+  "sweepReviewTxSize": "Transaction size",
+  "@sweepReviewTxSize": {
+    "description": "Virtual size of the sweep transaction"
+  },
+  "sweepReviewVbytes": "{size} vB",
+  "@sweepReviewVbytes": {
+    "description": "A transaction size in virtual bytes",
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "sweepReviewDustAbsorbed": "What was left is too small for an output, so it goes to the miner fee instead. No change comes back.",
+  "@sweepReviewDustAbsorbed": {
+    "description": "Warns that a dust remainder was folded into the sweep fee"
+  },
+  "sweepReviewInputsPinned": "Only the coins you selected will be spent. No other coin can be pulled in.",
+  "@sweepReviewInputsPinned": {
+    "description": "Reassures the user that a sweep spends exactly the selected coins"
+  },
+  "sweepConfirmAction": "Confirm and broadcast",
+  "@sweepConfirmAction": {
+    "description": "Signs and broadcasts the reviewed sweep"
+  },
+  "sweepBroadcasting": "Broadcasting…",
+  "@sweepBroadcasting": {
+    "description": "Shown on the confirm button while the sweep is being broadcast"
+  },
+  "sweepSuccessHeadline": "Sweep broadcast",
+  "@sweepSuccessHeadline": {
+    "description": "Headline of the sweep success screen"
+  },
+  "sweepSuccessTxId": "Transaction ID",
+  "@sweepSuccessTxId": {
+    "description": "Label of the broadcast sweep transaction id"
+  },
+  "sweepErrorNoInputs": "No coin was selected to sweep.",
+  "@sweepErrorNoInputs": {
+    "description": "Sweep failure: the flow was entered without any coin"
+  },
+  "sweepErrorNoRecipients": "Add at least one recipient.",
+  "@sweepErrorNoRecipients": {
+    "description": "Sweep failure: the allocation form is empty"
+  },
+  "sweepErrorMissingAddress": "Every recipient needs an address.",
+  "@sweepErrorMissingAddress": {
+    "description": "Sweep failure: a recipient row has no address"
+  },
+  "sweepErrorMissingAmount": "Every recipient needs an amount, unless it takes the rest.",
+  "@sweepErrorMissingAmount": {
+    "description": "Sweep failure: a recipient row has neither an amount nor the Max flag"
+  },
+  "sweepErrorDuplicateAddress": "The same address is used twice.",
+  "@sweepErrorDuplicateAddress": {
+    "description": "Sweep failure: two recipient rows share an address"
+  },
+  "sweepErrorMultipleRemainder": "Only one recipient can take the rest.",
+  "@sweepErrorMultipleRemainder": {
+    "description": "Sweep failure: more than one row claims the remainder"
+  },
+  "sweepErrorInvalidAddress": "That is not a valid Bitcoin address.",
+  "@sweepErrorInvalidAddress": {
+    "description": "Sweep failure: a recipient address could not be parsed"
+  },
+  "sweepErrorWrongNetwork": "That address belongs to another network.",
+  "@sweepErrorWrongNetwork": {
+    "description": "Sweep failure: a recipient address is for the wrong Bitcoin network"
+  },
+  "sweepErrorAmountBelowDust": "Each amount must be at least {minimum} sats.",
+  "@sweepErrorAmountBelowDust": {
+    "description": "Sweep failure: an output would be dust",
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      }
+    }
+  },
+  "sweepErrorExceedsBalance": "That is {amount} sats more than the selected coins hold.",
+  "@sweepErrorExceedsBalance": {
+    "description": "Sweep failure: the allocation exceeds the selected balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sweepErrorNoRoomForFee": "Leave some room for the network fee.",
+  "@sweepErrorNoRoomForFee": {
+    "description": "Sweep failure: the allocation uses every satoshi"
+  },
+  "sweepErrorUnspendableInput": "{count, plural, =1{1 selected coin cannot be spent right now.} other{{count} selected coins cannot be spent right now.}}",
+  "@sweepErrorUnspendableInput": {
+    "description": "Sweep failure: a selected coin is frozen or reserved by a payjoin session",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sweepErrorInsufficientFunds": "{amount} sats short once the network fee is covered.",
+  "@sweepErrorInsufficientFunds": {
+    "description": "Sweep failure: the coins cannot cover the allocation plus the fee",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sweepErrorFeeTooLow": "That fee rate is too low to be relayed.",
+  "@sweepErrorFeeTooLow": {
+    "description": "Sweep failure: the chosen fee rate is below the relay floor"
+  },
+  "sweepErrorFeesUnavailable": "Could not load fee estimates. Check your connection.",
+  "@sweepErrorFeesUnavailable": {
+    "description": "Sweep failure: network fee estimates could not be fetched"
+  },
+  "sweepErrorSignFailed": "Could not sign the transaction.",
+  "@sweepErrorSignFailed": {
+    "description": "Sweep failure: signing the PSBT failed"
+  },
+  "sweepErrorBroadcastFailed": "The network refused the transaction. Nothing was spent.",
+  "@sweepErrorBroadcastFailed": {
+    "description": "Sweep failure: the signed transaction was rejected at broadcast"
+  },
+  "sweepUseOwnChangeAddress": "Use one of my change addresses",
+  "@sweepUseOwnChangeAddress": {
+    "description": "Opens the picker of the wallet own unused change addresses"
+  },
+  "sweepChangeAddressSheetTitle": "Your change addresses",
+  "@sweepChangeAddressSheetTitle": {
+    "description": "Title of the own-change-address picker sheet"
+  },
+  "sweepChangeAddressSheetBody": "Never-used addresses from this wallet. Reusing one that already received a payment would link them on-chain.",
+  "@sweepChangeAddressSheetBody": {
+    "description": "Explains why only unused change addresses are offered"
+  },
+  "sweepChangeAddressSheetEmpty": "No unused change address is available yet.",
+  "@sweepChangeAddressSheetEmpty": {
+    "description": "Empty state of the own-change-address picker"
+  },
+  "sweepChangeAddressIndex": "Change #{index}",
+  "@sweepChangeAddressIndex": {
+    "description": "Derivation index of a change address in the picker",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "sweepErrorInsufficientFundsUnknown": "The selected coins do not cover the amounts plus the network fee. Lower an amount, or select another coin.",
+  "@sweepErrorInsufficientFundsUnknown": {
+    "description": "Sweep failure: coin selection failed and the SDK gave no shortfall figure"
   }
 }
