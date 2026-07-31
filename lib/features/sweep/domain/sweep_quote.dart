@@ -35,8 +35,12 @@ final class SweepQuote {
     return change != null && change <= BigInt.zero;
   }
 
-  /// Effective rate actually achieved, in sat/vByte.
-  double get satPerVbyte => txSize > 0 ? feeSat.toInt() / txSize : 0;
+  /// Review rate in sat/vByte. Relative fees retain BDK's exact requested rate;
+  /// absolute fees are expressed against the available unsigned size.
+  double get satPerVbyte => switch (networkFee) {
+    RelativeFee(:final satPerKwu) => satPerKwu / 250.0,
+    AbsoluteFee() => txSize > 0 ? feeSat.toInt() / txSize : 0,
+  };
 
   /// Total leaving the wallet — what the recipients receive plus the fee, with
   /// any change that comes back excluded.

@@ -20,7 +20,7 @@ class BroadcastSweepPsbtUsecase {
     try {
       final txId = await _broadcast.execute(signedPsbt, isPsbt: true);
       return Ok(txId);
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(message: 'Failed to broadcast sweep', error: e, trace: st);
       return Err(SweepBroadcastFailure(e.toString()));
     }

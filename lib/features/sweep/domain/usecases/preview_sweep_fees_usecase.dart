@@ -39,7 +39,12 @@ class PreviewSweepFeesUsecase {
     final byRate = <String, Future<BitcoinFeePreviewSlot>>{};
     Future<BitcoinFeePreviewSlot> resolve(NetworkFee fee) => byRate.putIfAbsent(
       rateKey(fee),
-      () => one(walletId: walletId, plan: plan, networkFee: fee),
+      () => one(
+        walletId: walletId,
+        plan: plan,
+        networkFee: fee,
+        floorSatPerKwu: presets.minRelay.satPerKwu,
+      ),
     );
 
     final results = await Future.wait([
@@ -61,11 +66,13 @@ class PreviewSweepFeesUsecase {
     required String walletId,
     required SweepPlan plan,
     required NetworkFee networkFee,
+    int? floorSatPerKwu,
   }) async {
     final result = await _buildSweepPsbt.execute(
       walletId: walletId,
       plan: plan,
       networkFee: networkFee,
+      floorSatPerKwu: floorSatPerKwu,
     );
 
     return switch (result) {

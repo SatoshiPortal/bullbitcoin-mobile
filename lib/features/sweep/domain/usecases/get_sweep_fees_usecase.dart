@@ -22,7 +22,7 @@ class GetSweepFeesUsecase {
       // this flow does not implement.
       final fees = await _getNetworkFees.execute(isLiquid: false);
       return Ok(fees);
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.warning(
         'Failed to fetch network fees for sweep',
         error: e,

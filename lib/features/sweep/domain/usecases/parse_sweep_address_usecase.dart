@@ -29,7 +29,7 @@ class ParseSweepAddressUsecase {
     final PaymentRequest request;
     try {
       request = await PaymentRequest.parse(trimmed);
-    } catch (_) {
+    } on Exception catch (_) {
       // Parsing is best-effort by design; anything it can't read is simply not
       // an address we can pay.
       return Err(SweepInvalidAddressFailure(trimmed));

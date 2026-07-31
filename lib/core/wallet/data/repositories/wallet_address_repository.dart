@@ -8,9 +8,10 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/change_address_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
-class WalletAddressRepository {
+class WalletAddressRepository implements ChangeAddressPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -272,6 +273,7 @@ class WalletAddressRepository {
     return result;
   }
 
+  @override
   Future<List<WalletAddress>> getUsedChangeAddresses(
     String walletId, {
     int? limit,

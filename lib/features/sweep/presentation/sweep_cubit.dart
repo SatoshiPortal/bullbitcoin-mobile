@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -16,6 +14,7 @@ import 'package:bb_mobile/features/sweep/domain/sweep_quote.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/broadcast_sweep_psbt_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/build_sweep_psbt_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/get_own_change_addresses_usecase.dart';
+import 'package:bb_mobile/features/sweep/domain/usecases/get_sweep_display_settings_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/get_sweep_fees_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/parse_sweep_address_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/preview_sweep_fees_usecase.dart';
@@ -43,10 +42,18 @@ class SweepCubit extends Cubit<SweepState>
   final SignSweepPsbtUsecase _signPsbt;
   final BroadcastSweepPsbtUsecase _broadcast;
   final GetWalletUsecase _getWallet;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrency;
-  final SettingsRepository _settingsRepository;
+  final GetSweepDisplaySettingsUsecase _getDisplaySettings;
 
   Timer? _customFeeDebounceTimer;
+
+  /// Changes whenever the recipients or selected inputs no longer describe the
+  /// plan being previewed. Async preview results may only populate the cache
+  /// while this value still matches.
+  int _planEpoch = 0;
+
+  /// Orders review/reprice builds. Only the latest build may stage the PSBT that
+  /// can be signed.
+  int _feeBuildEpoch = 0;
 
   /// Guards against a slow preview for a rate the user has already replaced
   /// landing after a newer one and staging the wrong PSBT for broadcast.
@@ -64,9 +71,7 @@ class SweepCubit extends Cubit<SweepState>
     required SignSweepPsbtUsecase signSweepPsbtUsecase,
     required BroadcastSweepPsbtUsecase broadcastSweepPsbtUsecase,
     required GetWalletUsecase getWalletUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required this._settingsRepository,
+    required GetSweepDisplaySettingsUsecase getSweepDisplaySettingsUsecase,
   }) : _getFees = getSweepFeesUsecase,
        _previewFees = previewSweepFeesUsecase,
        _parseAddress = parseSweepAddressUsecase,
@@ -75,7 +80,7 @@ class SweepCubit extends Cubit<SweepState>
        _signPsbt = signSweepPsbtUsecase,
        _broadcast = broadcastSweepPsbtUsecase,
        _getWallet = getWalletUsecase,
-       _convertSatsToCurrency = convertSatsToCurrencyAmountUsecase,
+       _getDisplaySettings = getSweepDisplaySettingsUsecase,
        super(SweepState(walletId: walletId, network: network, inputs: inputs));
 
   @override
@@ -89,6 +94,7 @@ class SweepCubit extends Cubit<SweepState>
   /// Loads everything the form needs: fee presets, the fiat hint for the fee
   /// modal, and the wallet's own empty change addresses.
   Future<void> init() async {
+    if (state.loadingFees) return;
     emit(state.copyWith(loadingFees: true));
 
     final fees = await _getFees.execute();
@@ -103,26 +109,22 @@ class SweepCubit extends Cubit<SweepState>
     // Both are decoration: a missing fiat rate only hides a hint, and a missing
     // change-address list only hides a shortcut. Neither blocks the sweep, so
     // neither is surfaced as a failure.
-    await _loadFiatHint();
+    await _loadDisplaySettings();
     await loadOwnChangeAddresses();
   }
 
-  Future<void> _loadFiatHint() async {
-    try {
-      final settings = await _settingsRepository.fetch();
-      final rate = await _convertSatsToCurrency.execute(
-        amountSat: BigInt.from(100000000),
-        currencyCode: settings.currencyCode,
-      );
-      if (isClosed) return;
+  Future<void> _loadDisplaySettings() async {
+    final result = await _getDisplaySettings.execute();
+    if (isClosed) return;
+    if (result case Ok(:final value)) {
       emit(
         state.copyWith(
-          exchangeRate: rate,
-          fiatCurrencyCode: settings.currencyCode,
+          exchangeRate: value.exchangeRate,
+          fiatCurrencyCode: value.fiatCurrencyCode,
+          bitcoinUnit: value.bitcoinUnit,
+          hideAmounts: value.hideAmounts,
         ),
       );
-    } catch (e) {
-      log.info('Sweep: no fiat hint available ($e)');
     }
   }
 
@@ -139,6 +141,7 @@ class SweepCubit extends Cubit<SweepState>
   // ── Allocation form ───────────────────────────────────────────────────────
 
   void addRecipient() {
+    _invalidatePlan();
     emit(
       state.copyWith(
         allocations: [
@@ -146,6 +149,8 @@ class SweepCubit extends Cubit<SweepState>
           const SweepAllocation(address: ''),
         ],
         quote: null,
+        building: false,
+        feePreviewCache: const BitcoinFeePreviewCache(),
         failure: null,
       ),
     );
@@ -153,8 +158,18 @@ class SweepCubit extends Cubit<SweepState>
 
   void removeRecipient(int index) {
     if (state.allocations.length <= 1) return;
+    if (index < 0 || index >= state.allocations.length) return;
+    _invalidatePlan();
     final next = [...state.allocations]..removeAt(index);
-    emit(state.copyWith(allocations: next, quote: null, failure: null));
+    emit(
+      state.copyWith(
+        allocations: next,
+        quote: null,
+        building: false,
+        feePreviewCache: const BitcoinFeePreviewCache(),
+        failure: null,
+      ),
+    );
   }
 
   void addressChanged(int index, String address) {
@@ -177,6 +192,8 @@ class SweepCubit extends Cubit<SweepState>
   /// Makes [index] the row that absorbs the remainder, clearing the flag
   /// everywhere else — only one output can drain it.
   void takeRemainder(int index) {
+    if (index < 0 || index >= state.allocations.length) return;
+    _invalidatePlan();
     final next = <SweepAllocation>[];
     for (var i = 0; i < state.allocations.length; i++) {
       final row = state.allocations[i];
@@ -186,7 +203,15 @@ class SweepCubit extends Cubit<SweepState>
             : row.copyWith(takesRemainder: false),
       );
     }
-    emit(state.copyWith(allocations: next, quote: null, failure: null));
+    emit(
+      state.copyWith(
+        allocations: next,
+        quote: null,
+        building: false,
+        feePreviewCache: const BitcoinFeePreviewCache(),
+        failure: null,
+      ),
+    );
   }
 
   /// Gives the remainder back to the wallet's own change output.
@@ -196,21 +221,46 @@ class SweepCubit extends Cubit<SweepState>
 
   void _updateRow(int index, SweepAllocation Function(SweepAllocation) update) {
     if (index < 0 || index >= state.allocations.length) return;
+    _invalidatePlan();
     final next = [...state.allocations];
     next[index] = update(next[index]);
-    emit(state.copyWith(allocations: next, quote: null, failure: null));
+    emit(
+      state.copyWith(
+        allocations: next,
+        quote: null,
+        building: false,
+        feePreviewCache: const BitcoinFeePreviewCache(),
+        failure: null,
+      ),
+    );
   }
+
+  void _invalidatePlan() {
+    _planEpoch++;
+    _feeBuildEpoch++;
+    _previewEpoch++;
+    _customFeeDebounceTimer?.cancel();
+  }
+
+  bool _isCurrentBuild({required int planEpoch, required int buildEpoch}) =>
+      !isClosed && planEpoch == _planEpoch && buildEpoch == _feeBuildEpoch;
 
   // ── Review ────────────────────────────────────────────────────────────────
 
   /// Resolves the typed addresses, validates the plan and builds the unsigned
   /// transaction. Moves to [SweepStep.review] on success.
   Future<void> review() async {
+    if (state.isBusy) return;
     final fee = state.selectedFee;
     if (fee == null) {
       emit(state.copyWith(failure: const SweepFeesUnavailableFailure()));
       return;
     }
+
+    _invalidatePlan();
+    final planEpoch = _planEpoch;
+    final buildEpoch = _feeBuildEpoch;
+    final allocationSnapshot = List<SweepAllocation>.of(state.allocations);
 
     emit(
       state.copyWith(
@@ -224,15 +274,17 @@ class SweepCubit extends Cubit<SweepState>
     );
 
     final List<SweepAllocation> allocations;
-    switch (await _resolveAddresses()) {
+    switch (await _resolveAddresses(allocationSnapshot)) {
       case Ok(:final value):
         allocations = value;
       case Err(:final failure):
-        if (isClosed) return;
+        if (!_isCurrentBuild(planEpoch: planEpoch, buildEpoch: buildEpoch)) {
+          return;
+        }
         emit(state.copyWith(building: false, failure: failure));
         return;
     }
-    if (isClosed) return;
+    if (!_isCurrentBuild(planEpoch: planEpoch, buildEpoch: buildEpoch)) return;
     emit(state.copyWith(allocations: allocations));
 
     final SweepPlan plan;
@@ -243,6 +295,9 @@ class SweepCubit extends Cubit<SweepState>
       case Ok(:final value):
         plan = value;
       case Err(:final failure):
+        if (!_isCurrentBuild(planEpoch: planEpoch, buildEpoch: buildEpoch)) {
+          return;
+        }
         emit(state.copyWith(building: false, failure: failure));
         return;
     }
@@ -251,8 +306,9 @@ class SweepCubit extends Cubit<SweepState>
       walletId: state.walletId,
       plan: plan,
       networkFee: fee,
+      floorSatPerKwu: state.feePresets?.minRelay.satPerKwu,
     );
-    if (isClosed) return;
+    if (!_isCurrentBuild(planEpoch: planEpoch, buildEpoch: buildEpoch)) return;
 
     switch (quote) {
       case Ok(:final value):
@@ -280,10 +336,11 @@ class SweepCubit extends Cubit<SweepState>
 
   /// Normalises every row's address, prefilling an amount when the user pasted
   /// a BIP21 URI that carried one.
-  Future<Result<List<SweepAllocation>, SweepFailure>>
-  _resolveAddresses() async {
+  Future<Result<List<SweepAllocation>, SweepFailure>> _resolveAddresses(
+    List<SweepAllocation> rows,
+  ) async {
     final resolved = <SweepAllocation>[];
-    for (final row in state.allocations) {
+    for (final row in rows) {
       final parsed = await _parseAddress.execute(
         input: row.address,
         network: state.network,
@@ -305,7 +362,16 @@ class SweepCubit extends Cubit<SweepState>
   }
 
   void backToAllocation() {
-    emit(state.copyWith(step: SweepStep.allocate, quote: null, failure: null));
+    _invalidatePlan();
+    emit(
+      state.copyWith(
+        step: SweepStep.allocate,
+        quote: null,
+        building: false,
+        feePreviewCache: const BitcoinFeePreviewCache(),
+        failure: null,
+      ),
+    );
   }
 
   // ── Fee selection (shared modal) ──────────────────────────────────────────
@@ -314,10 +380,26 @@ class SweepCubit extends Cubit<SweepState>
   /// exists for that slot.
   Future<void> _applyFee(FeeSelection selection, NetworkFee fee) async {
     final plan = state.quote?.plan;
-    if (plan == null) return;
+    if (plan == null) {
+      emit(
+        state.copyWith(
+          selectedFeeOption: selection,
+          customFee: selection == FeeSelection.custom ? fee : state.customFee,
+          armPriorSelection: null,
+          armPriorCustomFee: null,
+        ),
+      );
+      return;
+    }
+
+    final previousQuote = state.quote!;
+    final previousSelection = state.selectedFeeOption;
+    final previousCustomFee = state.customFee;
+    final planEpoch = _planEpoch;
+    final buildEpoch = ++_feeBuildEpoch;
 
     final cached = state.feePreviewCache.slotFor(selection);
-    if (cached.isCacheReady) {
+    if (cached.isCacheReady && cached.feeSat != null) {
       emit(
         state.copyWith(
           selectedFeeOption: selection,
@@ -329,24 +411,38 @@ class SweepCubit extends Cubit<SweepState>
             txSize: cached.txSize!,
             feeSat: BigInt.from(cached.feeSat!),
           ),
+          building: false,
+          failure: null,
+          armPriorSelection: null,
+          armPriorCustomFee: null,
         ),
       );
       return;
     }
 
-    emit(state.copyWith(selectedFeeOption: selection, building: true));
+    emit(
+      state.copyWith(
+        building: true,
+        failure: null,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
     final result = await _buildPsbt.execute(
       walletId: state.walletId,
       plan: plan,
       networkFee: fee,
+      floorSatPerKwu: state.feePresets?.minRelay.satPerKwu,
     );
-    if (isClosed) return;
+    if (!_isCurrentBuild(planEpoch: planEpoch, buildEpoch: buildEpoch)) return;
 
     switch (result) {
       case Ok(:final value):
         emit(
           state.copyWith(
             building: false,
+            selectedFeeOption: selection,
+            customFee: selection == FeeSelection.custom ? fee : state.customFee,
             quote: value,
             feePreviewCache: state.feePreviewCache.withSlot(
               selection,
@@ -359,7 +455,15 @@ class SweepCubit extends Cubit<SweepState>
           ),
         );
       case Err(:final failure):
-        emit(state.copyWith(building: false, failure: failure));
+        emit(
+          state.copyWith(
+            building: false,
+            selectedFeeOption: previousSelection,
+            customFee: previousCustomFee,
+            quote: previousQuote,
+            failure: failure,
+          ),
+        );
     }
   }
 
@@ -372,16 +476,6 @@ class SweepCubit extends Cubit<SweepState>
     };
     if (fee == null) return;
 
-    // Record the choice first, and unconditionally: the selection is also
-    // meaningful before a quote exists (it is the rate `review()` will build
-    // with). Only the re-pricing below needs a plan.
-    emit(
-      state.copyWith(
-        selectedFeeOption: selection,
-        armPriorSelection: null,
-        armPriorCustomFee: null,
-      ),
-    );
     await _applyFee(selection, fee);
   }
 
@@ -391,6 +485,7 @@ class SweepCubit extends Cubit<SweepState>
     final presets = state.feePresets;
     if (plan == null || presets == null) return;
 
+    final planEpoch = _planEpoch;
     emit(
       state.copyWith(
         feePreviewCache: state.feePreviewCache.copyWith(presetsLoading: true),
@@ -402,7 +497,7 @@ class SweepCubit extends Cubit<SweepState>
       plan: plan,
       presets: presets,
     );
-    if (isClosed) return;
+    if (isClosed || planEpoch != _planEpoch) return;
 
     var cache = state.feePreviewCache;
     for (final entry in slots.entries) {
@@ -423,6 +518,7 @@ class SweepCubit extends Cubit<SweepState>
 
     _customFeeDebounceTimer?.cancel();
     final epoch = ++_previewEpoch;
+    final planEpoch = _planEpoch;
     emit(
       state.copyWith(
         feePreviewCache: state.feePreviewCache.copyWith(customLoading: true),
@@ -434,8 +530,11 @@ class SweepCubit extends Cubit<SweepState>
         walletId: state.walletId,
         plan: plan,
         networkFee: fee,
+        floorSatPerKwu: state.feePresets?.minRelay.satPerKwu,
       );
-      if (isClosed || epoch != _previewEpoch) return;
+      if (isClosed || epoch != _previewEpoch || planEpoch != _planEpoch) {
+        return;
+      }
       emit(
         state.copyWith(
           feePreviewCache: state.feePreviewCache
@@ -485,6 +584,7 @@ class SweepCubit extends Cubit<SweepState>
     // Bump the epoch too: a preview for the previous rate may still be in
     // flight and must not land on the new one.
     _previewEpoch++;
+    _customFeeDebounceTimer?.cancel();
     final cleared = state.feePreviewCache.withSlot(
       FeeSelection.custom,
       const BitcoinFeePreviewSlot(),
@@ -497,6 +597,7 @@ class SweepCubit extends Cubit<SweepState>
             : state.armPriorCustomFee,
         selectedFeeOption: FeeSelection.custom,
         customFee: fee,
+        building: false,
         feePreviewCache: cleared,
       ),
     );
@@ -506,6 +607,8 @@ class SweepCubit extends Cubit<SweepState>
   void disarmCustomFee() {
     final prior = state.armPriorSelection;
     if (prior == null) return;
+    _previewEpoch++;
+    _customFeeDebounceTimer?.cancel();
     emit(
       state.copyWith(
         selectedFeeOption: prior,
@@ -522,25 +625,38 @@ class SweepCubit extends Cubit<SweepState>
   void finalizeArmedCustomFee() {
     final prior = state.armPriorSelection;
     if (prior == null) return;
+    _previewEpoch++;
+    _customFeeDebounceTimer?.cancel();
 
     final typed = state.customFee;
+    final priorCustomFee = state.armPriorCustomFee;
     final floor = state.feePresets?.minRelay.satPerKwu;
     final acceptable =
         typed != null &&
         typed.aboveMinRelay(txSize: state.quote?.txSize, floorSatPerKwu: floor);
 
-    emit(state.copyWith(armPriorSelection: null, armPriorCustomFee: null));
-
     if (!acceptable) {
       emit(
         state.copyWith(
           selectedFeeOption: prior,
-          customFee: state.armPriorCustomFee,
+          customFee: priorCustomFee,
+          armPriorSelection: null,
+          armPriorCustomFee: null,
           failure: const SweepFeeTooLowFailure(),
         ),
       );
       return;
     }
+    // Restore the last reviewed fee while the new custom PSBT is built. The
+    // selection only changes once matching bytes are ready to sign.
+    emit(
+      state.copyWith(
+        selectedFeeOption: prior,
+        customFee: priorCustomFee,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
     unawaited(_applyFee(FeeSelection.custom, typed));
   }
 
@@ -548,6 +664,10 @@ class SweepCubit extends Cubit<SweepState>
 
   /// Signs and broadcasts the quote under review.
   Future<void> confirm() async {
+    if (state.building || state.armPriorSelection != null) {
+      log.warning('Sweep quote is changing; ignoring confirm');
+      return;
+    }
     final quote = state.quote;
     if (quote == null) {
       emit(state.copyWith(failure: const SweepBuildFailure('no quote')));
@@ -564,6 +684,7 @@ class SweepCubit extends Cubit<SweepState>
     switch (await _signPsbt.execute(
       walletId: state.walletId,
       unsignedPsbt: quote.unsignedPsbt,
+      floorSatPerKwu: state.feePresets?.minRelay.satPerKwu,
     )) {
       case Ok(:final value):
         signedPsbt = value;

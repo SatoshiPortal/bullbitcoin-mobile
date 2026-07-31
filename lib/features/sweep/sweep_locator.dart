@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/broadcast_sweep_psbt_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/build_sweep_psbt_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/get_own_change_addresses_usecase.dart';
+import 'package:bb_mobile/features/sweep/domain/usecases/get_sweep_display_settings_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/get_sweep_fees_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/parse_sweep_address_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/preview_sweep_fees_usecase.dart';
@@ -30,7 +31,14 @@ class SweepLocator {
     );
     locator.registerFactory<GetOwnChangeAddressesUsecase>(
       () => GetOwnChangeAddressesUsecase(
-        walletAddressRepository: locator<WalletAddressRepository>(),
+        changeAddressPort: locator<WalletAddressRepository>(),
+      ),
+    );
+    locator.registerFactory<GetSweepDisplaySettingsUsecase>(
+      () => GetSweepDisplaySettingsUsecase(
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
       ),
     );
     locator.registerFactory<BuildSweepPsbtUsecase>(
@@ -47,7 +55,7 @@ class SweepLocator {
     );
     locator.registerFactory<SignSweepPsbtUsecase>(
       () => SignSweepPsbtUsecase(
-        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        bitcoinSendPort: locator<BitcoinWalletRepository>(),
       ),
     );
     locator.registerFactory<BroadcastSweepPsbtUsecase>(
@@ -71,9 +79,8 @@ class SweepLocator {
         signSweepPsbtUsecase: locator<SignSweepPsbtUsecase>(),
         broadcastSweepPsbtUsecase: locator<BroadcastSweepPsbtUsecase>(),
         getWalletUsecase: locator<GetWalletUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getSweepDisplaySettingsUsecase:
+            locator<GetSweepDisplaySettingsUsecase>(),
       ),
     );
   }

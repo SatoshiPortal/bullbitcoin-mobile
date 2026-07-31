@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sweep/domain/sweep_plan.dart';
+import 'package:bb_mobile/features/sweep/ui/sweep_amount_format.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// One row of the allocation form: where the money goes and how much.
@@ -17,6 +16,7 @@ class SweepRecipientCard extends StatefulWidget {
     required this.index,
     required this.allocation,
     required this.bitcoinUnit,
+    required this.hideAmounts,
     required this.remainderSat,
     required this.canRemove,
     required this.onAddressChanged,
@@ -30,6 +30,7 @@ class SweepRecipientCard extends StatefulWidget {
   final int index;
   final SweepAllocation allocation;
   final BitcoinUnit bitcoinUnit;
+  final bool hideAmounts;
 
   /// What this row would receive if it took the remainder — shown on the Max
   /// chip so the choice is informed. Fee not yet deducted at this point.
@@ -79,23 +80,18 @@ class _SweepRecipientCardState extends State<SweepRecipientCard> {
   }
 
   String _formatAmount(BigInt? sats) {
-    if (sats == null) return '';
-    return widget.bitcoinUnit == BitcoinUnit.btc
-        ? ConvertAmount.satsToBtc(sats.toInt()).toString()
-        : sats.toString();
+    return formatSweepAmountInput(sats, widget.bitcoinUnit);
   }
 
-  BigInt? _parseAmount(String text) {
-    final trimmed = text.trim();
-    if (trimmed.isEmpty) return null;
-    if (widget.bitcoinUnit == BitcoinUnit.btc) {
-      final btc = double.tryParse(trimmed);
-      if (btc == null || btc <= 0) return null;
-      return BigInt.from(ConvertAmount.btcToSats(btc));
-    }
-    final sats = BigInt.tryParse(trimmed);
-    if (sats == null || sats <= BigInt.zero) return null;
-    return sats;
+  BigInt? _parseAmount(String text) =>
+      parseSweepAmountInput(text, widget.bitcoinUnit);
+
+  Future<void> _pasteAddress() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (!mounted) return;
+    final text = data?.text?.trim();
+    if (text == null || text.isEmpty) return;
+    widget.onAddressChanged(text);
   }
 
   @override
@@ -138,6 +134,7 @@ class _SweepRecipientCardState extends State<SweepRecipientCard> {
                       BullIcons.deleteOutline,
                       size: 18,
                       color: colors.textMuted,
+                      semanticLabel: loc.delete,
                     ),
                   ),
                 ),
@@ -150,6 +147,13 @@ class _SweepRecipientCardState extends State<SweepRecipientCard> {
             hint: loc.sweepAddressHint,
             maxLines: 2,
             minLines: 1,
+            rightIcon: BullIcon(
+              BullIcons.contentPaste,
+              size: 18,
+              color: colors.primary,
+              semanticLabel: loc.pasteInputDefaultHint,
+            ),
+            onRightTap: _pasteAddress,
           ),
           if (widget.onPickChangeAddress != null) ...[
             const Gap(6),
@@ -180,6 +184,7 @@ class _SweepRecipientCardState extends State<SweepRecipientCard> {
             _RemainderRow(
               remainderSat: widget.remainderSat,
               bitcoinUnit: widget.bitcoinUnit,
+              hideAmounts: widget.hideAmounts,
               onRelease: widget.onReleaseRemainder,
             )
           else
@@ -231,19 +236,23 @@ class _RemainderRow extends StatelessWidget {
   const _RemainderRow({
     required this.remainderSat,
     required this.bitcoinUnit,
+    required this.hideAmounts,
     required this.onRelease,
   });
 
   final BigInt remainderSat;
   final BitcoinUnit bitcoinUnit;
+  final bool hideAmounts;
   final VoidCallback onRelease;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final amount = bitcoinUnit == BitcoinUnit.btc
-        ? FormatAmount.btc(ConvertAmount.satsToBtc(remainderSat.toInt()))
-        : FormatAmount.sats(remainderSat.toInt());
+    final amount = formatSweepAmount(
+      remainderSat,
+      bitcoinUnit,
+      hidden: hideAmounts,
+    );
     return Row(
       children: [
         Expanded(

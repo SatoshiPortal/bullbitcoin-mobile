@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/sweep/presentation/sweep_cubit.dart';
 import 'package:bb_mobile/features/sweep/presentation/sweep_failure_l10n.dart';
 import 'package:bb_mobile/features/sweep/presentation/sweep_state.dart';
@@ -51,9 +50,7 @@ class _AllocateView extends StatelessWidget {
     final loc = context.loc;
     final colors = context.bull;
     final cubit = context.read<SweepCubit>();
-    final bitcoinUnit =
-        context.select((SettingsCubit c) => c.state.bitcoinUnit) ??
-        BitcoinUnit.btc;
+    final bitcoinUnit = state.bitcoinUnit;
 
     return BullScaffold(
       body: SafeArea(
@@ -74,6 +71,7 @@ class _AllocateView extends StatelessWidget {
                       index: i,
                       allocation: state.allocations[i],
                       bitcoinUnit: bitcoinUnit,
+                      hideAmounts: state.hideAmounts,
                       remainderSat: _remainderFor(i),
                       canRemove: state.allocations.length > 1,
                       onAddressChanged: (value) =>
@@ -123,9 +121,20 @@ class _AllocateView extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: BullButton.big(
-            label: state.building ? loc.sweepBuilding : loc.sweepReviewAction,
-            disabled: !state.canReview,
-            onPressed: cubit.review,
+            label: state.feePresets == null && !state.loadingFees
+                ? loc.retry
+                : state.building
+                ? loc.sweepBuilding
+                : loc.sweepReviewAction,
+            disabled:
+                state.loadingFees ||
+                (state.feePresets != null && !state.canReview),
+            onPressed: state.feePresets == null
+                ? cubit.init
+                : () {
+                    FocusScope.of(context).unfocus();
+                    cubit.review();
+                  },
             bgColor: colors.primary,
             textColor: colors.onPrimary,
           ),
@@ -140,6 +149,7 @@ class _AllocateView extends StatelessWidget {
       context: context,
       child: SweepChangeAddressSheet(
         addresses: state.ownChangeAddresses,
+        onClose: context.pop,
         onSelected: (address) {
           cubit.addressChanged(index, address.address);
           context.pop();
@@ -190,7 +200,11 @@ class _TotalCard extends StatelessWidget {
           ),
           const Gap(4),
           Text(
-            formatSweepAmount(state.totalInputSat, bitcoinUnit),
+            formatSweepAmount(
+              state.totalInputSat,
+              bitcoinUnit,
+              hidden: state.hideAmounts,
+            ),
             style: context.bullText.titleLarge?.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.text,
@@ -226,10 +240,10 @@ class _ReviewFeeRow extends StatelessWidget {
     final loc = context.loc;
     final quote = state.quote;
     final label = switch (state.selectedFeeOption) {
-      FeeSelection.fastest => FeeSelection.fastest.title(),
-      FeeSelection.economic => FeeSelection.economic.title(),
-      FeeSelection.slow => FeeSelection.slow.title(),
-      FeeSelection.custom => FeeSelection.custom.title(),
+      FeeSelection.fastest => loc.rbfFastest,
+      FeeSelection.economic => loc.sendEconomyFee,
+      FeeSelection.slow => loc.feePrioritySlow,
+      FeeSelection.custom => loc.rbfCustomFee,
     };
 
     return GestureDetector(
@@ -274,7 +288,7 @@ class _ReviewFeeRow extends StatelessWidget {
               )
             else
               Text(
-                '${formatSweepAmount(quote.feeSat, bitcoinUnit)} · '
+                '${formatSweepAmount(quote.feeSat, bitcoinUnit, hidden: state.hideAmounts)} · '
                 '${loc.sweepFeeRate(quote.satPerVbyte.toStringAsFixed(2))}',
                 style: context.bullText.labelMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -331,7 +345,11 @@ class _AllocationSummary extends StatelessWidget {
       children: [
         _SummaryLine(
           label: loc.sweepAllocated,
-          value: formatSweepAmount(state.allocatedSat, bitcoinUnit),
+          value: formatSweepAmount(
+            state.allocatedSat,
+            bitcoinUnit,
+            hidden: state.hideAmounts,
+          ),
         ),
         const Gap(6),
         _SummaryLine(
@@ -339,8 +357,16 @@ class _AllocationSummary extends StatelessWidget {
               ? loc.sweepRemainderToRecipient
               : loc.sweepChangeBackToWallet,
           value: unallocated.isNegative
-              ? formatSweepAmount(BigInt.zero, bitcoinUnit)
-              : formatSweepAmount(unallocated, bitcoinUnit),
+              ? formatSweepAmount(
+                  BigInt.zero,
+                  bitcoinUnit,
+                  hidden: state.hideAmounts,
+                )
+              : formatSweepAmount(
+                  unallocated,
+                  bitcoinUnit,
+                  hidden: state.hideAmounts,
+                ),
           emphasise: true,
         ),
         if (state.isOverAllocated) ...[
@@ -403,9 +429,7 @@ class _ReviewView extends StatelessWidget {
     final loc = context.loc;
     final colors = context.bull;
     final cubit = context.read<SweepCubit>();
-    final bitcoinUnit =
-        context.select((SettingsCubit c) => c.state.bitcoinUnit) ??
-        BitcoinUnit.btc;
+    final bitcoinUnit = state.bitcoinUnit;
     final quote = state.quote;
 
     return BullScaffold(
@@ -423,6 +447,7 @@ class _ReviewView extends StatelessWidget {
                   : SweepReviewBody(
                       quote: quote,
                       bitcoinUnit: bitcoinUnit,
+                      hideAmounts: state.hideAmounts,
                       feeRow: _ReviewFeeRow(
                         state: state,
                         bitcoinUnit: bitcoinUnit,
@@ -439,7 +464,7 @@ class _ReviewView extends StatelessWidget {
             label: state.broadcasting
                 ? loc.sweepBroadcasting
                 : loc.sweepConfirmAction,
-            disabled: state.broadcasting || quote == null,
+            disabled: state.broadcasting || state.building || quote == null,
             onPressed: cubit.confirm,
             bgColor: colors.primary,
             textColor: colors.onPrimary,

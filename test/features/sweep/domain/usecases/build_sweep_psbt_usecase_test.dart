@@ -222,6 +222,26 @@ void main() {
       expect(captured[0], plan.recipients);
       expect(captured[1], plan.inputs);
     });
+
+    test('rejects a built psbt below the configured relay floor', () async {
+      stubNothingUnspendable();
+      stubSuccessfulBuild();
+      when(
+        () => sendPort.getTxFeeAmount(psbt: any(named: 'psbt')),
+      ).thenAnswer((_) async => 10);
+
+      final result = await usecase.execute(
+        walletId: 'wallet-1',
+        plan: buildPlan(),
+        networkFee: const NetworkFee.absolute(10),
+        floorSatPerKwu: 250,
+      );
+
+      expect(
+        (result as Err<SweepQuote, SweepFailure>).failure,
+        isA<SweepFeeTooLowFailure>(),
+      );
+    });
   });
 
   group('failures', () {

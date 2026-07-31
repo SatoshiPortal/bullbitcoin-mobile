@@ -85,7 +85,10 @@ class CoinsScreen extends StatelessWidget {
                   // left out. Liquid is out of scope: LWK's builder has a
                   // rate-only, single-recipient contract this flow doesn't
                   // implement.
-                  onSweep: wallet.isBitcoin && !state.anySelectedFrozen
+                  onSweep:
+                      wallet.isBitcoin &&
+                          wallet.signsLocally &&
+                          !state.anySelectedFrozen
                       ? () => _openSweep(context, state)
                       : null,
                 )
@@ -474,7 +477,8 @@ class _UtxoList extends StatelessWidget {
             onLongPress: () => cubit.enterSelect(seedOutpoint: key),
             onToggle: () => cubit.toggle(key),
             onSwipeAction: () => _onSwipe(context, utxo.isFrozen, key),
-            onSwipeSweep: wallet.isBitcoin && !utxo.isFrozen
+            onSwipeSweep:
+                wallet.isBitcoin && wallet.signsLocally && !utxo.isFrozen
                 ? () => openSweep(context, wallet, [utxo])
                 : null,
             onCopied: () => BullSnackBar.show(

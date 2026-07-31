@@ -12,11 +12,13 @@ class SweepReviewBody extends StatelessWidget {
     super.key,
     required this.quote,
     required this.bitcoinUnit,
+    required this.hideAmounts,
     required this.feeRow,
   });
 
   final SweepQuote quote;
   final BitcoinUnit bitcoinUnit;
+  final bool hideAmounts;
 
   /// The tappable fee row, injected by the screen so this widget stays free of
   /// any cubit reference.
@@ -42,7 +44,11 @@ class SweepReviewBody extends StatelessWidget {
         ),
         const Gap(4),
         Text(
-          formatSweepAmount(plan.totalInputSat, bitcoinUnit),
+          formatSweepAmount(
+            plan.totalInputSat,
+            bitcoinUnit,
+            hidden: hideAmounts,
+          ),
           style: context.bullText.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
             color: colors.text,
@@ -64,10 +70,12 @@ class SweepReviewBody extends StatelessWidget {
               FixedTxRecipient(:final amountSat) => formatSweepAmount(
                 amountSat,
                 bitcoinUnit,
+                hidden: hideAmounts,
               ),
               DrainTxRecipient() => formatSweepAmount(
                 remainder ?? BigInt.zero,
                 bitcoinUnit,
+                hidden: hideAmounts,
               ),
             },
             note: recipient is DrainTxRecipient
@@ -82,14 +90,13 @@ class SweepReviewBody extends StatelessWidget {
             if (change != null && change > BigInt.zero)
               BullDetailsTableItem(
                 label: loc.sweepReviewChange,
-                displayValue: formatSweepAmount(change, bitcoinUnit),
+                displayValue: formatSweepAmount(
+                  change,
+                  bitcoinUnit,
+                  hidden: hideAmounts,
+                ),
                 copiedMessage: loc.addressCardCopiedMessage,
               ),
-            BullDetailsTableItem(
-              label: loc.sweepReviewTxSize,
-              displayValue: loc.sweepReviewVbytes(quote.txSize),
-              copiedMessage: loc.addressCardCopiedMessage,
-            ),
           ],
         ),
         if (quote.changeAbsorbedIntoFee) ...[

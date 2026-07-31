@@ -32,7 +32,7 @@ class CoinsSelectionBar extends StatelessWidget {
   final VoidCallback onFreeze;
   final VoidCallback onUnfreeze;
 
-  /// Null when the current selection cannot be swept.
+  /// Null when the selection is frozen, non-Bitcoin, or cannot sign locally.
   final VoidCallback? onSweep;
 
   @override

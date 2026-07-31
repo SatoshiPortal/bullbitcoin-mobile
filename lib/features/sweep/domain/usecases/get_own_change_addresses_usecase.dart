@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/change_address_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/sweep/domain/sweep_failure.dart';
 import 'package:meta/meta.dart';
@@ -15,11 +15,10 @@ import 'package:meta/meta.dart';
 /// the two on-chain, which is the privacy leak a coin-control screen exists to
 /// avoid in the first place.
 class GetOwnChangeAddressesUsecase {
-  final WalletAddressRepository _addressRepository;
+  final ChangeAddressPort _addressRepository;
 
-  GetOwnChangeAddressesUsecase({
-    required WalletAddressRepository walletAddressRepository,
-  }) : _addressRepository = walletAddressRepository;
+  GetOwnChangeAddressesUsecase({required ChangeAddressPort changeAddressPort})
+    : _addressRepository = changeAddressPort;
 
   /// Unused, zero-balance change addresses for [walletId], newest index first.
   ///
@@ -43,7 +42,7 @@ class GetOwnChangeAddressesUsecase {
           .toList();
 
       return Ok(empty);
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.warning('Failed to list own change addresses', error: e, trace: st);
       return Err(SweepChangeAddressesUnavailableFailure(e.toString()));
     }

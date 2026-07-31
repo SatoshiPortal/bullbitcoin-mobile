@@ -42,5 +42,7 @@ abstract interface class BitcoinSendPort {
   /// re-derived from a rate — the real number the user will pay.
   Future<int> getTxFeeAmount({required String psbt});
 
+  Future<String> signPsbt(String psbt, {required String walletId});
+
   Future<bool> isAddressOfWallet(String address, {required String walletId});
 }

@@ -1,6 +1,8 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'dart:async';
+
+import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -12,6 +14,7 @@ import 'package:bb_mobile/features/sweep/domain/sweep_quote.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/broadcast_sweep_psbt_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/build_sweep_psbt_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/get_own_change_addresses_usecase.dart';
+import 'package:bb_mobile/features/sweep/domain/usecases/get_sweep_display_settings_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/get_sweep_fees_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/parse_sweep_address_usecase.dart';
 import 'package:bb_mobile/features/sweep/domain/usecases/preview_sweep_fees_usecase.dart';
@@ -40,10 +43,8 @@ class _MockPreviewFees extends Mock implements PreviewSweepFeesUsecase {}
 class _MockGetOwnChangeAddresses extends Mock
     implements GetOwnChangeAddressesUsecase {}
 
-class _MockConvertSatsToCurrency extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
-
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockGetDisplaySettings extends Mock
+    implements GetSweepDisplaySettingsUsecase {}
 
 const _alice = 'tb1qalice000000000000000000000000000000000';
 const _bob = 'tb1qbob00000000000000000000000000000000000';
@@ -57,8 +58,7 @@ void main() {
   late _MockGetWallet getWallet;
   late _MockPreviewFees previewFees;
   late _MockGetOwnChangeAddresses getOwnChangeAddresses;
-  late _MockConvertSatsToCurrency convertSatsToCurrency;
-  late _MockSettingsRepository settingsRepository;
+  late _MockGetDisplaySettings getDisplaySettings;
 
   // 60 000 + 40 000 = 100 000 sats of selected coins.
   final inputs = <WalletUtxo>[
@@ -85,8 +85,7 @@ void main() {
     signSweepPsbtUsecase: signPsbt,
     broadcastSweepPsbtUsecase: broadcast,
     getWalletUsecase: getWallet,
-    convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
-    settingsRepository: settingsRepository,
+    getSweepDisplaySettingsUsecase: getDisplaySettings,
   );
 
   SweepQuote quoteOf(SweepPlan plan) => SweepQuote(
@@ -125,6 +124,7 @@ void main() {
         walletId: any(named: 'walletId'),
         plan: any(named: 'plan'),
         networkFee: any(named: 'networkFee'),
+        floorSatPerKwu: any(named: 'floorSatPerKwu'),
       ),
     ).thenAnswer((invocation) async {
       final plan = invocation.namedArguments[const Symbol('plan')] as SweepPlan;
@@ -137,6 +137,7 @@ void main() {
       () => signPsbt.execute(
         walletId: any(named: 'walletId'),
         unsignedPsbt: any(named: 'unsignedPsbt'),
+        floorSatPerKwu: any(named: 'floorSatPerKwu'),
       ),
     ).thenAnswer((_) async => const Ok<String, SweepFailure>('signed'));
   }
@@ -185,8 +186,7 @@ void main() {
     getWallet = _MockGetWallet();
     previewFees = _MockPreviewFees();
     getOwnChangeAddresses = _MockGetOwnChangeAddresses();
-    convertSatsToCurrency = _MockConvertSatsToCurrency();
-    settingsRepository = _MockSettingsRepository();
+    getDisplaySettings = _MockGetDisplaySettings();
 
     // init() also loads decoration (fiat hint, own change addresses). Neither
     // blocks the flow, so every test stubs them as unavailable unless it cares.
@@ -196,7 +196,11 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const Ok<List<WalletAddress>, SweepFailure>([]));
-    when(() => settingsRepository.fetch()).thenThrow(Exception('no settings'));
+    when(() => getDisplaySettings.execute()).thenAnswer(
+      (_) async => const Err<SweepDisplaySettings, SweepFailure>(
+        SweepUnexpectedFailure(),
+      ),
+    );
   });
 
   group('initial state', () {
@@ -213,6 +217,32 @@ void main() {
   });
 
   group('loadFees', () {
+    test(
+      'loads display preferences without exposing Settings internals',
+      () async {
+        stubFeesOk();
+        when(() => getDisplaySettings.execute()).thenAnswer(
+          (_) async => const Ok<SweepDisplaySettings, SweepFailure>(
+            SweepDisplaySettings(
+              bitcoinUnit: BitcoinUnit.sats,
+              hideAmounts: false,
+              exchangeRate: 42000,
+              fiatCurrencyCode: 'CAD',
+            ),
+          ),
+        );
+        final cubit = buildCubit();
+
+        await cubit.init();
+
+        expect(cubit.state.bitcoinUnit, BitcoinUnit.sats);
+        expect(cubit.state.hideAmounts, isFalse);
+        expect(cubit.state.exchangeRate, 42000);
+        expect(cubit.state.fiatCurrencyCode, 'CAD');
+        await cubit.close();
+      },
+    );
+
     test('stores the presets', () async {
       stubFeesOk();
       final cubit = buildCubit();
@@ -361,6 +391,7 @@ void main() {
           walletId: 'wallet-1',
           plan: any(named: 'plan'),
           networkFee: presets.fastest,
+          floorSatPerKwu: presets.minRelay.satPerKwu,
         ),
       ).called(1);
       await cubit.close();
@@ -379,9 +410,81 @@ void main() {
           walletId: any(named: 'walletId'),
           plan: any(named: 'plan'),
           networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       ).called(2);
       expect(cubit.state.selectedFeeOption, FeeSelection.economic);
+      await cubit.close();
+    });
+
+    test('only the latest concurrent fee build can stage a psbt', () async {
+      final cubit = await reviewing();
+      final plan = cubit.state.quote!.plan;
+      final fastest = Completer<Result<SweepQuote, SweepFailure>>();
+      final slow = Completer<Result<SweepQuote, SweepFailure>>();
+      reset(buildPsbt);
+      when(
+        () => buildPsbt.execute(
+          walletId: any(named: 'walletId'),
+          plan: any(named: 'plan'),
+          networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
+        ),
+      ).thenAnswer((invocation) {
+        final fee = invocation.namedArguments[const Symbol('networkFee')];
+        return fee == presets.fastest ? fastest.future : slow.future;
+      });
+
+      final first = cubit.feeOptionSelected(FeeSelection.fastest);
+      final second = cubit.feeOptionSelected(FeeSelection.slow);
+      slow.complete(
+        Ok(
+          SweepQuote(
+            plan: plan,
+            networkFee: presets.slow,
+            unsignedPsbt: 'slow-psbt',
+            txSize: 210,
+            feeSat: BigInt.from(210),
+          ),
+        ),
+      );
+      await second;
+      fastest.complete(
+        Ok(
+          SweepQuote(
+            plan: plan,
+            networkFee: presets.fastest,
+            unsignedPsbt: 'fast-psbt',
+            txSize: 210,
+            feeSat: BigInt.from(2100),
+          ),
+        ),
+      );
+      await first;
+
+      expect(cubit.state.selectedFeeOption, FeeSelection.slow);
+      expect(cubit.state.quote?.unsignedPsbt, 'slow-psbt');
+      await cubit.close();
+    });
+
+    test('a failed reprice keeps the last reviewed fee and psbt', () async {
+      final cubit = await reviewing();
+      when(
+        () => buildPsbt.execute(
+          walletId: any(named: 'walletId'),
+          plan: any(named: 'plan'),
+          networkFee: presets.fastest,
+          floorSatPerKwu: presets.minRelay.satPerKwu,
+        ),
+      ).thenAnswer(
+        (_) async => const Err<SweepQuote, SweepFailure>(SweepBuildFailure()),
+      );
+
+      await cubit.feeOptionSelected(FeeSelection.fastest);
+
+      expect(cubit.state.selectedFeeOption, FeeSelection.economic);
+      expect(cubit.state.quote?.unsignedPsbt, 'unsigned');
+      expect(cubit.state.failure, isA<SweepBuildFailure>());
       await cubit.close();
     });
 
@@ -428,6 +531,7 @@ void main() {
           walletId: 'wallet-1',
           plan: any(named: 'plan'),
           networkFee: subOne,
+          floorSatPerKwu: presets.minRelay.satPerKwu,
         ),
       ).called(1);
       await cubit.close();
@@ -445,6 +549,22 @@ void main() {
       await cubit.close();
     });
 
+    test('an invalid edit restores the prior custom rate', () async {
+      final cubit = await reviewing();
+      final prior = NetworkFee.relativeFromSatPerVbyte(2);
+      cubit.armCustomFee(prior);
+      cubit.finalizeArmedCustomFee();
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+
+      cubit.armCustomFee(NetworkFee.relativeFromSatPerVbyte(0.01));
+      cubit.finalizeArmedCustomFee();
+
+      expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+      expect(cubit.state.customFee, prior);
+      await cubit.close();
+    });
+
     test('an acceptable rate is committed on dismissal', () async {
       final cubit = await reviewing();
       cubit.armCustomFee(NetworkFee.relativeFromSatPerVbyte(7));
@@ -459,6 +579,7 @@ void main() {
           walletId: 'wallet-1',
           plan: any(named: 'plan'),
           networkFee: NetworkFee.relativeFromSatPerVbyte(7),
+          floorSatPerKwu: presets.minRelay.satPerKwu,
         ),
       ).called(1);
       await cubit.close();
@@ -474,6 +595,82 @@ void main() {
       expect(cubit.state.quote, isNull);
       await cubit.close();
     });
+
+    test('editing while review builds cancels the stale result', () async {
+      stubFeesOk();
+      final parsed = Completer<Result<ParsedSweepAddress, SweepFailure>>();
+      when(
+        () => parseAddress.execute(
+          input: any(named: 'input'),
+          network: any(named: 'network'),
+        ),
+      ).thenAnswer((_) => parsed.future);
+      final cubit = buildCubit();
+      await cubit.init();
+      cubit
+        ..addressChanged(0, _alice)
+        ..amountChanged(0, BigInt.from(25000));
+
+      final review = cubit.review();
+      expect(cubit.state.building, isTrue);
+      cubit.addressChanged(0, _bob);
+      expect(cubit.state.building, isFalse);
+      parsed.complete(
+        const Ok<ParsedSweepAddress, SweepFailure>((
+          address: _alice,
+          amountSat: null,
+        )),
+      );
+      await review;
+
+      expect(cubit.state.quote, isNull);
+      expect(cubit.state.allocations.single.address, _bob);
+      verifyNever(
+        () => buildPsbt.execute(
+          walletId: any(named: 'walletId'),
+          plan: any(named: 'plan'),
+          networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
+        ),
+      );
+      await cubit.close();
+    });
+
+    test(
+      'a preview from an abandoned plan cannot repopulate the cache',
+      () async {
+        final cubit = await reviewing();
+        final preview = Completer<BitcoinFeePreviewSlot>();
+        when(
+          () => previewFees.one(
+            walletId: any(named: 'walletId'),
+            plan: any(named: 'plan'),
+            networkFee: any(named: 'networkFee'),
+            floorSatPerKwu: any(named: 'floorSatPerKwu'),
+          ),
+        ).thenAnswer((_) => preview.future);
+
+        unawaited(
+          cubit.previewCustomFee(NetworkFee.relativeFromSatPerVbyte(3)),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 650));
+        cubit.backToAllocation();
+        preview.complete(
+          const BitcoinFeePreviewSlot(
+            feeSat: 600,
+            unsignedPsbt: 'stale-psbt',
+            txSize: 200,
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          cubit.state.feePreviewCache.slotFor(FeeSelection.custom).isCacheReady,
+          isFalse,
+        );
+        await cubit.close();
+      },
+    );
   });
 
   group('review', () {
@@ -515,6 +712,7 @@ void main() {
           walletId: any(named: 'walletId'),
           plan: any(named: 'plan'),
           networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       );
       await cubit.close();
@@ -539,6 +737,7 @@ void main() {
           walletId: any(named: 'walletId'),
           plan: any(named: 'plan'),
           networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       );
       await cubit.close();
@@ -572,6 +771,7 @@ void main() {
           walletId: 'wallet-1',
           plan: any(named: 'plan'),
           networkFee: presets.fastest,
+          floorSatPerKwu: presets.minRelay.satPerKwu,
         ),
       ).called(1);
       await cubit.close();
@@ -585,6 +785,7 @@ void main() {
           walletId: any(named: 'walletId'),
           plan: any(named: 'plan'),
           networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       ).thenAnswer(
         (_) async => Err<SweepQuote, SweepFailure>(
@@ -659,6 +860,45 @@ void main() {
   });
 
   group('confirm', () {
+    test('does not sign while a replacement fee psbt is building', () async {
+      final cubit = await reviewing();
+      final replacement = Completer<Result<SweepQuote, SweepFailure>>();
+      reset(buildPsbt);
+      when(
+        () => buildPsbt.execute(
+          walletId: any(named: 'walletId'),
+          plan: any(named: 'plan'),
+          networkFee: any(named: 'networkFee'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
+        ),
+      ).thenAnswer((_) => replacement.future);
+
+      final reprice = cubit.feeOptionSelected(FeeSelection.fastest);
+      expect(cubit.state.building, isTrue);
+      await cubit.confirm();
+
+      verifyNever(
+        () => signPsbt.execute(
+          walletId: any(named: 'walletId'),
+          unsignedPsbt: any(named: 'unsignedPsbt'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
+        ),
+      );
+      replacement.complete(
+        Ok(
+          SweepQuote(
+            plan: cubit.state.quote!.plan,
+            networkFee: presets.fastest,
+            unsignedPsbt: 'replacement',
+            txSize: 200,
+            feeSat: BigInt.from(2000),
+          ),
+        ),
+      );
+      await reprice;
+      await cubit.close();
+    });
+
     test('signs, broadcasts and lands on success', () async {
       final cubit = await reviewing();
       stubSignOk();
@@ -683,7 +923,11 @@ void main() {
       await cubit.confirm();
 
       verify(
-        () => signPsbt.execute(walletId: 'wallet-1', unsignedPsbt: 'unsigned'),
+        () => signPsbt.execute(
+          walletId: 'wallet-1',
+          unsignedPsbt: 'unsigned',
+          floorSatPerKwu: presets.minRelay.satPerKwu,
+        ),
       ).called(1);
       await cubit.close();
     });
@@ -694,6 +938,7 @@ void main() {
         () => signPsbt.execute(
           walletId: any(named: 'walletId'),
           unsignedPsbt: any(named: 'unsignedPsbt'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       ).thenAnswer(
         (_) async => const Err<String, SweepFailure>(SweepSignFailure()),
@@ -739,6 +984,7 @@ void main() {
         () => signPsbt.execute(
           walletId: any(named: 'walletId'),
           unsignedPsbt: any(named: 'unsignedPsbt'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       ).called(1);
       verify(
@@ -757,6 +1003,7 @@ void main() {
         () => signPsbt.execute(
           walletId: any(named: 'walletId'),
           unsignedPsbt: any(named: 'unsignedPsbt'),
+          floorSatPerKwu: any(named: 'floorSatPerKwu'),
         ),
       );
       await cubit.close();

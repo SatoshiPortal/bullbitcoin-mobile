@@ -73,6 +73,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     );
   }
 
+  @override
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final wallet = await getPrivateWallet(walletId: walletId);
     final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);

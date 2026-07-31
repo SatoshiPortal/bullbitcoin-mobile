@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/sweep/presentation/sweep_cubit.dart';
 import 'package:bb_mobile/features/sweep/ui/screens/sweep_screen.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +33,10 @@ class SweepRouter {
       // A sweep only means something with coins to sweep, on a Bitcoin wallet.
       // Deep-link or refresh without them → home rather than a force-unwrap
       // crash.
-      if (args is! SweepArgs || args.inputs.isEmpty || !args.wallet.isBitcoin) {
+      if (args is! SweepArgs ||
+          args.inputs.isEmpty ||
+          !args.wallet.isBitcoin ||
+          !args.wallet.signsLocally) {
         return WalletRoute.walletHome.path;
       }
       return null;

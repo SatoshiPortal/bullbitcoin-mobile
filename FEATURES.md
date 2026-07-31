@@ -108,7 +108,6 @@ graph TB
     SWAPS --> UTXO_MGMT
     SWEEP --> BULL_PAYJOIN
     SWEEP --> FEES
-    SWEEP --> SETTINGS
     SWEEP --> UTXO_MGMT
     SWEEP --> WALLETS
     TOR --> CORE
@@ -201,7 +200,7 @@ graph TB
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
-- **Sweep**: Depends on Fees, Payjoin, Settings, UTXO Management, Wallets — entered from Coins with a fixed coin selection
+- **Sweep**: Depends on Fees, Payjoin, UTXO Management, Wallets — entered from Coins with a fixed coin selection
 - **Receive**: Depends on Payjoin, Swaps
 - **AutoSwaps**: Depends on Transfer
 - **Backups**: Depends on BIP85, Tor, Wallets

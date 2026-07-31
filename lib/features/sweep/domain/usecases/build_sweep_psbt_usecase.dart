@@ -36,6 +36,7 @@ class BuildSweepPsbtUsecase {
     required String walletId,
     required SweepPlan plan,
     required NetworkFee networkFee,
+    int? floorSatPerKwu,
   }) async {
     final unspendable = await _unspendableOutpoints();
     switch (unspendable) {
@@ -61,6 +62,18 @@ class BuildSweepPsbtUsecase {
       );
       final txSize = await _bitcoinSend.getTxSize(psbt: psbt);
       final feeSat = await _bitcoinSend.getTxFeeAmount(psbt: psbt);
+      final clearsRelay = networkFee is RelativeFee
+          ? networkFee.aboveMinRelay(floorSatPerKwu: floorSatPerKwu)
+          : NetworkFee.absolute(
+              feeSat,
+            ).aboveMinRelay(txSize: txSize, floorSatPerKwu: floorSatPerKwu);
+      if (floorSatPerKwu != null && !clearsRelay) {
+        log.warning(
+          'Refusing sweep PSBT below relay floor: $feeSat sats at '
+          '$txSize vbytes',
+        );
+        return const Err(SweepFeeTooLowFailure());
+      }
 
       return Ok(
         SweepQuote(
@@ -110,7 +123,7 @@ class BuildSweepPsbtUsecase {
       return const Err(SweepFeeTooLowFailure());
     } on bdk.FeeTooLowCreateTxException {
       return const Err(SweepFeeTooLowFailure());
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(message: 'Failed to build sweep psbt', error: e, trace: st);
       return Err(SweepBuildFailure(e.toString()));
     }
@@ -167,7 +180,7 @@ class BuildSweepPsbtUsecase {
           ),
         ),
       };
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to read the unspendable outpoint set',
         error: e,

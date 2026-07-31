@@ -13,10 +13,12 @@ class SweepChangeAddressSheet extends StatelessWidget {
     super.key,
     required this.addresses,
     required this.onSelected,
+    required this.onClose,
   });
 
   final List<WalletAddress> addresses;
   final ValueChanged<WalletAddress> onSelected;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +29,7 @@ class SweepChangeAddressSheet extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
-        Text(
-          loc.sweepChangeAddressSheetTitle,
-          style: context.bullText.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: colors.text,
-          ),
-        ),
-        const Gap(6),
+        BullTopBar(title: loc.sweepChangeAddressSheetTitle, onAction: onClose),
         Text(
           loc.sweepChangeAddressSheetBody,
           style: context.bullText.bodySmall?.copyWith(color: colors.textMuted),
