@@ -26,9 +26,8 @@ class EntropyCeremonyState {
 
 /// Serializes pointer samples and feeds them into the current pool ceremony.
 class EntropyCeremonyCubit extends Cubit<EntropyCeremonyState> {
-  EntropyCeremonyCubit({required MixEntropyUsecase mixEntropyUsecase})
-    : _mixEntropyUsecase = mixEntropyUsecase,
-      super(const EntropyCeremonyState());
+  EntropyCeremonyCubit({required this._mixEntropyUsecase})
+    : super(const EntropyCeremonyState());
 
   final MixEntropyUsecase _mixEntropyUsecase;
   final Stopwatch _stopwatch = Stopwatch();

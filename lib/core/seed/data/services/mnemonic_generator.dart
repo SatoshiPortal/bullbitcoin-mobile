@@ -11,11 +11,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 /// platform CSPRNG draw. BDK performs deterministic BIP39 encoding only; its
 /// internal random mnemonic constructor is never used here.
 class MnemonicGenerator {
-  MnemonicGenerator({
-    required EntropyPool entropyPool,
-    required OsRngSource osRngSource,
-  }) : _entropyPool = entropyPool,
-       _osRngSource = osRngSource;
+  MnemonicGenerator({required this._entropyPool, required this._osRngSource});
 
   final EntropyPool _entropyPool;
   final OsRngSource _osRngSource;

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/entropy/data/services/entropy_pool.dart';
 import 'package:bb_mobile/core/entropy/data/services/sources/os_rng_source.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 
 Uint8List fixedOsDraw() => Uint8List.fromList(

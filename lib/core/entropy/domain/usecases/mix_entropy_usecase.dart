@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/entropy/data/services/entropy_pool.dart';
 
 /// Owns the touch-ceremony lifecycle exposed to onboarding.
 class MixEntropyUsecase {
-  const MixEntropyUsecase({required EntropyPool entropyPool})
-    : _entropyPool = entropyPool;
+  const MixEntropyUsecase({required this._entropyPool});
 
   static const requiredSampleCount = EntropyPool.requiredTouchSamples;
 
