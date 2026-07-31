@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status_card.dart';
@@ -44,9 +45,8 @@ class TorProxyWidget extends StatelessWidget {
                   style: context.font.titleMedium,
                 ),
                 const Gap(12),
-                DropdownButton<TorTransportMode>(
+                BBDropdown<TorTransportMode>(
                   value: torState.transportMode,
-                  isExpanded: true,
                   items: TorTransportMode.values
                       .map(
                         (mode) => DropdownMenuItem(
