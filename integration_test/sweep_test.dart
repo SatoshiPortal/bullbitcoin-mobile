@@ -156,7 +156,9 @@ Future<void> main({bool isInitialized = false}) async {
         final utxos = await utxoRepository.getWalletUtxos(walletId: alice.id);
         final spendable = utxos.where((u) => !u.isFrozen).toList();
         if (spendable.isEmpty) {
-          markTestSkipped('Alice ($alice) has no spendable testnet coins');
+          // Do not interpolate Wallet: its generated toString contains public
+          // descriptors and xpubs, which must not leak into CI logs.
+          markTestSkipped('Alice fixture has no spendable testnet coins');
           return null;
         }
         return spendable;
