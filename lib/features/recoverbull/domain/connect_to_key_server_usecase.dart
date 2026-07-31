@@ -23,9 +23,13 @@ class ConnectToKeyServerUsecase {
 
   /// [onAttempt] fires before each call with a 1-based attempt number, so the
   /// caller can show which attempt is in flight rather than which one failed.
+  ///
+  /// The first attempt is immediate. Tor readiness is already awaited before
+  /// this runs, so delaying it only added a second to every start, including
+  /// the common case where the server answers at once.
   Future<bool> execute({required void Function(int attempt) onAttempt}) async {
     for (var attempt = 1; attempt <= maxAttempts; attempt++) {
-      await _wait(Duration(seconds: attempt));
+      if (attempt > 1) await _wait(Duration(seconds: attempt - 1));
       onAttempt(attempt);
       if (await _checkServerConnectionUsecase.execute()) return true;
     }

@@ -60,15 +60,19 @@ void main() {
     },
   );
 
-  test('backs off between attempts', () async {
+  test('tries immediately, then backs off between retries', () async {
     when(() => checkConnection.execute()).thenAnswer((_) async => false);
 
     await run();
 
-    expect(waited, const [
-      Duration(seconds: 1),
-      Duration(seconds: 2),
-      Duration(seconds: 3),
-    ]);
+    expect(waited, const [Duration(seconds: 1), Duration(seconds: 2)]);
+  });
+
+  test('does not delay a server that answers at once', () async {
+    when(() => checkConnection.execute()).thenAnswer((_) async => true);
+
+    await run();
+
+    expect(waited, isEmpty);
   });
 }
