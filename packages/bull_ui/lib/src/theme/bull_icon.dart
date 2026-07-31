@@ -15,6 +15,7 @@ abstract final class BullIcons {
   static const IconData checkCircle = Icons.check_circle;
   static const IconData schedule = Icons.schedule;
   static const IconData contentCopy = Icons.content_copy;
+  static const IconData contentPaste = Icons.content_paste;
   static const IconData sell = Icons.sell;
   static const IconData close = Icons.close;
   static const IconData check = Icons.check;
@@ -29,7 +30,13 @@ abstract final class BullIcons {
 /// A thin wrapper over the Flutter [Icon] so feature code never touches
 /// Material's `Icon`/`Icons` directly. Pair with [BullIcons].
 class BullIcon extends StatelessWidget {
-  const BullIcon(this.icon, {super.key, this.size, this.color});
+  const BullIcon(
+    this.icon, {
+    super.key,
+    this.size,
+    this.color,
+    this.semanticLabel,
+  });
 
   /// The icon glyph — use a [BullIcons] constant.
   final IconData icon;
@@ -40,8 +47,11 @@ class BullIcon extends StatelessWidget {
   /// Optional explicit colour. Defaults to the ambient [IconTheme].
   final Color? color;
 
+  /// Optional accessibility label for icon-only controls.
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
-    return Icon(icon, size: size, color: color);
+    return Icon(icon, size: size, color: color, semanticLabel: semanticLabel);
   }
 }

@@ -45,6 +45,7 @@ class BullTopBar extends StatelessWidget {
             IconButton(
               icon: const BullIcon(BullIcons.arrowBack),
               onPressed: onBack,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               iconSize: 24,
               color: colors.text,
               visualDensity: VisualDensity.compact,
@@ -70,6 +71,9 @@ class BullTopBar extends StatelessWidget {
                 IconButton(
                   icon: BullIcon(actionIcon ?? BullIcons.close),
                   onPressed: onAction,
+                  tooltip: actionIcon == null
+                      ? MaterialLocalizations.of(context).closeButtonTooltip
+                      : null,
                   iconSize: 24,
                   color: colors.text,
                   visualDensity: VisualDensity.compact,

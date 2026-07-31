@@ -36,6 +36,7 @@ export 'package:flutter/widgets.dart'
         EdgeInsetsGeometry,
         Expanded,
         Flexible,
+        FocusScope,
         FontFeature,
         FontWeight,
         FractionallySizedBox,
@@ -81,7 +82,8 @@ export 'package:flutter/widgets.dart'
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
     show DropdownMenuItem, FormFieldValidator, RefreshCallback, TextTheme;
-export 'package:flutter/services.dart' show TextInputFormatter;
+export 'package:flutter/services.dart'
+    show Clipboard, ClipboardData, TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
 export 'package:gap/gap.dart' show Gap;
