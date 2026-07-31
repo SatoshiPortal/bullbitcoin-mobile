@@ -39,6 +39,7 @@ import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
+import 'package:bb_mobile/features/sweep/sweep_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -95,6 +96,7 @@ class AppLocator {
     ReceiveLocator.setup(locator);
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
+    SweepLocator.setup(locator);
     ConsolidationLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
     AnnouncementsLocator.setup(locator);
