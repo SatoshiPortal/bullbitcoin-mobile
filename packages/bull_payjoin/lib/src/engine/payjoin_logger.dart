@@ -3,13 +3,10 @@ import 'dart:convert';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart';
 import 'package:crypto/crypto.dart';
 
-PayjoinLogger log = PayjoinLogger(const _NoopPayjoinLogPort());
-
-void configurePayjoinLogger(PayjoinLogPort port) {
-  log = PayjoinLogger(port);
-}
-
 final class PayjoinLogger {
+  /// Writes nowhere. For a host that wants the engine silent, and for tests.
+  static const PayjoinLogger silent = PayjoinLogger(_NoopPayjoinLogPort());
+
   final PayjoinLogPort _port;
 
   const PayjoinLogger(this._port);
@@ -29,7 +26,13 @@ final class PayjoinLogger {
     Object? error,
     StackTrace? trace,
   }) {
-    _write(PayjoinLogLevel.warning, code, sessionRef: sessionRef, trace: trace);
+    _write(
+      PayjoinLogLevel.warning,
+      code,
+      sessionRef: sessionRef,
+      error: error,
+      trace: trace,
+    );
   }
 
   void severe({
@@ -39,13 +42,24 @@ final class PayjoinLogger {
     Object? error,
     StackTrace? trace,
   }) {
-    _write(PayjoinLogLevel.severe, code, sessionRef: sessionRef, trace: trace);
+    _write(
+      PayjoinLogLevel.severe,
+      code,
+      sessionRef: sessionRef,
+      error: error,
+      trace: trace,
+    );
   }
 
+  /// The free-form message is deliberately dropped: call sites compose it, so
+  /// it is the one field that could carry a BIP21 URI or a raw txid into the
+  /// host's logs. [error] and [trace] are forwarded instead — they are the
+  /// diagnosis, and neither is composed here.
   void _write(
     PayjoinLogLevel level,
     PayjoinLogCode code, {
     String? sessionRef,
+    Object? error,
     StackTrace? trace,
   }) {
     _port.write(
@@ -53,6 +67,7 @@ final class PayjoinLogger {
         level: level,
         code: code,
         sessionRef: _safeSessionRef(sessionRef),
+        error: error,
         trace: trace,
       ),
     );

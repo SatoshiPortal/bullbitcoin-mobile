@@ -7,6 +7,7 @@ import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as internal;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
+import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';
@@ -146,6 +147,7 @@ void main() {
     engine = PayjoinRepositoryImpl(
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
+      log: PayjoinLogger.silent,
       wallet: _MockWalletPort(),
       blockchain: blockchain,
       transactions: transactions,

@@ -27,9 +27,13 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required PayjoinLegacyDataPort legacyData,
   required PayjoinLogPort log,
 }) async {
+  // Scoped to this runtime rather than held in a library global: two runtimes
+  // in one isolate (a retried open, a test) would otherwise overwrite each
+  // other's destination, and the order of `openPayjoin` calls would silently
+  // decide where a session's failures are reported.
+  final payjoinLog = logger.PayjoinLogger(log);
   PayjoinDatabase? database;
   try {
-    logger.configurePayjoinLogger(log);
     database = PayjoinDatabase.open(databasePath);
     await importLegacyPayjoinData(database, legacyData);
     final local = LocalPayjoinDatasource(db: database);
@@ -43,10 +47,12 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
           receiveTimeout: const Duration(seconds: 35),
         ),
       ),
+      log: payjoinLog,
     );
     final engine = PayjoinRepositoryImpl(
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
+      log: payjoinLog,
       wallet: wallet,
       blockchain: blockchain,
       transactions: transactions,
@@ -56,7 +62,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     final roles = _PayjoinRoles(engine, policy, wallet);
     return Ok(_PayjoinLifecycle(database, engine, roles.payjoin));
   } catch (error, trace) {
-    logger.log.severe(
+    payjoinLog.severe(
       message: 'Could not open or migrate Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,

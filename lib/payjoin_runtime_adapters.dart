@@ -107,9 +107,12 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
       case PayjoinLogLevel.warning:
         log.warning(message);
       case PayjoinLogLevel.severe:
+        // The engine's own error when it gave us one: Sentry groups on it, so
+        // substituting a synthetic error would file every failure of a given
+        // code under one signature and hide the cause.
         log.severe(
           message: message,
-          error: StateError('Payjoin engine ${event.code.name}'),
+          error: event.error ?? StateError('Payjoin engine ${event.code.name}'),
           trace: event.trace ?? StackTrace.current,
         );
     }

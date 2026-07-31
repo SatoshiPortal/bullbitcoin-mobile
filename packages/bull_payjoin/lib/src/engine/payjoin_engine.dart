@@ -30,6 +30,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // wallet UTXO before either proposal has been persisted.
   final Lock _utxoSelectionLock;
   final Lock _resumeLock;
+  final PayjoinLogger _log;
 
   // All effects for one protocol session run in order. These locks are kept
   // until repository disposal so a lock is never replaced while callbacks are
@@ -77,6 +78,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   PayjoinRepositoryImpl({
     required this._localPayjoinDatasource,
     required this._pdkPayjoinDatasource,
+    required this._log,
     required api.PayjoinWalletPort wallet,
     required api.PayjoinBlockchainPort blockchain,
     required api.PayjoinTransactionPort transactions,
@@ -369,7 +371,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (freshModel != null) {
       final freshEntity = freshModel.toEntity();
       if (!freshEntity.canManuallyBroadcastOriginal) {
-        log.warning(
+        _log.warning(
           'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
           'already completed or a proposal is in flight',
         );
@@ -420,7 +422,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } catch (e, st) {
         firstError ??= e;
         firstStackTrace ??= st;
-        log.severe(
+        _log.severe(
           message:
               'Failed to settle disabled receiver ${receiver.toEntity().logRef}',
           code: api.PayjoinLogCode.broadcastFailure,
@@ -456,7 +458,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } on StateError catch (e) {
         // A previous attempt may already have advanced the PDK typestate.
         // Broadcasting the persisted original remains the safe recovery.
-        log.warning('Receiver decline already applied: $e');
+        _log.warning('Receiver decline already applied: $e');
       }
 
       final result = await _broadcastOriginalWithRetry(declined.toEntity());
@@ -517,7 +519,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // logRef, never id/raw txid: a sender payjoin id is the full BIP21
       // URI and a raw txid identifies the payment on-chain — both off-limits
       // in logs (user-shareable / pasted into issues).
-      log.info(
+      _log.info(
         'Original transaction broadcasted for payjoin ${payjoin.logRef}',
       );
 
@@ -598,7 +600,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       return resolvedModel.toEntity();
     } catch (e) {
-      log.severe(
+      _log.severe(
         message: 'Error broadcasting original transaction',
         code: api.PayjoinLogCode.broadcastFailure,
         sessionRef: payjoin.logRef,
@@ -622,7 +624,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // in "requested" until the app restarts.
     PayjoinReceiver? result;
     try {
-      log.info('Processing payjoin request: ${model.id}');
+      _log.info('Processing payjoin request: ${model.id}');
       final recorded = await _localPayjoinDatasource.recordReceiverRequest(
         model,
       );
@@ -656,7 +658,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // threshold. See PayjoinConstants.defaultMinAmountSat.
       final policy = await _policy.load();
       if (!policy.enabled) {
-        log.warning(
+        _log.warning(
           'Payjoin request ${model.id} arrived after Payjoin was disabled; '
           'broadcasting the original transaction instead',
         );
@@ -665,7 +667,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         amountSat: model.amountSat,
         minAmountSat: policy.minimumAmount.value.toInt(),
       )) {
-        log.warning(
+        _log.warning(
           'Payjoin request ${model.id} below minimum '
           '(${policy.minimumAmount.value} sat); declining and '
           'broadcasting original instead',
@@ -682,7 +684,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         result = await _proposePayjoin(model, unspentUtxos);
       }
     } catch (e) {
-      log.severe(
+      _log.severe(
         message: 'Error processing payjoin request',
         code: api.PayjoinLogCode.walletFailure,
         sessionRef: model.toEntity().logRef,
@@ -745,7 +747,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // inside _broadcastOriginalTransaction — this is the summary line.
     // logRef, never id: this accepts any Payjoin and a sender id is the full
     //  BIP21 URI.
-    log.warning(
+    _log.warning(
       'Failed to broadcast the original transaction after $maxAttempts '
       'attempts; leaving payjoin ${payjoin.logRef} unfinished so the next app '
       'start retries',
@@ -776,7 +778,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         try {
           await _processPayjoinProposalInner(payjoinModel);
         } catch (e) {
-          log.severe(
+          _log.severe(
             message: 'Error processing payjoin proposal event',
             code: api.PayjoinLogCode.storageFailure,
             sessionRef: payjoinModel.toEntity().logRef,
@@ -809,7 +811,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (!recorded) return;
 
     final payjoin = payjoinModel.toEntity() as PayjoinSender;
-    log.info('Processing payjoin proposal for ${payjoin.logRef}');
+    _log.info('Processing payjoin proposal for ${payjoin.logRef}');
 
     _payjoinStreamController.add(payjoin);
 
@@ -823,7 +825,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             : primitives.BitcoinNetwork.mainnet,
         psbt: payjoin.proposalPsbt!,
       );
-      log.info('Payjoin proposal signed for ${payjoin.logRef}');
+      _log.info('Payjoin proposal signed for ${payjoin.logRef}');
       result = await _broadcastPsbt(
         payjoinModel: payjoinModel,
         finalizedPsbt: finalizedPsbt,
@@ -834,9 +836,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // logRef, never id/raw txid: a sender payjoin id is the full BIP21 URI
       //  and a raw txid identifies the payment on-chain — both off-limits in
       //  logs.
-      log.info('Payjoin proposal broadcasted for ${payjoin.logRef}');
+      _log.info('Payjoin proposal broadcasted for ${payjoin.logRef}');
     } catch (e) {
-      log.severe(
+      _log.severe(
         message: 'Error broadcasting payjoin proposal',
         code: api.PayjoinLogCode.broadcastFailure,
         sessionRef: payjoin.logRef,
@@ -866,7 +868,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             walletId: payjoin.walletId,
           );
         } catch (e, st) {
-          log.warning(
+          _log.warning(
             'Payjoin broadcast succeeded but labeling failed',
             error: e,
             trace: st,
@@ -935,7 +937,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         try {
           await _processExpiredPayjoinInner(payjoinModel);
         } catch (e) {
-          log.severe(
+          _log.severe(
             message: 'Error processing expired payjoin event',
             code: api.PayjoinLogCode.storageFailure,
             sessionRef: payjoinModel.toEntity().logRef,
@@ -1115,7 +1117,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _resumePayjoinsOnStartupUnguarded();
     } catch (e, st) {
-      log.severe(
+      _log.severe(
         message: 'Failed to resume payjoin sessions on startup',
         code: api.PayjoinLogCode.storageFailure,
         error: e,
@@ -1174,7 +1176,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           }
         });
       } catch (e, st) {
-        log.severe(
+        _log.severe(
           message:
               'Failed to resume payjoin receiver ${receiver.toEntity().logRef}',
           code: api.PayjoinLogCode.storageFailure,
@@ -1217,7 +1219,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           originalTxId: sender.originalTxId,
         );
       } catch (e, st) {
-        log.severe(
+        _log.severe(
           message:
               'Failed to resume payjoin sender ${sender.toEntity().logRef}',
           code: api.PayjoinLogCode.storageFailure,
@@ -1242,7 +1244,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } catch (e, st) {
         // logRef, never id: this SEVERE reaches Sentry, and a sender id is
         // the full BIP21 URI.
-        log.severe(
+        _log.severe(
           message:
               'Failed to resume payjoin session ${model.toEntity().logRef}',
           code: api.PayjoinLogCode.storageFailure,
@@ -1348,7 +1350,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       if (freshModel.isCompleted ||
           freshModel.isAborted ||
           freshModel.isExpired) {
-        log.warning(
+        _log.warning(
           'Skipping payjoin proposal for ${freshModel.toEntity().logRef}: '
           'session already resolved (${freshModel.status})',
         );
@@ -1386,7 +1388,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
               (resolved.isCompleted || resolved.isAborted)) {
             return null;
           }
-          log.severe(
+          _log.severe(
             message:
                 'Payjoin proposal was sent but its state was not persisted',
             code: api.PayjoinLogCode.storageFailure,
@@ -1403,7 +1405,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // can attempt this request again. Closing that residual race requires
         // a durable write-ahead proposal reservation before publication; an
         // original-transaction fallback here would be more dangerous.
-        log.severe(
+        _log.severe(
           message: 'Payjoin proposal was sent but persistence failed',
           code: api.PayjoinLogCode.storageFailure,
           sessionRef: payjoin.toEntity().logRef,
@@ -1495,7 +1497,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         payjoinModel.id,
       );
       if (persisted?.isAborted == true) {
-        log.warning(
+        _log.warning(
           'Payjoin ${payjoinModel.toEntity().logRef} broadcast after the '
           'original transaction was observed; the network will resolve the '
           'conflict',
@@ -1516,7 +1518,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (resolved?.isCompleted == true) completedModel = resolved!;
       }
     } catch (e, st) {
-      log.severe(
+      _log.severe(
         message: 'Payjoin broadcast succeeded but completion was not persisted',
         code: api.PayjoinLogCode.storageFailure,
         sessionRef: payjoinModel.toEntity().logRef,
@@ -1669,7 +1671,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
                 transactionId: txId,
               );
             } catch (e) {
-              log.warning('Payjoin $kind watch lookup failed: $e');
+              _log.warning('Payjoin $kind watch lookup failed: $e');
               return false;
             }
           })
@@ -1680,7 +1682,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             //  unhandled zone error.
             unawaited(
               onSeen(payjoinId).catchError((Object e) {
-                log.warning('Payjoin $kind completion handler failed: $e');
+                _log.warning('Payjoin $kind completion handler failed: $e');
               }),
             );
           });
@@ -1700,7 +1702,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     } catch (e) {
       // logRefForId: payjoinId is the raw session id, which for a sender IS
       //  the full BIP21 URI (address+amount) — never log it raw.
-      log.warning(
+      _log.warning(
         'Failed to arm the $kind watch for '
         '${Payjoin.logRefForId(payjoinId)}: $e',
       );
@@ -1745,7 +1747,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           refresh: true,
         );
       } catch (e) {
-        log.warning('Payjoin $kind poll failed: $e');
+        _log.warning('Payjoin $kind poll failed: $e');
       }
 
       // Re-check: the session may have resolved through the passive watcher
@@ -1758,7 +1760,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         try {
           await onSeen(payjoinId);
         } catch (e) {
-          log.warning('Payjoin $kind completion handler failed: $e');
+          _log.warning('Payjoin $kind completion handler failed: $e');
         }
         if (watchers.containsKey(payjoinId)) {
           _scheduleTransactionPoll(
@@ -1831,7 +1833,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
     }
     _payjoinStreamController.add(completedModel.toEntity());
-    log.info(
+    _log.info(
       'Payjoin ${completedModel.toEntity().logRef} completed on broadcast',
     );
   });
@@ -1877,7 +1879,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _syncWalletAfterBroadcast(abortedModel.walletId);
       final abortedEntity = abortedModel.toEntity();
       _payjoinStreamController.add(abortedEntity);
-      log.info(
+      _log.info(
         'Payjoin ${abortedEntity.logRef} resolved via the original '
         'transaction observed on-chain (fallback, not necessarily broadcast '
         'by this device)',
@@ -1934,7 +1936,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       Future(() => _transactions.refreshWallet(walletId)).catchError((
         Object e,
       ) {
-        log.warning('Failed to sync wallet after payjoin broadcast: $e');
+        _log.warning('Failed to sync wallet after payjoin broadcast: $e');
       }),
     );
   }
@@ -1951,7 +1953,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _labels.labelTransaction(walletId: walletId, transactionId: txId);
     } catch (e) {
-      log.warning('Failed to label payjoin transaction', error: e);
+      _log.warning('Failed to label payjoin transaction', error: e);
     }
   }
 
@@ -1975,7 +1977,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _labels.labelTransaction(walletId: walletId, transactionId: txId);
     } catch (e) {
-      log.warning('Failed to label completed payjoin send', error: e);
+      _log.warning('Failed to label completed payjoin send', error: e);
     }
   }
 }

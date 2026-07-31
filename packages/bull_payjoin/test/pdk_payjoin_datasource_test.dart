@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
+import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
@@ -135,6 +136,7 @@ void main() {
         final keys = _fakeOhttpKeys();
         final seenDirectories = <String>{};
         final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
           dio: Dio(),
           ohttpKeysFetcher:
               ({required ohttpRelayUrl, required directoryUrl}) async {
@@ -160,6 +162,7 @@ void main() {
     test('tries every relay before returning unavailable', () async {
       final attempted = <String>{};
       final datasource = PdkPayjoinDatasource(
+        log: PayjoinLogger.silent,
         dio: Dio(),
         ohttpKeysFetcher:
             ({required ohttpRelayUrl, required directoryUrl}) async {
@@ -261,7 +264,10 @@ void main() {
 
     test('stopPolling prevents a pending expiry event', () {
       fakeAsync((async) {
-        final datasource = PdkPayjoinDatasource(dio: Dio());
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: Dio(),
+        );
         final events = <PayjoinModel>[];
         datasource.expiredPayjoins.listen(events.add);
         final model = expiredSender();
@@ -281,7 +287,10 @@ void main() {
     });
 
     test('dispose closes streams and is idempotent', () async {
-      final datasource = PdkPayjoinDatasource(dio: Dio());
+      final datasource = PdkPayjoinDatasource(
+        log: PayjoinLogger.silent,
+        dio: Dio(),
+      );
 
       await datasource.dispose();
 

@@ -241,12 +241,21 @@ final class PayjoinLogEvent {
   final PayjoinLogLevel level;
   final PayjoinLogCode code;
   final String? sessionRef;
+
+  /// What actually went wrong, for the host to report. Carried deliberately:
+  /// without it a failure reaches the app as a bare [code], which collapses
+  /// every cause behind it into one signature — a locked database, a rejected
+  /// broadcast and a failed migration become indistinguishable in crash
+  /// reports. Unlike a free-form message this is not composed by the call
+  /// site, so it cannot smuggle a session identifier into the logs.
+  final Object? error;
   final StackTrace? trace;
 
   PayjoinLogEvent({
     required this.level,
     required this.code,
     this.sessionRef,
+    this.error,
     this.trace,
   }) {
     final sessionRef = this.sessionRef;

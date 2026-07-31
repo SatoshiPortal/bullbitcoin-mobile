@@ -13,6 +13,20 @@ void main() {
     );
   });
 
+  test('log events carry the underlying error for the host to report', () {
+    final cause = StateError('database is locked');
+
+    final event = PayjoinLogEvent(
+      level: PayjoinLogLevel.severe,
+      code: PayjoinLogCode.storageFailure,
+      error: cause,
+    );
+
+    // Without this the host can only report the code, so a locked database and
+    // a rejected broadcast reach crash reporting as the same signature.
+    expect(event.error, same(cause));
+  });
+
   test('log events accept privacy-safe session references', () {
     expect(
       PayjoinLogEvent(
