@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
@@ -7,15 +9,20 @@ import 'package:bb_mobile/features/coins/ui/widgets/coins_summary_bar.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_sort_filter_sheet.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/freeze_confirm_dialog.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/utxo_tile.dart';
+import 'package:bb_mobile/features/sweep/public/sweep_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-/// The Coins (UTXO) screen — list view with summary, sort/filter, multi-select
-/// and freeze/unfreeze. Built entirely on `package:bull_ui/bull_ui.dart`.
+/// The Coins (UTXO) screen — list view with summary, sort/filter, multi-select,
+/// freeze/unfreeze and sweep. Built entirely on `package:bull_ui/bull_ui.dart`.
 class CoinsScreen extends StatelessWidget {
-  const CoinsScreen({super.key});
+  const CoinsScreen({super.key, required this.wallet});
+
+  /// The wallet whose coins are listed. Needed to hand the sweep flow both the
+  /// wallet id and its network.
+  final Wallet wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +55,9 @@ class CoinsScreen extends StatelessWidget {
                   ),
                 if (!state.selecting && state.status == CoinsStatus.ready)
                   _SubHeader(state: state),
-                Expanded(child: _Body(state: state)),
+                Expanded(
+                  child: _Body(state: state, wallet: wallet),
+                ),
                 if (!state.selecting && state.status == CoinsStatus.ready)
                   const _FooterHint(),
               ],
@@ -71,12 +80,23 @@ class CoinsScreen extends StatelessWidget {
                         .map(utxoOutpointKey)
                         .toList(),
                   ),
+                  // A sweep spends every selected coin, so a frozen one in the
+                  // selection has to be unfrozen first rather than silently
+                  // left out. Liquid is out of scope: LWK's builder has a
+                  // rate-only, single-recipient contract this flow doesn't
+                  // implement.
+                  onSweep: wallet.isBitcoin && !state.anySelectedFrozen
+                      ? () => _openSweep(context, state)
+                      : null,
                 )
               : null,
         );
       },
     );
   }
+
+  Future<void> _openSweep(BuildContext context, CoinsState state) =>
+      openSweep(context, wallet, state.selectedUtxos);
 
   Future<void> _confirmFreeze(BuildContext context, CoinsState state) async {
     final selected = state.selectedUtxos.where((u) => !u.isFrozen).toList();
@@ -150,6 +170,27 @@ class _TopChrome extends StatelessWidget {
       actionBadge: state.filter.hasActiveFilter,
     );
   }
+}
+
+/// Hands [inputs] to the sweep flow, then drops the selection and reloads —
+/// those coins may no longer exist, so the list must not keep acting on them.
+///
+/// Shared by the selection action bar and the per-tile leading swipe.
+Future<void> openSweep(
+  BuildContext context,
+  Wallet wallet,
+  List<WalletUtxo> inputs,
+) async {
+  if (inputs.isEmpty) return;
+  final cubit = context.read<CoinsCubit>();
+
+  await context.pushNamed(
+    SweepRoute.sweep.name,
+    extra: SweepArgs(wallet: wallet, inputs: inputs),
+  );
+  if (!context.mounted) return;
+  cubit.exitSelect();
+  await cubit.refresh();
 }
 
 /// Shared helper to present the sort/filter sheet.
@@ -379,9 +420,10 @@ class _SubHeader extends StatelessWidget {
 
 /// The list / state region.
 class _Body extends StatelessWidget {
-  const _Body({required this.state});
+  const _Body({required this.state, required this.wallet});
 
   final CoinsState state;
+  final Wallet wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -394,15 +436,16 @@ class _Body extends StatelessWidget {
         return const _EmptyState();
       case CoinsStatus.ready:
         if (state.isFilteredEmpty) return const _FilteredEmptyState();
-        return _UtxoList(state: state);
+        return _UtxoList(state: state, wallet: wallet);
     }
   }
 }
 
 class _UtxoList extends StatelessWidget {
-  const _UtxoList({required this.state});
+  const _UtxoList({required this.state, required this.wallet});
 
   final CoinsState state;
+  final Wallet wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -431,6 +474,9 @@ class _UtxoList extends StatelessWidget {
             onLongPress: () => cubit.enterSelect(seedOutpoint: key),
             onToggle: () => cubit.toggle(key),
             onSwipeAction: () => _onSwipe(context, utxo.isFrozen, key),
+            onSwipeSweep: wallet.isBitcoin && !utxo.isFrozen
+                ? () => openSweep(context, wallet, [utxo])
+                : null,
             onCopied: () => BullSnackBar.show(
               context,
               message: context.loc.addressCardCopiedMessage,

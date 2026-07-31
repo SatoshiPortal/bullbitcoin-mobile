@@ -30,7 +30,7 @@ class CoinsRouter {
       final wallet = state.extra! as Wallet;
       return BlocProvider(
         create: (_) => locator<CoinsCubit>(param1: wallet.id)..load(),
-        child: const CoinsScreen(),
+        child: CoinsScreen(wallet: wallet),
       );
     },
   );

@@ -7,8 +7,12 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Sticky bottom action bar shown in selection mode (§14). Summary line plus
-/// Freeze / Unfreeze tool buttons — **no Send/Sweep** (Decision D4). Freeze is
-/// shown when any unfrozen coin is selected; Unfreeze when any frozen coin is.
+/// Freeze / Unfreeze / Sweep tool buttons. Freeze is shown when any unfrozen
+/// coin is selected; Unfreeze when any frozen coin is.
+///
+/// Sweep spends the selected coins entirely, so it is offered only when the
+/// whole selection is spendable — [onSweep] is null otherwise (a frozen coin in
+/// the selection, or a wallet whose network the sweep flow doesn't build for).
 class CoinsSelectionBar extends StatelessWidget {
   const CoinsSelectionBar({
     super.key,
@@ -18,6 +22,7 @@ class CoinsSelectionBar extends StatelessWidget {
     required this.anyFrozen,
     required this.onFreeze,
     required this.onUnfreeze,
+    this.onSweep,
   });
 
   final int selectedCount;
@@ -26,6 +31,9 @@ class CoinsSelectionBar extends StatelessWidget {
   final bool anyFrozen;
   final VoidCallback onFreeze;
   final VoidCallback onUnfreeze;
+
+  /// Null when the current selection cannot be swept.
+  final VoidCallback? onSweep;
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +50,24 @@ class CoinsSelectionBar extends StatelessWidget {
         ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedTotalSat.toInt()))
         : FormatAmount.sats(selectedTotalSat.toInt());
 
+    final onSweep = this.onSweep;
+
     return BullSelectionActionBar(
       summary: '${loc.coinsSelectedCount(selectedCount)} · $total',
       actions: [
+        if (onSweep != null)
+          BullToolButton(
+            label: loc.coinsSweep,
+            icon: BullIcons.callMerge,
+            onPressed: onSweep,
+            primary: true,
+          ),
         if (anyUnfrozen)
           BullToolButton(
             label: loc.coinsFreeze,
             icon: BullIcons.acUnit,
             onPressed: onFreeze,
-            primary: true,
+            primary: onSweep == null,
           ),
         if (anyFrozen)
           BullToolButton(

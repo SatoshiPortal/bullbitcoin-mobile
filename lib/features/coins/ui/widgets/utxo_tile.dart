@@ -30,6 +30,7 @@ class UtxoTile extends StatelessWidget {
     required this.onToggle,
     required this.onSwipeAction,
     required this.onCopied,
+    this.onSwipeSweep,
   });
 
   final WalletUtxo utxo;
@@ -43,11 +44,15 @@ class UtxoTile extends StatelessWidget {
   /// Toggle this coin's checkbox (selection mode only).
   final VoidCallback onToggle;
 
-  /// Swipe action committed (freeze if unfrozen, unfreeze if frozen).
+  /// Trailing swipe committed (freeze if unfrozen, unfreeze if frozen).
   final VoidCallback onSwipeAction;
 
   /// Address was copied to the clipboard.
   final VoidCallback onCopied;
+
+  /// Leading swipe committed — sweep this single coin. Null makes the gesture
+  /// inert (frozen coin, or a wallet the sweep flow cannot build for).
+  final VoidCallback? onSwipeSweep;
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +161,14 @@ class UtxoTile extends StatelessWidget {
       actionColor: utxo.isFrozen ? colors.textMuted : colors.info,
       actionForeground: colors.onPrimary,
       onAction: onSwipeAction,
+      // Swiping the other way sweeps this single coin. Null — hence inert — for
+      // a frozen coin: a sweep spends its inputs, so it has to be unfrozen
+      // deliberately first rather than thawed by a side effect of the gesture.
+      onLeadingAction: onSwipeSweep,
+      leadingActionLabel: context.loc.coinsSweep,
+      leadingActionIcon: BullIcons.callMerge,
+      leadingActionColor: colors.primary,
+      leadingActionForeground: colors.onPrimary,
       child: tappable,
     );
   }

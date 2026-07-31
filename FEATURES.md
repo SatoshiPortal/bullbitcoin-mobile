@@ -46,6 +46,7 @@ graph TB
     PAY[Pay]
     BUY[Buy]
     COINS[Coins / UTXOs]
+    SWEEP[Sweep]
     ANNOUNCEMENTS[Announcements]
     CONSOLIDATION[Consolidation]
 
@@ -74,6 +75,7 @@ graph TB
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS --> WALLETS
+    COINS --> SWEEP
     DCA --> RECEIVE
     EXCHANGE --> SETTINGS
     FEES --> NETWORK
@@ -104,6 +106,11 @@ graph TB
     STATUS --> BULL_PAYJOIN
     SWAPS --> BULL_PAYJOIN
     SWAPS --> UTXO_MGMT
+    SWEEP --> BULL_PAYJOIN
+    SWEEP --> FEES
+    SWEEP --> SETTINGS
+    SWEEP --> UTXO_MGMT
+    SWEEP --> WALLETS
     TOR --> CORE
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
@@ -127,7 +134,7 @@ graph TB
 
     class CORE coreStyle
     class PRIMITIVES,BULL_PAYJOIN packageStyle
-    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION featureStyle
+    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS,SWEEP,ANNOUNCEMENTS,CONSOLIDATION featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -194,6 +201,7 @@ graph TB
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
+- **Sweep**: Depends on Fees, Payjoin, Settings, UTXO Management, Wallets — entered from Coins with a fixed coin selection
 - **Receive**: Depends on Payjoin, Swaps
 - **AutoSwaps**: Depends on Transfer
 - **Backups**: Depends on BIP85, Tor, Wallets
