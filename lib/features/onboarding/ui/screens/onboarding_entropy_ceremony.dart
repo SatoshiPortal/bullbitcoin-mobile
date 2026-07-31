@@ -15,12 +15,13 @@ import 'package:go_router/go_router.dart';
 /// Human-entropy ceremony: the user moves a finger around the screen and
 /// every qualified pointer sample is mixed into the entropy pool. Synthetic,
 /// stationary, and invalid movement samples do not advance the pacing bar.
-/// When the bar fills, the ceremony is finalized and wallet creation is
-/// dispatched.
+/// Finalization also requires ten seconds between the first and final accepted
+/// samples and movement across at least half of each canvas axis. These are
+/// anti-degeneracy checks, not an estimate of entropy bits.
 ///
-/// The trail renders only raw touch positions and the bar only the event
-/// count: nothing derived from pool state is ever displayed. The hint
-/// animation is a fixed Lissajous figure — decorative, unrelated to the
+/// The trail renders only raw touch positions and the bar reflects the public
+/// ceremony gates: nothing derived from pool state is ever displayed. The
+/// hint animation is a fixed Lissajous figure — decorative, unrelated to the
 /// pool.
 class OnboardingEntropyCeremony extends StatefulWidget {
   const OnboardingEntropyCeremony({super.key});
@@ -67,11 +68,15 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
   }
 
   void _onPointerMove(PointerMoveEvent event) {
+    final canvasSize = _canvasSize;
     final accepted = context.read<EntropyCeremonyCubit>().addPointerSample(
       kind: PointerSampleKind.move,
       pointer: event.pointer,
-      x: event.position.dx,
-      y: event.position.dy,
+      deviceKind: event.kind.index,
+      x: event.localPosition.dx,
+      y: event.localPosition.dy,
+      canvasWidth: canvasSize.width,
+      canvasHeight: canvasSize.height,
       dx: event.delta.dx,
       dy: event.delta.dy,
       timestampMicros: event.timeStamp.inMicroseconds,
@@ -96,11 +101,15 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
   // Taps remain a human-input path for users who cannot perform continuous
   // drag gestures. The counter is pacing, not an entropy measurement.
   void _onPointerDown(PointerDownEvent event) {
+    final canvasSize = _canvasSize;
     final accepted = context.read<EntropyCeremonyCubit>().addPointerSample(
       kind: PointerSampleKind.down,
       pointer: event.pointer,
-      x: event.position.dx,
-      y: event.position.dy,
+      deviceKind: event.kind.index,
+      x: event.localPosition.dx,
+      y: event.localPosition.dy,
+      canvasWidth: canvasSize.width,
+      canvasHeight: canvasSize.height,
       dx: 0,
       dy: 0,
       timestampMicros: event.timeStamp.inMicroseconds,
@@ -123,6 +132,14 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
 
   void _onPointerUp(PointerUpEvent event) {
     setState(() => _trail.add(null));
+  }
+
+  Size get _canvasSize {
+    final mediaQuery = MediaQuery.of(context);
+    return Size(
+      mediaQuery.size.width - mediaQuery.padding.horizontal,
+      mediaQuery.size.height - mediaQuery.padding.vertical,
+    );
   }
 
   @override
