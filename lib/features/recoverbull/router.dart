@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -51,6 +52,12 @@ class RecoverBullRouter {
               locator<StoreVaultKeyIntoServerUsecase>(),
           checkKeyServerConnectionUsecase:
               locator<CheckServerConnectionUsecase>(),
+          // Composed here rather than registered: this feature has no locator
+          // of its own, and the use case is a thin retry policy over a core
+          // use case that is registered.
+          connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+            locator<CheckServerConnectionUsecase>(),
+          ),
           fetchVaultKeyFromServerUsecase:
               locator<FetchVaultKeyFromServerUsecase>(),
           decryptVaultUsecase: locator<DecryptVaultUsecase>(),

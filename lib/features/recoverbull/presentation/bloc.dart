@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -36,7 +37,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final SaveVaultToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
+
+  /// Single-shot: the pre-flight check before storing a vault key, where the
+  /// user is already committed and a retry budget would only delay the error.
   final CheckServerConnectionUsecase _checkKeyServerConnectionUsecase;
+
+  /// Retrying: the connecting screen, where a cold onion lookup is expected to
+  /// need more than one try.
+  final ConnectToKeyServerUsecase _connectToKeyServerUsecase;
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
@@ -58,6 +66,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._createEncryptedVaultUsecase,
     required this._storeVaultKeyIntoServerUsecase,
     required this._checkKeyServerConnectionUsecase,
+    required this._connectToKeyServerUsecase,
     required this._fetchVaultKeyFromServerUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
@@ -148,7 +157,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       // `torStatus` is not emitted here: it is driven by the subscription set
       // up in the constructor. Emitting a snapshot at this point is what made a
       // healthy cold start look like a Tor failure.
-      const retries = 3;
+      const retries = ConnectToKeyServerUsecase.maxAttempts;
       emit(
         state.copyWith(
           failure: null,
@@ -158,19 +167,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         ),
       );
 
-      var isConnected = false;
-      int attempt = 1;
-      for (; attempt <= retries; attempt++) {
-        final delay = Duration(seconds: attempt);
-        await Future.delayed(delay);
+      final isConnected = await _connectToKeyServerUsecase.execute(
         // Published before the call, so the screen shows which attempt is
         // actually in flight rather than which one already failed. Guarded:
         // the backoff outlives the screen when the user navigates away.
-        if (isClosed) return;
-        emit(state.copyWith(keyServerAttempt: attempt));
-        isConnected = await _checkKeyServerConnectionUsecase.execute();
-        if (isConnected) break;
-      }
+        onAttempt: (attempt) {
+          if (isClosed) return;
+          emit(state.copyWith(keyServerAttempt: attempt));
+        },
+      );
 
       if (!isConnected) {
         log.severe(
@@ -184,7 +189,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           ),
         );
       } else {
-        log.fine('Recoverbull server ready after $attempt attempts');
+        log.fine(
+          'Recoverbull server ready after ${state.keyServerAttempt} attempts',
+        );
         // Tor's status is not forced here. It used to be set to `online` on
         // this path, which asserted Tor's health from the key server's reply;
         // the readiness stream is the only thing that knows, and the screen
