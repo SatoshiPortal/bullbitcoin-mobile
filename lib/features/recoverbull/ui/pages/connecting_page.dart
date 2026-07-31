@@ -82,20 +82,25 @@ class _ConnectingPageState extends State<ConnectingPage> {
       tor.TorConnecting(:final progress) => progress,
       _ => null,
     };
-    if (fraction != null && _lastFraction != fraction) {
-      _lastFraction = fraction;
-      _fractionMovedAt = now;
-    }
-
     final diagnostic = switch (connection) {
       tor.TorConnecting(:final diagnostic) => diagnostic,
       _ => null,
     };
-    if (diagnostic == null) {
-      _blockageSince = null;
-    } else {
-      _blockageSince ??= now;
-    }
+
+    // `build` reads these through `_progressIsLive` and `_blockageIsSettled`,
+    // so they are widget state, not bookkeeping. Mutating them bare only
+    // appeared to work because the one-second ticker rebuilt anyway.
+    setState(() {
+      if (fraction != null && _lastFraction != fraction) {
+        _lastFraction = fraction;
+        _fractionMovedAt = now;
+      }
+      if (diagnostic == null) {
+        _blockageSince = null;
+      } else {
+        _blockageSince ??= now;
+      }
+    });
 
     if (connection is tor.TorReady &&
         state.keyServerStatus == KeyServerStatus.online) {
@@ -200,6 +205,17 @@ class _Body extends StatelessWidget {
     };
   }
 
+  /// The blockage a bootstrap reported when it gave up.
+  ///
+  /// Deliberately not subject to [_blockageGrace]: that grace exists to ride
+  /// out a transient readiness dip, and a terminal failure is not one. Without
+  /// this the reason was dropped exactly when it stopped being provisional.
+  tor.TorDiagnostic? get _failureDiagnostic => switch (_tor) {
+    tor.TorUnavailable(failure: tor.TorBootstrapFailure(:final diagnostic)) =>
+      diagnostic,
+    _ => null,
+  };
+
   /// There is deliberately no separate "internet" phase.
   ///
   /// Nothing in the data can carry one honestly: upstream's connectivity flag is
@@ -235,7 +251,7 @@ class _Body extends StatelessWidget {
   /// them as best effort that "may declare that Arti is stuck for reasons that
   /// are incorrect", so the screen offers an explanation and never asserts.
   String _failureMessage(BuildContext context) {
-    final diagnostic = _diagnostic;
+    final diagnostic = _diagnostic ?? _failureDiagnostic;
     if (diagnostic != null) {
       if (diagnostic.suggestsCensorship) {
         return context.loc.torSettingsDescCensored;

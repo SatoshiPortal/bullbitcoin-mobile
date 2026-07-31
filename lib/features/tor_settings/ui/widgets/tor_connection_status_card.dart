@@ -20,6 +20,12 @@ class TorConnectionStatusCard extends StatelessWidget {
   /// offers an explanation, it does not assert that the user is censored.
   bool get _looksCensored => switch (connection) {
     TorConnecting(:final diagnostic) => diagnostic?.suggestsCensorship ?? false,
+    // A bootstrap that gave up still carries why it gave up, and that is the
+    // moment this matters most: in `direct` mode nothing falls back to
+    // Snowflake, so without this the user is told to "try again" with no hint
+    // that changing transport is the actual fix.
+    TorUnavailable(failure: TorBootstrapFailure(:final diagnostic)) =>
+      diagnostic?.suggestsCensorship ?? false,
     _ => false,
   };
 

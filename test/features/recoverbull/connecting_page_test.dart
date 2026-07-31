@@ -66,6 +66,31 @@ void main() {
     expect(find.text(l10n.recoverbullPleaseWait), findsOneWidget);
   });
 
+  // The grace period exists to ride out a transient readiness dip, so it must
+  // not swallow the reason a bootstrap gave up for good: this state reaches the
+  // page with no prior TorConnecting event to start the grace clock.
+  testWidgets('explains a filtered network on a failed bootstrap', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorUnavailable(
+          source: tor.TorSource.embedded,
+          failure: tor.TorBootstrapFailure(
+            'filtered',
+            tor.TorDiagnostic.filtering,
+          ),
+        ),
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsDescCensored), findsOneWidget);
+    expect(find.text(l10n.recoverbullTorCantStart), findsNothing);
+  });
+
   testWidgets('offers a retry once Tor reports it cannot start', (
     tester,
   ) async {
