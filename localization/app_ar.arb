@@ -1886,7 +1886,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• يُستخدم Tor المدمج فقط بواسطة RecoverBull\n• يُستخدم Orbot فقط لخوادم Bitcoin Electrum التي تنتهي بـ .onion\n• تبقى حركة الشبكة الأخرى في Bull دون تغيير\n• منفذ Orbot الافتراضي هو 9050\n• تأكد من تشغيل Orbot قبل التفعيل\n• قد تكون الاتصالات عبر Tor أبطأ",
+  "torSettingsInfoDescription": "• يُستخدم Tor المدمج من قِبل RecoverBull وخوادم Bitcoin Electrum التي تنتهي بـ .onion\n• يحل Orbot عند تفعيله مكان Tor المدمج لتلك الخوادم\n• تبقى بقية حركة شبكة Bull دون تغيير\n• منفذ Orbot الافتراضي هو 9050\n• تأكد من تشغيل Orbot قبل التفعيل\n• قد تكون الاتصالات عبر Tor أبطأ",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13280,5 +13280,26 @@
   "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
   "transactionDetailLabelPayjoinAborted": "ملغى",
   "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78).",
+  "torSettingsStatusCensored": "يبدو أن الاتصال مُرشَّح",
+  "torSettingsDescCensored": "تعذّر على Tor الوصول إلى الشبكة. غالبًا ما يعني هذا أن الاتصال يخضع للترشيح.",
+  "torSettingsBootstrapProgress": "جارٍ الاتصال… {percent}%",
+  "recoverbullPhaseNetworkInfo": "جارٍ جلب معلومات الشبكة",
+  "recoverbullLongestStep": "هذه أطول خطوة. قد يستغرق التشغيل الأول أكثر من دقيقة.",
+  "recoverbullTorOffline": "يبدو أنه لا يوجد اتصال بالإنترنت.",
+  "recoverbullTorClockSkewed": "ساعة جهازك غير مضبوطة، لذا لا يستطيع Tor التحقق من شهادات المُرحِّلات. تحقق من إعدادات التاريخ والوقت.",
+  "recoverbullTorCantStart": "تعذّر على Tor الاتصال الآن. أعد المحاولة.",
+  "recoverbullServerUnreachableTorOk": "يعمل Tor، لكن خادم النسخ الاحتياطي لم يستجب. قد يستغرق ذلك لحظة بعد التشغيل الأول مباشرة.",
+  "torSettingsEmbeddedTitle": "Tor المدمج",
+  "torSettingsEmbeddedDescription": "يُستخدم Tor المدمج من قِبل RecoverBull وخوادم Bitcoin Electrum التي تنتهي بـ .onion. تبقى بقية حركة التطبيق مباشرة.",
+  "torSettingsTransportMode": "طريقة الاتصال",
+  "torSettingsModeAutomatic": "تلقائي",
+  "torSettingsModeDirect": "مباشر",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "يجرّب اتصالًا مباشرًا بـ Tor أولًا، ويستخدم Snowflake إذا بدا أن الشبكة تحجب Tor.",
+  "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
+  "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
+  "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
+  "torSettingsExternalProxyTitle": "وكيل Tor خارجي (متقدم)",
+  "torSettingsExternalProxyDescription": "عند التفعيل، تستخدم خوادم Bitcoin Electrum التي تنتهي بـ .onion تطبيق Orbot على المنفذ المحدد بدلًا من Tor المدمج."
 }

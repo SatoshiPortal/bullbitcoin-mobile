@@ -9315,7 +9315,7 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• এম্বেড কৰা Tor কেৱল RecoverBull-এ ব্যৱহাৰ কৰে\n• Orbot কেৱল Bitcoin Electrum .onion ছাৰ্ভাৰৰ বাবে ব্যৱহাৰ কৰা হয়\n• Bull-ৰ অন্য নেটৱৰ্ক ট্ৰেফিক অপৰিৱৰ্তিত থাকে\n• Orbot-ৰ ডিফল্ট প'ৰ্ট 9050\n• সক্ৰিয় কৰাৰ আগতে Orbot চলি থকাটো নিশ্চিত কৰক\n• Tor-ৰ জৰিয়তে সংযোগ ধীৰ হ'ব পাৰে",
+  "torSettingsInfoDescription": "• অন্তৰ্নিহিত Tor ব্যৱহাৰ কৰে RecoverBull আৰু Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে\n• সক্ৰিয় থাকিলে Orbot সেই .onion ছাৰ্ভাৰসমূহৰ বাবে অন্তৰ্নিহিত Tor-ৰ ঠাই লয়\n• Bull-ৰ বাকী নেটৱৰ্ক ট্ৰেফিক অপৰিৱৰ্তিত থাকে\n• Orbot-ৰ ডিফল্ট পৰ্ট 9050\n• সক্ৰিয় কৰাৰ আগতে নিশ্চিত কৰক যে Orbot চলি আছে\n• Tor-ৰ মাধ্যমে সংযোগ লেহেম হ'ব পাৰে",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -10318,5 +10318,26 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
+  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
+  "torSettingsBootstrapProgress": "সংযোগ কৰি আছে… {percent}%",
+  "recoverbullPhaseNetworkInfo": "নেটৱৰ্কৰ তথ্য সংগ্ৰহ কৰি আছে",
+  "recoverbullLongestStep": "এইটোৱেই আটাইতকৈ দীঘলীয়া পদক্ষেপ। প্ৰথমবাৰ আৰম্ভ হ'বলৈ এক মিনিটতকৈ বেছি সময় লাগিব পাৰে।",
+  "recoverbullTorOffline": "ইণ্টাৰনেট সংযোগ নথকা যেন লাগিছে।",
+  "recoverbullTorClockSkewed": "আপোনাৰ ডিভাইচৰ ঘড়ী ভুল, সেয়েহে Tor-এ ৰিলে প্ৰমাণপত্ৰ পৰীক্ষা কৰিব নোৱাৰে। তাৰিখ আৰু সময়ৰ ছেটিং চাওক।",
+  "recoverbullTorCantStart": "এতিয়া Tor সংযোগ কৰিব পৰা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recoverbullServerUnreachableTorOk": "Tor কাম কৰি আছে, কিন্তু বেকআপ ছাৰ্ভাৰে সঁহাৰি দিয়া নাই। প্ৰথমবাৰ আৰম্ভ কৰাৰ পিছত ইয়াত অলপ সময় লাগিব পাৰে।",
+  "torSettingsEmbeddedTitle": "অন্তৰ্নিহিত Tor",
+  "torSettingsEmbeddedDescription": "অন্তৰ্নিহিত Tor ব্যৱহাৰ কৰে RecoverBull আৰু Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে। এপৰ বাকী ট্ৰেফিক পোনপটীয়াকৈয়ে থাকে।",
+  "torSettingsTransportMode": "সংযোগৰ পদ্ধতি",
+  "torSettingsModeAutomatic": "স্বয়ংক্ৰিয়",
+  "torSettingsModeDirect": "পোনপটীয়া",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
+  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
+  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
+  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
+  "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্ৰক্সী (উন্নত)",
+  "torSettingsExternalProxyDescription": "সক্ৰিয় কৰিলে, Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে অন্তৰ্নিহিত Tor-ৰ পৰিৱৰ্তে নিৰ্ধাৰিত পৰ্টত Orbot ব্যৱহাৰ কৰে।"
 }

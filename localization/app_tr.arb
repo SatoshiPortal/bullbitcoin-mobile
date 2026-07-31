@@ -1992,7 +1992,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Yerleşik Tor yalnızca RecoverBull tarafından kullanılır\n• Orbot yalnızca Bitcoin Electrum .onion sunucuları için kullanılır\n• Bull'un diğer ağ trafiği değişmez\n• Varsayılan Orbot bağlantı noktası 9050'dir\n• Etkinleştirmeden önce Orbot'un çalıştığından emin olun\n• Tor üzerinden bağlantılar daha yavaş olabilir",
+  "torSettingsInfoDescription": "• Gömülü Tor, RecoverBull ve Bitcoin Electrum .onion sunucuları tarafından kullanılır\n• Orbot, etkinleştirildiğinde bu .onion sunucuları için gömülü Tor'un yerini alır\n• Bull'un diğer ağ trafiği değişmez\n• Orbot'un varsayılan bağlantı noktası 9050'dir\n• Etkinleştirmeden önce Orbot'un çalıştığından emin olun\n• Tor üzerinden bağlantılar daha yavaş olabilir",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13277,5 +13277,26 @@
   "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
   "transactionDetailLabelPayjoinAborted": "İptal edildi",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
+  "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
+  "torSettingsBootstrapProgress": "Bağlanıyor… %{percent}",
+  "recoverbullPhaseNetworkInfo": "Ağ bilgileri alınıyor",
+  "recoverbullLongestStep": "Bu en uzun adımdır. İlk başlatma bir dakikadan uzun sürebilir.",
+  "recoverbullTorOffline": "İnternet bağlantısı yok gibi görünüyor.",
+  "recoverbullTorClockSkewed": "Cihazınızın saati yanlış, bu yüzden Tor aktarıcı sertifikalarını doğrulayamıyor. Tarih ve saat ayarlarını kontrol edin.",
+  "recoverbullTorCantStart": "Tor şu anda bağlanamadı. Lütfen tekrar deneyin.",
+  "recoverbullServerUnreachableTorOk": "Tor çalışıyor ancak yedek sunucusu yanıt vermedi. İlk başlatmanın hemen ardından bu biraz zaman alabilir.",
+  "torSettingsEmbeddedTitle": "Gömülü Tor",
+  "torSettingsEmbeddedDescription": "Gömülü Tor, RecoverBull ve Bitcoin Electrum .onion sunucuları tarafından kullanılır. Uygulamanın diğer trafiği doğrudan kalır.",
+  "torSettingsTransportMode": "Bağlantı yöntemi",
+  "torSettingsModeAutomatic": "Otomatik",
+  "torSettingsModeDirect": "Doğrudan",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Önce doğrudan Tor bağlantısını dener; ağ Tor'u engelliyor görünüyorsa Snowflake kullanır.",
+  "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
+  "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
+  "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
+  "torSettingsExternalProxyTitle": "Harici Tor vekili (gelişmiş)",
+  "torSettingsExternalProxyDescription": "Etkinleştirildiğinde Bitcoin Electrum .onion sunucuları, gömülü Tor yerine yapılandırılan bağlantı noktasındaki Orbot'u kullanır."
 }

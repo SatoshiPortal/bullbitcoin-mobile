@@ -657,7 +657,7 @@
   "jadeInstructionsTitle": "Blockstream Jade PSBT-Anleitung",
   "scanNfcButton": "NFC scannen",
   "testBackupChooseVaultLocation": "Speicherort wählen",
-  "torSettingsInfoDescription": "• Das integrierte Tor wird nur von RecoverBull verwendet\n• Orbot wird nur für Bitcoin-Electrum-Server mit .onion-Adresse verwendet\n• Anderer Netzwerkverkehr von Bull bleibt unverändert\n• Der Standardport von Orbot ist 9050\n• Stellen Sie vor dem Aktivieren sicher, dass Orbot ausgeführt wird\n• Verbindungen über Tor können langsamer sein",
+  "torSettingsInfoDescription": "• Das integrierte Tor wird von RecoverBull und von Bitcoin-Electrum-Servern mit .onion-Adresse verwendet\n• Orbot ersetzt, wenn aktiviert, das integrierte Tor für diese .onion-Server\n• Anderer Netzwerkverkehr von Bull bleibt unverändert\n• Der Standardport von Orbot ist 9050\n• Stellen Sie vor dem Aktivieren sicher, dass Orbot ausgeführt wird\n• Verbindungen über Tor können langsamer sein",
   "dcaAddressBitcoin": "Bitcoin-Adresse",
   "sendErrorAmountBelowMinimum": "Betrag unterhalb der Mindest-Swap-Grenze: {minLimit} Sats.",
   "@sendErrorAmountBelowMinimum": {
@@ -5217,5 +5217,23 @@
   "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78).",
   "torSettingsStatusCensored": "Verbindung scheint gefiltert",
   "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
-  "torSettingsBootstrapProgress": "Verbinden… {percent}%"
+  "torSettingsBootstrapProgress": "Verbinden… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Netzwerkinformationen werden abgerufen",
+  "recoverbullLongestStep": "Das ist der längste Schritt. Ein erster Start kann über eine Minute dauern.",
+  "recoverbullTorOffline": "Es scheint keine Internetverbindung zu bestehen.",
+  "recoverbullTorClockSkewed": "Die Uhr deines Geräts geht falsch, daher kann Tor die Zertifikate der Relays nicht prüfen. Überprüfe Datum und Uhrzeit.",
+  "recoverbullTorCantStart": "Tor konnte sich gerade nicht verbinden. Bitte versuche es erneut.",
+  "recoverbullServerUnreachableTorOk": "Tor funktioniert, aber der Backup-Server hat nicht geantwortet. Kurz nach einem ersten Start kann das einen Moment dauern.",
+  "torSettingsEmbeddedTitle": "Integriertes Tor",
+  "torSettingsEmbeddedDescription": "Das integrierte Tor wird von RecoverBull und von Bitcoin-Electrum-Servern mit .onion-Adresse verwendet. Der übrige Datenverkehr der App bleibt direkt.",
+  "torSettingsTransportMode": "Verbindungsmethode",
+  "torSettingsModeAutomatic": "Automatisch",
+  "torSettingsModeDirect": "Direkt",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Versucht zuerst eine direkte Tor-Verbindung und nutzt Snowflake, wenn das Netzwerk Tor zu blockieren scheint.",
+  "torSettingsModeDirectDescription": "Verbindet sich direkt mit dem Tor-Netzwerk, ohne Pluggable Transport.",
+  "torSettingsModeSnowflakeDescription": "Nutzt freiwillige Snowflake-Proxys, um Tor aus einem gefilterten Netzwerk zu erreichen.",
+  "torSettingsActiveTransport": "Aktiver Transport: {transport}",
+  "torSettingsExternalProxyTitle": "Externer Tor-Proxy (erweitert)",
+  "torSettingsExternalProxyDescription": "Wenn aktiviert, verwenden Bitcoin-Electrum-Server mit .onion-Adresse Orbot am konfigurierten Port statt des integrierten Tor."
 }

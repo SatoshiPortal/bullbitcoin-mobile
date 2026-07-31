@@ -11492,7 +11492,7 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• Embedded Tor sirf RecoverBull istemal karta hai\n• Orbot sirf Bitcoin Electrum .onion server ke liye istemal hota hai\n• Bull ka baaki network traffic nahi badalta\n• Orbot ka default port 9050 hai\n• Chalu karne se pehle pakka karein ki Orbot chal raha hai\n• Tor ke zariye connection dheeme ho sakte hain",
+  "torSettingsInfoDescription": "• Embedded Tor ka istemal RecoverBull aur Bitcoin Electrum ke .onion servers karte hain\n• Enable hone par Orbot un .onion servers ke liye embedded Tor ki jagah le leta hai\n• Bull ka baaki network traffic waisa hi rehta hai\n• Orbot ka default port 9050 hai\n• Enable karne se pehle sunishchit karein ki Orbot chal raha hai\n• Tor ke through connections dhime ho sakte hain",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13672,5 +13672,26 @@
   "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
   "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
-  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78).",
+  "torSettingsStatusCensored": "Connection filtered lag raha hai",
+  "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
+  "torSettingsBootstrapProgress": "Connect ho raha hai… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Network ki jaankari li ja rahi hai",
+  "recoverbullLongestStep": "Yeh sabse lamba step hai. Pehli baar shuru hone mein ek minute se zyada lag sakta hai.",
+  "recoverbullTorOffline": "Lagta hai internet connection nahi hai.",
+  "recoverbullTorClockSkewed": "Aapke device ki ghadi galat hai, isliye Tor relay certificates verify nahi kar pa raha. Date aur time settings check karein.",
+  "recoverbullTorCantStart": "Tor abhi connect nahi ho paaya. Kripya dobara koshish karein.",
+  "recoverbullServerUnreachableTorOk": "Tor chal raha hai, lekin backup server ne jawab nahi diya. Pehli baar shuru karne ke turant baad ismein thoda samay lag sakta hai.",
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "torSettingsEmbeddedDescription": "Embedded Tor ka istemal RecoverBull aur Bitcoin Electrum ke .onion servers karte hain. App ka baaki traffic seedha rehta hai.",
+  "torSettingsTransportMode": "Connection ka tarika",
+  "torSettingsModeAutomatic": "Automatic",
+  "torSettingsModeDirect": "Direct",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Pehle seedha Tor connection try karta hai, aur agar network Tor ko block karta lage to Snowflake istemal karta hai.",
+  "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
+  "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "torSettingsExternalProxyTitle": "Bahari Tor proxy (advanced)",
+  "torSettingsExternalProxyDescription": "Enable karne par, Bitcoin Electrum ke .onion servers embedded Tor ki jagah configure kiye gaye port par Orbot ka istemal karte hain."
 }

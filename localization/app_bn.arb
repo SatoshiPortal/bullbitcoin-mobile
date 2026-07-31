@@ -1977,7 +1977,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• এমবেডেড Tor শুধু RecoverBull ব্যবহার করে\n• Orbot শুধু Bitcoin Electrum .onion সার্ভারের জন্য ব্যবহার করা হয়\n• Bull-এর অন্যান্য নেটওয়ার্ক ট্রাফিক অপরিবর্তিত থাকে\n• Orbot-এর ডিফল্ট পোর্ট 9050\n• চালু করার আগে নিশ্চিত করুন যে Orbot চলছে\n• Tor-এর মাধ্যমে সংযোগ ধীর হতে পারে",
+  "torSettingsInfoDescription": "• অন্তর্নির্মিত Tor ব্যবহার করে RecoverBull এবং Bitcoin Electrum-এর .onion সার্ভারগুলি\n• সক্রিয় থাকলে Orbot সেই .onion সার্ভারগুলির জন্য অন্তর্নির্মিত Tor-এর জায়গা নেয়\n• Bull-এর বাকি নেটওয়ার্ক ট্রাফিক অপরিবর্তিত থাকে\n• Orbot-এর ডিফল্ট পোর্ট 9050\n• সক্রিয় করার আগে নিশ্চিত করুন Orbot চলছে\n• Tor-এর মাধ্যমে সংযোগ ধীর হতে পারে",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13487,5 +13487,26 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
+  "torSettingsStatusCensored": "সংযোগ ফিল্টার করা মনে হচ্ছে",
+  "torSettingsDescCensored": "Tor নেটওয়ার্কে পৌঁছাতে পারেনি। সাধারণত এর মানে সংযোগ ফিল্টার করা হচ্ছে।",
+  "torSettingsBootstrapProgress": "সংযোগ করা হচ্ছে… {percent}%",
+  "recoverbullPhaseNetworkInfo": "নেটওয়ার্কের তথ্য নেওয়া হচ্ছে",
+  "recoverbullLongestStep": "এটি দীর্ঘতম ধাপ। প্রথমবার চালু হতে এক মিনিটের বেশি লাগতে পারে।",
+  "recoverbullTorOffline": "মনে হচ্ছে ইন্টারনেট সংযোগ নেই।",
+  "recoverbullTorClockSkewed": "আপনার ডিভাইসের ঘড়ি ভুল, তাই Tor রিলে সার্টিফিকেট যাচাই করতে পারছে না। তারিখ ও সময়ের সেটিংস দেখুন।",
+  "recoverbullTorCantStart": "Tor এখন সংযোগ করতে পারেনি। আবার চেষ্টা করুন।",
+  "recoverbullServerUnreachableTorOk": "Tor কাজ করছে, কিন্তু ব্যাকআপ সার্ভার সাড়া দেয়নি। প্রথমবার চালুর পরপরই এতে কিছুটা সময় লাগতে পারে।",
+  "torSettingsEmbeddedTitle": "অন্তর্নির্মিত Tor",
+  "torSettingsEmbeddedDescription": "অন্তর্নির্মিত Tor ব্যবহার করে RecoverBull এবং Bitcoin Electrum-এর .onion সার্ভারগুলি। অ্যাপের বাকি ট্রাফিক সরাসরিই থাকে।",
+  "torSettingsTransportMode": "সংযোগের পদ্ধতি",
+  "torSettingsModeAutomatic": "স্বয়ংক্রিয়",
+  "torSettingsModeDirect": "সরাসরি",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "প্রথমে সরাসরি Tor সংযোগ চেষ্টা করে, আর নেটওয়ার্ক Tor আটকাচ্ছে মনে হলে Snowflake ব্যবহার করে।",
+  "torSettingsModeDirectDescription": "প্লাগেবল ট্রান্সপোর্ট ছাড়াই সরাসরি Tor নেটওয়ার্কে যুক্ত হয়।",
+  "torSettingsModeSnowflakeDescription": "ফিল্টার করা নেটওয়ার্ক থেকে Tor-এ পৌঁছাতে স্বেচ্ছাসেবী Snowflake প্রক্সি ব্যবহার করে।",
+  "torSettingsActiveTransport": "সক্রিয় ট্রান্সপোর্ট: {transport}",
+  "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্রক্সি (উন্নত)",
+  "torSettingsExternalProxyDescription": "সক্রিয় থাকলে, Bitcoin Electrum-এর .onion সার্ভারগুলি অন্তর্নির্মিত Tor-এর বদলে নির্ধারিত পোর্টে Orbot ব্যবহার করে।"
 }

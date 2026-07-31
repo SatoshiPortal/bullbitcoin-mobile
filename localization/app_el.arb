@@ -1710,7 +1710,7 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "torSettingsInfoDescription": "• Το ενσωματωμένο Tor χρησιμοποιείται μόνο από το RecoverBull\n• Το Orbot χρησιμοποιείται μόνο για διακομιστές Bitcoin Electrum .onion\n• Η υπόλοιπη δικτυακή κίνηση του Bull δεν αλλάζει\n• Η προεπιλεγμένη θύρα του Orbot είναι 9050\n• Βεβαιωθείτε ότι το Orbot εκτελείται πριν το ενεργοποιήσετε\n• Οι συνδέσεις μέσω Tor μπορεί να είναι πιο αργές",
+  "torSettingsInfoDescription": "• Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion\n• Το Orbot, όταν είναι ενεργό, αντικαθιστά το ενσωματωμένο Tor για αυτούς τους διακομιστές .onion\n• Η υπόλοιπη δικτυακή κίνηση του Bull δεν αλλάζει\n• Η προεπιλεγμένη θύρα του Orbot είναι 9050\n• Βεβαιωθείτε ότι το Orbot εκτελείται πριν το ενεργοποιήσετε\n• Οι συνδέσεις μέσω Tor μπορεί να είναι πιο αργές",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13277,5 +13277,26 @@
   "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
   "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
   "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "torSettingsStatusCensored": "Η σύνδεση φαίνεται φιλτραρισμένη",
+  "torSettingsDescCensored": "Το Tor δεν μπόρεσε να φτάσει στο δίκτυο. Αυτό συνήθως σημαίνει ότι η σύνδεση φιλτράρεται.",
+  "torSettingsBootstrapProgress": "Σύνδεση… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Λήψη πληροφοριών δικτύου",
+  "recoverbullLongestStep": "Αυτό είναι το πιο χρονοβόρο βήμα. Η πρώτη εκκίνηση μπορεί να ξεπεράσει το ένα λεπτό.",
+  "recoverbullTorOffline": "Φαίνεται ότι δεν υπάρχει σύνδεση στο διαδίκτυο.",
+  "recoverbullTorClockSkewed": "Το ρολόι της συσκευής είναι λάθος, οπότε το Tor δεν μπορεί να επαληθεύσει τα πιστοποιητικά των κόμβων. Ελέγξτε την ημερομηνία και την ώρα.",
+  "recoverbullTorCantStart": "Το Tor δεν μπόρεσε να συνδεθεί αυτή τη στιγμή. Δοκιμάστε ξανά.",
+  "recoverbullServerUnreachableTorOk": "Το Tor λειτουργεί, αλλά ο διακομιστής αντιγράφων δεν απάντησε. Αμέσως μετά την πρώτη εκκίνηση μπορεί να χρειαστεί λίγη ώρα.",
+  "torSettingsEmbeddedTitle": "Ενσωματωμένο Tor",
+  "torSettingsEmbeddedDescription": "Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion. Η υπόλοιπη κίνηση της εφαρμογής παραμένει άμεση.",
+  "torSettingsTransportMode": "Μέθοδος σύνδεσης",
+  "torSettingsModeAutomatic": "Αυτόματα",
+  "torSettingsModeDirect": "Άμεση",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Δοκιμάζει πρώτα άμεση σύνδεση Tor και χρησιμοποιεί το Snowflake αν το δίκτυο φαίνεται να μπλοκάρει το Tor.",
+  "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
+  "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
+  "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
+  "torSettingsExternalProxyTitle": "Εξωτερικός διαμεσολαβητής Tor (για προχωρημένους)",
+  "torSettingsExternalProxyDescription": "Όταν είναι ενεργό, οι διακομιστές Bitcoin Electrum με διεύθυνση .onion χρησιμοποιούν το Orbot στη ρυθμισμένη θύρα αντί για το ενσωματωμένο Tor."
 }

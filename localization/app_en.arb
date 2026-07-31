@@ -12981,7 +12981,7 @@
   "@torSettingsInfoTitle": {
     "description": "Title for the Tor information card"
   },
-  "torSettingsInfoDescription": "• Embedded Tor is used only by RecoverBull\n• Orbot is used only for Bitcoin Electrum .onion servers\n• Other Bull network traffic is unchanged\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connections may be slower through Tor",
+  "torSettingsInfoDescription": "• Embedded Tor is used by RecoverBull and Bitcoin Electrum .onion servers\n• Orbot, when enabled, replaces embedded Tor for those .onion servers\n• Other Bull network traffic is unchanged\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connections may be slower through Tor",
   "@torSettingsInfoDescription": {
     "description": "Explains that embedded Tor is limited to RecoverBull, while this Orbot setting applies only to Bitcoin Electrum .onion servers."
   },

@@ -2000,7 +2000,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• 내장 Tor는 RecoverBull에서만 사용됩니다\n• Orbot은 Bitcoin Electrum .onion 서버에만 사용됩니다\n• Bull의 다른 네트워크 트래픽은 변경되지 않습니다\n• Orbot 기본 포트는 9050입니다\n• 활성화하기 전에 Orbot이 실행 중인지 확인하세요\n• Tor를 통한 연결은 더 느릴 수 있습니다",
+  "torSettingsInfoDescription": "• 내장 Tor는 RecoverBull과 Bitcoin Electrum .onion 서버에서 사용됩니다\n• Orbot을 활성화하면 해당 .onion 서버에서 내장 Tor 대신 Orbot이 사용됩니다\n• Bull의 다른 네트워크 트래픽은 변경되지 않습니다\n• Orbot 기본 포트는 9050입니다\n• 활성화하기 전에 Orbot이 실행 중인지 확인하세요\n• Tor를 통한 연결은 더 느릴 수 있습니다",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13277,5 +13277,26 @@
   "transactionStatusPayjoinAborted": "Payjoin 중단됨",
   "transactionDetailLabelPayjoinAborted": "중단됨",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin 수수료 기여분",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78).",
+  "torSettingsStatusCensored": "연결이 차단된 것으로 보입니다",
+  "torSettingsDescCensored": "Tor가 네트워크에 연결하지 못했습니다. 보통 연결이 차단되고 있다는 뜻입니다.",
+  "torSettingsBootstrapProgress": "연결 중… {percent}%",
+  "recoverbullPhaseNetworkInfo": "네트워크 정보를 가져오는 중",
+  "recoverbullLongestStep": "가장 오래 걸리는 단계입니다. 첫 실행은 1분 이상 걸릴 수 있습니다.",
+  "recoverbullTorOffline": "인터넷 연결이 없는 것 같습니다.",
+  "recoverbullTorClockSkewed": "기기 시계가 맞지 않아 Tor가 중계 서버 인증서를 확인할 수 없습니다. 날짜와 시간 설정을 확인하세요.",
+  "recoverbullTorCantStart": "지금은 Tor가 연결하지 못했습니다. 다시 시도해 주세요.",
+  "recoverbullServerUnreachableTorOk": "Tor는 작동하지만 백업 서버가 응답하지 않았습니다. 첫 실행 직후에는 시간이 걸릴 수 있습니다.",
+  "torSettingsEmbeddedTitle": "내장 Tor",
+  "torSettingsEmbeddedDescription": "내장 Tor는 RecoverBull과 Bitcoin Electrum .onion 서버에서 사용됩니다. 앱의 다른 트래픽은 그대로 직접 연결됩니다.",
+  "torSettingsTransportMode": "연결 방식",
+  "torSettingsModeAutomatic": "자동",
+  "torSettingsModeDirect": "직접",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "먼저 Tor에 직접 연결하고, 네트워크가 Tor를 차단하는 것으로 보이면 Snowflake를 사용합니다.",
+  "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
+  "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
+  "torSettingsActiveTransport": "활성 전송: {transport}",
+  "torSettingsExternalProxyTitle": "외부 Tor 프록시(고급)",
+  "torSettingsExternalProxyDescription": "활성화하면 Bitcoin Electrum .onion 서버가 내장 Tor 대신 설정된 포트의 Orbot을 사용합니다."
 }

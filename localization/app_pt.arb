@@ -4116,7 +4116,7 @@
   "@withdrawOwnershipQuestion": {
     "description": "Question asking about account ownership"
   },
-  "torSettingsInfoDescription": "• O Tor integrado é usado apenas pelo RecoverBull\n• O Orbot é usado apenas para servidores Electrum Bitcoin .onion\n• O restante tráfego de rede da Bull não é alterado\n• A porta predefinida do Orbot é 9050\n• Certifique-se de que o Orbot está em execução antes de ativar\n• As ligações através do Tor podem ser mais lentas",
+  "torSettingsInfoDescription": "• O Tor integrado é usado pelo RecoverBull e pelos servidores Bitcoin Electrum .onion\n• O Orbot, quando ativo, substitui o Tor integrado nesses servidores .onion\n• O restante tráfego de rede do Bull não muda\n• A porta predefinida do Orbot é 9050\n• Confirma que o Orbot está em execução antes de ativar\n• As ligações podem ser mais lentas através do Tor",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -5329,5 +5329,23 @@
   "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
   "torSettingsStatusCensored": "A ligação parece filtrada",
   "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isto indica muitas vezes uma ligação filtrada.",
-  "torSettingsBootstrapProgress": "A ligar… {percent}%"
+  "torSettingsBootstrapProgress": "A ligar… {percent}%",
+  "recoverbullPhaseNetworkInfo": "A obter informações da rede",
+  "recoverbullLongestStep": "Este é o passo mais longo. Um primeiro arranque pode demorar mais de um minuto.",
+  "recoverbullTorOffline": "Parece não haver ligação à internet.",
+  "recoverbullTorClockSkewed": "O relógio do dispositivo está errado, por isso o Tor não consegue verificar os certificados dos relays. Verifica a data e a hora.",
+  "recoverbullTorCantStart": "O Tor não conseguiu ligar-se neste momento. Tenta novamente.",
+  "recoverbullServerUnreachableTorOk": "O Tor está a funcionar, mas o servidor de backup não respondeu. Logo após um primeiro arranque isto pode demorar um momento.",
+  "torSettingsEmbeddedTitle": "Tor integrado",
+  "torSettingsEmbeddedDescription": "O Tor integrado é usado pelo RecoverBull e pelos servidores Bitcoin Electrum .onion. O restante tráfego da aplicação continua direto.",
+  "torSettingsTransportMode": "Método de ligação",
+  "torSettingsModeAutomatic": "Automático",
+  "torSettingsModeDirect": "Direta",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Tenta primeiro uma ligação Tor direta e usa o Snowflake se a rede parecer bloquear o Tor.",
+  "torSettingsModeDirectDescription": "Liga-se diretamente à rede Tor, sem pluggable transport.",
+  "torSettingsModeSnowflakeDescription": "Usa proxies voluntários Snowflake para alcançar o Tor a partir de uma rede filtrada.",
+  "torSettingsActiveTransport": "Transporte ativo: {transport}",
+  "torSettingsExternalProxyTitle": "Proxy Tor externo (avançado)",
+  "torSettingsExternalProxyDescription": "Quando ativo, os servidores Bitcoin Electrum .onion usam o Orbot na porta configurada em vez do Tor integrado."
 }

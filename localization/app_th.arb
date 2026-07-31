@@ -2000,7 +2000,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor ในตัวใช้โดย RecoverBull เท่านั้น\n• Orbot ใช้เฉพาะกับเซิร์ฟเวอร์ Bitcoin Electrum .onion\n• การรับส่งข้อมูลเครือข่ายอื่นของ Bull ไม่เปลี่ยนแปลง\n• พอร์ตเริ่มต้นของ Orbot คือ 9050\n• ตรวจสอบว่า Orbot กำลังทำงานก่อนเปิดใช้งาน\n• การเชื่อมต่อผ่าน Tor อาจช้าลง",
+  "torSettingsInfoDescription": "• Tor ในตัวใช้โดย RecoverBull และเซิร์ฟเวอร์ Bitcoin Electrum ที่เป็น .onion\n• เมื่อเปิดใช้ Orbot จะใช้แทน Tor ในตัวสำหรับเซิร์ฟเวอร์ .onion เหล่านั้น\n• การรับส่งข้อมูลอื่นของ Bull ไม่เปลี่ยนแปลง\n• พอร์ตเริ่มต้นของ Orbot คือ 9050\n• ตรวจสอบว่า Orbot ทำงานอยู่ก่อนเปิดใช้งาน\n• การเชื่อมต่อผ่าน Tor อาจช้ากว่า",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13277,5 +13277,26 @@
   "transactionStatusPayjoinAborted": "Payjoin ถูกยกเลิก",
   "transactionDetailLabelPayjoinAborted": "ถูกยกเลิก",
   "transactionDetailLabelPayjoinFeeContribution": "ค่าธรรมเนียมส่วนร่วม Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)",
+  "torSettingsStatusCensored": "การเชื่อมต่อดูเหมือนถูกกรอง",
+  "torSettingsDescCensored": "Tor ไม่สามารถเข้าถึงเครือข่ายได้ ซึ่งมักหมายความว่าการเชื่อมต่อกำลังถูกกรอง",
+  "torSettingsBootstrapProgress": "กำลังเชื่อมต่อ… {percent}%",
+  "recoverbullPhaseNetworkInfo": "กำลังดึงข้อมูลเครือข่าย",
+  "recoverbullLongestStep": "นี่เป็นขั้นตอนที่นานที่สุด การเริ่มครั้งแรกอาจใช้เวลามากกว่าหนึ่งนาที",
+  "recoverbullTorOffline": "ดูเหมือนว่าไม่มีการเชื่อมต่ออินเทอร์เน็ต",
+  "recoverbullTorClockSkewed": "นาฬิกาของอุปกรณ์ไม่ตรง Tor จึงไม่สามารถตรวจสอบใบรับรองของรีเลย์ได้ โปรดตรวจสอบการตั้งค่าวันที่และเวลา",
+  "recoverbullTorCantStart": "ขณะนี้ Tor เชื่อมต่อไม่สำเร็จ โปรดลองอีกครั้ง",
+  "recoverbullServerUnreachableTorOk": "Tor ทำงานอยู่ แต่เซิร์ฟเวอร์สำรองข้อมูลไม่ตอบสนอง หลังจากเริ่มครั้งแรกอาจใช้เวลาสักครู่",
+  "torSettingsEmbeddedTitle": "Tor ในตัว",
+  "torSettingsEmbeddedDescription": "Tor ในตัวใช้โดย RecoverBull และเซิร์ฟเวอร์ Bitcoin Electrum ที่เป็น .onion ส่วนการรับส่งข้อมูลอื่นของแอปยังคงเชื่อมต่อโดยตรง",
+  "torSettingsTransportMode": "วิธีการเชื่อมต่อ",
+  "torSettingsModeAutomatic": "อัตโนมัติ",
+  "torSettingsModeDirect": "โดยตรง",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "ลองเชื่อมต่อ Tor โดยตรงก่อน และใช้ Snowflake หากเครือข่ายดูเหมือนจะบล็อก Tor",
+  "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
+  "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
+  "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
+  "torSettingsExternalProxyTitle": "พร็อกซี Tor ภายนอก (ขั้นสูง)",
+  "torSettingsExternalProxyDescription": "เมื่อเปิดใช้งาน เซิร์ฟเวอร์ Bitcoin Electrum ที่เป็น .onion จะใช้ Orbot ที่พอร์ตที่กำหนดแทน Tor ในตัว"
 }

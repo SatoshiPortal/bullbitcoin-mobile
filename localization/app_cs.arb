@@ -2212,7 +2212,7 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Vestavěný Tor používá pouze RecoverBull\n• Orbot se používá pouze pro servery Bitcoin Electrum .onion\n• Ostatní síťový provoz aplikace Bull zůstává beze změny\n• Výchozí port Orbotu je 9050\n• Před zapnutím ověřte, že je Orbot spuštěný\n• Připojení přes Tor mohou být pomalejší",
+  "torSettingsInfoDescription": "• Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion\n• Orbot, je-li zapnutý, nahrazuje vestavěný Tor pro tyto servery .onion\n• Ostatní síťový provoz Bullu se nemění\n• Výchozí port Orbotu je 9050\n• Před zapnutím se ujistěte, že Orbot běží\n• Připojení přes Tor může být pomalejší",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
@@ -13277,5 +13277,26 @@
   "transactionStatusPayjoinAborted": "Payjoin přerušen",
   "transactionDetailLabelPayjoinAborted": "Přerušeno",
   "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
+  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
+  "torSettingsBootstrapProgress": "Připojování… {percent} %",
+  "recoverbullPhaseNetworkInfo": "Načítání informací o síti",
+  "recoverbullLongestStep": "Toto je nejdelší krok. První spuštění může trvat déle než minutu.",
+  "recoverbullTorOffline": "Zdá se, že není k dispozici připojení k internetu.",
+  "recoverbullTorClockSkewed": "Hodiny zařízení jdou špatně, takže Tor nemůže ověřit certifikáty uzlů. Zkontrolujte nastavení data a času.",
+  "recoverbullTorCantStart": "Tor se nyní nedokázal připojit. Zkuste to prosím znovu.",
+  "recoverbullServerUnreachableTorOk": "Tor funguje, ale zálohovací server neodpověděl. Hned po prvním spuštění to může chvíli trvat.",
+  "torSettingsEmbeddedTitle": "Vestavěný Tor",
+  "torSettingsEmbeddedDescription": "Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion. Ostatní provoz aplikace zůstává přímý.",
+  "torSettingsTransportMode": "Způsob připojení",
+  "torSettingsModeAutomatic": "Automaticky",
+  "torSettingsModeDirect": "Přímé",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
+  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
+  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
+  "torSettingsActiveTransport": "Aktivní transport: {transport}",
+  "torSettingsExternalProxyTitle": "Externí proxy Tor (pokročilé)",
+  "torSettingsExternalProxyDescription": "Když je zapnuto, servery Bitcoin Electrum s adresou .onion použijí Orbot na nastaveném portu místo vestavěného Toru."
 }
