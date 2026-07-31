@@ -104,7 +104,12 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
     // When the gesture is disabled (e.g. the list enters selection mode after a
     // long-press), snap the row closed so a partially-revealed action panel
     // can't linger over the row content.
-    if (oldWidget.enabled && !widget.enabled && _dx != 0) {
+    final leadingRemoved =
+        oldWidget.onLeadingAction != null &&
+        widget.onLeadingAction == null &&
+        _dx > 0;
+    if (((oldWidget.enabled && !widget.enabled) || leadingRemoved) &&
+        _dx != 0) {
       setState(() {
         _dx = 0;
         _animating = true;

@@ -209,5 +209,40 @@ void main() {
       expect(trailing, 1);
       expect(leading, 0);
     });
+
+    testWidgets('closes if the leading action becomes unavailable', (
+      tester,
+    ) async {
+      var leadingEnabled = true;
+      late StateSetter setState;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          StatefulBuilder(
+            builder: (context, update) {
+              setState = update;
+              return build(
+                onAction: () {},
+                onLeadingAction: leadingEnabled ? () {} : null,
+              );
+            },
+          ),
+        ),
+      );
+
+      final closedDx = tester.getTopLeft(find.text('row')).dx;
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('row')),
+      );
+      await gesture.moveBy(const Offset(40, 0));
+      await tester.pump();
+      expect(find.text('Sweep'), findsOneWidget);
+
+      setState(() => leadingEnabled = false);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sweep'), findsNothing);
+      expect(tester.getTopLeft(find.text('row')).dx, closedDx);
+      await gesture.up();
+    });
   });
 }
