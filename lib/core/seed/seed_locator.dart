@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/entropy/data/services/entropy_collector.dart';
+import 'package:bb_mobile/core/entropy/data/services/entropy_pool.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/word_list_repository.dart';
@@ -34,7 +36,10 @@ class SeedLocator {
 
   static void registerServices(GetIt locator) {
     locator.registerLazySingleton<MnemonicGenerator>(
-      () => const MnemonicGenerator(),
+      () => MnemonicGenerator(
+        entropyPool: locator<EntropyPool>(),
+        entropyCollector: locator<EntropyCollector>(),
+      ),
     );
   }
 

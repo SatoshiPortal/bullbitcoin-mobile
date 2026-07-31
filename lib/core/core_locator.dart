@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/core/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
+import 'package:bb_mobile/core/entropy/entropy_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -69,6 +70,9 @@ class CoreLocator {
   }
 
   static void registerServices(GetIt locator) {
+    // Entropy must be registered before SeedLocator: MnemonicGenerator
+    // depends on the pool and collector.
+    EntropyLocator.setup(locator);
     ExchangeLocator.registerServices(locator);
     MempoolLocator.registerServices(locator);
     SeedLocator.registerServices(locator);
