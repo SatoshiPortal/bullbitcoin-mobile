@@ -1039,7 +1039,28 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  attempting: the fallback watch armed at session creation must
       //  survive a failed attempt here.
       final result = await _broadcastOriginalTransaction(payjoin);
-      _payjoinStreamController.add(result ?? payjoin);
+      if (result != null) {
+        _payjoinStreamController.add(result);
+        return;
+      }
+      // The automatic fallback failed, and unlike the receiver branch this
+      //  original is OUR payment: persist the expiry so the session becomes
+      //  terminal on our side. Two things follow, and they are inseparable.
+      //  It releases this session's inputs — the freeze reads
+      //  `onlyUnfinished`, so an unfinished row locks those coins out of every
+      //  send in the app, not just this order, for a payment we cannot even
+      //  broadcast. And because they are released the user can rebuild the
+      //  payment on other coins, which is exactly why we must also stop
+      //  re-broadcasting this original later (see the sender sweep in
+      //  _resumePayjoinsOnStartupUnguarded): the two would not conflict, so
+      //  both could confirm and pay the order twice.
+      //
+      //  The fallback observer armed at session creation stays live and is
+      //  re-armed by that sweep: it is read-only, so if the counterparty
+      //  broadcasts this original anyway — BIP78 invites them to — the row
+      //  still converges to aborted and the history tells the truth.
+      final recorded = await _localPayjoinDatasource.markExpired(expiredModel);
+      if (recorded) _payjoinStreamController.add(payjoin);
     } else {
       // A receiver whose proposal was already sent (proposalPsbt != null)
       //  lands here. From here the sender owns finalizing/broadcasting the
@@ -1164,49 +1185,37 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
     }
 
-    // Same sweep for senders: a sender's original transaction (originalPsbt)
-    // is always available from session creation, unlike a receiver's (which
-    // only arrives with the request), so the only guard needed here is
-    // proposalPsbt == null — mirroring the receiver branch above.
+    // Senders are swept differently from receivers on purpose. An expired
+    // sender is terminal on our side (see _processExpiredPayjoinInner): its
+    // inputs have been released, so the user may already have rebuilt the
+    // payment on other coins. Putting another of this session's transactions
+    // on the wire — the original, or a proposal that was persisted but never
+    // broadcast — would not conflict with that rebuild, so both could confirm
+    // and pay the order twice. We therefore re-arm only the READ-ONLY
+    // observers: if the counterparty broadcasts one of them anyway (BIP78
+    // invites the receiver to broadcast the original), the row still converges
+    // to aborted/completed and the history stays truthful.
+    //
+    // A receiver's fallback is the opposite case and keeps its retry above:
+    // the original it holds is the SENDER's payment, and broadcasting it is
+    // the receiver's anti-probing duty — abandoning it would strand the
+    // counterparty's funds rather than free our own.
     final senders = await _localPayjoinDatasource.fetchSenders();
     for (final sender in senders) {
       if (!sender.isExpired || sender.isAborted || sender.isCompleted) continue;
       try {
-        if (sender.proposalPsbt != null) {
-          if (sender.txId != null) {
-            _watchForBroadcast(
-              payjoinId: sender.id,
-              walletId: sender.walletId,
-              txId: sender.txId!,
-            );
-          }
-          _watchForFallback(
+        if (sender.txId != null) {
+          _watchForBroadcast(
             payjoinId: sender.id,
             walletId: sender.walletId,
-            originalTxId: sender.originalTxId,
+            txId: sender.txId!,
           );
-          await _processPayjoinProposal(sender);
-          continue;
         }
-
-        PayjoinSenderModel? proposalReceived;
-        await _withSessionLock(sender.id, () async {
-          final fresh = await _localPayjoinDatasource.fetchSender(sender.id);
-          if (fresh == null || fresh.isCompleted || fresh.isAborted) return;
-          if (fresh.proposalPsbt != null) {
-            proposalReceived = fresh;
-            return;
-          }
-          await _broadcastOriginalTransaction(fresh.toEntity());
-          _watchForFallback(
-            payjoinId: fresh.id,
-            walletId: fresh.walletId,
-            originalTxId: fresh.originalTxId,
-          );
-        });
-        if (proposalReceived != null) {
-          await _processPayjoinProposal(proposalReceived!);
-        }
+        _watchForFallback(
+          payjoinId: sender.id,
+          walletId: sender.walletId,
+          originalTxId: sender.originalTxId,
+        );
       } catch (e, st) {
         log.severe(
           message:

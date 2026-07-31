@@ -78,6 +78,35 @@ void main() {
           )
           as PayjoinSenderModel;
 
+  // Single-input, single-output unsigned PSBT. Real enough for BitcoinTx to
+  // extract the spent outpoint, which is what the freeze reads.
+  const oneInputPsbt =
+      'cHNidP8BAFICAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
+      'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
+      'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+
+  /// A sender whose expiry elapsed two hours ago, so a resume routes it
+  /// straight through the expiry handler (`_resumeOne`).
+  PayjoinSenderModel expiredSender({
+    String uri = 'bitcoin:tb1qsender?pj=https://payjo.in',
+    String? proposalPsbt,
+    String? transactionId,
+  }) =>
+      PayjoinModel.sender(
+            uri: uri,
+            isTestnet: true,
+            sender: '[]',
+            walletId: 'wallet-1',
+            originalPsbt: oneInputPsbt,
+            originalTxId: 'original-tx',
+            amountSat: 50000,
+            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+            expireAfterSec: 3600,
+            proposalPsbt: proposalPsbt,
+            txId: transactionId,
+          )
+          as PayjoinSenderModel;
+
   setUp(() async {
     database = PayjoinDatabase.forTesting(NativeDatabase.memory());
     local = LocalPayjoinDatasource(db: database);
@@ -313,6 +342,104 @@ void main() {
         transactionId: any(named: 'transactionId'),
       ),
     );
+  });
+
+  group('an expired sender is terminal from our side', () {
+    test('a failed fallback releases the frozen inputs', () async {
+      final model = expiredSender();
+      await local.storeSender(model);
+      when(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenThrow(StateError('electrum unavailable'));
+
+      await engine.resumePayjoinsOnStartup();
+
+      // Holding the inputs hostage while the payment cannot be broadcast locks
+      // the user out of their own coins for every send, not just this order.
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
+    });
+
+    test('a failed fallback persists the expiry', () async {
+      final model = expiredSender();
+      await local.storeSender(model);
+      when(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenThrow(StateError('electrum unavailable'));
+
+      await engine.resumePayjoinsOnStartup();
+
+      expect((await local.fetchSender(model.id))?.isExpired, isTrue);
+    });
+
+    test('a later resume never re-broadcasts the original', () async {
+      final model = expiredSender();
+      await local.storeSender(model);
+      when(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenThrow(StateError('electrum unavailable'));
+
+      await engine.resumePayjoinsOnStartup();
+      await engine.resumePayjoinsOnStartup();
+
+      // The inputs were released by the first attempt, so the user may have
+      // rebuilt the payment on other coins. A second broadcast of this
+      // original could then confirm alongside it and pay the order twice.
+      verify(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).called(1);
+    });
+
+    test('a later resume never broadcasts an abandoned proposal', () async {
+      final model = expiredSender(proposalPsbt: 'cHNidP9wcm9wb3NhbA==');
+      await local.storeSender(model);
+
+      await engine.resumePayjoinsOnStartup();
+      await engine.resumePayjoinsOnStartup();
+
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+    });
+
+    test('the receiver keeps retrying its anti-probing fallback', () async {
+      // Asymmetry on purpose: the original a receiver holds is the *sender's*
+      // payment, and BIP78 makes broadcasting it the receiver's duty. Dropping
+      // that retry would strand the counterparty.
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+      );
+      await local.storeReceiver(model);
+      when(
+        () => blockchain.broadcastTransaction(
+          network: any(named: 'network'),
+          transaction: any(named: 'transaction'),
+        ),
+      ).thenThrow(StateError('electrum unavailable'));
+
+      await engine.resumePayjoinsOnStartup();
+
+      expect(
+        (await local.fetchReceiver(model.id))?.isExpired,
+        isFalse,
+        reason: 'the row must stay unfinished so the fallback is retried',
+      );
+    });
   });
 
   test(
