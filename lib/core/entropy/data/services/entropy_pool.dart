@@ -11,14 +11,25 @@ import 'package:crypto/crypto.dart';
 /// Invariants (see also the module tests):
 /// - Additivity: every mix hashes the new data *together with* the previous
 ///   state, so no source — even one returning attacker-chosen bytes — can
-///   ever reduce the entropy already in the pool. Sources are concatenated
-///   and hashed, never XORed, and nothing can replace the state wholesale.
+///   reduce the entropy already in the pool (computational, under standard
+///   SHA-512 assumptions). Sources are concatenated and hashed, never XORed,
+///   and nothing can replace the state wholesale.
 /// - Mandatory floor: [extract] throws unless the OS RNG and the bdk RNG
-///   were both mixed since the last extraction, so output is never weaker
-///   than the platform CSPRNG regardless of what the other sources do.
+///   were both fed through [mixMandatory] since the last extraction, so
+///   output is never weaker than the platform CSPRNG regardless of what the
+///   other sources do. The supplemental [mix] path can NEVER satisfy this
+///   gate, whatever source name it passes.
 /// - Half-out/half-back: each SHA-512 digest is split — the first 32 bytes
 ///   are the output, the second 32 bytes become the next secret state and
 ///   never leave this class. Extraction is capped at 32 bytes per round.
+///
+/// Note on independence: both mandatory sources ultimately derive from the
+/// same operating-system entropy root (the bdk draw goes through Rust's
+/// userspace `thread_rng`, reseeded from the OS; the Dart source through
+/// `Random.secure`). Mixing both provides implementation/binding-failure
+/// diversity, not independent entropy roots — a fully compromised kernel
+/// RNG affects both, which is exactly why the environmental sources are
+/// mixed on top.
 class EntropyPool {
   EntropyPool({this.strengthenBudget = const Duration(milliseconds: 10)});
 
@@ -28,6 +39,11 @@ class EntropyPool {
 
   static const _stateSize = 32;
   static const maxExtractBytes = 32;
+
+  /// Minimum bytes a mandatory source must deliver: a short read can never
+  /// count towards the security floor.
+  static const minMandatoryBytes = 32;
+
   static const mandatorySources = {
     EntropySourceName.osRng,
     EntropySourceName.bdkRng,
@@ -37,14 +53,37 @@ class EntropyPool {
   int _counter = 0;
   final Set<String> _mandatoryMixed = {};
 
-  /// Folds [data] from [sourceName] into the pool state.
+  /// Folds supplemental [data] from [sourceName] into the pool state.
   ///
+  /// Strictly additive and unprivileged: this path never satisfies the
+  /// mandatory gate, even when called with a mandatory source's name.
   /// Empty data is skipped: "mixed" must always mean real bytes arrived,
   /// never a placeholder.
   void mix(String sourceName, Uint8List data) {
     if (data.isEmpty) return;
+    _mixInternal(sourceName, data);
+  }
 
-    final nameBytes = _utf8(sourceName);
+  /// Folds [data] from one of the [mandatorySources] into the pool and
+  /// marks the gate for it. This is the only way to satisfy the mandatory
+  /// floor and it validates both the source identity and a minimum length.
+  void mixMandatory(String sourceName, Uint8List data) {
+    if (!mandatorySources.contains(sourceName)) {
+      throw ArgumentError.value(
+        sourceName,
+        'sourceName',
+        'not a mandatory entropy source',
+      );
+    }
+    if (data.length < minMandatoryBytes) {
+      throw MandatoryEntropyTooShortException(sourceName, data.length);
+    }
+    _mixInternal(sourceName, data);
+    _mandatoryMixed.add(sourceName);
+  }
+
+  void _mixInternal(String sourceName, Uint8List data) {
+    final nameBytes = Uint8List.fromList(utf8.encode(sourceName));
     final input = BytesBuilder(copy: false)
       ..add(_encodeU64(nameBytes.length))
       ..add(nameBytes)
@@ -52,12 +91,11 @@ class EntropyPool {
       ..add(_encodeU64(data.length))
       ..add(data)
       ..add(_state);
-    final digest = sha512.convert(input.takeBytes()).bytes;
+    final buffer = input.takeBytes();
+    final digest = sha512.convert(buffer).bytes;
+    _zero(buffer);
 
     _replaceState(digest);
-    if (mandatorySources.contains(sourceName)) {
-      _mandatoryMixed.add(sourceName);
-    }
   }
 
   /// Burns [strengthenBudget] of CPU time iterating SHA-512 over the state,
@@ -72,7 +110,9 @@ class EntropyPool {
     var iterations = 0;
     do {
       for (var i = 0; i < 64; i++) {
-        buffer = Uint8List.fromList(sha512.convert(buffer).bytes);
+        final next = Uint8List.fromList(sha512.convert(buffer).bytes);
+        _zero(buffer);
+        buffer = next;
         iterations++;
       }
     } while (stopwatch.elapsed < strengthenBudget);
@@ -92,7 +132,7 @@ class EntropyPool {
   /// Returns [length] bytes (max 32) of entropy and advances the state.
   ///
   /// Throws [EntropyPoolNotSeededException] unless every mandatory source
-  /// was mixed since the last extraction.
+  /// was fed through [mixMandatory] since the last extraction.
   Uint8List extract(int length) {
     if (length <= 0 || length > maxExtractBytes) {
       throw ArgumentError.value(
@@ -111,7 +151,9 @@ class EntropyPool {
     final input = BytesBuilder(copy: false)
       ..add(_encodeU64(_counter++))
       ..add(_state);
-    final digest = sha512.convert(input.takeBytes()).bytes;
+    final buffer = input.takeBytes();
+    final digest = sha512.convert(buffer).bytes;
+    _zero(buffer);
 
     _replaceState(digest);
     _mandatoryMixed.clear();
@@ -134,9 +176,6 @@ class EntropyPool {
     }
   }
 
-  static Uint8List _utf8(String value) =>
-      Uint8List.fromList(utf8.encode(value));
-
   static Uint8List _encodeU64(int value) {
     final bytes = Uint8List(8);
     ByteData.view(bytes.buffer).setUint64(0, value);
@@ -149,5 +188,13 @@ class EntropyPoolNotSeededException extends BullException {
     : super(
         'Entropy pool is missing mandatory sources: '
         '${missingSources.join(', ')}',
+      );
+}
+
+class MandatoryEntropyTooShortException extends BullException {
+  MandatoryEntropyTooShortException(String source, int length)
+    : super(
+        'Mandatory entropy source $source delivered $length bytes; '
+        'minimum is ${EntropyPool.minMandatoryBytes}',
       );
 }

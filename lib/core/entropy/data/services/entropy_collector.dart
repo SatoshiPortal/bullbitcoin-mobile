@@ -30,7 +30,16 @@ class EntropyCollector {
   Future<void> _collectOne(EntropySource source) async {
     try {
       final data = await source.collect().timeout(perSourceTimeout);
-      _pool.mix(source.name, data);
+      if (source.mandatory) {
+        // The privileged path: validates identity and minimum length, and
+        // is the only way to satisfy the pool's mandatory gate.
+        _pool.mixMandatory(source.name, data);
+      } else {
+        _pool.mix(source.name, data);
+      }
+      for (var i = 0; i < data.length; i++) {
+        data[i] = 0;
+      }
     } catch (e) {
       if (source.mandatory) {
         throw MandatoryEntropySourceFailedException(source.name, e);

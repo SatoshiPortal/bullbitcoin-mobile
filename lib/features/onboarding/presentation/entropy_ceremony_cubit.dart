@@ -44,6 +44,7 @@ class EntropyCeremonyCubit extends Cubit<EntropyCeremonyState> {
   final CollectSensorEntropyUsecase _collectSensorEntropyUsecase;
   final Stopwatch _stopwatch = Stopwatch()..start();
   bool _sensorLoopRunning = false;
+  bool _sensorsPaused = false;
 
   /// Starts the background IMU sampling loop for the lifetime of the screen.
   ///
@@ -54,7 +55,7 @@ class EntropyCeremonyCubit extends Cubit<EntropyCeremonyState> {
     if (_sensorLoopRunning) return;
     _sensorLoopRunning = true;
     const minRoundDuration = Duration(milliseconds: 1500);
-    while (!isClosed) {
+    while (!isClosed && !_sensorsPaused) {
       final round = Stopwatch()..start();
       await _collectSensorEntropyUsecase.execute();
       final remaining = minRoundDuration - round.elapsed;
@@ -62,6 +63,32 @@ class EntropyCeremonyCubit extends Cubit<EntropyCeremonyState> {
         await Future<void>.delayed(remaining);
       }
     }
+    _sensorLoopRunning = false;
+  }
+
+  /// Stops sensor sampling while the app is backgrounded: motion data must
+  /// only be collected while the ceremony is actually on screen.
+  void pauseSensors() {
+    _sensorsPaused = true;
+  }
+
+  void resumeSensors() {
+    if (isClosed) return;
+    _sensorsPaused = false;
+    start();
+  }
+
+  /// Accessible completion path: users who cannot perform touch gestures
+  /// can finish the ceremony directly. This never weakens the seed — the
+  /// mandatory OS + bdk RNG floor is enforced at extraction and does not
+  /// depend on ceremony input, which is strictly supplemental.
+  void completeWithoutCeremony() {
+    if (state.isComplete) return;
+    emit(
+      const EntropyCeremonyState(
+        eventCount: EntropyCeremonyState.targetEventCount,
+      ),
+    );
   }
 
   void addPointerSample({

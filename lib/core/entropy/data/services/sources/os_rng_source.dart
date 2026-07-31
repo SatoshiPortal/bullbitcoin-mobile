@@ -21,8 +21,10 @@ class OsRngSource implements EntropySource {
   @override
   Future<Uint8List> collect() async {
     final random = Random.secure();
-    return Uint8List.fromList(
-      List<int>.generate(_bytes, (_) => random.nextInt(256)),
-    );
+    final bytes = Uint8List(_bytes);
+    for (var i = 0; i < _bytes; i++) {
+      bytes[i] = random.nextInt(256);
+    }
+    return bytes;
   }
 }

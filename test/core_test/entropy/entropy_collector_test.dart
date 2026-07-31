@@ -50,7 +50,7 @@ void main() {
         ],
       );
       await collector.collectAll();
-      p.mix(EntropySourceName.bdkRng, bdkBytes);
+      p.mixMandatory(EntropySourceName.bdkRng, bdkBytes);
       expect(p.extract(32).length, 32);
     },
   );
@@ -69,7 +69,7 @@ void main() {
       ],
     );
     await collector.collectAll();
-    p.mix(EntropySourceName.bdkRng, bdkBytes);
+    p.mixMandatory(EntropySourceName.bdkRng, bdkBytes);
     expect(p.extract(32).length, 32);
   });
 
@@ -84,7 +84,7 @@ void main() {
       perSourceTimeout: const Duration(milliseconds: 50),
     );
     await collector.collectAll();
-    p.mix(EntropySourceName.bdkRng, bdkBytes);
+    p.mixMandatory(EntropySourceName.bdkRng, bdkBytes);
     expect(p.extract(32).length, 32);
   });
 

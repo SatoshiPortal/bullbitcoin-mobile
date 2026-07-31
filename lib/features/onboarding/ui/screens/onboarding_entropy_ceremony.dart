@@ -29,19 +29,50 @@ class OnboardingEntropyCeremony extends StatefulWidget {
       _OnboardingEntropyCeremonyState();
 }
 
-class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
+class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
+    with WidgetsBindingObserver {
   static const _maxTrailPoints = 400;
   static const _milestoneFadeAfter = Duration(milliseconds: 2200);
   static const _completePause = Duration(milliseconds: 1200);
 
+  /// Accessible completion: after this long the ceremony can be finished
+  /// without gestures. Ceremony input is strictly supplemental — the
+  /// mandatory RNG floor is enforced at extraction either way.
+  static const _fallbackAfter = Duration(seconds: 20);
+
   final List<Offset?> _trail = [];
   String _milestone = '';
   Timer? _milestoneTimer;
+  Timer? _fallbackTimer;
+  bool _showFallback = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _fallbackTimer = Timer(_fallbackAfter, () {
+      if (mounted) setState(() => _showFallback = true);
+    });
+  }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _milestoneTimer?.cancel();
+    _fallbackTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Motion data must only be sampled while the ceremony is on screen.
+    final cubit = context.read<EntropyCeremonyCubit>();
+    if (state == AppLifecycleState.resumed) {
+      cubit.resumeSensors();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      cubit.pauseSensors();
+    }
   }
 
   List<String> _milestoneMessages(BuildContext context) => [
@@ -83,9 +114,9 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
     });
   }
 
-  // Taps count too: they carry the same timing entropy as drags, and they
-  // keep the ceremony completable for users who cannot perform continuous
-  // drag gestures.
+  // Taps count too: they carry timing entropy of their own, and they keep
+  // the ceremony progressing for users who cannot perform continuous drag
+  // gestures. (The counter is pacing, not an entropy measurement.)
   void _onPointerDown(PointerDownEvent event) {
     context.read<EntropyCeremonyCubit>().addPointerSample(
       x: event.position.dx,
@@ -168,16 +199,19 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
                 // Full-screen capture surface: the whole screen is the
                 // canvas, chrome is drawn on top and ignores pointers.
                 Positioned.fill(
-                  child: Listener(
-                    onPointerDown: creating ? null : _onPointerDown,
-                    onPointerMove: creating ? null : _onPointerMove,
-                    onPointerUp: creating ? null : _onPointerUp,
-                    behavior: HitTestBehavior.opaque,
-                    child: CustomPaint(
-                      size: Size.infinite,
-                      painter: _TrailPainter(
-                        points: List.of(_trail),
-                        color: ink,
+                  child: Semantics(
+                    label: context.loc.onboardingEntropyCeremonyInstruction,
+                    child: Listener(
+                      onPointerDown: creating ? null : _onPointerDown,
+                      onPointerMove: creating ? null : _onPointerMove,
+                      onPointerUp: creating ? null : _onPointerUp,
+                      behavior: HitTestBehavior.opaque,
+                      child: CustomPaint(
+                        size: Size.infinite,
+                        painter: _TrailPainter(
+                          points: List.of(_trail),
+                          color: ink,
+                        ),
                       ),
                     ),
                   ),
@@ -232,6 +266,29 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
                     ],
                   ),
                 ),
+                // Accessible completion: outside the IgnorePointer chrome so
+                // it is tappable and reachable by assistive technology.
+                if (_showFallback && !creating)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 8,
+                    child: Center(
+                      child: TextButton(
+                        onPressed: () => context
+                            .read<EntropyCeremonyCubit>()
+                            .completeWithoutCeremony(),
+                        child: BBText(
+                          context.loc.onboardingEntropyCeremonySkip,
+                          style: context.font.labelSmall?.copyWith(
+                            decoration: TextDecoration.underline,
+                            decorationColor: ink.withValues(alpha: 0.6),
+                          ),
+                          color: ink.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                  ),
                 if (creating)
                   Center(
                     child: SizedBox(

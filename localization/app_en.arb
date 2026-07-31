@@ -1315,7 +1315,7 @@
   "@onboardingPhysicalBackup": {
     "description": "Title for the physical backup recovery option in onboarding"
   },
-  "onboardingPhysicalBackupDescription": "Recover your wallet via 12 words.",
+  "onboardingPhysicalBackupDescription": "Recover your wallet via your 12 or 24 recovery words.",
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
   },
@@ -1394,6 +1394,10 @@
   "onboardingEntropyCeremonyCreating": "Creating your wallet...",
   "@onboardingEntropyCeremonyCreating": {
     "description": "Status text shown on the entropy ceremony screen while the wallet is being created"
+  },
+  "onboardingEntropyCeremonySkip": "Continue without drawing",
+  "@onboardingEntropyCeremonySkip": {
+    "description": "Accessible fallback shown after a delay on the entropy ceremony screen; completes the ceremony without touch gestures"
   },
   "sendTitle": "Send",
   "@sendTitle": {
@@ -4292,7 +4296,7 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "physicalBackupDescription": "Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.",
+  "physicalBackupDescription": "Write down all of your recovery words on a piece of paper. Keep them safe and make sure not to lose them.",
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
   },
@@ -4638,7 +4642,7 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "recoverVia12WordsDescription": "Recover your wallet via 12 words.",
+  "recoverVia12WordsDescription": "Recover your wallet via your 12 or 24 recovery words.",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
@@ -8198,7 +8202,7 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "backupWalletPhysicalBackupDescription": "Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.",
+  "backupWalletPhysicalBackupDescription": "Write down all of your recovery words on a piece of paper. Keep them safe and make sure not to lose them.",
   "@backupWalletPhysicalBackupDescription": {
     "description": "Description of physical backup method"
   },
@@ -8505,7 +8509,7 @@
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
   },
-  "testBackupPhysicalBackupDescription": "Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.",
+  "testBackupPhysicalBackupDescription": "Write down all of your recovery words on a piece of paper. Keep them safe and make sure not to lose them.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
   },
