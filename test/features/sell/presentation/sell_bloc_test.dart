@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -77,6 +78,8 @@ class _MockGetOrder extends Mock implements GetOrderUsecase {}
 
 class _MockSendWithPayjoin extends Mock implements SendWithPayjoinUsecase {}
 
+class _MockWatchPayjoin extends Mock implements WatchPayjoinUsecase {}
+
 class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
 class _MockPreviewBitcoinFeePresets extends Mock
@@ -108,6 +111,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.broadcastBitcoinTransactionUsecase,
     required super.broadcastLiquidTransactionUsecase,
     required super.sendWithPayjoinUsecase,
+    required super.watchPayjoinUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -158,6 +162,7 @@ void main() {
   late _MockGetNetworkFees getNetworkFees;
   late _MockGetOrder getOrder;
   late _MockSendWithPayjoin sendWithPayjoin;
+  late _MockWatchPayjoin watchPayjoin;
   late _MockRefreshSellOrder refreshSellOrder;
   late _MockLabelsFacade labelsFacade;
   late _MockPreviewBitcoinFee previewBitcoinFee;
@@ -213,6 +218,10 @@ void main() {
     getNetworkFees = _MockGetNetworkFees();
     getOrder = _MockGetOrder();
     sendWithPayjoin = _MockSendWithPayjoin();
+    watchPayjoin = _MockWatchPayjoin();
+    when(
+      () => watchPayjoin.execute(any()),
+    ).thenAnswer((_) => const Stream.empty());
     refreshSellOrder = _MockRefreshSellOrder();
     labelsFacade = _MockLabelsFacade();
     previewBitcoinFee = _MockPreviewBitcoinFee();
@@ -275,6 +284,7 @@ void main() {
       broadcastBitcoinTransactionUsecase: broadcastBitcoin,
       broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
       sendWithPayjoinUsecase: sendWithPayjoin,
+      watchPayjoinUsecase: watchPayjoin,
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
@@ -318,6 +328,116 @@ void main() {
       expect((bloc.state as SellPaymentState).isPayjoinEnabled, isTrue);
     });
 
+    test(
+      'does not report success while a Payjoin is only requested',
+      () async {
+        const bip21 =
+            'bitcoin:bc1q0000000000000000000000000000000000000'
+            '?amount=0.001&pj=https://payjo.in/session';
+        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(
+          () => sendWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer(
+          (_) async => PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
+        );
+
+        // The order fetch must succeed, otherwise the premature success this test
+        // guards against is hidden by a failing fetch rather than absent.
+        when(
+          () => getOrder.execute(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => sellOrder);
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        // Long enough to outlast the post-broadcast order fetch delay.
+        await Future<void>.delayed(const Duration(seconds: 6));
+
+        // Nothing is on the wire yet: the session is still negotiating, and its
+        // original transaction is only broadcast if that negotiation fails.
+        expect(bloc.state, isA<SellPaymentState>());
+      },
+      timeout: const Timeout(Duration(seconds: 15)),
+    );
+
+    test(
+      'a completed Payjoin settles the sale with its txid',
+      () async {
+        const bip21 =
+            'bitcoin:bc1q0000000000000000000000000000000000000'
+            '?amount=0.001&pj=https://payjo.in/session';
+        const payjoinTxid =
+            'aaaa1111c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
+        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(
+          () => getOrder.execute(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => sellOrder);
+        when(
+          () => sendWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer(
+          (_) async => PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
+        );
+        when(() => watchPayjoin.execute(bip21)).thenAnswer(
+          (_) => Stream.value(
+            PayjoinSenderSession(
+              status: PayjoinStatus.completed,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: expectedTxid,
+              transactionId: payjoinTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            ),
+          ),
+        );
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        final settled = await bloc.stream.firstWhere(
+          (state) => state is SellPaymentState && state.isPayinBroadcast,
+        );
+
+        // The payjoin transaction is the one that reached the chain, so it is the
+        // txid the sale must carry — not the original it replaced.
+        expect((settled as SellPaymentState).payinBroadcastTxid, payjoinTxid);
+        await bloc.stream.firstWhere((state) => state is SellSuccessState);
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
     test('absolute custom fees pass their actual rate to Payjoin', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
@@ -357,9 +477,9 @@ void main() {
       );
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
-      await bloc.stream.firstWhere(
-        (state) => state is SellPaymentState && state.isPayinBroadcast,
-      );
+      // The session is now watched rather than latched: nothing is on the wire
+      // until it resolves.
+      await untilCalled(() => watchPayjoin.execute(bip21));
 
       verify(
         () => sendWithPayjoin.execute(
@@ -408,9 +528,7 @@ void main() {
         ).thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere(
-          (state) => state is SellPaymentState && state.isPayinBroadcast,
-        );
+        await untilCalled(() => watchPayjoin.execute(bip21));
 
         verify(
           () => sendWithPayjoin.execute(

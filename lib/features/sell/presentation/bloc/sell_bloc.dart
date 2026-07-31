@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -37,7 +38,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinSessionWindow;
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -59,6 +61,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._broadcastBitcoinTransactionUsecase,
     required this._broadcastLiquidTransactionUsecase,
     required this._sendWithPayjoinUsecase,
+    required this._watchPayjoinUsecase,
     required this._getNetworkFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
@@ -81,6 +84,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     );
     on<SellPollOrderStatus>(_onPollOrderStatus);
     on<SellPayjoinToggled>(_onPayjoinToggled);
+    on<SellPayjoinSessionUpdated>(_onPayjoinSessionUpdated);
     on<SellReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<SellUtxosSelected>(_onUtxosSelected);
     on<SellLoadUtxos>(_onLoadUtxos);
@@ -104,6 +108,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
+  final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -116,6 +121,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   Timer? _pollingTimer;
+  StreamSubscription<PayjoinSession>? _payjoinSubscription;
+  String? _activePayjoinSessionId;
 
   /// Bumped whenever the cached previews stop describing the payin being
   /// built (typed rate, coin selection, RBF, a refreshed payin amount). A
@@ -465,7 +472,16 @@ class SellBloc extends Bloc<SellEvent, SellState>
       return;
     }
 
+    // Second half of that same latch, for the payjoin path: the txid only lands
+    // once the session resolves, so until then the *session* is what says this
+    // order's payin is already committed.
+    if (_activePayjoinSessionId != null) {
+      emit(sellPaymentState.copyWith(isConfirmingPayment: true));
+      return;
+    }
+
     emit(sellPaymentState.copyWith(isConfirmingPayment: true));
+    var waitingForPayjoin = false;
     try {
       final wallet = sellPaymentState.selectedWallet;
       if (wallet == null) {
@@ -588,14 +604,17 @@ class SellBloc extends Bloc<SellEvent, SellState>
             'Sell Payjoin sender active: ${payjoinSender.logRef}, '
             'status=${payjoinSender.status.name}',
           );
-          // The session now owns eventual broadcast of either the proposal or
-          // the original transaction. Re-entering Confirm would create a second
-          // session against different UTXOs, so latch immediately.
-          _latchBroadcast(emit, payjoinSender.originalTxId);
+          // The session owns eventual broadcast of either the proposal or the
+          // original transaction, and neither is on the wire yet. Watch it
+          // instead of latching a txid now: announcing success here showed a
+          // settled sale for a payin that may still fail. Re-entering Confirm
+          // would create a second session against different UTXOs, which the
+          // guard above prevents while this one runs.
+          _watchPayjoin(payjoinSender.id);
+          waitingForPayjoin = true;
           // The original transaction is what reaches the chain whenever the
           // negotiation does not complete, and the payjoin repository labels the
-          // payjoin transaction itself once it does. Order polling resolves the
-          // order either way.
+          // payjoin transaction itself once it does.
           await _labelsFacade.store(
             NewLabel.tx(
               transactionId: payjoinSender.originalTxId,
@@ -632,7 +651,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           );
         }
       }
-      await _completeAfterBroadcast(emit);
+      if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
       _emitSendPaymentError(emit, SellError.unexpected(message: e.message));
     } on PrepareBitcoinSendException catch (e) {
@@ -649,10 +668,72 @@ class SellBloc extends Bloc<SellEvent, SellState>
     } finally {
       final current = _currentPaymentState;
       // Once broadcast, the confirmation stays in flight until the order
-      // reflects the payment; polling takes it to the success state.
-      if (current != null && !current.isPayinBroadcast) {
+      // reflects the payment; polling takes it to the success state. A payjoin
+      // session still negotiating counts as committed for the same reason.
+      if (current != null &&
+          !current.isPayinBroadcast &&
+          _activePayjoinSessionId == null) {
         emit(current.copyWith(isConfirmingPayment: false));
       }
+    }
+  }
+
+  void _watchPayjoin(String sessionId) {
+    _activePayjoinSessionId = sessionId;
+    unawaited(_payjoinSubscription?.cancel());
+    _payjoinSubscription = _watchPayjoinUsecase
+        .execute(sessionId)
+        .listen(
+          (session) => add(SellEvent.payjoinSessionUpdated(session)),
+          onError: (Object error, StackTrace stackTrace) {
+            log.warning('Payjoin session watch failed');
+            Future<void>.delayed(const Duration(seconds: 5), () {
+              if (!isClosed && _activePayjoinSessionId == sessionId) {
+                _watchPayjoin(sessionId);
+              }
+            });
+          },
+        );
+  }
+
+  Future<void> _onPayjoinSessionUpdated(
+    SellPayjoinSessionUpdated event,
+    Emitter<SellState> emit,
+  ) async {
+    final session = event.session;
+    if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+
+    // `expired` is terminal but settles nothing: the package released this
+    // session's inputs and stopped re-broadcasting it, so the user may confirm
+    // again — which the released latch below allows.
+    final subscription = _payjoinSubscription;
+    _payjoinSubscription = null;
+    _activePayjoinSessionId = null;
+    await subscription?.cancel();
+    final current = _currentPaymentState;
+    if (current == null) return;
+
+    if (session.isExpired) {
+      emit(current.copyWith(isConfirmingPayment: false));
+      return;
+    }
+
+    final txid = session.isCompleted
+        ? session.txId ?? session.originalTxId
+        : session.originalTxId;
+    if (txid == null) {
+      log.severe(
+        error: 'Resolved Payjoin has no transaction id',
+        trace: StackTrace.current,
+      );
+      return;
+    }
+
+    _latchBroadcast(emit, txid);
+    try {
+      await _completeAfterBroadcast(emit);
+    } catch (error) {
+      log.severe(error: error, trace: StackTrace.current);
     }
   }
 
@@ -1247,8 +1328,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
       add(SellEvent.feeOptionSelected(selection));
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _stopPolling();
+    await _payjoinSubscription?.cancel();
     return super.close();
   }
 }

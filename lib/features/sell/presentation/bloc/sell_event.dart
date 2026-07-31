@@ -20,6 +20,8 @@ sealed class SellEvent with _$SellEvent {
   const factory SellEvent.sendPaymentConfirmed() = SellSendPaymentConfirmed;
   const factory SellEvent.pollOrderStatus() = SellPollOrderStatus;
   const factory SellEvent.payjoinToggled(bool enabled) = SellPayjoinToggled;
+  const factory SellEvent.payjoinSessionUpdated(PayjoinSession session) =
+      SellPayjoinSessionUpdated;
   const factory SellEvent.replaceByFeeChanged({required bool replaceByFee}) =
       SellReplaceByFeeChanged;
   const factory SellEvent.utxosSelected({required List<WalletUtxo> utxos}) =
