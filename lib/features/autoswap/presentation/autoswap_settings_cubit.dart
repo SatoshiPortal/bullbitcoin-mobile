@@ -166,9 +166,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
-          showWarning: state.enabledToggle
-              ? state.settings?.showWarning ?? true
-              : false,
+          // Consent to execution is granted only through the warning flow
+          // (DismissAutoSwapWarning). Saving settings must never fabricate
+          // it: writing false on disable used to survive a later re-enable,
+          // arming autoswap without the user ever seeing the warning.
+          showWarning: state.settings?.showWarning ?? true,
         ),
       );
       emit(
@@ -355,7 +357,10 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
-          showWarning: false,
+          // Same consent rule as updateSettings: disabling must not count as
+          // having seen the warning, or a later re-enable arms autoswap
+          // without the user ever consenting.
+          showWarning: state.settings?.showWarning ?? true,
         ),
       );
 
