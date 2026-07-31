@@ -30,13 +30,18 @@ void main() {
         timestampMicros: 1000 + i,
         pressure: 1.0,
         radiusMajor: 4.0,
+        radiusMinor: 3.0,
+        size: 0.2,
+        orientation: 0.1,
+        tilt: 0.0,
+        synthesized: false,
       );
     }
   }
 
   test('progress and deciles advance with pointer samples', () {
     expect(cubit.state.hasStarted, isFalse);
-    addSamples(30);
+    addSamples(50);
     expect(cubit.state.hasStarted, isTrue);
     expect(cubit.state.decile, 1);
     expect(cubit.state.isComplete, isFalse);
@@ -73,6 +78,74 @@ void main() {
     addSamples(50);
 
     expect(cubit.state.eventCount, EntropyCeremonyState.targetEventCount);
+  });
+
+  test('synthesized pointer samples do not advance the ceremony', () {
+    final accepted = cubit.addPointerSample(
+      kind: PointerSampleKind.move,
+      pointer: 1,
+      x: 10,
+      y: 20,
+      dx: 1,
+      dy: 1,
+      timestampMicros: 1000,
+      pressure: 1,
+      radiusMajor: 4,
+      radiusMinor: 3,
+      size: 0.2,
+      orientation: 0.1,
+      tilt: 0,
+      synthesized: true,
+    );
+
+    expect(accepted, isFalse);
+    expect(cubit.state.eventCount, 0);
+  });
+
+  test('consecutive duplicate positions do not advance the ceremony', () {
+    addSamples(1);
+
+    final accepted = cubit.addPointerSample(
+      kind: PointerSampleKind.move,
+      pointer: 1,
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      timestampMicros: 2000,
+      pressure: 1,
+      radiusMajor: 4,
+      radiusMinor: 3,
+      size: 0.2,
+      orientation: 0.1,
+      tilt: 0,
+      synthesized: false,
+    );
+
+    expect(accepted, isFalse);
+    expect(cubit.state.eventCount, 1);
+  });
+
+  test('non-finite positions and deltas do not advance the ceremony', () {
+    final accepted = cubit.addPointerSample(
+      kind: PointerSampleKind.move,
+      pointer: 1,
+      x: double.nan,
+      y: 0,
+      dx: 1,
+      dy: 1,
+      timestampMicros: 1000,
+      pressure: 1,
+      radiusMajor: 4,
+      radiusMinor: 3,
+      size: 0.2,
+      orientation: 0.1,
+      tilt: 0,
+      synthesized: false,
+    );
+
+    expect(accepted, isFalse);
+    expect(cubit.state.eventCount, 0);
   });
 
   test('start is idempotent', () {

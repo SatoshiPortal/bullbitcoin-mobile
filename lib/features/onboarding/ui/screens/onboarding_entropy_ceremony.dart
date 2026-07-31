@@ -13,8 +13,10 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 /// Human-entropy ceremony: the user moves a finger around the screen and
-/// every pointer sample is mixed into the entropy pool. When the pacing bar
-/// fills, the ceremony is finalized and wallet creation is dispatched.
+/// every qualified pointer sample is mixed into the entropy pool. Synthetic,
+/// stationary, and invalid movement samples do not advance the pacing bar.
+/// When the bar fills, the ceremony is finalized and wallet creation is
+/// dispatched.
 ///
 /// The trail renders only raw touch positions and the bar only the event
 /// count: nothing derived from pool state is ever displayed. The hint
@@ -65,7 +67,7 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
   }
 
   void _onPointerMove(PointerMoveEvent event) {
-    context.read<EntropyCeremonyCubit>().addPointerSample(
+    final accepted = context.read<EntropyCeremonyCubit>().addPointerSample(
       kind: PointerSampleKind.move,
       pointer: event.pointer,
       x: event.position.dx,
@@ -75,7 +77,14 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
       timestampMicros: event.timeStamp.inMicroseconds,
       pressure: event.pressure,
       radiusMajor: event.radiusMajor,
+      radiusMinor: event.radiusMinor,
+      size: event.size,
+      orientation: event.orientation,
+      tilt: event.tilt,
+      synthesized: event.synthesized,
     );
+    if (!accepted) return;
+
     setState(() {
       _trail.add(event.localPosition);
       if (_trail.length > _maxTrailPoints) {
@@ -87,7 +96,7 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
   // Taps remain a human-input path for users who cannot perform continuous
   // drag gestures. The counter is pacing, not an entropy measurement.
   void _onPointerDown(PointerDownEvent event) {
-    context.read<EntropyCeremonyCubit>().addPointerSample(
+    final accepted = context.read<EntropyCeremonyCubit>().addPointerSample(
       kind: PointerSampleKind.down,
       pointer: event.pointer,
       x: event.position.dx,
@@ -97,7 +106,14 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
       timestampMicros: event.timeStamp.inMicroseconds,
       pressure: event.pressure,
       radiusMajor: event.radiusMajor,
+      radiusMinor: event.radiusMinor,
+      size: event.size,
+      orientation: event.orientation,
+      tilt: event.tilt,
+      synthesized: event.synthesized,
     );
+    if (!accepted) return;
+
     setState(() {
       _trail
         ..add(null)

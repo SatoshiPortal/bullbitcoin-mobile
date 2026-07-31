@@ -18,7 +18,7 @@ class EntropyPool {
   static const stateSize = 32;
   static const maxExtractBytes = 32;
   static const minOsEntropyBytes = 32;
-  static const requiredTouchSamples = 300;
+  static const requiredTouchSamples = 500;
 
   static const _touchBeginDomain = 'touch-ceremony-begin-v1';
   static const _touchSampleDomain = 'touch-sample-v1';

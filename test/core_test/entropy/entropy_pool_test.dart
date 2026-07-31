@@ -24,10 +24,10 @@ void main() {
   group('known-answer construction', () {
     test('matches the independently computed SHA-512 vector', () {
       // Computed with Python hashlib from the versioned framing in
-      // EntropyPool: ceremony 1, 300 deterministic 80-byte touch samples,
+      // EntropyPool: ceremony 1, 500 deterministic 80-byte touch samples,
       // OS bytes 0..63, then a 32-byte extraction.
       const externalVector =
-          'afa6c476a27acfa28970bd8677cf02bc98a95bf229b4506d24d478d7975e2b47';
+          '9f2a1182ba107634ff8ebff3f4c6b74e24c2185acacca768ffb2216db6e1d27a';
       final pool = EntropyPool();
       completeCeremony(pool);
 
