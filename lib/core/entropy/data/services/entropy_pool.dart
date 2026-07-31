@@ -1,139 +1,88 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/entropy/domain/entropy_source.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:crypto/crypto.dart';
 
-/// SHA-512 entropy accumulator modelled on Bitcoin Core's
-/// `RNGState::MixExtract` (src/random.cpp).
+/// Stateful SHA-512 combiner for wallet-generation entropy.
 ///
-/// Invariants (see also the module tests):
-/// - Additivity: every mix hashes the new data *together with* the previous
-///   state, so no source — even one returning attacker-chosen bytes — can
-///   reduce the entropy already in the pool (computational, under standard
-///   SHA-512 assumptions). Sources are concatenated and hashed, never XORed,
-///   and nothing can replace the state wholesale.
-/// - Mandatory floor: [extract] throws unless the OS RNG and the bdk RNG
-///   were both fed through [mixMandatory] since the last extraction, so
-///   output is never weaker than the platform CSPRNG regardless of what the
-///   other sources do. The supplemental [mix] path can NEVER satisfy this
-///   gate, whatever source name it passes.
-/// - Half-out/half-back: each SHA-512 digest is split — the first 32 bytes
-///   are the output, the second 32 bytes become the next secret state and
-///   never leave this class. Extraction is capped at 32 bytes per round.
+/// A fresh touch ceremony and a fresh operating-system CSPRNG draw are both
+/// required for every extraction. Touch input is deliberately uncredited: it
+/// is a physically distinct hedge against predictable RNG output, not a
+/// claimed number of entropy bits.
 ///
-/// Note on independence: both mandatory sources ultimately derive from the
-/// same operating-system entropy root (the bdk draw goes through Rust's
-/// userspace `thread_rng`, reseeded from the OS; the Dart source through
-/// `Random.secure`). Mixing both provides implementation/binding-failure
-/// diversity, not independent entropy roots — a fully compromised kernel
-/// RNG affects both, which is exactly why the environmental sources are
-/// mixed on top.
+/// Each operation hashes framed input together with the previous 256-bit
+/// state. Extraction returns the first half of a SHA-512 digest and retains
+/// the second half as the next secret state.
 class EntropyPool {
-  EntropyPool({this.strengthenBudget = const Duration(milliseconds: 10)});
-
-  /// CPU budget for the strengthening pass run on every extraction.
-  /// [Duration.zero] disables strengthening (deterministic mode for tests).
-  final Duration strengthenBudget;
-
-  static const _stateSize = 32;
+  static const stateSize = 32;
   static const maxExtractBytes = 32;
+  static const minOsEntropyBytes = 32;
+  static const requiredTouchSamples = 300;
 
-  /// Minimum bytes a mandatory source must deliver: a short read can never
-  /// count towards the security floor.
-  static const minMandatoryBytes = 32;
+  static const _touchBeginDomain = 'touch-ceremony-begin-v1';
+  static const _touchSampleDomain = 'touch-sample-v1';
+  static const _touchCompleteDomain = 'touch-ceremony-complete-v1';
+  static const _osRngDomain = 'os-rng-v1';
 
-  static const mandatorySources = {
-    EntropySourceName.osRng,
-    EntropySourceName.bdkRng,
-  };
-
-  Uint8List _state = Uint8List(_stateSize);
+  Uint8List _state = Uint8List(stateSize);
   int _counter = 0;
-  final Set<String> _mandatoryMixed = {};
+  int _ceremonyId = 0;
+  int _touchSamples = 0;
+  bool _ceremonyActive = false;
+  bool _ceremonyComplete = false;
 
-  /// Folds supplemental [data] from [sourceName] into the pool state.
+  /// Starts a new human-entropy session while retaining all prior pool state.
   ///
-  /// Strictly additive and unprivileged: this path never satisfies the
-  /// mandatory gate, even when called with a mandatory source's name.
-  /// Empty data is skipped: "mixed" must always mean real bytes arrived,
-  /// never a placeholder.
-  void mix(String sourceName, Uint8List data) {
-    if (data.isEmpty) return;
-    _mixInternal(sourceName, data);
+  /// Starting again invalidates any unconsumed completion from an older
+  /// ceremony, so a completed gesture cannot be reused for a later attempt.
+  void beginTouchCeremony() {
+    _ceremonyId++;
+    _touchSamples = 0;
+    _ceremonyActive = true;
+    _ceremonyComplete = false;
+    _mixInternal(_touchBeginDomain, _encodeU64(_ceremonyId));
   }
 
-  /// Folds [data] from one of the [mandatorySources] into the pool and
-  /// marks the gate for it. This is the only way to satisfy the mandatory
-  /// floor and it validates both the source identity and a minimum length.
-  void mixMandatory(String sourceName, Uint8List data) {
-    if (!mandatorySources.contains(sourceName)) {
-      throw ArgumentError.value(
-        sourceName,
-        'sourceName',
-        'not a mandatory entropy source',
+  /// Mixes one serialized pointer sample into the active ceremony.
+  void mixTouchSample(Uint8List data) {
+    if (!_ceremonyActive || _ceremonyComplete) {
+      throw TouchEntropyCeremonyStateException(
+        'Touch entropy requires an active, incomplete ceremony',
       );
     }
-    if (data.length < minMandatoryBytes) {
-      throw MandatoryEntropyTooShortException(sourceName, data.length);
+    if (data.isEmpty) {
+      throw ArgumentError.value(data, 'data', 'must not be empty');
     }
-    _mixInternal(sourceName, data);
-    _mandatoryMixed.add(sourceName);
+
+    _mixInternal(_touchSampleDomain, data);
+    _touchSamples++;
   }
 
-  void _mixInternal(String sourceName, Uint8List data) {
-    final nameBytes = Uint8List.fromList(utf8.encode(sourceName));
-    final input = BytesBuilder(copy: false)
-      ..add(_encodeU64(nameBytes.length))
-      ..add(nameBytes)
-      ..add(_encodeU64(_counter++))
-      ..add(_encodeU64(data.length))
-      ..add(data)
-      ..add(_state);
-    final buffer = input.takeBytes();
-    final digest = sha512.convert(buffer).bytes;
-    _zero(buffer);
+  /// Marks the active ceremony ready for one extraction.
+  void completeTouchCeremony() {
+    if (!_ceremonyActive || _ceremonyComplete) {
+      throw TouchEntropyCeremonyStateException(
+        'No active touch entropy ceremony can be completed',
+      );
+    }
+    if (_touchSamples < requiredTouchSamples) {
+      throw TouchEntropyCeremonyIncompleteException(
+        collected: _touchSamples,
+        required: requiredTouchSamples,
+      );
+    }
 
-    _replaceState(digest);
+    _mixInternal(_touchCompleteDomain, _encodeU64(_touchSamples));
+    _ceremonyActive = false;
+    _ceremonyComplete = true;
   }
 
-  /// Burns [strengthenBudget] of CPU time iterating SHA-512 over the state,
-  /// like Bitcoin Core's `Strengthen()`. The result plus the observed
-  /// iteration count and elapsed ticks (scheduler/clock jitter) are folded
-  /// back through the normal mix path.
-  void strengthen() {
-    if (strengthenBudget == Duration.zero) return;
-
-    final stopwatch = Stopwatch()..start();
-    var buffer = Uint8List.fromList([..._encodeU64(_counter++), ..._state]);
-    var iterations = 0;
-    do {
-      for (var i = 0; i < 64; i++) {
-        final next = Uint8List.fromList(sha512.convert(buffer).bytes);
-        _zero(buffer);
-        buffer = next;
-        iterations++;
-      }
-    } while (stopwatch.elapsed < strengthenBudget);
-    stopwatch.stop();
-
-    mix(
-      EntropySourceName.strengthen,
-      Uint8List.fromList([
-        ...buffer,
-        ..._encodeU64(iterations),
-        ..._encodeU64(stopwatch.elapsedTicks),
-      ]),
-    );
-    _zero(buffer);
-  }
-
-  /// Returns [length] bytes (max 32) of entropy and advances the state.
+  /// Mixes fresh [osEntropy] and returns [length] bytes in one transaction.
   ///
-  /// Throws [EntropyPoolNotSeededException] unless every mandatory source
-  /// was fed through [mixMandatory] since the last extraction.
-  Uint8List extract(int length) {
+  /// The completed touch ceremony is consumed only after successful
+  /// extraction. There is no fallback when either required input is absent.
+  Uint8List extractWithOsEntropy(Uint8List osEntropy, int length) {
     if (length <= 0 || length > maxExtractBytes) {
       throw ArgumentError.value(
         length,
@@ -141,33 +90,55 @@ class EntropyPool {
         'must be between 1 and $maxExtractBytes bytes',
       );
     }
-    final missing = mandatorySources.difference(_mandatoryMixed);
-    if (missing.isNotEmpty) {
-      throw EntropyPoolNotSeededException(missing);
+    if (!_ceremonyComplete) {
+      throw EntropyPoolNotReadyException(
+        'A completed touch entropy ceremony is required',
+      );
+    }
+    if (osEntropy.length < minOsEntropyBytes) {
+      throw OsEntropyTooShortException(osEntropy.length);
     }
 
-    strengthen();
+    _mixInternal(_osRngDomain, osEntropy);
 
     final input = BytesBuilder(copy: false)
       ..add(_encodeU64(_counter++))
       ..add(_state);
     final buffer = input.takeBytes();
-    final digest = sha512.convert(buffer).bytes;
+    final digest = Uint8List.fromList(sha512.convert(buffer).bytes);
+    _zero(buffer);
+
+    final output = Uint8List.fromList(digest.sublist(0, length));
+    _replaceState(digest);
+    _zero(digest);
+
+    _ceremonyComplete = false;
+    _touchSamples = 0;
+    return output;
+  }
+
+  void _mixInternal(String domain, Uint8List data) {
+    final domainBytes = Uint8List.fromList(utf8.encode(domain));
+    final input = BytesBuilder(copy: false)
+      ..add(_encodeU64(domainBytes.length))
+      ..add(domainBytes)
+      ..add(_encodeU64(_counter++))
+      ..add(_encodeU64(data.length))
+      ..add(data)
+      ..add(_state);
+    final buffer = input.takeBytes();
+    final digest = Uint8List.fromList(sha512.convert(buffer).bytes);
     _zero(buffer);
 
     _replaceState(digest);
-    _mandatoryMixed.clear();
-    return Uint8List.fromList(digest.sublist(0, length));
+    _zero(digest);
   }
 
-  /// Adopts the second half of [digest] as the new state and best-effort
-  /// zeroes the old one (Dart's GC may have made copies; this matches the
-  /// hygiene level of the rest of the seed handling code).
-  void _replaceState(List<int> digest) {
+  void _replaceState(Uint8List digest) {
     assert(digest.length == 64);
-    final old = _state;
-    _state = Uint8List.fromList(digest.sublist(_stateSize));
-    _zero(old);
+    final oldState = _state;
+    _state = Uint8List.fromList(digest.sublist(stateSize));
+    _zero(oldState);
   }
 
   static void _zero(Uint8List bytes) {
@@ -183,18 +154,28 @@ class EntropyPool {
   }
 }
 
-class EntropyPoolNotSeededException extends BullException {
-  EntropyPoolNotSeededException(Set<String> missingSources)
-    : super(
-        'Entropy pool is missing mandatory sources: '
-        '${missingSources.join(', ')}',
-      );
+class EntropyPoolNotReadyException extends BullException {
+  EntropyPoolNotReadyException(super.message);
 }
 
-class MandatoryEntropyTooShortException extends BullException {
-  MandatoryEntropyTooShortException(String source, int length)
+class TouchEntropyCeremonyStateException extends BullException {
+  TouchEntropyCeremonyStateException(super.message);
+}
+
+class TouchEntropyCeremonyIncompleteException extends BullException {
+  TouchEntropyCeremonyIncompleteException({
+    required int collected,
+    required int required,
+  }) : super(
+         'Touch entropy ceremony has $collected samples; '
+         '$required are required',
+       );
+}
+
+class OsEntropyTooShortException extends BullException {
+  OsEntropyTooShortException(int length)
     : super(
-        'Mandatory entropy source $source delivered $length bytes; '
-        'minimum is ${EntropyPool.minMandatoryBytes}',
+        'Operating-system entropy source delivered $length bytes; '
+        'minimum is ${EntropyPool.minOsEntropyBytes}',
       );
 }

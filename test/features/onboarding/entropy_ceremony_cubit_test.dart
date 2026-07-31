@@ -1,6 +1,6 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/entropy/data/services/entropy_pool.dart';
-import 'package:bb_mobile/core/entropy/data/services/sources/imu_sensor_source.dart';
-import 'package:bb_mobile/core/entropy/domain/usecases/collect_sensor_entropy_usecase.dart';
 import 'package:bb_mobile/core/entropy/domain/usecases/mix_entropy_usecase.dart';
 import 'package:bb_mobile/features/onboarding/presentation/entropy_ceremony_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,15 +10,10 @@ void main() {
   late EntropyCeremonyCubit cubit;
 
   setUp(() {
-    pool = EntropyPool(strengthenBudget: Duration.zero);
+    pool = EntropyPool();
     cubit = EntropyCeremonyCubit(
       mixEntropyUsecase: MixEntropyUsecase(entropyPool: pool),
-      collectSensorEntropyUsecase: CollectSensorEntropyUsecase(
-        entropyPool: pool,
-        // Never started in these tests: sensors need a real device.
-        imuSensorSource: const ImuSensorSource(),
-      ),
-    );
+    )..start();
   });
 
   tearDown(() => cubit.close());
@@ -26,6 +21,8 @@ void main() {
   void addSamples(int count) {
     for (var i = 0; i < count; i++) {
       cubit.addPointerSample(
+        kind: i.isEven ? PointerSampleKind.down : PointerSampleKind.move,
+        pointer: 1,
         x: i.toDouble(),
         y: i * 2.0,
         dx: 1.0,
@@ -45,19 +42,43 @@ void main() {
     expect(cubit.state.isComplete, isFalse);
   });
 
-  test('completes at the target event count and stops counting', () {
-    addSamples(EntropyCeremonyState.targetEventCount + 50);
+  test('completion satisfies the pool human-input gate', () {
+    addSamples(EntropyCeremonyState.targetEventCount);
+
     expect(cubit.state.isComplete, isTrue);
     expect(cubit.state.progress, 1.0);
-    expect(cubit.state.decile, 10);
+    expect(
+      pool.extractWithOsEntropy(
+        Uint8List.fromList(List.generate(64, (index) => index)),
+        16,
+      ),
+      hasLength(16),
+    );
+  });
+
+  test('partial touch input cannot satisfy the pool gate', () {
+    addSamples(EntropyCeremonyState.targetEventCount - 1);
+
+    expect(
+      () => pool.extractWithOsEntropy(
+        Uint8List.fromList(List.generate(64, (index) => index)),
+        16,
+      ),
+      throwsA(isA<EntropyPoolNotReadyException>()),
+    );
+  });
+
+  test('samples after completion are ignored', () {
+    addSamples(EntropyCeremonyState.targetEventCount);
+    addSamples(50);
+
     expect(cubit.state.eventCount, EntropyCeremonyState.targetEventCount);
   });
 
-  test('touch samples are additive only: the mandatory gate still holds', () {
+  test('start is idempotent', () {
+    cubit.start();
     addSamples(EntropyCeremonyState.targetEventCount);
-    expect(
-      () => pool.extract(32),
-      throwsA(isA<EntropyPoolNotSeededException>()),
-    );
+
+    expect(cubit.state.isComplete, isTrue);
   });
 }

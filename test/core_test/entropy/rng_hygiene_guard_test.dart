@@ -2,11 +2,10 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Source-level guards against the RNG failure classes documented in
-/// Block's Coldcard disclosure (predictable fallback binding, narrow
-/// reseed pipe, call-site drift). These invariants held at review time;
-/// this test makes them fail loudly instead of silently when a future
-/// refactor moves a call site or weakens a binding.
+/// Source-level tripwires for accidental RNG-path drift.
+///
+/// Behavioral tests remain the security evidence; these checks only make a
+/// future call-site or dependency regression fail loudly.
 void main() {
   late final List<File> libFiles;
 
@@ -14,10 +13,10 @@ void main() {
     libFiles = Directory('lib')
         .listSync(recursive: true)
         .whereType<File>()
-        .where((f) => f.path.endsWith('.dart'))
-        .where((f) => !f.path.contains('lib/generated/'))
+        .where((file) => file.path.endsWith('.dart'))
+        .where((file) => !file.path.contains('lib/generated/'))
         .toList();
-    expect(libFiles, isNotEmpty, reason: 'expected to run from package root');
+    expect(libFiles, isNotEmpty, reason: 'expected package-root execution');
   });
 
   Iterable<String> filesContaining(Pattern pattern) sync* {
@@ -28,40 +27,35 @@ void main() {
     }
   }
 
-  test('fresh mnemonics are generated in exactly one place', () {
-    // Coldcard's bug shipped when a refactor drifted callers from the
-    // hardware RNG wrapper to a broken binding. Any new generation call
-    // site must go through MnemonicGenerator or consciously amend this.
-    expect(filesContaining('Mnemonic(wordCount').toList(), [
-      'lib/core/seed/data/services/mnemonic_generator.dart',
-    ]);
+  test('BDK random mnemonic generation is absent', () {
+    expect(filesContaining('Mnemonic(wordCount').toList(), isEmpty);
   });
 
-  test('only the generator and the locator touch the entropy pool from '
-      'outside the entropy module', () {
-    final importers = filesContaining(
-      "entropy_pool.dart'",
-    ).where((p) => !p.startsWith('lib/core/entropy/')).toList()..sort();
-    expect(importers, [
+  test('the generator deterministically encodes explicit entropy', () {
+    final generator = File(
       'lib/core/seed/data/services/mnemonic_generator.dart',
-      'lib/core/seed/seed_locator.dart',
-    ]);
+    ).readAsStringSync();
+
+    expect(generator, contains('bdk.Mnemonic.fromEntropy'));
+    expect(generator, contains('extractWithOsEntropy'));
   });
 
-  test('mandatory gate can only be fed by the collector and the generator', () {
-    final callers = filesContaining('.mixMandatory(').toList()..sort();
-    expect(callers, [
-      'lib/core/entropy/data/services/entropy_collector.dart',
-      'lib/core/seed/data/services/mnemonic_generator.dart',
-    ]);
+  test('removed environmental entropy sources do not return', () {
+    for (final removedName in [
+      'CpuJitterSource',
+      'SystemStatsSource',
+      'ImuSensorSource',
+      'EntropyCollector',
+    ]) {
+      expect(filesContaining(removedName).toList(), isEmpty);
+    }
   });
 
-  test('no non-secure Random anywhere in the entropy or seed modules', () {
-    final insecure = RegExp(r'\bRandom\((?!\))|\bRandom\(\d');
+  test('entropy and seed code use no non-secure Random constructor', () {
     for (final file in libFiles.where(
-      (f) =>
-          f.path.contains('lib/core/entropy/') ||
-          f.path.contains('lib/core/seed/'),
+      (file) =>
+          file.path.contains('lib/core/entropy/') ||
+          file.path.contains('lib/core/seed/'),
     )) {
       final source = file.readAsStringSync();
       for (final match in RegExp(r'\bRandom[.(]').allMatches(source)) {
@@ -72,29 +66,31 @@ void main() {
         expect(
           snippet.startsWith('Random.secure'),
           isTrue,
-          reason:
-              'non-secure Random in ${file.path}: "$snippet" — '
-              'seed/entropy code must only use Random.secure()',
+          reason: 'non-secure Random in ${file.path}: "$snippet"',
         );
       }
-      expect(
-        insecure.hasMatch(source),
-        isFalse,
-        reason: 'seeded Random(...) constructor in ${file.path}',
-      );
     }
   });
 
-  test('production wiring cannot weaken the pool configuration', () {
-    // The locator must construct EntropyPool with defaults: overriding
-    // strengthenBudget (the deterministic test mode) belongs to tests only.
-    final overriders = filesContaining('strengthenBudget')
-        .where((p) => p != 'lib/core/entropy/data/services/entropy_pool.dart')
-        .toList();
-    expect(overriders, isEmpty);
+  test('production wiring uses the default OS provider', () {
     final locator = File(
       'lib/core/entropy/entropy_locator.dart',
     ).readAsStringSync();
-    expect(locator.contains('EntropyPool()'), isTrue);
+
+    expect(locator, contains('OsRngSource()'));
+    expect(locator, isNot(contains('provider:')));
+  });
+
+  test('onboarding has no human-entropy bypass', () {
+    final screen = File(
+      'lib/features/onboarding/ui/screens/onboarding_entropy_ceremony.dart',
+    ).readAsStringSync();
+    final cubit = File(
+      'lib/features/onboarding/presentation/entropy_ceremony_cubit.dart',
+    ).readAsStringSync();
+
+    expect(screen, isNot(contains('Continue without drawing')));
+    expect(screen, isNot(contains('onboardingEntropyCeremonySkip')));
+    expect(cubit, isNot(contains('completeWithoutCeremony')));
   });
 }

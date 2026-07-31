@@ -70,8 +70,8 @@ class CoreLocator {
   }
 
   static void registerServices(GetIt locator) {
-    // Entropy must be registered before SeedLocator: MnemonicGenerator
-    // depends on the pool and collector.
+    // Entropy must be registered before SeedLocator because mnemonic
+    // generation depends on the pool and operating-system source.
     EntropyLocator.setup(locator);
     ExchangeLocator.registerServices(locator);
     MempoolLocator.registerServices(locator);

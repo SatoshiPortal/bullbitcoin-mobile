@@ -1347,57 +1347,49 @@
   "@onboardingCreateNewWallet": {
     "description": "Button label for creating a new wallet in onboarding"
   },
-  "onboardingEntropyCeremonyTitle": "Add randomness",
-  "@onboardingEntropyCeremonyTitle": {
-    "description": "Title of the entropy ceremony screen shown before creating a new wallet"
-  },
-  "onboardingEntropyCeremonyInstruction": "Bitcoin wallets are secured by entropy. Add extra security with a human touch by randomly moving your finger on the screen.",
+  "onboardingEntropyCeremonyInstruction": "Move your finger randomly across the screen. Your movement will be mixed with secure device randomness when your wallet is created.",
   "@onboardingEntropyCeremonyInstruction": {
     "description": "Call to action on the entropy ceremony screen"
   },
-  "onboardingEntropyMilestone1": "this is so random",
+  "onboardingEntropyMilestone1": "human input detected",
   "@onboardingEntropyMilestone1": {
     "description": "Entropy ceremony milestone message at 10%"
   },
-  "onboardingEntropyMilestone2": "keep randomizing, you're doing great",
+  "onboardingEntropyMilestone2": "keep moving randomly",
   "@onboardingEntropyMilestone2": {
     "description": "Entropy ceremony milestone message at 20%"
   },
-  "onboardingEntropyMilestone3": "isn't math fun?",
+  "onboardingEntropyMilestone3": "mixing your gesture",
   "@onboardingEntropyMilestone3": {
     "description": "Entropy ceremony milestone message at 30%"
   },
-  "onboardingEntropyMilestone4": "you are generating entropy",
+  "onboardingEntropyMilestone4": "adding movement and timing",
   "@onboardingEntropyMilestone4": {
     "description": "Entropy ceremony milestone message at 40%"
   },
-  "onboardingEntropyMilestone5": "cryptography is magic",
+  "onboardingEntropyMilestone5": "keep going",
   "@onboardingEntropyMilestone5": {
     "description": "Entropy ceremony milestone message at 50%"
   },
-  "onboardingEntropyMilestone6": "your randomness is excellent",
+  "onboardingEntropyMilestone6": "human randomness is being mixed",
   "@onboardingEntropyMilestone6": {
     "description": "Entropy ceremony milestone message at 60%"
   },
-  "onboardingEntropyMilestone7": "very random of you, but not enough yet",
+  "onboardingEntropyMilestone7": "almost there",
   "@onboardingEntropyMilestone7": {
     "description": "Entropy ceremony milestone message at 70%"
   },
-  "onboardingEntropyMilestone8": "you are making your wallet truly unique",
+  "onboardingEntropyMilestone8": "finalizing your contribution",
   "@onboardingEntropyMilestone8": {
     "description": "Entropy ceremony milestone message at 80%"
   },
-  "onboardingEntropyMilestone9": "RANDOMNESS ACHIEVED",
+  "onboardingEntropyMilestone9": "HUMAN RANDOMNESS ADDED",
   "@onboardingEntropyMilestone9": {
     "description": "Entropy ceremony final message at 100%"
   },
   "onboardingEntropyCeremonyCreating": "Creating your wallet...",
   "@onboardingEntropyCeremonyCreating": {
     "description": "Status text shown on the entropy ceremony screen while the wallet is being created"
-  },
-  "onboardingEntropyCeremonySkip": "Continue without drawing",
-  "@onboardingEntropyCeremonySkip": {
-    "description": "Accessible fallback shown after a delay on the entropy ceremony screen; completes the ceremony without touch gestures"
   },
   "sendTitle": "Send",
   "@sendTitle": {

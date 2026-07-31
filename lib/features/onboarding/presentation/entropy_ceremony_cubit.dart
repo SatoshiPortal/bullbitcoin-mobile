@@ -1,97 +1,49 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/entropy/domain/entropy_source.dart';
-import 'package:bb_mobile/core/entropy/domain/usecases/collect_sensor_entropy_usecase.dart';
 import 'package:bb_mobile/core/entropy/domain/usecases/mix_entropy_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+enum PointerSampleKind { down, move }
 
 class EntropyCeremonyState {
   const EntropyCeremonyState({this.eventCount = 0});
 
-  /// Pointer move events collected so far. Purely a pacing counter for the
-  /// progress bar — never a measured entropy claim. The security floor is
-  /// the pool's mandatory OS+bdk RNG gate, not this number.
+  /// Pointer samples collected so far. This is ceremony pacing only, not an
+  /// estimate of entropy bits.
   final int eventCount;
 
-  /// ~2 bits of timing jitter credited per move event; bar fills at 256
-  /// credited bits worth of margin (VeraCrypt-style pacing).
-  static const targetEventCount = 300;
+  static const targetEventCount = MixEntropyUsecase.requiredSampleCount;
 
   double get progress =>
       (eventCount / targetEventCount).clamp(0.0, 1.0).toDouble();
 
   bool get isComplete => eventCount >= targetEventCount;
 
-  /// 10%-decile the bar has reached (0..10), driving the milestone messages.
   int get decile => isComplete ? 10 : (progress * 10).floor();
 
   bool get hasStarted => eventCount > 0;
 }
 
-/// Feeds the onboarding entropy ceremony into the pool: every raw pointer
-/// sample is mixed as it arrives, and IMU sensor windows are collected
-/// continuously while the screen is open. Everything here is additive on
-/// top of the mandatory RNG floor.
+/// Serializes pointer samples and feeds them into the current pool ceremony.
 class EntropyCeremonyCubit extends Cubit<EntropyCeremonyState> {
-  EntropyCeremonyCubit({
-    required MixEntropyUsecase mixEntropyUsecase,
-    required CollectSensorEntropyUsecase collectSensorEntropyUsecase,
-  }) : _mixEntropyUsecase = mixEntropyUsecase,
-       _collectSensorEntropyUsecase = collectSensorEntropyUsecase,
-       super(const EntropyCeremonyState());
+  EntropyCeremonyCubit({required MixEntropyUsecase mixEntropyUsecase})
+    : _mixEntropyUsecase = mixEntropyUsecase,
+      super(const EntropyCeremonyState());
 
   final MixEntropyUsecase _mixEntropyUsecase;
-  final CollectSensorEntropyUsecase _collectSensorEntropyUsecase;
-  final Stopwatch _stopwatch = Stopwatch()..start();
-  bool _sensorLoopRunning = false;
-  bool _sensorsPaused = false;
+  final Stopwatch _stopwatch = Stopwatch();
+  bool _started = false;
 
-  /// Starts the background IMU sampling loop for the lifetime of the screen.
-  ///
-  /// Each round is paced to at least the sensor window so a device where
-  /// collection fails fast (no sensors, missing plugin) cannot turn this
-  /// into a busy loop.
-  Future<void> start() async {
-    if (_sensorLoopRunning) return;
-    _sensorLoopRunning = true;
-    const minRoundDuration = Duration(milliseconds: 1500);
-    while (!isClosed && !_sensorsPaused) {
-      final round = Stopwatch()..start();
-      await _collectSensorEntropyUsecase.execute();
-      final remaining = minRoundDuration - round.elapsed;
-      if (remaining > Duration.zero) {
-        await Future<void>.delayed(remaining);
-      }
-    }
-    _sensorLoopRunning = false;
-  }
-
-  /// Stops sensor sampling while the app is backgrounded: motion data must
-  /// only be collected while the ceremony is actually on screen.
-  void pauseSensors() {
-    _sensorsPaused = true;
-  }
-
-  void resumeSensors() {
-    if (isClosed) return;
-    _sensorsPaused = false;
-    start();
-  }
-
-  /// Accessible completion path: users who cannot perform touch gestures
-  /// can finish the ceremony directly. This never weakens the seed — the
-  /// mandatory OS + bdk RNG floor is enforced at extraction and does not
-  /// depend on ceremony input, which is strictly supplemental.
-  void completeWithoutCeremony() {
-    if (state.isComplete) return;
-    emit(
-      const EntropyCeremonyState(
-        eventCount: EntropyCeremonyState.targetEventCount,
-      ),
-    );
+  void start() {
+    if (_started) return;
+    _started = true;
+    _stopwatch.start();
+    _mixEntropyUsecase.begin();
   }
 
   void addPointerSample({
+    required PointerSampleKind kind,
+    required int pointer,
     required double x,
     required double y,
     required double dx,
@@ -100,20 +52,40 @@ class EntropyCeremonyCubit extends Cubit<EntropyCeremonyState> {
     required double pressure,
     required double radiusMajor,
   }) {
-    final bytes = Uint8List(64);
-    final view = ByteData.view(bytes.buffer);
-    view.setFloat64(0, x);
-    view.setFloat64(8, y);
-    view.setFloat64(16, dx);
-    view.setFloat64(24, dy);
-    view.setUint64(32, timestampMicros);
-    view.setUint64(40, _stopwatch.elapsedTicks);
-    view.setFloat64(48, pressure);
-    view.setFloat64(56, radiusMajor);
-    _mixEntropyUsecase.execute(source: EntropySourceName.touch, data: bytes);
+    if (!_started) {
+      throw StateError('Entropy ceremony has not started');
+    }
+    if (state.isComplete) return;
 
-    if (!state.isComplete) {
-      emit(EntropyCeremonyState(eventCount: state.eventCount + 1));
+    final bytes = Uint8List(80);
+    final view = ByteData.view(bytes.buffer);
+    view.setUint64(0, kind.index);
+    view.setUint64(8, pointer);
+    view.setFloat64(16, x);
+    view.setFloat64(24, y);
+    view.setFloat64(32, dx);
+    view.setFloat64(40, dy);
+    view.setUint64(48, timestampMicros);
+    view.setUint64(56, _stopwatch.elapsedTicks);
+    view.setFloat64(64, pressure);
+    view.setFloat64(72, radiusMajor);
+
+    try {
+      _mixEntropyUsecase.execute(bytes);
+    } finally {
+      _zero(bytes);
+    }
+
+    final nextCount = state.eventCount + 1;
+    if (nextCount == EntropyCeremonyState.targetEventCount) {
+      _mixEntropyUsecase.complete();
+    }
+    emit(EntropyCeremonyState(eventCount: nextCount));
+  }
+
+  static void _zero(Uint8List bytes) {
+    for (var i = 0; i < bytes.length; i++) {
+      bytes[i] = 0;
     }
   }
 }

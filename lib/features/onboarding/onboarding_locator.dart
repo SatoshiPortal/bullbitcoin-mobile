@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/entropy/domain/usecases/collect_sensor_entropy_usecase.dart';
 import 'package:bb_mobile/core/entropy/domain/usecases/mix_entropy_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -20,10 +19,8 @@ class OnboardingLocator {
     );
 
     locator.registerFactory<EntropyCeremonyCubit>(
-      () => EntropyCeremonyCubit(
-        mixEntropyUsecase: locator<MixEntropyUsecase>(),
-        collectSensorEntropyUsecase: locator<CollectSensorEntropyUsecase>(),
-      ),
+      () =>
+          EntropyCeremonyCubit(mixEntropyUsecase: locator<MixEntropyUsecase>()),
     );
 
     // Usecases

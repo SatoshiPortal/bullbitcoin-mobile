@@ -12,10 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-/// VeraCrypt-style entropy ceremony: the user drags a finger around the
-/// screen and every raw pointer sample is mixed into the entropy pool,
-/// while IMU sensors stream in the background. When the pacing bar fills,
-/// wallet creation is dispatched.
+/// Human-entropy ceremony: the user moves a finger around the screen and
+/// every pointer sample is mixed into the entropy pool. When the pacing bar
+/// fills, the ceremony is finalized and wallet creation is dispatched.
 ///
 /// The trail renders only raw touch positions and the bar only the event
 /// count: nothing derived from pool state is ever displayed. The hint
@@ -29,50 +28,19 @@ class OnboardingEntropyCeremony extends StatefulWidget {
       _OnboardingEntropyCeremonyState();
 }
 
-class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
-    with WidgetsBindingObserver {
+class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony> {
   static const _maxTrailPoints = 400;
   static const _milestoneFadeAfter = Duration(milliseconds: 2200);
   static const _completePause = Duration(milliseconds: 1200);
 
-  /// Accessible completion: after this long the ceremony can be finished
-  /// without gestures. Ceremony input is strictly supplemental — the
-  /// mandatory RNG floor is enforced at extraction either way.
-  static const _fallbackAfter = Duration(seconds: 20);
-
   final List<Offset?> _trail = [];
   String _milestone = '';
   Timer? _milestoneTimer;
-  Timer? _fallbackTimer;
-  bool _showFallback = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _fallbackTimer = Timer(_fallbackAfter, () {
-      if (mounted) setState(() => _showFallback = true);
-    });
-  }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _milestoneTimer?.cancel();
-    _fallbackTimer?.cancel();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Motion data must only be sampled while the ceremony is on screen.
-    final cubit = context.read<EntropyCeremonyCubit>();
-    if (state == AppLifecycleState.resumed) {
-      cubit.resumeSensors();
-    } else if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.hidden) {
-      cubit.pauseSensors();
-    }
   }
 
   List<String> _milestoneMessages(BuildContext context) => [
@@ -98,6 +66,8 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
 
   void _onPointerMove(PointerMoveEvent event) {
     context.read<EntropyCeremonyCubit>().addPointerSample(
+      kind: PointerSampleKind.move,
+      pointer: event.pointer,
       x: event.position.dx,
       y: event.position.dy,
       dx: event.delta.dx,
@@ -114,11 +84,12 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
     });
   }
 
-  // Taps count too: they carry timing entropy of their own, and they keep
-  // the ceremony progressing for users who cannot perform continuous drag
-  // gestures. (The counter is pacing, not an entropy measurement.)
+  // Taps remain a human-input path for users who cannot perform continuous
+  // drag gestures. The counter is pacing, not an entropy measurement.
   void _onPointerDown(PointerDownEvent event) {
     context.read<EntropyCeremonyCubit>().addPointerSample(
+      kind: PointerSampleKind.down,
+      pointer: event.pointer,
       x: event.position.dx,
       y: event.position.dy,
       dx: 0,
@@ -146,6 +117,10 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
     final hasStarted = context.select(
       (EntropyCeremonyCubit cubit) => cubit.state.hasStarted,
     );
+    final ceremonyComplete = context.select(
+      (EntropyCeremonyCubit cubit) => cubit.state.isComplete,
+    );
+    final acceptingPointerInput = !creating && !ceremonyComplete;
 
     final ink = context.appColors.onPrimaryFixed;
 
@@ -202,9 +177,13 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
                   child: Semantics(
                     label: context.loc.onboardingEntropyCeremonyInstruction,
                     child: Listener(
-                      onPointerDown: creating ? null : _onPointerDown,
-                      onPointerMove: creating ? null : _onPointerMove,
-                      onPointerUp: creating ? null : _onPointerUp,
+                      onPointerDown: acceptingPointerInput
+                          ? _onPointerDown
+                          : null,
+                      onPointerMove: acceptingPointerInput
+                          ? _onPointerMove
+                          : null,
+                      onPointerUp: acceptingPointerInput ? _onPointerUp : null,
                       behavior: HitTestBehavior.opaque,
                       child: CustomPaint(
                         size: Size.infinite,
@@ -266,29 +245,6 @@ class _OnboardingEntropyCeremonyState extends State<OnboardingEntropyCeremony>
                     ],
                   ),
                 ),
-                // Accessible completion: outside the IgnorePointer chrome so
-                // it is tappable and reachable by assistive technology.
-                if (_showFallback && !creating)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 8,
-                    child: Center(
-                      child: TextButton(
-                        onPressed: () => context
-                            .read<EntropyCeremonyCubit>()
-                            .completeWithoutCeremony(),
-                        child: BBText(
-                          context.loc.onboardingEntropyCeremonySkip,
-                          style: context.font.labelSmall?.copyWith(
-                            decoration: TextDecoration.underline,
-                            decorationColor: ink.withValues(alpha: 0.6),
-                          ),
-                          color: ink.withValues(alpha: 0.6),
-                        ),
-                      ),
-                    ),
-                  ),
                 if (creating)
                   Center(
                     child: SizedBox(
