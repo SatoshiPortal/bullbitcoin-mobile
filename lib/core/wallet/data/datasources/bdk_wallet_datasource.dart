@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/tx_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -298,6 +299,115 @@ class BdkWalletDatasource {
     }
 
     // Finish the transaction building process
+    final psbt = txBuilder.finish(wallet: bdkWallet);
+
+    return psbt.serialize();
+  }
+
+  /// Builds an unsigned PSBT that spends **exactly** [inputs] to [recipients].
+  ///
+  /// Differs from [buildPsbt] on the two axes a coin sweep needs:
+  ///
+  /// - **Inputs are pinned.** `addUtxos` + `manuallySelectedOnly` forbid BDK
+  ///   from pulling any other coin of the wallet into the transaction, so the
+  ///   set the user picked is the set that gets spent — no more, no less.
+  /// - **Outputs are plural.** `setRecipients` writes every fixed-amount
+  ///   output in one call; [buildPsbt] can only ever emit one.
+  ///
+  /// A [DrainTxRecipient] in [recipients] becomes BDK's `drain_to`, which
+  /// *replaces* the change output instead of adding one — that's the
+  /// no-change, spend-it-all case. With no drain recipient the leftover goes
+  /// to this wallet's own change output, derived by BDK from the internal
+  /// descriptor (never a reused address).
+  ///
+  /// Deliberately takes no `unspendable` set. BDK gives manually added utxos
+  /// priority over the unspendable list, so passing it here would be
+  /// security theatre: the frozen/reserved check has to happen *before* an
+  /// outpoint reaches [inputs], and it does — in the sweep use-case.
+  Future<String> buildSweepPsbt({
+    required WalletModel wallet,
+    required List<TxRecipient> recipients,
+    required List<WalletUtxoModel> inputs,
+    required NetworkFee networkFee,
+    bool replaceByFee = true,
+  }) async {
+    if (inputs.isEmpty) {
+      throw ArgumentError.value(inputs, 'inputs', 'must not be empty');
+    }
+    if (recipients.isEmpty) {
+      throw ArgumentError.value(recipients, 'recipients', 'must not be empty');
+    }
+    final drains = recipients.whereType<DrainTxRecipient>().toList();
+    if (drains.length > 1) {
+      throw ArgumentError.value(
+        recipients,
+        'recipients',
+        'must hold at most one DrainTxRecipient',
+      );
+    }
+
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final network = wallet.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
+    bdk.Script scriptOf(String address) =>
+        bdk.Address(address: address, network: network).scriptPubkey();
+
+    var txBuilder = bdk.TxBuilder();
+
+    final fixed = recipients.whereType<FixedTxRecipient>().toList();
+    if (fixed.isNotEmpty) {
+      txBuilder = txBuilder.setRecipients(
+        recipients: fixed
+            .map(
+              (recipient) => bdk.ScriptAmount(
+                script: scriptOf(recipient.address),
+                amount: bdk.Amount.fromSat(
+                  satoshi: recipient.amountSat.toInt(),
+                ),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    if (drains.isNotEmpty) {
+      txBuilder = txBuilder.drainTo(script: scriptOf(drains.single.address));
+    }
+
+    // The sweep invariant. `addUtxos` alone only marks these as must-spend;
+    // `manuallySelectedOnly` is what stops BDK from topping the transaction
+    // up with other coins when the recipients ask for more than the inputs
+    // hold (it fails with insufficient funds instead, which is correct here).
+    txBuilder = txBuilder
+        .addUtxos(
+          outpoints: inputs
+              .map(
+                (utxo) => bdk.OutPoint(
+                  txid: bdk.Txid.fromString(hex: utxo.txId),
+                  vout: utxo.vout,
+                ),
+              )
+              .toList(),
+        )
+        .manuallySelectedOnly();
+
+    // See [buildPsbt]: bdk_dart enables RBF by default, so only the opt-out
+    // needs an explicit sequence.
+    if (!replaceByFee) {
+      txBuilder = txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    }
+
+    txBuilder = switch (networkFee) {
+      AbsoluteFee(:final sats) => txBuilder.feeAbsolute(
+        feeAmount: bdk.Amount.fromSat(satoshi: sats),
+      ),
+      // sat/kwu is BDK's native unit — pass through without rounding.
+      RelativeFee(:final satPerKwu) => txBuilder.feeRate(
+        feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: satPerKwu),
+      ),
+    };
+
     final psbt = txBuilder.finish(wallet: bdkWallet);
 
     return psbt.serialize();

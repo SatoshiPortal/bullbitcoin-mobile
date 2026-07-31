@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/tx_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
@@ -53,6 +54,25 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     return psbt;
   }
 
+  @override
+  Future<String> buildSweepPsbt({
+    required String walletId,
+    required List<TxRecipient> recipients,
+    required List<WalletUtxo> inputs,
+    required NetworkFee networkFee,
+    bool? replaceByFee,
+  }) async {
+    final wallet = await _publicWallet(walletId);
+
+    return _bdkWallet.buildSweepPsbt(
+      wallet: wallet,
+      recipients: recipients,
+      inputs: inputs.map(WalletUtxoMapper.fromEntity).toList(),
+      networkFee: networkFee,
+      replaceByFee: replaceByFee ?? true,
+    );
+  }
+
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final wallet = await getPrivateWallet(walletId: walletId);
     final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);
@@ -91,6 +111,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     return txSize;
   }
 
+  @override
   Future<int> getTxFeeAmount({required String psbt}) async {
     final feeAbsolute = await _bdkWallet.getFeeAmount(psbt);
     return feeAbsolute;
