@@ -13488,5 +13488,6 @@
   "receiveMessageForSender": "প্রেরকের জন্য বার্তা",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin চালু আছে, কিন্তু এই ওয়ালেটে অবদান রাখার মতো কোনো ব্যালেন্স নেই। অর্থ পাওয়ার পর এটি সক্রিয় হবে।",
-  "announcementAutoswapDescription": "আপনার Liquid স্বয়ংক্রিয়ভাবে Bitcoin-এ রূপান্তরিত হয়।"
+  "announcementAutoswapDescription": "আপনার Liquid স্বয়ংক্রিয়ভাবে Bitcoin-এ রূপান্তরিত হয়।",
+  "legacySeedViewErrorFetch": "পুরোনো সিড লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }

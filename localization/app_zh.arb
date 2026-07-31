@@ -5278,5 +5278,6 @@
   "receiveMessageForSender": "给付款方的留言",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
-  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。"
+  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。",
+  "legacySeedViewErrorFetch": "加载旧种子失败。请重试。"
 }

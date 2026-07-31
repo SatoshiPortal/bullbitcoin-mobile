@@ -13278,5 +13278,6 @@
   "receiveMessageForSender": "پیام برای فرستنده",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin فعال است، اما این کیف پول هنوز موجودی‌ای برای مشارکت ندارد. پس از دریافت وجه فعال خواهد شد.",
-  "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود."
+  "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود.",
+  "legacySeedViewErrorFetch": "بارگذاری سیدهای قدیمی ناموفق بود. لطفاً دوباره تلاش کنید."
 }

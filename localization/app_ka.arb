@@ -3904,5 +3904,6 @@
   "receiveMessageForSender": "შეტყობინება გამგზავნს",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin ჩართულია, მაგრამ ამ საფულეს ჯერ არ აქვს ბალანსი მონაწილეობის მისაღებად. ის გააქტიურდება თანხის მიღებისთანავე.",
-  "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში."
+  "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში.",
+  "legacySeedViewErrorFetch": "ძველი სიდების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
 }

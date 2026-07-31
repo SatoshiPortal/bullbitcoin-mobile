@@ -13278,5 +13278,6 @@
   "receiveMessageForSender": "보내는 사람에게 전할 메시지",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
-  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다."
+  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다.",
+  "legacySeedViewErrorFetch": "기존 시드를 불러오지 못했습니다. 다시 시도해 주세요."
 }

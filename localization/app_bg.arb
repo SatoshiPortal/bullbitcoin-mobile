@@ -10967,5 +10967,6 @@
   "receiveMessageForSender": "Съобщение за изпращача",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
-  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin."
+  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
+  "legacySeedViewErrorFetch": "Неуспешно зареждане на наследените семена. Моля, опитайте отново."
 }

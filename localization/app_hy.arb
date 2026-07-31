@@ -3748,5 +3748,6 @@
   "receiveMessageForSender": "Հաղորդագրություն ուղարկողին",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin-ը միացված է, սակայն այս դրամապանակը դեռ ներդրման համար մնացորդ չունի։ Այն կակտիվանա միջոցներ ստանալուն պես։",
-  "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։"
+  "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։",
+  "legacySeedViewErrorFetch": "Չհաջողվեց բեռնել հին սերմերը։ Խնդրում ենք կրկին փորձել։"
 }

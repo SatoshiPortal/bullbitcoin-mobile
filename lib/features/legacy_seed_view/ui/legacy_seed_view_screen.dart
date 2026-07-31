@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
+import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,15 +26,20 @@ class LegacySeedViewScreen extends StatelessWidget {
         ),
         body: BlocBuilder<LegacySeedViewCubit, LegacySeedViewState>(
           builder: (context, state) {
-            if (!state.loading && state.seeds.isEmpty && state.error == null) {
+            if (!state.loading &&
+                state.seeds.isEmpty &&
+                state.failure == null) {
               context.read<LegacySeedViewCubit>().fetchOldSeeds();
             }
             if (state.loading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state.error != null) {
+            if (state.failure case final failure?) {
               return Center(
-                child: BBText(state.error!, style: context.font.bodyLarge),
+                child: BBText(
+                  failure.toTranslated(context),
+                  style: context.font.bodyLarge,
+                ),
               );
             }
             if (state.seeds.isEmpty) {

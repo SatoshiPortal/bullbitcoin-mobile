@@ -13468,5 +13468,6 @@
   "receiveMessageForSender": "भेजने वाले के लिए संदेश",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
-  "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।"
+  "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
+  "legacySeedViewErrorFetch": "पुराने सीड लोड करने में विफल। कृपया पुनः प्रयास करें।"
 }

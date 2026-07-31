@@ -5284,5 +5284,6 @@
   "receiveMessageForSender": "Сообщение для отправителя",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin включён, но в этом кошельке пока нет средств для участия. Он активируется, как только вы получите средства.",
-  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin."
+  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin.",
+  "legacySeedViewErrorFetch": "Не удалось загрузить старые сид-фразы. Пожалуйста, попробуйте снова."
 }
