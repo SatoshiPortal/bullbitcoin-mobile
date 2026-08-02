@@ -4,8 +4,9 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 typedef Mnemonic = ({
   String label,
@@ -13,6 +14,10 @@ typedef Mnemonic = ({
   List<String> words,
   bip39.Language language,
 });
+
+/// What the suggestion chips are currently answering: the focused field and
+/// the prefix it holds.
+typedef _HintQuery = ({int index, String prefix});
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
@@ -40,66 +45,89 @@ class MnemonicWidget extends StatefulWidget {
   State<MnemonicWidget> createState() => _MnemonicWidgetState();
 }
 
+/// Owns one [TextEditingController] per word.
+///
+/// The controllers are the single source of truth for what has been typed, so
+/// a keystroke never has to travel up to this state and back down: the field
+/// updates itself, and only the widgets actually listening to that controller
+/// rebuild. This state rebuilds on the rare events only — length change and
+/// submit error.
 class _MnemonicWidgetState extends State<MnemonicWidget> {
   Exception? _error;
   late bip39.MnemonicLength length;
-  late List<String> words;
+  late List<TextEditingController> _controllers;
   String passphrase = '';
   String label = '';
+
+  List<String> get _words =>
+      _controllers.map((controller) => controller.text.trim()).toList();
 
   @override
   void initState() {
     super.initState();
     length = widget.initialLength;
-    words = List<String>.filled(length.words, '');
+    _controllers = _newControllers(length.words);
   }
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  List<TextEditingController> _newControllers(int count) =>
+      List.generate(count, (_) => TextEditingController());
 
   void onSubmit() {
     setState(() => _error = null);
+    final words = _words;
 
-    if (words.every((word) => word.isNotEmpty)) {
-      try {
-        final mnemonic = bip39.Mnemonic.fromWords(
-          words: words,
-          language: widget.language,
-          passphrase: passphrase,
-        );
-        widget.onSubmit((
-          words: mnemonic.words,
-          passphrase: passphrase,
-          label: label,
-          language: widget.language,
-        ));
-      } catch (e) {
-        // if checksum is invalid, clear the last word
-        if (e is bip39.MnemonicInvalidChecksumException) words.last = '';
-        setState(() => _error = MnemonicException(e.toString()));
-        return;
-      }
-    } else {
+    if (words.any((word) => word.isEmpty)) {
       setState(() => _error = EmptyMnemonicWordsError());
+      return;
+    }
+
+    try {
+      final mnemonic = bip39.Mnemonic.fromWords(
+        words: words,
+        language: widget.language,
+        passphrase: passphrase,
+      );
+      widget.onSubmit((
+        words: mnemonic.words,
+        passphrase: passphrase,
+        label: label,
+        language: widget.language,
+      ));
+    } catch (e) {
+      // if checksum is invalid, clear the last word
+      if (e is bip39.MnemonicInvalidChecksumException) {
+        _controllers.last.clear();
+      }
+      setState(() => _error = MnemonicException(e.toString()));
     }
   }
 
-  void updateMnemonic(({int index, String word}) value) {
-    words[value.index] = value.word.toLowerCase().trim();
-    setState(() {});
-  }
+  // No setState: the inputs keep their own text, and nothing else displays it.
+  void updatePassphrase(String value) => passphrase = value;
 
-  void updatePassphrase(String value) {
-    passphrase = value;
-    setState(() {});
-  }
+  void updateLabel(String value) => label = value;
 
-  void updateLabel(String value) {
-    label = value;
-    setState(() {});
-  }
-
-  void changeMnemonicLength(bip39.MnemonicLength length) {
-    this.length = length;
-    words = List<String>.filled(length.words, '');
-    setState(() => _error = null);
+  void changeMnemonicLength(bip39.MnemonicLength value) {
+    final previous = _controllers;
+    setState(() {
+      length = value;
+      _controllers = _newControllers(length.words);
+      _error = null;
+    });
+    // Dispose only once the tree no longer references them.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final controller in previous) {
+        controller.dispose();
+      }
+    });
   }
 
   @override
@@ -117,9 +145,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           ],
 
           MnemonicSentenceWidget(
-            words: words,
+            controllers: _controllers,
             language: widget.language,
-            onWordChanged: updateMnemonic,
             allowAutoFillWords: widget.allowAutoFillWords,
           ),
 
@@ -167,59 +194,34 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 }
 
-class MnemonicWord extends StatefulWidget {
+/// A single word field.
+///
+/// Stateless on purpose: the [TextField] is built once and never rebuilt by a
+/// keystroke. Only the index badge and the clear button depend on the typed
+/// text, and each subscribes to the controller on its own.
+class MnemonicWord extends StatelessWidget {
   final bip39.Language language;
   final int index;
-  final Function(({int index, String word})) onWordChanged;
+  final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onComplete;
-  final String word;
 
   const MnemonicWord({
+    super.key,
     this.language = bip39.Language.english,
     required this.index,
-    required this.word,
-    required this.onWordChanged,
+    required this.controller,
     required this.focusNode,
     required this.onComplete,
   });
 
-  @override
-  State<MnemonicWord> createState() => MnemonicWordState();
-}
-
-class MnemonicWordState extends State<MnemonicWord> {
-  final _controller = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.text = widget.word;
-  }
-
   String get displayIndex {
-    final displayIndex = widget.index + 1;
+    final displayIndex = index + 1;
     return displayIndex < 10 ? '0$displayIndex' : '$displayIndex';
   }
 
   @override
-  void didUpdateWidget(MnemonicWord oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.word != widget.word && _controller.text != widget.word) {
-      _controller.text = widget.word;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isValidWord = widget.language.isValid(widget.word);
-
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -230,44 +232,50 @@ class MnemonicWordState extends State<MnemonicWord> {
       height: 41,
       child: Row(
         children: [
-          Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: widget.word.isEmpty
-                  ? context.appColors.onSurface
-                  : isValidWord
-                  ? context.appColors.success
-                  : context.appColors.error,
-
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: BBText(
-              displayIndex,
-              style: context.font.headlineMedium,
-              color: context.appColors.surface,
-              textAlign: .right,
-            ),
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) {
+              final word = value.text.trim();
+              return Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: word.isEmpty
+                      ? context.appColors.onSurface
+                      : language.isValid(word)
+                      ? context.appColors.success
+                      : context.appColors.error,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: BBText(
+                  displayIndex,
+                  style: context.font.headlineMedium,
+                  color: context.appColors.surface,
+                  textAlign: .right,
+                ),
+              );
+            },
           ),
           const Gap(4),
           Expanded(
             child: TextField(
               enableSuggestions: false,
               autocorrect: false,
-              controller: _controller,
+              controller: controller,
+              inputFormatters: [
+                // Keeps the previous behaviour of lowercasing as you type.
+                // Same length in and out, so the caret position stays valid.
+                TextInputFormatter.withFunction(
+                  (_, value) => value.copyWith(text: value.text.toLowerCase()),
+                ),
+              ],
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.text,
               ),
-              onChanged: (value) {
-                widget.onWordChanged((
-                  index: widget.index,
-                  word: _controller.text,
-                ));
-              },
-              focusNode: widget.focusNode,
+              focusNode: focusNode,
               clipBehavior: .antiAliasWithSaveLayer,
-              onEditingComplete: widget.onComplete,
+              onEditingComplete: onComplete,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.only(right: 8),
                 border: OutlineInputBorder(
@@ -282,15 +290,21 @@ class MnemonicWordState extends State<MnemonicWord> {
               ),
             ),
           ),
-          if (_controller.text.isNotEmpty || isValidWord)
-            IconButton(
-              onPressed: () {
-                _controller.clear();
-                widget.onWordChanged((index: widget.index, word: ''));
-              },
-              icon: Icon(Icons.close, size: 24, color: context.appColors.text),
-              padding: EdgeInsets.zero,
-            ),
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) {
+              if (value.text.isEmpty) return const SizedBox.shrink();
+              return IconButton(
+                onPressed: controller.clear,
+                icon: Icon(
+                  Icons.close,
+                  size: 24,
+                  color: context.appColors.text,
+                ),
+                padding: EdgeInsets.zero,
+              );
+            },
+          ),
         ],
       ),
     );
@@ -299,16 +313,14 @@ class MnemonicWordState extends State<MnemonicWord> {
 
 class MnemonicSentenceWidget extends StatefulWidget {
   static const int columns = 2;
-  final List<String> words;
+  final List<TextEditingController> controllers;
   final bip39.Language language;
-  final Function(({int index, String word})) onWordChanged;
   final bool allowAutoFillWords;
 
   const MnemonicSentenceWidget({
     super.key,
-    required this.words,
+    required this.controllers,
     required this.language,
-    required this.onWordChanged,
     this.allowAutoFillWords = true,
   });
 
@@ -317,109 +329,153 @@ class MnemonicSentenceWidget extends StatefulWidget {
 }
 
 class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
-  List<FocusNode> focusNodes = [];
-  int _focusedDisplayIndex = 0;
+  final ValueNotifier<_HintQuery> _hint = ValueNotifier((index: 0, prefix: ''));
+  final List<VoidCallback> _textListeners = [];
+  List<FocusNode> _focusNodes = [];
 
   @override
   void initState() {
     super.initState();
-    _initializeFocusNodes();
+    _attach();
   }
 
   @override
   void didUpdateWidget(MnemonicSentenceWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.words.length != widget.words.length) {
-      _disposeFocusNodes();
-      _initializeFocusNodes();
-      _focusedDisplayIndex = 0;
+    if (!identical(oldWidget.controllers, widget.controllers)) {
+      _detach(oldWidget.controllers);
+      _attach();
+      _hint.value = (index: 0, prefix: '');
     }
   }
 
   @override
   void dispose() {
-    _disposeFocusNodes();
+    _detach(widget.controllers);
+    _hint.dispose();
     super.dispose();
   }
 
-  void _initializeFocusNodes() {
-    focusNodes = List.generate(
-      widget.words.length,
-      (index) => FocusNode()
-        ..addListener(() {
-          final focusedIndex = focusNodes.indexWhere((node) => node.hasFocus);
-          if (focusedIndex != -1 && _focusedDisplayIndex != focusedIndex) {
-            setState(() => _focusedDisplayIndex = focusedIndex);
-          }
-        }),
-    );
+  void _attach() {
+    _focusNodes = List.generate(widget.controllers.length, (index) {
+      final node = FocusNode();
+      node.addListener(() {
+        if (node.hasFocus) _refreshHint(index);
+      });
+      return node;
+    });
+    for (var index = 0; index < widget.controllers.length; index++) {
+      final position = index;
+      void listener() => _onTextChanged(position);
+      _textListeners.add(listener);
+      widget.controllers[index].addListener(listener);
+    }
   }
 
-  void _disposeFocusNodes() {
-    for (final node in focusNodes) {
+  void _detach(List<TextEditingController> controllers) {
+    for (var i = 0; i < controllers.length && i < _textListeners.length; i++) {
+      controllers[i].removeListener(_textListeners[i]);
+    }
+    _textListeners.clear();
+    for (final node in _focusNodes) {
       node.dispose();
     }
-    focusNodes.clear();
+    _focusNodes = [];
+  }
+
+  void _onTextChanged(int index) {
+    if (_hint.value.index == index) _refreshHint(index);
+    _maybeAutoFill(index);
+  }
+
+  void _refreshHint(int index) {
+    _hint.value = (index: index, prefix: widget.controllers[index].text.trim());
+  }
+
+  /// Completes the field as soon as the prefix leaves a single possibility.
+  ///
+  /// Runs on the text-change notification rather than during build, where the
+  /// previous implementation scheduled it as a post-frame side effect.
+  void _maybeAutoFill(int index) {
+    if (!widget.allowAutoFillWords) return;
+    final prefix = widget.controllers[index].text.trim();
+    if (prefix.isEmpty) return;
+
+    // Stop at the second match: only ambiguity matters here, not the count.
+    final matches = widget.language.list
+        .where((word) => word.startsWith(prefix))
+        .take(2)
+        .toList();
+    if (matches.length == 1 && matches.first != prefix) {
+      widget.controllers[index].text = matches.first;
+      _focusNext(index + 1);
+    }
   }
 
   void _focusNext(int nextIndex) {
-    if (nextIndex < widget.words.length) {
-      if (nextIndex >= 0 && nextIndex < focusNodes.length) {
-        FocusScope.of(context).requestFocus(focusNodes[nextIndex]);
-      }
+    if (nextIndex >= 0 && nextIndex < _focusNodes.length) {
+      FocusScope.of(context).requestFocus(_focusNodes[nextIndex]);
     }
   }
 
-  void _onHintTap(String word) {
-    widget.onWordChanged((index: _focusedDisplayIndex, word: word));
-    _focusNext(_focusedDisplayIndex + 1);
+  void _onHintTap(int index, String word) {
+    widget.controllers[index].text = word;
+    _focusNext(index + 1);
   }
 
-  Widget _buildHintsList({Key? key}) {
+  Widget _buildHintsList() {
     const height = 50.0;
-    final hints = widget.language.list.where(
-      (word) => word.startsWith(widget.words[_focusedDisplayIndex]),
-    );
+    return ValueListenableBuilder<_HintQuery>(
+      valueListenable: _hint,
+      builder: (context, query, _) {
+        // Materialized: elementAt on a lazy where() walks the wordlist again
+        // for every chip the list scrolls to.
+        final hints = widget.language.list
+            .where((word) => word.startsWith(query.prefix))
+            .toList();
 
-    if (widget.allowAutoFillWords &&
-        hints.length == 1 &&
-        hints.first != widget.words[_focusedDisplayIndex]) {
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _onHintTap(hints.first),
-      );
-    }
-
-    if (hints.length == 1 &&
-        hints.first == widget.words[_focusedDisplayIndex]) {
-      return const SizedBox(height: height);
-    }
-
-    return SizedBox(
-      key: key,
-      height: height,
-      child: ListView.separated(
-        scrollDirection: .horizontal,
-        itemCount: hints.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final hint = hints.elementAt(index);
-          return _HintChip(word: hint, onTap: () => _onHintTap(hint));
-        },
-      ),
+        return Column(
+          crossAxisAlignment: .start,
+          children: [
+            SizedBox(
+              height: height,
+              child: hints.length == 1 && hints.first == query.prefix
+                  ? null
+                  : ListView.separated(
+                      key: ValueKey(query.index),
+                      scrollDirection: .horizontal,
+                      itemCount: hints.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) => _HintChip(
+                        word: hints[index],
+                        onTap: () => _onHintTap(query.index, hints[index]),
+                      ),
+                    ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final splitIndex = (widget.words.length / MnemonicSentenceWidget.columns)
-        .floor();
-    final leftWords = List.generate(
-      splitIndex,
-      (i) => (index: i, word: widget.words[i]),
-    );
-    final rightWords = List.generate(
-      widget.words.length - splitIndex,
-      (i) => (index: i + splitIndex, word: widget.words[i + splitIndex]),
+    final count = widget.controllers.length;
+    final splitIndex = (count / MnemonicSentenceWidget.columns).floor();
+
+    Widget column(int from, int to) => Column(
+      spacing: 16,
+      crossAxisAlignment: .start,
+      children: [
+        for (var index = from; index < to; index++)
+          MnemonicWord(
+            index: index,
+            controller: widget.controllers[index],
+            language: widget.language,
+            focusNode: _focusNodes[index],
+            onComplete: () => _focusNext(index + 1),
+          ),
+      ],
     );
 
     return Column(
@@ -428,43 +484,12 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
           crossAxisAlignment: .start,
           spacing: 16,
           children: [
-            Expanded(
-              child: Column(
-                spacing: 16,
-                children: leftWords
-                    .map(
-                      (entry) => MnemonicWord(
-                        index: entry.index,
-                        word: entry.word,
-                        onWordChanged: widget.onWordChanged,
-                        focusNode: focusNodes[entry.index],
-                        onComplete: () => _focusNext(entry.index + 1),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-            Expanded(
-              child: Column(
-                spacing: 16,
-                crossAxisAlignment: .start,
-                children: rightWords
-                    .map(
-                      (entry) => MnemonicWord(
-                        index: entry.index,
-                        word: entry.word,
-                        onWordChanged: widget.onWordChanged,
-                        focusNode: focusNodes[entry.index],
-                        onComplete: () => _focusNext(entry.index + 1),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
+            Expanded(child: column(0, splitIndex)),
+            Expanded(child: column(splitIndex, count)),
           ],
         ),
         const Gap(16),
-        _buildHintsList(key: ValueKey(_focusedDisplayIndex)),
+        _buildHintsList(),
       ],
     );
   }
