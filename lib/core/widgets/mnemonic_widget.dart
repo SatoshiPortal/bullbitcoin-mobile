@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/bip39.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -332,6 +334,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   final ValueNotifier<_HintQuery> _hint = ValueNotifier((index: 0, prefix: ''));
   final List<VoidCallback> _textListeners = [];
   List<FocusNode> _focusNodes = [];
+  String? _candidatesKey;
+  List<String>? _candidates;
 
   @override
   void initState() {
@@ -388,6 +392,37 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     _maybeAutoFill(index);
   }
 
+  /// The words worth offering for the field at [index].
+  ///
+  /// Every word of the list, except on the last field: there the checksum
+  /// pins the answer down to a handful of words, so offering the other 2000
+  /// would only be offering ways to fail.
+  List<String> _pool(int index) {
+    if (index == widget.controllers.length - 1) {
+      final candidates = _lastWordCandidates();
+      if (candidates != null) return candidates;
+    }
+    return widget.language.list;
+  }
+
+  /// Cached: the answer only changes when a word other than the last does,
+  /// so typing in the last field does not recompute it.
+  List<String>? _lastWordCandidates() {
+    final previous = [
+      for (var i = 0; i < widget.controllers.length - 1; i++)
+        widget.controllers[i].text.trim(),
+    ];
+    final key = previous.join(' ');
+    if (key != _candidatesKey) {
+      _candidatesKey = key;
+      _candidates = Bip39WordList.lastWordCandidates(
+        words: previous,
+        language: widget.language,
+      );
+    }
+    return _candidates;
+  }
+
   void _refreshHint(int index) {
     _hint.value = (index: index, prefix: widget.controllers[index].text.trim());
   }
@@ -402,10 +437,9 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     if (prefix.isEmpty) return;
 
     // Stop at the second match: only ambiguity matters here, not the count.
-    final matches = widget.language.list
-        .where((word) => word.startsWith(prefix))
-        .take(2)
-        .toList();
+    final matches = _pool(
+      index,
+    ).where((word) => word.startsWith(prefix)).take(2).toList();
     if (matches.length == 1 && matches.first != prefix) {
       widget.controllers[index].text = matches.first;
       _focusNext(index + 1);
@@ -428,15 +462,27 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     return ValueListenableBuilder<_HintQuery>(
       valueListenable: _hint,
       builder: (context, query, _) {
+        final isLastWord = query.index == widget.controllers.length - 1;
+        final pool = _pool(query.index);
+        final predicting = isLastWord && !identical(pool, widget.language.list);
+
         // Materialized: elementAt on a lazy where() walks the wordlist again
         // for every chip the list scrolls to.
-        final hints = widget.language.list
+        final hints = pool
             .where((word) => word.startsWith(query.prefix))
             .toList();
 
         return Column(
           crossAxisAlignment: .start,
           children: [
+            if (predicting) ...[
+              BBText(
+                context.loc.mnemonicPossibleLastWords(pool.length),
+                style: context.font.labelSmall,
+                color: context.appColors.textMuted,
+              ),
+              const Gap(4),
+            ],
             SizedBox(
               height: height,
               child: hints.length == 1 && hints.first == query.prefix

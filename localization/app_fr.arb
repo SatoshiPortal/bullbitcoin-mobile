@@ -5244,5 +5244,6 @@
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds.",
   "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
-  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer."
+  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
+  "mnemonicPossibleLastWords": "{count} derniers mots possibles"
 }

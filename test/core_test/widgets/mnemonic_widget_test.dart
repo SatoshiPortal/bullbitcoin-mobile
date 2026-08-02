@@ -182,6 +182,60 @@ void main() {
       );
     });
 
+    testWidgets('offers only checksum valid words on the last field', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(11), '']);
+
+      await tester.tap(wordField(11));
+      await tester.pump();
+
+      final valid = bip39.Mnemonic.lastWordCandidates(
+        words: validWords.take(11).toList(),
+      );
+      expect(valid, hasLength(128));
+
+      // Narrow to a prefix so the chips fit on screen: the list is lazy and
+      // only builds what is visible.
+      await tester.enterText(wordField(11), 'sen');
+      await tester.pump();
+
+      // the real last word is offered
+      expect(find.text('senior'), findsOneWidget);
+
+      // wordlist words with the same prefix that break the checksum are not
+      final rejected = bip39.Language.english.list.where(
+        (word) => word.startsWith('sen') && !valid.contains(word),
+      );
+      expect(rejected, isNotEmpty);
+      for (final word in rejected) {
+        expect(find.text(word), findsNothing, reason: '$word breaks checksum');
+      }
+    });
+
+    testWidgets('announces how many last words are possible', (tester) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(11), '']);
+
+      await tester.tap(wordField(11));
+      await tester.pump();
+
+      expect(find.text('128 possible last words'), findsOneWidget);
+    });
+
+    testWidgets('falls back to the full list while earlier words are missing', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(10), '', '']);
+
+      await tester.tap(wordField(11));
+      await tester.pump();
+
+      expect(find.textContaining('possible last words'), findsNothing);
+    });
+
     testWidgets('auto fills once the prefix leaves a single candidate', (
       tester,
     ) async {

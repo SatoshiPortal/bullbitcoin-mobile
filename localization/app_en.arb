@@ -14936,5 +14936,9 @@
   "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
   "@addressViewErrorLoadFailed": {
     "description": "Shown when loading or paginating the wallet address list fails"
+  },
+  "mnemonicPossibleLastWords": "{count} possible last words",
+  "@mnemonicPossibleLastWords": {
+    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed"
   }
 }
