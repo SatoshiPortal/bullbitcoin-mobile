@@ -13278,5 +13278,6 @@
   "receiveMessageForSender": "ข้อความสำหรับผู้ส่ง",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
-  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ"
+  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
+  "legacySeedViewErrorFetch": "โหลดซีดเก่าไม่สำเร็จ โปรดลองอีกครั้ง"
 }

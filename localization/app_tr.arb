@@ -13278,5 +13278,6 @@
   "receiveMessageForSender": "Gönderen için mesaj",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
-  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür."
+  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
+  "legacySeedViewErrorFetch": "Eski tohumlar yüklenemedi. Lütfen tekrar deneyin."
 }

@@ -3763,5 +3763,6 @@
   "receiveMessageForSender": "Ujumbe kwa mtumaji",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin imewashwa, lakini pochi hii bado haina salio la kuchangia. Itaanza kufanya kazi mara tu utakapopokea fedha.",
-  "announcementAutoswapDescription": "Liquid yako hubadilishwa kiotomatiki kuwa Bitcoin."
+  "announcementAutoswapDescription": "Liquid yako hubadilishwa kiotomatiki kuwa Bitcoin.",
+  "legacySeedViewErrorFetch": "Imeshindwa kupakia mbegu za zamani. Tafadhali jaribu tena."
 }

@@ -13278,5 +13278,6 @@
   "receiveMessageForSender": "Μήνυμα για τον αποστολέα",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
-  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin."
+  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
+  "legacySeedViewErrorFetch": "Αποτυχία φόρτωσης των παλαιών seeds. Παρακαλώ δοκιμάστε ξανά."
 }

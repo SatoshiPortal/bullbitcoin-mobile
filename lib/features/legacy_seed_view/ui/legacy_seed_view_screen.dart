@@ -2,11 +2,26 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
+import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LegacySeedViewScreen extends StatelessWidget {
+class LegacySeedViewScreen extends StatefulWidget {
   const LegacySeedViewScreen({super.key});
+
+  @override
+  State<LegacySeedViewScreen> createState() => _LegacySeedViewScreenState();
+}
+
+class _LegacySeedViewScreenState extends State<LegacySeedViewScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch once on mount. Triggering the fetch from BlocBuilder.builder
+    // instead re-fires on every rebuild when the result is an empty success
+    // (the user has no legacy seeds), which loops indefinitely.
+    context.read<LegacySeedViewCubit>().fetchOldSeeds();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +40,15 @@ class LegacySeedViewScreen extends StatelessWidget {
         ),
         body: BlocBuilder<LegacySeedViewCubit, LegacySeedViewState>(
           builder: (context, state) {
-            if (!state.loading && state.seeds.isEmpty && state.error == null) {
-              context.read<LegacySeedViewCubit>().fetchOldSeeds();
-            }
             if (state.loading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state.error != null) {
+            if (state.failure case final failure?) {
               return Center(
-                child: BBText(state.error!, style: context.font.bodyLarge),
+                child: BBText(
+                  failure.toTranslated(context),
+                  style: context.font.bodyLarge,
+                ),
               );
             }
             if (state.seeds.isEmpty) {

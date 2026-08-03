@@ -5278,5 +5278,6 @@
   "receiveMessageForSender": "Messaggio per il mittente",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin è attivo, ma questo portafoglio non ha ancora un saldo da contribuire. Si attiverà non appena riceverai fondi.",
-  "announcementAutoswapDescription": "Il tuo Liquid viene convertito automaticamente in Bitcoin."
+  "announcementAutoswapDescription": "Il tuo Liquid viene convertito automaticamente in Bitcoin.",
+  "legacySeedViewErrorFetch": "Impossibile caricare i vecchi seed. Riprova."
 }

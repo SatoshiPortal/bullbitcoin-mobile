@@ -5275,5 +5275,6 @@
   "receiveMessageForSender": "Повідомлення для відправника",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin увімкнено, але в цьому гаманці ще немає коштів для участі. Він активується, щойно ви отримаєте кошти.",
-  "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin."
+  "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
+  "legacySeedViewErrorFetch": "Не вдалося завантажити старі сіди. Будь ласка, спробуйте ще раз."
 }

@@ -13281,5 +13281,6 @@
   "receiveMessageForSender": "رسالة إلى المرسل",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
-  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin."
+  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
+  "legacySeedViewErrorFetch": "فشل تحميل البذور القديمة. يرجى المحاولة مرة أخرى."
 }

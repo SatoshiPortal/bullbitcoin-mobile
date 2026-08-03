@@ -5221,5 +5221,6 @@
   "receiveMessageForSender": "Nachricht an den Sender",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin ist aktiviert, aber dieses Wallet hat noch kein Guthaben für einen Beitrag. Es wird aktiv, sobald du Guthaben empfängst.",
-  "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht."
+  "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht.",
+  "legacySeedViewErrorFetch": "Legacy-Seeds konnten nicht geladen werden. Bitte versuchen Sie es erneut."
 }

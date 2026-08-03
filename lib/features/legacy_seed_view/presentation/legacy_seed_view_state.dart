@@ -5,7 +5,7 @@ abstract class LegacySeedViewState with _$LegacySeedViewState {
   const factory LegacySeedViewState({
     @Default(<OldSeed>[]) List<OldSeed> seeds,
     @Default(false) bool loading,
-    String? error,
+    LegacySeedViewFailure? failure,
   }) = _LegacySeedViewState;
   const LegacySeedViewState._();
 }
