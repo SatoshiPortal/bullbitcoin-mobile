@@ -149,4 +149,98 @@ void main() {
     expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
     expect((result as Ok<String, RecoverBullCoreFailure>).value, 'abcd');
   });
+
+  // Guards the package:hex -> package:convert codec swap and the
+  // `_normalizeHex` input handling. The repository HEX-decodes `identifier`
+  // and `salt` before the network call, so `fetchVaultKey` is the observable
+  // seam: a decodable input reaches the mocked `remote.fetch`, a malformed one
+  // is rejected before any network I/O.
+  group('hex input normalization and strict decoding (identifier/salt)', () {
+    void stubFetchOk() {
+      when(
+        () => remote.fetch(
+          any(),
+          any(),
+          any(),
+          externalProxy: any(named: 'externalProxy'),
+        ),
+      ).thenAnswer((_) async => [0xab, 0xcd]);
+    }
+
+    test('whitespace-formatted input still decodes (normalized, not '
+        'rejected)', () async {
+      stubFetchOk();
+
+      // The reveal screen groups the key into space-separated 4-char chunks;
+      // a user may retype it that way. Normalization must strip the spaces so
+      // the value still decodes, preserving the tolerance package:hex gave
+      // implicitly.
+      final result = await repository.fetchVaultKey(
+        'de ad be ef',
+        'password',
+        '00 11',
+      );
+
+      expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
+      verify(
+        () => remote.fetch(
+          any(),
+          any(),
+          any(),
+          externalProxy: any(named: 'externalProxy'),
+        ),
+      ).called(1);
+    });
+
+    test('uppercase input still decodes', () async {
+      stubFetchOk();
+
+      final result = await repository.fetchVaultKey('ABCD', 'password', 'EF01');
+
+      expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
+    });
+
+    test('odd-length input is rejected before any network call '
+        '(no silent zero-padding)', () async {
+      stubFetchOk();
+
+      // Under package:hex "abc" was silently decoded as "0abc" -> a different,
+      // wrong key, and the request proceeded. Under package:convert it throws,
+      // is caught, and mapped to a failure *before* remote.fetch is reached.
+      final result = await repository.fetchVaultKey('abc', 'password', '00');
+
+      expect(result, isA<Err<String, RecoverBullCoreFailure>>());
+      expect(
+        (result as Err<String, RecoverBullCoreFailure>).failure,
+        isA<RecoverBullUnexpectedCoreFailure>(),
+      );
+      verifyNever(
+        () => remote.fetch(
+          any(),
+          any(),
+          any(),
+          externalProxy: any(named: 'externalProxy'),
+        ),
+      );
+    });
+
+    test('non-hex input is rejected before any network call', () async {
+      stubFetchOk();
+
+      final result = await repository.fetchVaultKey('zz', 'password', '00');
+
+      expect(
+        (result as Err<String, RecoverBullCoreFailure>).failure,
+        isA<RecoverBullUnexpectedCoreFailure>(),
+      );
+      verifyNever(
+        () => remote.fetch(
+          any(),
+          any(),
+          any(),
+          externalProxy: any(named: 'externalProxy'),
+        ),
+      );
+    });
+  });
 }
