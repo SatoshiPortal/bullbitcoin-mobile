@@ -3027,7 +3027,6 @@
   "importColdcardScanNfcSheetTitle": "Gusa {deviceName} yako ili kuingiza descriptor ya pochi kupitia NFC",
   "importColdcardButtonOpenCamera": "Fungua kamera",
   "importColdcardButtonInstructions": "Maelekezo",
-  "importColdcardButtonPurchase": "Nunua kifaa",
   "importColdcardQInstructionsTitle": "Maelekezo ya Coldcard Q",
   "importColdcardQStep1": "Ingia kwenye kifaa chako cha Coldcard Q",
   "importColdcardQStep2": "Ongeza passphrase ikiwa unayo (hiari)",

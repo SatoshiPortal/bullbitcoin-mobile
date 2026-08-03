@@ -3227,7 +3227,6 @@
   "importColdcardDescription": "Tuo Coldcard Q -laitteesi lompakon kuvaus (descriptor) -QR-koodi",
   "importColdcardButtonOpenCamera": "Avaa kamera",
   "importColdcardButtonInstructions": "Ohjeet",
-  "importColdcardButtonPurchase": "Osta laite",
   "importColdcardInstructionsTitle": "Coldcard Q -ohjeet",
   "importColdcardInstructionsStep1": "Kirjaudu Coldcard Q -laitteeseesi",
   "importColdcardInstructionsStep2": "Syötä salasana, jos käytät sellaista",

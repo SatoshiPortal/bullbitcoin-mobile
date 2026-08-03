@@ -7180,10 +7180,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "importColdcardButtonPurchase": "ডিভাইচ ক্ৰয় কৰক",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "importColdcardInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
   "@importColdcardInstructionsTitle": {
     "description": "ImportColdcardQ: Title of instructions bottom sheet"

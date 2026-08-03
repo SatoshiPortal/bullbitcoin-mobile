@@ -10285,7 +10285,6 @@
   "importColdcardScanNfcSheetTitle": "Докоснете вашия {deviceName}, за да импортирате описателя на портфейла през NFC",
   "importColdcardButtonOpenCamera": "Отвори камерата",
   "importColdcardButtonInstructions": "Инструкции",
-  "importColdcardButtonPurchase": "Купи устройство",
   "importColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
   "importColdcardQStep1": "Влезте в устройството си Coldcard Q",
   "importColdcardQStep2": "Добавете защитна парола, ако имате такава (по избор)",

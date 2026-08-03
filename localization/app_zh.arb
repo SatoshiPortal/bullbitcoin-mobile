@@ -1000,7 +1000,6 @@
   },
   "kruxStep15": "该交易将被导入到 Bull Bitcoin 钱包中",
   "fundExchangeETransferLabelSecretQuestion": "保密问题",
-  "importColdcardButtonPurchase": "采购装置",
   "jadeStep15": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "confirmButton": "执 行",
   "transactionSwapInfoClaimableTransfer": "转让将在几秒内自动完成。 否则,你就可以通过点击“Retry Transfer claim”纽州而尝试人工索赔.",

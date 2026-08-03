@@ -2788,10 +2788,6 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
-  "importColdcardButtonPurchase": "جهاز الشراء",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "jadeStep15": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"

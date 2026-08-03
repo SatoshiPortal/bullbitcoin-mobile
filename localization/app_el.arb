@@ -2478,10 +2478,6 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
-  "importColdcardButtonPurchase": "Εργαλείο αγοράς",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "jadeStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"

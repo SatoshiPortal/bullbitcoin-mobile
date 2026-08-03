@@ -3011,7 +3011,6 @@
   "importColdcardScanNfcSheetTitle": "Հպեք ձեր {deviceName}-ը՝ դրամապանակի դեսկրիպտորը NFC-ով ներմուծելու համար",
   "importColdcardButtonOpenCamera": "Բացել տեսախցիկը",
   "importColdcardButtonInstructions": "Հրահանգներ",
-  "importColdcardButtonPurchase": "Գնել սարք",
   "importColdcardQInstructionsTitle": "Coldcard Q հրահանգներ",
   "importColdcardQStep1": "Մուտք գործեք ձեր Coldcard Q սարք",
   "importColdcardQStep2": "Ավելացրեք passphrase, եթե ունեք (ընտրովի)",

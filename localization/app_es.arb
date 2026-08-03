@@ -3282,7 +3282,6 @@
   "importColdcardDescription": "Importa el código QR descriptor de billetera de tu Coldcard Q",
   "importColdcardButtonOpenCamera": "Abrir la cámara",
   "importColdcardButtonInstructions": "Instrucciones",
-  "importColdcardButtonPurchase": "Comprar dispositivo",
   "importColdcardInstructionsTitle": "Instrucciones Coldcard Q",
   "importColdcardInstructionsStep1": "Inicia sesión en tu dispositivo Coldcard Q",
   "importColdcardInstructionsStep2": "Ingresa una frase de contraseña si corresponde",

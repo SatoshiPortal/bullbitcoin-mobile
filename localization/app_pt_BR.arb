@@ -2917,10 +2917,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "importColdcardButtonPurchase": "Dispositivo de compra",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "payRecipientType": "Tipo de destinatário",
   "@payRecipientType": {
     "description": "Label for recipient type"

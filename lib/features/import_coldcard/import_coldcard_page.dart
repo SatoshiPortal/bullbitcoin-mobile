@@ -14,7 +14,6 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ImportColdcardPage extends StatelessWidget {
   static const _supportedDevices = {
@@ -133,16 +132,6 @@ class ImportColdcardPage extends StatelessWidget {
                       ColdcardMk4InstructionsBottomSheet.show(context);
                     }
                   },
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
-                ),
-                Gap(Device.screen.height * 0.02),
-                BBButton.small(
-                  label: context.loc.importColdcardButtonPurchase,
-                  onPressed: () => launchUrl(
-                    Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
-                  ),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,

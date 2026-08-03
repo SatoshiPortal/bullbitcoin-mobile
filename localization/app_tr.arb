@@ -2950,10 +2950,6 @@
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
   },
-  "importColdcardButtonPurchase": "Satın alma cihazı satın alın",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "jadeStep15": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"

@@ -973,7 +973,6 @@
   },
   "kruxStep15": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert.",
   "fundExchangeETransferLabelSecretQuestion": "Geheime Frage",
-  "importColdcardButtonPurchase": "Kaufeinrichtung",
   "jadeStep15": "Die Transaktion ist bereit zum Senden! Sobald Sie auf „Senden“ klicken, wird die Transaktion im Bitcoin-Netzwerk veröffentlicht und die Mittel werden übertragen.",
   "confirmButton": "Bestätigen",
   "transactionSwapInfoClaimableTransfer": "Der Swap wird innerhalb weniger Sekunden automatisch abgeschlossen. Ist dies nicht der Fall, können Sie einen manuellen Antrag stellen, indem Sie auf die Schaltfläche „Swap erneut anfordern“ klicken",

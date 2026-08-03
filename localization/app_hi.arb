@@ -2958,10 +2958,6 @@
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
   },
-  "importColdcardButtonPurchase": "खरीद उपकरण",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "jadeStep15": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"

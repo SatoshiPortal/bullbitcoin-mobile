@@ -10720,10 +10720,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "importColdcardButtonPurchase": "Purchase device",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardQInstructionsTitle": {
     "description": "Title for Coldcard Q import instructions"

@@ -3279,7 +3279,6 @@
   "importColdcardDescription": "Importez le QR code descripteur de portefeuille de votre Coldcard Q",
   "importColdcardButtonOpenCamera": "Ouvrir la caméra",
   "importColdcardButtonInstructions": "Instructions",
-  "importColdcardButtonPurchase": "Acheter l'appareil",
   "importColdcardInstructionsTitle": "Instructions Coldcard Q",
   "importColdcardInstructionsStep1": "Connectez-vous à votre appareil Coldcard Q",
   "importColdcardInstructionsStep2": "Entrez une phrase secrète si applicable",

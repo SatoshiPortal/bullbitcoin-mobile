@@ -9346,10 +9346,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "importColdcardButtonPurchase": "Device kharido",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "importColdcardInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardInstructionsTitle": {
     "description": "ImportColdcardQ: Title of instructions bottom sheet"

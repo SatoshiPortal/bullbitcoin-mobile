@@ -3011,7 +3011,6 @@
   "importColdcardScanNfcSheetTitle": "Chạm {deviceName} của bạn để nhập descriptor ví qua NFC",
   "importColdcardButtonOpenCamera": "Mở camera",
   "importColdcardButtonInstructions": "Hướng dẫn",
-  "importColdcardButtonPurchase": "Mua thiết bị",
   "importColdcardQInstructionsTitle": "Hướng dẫn Coldcard Q",
   "importColdcardQStep1": "Đăng nhập vào thiết bị Coldcard Q của bạn",
   "importColdcardQStep2": "Thêm một cụm mật khẩu nếu bạn có (tùy chọn)",
