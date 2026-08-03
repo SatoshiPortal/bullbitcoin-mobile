@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
@@ -158,6 +159,15 @@ class SwapsLocator {
 
     locator.registerFactory<GetSwapsUsecase>(
       () => GetSwapsUsecase(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+
+    locator.registerFactory<LogSwapCensusUsecase>(
+      () => LogSwapCensusUsecase(
         boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

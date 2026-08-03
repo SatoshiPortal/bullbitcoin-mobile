@@ -47,53 +47,7 @@ class SwapWatcherService {
     }
   }
 
-  /// One census per process: a compact line for every stored swap, so a
-  /// single user log export shows exactly which local state (status /
-  /// recorded txids) keeps a swap out of [getOngoingSwaps]' watch set.
-  static bool _censusLogged = false;
-
-  Future<void> _logSwapCensus() async {
-    if (_censusLogged) return;
-    _censusLogged = true;
-    try {
-      final swaps = await _boltzRepo.getAllSwaps();
-      log.fine('[SwapCensus] ${swaps.length} stored swaps');
-      for (final s in swaps) {
-        final send = switch (s) {
-          LnSendSwap(:final sendTxid) => sendTxid,
-          ChainSwap(:final sendTxid) => sendTxid,
-          _ => null,
-        };
-        final recv = switch (s) {
-          LnReceiveSwap(:final receiveTxid) => receiveTxid,
-          ChainSwap(:final receiveTxid) => receiveTxid,
-          _ => null,
-        };
-        final refund = switch (s) {
-          LnSendSwap(:final refundTxid) => refundTxid,
-          ChainSwap(:final refundTxid) => refundTxid,
-          _ => null,
-        };
-        final refundAddr = switch (s) {
-          LnSendSwap(:final refundAddress) => refundAddress,
-          ChainSwap(:final refundAddress) => refundAddress,
-          _ => null,
-        };
-        log.fine(
-          '[SwapCensus] ${s.id} ${s.type.name} ${s.status.name}'
-          ' keyIndex=${s.keyIndex}'
-          ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}'
-          ' refundAddr=${refundAddr ?? '-'}'
-          ' completedAt=${s.completionTime?.toIso8601String() ?? '-'}',
-        );
-      }
-    } catch (e) {
-      log.warning('[SwapCensus] failed: $e');
-    }
-  }
-
   Future<void> startWatching() async {
-    unawaited(_logSwapCensus());
     await _swapStreamSubscription?.cancel();
     _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
