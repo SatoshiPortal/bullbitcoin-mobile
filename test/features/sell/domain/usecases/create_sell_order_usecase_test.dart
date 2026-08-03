@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -43,18 +43,21 @@ void main() {
       testnetExchangeOrderRepository: testnetRepo,
       settingsRepository: settingsRepository,
     );
-    when(() => settingsRepository.fetch())
-        .thenAnswer((_) async => fakeSettings);
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => fakeSettings);
   });
 
   group('CreateSellOrderUsecase', () {
     test('returns Ok(order) on success', () async {
       final fakeOrder = MockSellOrder();
-      when(() => mainnetRepo.placeSellOrder(
-            orderAmount: any(named: 'orderAmount'),
-            currency: any(named: 'currency'),
-            network: any(named: 'network'),
-          )).thenAnswer((_) async => fakeOrder);
+      when(
+        () => mainnetRepo.placeSellOrder(
+          orderAmount: any(named: 'orderAmount'),
+          currency: any(named: 'currency'),
+          network: any(named: 'network'),
+        ),
+      ).thenAnswer((_) async => fakeOrder);
 
       final result = await usecase.execute(
         orderAmount: const FiatAmount(100),
@@ -67,11 +70,13 @@ void main() {
     });
 
     test('returns Err(SellUnauthenticatedFailure) — no raw leak', () async {
-      when(() => mainnetRepo.placeSellOrder(
-            orderAmount: any(named: 'orderAmount'),
-            currency: any(named: 'currency'),
-            network: any(named: 'network'),
-          )).thenThrow(const SellError.unauthenticated());
+      when(
+        () => mainnetRepo.placeSellOrder(
+          orderAmount: any(named: 'orderAmount'),
+          currency: any(named: 'currency'),
+          network: any(named: 'network'),
+        ),
+      ).thenThrow(const SellError.unauthenticated());
 
       final result = await usecase.execute(
         orderAmount: const FiatAmount(100),
@@ -83,56 +88,62 @@ void main() {
       expect((result as Err).failure, isA<SellUnauthenticatedFailure>());
     });
 
-    test('returns Err(SellBelowMinAmountFailure) with correct sat amount',
-        () async {
-      when(() => mainnetRepo.placeSellOrder(
+    test(
+      'returns Err(SellBelowMinAmountFailure) with correct sat amount',
+      () async {
+        when(
+          () => mainnetRepo.placeSellOrder(
             orderAmount: any(named: 'orderAmount'),
             currency: any(named: 'currency'),
             network: any(named: 'network'),
-          )).thenThrow(
-        const SellError.belowMinAmount(minAmountSat: 10000),
-      );
+          ),
+        ).thenThrow(const SellError.belowMinAmount(minAmountSat: 10000));
 
-      final result = await usecase.execute(
-        orderAmount: const FiatAmount(1),
-        currency: FiatCurrency.cad,
-        network: OrderBitcoinNetwork.bitcoin,
-      );
+        final result = await usecase.execute(
+          orderAmount: const FiatAmount(1),
+          currency: FiatCurrency.cad,
+          network: OrderBitcoinNetwork.bitcoin,
+        );
 
-      expect(result, isA<Err<SellOrder, SellFailure>>());
-      final failure = (result as Err).failure as SellBelowMinAmountFailure;
-      expect(failure.minAmountSat, 10000);
-    });
+        expect(result, isA<Err<SellOrder, SellFailure>>());
+        final failure = (result as Err).failure as SellBelowMinAmountFailure;
+        expect(failure.minAmountSat, 10000);
+      },
+    );
 
-    test('returns Err(SellAboveMaxAmountFailure) with correct sat amount',
-        () async {
-      when(() => mainnetRepo.placeSellOrder(
+    test(
+      'returns Err(SellAboveMaxAmountFailure) with correct sat amount',
+      () async {
+        when(
+          () => mainnetRepo.placeSellOrder(
             orderAmount: any(named: 'orderAmount'),
             currency: any(named: 'currency'),
             network: any(named: 'network'),
-          )).thenThrow(
-        const SellError.aboveMaxAmount(maxAmountSat: 500000),
-      );
+          ),
+        ).thenThrow(const SellError.aboveMaxAmount(maxAmountSat: 500000));
 
-      final result = await usecase.execute(
-        orderAmount: const FiatAmount(999),
-        currency: FiatCurrency.cad,
-        network: OrderBitcoinNetwork.bitcoin,
-      );
+        final result = await usecase.execute(
+          orderAmount: const FiatAmount(999),
+          currency: FiatCurrency.cad,
+          network: OrderBitcoinNetwork.bitcoin,
+        );
 
-      expect(result, isA<Err<SellOrder, SellFailure>>());
-      final failure = (result as Err).failure as SellAboveMaxAmountFailure;
-      expect(failure.maxAmountSat, 500000);
-    });
+        expect(result, isA<Err<SellOrder, SellFailure>>());
+        final failure = (result as Err).failure as SellAboveMaxAmountFailure;
+        expect(failure.maxAmountSat, 500000);
+      },
+    );
 
     test(
       'returns Err(SellUnexpectedFailure) on generic exception — raw message in logMessage only',
       () async {
-        when(() => mainnetRepo.placeSellOrder(
-              orderAmount: any(named: 'orderAmount'),
-              currency: any(named: 'currency'),
-              network: any(named: 'network'),
-            )).thenThrow(Exception('network timeout'));
+        when(
+          () => mainnetRepo.placeSellOrder(
+            orderAmount: any(named: 'orderAmount'),
+            currency: any(named: 'currency'),
+            network: any(named: 'network'),
+          ),
+        ).thenThrow(Exception('network timeout'));
 
         final result = await usecase.execute(
           orderAmount: const FiatAmount(100),

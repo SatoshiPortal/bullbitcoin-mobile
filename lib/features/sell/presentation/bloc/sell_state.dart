@@ -2,9 +2,7 @@ part of 'sell_bloc.dart';
 
 @freezed
 sealed class SellState with _$SellState {
-  const factory SellState.initial({
-    SellFailure? failure,
-  }) = SellInitialState;
+  const factory SellState.initial({SellFailure? failure}) = SellInitialState;
   const factory SellState.amountInput({
     required UserSummary userSummary,
     required BitcoinUnit bitcoinUnit,
