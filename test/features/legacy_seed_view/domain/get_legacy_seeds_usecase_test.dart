@@ -61,6 +61,26 @@ void main() {
       },
     );
 
+    test(
+      'maps a non-Exception throwable (corrupt legacy data) to a failure, not a hang',
+      () async {
+        // Corrupt legacy Hive data throws Error subtypes (TypeError/HiveError);
+        // ArgumentError stands in for them. The boundary must convert it to a
+        // failure so the UI never hangs, and must not retain the raw payload.
+        when(
+          () => getOldSeedsUsecase.execute(),
+        ).thenThrow(ArgumentError('corrupt legacy payload'));
+
+        switch (await usecase.execute()) {
+          case Err(:final failure):
+            expect(failure, isA<LegacySeedViewUnexpectedFailure>());
+            expect(failure.logMessage, isNull);
+          case Ok():
+            fail('expected a failure');
+        }
+      },
+    );
+
     test('returns Ok and dedupes seeds sharing a mnemonic', () async {
       when(() => getOldSeedsUsecase.execute()).thenAnswer(
         (_) async => [

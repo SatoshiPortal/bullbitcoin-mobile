@@ -29,7 +29,7 @@ class GetLegacySeedsUsecase {
         trace: st,
       );
       return const Err(LegacySeedViewFetchFailure());
-    } on Exception catch (e, st) {
+    } catch (e, st) {
       log.severe(
         message: 'fetch legacy seeds failed (${e.runtimeType})',
         error: e.runtimeType,
