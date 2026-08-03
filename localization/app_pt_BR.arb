@@ -142,7 +142,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -475,7 +475,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -965,7 +965,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -1062,10 +1062,6 @@
   "payFeeTooHigh": "A taxa é excepcionalmente alta",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
-  },
-  "payAboveMaxAmountError": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellKYCRejected": "Verificação de KYC rejeitada",
   "@sellKYCRejected": {
@@ -1167,7 +1163,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1232,10 +1228,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "payOrderAlreadyConfirmedError": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "arkStatusSettled": "Preparado",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
@@ -1259,10 +1251,6 @@
   "hwConnectTitle": "Conecte a carteira de hardware",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
-  },
-  "payOrderAlreadyConfirmed": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
   "@recipientsSearchHint": {
@@ -1937,10 +1925,6 @@
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Rica",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
-  },
-  "payOrderNotFound": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
   "@bitboxActionSignTransactionProcessing": {
@@ -3033,10 +3017,6 @@
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "payInsufficientBalanceError": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
   "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -3287,7 +3267,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4179,10 +4159,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5203,7 +5183,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -8254,7 +8234,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -8456,10 +8436,6 @@
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
   },
-  "payBelowMinAmountError": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "pinStatusSettingUpDescription": "Configurando seu código PIN",
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
@@ -8524,7 +8500,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -9197,7 +9173,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -9335,7 +9311,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -9410,10 +9386,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -10012,9 +9988,12 @@
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
   },
-  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
+  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "doneButton": "Feito",
   "@doneButton": {
@@ -10788,9 +10767,12 @@
   "@mempoolCustomServerEdit": {
     "description": "Button text to edit custom mempool server"
   },
-  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
+  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "@exchangeFileUploadInstructions": {
@@ -10977,10 +10959,6 @@
   "@arkReceiveArkAddress": {
     "description": "Label for Ark address"
   },
-  "payOrderNotFoundError": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "coreScreensToLabel": "Para",
   "@coreScreensToLabel": {
     "description": "Label for destination/receiver field"
@@ -11100,10 +11078,6 @@
   "googleDriveSignInMessage": "Você precisará se inscrever no Google Drive",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "transactionOrderLabelPayinAmount": "Quantidade de pagamento",
   "@transactionOrderLabelPayinAmount": {
@@ -12361,10 +12335,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -12526,7 +12500,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12824,7 +12798,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

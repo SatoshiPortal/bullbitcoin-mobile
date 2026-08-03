@@ -78,7 +78,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -169,7 +169,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -322,7 +322,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -358,9 +358,7 @@
   "bitboxScreenSegwitBip84": "Segwit (BIP84)",
   "bitboxScreenConnectingSubtext": "Установление безопасного соединения...",
   "receiveShareAddress": "Адрес",
-  "arkTxPending": "Завершение",
-  "payAboveMaxAmountError": "Вы пытаетесь заплатить выше максимальной суммы, которую можно заплатить этим кошельком.",
-  "sharedWithBullBitcoin": "поделился с Bull Bitcoin.",
+  "arkTxPending": "Завершение",  "sharedWithBullBitcoin": "поделился с Bull Bitcoin.",
   "jadeStep7": "   - Держите QR-код устойчивым и сосредоточенным",
   "sendCouldNotBuildTransaction": "Невозможно создать транзакции",
   "allSeedViewIUnderstandButton": "Я понимаю",
@@ -392,7 +390,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -427,9 +425,7 @@
   "physicalBackupRecommendationText": "Вы уверены в своих собственных возможностях операционной безопасности, чтобы скрыть и сохранить ваши семенные слова Bitcoin.",
   "importWatchOnlyDescriptor": "Дескриптор",
   "payPaymentInProgress": "Payment In Progress!",
-  "recoverbullFailed": "Не удалось",
-  "payOrderAlreadyConfirmed": "Этот порядок оплаты уже подтвержден.",
-  "ledgerProcessingSign": "Подписание транзакции",
+  "recoverbullFailed": "Не удалось",  "ledgerProcessingSign": "Подписание транзакции",
   "jadeStep6": "   - Увеличить яркость экрана на вашем устройстве",
   "fundExchangeETransferLabelEmail": "Отправить E-трансфер на эту электронную почту",
   "pinCodeCreateButton": "Создать PIN",
@@ -500,9 +496,7 @@
   "walletDeletionFailedTitle": "Удалить не удалось",
   "payPayFromWallet": "Платить за кошелек",
   "broadcastSignedTxNfcTitle": "NFC",
-  "buyYouPay": "Ты платишь",
-  "payOrderAlreadyConfirmedError": "Этот порядок оплаты уже подтвержден.",
-  "passportStep12": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на паспорте. Сканируйте.",
+  "buyYouPay": "Ты платишь",  "passportStep12": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на паспорте. Сканируйте.",
   "paySelectRecipient": "Выберите получателя",
   "payNoActiveWallet": "Нет активного кошелька",
   "importQrDeviceKruxStep4": "Нажмите кнопку «открытая камера»",
@@ -703,9 +697,7 @@
   "bitboxCubitOperationTimeout": "Операция была отложена. Попробуй еще раз.",
   "receivePaymentReceived": "Получена оплата!",
   "backupWalletHowToDecideVaultCloudSecurity": "Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Они могут получить доступ к вашему биткойну только в маловероятном случае, если они столкнутся с ключевым сервером (интернет-сервис, который хранит ваш пароль шифрования). Если ключевой сервер когда-либо взломан, ваш биткойн может быть под угрозой с облаком Google или Apple.",
-  "howToDecideBackupText1": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
-  "payOrderNotFound": "Заказ на оплату не был найден. Попробуй еще раз.",
-  "coldcardStep13": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на Coldcard. Сканируйте.",
+  "howToDecideBackupText1": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",  "coldcardStep13": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на Coldcard. Сканируйте.",
   "psbtFlowIncreaseBrightness": "Увеличить яркость экрана на вашем устройстве",
   "payCoinjoinCompleted": "CoinJoin завершен",
   "electrumAddCustomServer": "Добавить пользовательский сервер",
@@ -1108,9 +1100,7 @@
   "legacySeedViewScreenTitle": "Наследные семена",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
   "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
-  "electrumReset": "Перезагрузка",
-  "payInsufficientBalanceError": "Недостаточный баланс в выбранном кошельке для выполнения этого платежного поручения.",
-  "backupCompletedTitle": "Закрытие завершено!",
+  "electrumReset": "Перезагрузка",  "backupCompletedTitle": "Закрытие завершено!",
   "arkDate": "Дата",
   "psbtFlowInstructions": "Инструкции",
   "systemLabelExchangeSell": "Печать",
@@ -1145,7 +1135,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -1344,10 +1334,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -1916,7 +1906,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1935,10 +1925,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -3063,9 +3053,7 @@
   "importQrDevicePassportStep5": "Выберите опцию \"Sparrow\"",
   "psbtFlowClickPsbt": "Нажмите на PSBT",
   "sendInvoicePaid": "Оплата счетов-фактур",
-  "buyKycPendingDescription": "Вы должны сначала завершить проверку личности",
-  "payBelowMinAmountError": "Вы пытаетесь заплатить ниже минимальной суммы, которую можно заплатить этим кошельком.",
-  "arkReceiveSegmentArk": "Ковчег",
+  "buyKycPendingDescription": "Вы должны сначала завершить проверку личности",  "arkReceiveSegmentArk": "Ковчег",
   "autoswapRecipientWalletInfo": "Выберите, какой биткойн-кошелек получит переведенные средства (требуется)",
   "importWalletKrux": "Krux",
   "swapContinueButton": "Продолжить",
@@ -3081,10 +3069,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3277,7 +3265,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -3484,7 +3472,7 @@
   "bitboxErrorConnectionTypeNotInitialized": "Тип подключения не инициализируется.",
   "transactionListOngoingTransfersDescription": "Эти переводы в настоящее время осуществляются. Ваши средства безопасны и будут доступны, когда передача завершится.",
   "ledgerErrorUnknown": "Неизвестная ошибка",
-  "payBelowMinAmount": "Вы пытаетесь заплатить ниже минимальной суммы, которую можно заплатить этим кошельком.",
+  "payBelowMinAmount": "Вы пытаетесь заплатить ниже минимальной суммы, которую можно заплатить этим кошельком ({minAmountSat} sats).",
   "ledgerProcessingVerifySubtext": "Пожалуйста, подтвердите адрес вашего устройства Ledger.",
   "transactionOrderLabelOriginCedula": "Происхождение кедула",
   "recoverbullRecoveryTransactionsLabel": "Транзакции: {count}",
@@ -3630,9 +3618,7 @@
   },
   "electrumRetryCount": "Retry Count",
   "walletDetailsDescriptorLabel": "Дескриптор",
-  "importQrDeviceSeedsignerInstructionsTitle": "Инструкции для SeedSigner",
-  "payOrderNotFoundError": "Заказ на оплату не был найден. Попробуй еще раз.",
-  "jadeStep12": "Нажмите «I'm done» в кошельке Bull Bitcoin.",
+  "importQrDeviceSeedsignerInstructionsTitle": "Инструкции для SeedSigner",  "jadeStep12": "Нажмите «I'm done» в кошельке Bull Bitcoin.",
   "payFilterByType": "Фильтр по типу",
   "importMnemonicImporting": "Импорт...",
   "recoverbullGoogleDriveExportButton": "Экспорт",
@@ -3689,7 +3675,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -3697,7 +3683,6 @@
   "bitboxScreenWalletTypeLabel": "Тип кошелька:",
   "importQrDeviceKruxStep6": "Вот так!",
   "recoverbullRecoveryErrorMissingDerivationPath": "В архиве отсутствует траектория.",
-  "payUnauthenticatedError": "Вы не проверены. Пожалуйста, зайдите, чтобы продолжить.",
   "payClabe": "CLABE",
   "mempoolCustomServerDelete": "Удалить",
   "optionalPassphraseHint": "Факультативная фраза",
@@ -3709,7 +3694,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -3943,7 +3928,7 @@
   "sellSendPaymentNetworkFees": "Сетевые сборы",
   "transactionSwapDescLnReceivePaid": "Оплата была получена! Теперь мы транслируем транзакции на цепочке к вашему кошельку.",
   "transactionNoteUpdateButton": "Обновление",
-  "payAboveMaxAmount": "Вы пытаетесь заплатить выше максимальной суммы, которую можно заплатить этим кошельком.",
+  "payAboveMaxAmount": "Вы пытаетесь заплатить выше максимальной суммы, которую можно заплатить этим кошельком ({maxAmountSat} sats).",
   "receiveNetworkUnavailable": "{network} в настоящее время отсутствует",
   "@receiveNetworkUnavailable": {
     "placeholders": {
@@ -4259,7 +4244,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4581,7 +4566,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4879,7 +4864,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

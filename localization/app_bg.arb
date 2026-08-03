@@ -650,7 +650,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -1013,10 +1013,6 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "Опитвате се да платите над максималната сума, която може да се изплати с този портфейл.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
   "sharedWithBullBitcoin": "споделено с Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
@@ -1088,7 +1084,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1184,10 +1180,6 @@
   "payPaymentInProgress": "Плащането е в процес на обработка!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "payOrderAlreadyConfirmed": "Тази заявка за плащане вече е потвърдена.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "jadeStep6": "   - Увеличете яркостта на екрана на вашето устройство",
   "@jadeStep6": {
@@ -1370,10 +1362,6 @@
   "buyYouPay": "Плащате",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Тази заявка за плащане вече е потвърдена.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Passport. Сканирайте го.",
   "@passportStep12": {
@@ -1866,10 +1854,6 @@
   "howToDecideBackupText1": "Един от най-често срещаните начини, по които хората губят своите биткойни, е като загубят физическото резервно копие. Всеки, който намери вашето физическо резервно копие, ще може да открадне всички ваши биткойни. Ако сте много уверени, че можете да го скриете добре и никога да не го изгубите, това е добър вариант.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "Поръчката за плащане не беше намерена. Моля, опитайте отново.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Coldcard. Сканирайте го.",
   "@coldcardStep13": {
@@ -2808,10 +2792,6 @@
   "backupWalletPhysicalBackupTag": "Без доверие (вземете си време)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },
-  "payInsufficientBalanceError": "Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за плащане.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "backupCompletedTitle": "Резервното копие е завършено!",
   "@backupCompletedTitle": {
@@ -4606,7 +4586,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -6589,7 +6569,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -7105,10 +7085,6 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "Опитвате се да платите под минималната сума, която може да се изплати с този портфейл.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "importWalletKrux": "Krux",
   "@importWalletKrux": {
     "description": "Button label for Krux hardware wallet"
@@ -7539,7 +7515,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -8004,9 +7980,12 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "payBelowMinAmount": "Опитвате се да платите под минималната сума, която може да се изплати с този портфейл.",
+  "payBelowMinAmount": "Опитвате се да платите под минималната сума, която може да се изплати с този портфейл ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "transactionOrderLabelOriginCedula": "Произходна лична карта",
   "@transactionOrderLabelOriginCedula": {
@@ -8306,10 +8285,6 @@
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
   },
-  "payOrderNotFoundError": "Поръчката за плащане не беше намерена. Моля, опитайте отново.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "jadeStep12": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
@@ -8442,7 +8417,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -8454,10 +8429,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Липсва деривационен път за резервното копие.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -8482,7 +8453,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -9004,9 +8975,12 @@
       }
     }
   },
-  "payAboveMaxAmount": "Опитвате се да платите над максималната сума, която може да се изплати с този портфейл.",
+  "payAboveMaxAmount": "Опитвате се да платите над максималната сума, която може да се изплати с този портфейл ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} е в момента nedостъпно",
   "@receiveNetworkUnavailable": {
@@ -9583,7 +9557,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -9860,7 +9834,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

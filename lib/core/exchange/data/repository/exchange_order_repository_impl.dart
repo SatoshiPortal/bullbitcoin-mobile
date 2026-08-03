@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
+import 'package:bb_mobile/core/exchange/domain/failures/pay_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -234,7 +235,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   }
 
   @override
-  Future<FiatPaymentOrder> placePayOrder({
+  Future<Result<FiatPaymentOrder, PayFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
@@ -246,7 +247,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const PayError.unauthenticated();
+        return const Err(PayUnauthenticatedFailure());
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createPayOrder(
@@ -260,17 +261,16 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order =
           orderModel.toEntity(isTestnet: _isTestnet) as FiatPaymentOrder;
 
-      return order;
+      return Ok(order);
     } on BullBitcoinApiMinAmountException catch (e) {
-      final minAmountBtc = e.minAmount;
-      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
-      throw PayError.belowMinAmount(minAmountSat: minAmountSat);
+      final minAmountSat = ConvertAmount.btcToSats(e.minAmount);
+      return Err(PayBelowMinAmountFailure(minAmountSat: minAmountSat));
     } on BullBitcoinApiMaxAmountException catch (e) {
-      final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
-      throw PayError.aboveMaxAmount(maxAmountSat: maxAmountSat);
-    } catch (e) {
-      throw Exception('Failed to place pay order: $e');
+      final maxAmountSat = ConvertAmount.btcToSats(e.maxAmount);
+      return Err(PayAboveMaxAmountFailure(maxAmountSat: maxAmountSat));
+    } catch (e, st) {
+      log.severe(message: 'Failed to place pay order', error: e, trace: st);
+      return Err(PayUnexpectedFailure(e.toString()));
     }
   }
 
@@ -428,22 +428,16 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   }
 
   @override
-  Future<FiatPaymentOrder> refreshPayOrder(String orderId) async {
+  Future<Result<FiatPaymentOrder, PayFailure>> refreshPayOrder(
+    String orderId,
+  ) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
+      if (apiKeyModel == null || !apiKeyModel.isActive) {
+        return const Err(PayUnauthenticatedFailure());
       }
 
       final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
@@ -454,15 +448,18 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! FiatPaymentOrder) {
-        throw const PayError.unexpected(
-          message:
-              'Expected FiatPaymentOrder but received a different order type',
+        log.severe(
+          message: 'refreshPayOrder: unexpected order type',
+          error: order.runtimeType,
+          trace: StackTrace.current,
         );
+        return const Err(PayUnexpectedFailure());
       }
 
-      return order;
-    } catch (e) {
-      throw PayError.unexpected(message: 'Failed to refresh pay order: $e');
+      return Ok(order);
+    } catch (e, st) {
+      log.severe(message: 'Failed to refresh pay order', error: e, trace: st);
+      return Err(PayUnexpectedFailure(e.toString()));
     }
   }
 

@@ -979,7 +979,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -2023,21 +2023,16 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "payBelowMinAmount": "Aap minimum raashi se kam pay karne ki koshish kar rahe ho is wallet se.",
+  "payBelowMinAmount": "Aap minimum raashi se kam pay karne ki koshish kar rahe ho is wallet se ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "payNotAuthenticated": "Aap authenticated nahi ho. Jaari rakhne ke liye login karo.",
   "@payNotAuthenticated": {
     "description": "Error message when user is not authenticated"
-  },
-  "payOrderNotFound": "Pay order nahi mila. Dobara koshish karo.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "payOrderAlreadyConfirmed": "Yeh pay order pehle hi confirm ho chuka hai.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "payPaymentInProgress": "Payment Ho Rahi Hai!",
   "@payPaymentInProgress": {
@@ -4160,7 +4155,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -4249,7 +4244,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -4575,7 +4570,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -6817,7 +6812,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -7991,7 +7986,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -9590,10 +9585,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -10181,7 +10176,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -10295,7 +10290,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -11166,10 +11161,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -11182,7 +11177,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -11527,10 +11522,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -12061,30 +12056,6 @@
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
   },
-  "payAboveMaxAmountError": "Aap is wallet se maximum pay-able amount se zyada pay karne ki koshish kar rahe hain.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "payBelowMinAmountError": "Aap is wallet se minimum pay-able amount se kam pay karne ki koshish kar rahe hain.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "payInsufficientBalanceError": "Is pay order ko poora karne ke liye selected wallet mein balance kam hai.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "payUnauthenticatedError": "Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "payOrderNotFoundError": "Pay order nahi mila. Kripya phir se try karein.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "payOrderAlreadyConfirmedError": "Yeh pay order pehle hi confirm ho chuka hai.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySelectNetwork": "Network Chunein",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -12277,9 +12248,12 @@
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "payAboveMaxAmount": "Aap is wallet se maximum pay-able amount se zyada pay karne ki koshish kar rahe hain.",
+  "payAboveMaxAmount": "Aap is wallet se maximum pay-able amount se zyada pay karne ki koshish kar rahe hain ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "transactionListLoadingFailed": "Transactions load nahi ho sake.",
   "@transactionListLoadingFailed": {
@@ -12691,7 +12665,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -12919,7 +12893,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -13165,7 +13139,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

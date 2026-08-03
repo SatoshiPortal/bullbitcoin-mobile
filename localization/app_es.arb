@@ -541,14 +541,7 @@
   "paySelectWallet": "Seleccionar Billetera",
   "payWhichWalletQuestion": "¿Desde cual billetera desea pagar?",
   "payExternalWallet": "Billetera externa",
-  "payFromAnotherWallet": "Pagar desde otro billetera Bitcoin",
-  "payAboveMaxAmountError": "Está intentando pagar por encima del monto máximo que se puede pagar con esta billetera.",
-  "payBelowMinAmountError": "Está intentando pagar por debajo del monto mínimo que se puede pagar con esta billetera.",
-  "payInsufficientBalanceError": "Saldo insuficiente en la billetera seleccionada para completar esta orden de pago.",
-  "payUnauthenticatedError": "No está autenticado. Por favor inicie sesión para continuar.",
-  "payOrderNotFoundError": "No se encontró la orden de pago. Por favor intente de nuevo.",
-  "payOrderAlreadyConfirmedError": "Esta orden de pago ya ha sido confirmada.",
-  "paySelectNetwork": "Seleccionar red",
+  "payFromAnotherWallet": "Pagar desde otro billetera Bitcoin",  "paySelectNetwork": "Seleccionar red",
   "payHowToPayInvoice": "¿Cómo desea pagar esta factura?",
   "payBitcoinOnChain": "Bitcoin on-chain",
   "payLightningNetwork": "Red Lightning",
@@ -596,12 +589,9 @@
   "paySinpeOrigen": "Origen",
   "payNotAvailable": "N/A",
   "payBitcoinOnchain": "Bitcoin on-chain",
-  "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera.",
-  "payBelowMinAmount": "Está intentando pagar un monto inferior al monto mínimo que se puede pagar con esta billetera.",
-  "payNotAuthenticated": "No está autenticado. Por favor, inicie sesión para continuar.",
-  "payOrderNotFound": "No se encontró la orden de pago. Por favor, intente nuevamente.",
-  "payOrderAlreadyConfirmed": "Esta orden de pago ya ha sido confirmada.",
-  "payPaymentInProgress": "¡Pago en curso!",
+  "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera ({maxAmountSat} sats).",
+  "payBelowMinAmount": "Está intentando pagar un monto inferior al monto mínimo que se puede pagar con esta billetera ({minAmountSat} sats).",
+  "payNotAuthenticated": "No está autenticado. Por favor, inicie sesión para continuar.",  "payPaymentInProgress": "¡Pago en curso!",
   "payPaymentInProgressDescription": "Su pago ha sido iniciado y el destinatario recibirá los fondos después de que su transacción reciba 1 confirmación on-chain.",
   "payPriceRefreshIn": "El precio se actualizará en ",
   "payFor": "Para",
@@ -1410,7 +1400,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1421,7 +1411,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1457,7 +1447,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -1564,7 +1554,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -2389,7 +2379,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -2840,7 +2830,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -3351,10 +3341,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3542,7 +3532,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -3590,7 +3580,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -3939,10 +3929,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3954,7 +3944,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -4090,10 +4080,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -4270,7 +4260,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4578,7 +4568,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4876,7 +4866,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

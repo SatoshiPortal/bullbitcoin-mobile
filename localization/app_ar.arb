@@ -207,7 +207,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -452,7 +452,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -840,7 +840,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -954,10 +954,6 @@
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
   },
-  "payAboveMaxAmountError": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
   "jadeStep7": "   -اثبتوا وركزوا",
   "@jadeStep7": {
     "description": "Jade troubleshooting tip 2"
@@ -1061,7 +1057,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1173,10 +1169,6 @@
   "recoverbullFailed": "فشل",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "ledgerProcessingSign": "التوقيع على المعاملات",
   "@ledgerProcessingSign": {
@@ -1384,10 +1376,6 @@
   "buyYouPay": "تدفع",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
   "@passportStep12": {
@@ -1977,10 +1965,6 @@
   "receivePaymentReceived": "تم استلام الدفع!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },
-  "payOrderNotFound": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
   "@coldcardStep13": {
@@ -3142,10 +3126,6 @@
   "@electrumReset": {
     "description": "Reset button label in advanced options"
   },
-  "payInsufficientBalanceError": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
   "backupCompletedTitle": "اكتمل الدعم!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
@@ -3246,7 +3226,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -3874,10 +3854,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5524,7 +5504,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -5556,10 +5536,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -8069,7 +8049,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -8722,10 +8702,6 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "arkReceiveSegmentArk": "Ark",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
@@ -8770,10 +8746,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9283,7 +9259,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -9838,9 +9814,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
+  "payBelowMinAmount": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "يرجى تأكيد العنوان على جهاز ليدجر الخاص بك.",
   "@ledgerProcessingVerifySubtext": {
@@ -10227,10 +10206,6 @@
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
   },
-  "payOrderNotFoundError": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
@@ -10388,7 +10363,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -10404,10 +10379,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "ملف المساندة يفوت مسار التعقيم.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -10440,7 +10411,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -11087,9 +11058,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
+  "payAboveMaxAmount": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} غير متاح حالياً",
   "@receiveNetworkUnavailable": {
@@ -12533,7 +12507,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12714,7 +12688,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

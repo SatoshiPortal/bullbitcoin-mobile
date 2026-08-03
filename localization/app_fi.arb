@@ -503,14 +503,7 @@
   "paySelectWallet": "Valitse lompakko",
   "payWhichWalletQuestion": "Mistä lompakosta haluat maksaa?",
   "payExternalWallet": "Ulkoinen lompakko",
-  "payFromAnotherWallet": "Maksa toisesta Bitcoin-lompakosta",
-  "payAboveMaxAmountError": "Yrität maksaa yli suurimman summan, jonka tästä lompakosta voi maksaa.",
-  "payBelowMinAmountError": "Yrität maksaa alle pienimmän summan, jonka tästä lompakosta voi maksaa.",
-  "payInsufficientBalanceError": "Valitussa lompakossa ei ole tarpeeksi saldoa tämän maksun suorittamiseen.",
-  "payUnauthenticatedError": "Et ole tunnistautunut. Kirjaudu sisään jatkaaksesi.",
-  "payOrderNotFoundError": "Maksupyyntöä ei löytynyt. Yritä uudelleen.",
-  "payOrderAlreadyConfirmedError": "Tämä maksupyyntö on jo vahvistettu.",
-  "paySelectNetwork": "Valitse verkko",
+  "payFromAnotherWallet": "Maksa toisesta Bitcoin-lompakosta",  "paySelectNetwork": "Valitse verkko",
   "payHowToPayInvoice": "Miten haluat maksaa tämän laskun?",
   "payBitcoinOnChain": "Bitcoin on-chain",
   "payLightningNetwork": "Lightning-verkko",
@@ -556,12 +549,9 @@
   "paySinpeOrigen": "Lähde",
   "payNotAvailable": "Ei saatavilla",
   "payBitcoinOnchain": "Bitcoin on-chain",
-  "payAboveMaxAmount": "Yrität maksaa yli suurimman summan, jonka tästä lompakosta voi maksaa.",
-  "payBelowMinAmount": "Yrität maksaa alle pienimmän summan, jonka tästä lompakosta voi maksaa.",
-  "payNotAuthenticated": "Et ole tunnistautunut. Kirjaudu sisään jatkaaksesi.",
-  "payOrderNotFound": "Maksupyyntöä ei löytynyt. Yritä uudelleen.",
-  "payOrderAlreadyConfirmed": "Tämä maksupyyntö on jo vahvistettu.",
-  "payPaymentInProgress": "Maksu käynnissä!",
+  "payAboveMaxAmount": "Yrität maksaa yli suurimman summan, jonka tästä lompakosta voi maksaa ({maxAmountSat} sats).",
+  "payBelowMinAmount": "Yrität maksaa alle pienimmän summan, jonka tästä lompakosta voi maksaa ({minAmountSat} sats).",
+  "payNotAuthenticated": "Et ole tunnistautunut. Kirjaudu sisään jatkaaksesi.",  "payPaymentInProgress": "Maksu käynnissä!",
   "payPaymentInProgressDescription": "Maksusi on aloitettu ja vastaanottaja saa varat, kun transaktio vahvistuu lohkoketjussa.",
   "payPriceRefreshIn": "Hinta päivittyy ",
   "payFor": "Saaja",
@@ -1369,7 +1359,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1380,7 +1370,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1416,7 +1406,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -1513,7 +1503,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -2338,7 +2328,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -2789,7 +2779,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -3296,10 +3286,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3476,7 +3466,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -3524,7 +3514,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -3873,10 +3863,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3888,7 +3878,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -4024,10 +4014,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -4256,7 +4246,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4564,7 +4554,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4862,7 +4852,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

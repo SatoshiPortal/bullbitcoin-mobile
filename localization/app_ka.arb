@@ -375,7 +375,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -457,6 +457,9 @@
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
+  "payAboveMaxAmount": "თქვენ ცდილობთ გადაიხადოთ ამ საფულისთვის დაშვებული მაქსიმალური თანხის ზემოთ ({maxAmountSat} sats).",
+  "payBelowMinAmount": "თქვენ ცდილობთ გადაიხადოთ ამ საფულისთვის დაშვებული მინიმალური თანხის ქვემოთ ({minAmountSat} sats).",
+  "payNotAuthenticated": "თქვენ ავთენტიფიცირებული არ ხართ. გასაგრძელებლად გთხოვთ შეხვიდეთ სისტემაში.",  "payInsufficientBalance": "არჩეულ საფულეში არ არის საკმარისი ბალანსი ამ გადახდის ორდერის შესასრულებლად.",
   "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
@@ -570,7 +573,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

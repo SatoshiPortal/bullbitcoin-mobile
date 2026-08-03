@@ -78,7 +78,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -170,7 +170,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -323,7 +323,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -359,9 +359,7 @@
   "bitboxScreenSegwitBip84": "Segwit (BIP84)",
   "bitboxScreenConnectingSubtext": "建立安全联系.",
   "receiveShareAddress": "份额地址",
-  "arkTxPending": "待决",
-  "payAboveMaxAmountError": "您支付的金额超出了此钱包可支付的最大限额",
-  "sharedWithBullBitcoin": "提 交点.",
+  "arkTxPending": "待决",  "sharedWithBullBitcoin": "提 交点.",
   "jadeStep7": "   - 稳定并集中实施QR法",
   "sendCouldNotBuildTransaction": "不能建立交易",
   "allSeedViewIUnderstandButton": "Stand",
@@ -393,7 +391,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -428,9 +426,7 @@
   "physicalBackupRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
   "importWatchOnlyDescriptor": "说明",
   "payPaymentInProgress": "支付:!",
-  "recoverbullFailed": "Failed",
-  "payOrderAlreadyConfirmed": "这笔支付订单已确认",
-  "ledgerProcessingSign": "签署交易",
+  "recoverbullFailed": "Failed",  "ledgerProcessingSign": "签署交易",
   "jadeStep6": "   - 提高你的器具的亮度",
   "fundExchangeETransferLabelEmail": "E- transfer to this email",
   "pinCodeCreateButton": "设立PIN",
@@ -502,9 +498,7 @@
   "walletDeletionFailedTitle": "删除失败",
   "payPayFromWallet": "付款钱包",
   "broadcastSignedTxNfcTitle": "NFC",
-  "buyYouPay": "页: 1",
-  "payOrderAlreadyConfirmedError": "这笔支付订单已确认",
-  "passportStep12": "推土墙将请你扫描有关护照的QR代码。 缩略语.",
+  "buyYouPay": "页: 1",  "passportStep12": "推土墙将请你扫描有关护照的QR代码。 缩略语.",
   "paySelectRecipient": "选定受援国",
   "payNoActiveWallet": "没有活动钱包",
   "importQrDeviceKruxStep4": "Click the “ open UK” button",
@@ -706,9 +700,7 @@
   "bitboxCubitOperationTimeout": "该行动已经停止。 请再次审判.",
   "receivePaymentReceived": "收到的捐款!",
   "backupWalletHowToDecideVaultCloudSecurity": "谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 他们只能进入与关键服务器(在线服务,储存你的加密密码)相勾结的不太可能的事件。 如果关键服务器破碎,那么,谷歌或 Apple云可能会有风险.",
-  "howToDecideBackupText1": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",
-  "payOrderNotFound": "未找到这笔支付订单，请稍后重试",
-  "coldcardStep13": "土木板将请你扫描冷却板上的QR代码。 缩略语.",
+  "howToDecideBackupText1": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",  "coldcardStep13": "土木板将请你扫描冷却板上的QR代码。 缩略语.",
   "psbtFlowIncreaseBrightness": "3. 提高你的器具的亮度",
   "payCoinjoinCompleted": "联 合 国",
   "electrumAddCustomServer": "添加习俗服务器",
@@ -1111,9 +1103,7 @@
   "legacySeedViewScreenTitle": "遗产种子",
   "pleaseWaitFetching": "等到我们找回文件的时候.",
   "backupWalletPhysicalBackupTag": "无信托能力(时间)",
-  "electrumReset": "收 复",
-  "payInsufficientBalanceError": "当前钱包的余额不足以支付这笔订单",
-  "backupCompletedTitle": "填满!",
+  "electrumReset": "收 复",  "backupCompletedTitle": "填满!",
   "arkDate": "日期",
   "psbtFlowInstructions": "指示",
   "systemLabelExchangeSell": "Sell",
@@ -1148,7 +1138,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -1347,10 +1337,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -1919,7 +1909,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1938,10 +1928,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -3066,9 +3056,7 @@
   "importQrDevicePassportStep5": "选择“箭”办法",
   "psbtFlowClickPsbt": "Click PSBT",
   "sendInvoicePaid": "Invoice Paid",
-  "buyKycPendingDescription": "您必须首先完成身份证明核查",
-  "payBelowMinAmountError": "您支付的金额低于此钱包可支付的最小金额",
-  "arkReceiveSegmentArk": "方 法",
+  "buyKycPendingDescription": "您必须首先完成身份证明核查",  "arkReceiveSegmentArk": "方 法",
   "autoswapRecipientWalletInfo": "选择接收转账资金的比特币钱包（必选）",
   "importWalletKrux": "Krux",
   "swapContinueButton": "继续",
@@ -3084,10 +3072,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3280,7 +3268,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -3485,7 +3473,7 @@
   "bitboxErrorConnectionTypeNotInitialized": "连接类型没有初步确定.",
   "transactionListOngoingTransfersDescription": "这些转移目前正在进行之中。 你们的资金是安全的,在转让完成后将可动用.",
   "ledgerErrorUnknown": "不详的错误",
-  "payBelowMinAmount": "您支付的金额低于此钱包可支付的最小金额",
+  "payBelowMinAmount": "您支付的金额低于此钱包可支付的最小金额 ({minAmountSat} sats)",
   "ledgerProcessingVerifySubtext": "请确认您的Ledger装置上的地址.",
   "transactionOrderLabelOriginCedula": "来源:Cedula",
   "recoverbullRecoveryTransactionsLabel": "交易:{count}",
@@ -3631,9 +3619,7 @@
   },
   "electrumRetryCount": "业余",
   "walletDetailsDescriptorLabel": "说明",
-  "importQrDeviceSeedsignerInstructionsTitle": "见dSigner 指示",
-  "payOrderNotFoundError": "未找到这笔支付订单，请稍后重试",
-  "jadeStep12": "在 Bull Bitcoin 钱包中点击“我完成了”",
+  "importQrDeviceSeedsignerInstructionsTitle": "见dSigner 指示",  "jadeStep12": "在 Bull Bitcoin 钱包中点击“我完成了”",
   "payFilterByType": "按类型分列的过滤",
   "importMnemonicImporting": "导入中...",
   "recoverbullGoogleDriveExportButton": "出口",
@@ -3690,7 +3676,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -3698,7 +3684,6 @@
   "bitboxScreenWalletTypeLabel": "挂号:",
   "importQrDeviceKruxStep6": "这!",
   "recoverbullRecoveryErrorMissingDerivationPath": "后备档案缺失衍生物.",
-  "payUnauthenticatedError": "你没有认证。 请继续发言.",
   "payClabe": "CLABE",
   "mempoolCustomServerDelete": "删除",
   "optionalPassphraseHint": "Optional Passphrase",
@@ -3710,7 +3695,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -3943,7 +3928,7 @@
   },
   "sellSendPaymentNetworkFees": "网络费",
   "transactionSwapDescLnReceivePaid": "收到付款! 我们现在把链交易广播到你的墙上.",
-  "payAboveMaxAmount": "您支付的金额超出了此钱包可支付的最大限额",
+  "payAboveMaxAmount": "您支付的金额超出了此钱包可支付的最大限额 ({maxAmountSat} sats)",
   "receiveNetworkUnavailable": "{network} 目前没有",
   "@receiveNetworkUnavailable": {
     "placeholders": {
@@ -4246,7 +4231,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4572,7 +4557,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4752,7 +4737,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

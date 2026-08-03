@@ -174,7 +174,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -394,7 +394,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -765,7 +765,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -866,10 +866,6 @@
   "arkTxPending": "Pending",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "Προσπαθείτε να πληρώσετε πάνω από το μέγιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "jadeStep7": "   Κρατήστε τον κωδικό QR σταθερό και επικεντρωμένο",
   "@jadeStep7": {
@@ -978,7 +974,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1074,10 +1070,6 @@
   "payPaymentInProgress": "Πληρωμή σε εξέλιξη!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "payOrderAlreadyConfirmed": "Αυτή η διαταγή πληρωμής έχει ήδη επιβεβαιωθεί.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "ledgerProcessingSign": "Υπογραφή συναλλαγής",
   "@ledgerProcessingSign": {
@@ -1277,10 +1269,6 @@
   "buyYouPay": "Πληρώνετε",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Αυτή η διαταγή πληρωμής έχει ήδη επιβεβαιωθεί.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο διαβατήριο. Βάλτε το.",
   "@passportStep12": {
@@ -1777,10 +1765,6 @@
   "receivePaymentReceived": "Η πληρωμή έλαβε!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },
-  "payOrderNotFound": "Η διαταγή πληρωμής δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Coldcard. Βάλτε το.",
   "@coldcardStep13": {
@@ -2783,10 +2767,6 @@
   "@electrumReset": {
     "description": "Reset button label in advanced options"
   },
-  "payInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
   "backupCompletedTitle": "Το Backup ολοκληρώθηκε!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
@@ -2895,7 +2875,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -3437,10 +3417,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -4901,7 +4881,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -4929,10 +4909,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -7118,7 +7098,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -7706,10 +7686,6 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "arkReceiveSegmentArk": "Κιβωτός",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
@@ -7754,10 +7730,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -8186,7 +8162,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -8634,9 +8610,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
+  "payBelowMinAmount": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "Παρακαλούμε επιβεβαιώστε τη διεύθυνση στη συσκευή Ledger σας.",
   "@ledgerProcessingVerifySubtext": {
@@ -8974,10 +8953,6 @@
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
   },
-  "payOrderNotFoundError": "Η διαταγή πληρωμής δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "jadeStep12": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
@@ -9115,7 +9090,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -9131,10 +9106,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Backup αρχείο που λείπει μονοπάτι στέρησης.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -9167,7 +9138,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -9762,9 +9733,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "Προσπαθείτε να πληρώσετε πάνω από το μέγιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
+  "payAboveMaxAmount": "Προσπαθείτε να πληρώσετε πάνω από το μέγιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} σήμερα δεν είναι διαθέσιμη",
   "@receiveNetworkUnavailable": {
@@ -12530,7 +12504,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12828,7 +12802,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

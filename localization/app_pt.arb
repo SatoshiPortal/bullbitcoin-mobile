@@ -76,7 +76,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -168,7 +168,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -321,7 +321,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -357,9 +357,7 @@
   "bitboxScreenSegwitBip84": "Segwit (BIP84)",
   "bitboxScreenConnectingSubtext": "Estabelecer uma ligação segura...",
   "receiveShareAddress": "Compartilhar Endereço",
-  "arkTxPending": "Pendente",
-  "payAboveMaxAmountError": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
-  "sharedWithBullBitcoin": "compartilhado com Bull Bitcoin.",
+  "arkTxPending": "Pendente",  "sharedWithBullBitcoin": "compartilhado com Bull Bitcoin.",
   "jadeStep7": "   - Mantenha o código QR estável e centralizado",
   "sendCouldNotBuildTransaction": "Não poderia construir a transação",
   "allSeedViewIUnderstandButton": "Eu compreendo",
@@ -391,7 +389,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -426,9 +424,7 @@
   "physicalBackupRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
   "importWatchOnlyDescriptor": "Descritores",
   "payPaymentInProgress": "Pagamento em Progresso!",
-  "recoverbullFailed": "Falhado",
-  "payOrderAlreadyConfirmed": "Esta ordem de pagamento já foi confirmada.",
-  "ledgerProcessingSign": "Transação de Assinatura",
+  "recoverbullFailed": "Falhado",  "ledgerProcessingSign": "Transação de Assinatura",
   "jadeStep6": "   - Aumente o brilho da tela em seu dispositivo",
   "fundExchangeETransferLabelEmail": "Enviar o E-transfer para este e-mail",
   "pinCodeCreateButton": "Criar PIN",
@@ -500,9 +496,7 @@
   "walletDeletionFailedTitle": "Excluir Falhado",
   "payPayFromWallet": "Pagar da carteira",
   "broadcastSignedTxNfcTitle": "NFC",
-  "buyYouPay": "Você paga",
-  "payOrderAlreadyConfirmedError": "Esta ordem de pagamento já foi confirmada.",
-  "passportStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Passaporte. Analisa-o.",
+  "buyYouPay": "Você paga",  "passportStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Passaporte. Analisa-o.",
   "paySelectRecipient": "Selecione o destinatário",
   "payNoActiveWallet": "Sem carteira ativa",
   "importQrDeviceKruxStep4": "Clique no botão \"Câmera aberta\"",
@@ -703,9 +697,7 @@
   "bitboxCubitOperationTimeout": "A operação acabou. Por favor, tente novamente.",
   "receivePaymentReceived": "Pagamento recebido!",
   "backupWalletHowToDecideVaultCloudSecurity": "Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Eles só podem acessar seu Bitcoin no caso improvável que eles colludem com o servidor chave (o serviço on-line que armazena sua senha de criptografia). Se o servidor chave alguma vez for hackeado, seu Bitcoin pode estar em risco com o Google ou a nuvem da Apple.",
-  "howToDecideBackupText1": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
-  "payOrderNotFound": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "coldcardStep13": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Coldcard. Analisa-o.",
+  "howToDecideBackupText1": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",  "coldcardStep13": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Coldcard. Analisa-o.",
   "psbtFlowIncreaseBrightness": "Aumentar o brilho da tela em seu dispositivo",
   "payCoinjoinCompleted": "CoinJoin concluída",
   "electrumAddCustomServer": "Adicionar Servidor Personalizado",
@@ -1108,9 +1100,7 @@
   "legacySeedViewScreenTitle": "Sementes Legacy",
   "pleaseWaitFetching": "Por favor, espere enquanto buscamos seu arquivo de backup.",
   "backupWalletPhysicalBackupTag": "Trustless (ter o seu tempo)",
-  "electrumReset": "Redefinição",
-  "payInsufficientBalanceError": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
-  "backupCompletedTitle": "Backup concluído!",
+  "electrumReset": "Redefinição",  "backupCompletedTitle": "Backup concluído!",
   "arkDate": "Data",
   "psbtFlowInstructions": "Instruções",
   "systemLabelExchangeSell": "Venda",
@@ -1145,7 +1135,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -1344,10 +1334,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -1915,7 +1905,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -3045,9 +3035,7 @@
   "importQrDevicePassportStep5": "Selecione a opção \"Sparrow\"",
   "psbtFlowClickPsbt": "Clique em PSBT",
   "sendInvoicePaid": "Fatura paga",
-  "buyKycPendingDescription": "Você deve concluir a verificação de identificação primeiro",
-  "payBelowMinAmountError": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
-  "arkReceiveSegmentArk": "Arca",
+  "buyKycPendingDescription": "Você deve concluir a verificação de identificação primeiro",  "arkReceiveSegmentArk": "Arca",
   "autoswapRecipientWalletInfo": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
   "importWalletKrux": "Krux",
   "swapContinueButton": "Continue",
@@ -3063,10 +3051,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3257,7 +3245,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -3462,7 +3450,7 @@
   "bitboxErrorConnectionTypeNotInitialized": "Tipo de conexão não inicializado.",
   "transactionListOngoingTransfersDescription": "Estas transferências estão em andamento. Seus fundos estão seguros e estarão disponíveis quando a transferência terminar.",
   "ledgerErrorUnknown": "Erro desconhecido",
-  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
+  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira ({minAmountSat} sats).",
   "ledgerProcessingVerifySubtext": "Por favor, confirme o endereço no seu dispositivo Ledger.",
   "transactionOrderLabelOriginCedula": "Origem Cedula",
   "recoverbullRecoveryTransactionsLabel": "Transações: {count}",
@@ -3608,9 +3596,7 @@
   },
   "electrumRetryCount": "Contagem de Restrições",
   "walletDetailsDescriptorLabel": "Descritores",
-  "importQrDeviceSeedsignerInstructionsTitle": "Instruções do SeedSigner",
-  "payOrderNotFoundError": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "jadeStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "importQrDeviceSeedsignerInstructionsTitle": "Instruções do SeedSigner",  "jadeStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "payFilterByType": "Filtrar por tipo",
   "importMnemonicImporting": "Importação...",
   "recoverbullGoogleDriveExportButton": "Exportação",
@@ -3667,7 +3653,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -3675,7 +3661,6 @@
   "bitboxScreenWalletTypeLabel": "Tipo de carteira:",
   "importQrDeviceKruxStep6": "É isso!",
   "recoverbullRecoveryErrorMissingDerivationPath": "Arquivo de backup faltando caminho de derivação.",
-  "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "payClabe": "CLABE",
   "mempoolCustomServerDelete": "Excluir",
   "optionalPassphraseHint": "Passphrase opcional",
@@ -3687,7 +3672,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -3918,7 +3903,7 @@
   "sellSendPaymentNetworkFees": "Taxas de rede",
   "transactionSwapDescLnReceivePaid": "O pagamento foi recebido! Estamos agora a transmitir a transação em cadeia para a sua carteira.",
   "transactionNoteUpdateButton": "Atualização",
-  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
+  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira ({maxAmountSat} sats).",
   "receiveNetworkUnavailable": "{network} não está disponível",
   "@receiveNetworkUnavailable": {
     "placeholders": {
@@ -4180,10 +4165,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -4273,7 +4258,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4627,7 +4612,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4925,7 +4910,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

@@ -146,7 +146,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -489,7 +489,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -843,14 +843,7 @@
   "paySelectWallet": "Wallet বাছক",
   "payWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
   "payExternalWallet": "বাহ্যিক wallet",
-  "payFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
-  "payAboveMaxAmountError": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payBelowMinAmountError": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payInsufficientBalanceError": "এই পৰিশোধ অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
-  "payUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "payOrderNotFoundError": "পৰিশোধ অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "payOrderAlreadyConfirmedError": "এই পৰিশোধ অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
-  "paySelectNetwork": "নেটৱৰ্ক বাছক",
+  "payFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",  "paySelectNetwork": "নেটৱৰ্ক বাছক",
   "payHowToPayInvoice": "আপুনি এই invoice কেনেকৈ পৰিশোধ কৰিব বিচাৰে?",
   "payBitcoinOnChain": "Bitcoin অন-চেইন",
   "payLightningNetwork": "Lightning Network",
@@ -896,12 +889,9 @@
   "paySinpeOrigen": "উৎস",
   "payNotAvailable": "N/A",
   "payBitcoinOnchain": "Bitcoin অন-চেইন",
-  "payAboveMaxAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payBelowMinAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payNotAuthenticated": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "payOrderNotFound": "পৰিশোধ অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "payOrderAlreadyConfirmed": "এই পৰিশোধ অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
-  "payPaymentInProgress": "পৰিশোধ চলি আছে!",
+  "payAboveMaxAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে। ({maxAmountSat} sats)",
+  "payBelowMinAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে। ({minAmountSat} sats)",
+  "payNotAuthenticated": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",  "payPaymentInProgress": "পৰিশোধ চলি আছে!",
   "payPaymentInProgressDescription": "আপোনাৰ পৰিশোধ আৰম্ভ কৰা হৈছে আৰু আপোনাৰ লেনদেনে অনচেইন 1 নিশ্চিতকৰণ পোৱাৰ পিছত প্ৰাপকে ধন পাব।",
   "payPriceRefreshIn": "মূল্য পুনৰ নবীকৰণ হ'ব ",
   "payFor": "বাবে",
@@ -1984,7 +1974,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1996,7 +1986,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -2085,7 +2075,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -2411,7 +2401,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -4649,7 +4639,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -5823,7 +5813,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -7414,10 +7404,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -8005,7 +7995,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -8119,7 +8109,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -8989,10 +8979,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9005,7 +8995,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -9350,10 +9340,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -9828,7 +9818,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

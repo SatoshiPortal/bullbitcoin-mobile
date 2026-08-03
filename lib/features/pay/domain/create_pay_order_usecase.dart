@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
+import 'package:bb_mobile/core/exchange/domain/failures/pay_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 
 class PlacePayOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -15,7 +17,8 @@ class PlacePayOrderUsecase {
     required this._settingsRepository,
   });
 
-  Future<FiatPaymentOrder> execute({
+  @useResult
+  Future<Result<FiatPaymentOrder, PayFailure>> execute({
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
@@ -23,24 +26,19 @@ class PlacePayOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-      final repo = isTestnet
+      final repo = settings.environment.isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      final order = await repo.placePayOrder(
+      return await repo.placePayOrder(
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
       );
-
-      return order;
-    } on PayError {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw PayError.unexpected(message: '$e');
+    } catch (e, st) {
+      log.severe(message: 'Failed to place pay order', error: e, trace: st);
+      return Err(PayUnexpectedFailure(e.toString()));
     }
   }
 }

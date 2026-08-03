@@ -5,7 +5,8 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
+import 'package:bb_mobile/core/exchange/domain/failures/pay_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
@@ -92,13 +93,15 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     emit(recipientSelectionState!.copyWith(isLoadingUserSummary: true));
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
-
       emit(recipientSelectionState.copyWith(userSummary: userSummary));
-    } on GetExchangeUserSummaryException catch (e) {
+    } on GetExchangeUserSummaryException catch (e, st) {
+      log.severe(
+        message: 'Failed to fetch exchange user summary',
+        error: e,
+        trace: st,
+      );
       emit(
-        recipientSelectionState.copyWith(
-          error: PayError.unexpected(message: e.message),
-        ),
+        recipientSelectionState.copyWith(failure: const PayUnexpectedFailure()),
       );
     } finally {
       if (state is PayRecipientSelectionState) {
@@ -193,18 +196,17 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
       emit(
         walletSelectionState.copyWith(
-          error: PayError.unexpected(
-            message: 'Insufficient balance. Required: $requiredAmountSat sats',
-          ),
+          failure: const PayInsufficientBalanceFailure(),
+          isCreatingPayOrder: false,
         ),
       );
       return;
     }
+
     int absoluteFees = 0;
     try {
       final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
           .execute(walletId: event.wallet.id, index: 0);
-
       if (event.wallet.isLiquid) {
         final pset = await _prepareLiquidSendUsecase.execute(
           walletId: event.wallet.id,
@@ -220,87 +222,90 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         final bitcoinFees = await _getNetworkFeesUsecase.execute(
           isLiquid: false,
         );
-        final fastestFee = bitcoinFees.fastest;
-
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: event.wallet.id,
           address: dummyAddressForFeeCalculation.address,
           amountSat: requiredAmountSat,
-          networkFee: fastestFee,
+          networkFee: bitcoinFees.fastest,
         );
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to prepare transaction for fee estimate',
+        error: e,
+        trace: st,
+      );
       emit(
         walletSelectionState.copyWith(
-          error: PayError.unexpected(
-            message: 'Failed to prepare transaction: $e',
-          ),
+          failure: const PayUnexpectedFailure(),
+          isCreatingPayOrder: false,
         ),
       );
       return;
     }
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
-    try {
-      final createdPayOrder = await _placePayOrderUsecase.execute(
-        orderAmount: walletSelectionState.amount,
-        recipientId: walletSelectionState.selectedRecipient.id,
-        network: event.wallet.isLiquid
-            ? OrderBitcoinNetwork.liquid
-            : OrderBitcoinNetwork.bitcoin,
-        paymentDescription: walletSelectionState.paymentDescription,
-      );
 
-      if (!event.wallet.isLiquid) {
-        final utxos = await _getWalletUtxosUsecase.execute(
-          walletId: event.wallet.id,
-        );
+    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+
+    final placeResult = await _placePayOrderUsecase.execute(
+      orderAmount: walletSelectionState.amount,
+      recipientId: walletSelectionState.selectedRecipient.id,
+      network: event.wallet.isLiquid
+          ? OrderBitcoinNetwork.liquid
+          : OrderBitcoinNetwork.bitcoin,
+      paymentDescription: walletSelectionState.paymentDescription,
+    );
+
+    switch (placeResult) {
+      case Err(:final failure):
         emit(
-          walletSelectionState.toSendPaymentState(
-            selectedWallet: event.wallet,
-            payOrder: createdPayOrder,
-            absoluteFees: absoluteFees,
-            utxos: utxos,
-            exchangeRateEstimate: exchangeRateEstimate,
-          ),
-        );
-      } else {
-        emit(
-          walletSelectionState.toSendPaymentState(
-            selectedWallet: event.wallet,
-            payOrder: createdPayOrder,
-            absoluteFees: absoluteFees,
-            exchangeRateEstimate: exchangeRateEstimate,
-          ),
-        );
-      }
-      _startPolling();
-    } on PrepareLiquidSendException catch (e) {
-      emit(
-        walletSelectionState.copyWith(
-          error: PayError.unexpected(message: e.message),
-        ),
-      );
-    } on PrepareBitcoinSendException catch (e) {
-      emit(
-        walletSelectionState.copyWith(
-          error: PayError.unexpected(message: e.message),
-        ),
-      );
-    } on PayError catch (e) {
-      emit(walletSelectionState.copyWith(error: e));
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-    } finally {
-      if (state is PayWalletSelectionState) {
-        emit(
-          (state as PayWalletSelectionState).copyWith(
+          walletSelectionState.copyWith(
+            failure: failure,
             isCreatingPayOrder: false,
           ),
         );
-      }
+        return;
+      case Ok(:final value):
+        try {
+          if (!event.wallet.isLiquid) {
+            final utxos = await _getWalletUtxosUsecase.execute(
+              walletId: event.wallet.id,
+            );
+            emit(
+              walletSelectionState.toSendPaymentState(
+                selectedWallet: event.wallet,
+                payOrder: value,
+                absoluteFees: absoluteFees,
+                utxos: utxos,
+                exchangeRateEstimate: exchangeRateEstimate,
+              ),
+            );
+          } else {
+            emit(
+              walletSelectionState.toSendPaymentState(
+                selectedWallet: event.wallet,
+                payOrder: value,
+                absoluteFees: absoluteFees,
+                exchangeRateEstimate: exchangeRateEstimate,
+              ),
+            );
+          }
+          _startPolling();
+        } catch (e, st) {
+          log.severe(
+            message: 'Failed after placing pay order',
+            error: e,
+            trace: st,
+          );
+          emit(
+            walletSelectionState.copyWith(
+              failure: const PayUnexpectedFailure(),
+              isCreatingPayOrder: false,
+            ),
+          );
+        }
     }
   }
 
@@ -321,32 +326,24 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
     emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
 
-    try {
-      final createdPayOrder = await _placePayOrderUsecase.execute(
-        orderAmount: walletSelectionState.amount,
-        recipientId: walletSelectionState.selectedRecipient.id,
-        network: event.network,
-        paymentDescription: walletSelectionState.paymentDescription,
-      );
+    final placeResult = await _placePayOrderUsecase.execute(
+      orderAmount: walletSelectionState.amount,
+      recipientId: walletSelectionState.selectedRecipient.id,
+      network: event.network,
+      paymentDescription: walletSelectionState.paymentDescription,
+    );
 
-      // Proceed to payment state
-      emit(
-        walletSelectionState.toReceivePaymentState(payOrder: createdPayOrder),
-      );
-      _startPolling();
-    } on PayError catch (e) {
-      emit(walletSelectionState.copyWith(error: e));
-    } catch (e) {
-      // Log unexpected errors
-      log.severe(error: e, trace: StackTrace.current);
-    } finally {
-      if (state is PayWalletSelectionState) {
+    switch (placeResult) {
+      case Err(:final failure):
         emit(
-          (state as PayWalletSelectionState).copyWith(
+          walletSelectionState.copyWith(
+            failure: failure,
             isCreatingPayOrder: false,
           ),
         );
-      }
+      case Ok(:final value):
+        emit(walletSelectionState.toReceivePaymentState(payOrder: value));
+        _startPolling();
     }
   }
 
@@ -364,16 +361,13 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       return;
     }
 
-    try {
-      final refreshedOrder = await _refreshPayOrderUsecase.execute(
-        orderId: paymentState.payOrder.orderId,
-      );
-
-      emit(paymentState.copyWith(payOrder: refreshedOrder));
-    } on PayError catch (e) {
-      emit(paymentState.copyWith(error: e));
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+    switch (await _refreshPayOrderUsecase.execute(
+      orderId: paymentState.payOrder.orderId,
+    )) {
+      case Ok(:final value):
+        emit(paymentState.copyWith(payOrder: value));
+      case Err(:final failure):
+        emit(paymentState.copyWith(failure: failure));
     }
   }
 
@@ -393,23 +387,33 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
 
     emit(payPaymentState.copyWith(isConfirmingPayment: true));
+
+    final wallet = payPaymentState.selectedWallet;
+    if (wallet == null) {
+      log.severe(
+        message: 'sendPaymentConfirmed: no wallet in PayPaymentState',
+        error: 'wallet is null',
+        trace: StackTrace.current,
+      );
+      emit(
+        payPaymentState.copyWith(
+          failure: const PayUnexpectedFailure(),
+          isConfirmingPayment: false,
+        ),
+      );
+      return;
+    }
+
     try {
-      final wallet = payPaymentState.selectedWallet;
-      if (wallet == null) {
-        throw const PayError.unexpected(
-          message: 'No wallet selected to send payment',
-        );
-      }
-      final isLiquid = wallet.isLiquid;
       final payinAmountSat = ConvertAmount.btcToSats(
         payPaymentState.payOrder.payinAmount,
       );
-      if (isLiquid) {
+
+      if (wallet.isLiquid) {
         final pset = await _prepareLiquidSendUsecase.execute(
           walletId: wallet.id,
           address: payPaymentState.payOrder.liquidAddress!,
           amountSat: payinAmountSat,
-          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
           feeRate: const RelativeFee(25),
         );
         final signedPset = await _signLiquidTxUsecase.execute(
@@ -420,11 +424,19 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       } else {
         final absoluteFees = payPaymentState.absoluteFees;
         if (absoluteFees == null) {
-          throw const PayError.unexpected(
-            message: 'Transaction fees not calculated. Please try again.',
+          log.severe(
+            message: 'sendPaymentConfirmed: absoluteFees null',
+            error: 'absoluteFees is null',
+            trace: StackTrace.current,
           );
+          emit(
+            payPaymentState.copyWith(
+              failure: const PayUnexpectedFailure(),
+              isConfirmingPayment: false,
+            ),
+          );
+          return;
         }
-
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
           address: payPaymentState.payOrder.bitcoinAddress!,
@@ -447,57 +459,34 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           isPsbt: true,
         );
       }
-      // 5s delay gives backend time to register the 0 conf
+
+      // 5s delay gives backend time to register the 0-conf.
       await Future.delayed(const Duration(seconds: 5));
       final latestOrder = await _getOrderUsecase.execute(
         orderId: payPaymentState.payOrder.orderId,
       );
 
-      if (latestOrder is! FiatPaymentOrder) {
-        throw const PayError.unexpected(
-          message:
-              'Expected FiatPaymentOrder but received a different order type',
-        );
-      }
       if (state is PayPaymentState) {
         emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
       }
-      emit(payPaymentState.toSuccessState(payOrder: payPaymentState.payOrder));
-    } on PrepareLiquidSendException catch (e) {
+
+      if (latestOrder is FiatPaymentOrder) {
+        emit(payPaymentState.toSuccessState(payOrder: latestOrder));
+      } else {
+        log.severe(
+          message: 'sendPaymentConfirmed: unexpected order type after broadcast',
+          error: latestOrder.runtimeType,
+          trace: StackTrace.current,
+        );
+        emit(
+          payPaymentState.toSuccessState(payOrder: payPaymentState.payOrder),
+        );
+      }
+    } catch (e, st) {
+      log.severe(message: 'sendPaymentConfirmed failed', error: e, trace: st);
       emit(
         payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.message),
-          isConfirmingPayment: false,
-        ),
-      );
-    } on PrepareBitcoinSendException catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } on SignLiquidTxException catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } on SignBitcoinTxException catch (e) {
-      // Handle PayError and emit error state
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } catch (e) {
-      // Log unexpected errors
-      log.severe(error: e, trace: StackTrace.current);
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: e.toString()),
+          failure: const PayUnexpectedFailure(),
           isConfirmingPayment: false,
         ),
       );
@@ -583,12 +572,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     try {
       final utxos = await _getWalletUtxosUsecase.execute(walletId: wallet.id);
       emit(payPaymentState.copyWith(utxos: utxos));
-    } catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: 'Failed to load UTXOs: $e'),
-        ),
-      );
+    } catch (e, st) {
+      log.severe(message: 'Failed to load UTXOs', error: e, trace: st);
+      emit(payPaymentState.copyWith(failure: const PayUnexpectedFailure()));
     }
   }
 
@@ -666,12 +652,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         );
         emit(payPaymentState.copyWith(absoluteFees: absoluteFees));
       }
-    } catch (e) {
-      emit(
-        payPaymentState.copyWith(
-          error: PayError.unexpected(message: 'Failed to recalculate fees: $e'),
-        ),
-      );
+    } catch (e, st) {
+      log.severe(message: 'Failed to recalculate fees', error: e, trace: st);
+      emit(payPaymentState.copyWith(failure: const PayUnexpectedFailure()));
     }
   }
 

@@ -715,10 +715,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -731,7 +731,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -1000,10 +1000,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -1656,7 +1656,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -2003,7 +2003,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -2113,10 +2113,6 @@
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
   },
-  "payAboveMaxAmountError": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
   "jadeStep7": "   نگه داشتن کد QR ثابت و متمرکز",
   "@jadeStep7": {
     "description": "Jade troubleshooting tip 2"
@@ -2196,7 +2192,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -2296,10 +2292,6 @@
   "recoverbullFailed": "شکست",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "این سفارش پرداخت در حال حاضر تایید شده است.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "jadeStep6": "   افزایش روشنایی صفحه بر روی دستگاه شما",
   "@jadeStep6": {
@@ -2491,10 +2483,6 @@
   "buyYouPay": "پرداخت می کنید",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "این سفارش پرداخت در حال حاضر تایید شده است.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "کیف پول Bitcoin بول از شما می خواهد کد QR را در پاسپورت اسکن کنید. آن را اسکن کنید.",
   "@passportStep12": {
@@ -3010,10 +2998,6 @@
   "backupWalletHowToDecideVaultCloudSecurity": "ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. آنها فقط می توانند به Bitcoin شما در رویداد غیر محتمل که آنها با سرور کلیدی (خدمات آنلاین که رمز رمزگذاری شما را ذخیره می کند) دسترسی پیدا کنند. اگر سرور کلیدی هک شود، Bitcoin شما می تواند در معرض خطر با Google یا Apple Cloud باشد.",
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
-  },
-  "payOrderNotFound": "سفارش پرداخت پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "کیف پول Bitcoin بول از شما می خواهد کد QR را در کارت سرد اسکن کنید. آن را اسکن کنید.",
   "@coldcardStep13": {
@@ -4053,10 +4037,6 @@
   "@electrumReset": {
     "description": "Reset button label in advanced options"
   },
-  "payInsufficientBalanceError": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
   "backupCompletedTitle": "پشتیبان گیری کامل!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
@@ -4140,7 +4120,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4692,10 +4672,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -6155,7 +6135,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -8378,7 +8358,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -8938,10 +8918,6 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "autoswapRecipientWalletInfo": "انتخاب کنید که کیف پول بیت کوین وجوه منتقل شده (باید) را دریافت کند",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
@@ -9447,7 +9423,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -9924,9 +9900,12 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "payBelowMinAmount": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
+  "payBelowMinAmount": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "transactionOrderLabelOriginCedula": "منشأ Cedula",
   "@transactionOrderLabelOriginCedula": {
@@ -10254,10 +10233,6 @@
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
   },
-  "payOrderNotFoundError": "سفارش پرداخت پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "jadeStep12": "روی گزینه “I’m Done” در کیف پول Bitcoin بول کلیک کنید.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
@@ -10410,7 +10385,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -10426,10 +10401,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "فایل های گم شده در مسیر حرکت.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -10458,7 +10429,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -11057,9 +11028,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
+  "payAboveMaxAmount": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} در حال حاضر در دسترس نیست",
   "@receiveNetworkUnavailable": {
@@ -12530,7 +12504,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12710,7 +12684,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

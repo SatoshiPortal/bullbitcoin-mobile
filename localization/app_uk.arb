@@ -472,14 +472,7 @@
   "paySelectWallet": "Виберіть гаманець",
   "payWhichWalletQuestion": "Який гаманець ви хочете оплатити?",
   "payExternalWallet": "Зовнішній гаманець",
-  "payFromAnotherWallet": "Сплатити з іншого біткойн-гаманця",
-  "payAboveMaxAmountError": "Ви намагаєтеся сплатити над максимальною кількістю, яку можна сплатити за допомогою цього гаманця.",
-  "payBelowMinAmountError": "Ви намагаєтеся платити нижче мінімальної суми, яку можна сплатити за допомогою цього гаманця.",
-  "payInsufficientBalanceError": "Недостатній баланс у вибраному гаманці для завершення цього замовлення оплати.",
-  "payUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
-  "payOrderNotFoundError": "Не знайдено замовлення платежу. Будь ласка, спробуйте знову.",
-  "payOrderAlreadyConfirmedError": "Цей платіж вже був підтверджений.",
-  "paySelectNetwork": "Оберіть мережу",
+  "payFromAnotherWallet": "Сплатити з іншого біткойн-гаманця",  "paySelectNetwork": "Оберіть мережу",
   "payHowToPayInvoice": "Як ви хочете платити цей рахунок?",
   "payBitcoinOnChain": "Bitcoin у USD",
   "payLightningNetwork": "Мережа Lightning",
@@ -522,12 +515,9 @@
   "paySinpeOrigen": "Походження",
   "payNotAvailable": "Н/А",
   "payBitcoinOnchain": "Bitcoin у USD",
-  "payAboveMaxAmount": "Ви намагаєтеся сплатити над максимальною кількістю, яку можна сплатити за допомогою цього гаманця.",
-  "payBelowMinAmount": "Ви намагаєтеся платити нижче мінімальної суми, яку можна сплатити за допомогою цього гаманця.",
-  "payNotAuthenticated": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
-  "payOrderNotFound": "Не знайдено замовлення платежу. Будь ласка, спробуйте знову.",
-  "payOrderAlreadyConfirmed": "Цей платіж вже був підтверджений.",
-  "payPaymentInProgress": "Плата за прогрес!",
+  "payAboveMaxAmount": "Ви намагаєтеся сплатити над максимальною кількістю, яку можна сплатити за допомогою цього гаманця ({maxAmountSat} sats).",
+  "payBelowMinAmount": "Ви намагаєтеся платити нижче мінімальної суми, яку можна сплатити за допомогою цього гаманця ({minAmountSat} sats).",
+  "payNotAuthenticated": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",  "payPaymentInProgress": "Плата за прогрес!",
   "payPriceRefreshIn": "Ціна освіжає в ",
   "payFor": "Для",
   "payRecipient": "Отримувач",
@@ -1229,7 +1219,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -1293,7 +1283,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -1392,7 +1382,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -1447,7 +1437,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1970,7 +1960,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -2090,10 +2080,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -2499,7 +2489,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -2516,10 +2506,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -3355,10 +3345,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3497,7 +3487,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -3777,7 +3767,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -3795,7 +3785,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -4247,7 +4237,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4569,7 +4559,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4867,7 +4857,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

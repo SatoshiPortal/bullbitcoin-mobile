@@ -163,7 +163,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -245,6 +245,9 @@
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
+  "payAboveMaxAmount": "Դուք փորձում եք վճարել այս դրամապանակի համար թույլատրված առավելագույն գումարից ավելի: ({maxAmountSat} sats)",
+  "payBelowMinAmount": "Դուք փորձում եք վճարել այս դրամապանակի համար թույլատրված նվազագույն գումարից պակաս: ({minAmountSat} sats)",
+  "payNotAuthenticated": "Դուք չեք վավերացված։ Խնդրում ենք մուտք գործել՝ շարունակելու համար:",  "payInsufficientBalance": "Ընտրված դրամապանակում անբավարար մնացորդ կա այս վճարման պատվերը կատարելու համար:",
   "exportTransactionsInvalidDateRange": "Մեկնարկի ամսաթիվը պետք է լինի ավարտի ամսաթվից առաջ",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
@@ -358,7 +361,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

@@ -77,7 +77,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -169,7 +169,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -321,7 +321,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -357,9 +357,7 @@
   "bitboxScreenSegwitBip84": "SegWit (BIP84)",
   "bitboxScreenConnectingSubtext": "Sichere Verbindung wird aufgebaut…",
   "receiveShareAddress": "Adresse",
-  "arkTxPending": "Ausstehend",
-  "payAboveMaxAmountError": "Sie versuchen, einen Betrag zu bezahlen, der über dem Höchstbetrag liegt, der mit dieser Wallet bezahlt werden kann.",
-  "sharedWithBullBitcoin": "mit Bull Bitcoin geteilt.",
+  "arkTxPending": "Ausstehend",  "sharedWithBullBitcoin": "mit Bull Bitcoin geteilt.",
   "jadeStep7": "Halten Sie den QR-Code stabil und zentriert",
   "sendCouldNotBuildTransaction": "Transaktion konnte nicht erstellt werden",
   "allSeedViewIUnderstandButton": "Ich verstehe",
@@ -391,7 +389,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -423,9 +421,7 @@
   "importQrDeviceFingerprint": "Fingerabdruck",
   "physicalBackupRecommendationText": "Sie sind zuversichtlich in Ihre eigenen Sicherheitsvorkehrungen, um Ihre Bitcoin-Seed-Wörter sicher zu verwahren.",
   "importWatchOnlyDescriptor": "Deskriptor",
-  "payPaymentInProgress": "Zahlung läuft…",
-  "payOrderAlreadyConfirmed": "Dieser Zahlungsauftrag wurde bereits bestätigt.",
-  "ledgerProcessingSign": "Transaktion wird signiert",
+  "payPaymentInProgress": "Zahlung läuft…",  "ledgerProcessingSign": "Transaktion wird signiert",
   "jadeStep6": "Erhöhen Sie die Bildschirmhelligkeit auf Ihrem Gerät",
   "fundExchangeETransferLabelEmail": "Senden Sie den E-Transfer an diese E-Mail-Adresse",
   "pinCodeCreateButton": "PIN erstellen",
@@ -493,9 +489,7 @@
   "walletDeletionFailedTitle": "Löschen fehlgeschlagen",
   "payPayFromWallet": "Aus der Wallet bezahlen",
   "broadcastSignedTxNfcTitle": "NFC",
-  "buyYouPay": "Sie zahlen",
-  "payOrderAlreadyConfirmedError": "Dieser Zahlungsauftrag wurde bereits bestätigt.",
-  "passportStep12": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf dem Passport zu scannen. Scannen Sie ihn.",
+  "buyYouPay": "Sie zahlen",  "passportStep12": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf dem Passport zu scannen. Scannen Sie ihn.",
   "paySelectRecipient": "Empfänger auswählen",
   "payNoActiveWallet": "Keine aktive Wallet",
   "importQrDeviceKruxStep4": "Klicken Sie auf die Schaltfläche „Kamera öffnen“",
@@ -692,9 +686,7 @@
   "bitboxCubitOperationTimeout": "Der Vorgang hat zu lange gedauert. Bitte versuchen Sie es erneut.",
   "receivePaymentReceived": "Zahlung erhalten!",
   "backupWalletHowToDecideVaultCloudSecurity": "Cloud-Speicheranbieter wie Google oder Apple haben keinen Zugriff auf Ihre Bitcoin, da das Verschlüsselungspasswort sehr sicher ist. Sie können nur dann auf Ihre Bitcoin zugreifen, wenn sie im unwahrscheinlichen Fall mit dem Schlüsselserver zusammenarbeiten (dem Online-Dienst, der Ihr Verschlüsselungspasswort speichert). Sollte der Schlüsselserver jemals gehackt werden, könnte Ihr Bitcoin in der Google- oder Apple-Cloud gefährdet sein.",
-  "howToDecideBackupText1": "Eine der häufigsten Ursachen, warum Menschen ihre Bitcoin verlieren, ist der Verlust ihrer physischen Sicherung. Jeder, der Ihre physische Sicherung findet, kann alle Ihre Bitcoin entnehmen. Wenn Sie sehr zuversichtlich sind, dass Sie sie gut verstecken und nie verlieren werden, ist dies eine gute Option.",
-  "payOrderNotFound": "Die Zahlungsanweisung wurde nicht gefunden. Bitte versuchen Sie es erneut.",
-  "coldcardStep13": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf der Coldcard zu scannen. Scannen Sie ihn.",
+  "howToDecideBackupText1": "Eine der häufigsten Ursachen, warum Menschen ihre Bitcoin verlieren, ist der Verlust ihrer physischen Sicherung. Jeder, der Ihre physische Sicherung findet, kann alle Ihre Bitcoin entnehmen. Wenn Sie sehr zuversichtlich sind, dass Sie sie gut verstecken und nie verlieren werden, ist dies eine gute Option.",  "coldcardStep13": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf der Coldcard zu scannen. Scannen Sie ihn.",
   "psbtFlowIncreaseBrightness": "Erhöhen Sie die Bildschirmhelligkeit auf Ihrem Gerät",
   "payCoinjoinCompleted": "CoinJoin abgeschlossen",
   "electrumAddCustomServer": "Benutzerdefinierter Server",
@@ -1089,9 +1081,7 @@
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "pleaseWaitFetching": "Bitte warten Sie, während Ihre Sicherungsdatei abgerufen wird.",
   "backupWalletPhysicalBackupTag": "Vertrauenslos (nehmen Sie sich die Zeit)",
-  "electrumReset": "Zurücksetzen",
-  "payInsufficientBalanceError": "Das Guthaben in der ausgewählten Wallet reicht nicht aus, um diesen Zahlungsauftrag auszuführen.",
-  "backupCompletedTitle": "Backup abgeschlossen!",
+  "electrumReset": "Zurücksetzen",  "backupCompletedTitle": "Backup abgeschlossen!",
   "arkDate": "Datum",
   "psbtFlowInstructions": "Anweisungen",
   "systemLabelExchangeSell": "Verkauf",
@@ -1126,7 +1116,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -1319,10 +1309,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -1885,7 +1875,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -1904,10 +1894,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -3023,9 +3013,7 @@
   "importQrDevicePassportStep5": "Wählen Sie die Option „Sparrow“",
   "psbtFlowClickPsbt": "Klicken Sie auf PSBT",
   "sendInvoicePaid": "Rechnung bezahlt",
-  "buyKycPendingDescription": "Sie müssen zuerst die Identitätsprüfung abschließen.",
-  "payBelowMinAmountError": "Sie versuchen, einen Betrag zu zahlen, der unter dem Mindestbetrag liegt, der mit dieser Wallet gezahlt werden kann.",
-  "arkReceiveSegmentArk": "Ark",
+  "buyKycPendingDescription": "Sie müssen zuerst die Identitätsprüfung abschließen.",  "arkReceiveSegmentArk": "Ark",
   "autoswapRecipientWalletInfo": "Wählen Sie aus, welche Bitcoin-Wallet die überwiesenen Gelder erhalten soll (erforderlich)",
   "importWalletKrux": "Krux",
   "swapContinueButton": "Fortfahren",
@@ -3041,10 +3029,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -3236,7 +3224,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -3442,7 +3430,7 @@
   "bitboxErrorConnectionTypeNotInitialized": "Verbindungstyp nicht initialisiert.",
   "transactionListOngoingTransfersDescription": "Diese Überweisungen werden derzeit durchgeführt. Ihr Geld ist sicher und wird nach Abschluss der Überweisung verfügbar sein.",
   "ledgerErrorUnknown": "Unbekannter Fehler",
-  "payBelowMinAmount": "Sie versuchen, einen Betrag zu zahlen, der unter dem Mindestbetrag liegt, der mit dieser Wallet gezahlt werden kann",
+  "payBelowMinAmount": "Sie versuchen, einen Betrag zu zahlen, der unter dem Mindestbetrag liegt, der mit dieser Wallet gezahlt werden kann ({minAmountSat} sats)",
   "ledgerProcessingVerifySubtext": "Bitte bestätigen Sie die Adresse auf Ihrem Ledger-Gerät.",
   "transactionOrderLabelOriginCedula": "Herkunft des Ausweisdokuments (Costa Rica)",
   "recoverbullRecoveryTransactionsLabel": "Transaktionen: {count}",
@@ -3584,9 +3572,7 @@
   },
   "electrumRetryCount": "Wiederholungsversuche",
   "walletDetailsDescriptorLabel": "Output-Descriptor",
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-Anleitung",
-  "payOrderNotFoundError": "Die Zahlungsanweisung wurde nicht gefunden. Bitte versuchen Sie es erneut.",
-  "jadeStep12": "Tippen Sie in der Bull Bitcoin Wallet auf „Fertig“",
+  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-Anleitung",  "jadeStep12": "Tippen Sie in der Bull Bitcoin Wallet auf „Fertig“",
   "payFilterByType": "Nach Typ filtern",
   "importMnemonicImporting": "Wird importiert…",
   "recoverbullGoogleDriveExportButton": "Exportieren",
@@ -3642,7 +3628,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -3650,7 +3636,6 @@
   "bitboxScreenWalletTypeLabel": "Wallet-Typ:",
   "importQrDeviceKruxStep6": "Das ist es!",
   "recoverbullRecoveryErrorMissingDerivationPath": "In der Backup-Datei fehlt der Ableitungspfad.",
-  "payUnauthenticatedError": "Sie sind nicht authentifiziert. Bitte melden Sie sich an, um fortzufahren.",
   "payClabe": "CLABE",
   "mempoolCustomServerDelete": "Löschen",
   "optionalPassphraseHint": "Optionale Passphrase",
@@ -3662,7 +3647,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -3892,7 +3877,7 @@
   },
   "sellSendPaymentNetworkFees": "Netzwerkgebühren",
   "transactionSwapDescLnReceivePaid": "Die Zahlung ist eingegangen! Wir senden nun die On-Chain-Transaktion an Ihre Wallet",
-  "payAboveMaxAmount": "Sie versuchen, einen Betrag zu bezahlen, der über dem Höchstbetrag liegt, der mit dieser Wallet bezahlt werden kann",
+  "payAboveMaxAmount": "Sie versuchen, einen Betrag zu bezahlen, der über dem Höchstbetrag liegt, der mit dieser Wallet bezahlt werden kann ({maxAmountSat} sats)",
   "receiveNetworkUnavailable": "{network} ist derzeit nicht verfügbar",
   "@receiveNetworkUnavailable": {
     "placeholders": {
@@ -4246,7 +4231,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4466,7 +4451,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -4856,7 +4841,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
