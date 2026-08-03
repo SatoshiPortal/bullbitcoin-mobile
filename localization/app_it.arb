@@ -163,7 +163,6 @@
   "exchangeLandingRecommendedExchange": "Scambio Bitcoin consigliato",
   "backupWalletHowToDecideVaultMoreInfo": "Visitare Recoverbull.com per ulteriori informazioni.",
   "recoverbullGoBackEdit": "Torna indietro e modifica",
-  "importWatchOnlyWalletGuides": "Guide del portafoglio",
   "receiveConfirming": "Conferma... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -2507,7 +2506,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Acquistare un dispositivo",
   "sellMinimumAmount": "Importo minimo di vendita: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {

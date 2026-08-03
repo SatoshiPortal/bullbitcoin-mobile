@@ -463,10 +463,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "คู่มือ",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "กำลังยืนยัน... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -7689,10 +7685,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "ซื้ออุปกรณ์",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "จำนวนขายขั้นต่ำ: {amount}",
   "@sellMinimumAmount": {

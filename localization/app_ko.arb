@@ -463,10 +463,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "지갑 가이드",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "확인... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -7689,10 +7685,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "제품구매",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "최소 판매량: {amount}",
   "@sellMinimumAmount": {

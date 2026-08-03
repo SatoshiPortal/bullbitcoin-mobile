@@ -3038,8 +3038,6 @@
   "importWatchOnlyDerivationPath": "Derivointipolku",
   "importWatchOnlyImportButton": "Tuo watch-only -lompakko",
   "importWatchOnlyCancel": "Peruuta",
-  "importWatchOnlyBuyDevice": "Osta laite",
-  "importWatchOnlyWalletGuides": "Oppaat",
   "importWatchOnlyCopiedToClipboard": "Kopioitu leikepöydälle",
   "importWatchOnlySelectDerivation": "Valitse derivointitapa",
   "importWatchOnlyType": "Tyyppi",

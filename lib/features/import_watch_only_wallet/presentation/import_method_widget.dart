@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_ro
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ImportMethodWidget extends StatelessWidget {
   const ImportMethodWidget({super.key});
@@ -13,54 +12,18 @@ class ImportMethodWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: .spaceBetween,
       children: [
-        Column(
-          mainAxisAlignment: .spaceEvenly,
-          children: [
-            const Gap(12),
-            BBButton.big(
-              label: context.loc.importWatchOnlyScanQR,
-              onPressed: () =>
-                  context.replaceNamed(ImportWatchOnlyWalletRoutes.scan.name),
-              iconData: Icons.qr_code_scanner,
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
-              outlined: true,
-            ),
-
-            const Gap(12),
-          ],
+        const Gap(12),
+        BBButton.big(
+          label: context.loc.importWatchOnlyScanQR,
+          onPressed: () =>
+              context.replaceNamed(ImportWatchOnlyWalletRoutes.scan.name),
+          iconData: Icons.qr_code_scanner,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+          outlined: true,
         ),
-
-        Center(
-          child: Column(
-            mainAxisAlignment: .spaceEvenly,
-            children: [
-              BBButton.big(
-                label: context.loc.importWatchOnlyBuyDevice,
-                onPressed: () => launchUrl(
-                  Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
-                ),
-                iconData: Icons.shopping_cart,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-                outlined: true,
-              ),
-              const Gap(12),
-
-              BBButton.big(
-                label: context.loc.importWatchOnlyWalletGuides,
-                onPressed: () =>
-                    launchUrl(Uri.parse('https://docs.bull.ethicnology.com')),
-                iconData: Icons.lightbulb_outline,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-                outlined: true,
-              ),
-            ],
-          ),
-        ),
+        const Gap(12),
       ],
     );
   }

@@ -11354,10 +11354,6 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlyWalletGuides": "Guias de carteira",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyImportButton": "Importar apenas carteira de relógio",
   "@importWatchOnlyImportButton": {
     "description": "Button to confirm watch-only import"
@@ -11881,10 +11877,6 @@
   "dcaScheduleDescription": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
   "@dcaScheduleDescription": {
     "description": "Explanation text at the top of DCA setup form"
-  },
-  "importWatchOnlyBuyDevice": "Compre um dispositivo",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "transactionHistoryTitle": "Histórico de transações",
   "transactionHistoryHeading": "Histórico de transações",

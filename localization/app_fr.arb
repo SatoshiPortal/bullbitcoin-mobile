@@ -3090,8 +3090,6 @@
   "importWatchOnlyDerivationPath": "Chemin de dérivation",
   "importWatchOnlyImportButton": "Importer le portefeuille en lecture seule",
   "importWatchOnlyCancel": "Annuler",
-  "importWatchOnlyBuyDevice": "Acheter un appareil",
-  "importWatchOnlyWalletGuides": "Guides de portefeuille",
   "importWatchOnlyCopiedToClipboard": "Copié dans le presse-papiers",
   "importWatchOnlySelectDerivation": "Sélectionner la dérivation",
   "importWatchOnlyType": "Type",

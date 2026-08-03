@@ -472,10 +472,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "ওয়ালেট নির্দেশিকা",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "নিশ্চিত করা হচ্ছে... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -7501,10 +7497,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "একটি ডিভাইস কিনুন",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "ন্যূনতম বিক্রি পরিমাণ: {amount}",
   "@sellMinimumAmount": {

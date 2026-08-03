@@ -380,10 +380,6 @@
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
-  "importWatchOnlyWalletGuides": "Wallet οδηγούς",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Επιβεβαίωση ... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -6393,10 +6389,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "Αγοράστε μια συσκευή",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "Ελάχιστη ποσότητα πώλησης: {amount}",
   "@sellMinimumAmount": {

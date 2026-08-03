@@ -636,10 +636,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "Ръководства за портфейли",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Потвърждаване... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -5890,10 +5886,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "Купете устройство",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "Минимална сума за продажба: {amount}",
   "@sellMinimumAmount": {

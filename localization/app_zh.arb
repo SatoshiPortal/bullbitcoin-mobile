@@ -164,7 +164,6 @@
   "exchangeLandingRecommendedExchange": "提议交换",
   "backupWalletHowToDecideVaultMoreInfo": "访问后收集更多信息.",
   "recoverbullGoBackEdit": "<背 景",
-  "importWatchOnlyWalletGuides": "钱包向导",
   "receiveConfirming": "1. 确认......({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -2509,7 +2508,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "购买装置",
   "sellMinimumAmount": "最低销售额:{amount}",
   "@sellMinimumAmount": {
     "placeholders": {

@@ -6572,14 +6572,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importWatchOnlyBuyDevice": "ডিভাইচ কিনক",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
-  "importWatchOnlyWalletGuides": "Wallet গাইড",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyCopiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"

@@ -1625,10 +1625,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "راهنمای کیف پول",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "تایید...{count}/{required}",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -7595,10 +7591,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "خرید یک دستگاه",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "حداقل فروش: {amount}",
   "@sellMinimumAmount": {

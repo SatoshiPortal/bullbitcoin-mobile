@@ -3089,8 +3089,6 @@
   "importWatchOnlyDerivationPath": "Ruta de derivación",
   "importWatchOnlyImportButton": "Importar Billetera de Solo Lectura",
   "importWatchOnlyCancel": "Cancelar",
-  "importWatchOnlyBuyDevice": "Comprar un dispositivo",
-  "importWatchOnlyWalletGuides": "Guías de billetera",
   "importWatchOnlyCopiedToClipboard": "Copiado al portapapeles",
   "importWatchOnlySelectDerivation": "Seleccionar derivación",
   "importWatchOnlyType": "Tipo",

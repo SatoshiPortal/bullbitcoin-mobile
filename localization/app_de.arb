@@ -160,7 +160,6 @@
   "exchangeLandingRecommendedExchange": "Empfohlene Bitcoin-Börse",
   "backupWalletHowToDecideVaultMoreInfo": "Besuchen Sie recoverybull.com für weitere Informationen.",
   "recoverbullGoBackEdit": "<< Zurück und bearbeiten",
-  "importWatchOnlyWalletGuides": "Wallet-Anleitungen",
   "receiveConfirming": "Bestätigung läuft… ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -2454,7 +2453,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Ein Gerät kaufen",
   "sellMinimumAmount": "Mindestverkaufsmenge: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
