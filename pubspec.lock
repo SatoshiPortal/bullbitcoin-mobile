@@ -1056,7 +1056,7 @@ packages:
     source: hosted
     version: "2.0.0"
   hex:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hex
       sha256: "4e7cd54e4b59ba026432a6be2dd9d96e4c5205725194997193bf871703b82c4a"
