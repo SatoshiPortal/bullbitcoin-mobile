@@ -351,9 +351,15 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       final derivationPath = widget.parameters?.derivationPath;
       final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
 
-      if (address != null && derivationPath != null) {
-        cubit.showAddressVerification(address);
+      if (address == null || derivationPath == null) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'verify requested without address/derivationPath',
+          ),
+        );
       }
+
+      cubit.showAddressVerification(address);
 
       return locator<VerifyAddressBitBoxUsecase>().execute(
         device: device,
@@ -374,12 +380,22 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       }
 
       final device = cubit.state.connectedDevice!;
+      final psbt = widget.parameters?.psbt;
+      final derivationPath = widget.parameters?.derivationPath;
       final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
+
+      if (psbt == null || derivationPath == null) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'sign requested without psbt/derivationPath',
+          ),
+        );
+      }
 
       return locator<SignPsbtBitBoxUsecase>().execute(
         device,
-        psbt: widget.parameters?.psbt,
-        derivationPath: widget.parameters?.derivationPath,
+        psbt: psbt,
+        derivationPath: derivationPath,
         scriptType: scriptType,
       );
     });

@@ -19,18 +19,10 @@ class SignPsbtBitBoxUsecase {
   @useResult
   Future<Result<String, BitBoxFailure>> execute(
     BitBoxDeviceEntity device, {
-    required String? psbt,
-    required String? derivationPath,
+    required String psbt,
+    required String derivationPath,
     required ScriptType scriptType,
   }) async {
-    if (psbt == null || derivationPath == null) {
-      return const Err(
-        InvalidParametersBitBoxFailure(
-          'sign requested without psbt/derivationPath',
-        ),
-      );
-    }
-
     final bool isTestnet;
     try {
       final settings = await _settingsRepository.fetch();

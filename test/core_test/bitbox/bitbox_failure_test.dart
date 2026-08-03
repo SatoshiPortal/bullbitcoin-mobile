@@ -109,23 +109,6 @@ void main() {
         expect((result as Err).failure, isA<BitBoxUnexpectedFailure>());
       },
     );
-
-    test('validates missing psbt below presentation — no raw leak', () async {
-      final usecase = SignPsbtBitBoxUsecase(
-        repository: _MockRepository(),
-        settingsRepository: _MockSettingsRepository(),
-      );
-
-      final result = await usecase.execute(
-        _device,
-        psbt: null,
-        derivationPath: "m/84'/0'/0'",
-        scriptType: ScriptType.bip84,
-      );
-
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<InvalidParametersBitBoxFailure>());
-    });
   });
 
   group('ConnectBitBoxDeviceUsecase', () {
@@ -174,23 +157,6 @@ void main() {
   });
 
   group('VerifyAddressBitBoxUsecase', () {
-    test('returns InvalidParameters on missing input — no raw leak', () async {
-      final usecase = VerifyAddressBitBoxUsecase(
-        repository: _MockRepository(),
-        settingsRepository: _MockSettingsRepository(),
-      );
-
-      final result = await usecase.execute(
-        device: _device,
-        address: null,
-        derivationPath: "m/84'/0'/0'",
-        scriptType: ScriptType.bip84,
-      );
-
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<InvalidParametersBitBoxFailure>());
-    });
-
     test('maps an address mismatch to InvalidResponse', () async {
       final repo = _MockRepository();
       final settings = _MockSettingsRepository();

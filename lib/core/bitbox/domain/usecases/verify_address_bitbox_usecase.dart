@@ -19,18 +19,10 @@ class VerifyAddressBitBoxUsecase {
   @useResult
   Future<Result<bool, BitBoxFailure>> execute({
     required BitBoxDeviceEntity device,
-    required String? address,
-    required String? derivationPath,
+    required String address,
+    required String derivationPath,
     required ScriptType scriptType,
   }) async {
-    if (address == null || derivationPath == null) {
-      return const Err(
-        InvalidParametersBitBoxFailure(
-          'verify requested without address/derivationPath',
-        ),
-      );
-    }
-
     final bool isTestnet;
     try {
       final settings = await _settingsRepository.fetch();
