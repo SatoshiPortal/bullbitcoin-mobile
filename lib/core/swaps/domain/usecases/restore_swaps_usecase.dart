@@ -17,7 +17,7 @@ class RestoreSwapsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      log.info('SWAP_RESTORE: starting (testnet=$isTestnet)');
+      log.fine('SWAP_RESTORE: starting (testnet=$isTestnet)');
 
       final restored = await _swapRepository.restoreSwaps(isTestnet: isTestnet);
 
@@ -33,12 +33,12 @@ class RestoreSwapsUsecase {
           ),
       ];
       final missing = result.where((r) => !r.existsLocally).length;
-      log.info(
+      log.fine(
         'SWAP_RESTORE: ${result.length} restored, '
         '${result.length - missing} already local, $missing missing',
       );
       for (final r in result) {
-        log.info(
+        log.fine(
           'SWAP_RESTORE:   ${r.swap.id} ${r.swap.kind.name} '
           'local=${r.existsLocally}',
         );

@@ -1269,7 +1269,7 @@ class BoltzDatasource {
 
       switch (mapping) {
         case SwapStale():
-          log.info(
+          log.fine(
             '[Boltz] deleting stale pending swap $swapId '
             '(no funds at risk, expired upstream)',
           );
@@ -1289,7 +1289,7 @@ class BoltzDatasource {
 
         case SwapUpdated(:final swap):
           await _boltzStore.store(swap);
-          log.info(
+          log.fine(
             '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
             '(event ${boltzStatus.name})',
           );

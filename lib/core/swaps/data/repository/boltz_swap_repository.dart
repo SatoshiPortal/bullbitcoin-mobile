@@ -539,7 +539,7 @@ class BoltzSwapRepository {
       swapMasterKey.fingerprint,
       current + count,
     );
-    log.info(
+    log.fine(
       'SWAP_KEY: reserved index $current (count=$count) '
       'fp=${swapMasterKey.fingerprint}',
     );
@@ -556,7 +556,7 @@ class BoltzSwapRepository {
 
   Future<void> updateSwap({required Swap swap}) {
     // Debug: full-model writes must be as visible as updateSwapFields ones.
-    log.info('[SwapStore] ${swap.id} full-write status=${swap.status.name}');
+    log.fine('[SwapStore] ${swap.id} full-write status=${swap.status.name}');
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 
@@ -614,7 +614,7 @@ class BoltzSwapRepository {
 
     // Debug: every field mutation in one greppable line — the audit trail
     // for how a swap reached a state the watcher no longer acts on.
-    log.info(
+    log.fine(
       '[SwapStore] $swapId'
       '${status != null ? ' status=${swap.status.name}->${status.name}' : ''}'
       '${receiveTxid != null ? ' receiveTxid=$receiveTxid' : ''}'
@@ -771,14 +771,14 @@ class BoltzSwapRepository {
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
     final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
-    log.info(
+    log.fine(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
     );
     final summaries = await _boltz.restoreSwapSummaries(
       swapMasterKey: swapMasterKey,
     );
-    log.info('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
+    log.fine('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
     return [
       for (final s in summaries)
         RestoredSwap(
@@ -1025,7 +1025,7 @@ class BoltzSwapRepository {
     await _boltz.storage.store(model);
     subscribeToSwaps([id]);
     await reconcileSwaps([id]);
-    log.info('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
+    log.fine('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
     return model.toEntity();
   }
 

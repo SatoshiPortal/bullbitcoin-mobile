@@ -57,7 +57,7 @@ class SwapWatcherService {
     _censusLogged = true;
     try {
       final swaps = await _boltzRepo.getAllSwaps();
-      log.info('[SwapCensus] ${swaps.length} stored swaps');
+      log.fine('[SwapCensus] ${swaps.length} stored swaps');
       for (final s in swaps) {
         final send = switch (s) {
           LnSendSwap(:final sendTxid) => sendTxid,
@@ -79,7 +79,7 @@ class SwapWatcherService {
           ChainSwap(:final refundAddress) => refundAddress,
           _ => null,
         };
-        log.info(
+        log.fine(
           '[SwapCensus] ${s.id} ${s.type.name} ${s.status.name}'
           ' keyIndex=${s.keyIndex}'
           ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}'
@@ -154,7 +154,7 @@ class SwapWatcherService {
     }
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toSet().toList();
-    log.info(
+    log.fine(
       '[SwapWatcher] restart with ongoing swaps: '
       '${swapIdsToWatch.isEmpty ? 'none' : swapIdsToWatch.join(',')}',
     );
@@ -236,7 +236,7 @@ class SwapWatcherService {
       final elapsed = DateTime.now().difference(actionStartedAt);
       final wasSuspended = elapsed > _actionTimeout * 2;
       if (wasSuspended) {
-        log.info(
+        log.fine(
           '[SwapWatcher] action for swap ${swap.id} interrupted by app '
           'suspension (${elapsed.inMinutes}m elapsed); it may still '
           'complete now that the app resumed',
@@ -484,7 +484,7 @@ class SwapWatcherService {
 
   Future<void> _refundLnSend(LnSendSwap swap) async {
     if (swap.refundTxid != null) {
-      log.info(
+      log.fine(
         '[SwapWatcher] skip ln refund for ${swap.id}: refundTxid already '
         'recorded (${swap.refundTxid}) — verify it exists on-chain',
       );
@@ -575,7 +575,7 @@ class SwapWatcherService {
 
   Future<void> _refundChain(ChainSwap swap) async {
     if (swap.refundTxid != null) {
-      log.info(
+      log.fine(
         '[SwapWatcher] skip chain refund for ${swap.id}: refundTxid already '
         'recorded (${swap.refundTxid}) — verify it exists on-chain',
       );
@@ -690,7 +690,7 @@ class SwapWatcherService {
       }
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _clearRetries(swap.id);
-      log.info('[SwapWatcher] coop close succeeded for ${swap.id}');
+      log.fine('[SwapWatcher] coop close succeeded for ${swap.id}');
     } catch (e, st) {
       log.severe(
         message:
@@ -872,7 +872,7 @@ class SwapWatcherService {
       completionTime: DateTime.now(),
     );
     _clearRetries(swap.id);
-    log.info(
+    log.fine(
       '[SwapWatcher] ${isClaim ? 'claim' : 'refund'} succeeded for '
       '${swap.id} txid=$txid fees=$actualFees',
     );
@@ -898,7 +898,7 @@ class SwapWatcherService {
     // its funds are not at risk. It can never make progress, so delete it
     // instead of leaving it stuck as an ongoing transfer in the list.
     if (swap.recovered && _isAlreadySpentError(error)) {
-      log.info(
+      log.fine(
         '[SwapWatcher] recovered swap ${swap.id} already resolved on-chain '
         '(lockup spent) — deleting stale entry',
       );
@@ -916,7 +916,7 @@ class SwapWatcherService {
     if (!isClaim && _isNonFinalError(error)) {
       // Script-path refunds are only valid after the swap's timelock; stay
       // refundable and retry later.
-      log.info(
+      log.fine(
         '[SwapWatcher] refund for ${swap.id} not yet final (timelock); '
         'will retry',
       );
@@ -975,7 +975,7 @@ class SwapWatcherService {
       final txid = outspendStatus.txid;
       if (txid == null) return false;
 
-      log.info(
+      log.fine(
         '[SwapWatcher] outspend recovery for ${swap.id}: '
         '${isClaim ? 'claim' : 'refund'} already on-chain as $txid',
       );
@@ -1014,7 +1014,7 @@ class SwapWatcherService {
       attempts: attempts,
       nextAttemptAt: DateTime.now().add(clamped),
     );
-    log.info(
+    log.fine(
       '[SwapWatcher] swap $swapId attempt $attempts failed; next attempt '
       'after $clamped',
     );
