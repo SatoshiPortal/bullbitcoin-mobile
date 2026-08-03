@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
+import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_watch_only_wallet_usecase.dart';
@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_action.dart';
+import 'package:bb_mobile/features/bitbox/presentation/bitbox_failure_l10n.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_cubit.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
@@ -248,16 +250,12 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   Future<void> _executeAction(BuildContext context) async {
     final cubit = context.read<BitBoxOperationCubit>();
 
-    try {
-      if (widget.action == const BitBoxAction.importWallet()) {
-        await _executeImportWithPairing(context, cubit);
-      } else if (widget.action == const BitBoxAction.verifyAddress()) {
-        await _executeVerifyAddress(context, cubit);
-      } else if (widget.action == const BitBoxAction.signTransaction()) {
-        await _executeSignTransaction(context, cubit);
-      }
-    } catch (e, stackTrace) {
-      log.warning('BitBox operation failed', error: e, trace: stackTrace);
+    if (widget.action == const BitBoxAction.importWallet()) {
+      await _executeImportWithPairing(context, cubit);
+    } else if (widget.action == const BitBoxAction.verifyAddress()) {
+      await _executeVerifyAddress(context, cubit);
+    } else if (widget.action == const BitBoxAction.signTransaction()) {
+      await _executeSignTransaction(context, cubit);
     }
   }
 
@@ -343,123 +341,115 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     BuildContext context,
     BitBoxOperationCubit cubit,
   ) async {
-    try {
-      await cubit.executeOperation(() async {
-        await _ensureDeviceReady(cubit);
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
 
-        final device = cubit.state.connectedDevice!;
-        final address = widget.parameters?.address;
-        final derivationPath = widget.parameters?.derivationPath;
-        final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
+      final device = cubit.state.connectedDevice!;
+      final address = widget.parameters?.address;
+      final derivationPath = widget.parameters?.derivationPath;
+      final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
 
-        if (address == null) {
-          throw Exception('Address is required for verification');
-        }
-
-        if (derivationPath == null) {
-          throw Exception('Derivation path is required for verification');
-        }
-
-        cubit.showAddressVerification(address);
-
-        final verified = await locator<VerifyAddressBitBoxUsecase>().execute(
-          device: device,
-          address: address,
-          derivationPath: derivationPath,
-          scriptType: scriptType,
+      if (address == null || derivationPath == null) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'verify requested without address/derivationPath',
+          ),
         );
-        if (!verified) {
-          throw const BitBoxError.invalidResponse();
-        }
-        return verified;
-      });
-    } catch (e, stackTrace) {
-      log.warning('BitBox verify address failed', error: e, trace: stackTrace);
-    }
+      }
+
+      cubit.showAddressVerification(address);
+
+      return locator<VerifyAddressBitBoxUsecase>().execute(
+        device: device,
+        address: address,
+        derivationPath: derivationPath,
+        scriptType: scriptType,
+      );
+    });
   }
 
   Future<void> _executeSignTransaction(
     BuildContext context,
     BitBoxOperationCubit cubit,
   ) async {
-    try {
-      await cubit.executeOperation(() async {
-        await _ensureDeviceReady(cubit);
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
 
-        final device = cubit.state.connectedDevice!;
-        final psbt = widget.parameters?.psbt;
-        final derivationPath = widget.parameters?.derivationPath;
-        final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
+      final device = cubit.state.connectedDevice!;
+      final psbt = widget.parameters?.psbt;
+      final derivationPath = widget.parameters?.derivationPath;
+      final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
 
-        if (psbt == null) {
-          throw Exception('PSBT is required for signing');
-        }
-
-        if (derivationPath == null) {
-          throw Exception('Derivation path is required for signing');
-        }
-        return await locator<SignPsbtBitBoxUsecase>().execute(
-          device,
-          psbt: psbt,
-          derivationPath: derivationPath,
-          scriptType: scriptType,
+      if (psbt == null || derivationPath == null) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'sign requested without psbt/derivationPath',
+          ),
         );
-      });
-    } catch (e, stackTrace) {
-      log.warning(
-        'BitBox sign transaction failed',
-        error: e,
-        trace: stackTrace,
+      }
+
+      return locator<SignPsbtBitBoxUsecase>().execute(
+        device,
+        psbt: psbt,
+        derivationPath: derivationPath,
+        scriptType: scriptType,
       );
-    }
+    });
   }
 
-  Future<void> _ensureDeviceReady(BitBoxOperationCubit cubit) async {
+  Future<Result<void, BitBoxFailure>> _ensureDeviceReady(
+    BitBoxOperationCubit cubit,
+  ) async {
     final device = cubit.state.connectedDevice!;
     final repository = locator<BitBoxDeviceRepository>();
 
-    try {
-      await repository.getMasterFingerprint(device);
-    } catch (_) {
+    if (await repository.getMasterFingerprint(device) case Err()) {
       cubit.showWaitingForPassword();
 
-      final pairingCode = await locator<UnlockBitBoxDeviceUsecase>().execute(
-        device,
-      );
+      final String pairingCode;
+      switch (await locator<UnlockBitBoxDeviceUsecase>().execute(device)) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          pairingCode = value;
+      }
 
       if (pairingCode.isNotEmpty) {
         cubit.showPairingCode(pairingCode);
 
-        await locator<PairBitBoxDeviceUsecase>().execute(device);
+        if (await locator<PairBitBoxDeviceUsecase>().execute(device) case Err(
+          :final failure,
+        )) {
+          return Err(failure);
+        }
       }
     }
     cubit.showProcessing();
+    return const Ok(null);
   }
 
   Future<void> _executeImportWithPairing(
     BuildContext context,
     BitBoxOperationCubit cubit,
   ) async {
-    try {
-      await cubit.executeOperation(() async {
-        await _ensureDeviceReady(cubit);
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
 
-        final device = cubit.state.connectedDevice!;
+      final device = cubit.state.connectedDevice!;
 
-        return await locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
-          device: device,
-          deviceType: widget.parameters?.requestedDeviceType,
-          label: context.loc.bitboxScreenDefaultWalletLabel,
-          scriptType: _selectedScriptType,
-        );
-      });
-    } catch (e, stackTrace) {
-      log.severe(
-        message: 'BitBox import with pairing failed',
-        error: e,
-        trace: stackTrace,
+      return locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
+        device: device,
+        deviceType: widget.parameters?.requestedDeviceType,
+        label: context.loc.bitboxScreenDefaultWalletLabel,
+        scriptType: _selectedScriptType,
       );
-    }
+    });
   }
 
   Widget _buildScriptTypeButton(BuildContext context) {
@@ -639,7 +629,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
-          if (state.error case PermissionDeniedBitBoxError()) ...[
+          if (state.failure case PermissionDeniedBitBoxFailure()) ...[
             const Gap(16),
             BBButton.big(
               onPressed: () => _openAppSettings(),
@@ -722,21 +712,21 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     BitBoxOperationState state,
   ) {
     if (_usesBluetoothTransport) {
-      switch (state.error) {
-        case PermissionDeniedBitBoxError():
+      switch (state.failure) {
+        case PermissionDeniedBitBoxFailure():
           return context.loc.bitboxErrorBluetoothPermissionDenied;
-        case BluetoothUnavailableBitBoxError():
+        case BluetoothUnavailableBitBoxFailure():
           return context.loc.bitboxErrorBluetoothUnavailable;
-        case NoDevicesFoundBitBoxError():
+        case NoDevicesFoundBitBoxFailure():
           return context.loc.bitboxErrorNoBleDevicesFound;
-        case MultipleDevicesFoundBitBoxError():
+        case MultipleDevicesFoundBitBoxFailure():
           return context.loc.bitboxErrorMultipleBleDevicesFound;
         default:
           break;
       }
     }
 
-    return state.error?.toTranslated(context) ??
+    return state.failure?.toTranslated(context) ??
         context.loc.bitboxScreenUnknownError;
   }
 }

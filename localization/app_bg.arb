@@ -628,10 +628,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Установено несъответствие на устройството.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "Посетете recoverbull.com за повече информация.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
@@ -1832,10 +1828,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "Няма активна връзка с BitBox устройство.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "transactionFilterAll": "Всички",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
@@ -1847,10 +1839,6 @@
   "transactionDetailLabelAmountReceived": "Получена сума",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "Операцията изтече. Моля, опитайте отново.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Платежът е получен!",
   "@receivePaymentReceived": {
@@ -3204,10 +3192,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "Не успях да установя защитена връзка. Моля, опитайте отново.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Сумата е над лимитите за обмен",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3401,10 +3385,6 @@
   "payMyFiatRecipients": "Моите фиатни получатели",
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
-  },
-  "bitboxCubitPermissionDenied": "USB разрешение отказано. Моля, дайте разрешение за достъп до вашето BitBox устройство.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Прехвърля към",
   "@swapTransferTo": {
@@ -5426,10 +5406,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Открит е невалиден PSBT формат.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "testBackupErrorNoMnemonic": "Няма заредена мнемонична фраза.",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
@@ -6296,10 +6272,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "Неуспешно свързване към BitBox устройство. Моля, проверете връзката си.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "Условия за ползване",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -6411,10 +6383,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Устройството не е сдвоено. Моля, завършете процеса на сдвояване първо.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "Баланс CRC",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -6447,10 +6415,6 @@
   "payPriceRefreshIn": "Цената ще се обнови след ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Операцията беше прекъсната. Моля, опитайте отново.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
   "@passportStep3": {
@@ -6980,10 +6944,6 @@
   "backupWalletVaultProviderGoogleDrive": "Google Диск",
   "@backupWalletVaultProviderGoogleDrive": {
     "description": "Name of Google Drive vault provider option"
-  },
-  "bitboxCubitDeviceNotFound": "Не е намерено устройство BitBox. Моля свържете устройството си и опитайте отново.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
   },
   "buyStandardWithdrawal": "Стандартно теглене",
   "@buyStandardWithdrawal": {
@@ -8147,10 +8107,6 @@
   "sellReceiveAmount": "Ще получите",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "Невалиден отговор от BitBox устройство. Моля, опитайте отново.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "Настройки",
   "@settingsScreenTitle": {

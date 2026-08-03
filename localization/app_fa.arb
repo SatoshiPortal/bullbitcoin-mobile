@@ -1617,10 +1617,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "عدم تطابق دستگاه شناسایی شده است.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "برای کسب اطلاعات بیشتر به Recoverybull.com مراجعه کنید.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
@@ -2959,10 +2955,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "هیچ اتصال فعال با دستگاه BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "بودجه حساب شما",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2978,10 +2970,6 @@
   "transactionDetailLabelAmountReceived": "مبلغ دریافت شده",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "عملیات زمان بندی شده لطفا دوباره امتحان کنید.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "پرداخت!",
   "@receivePaymentReceived": {
@@ -4509,10 +4497,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "شکست در ایجاد ارتباط امن لطفا دوباره امتحان کنید.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "مقدار بالاتر از حد مبادله",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4749,10 +4733,6 @@
   "exchangeLandingFeature1": "خرید Bitcoin مستقیم به Self-custody",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "اجازه USB رد شد. اجازه دسترسی به دستگاه BitBox خود را بدهید.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "انتقال",
   "@swapTransferTo": {
@@ -7063,10 +7043,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "فرمت Invalid PSBT شناسایی شده است.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "dcaSetupFrequencyError": "لطفا یک فرکانس انتخاب کنید",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8044,10 +8020,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "عدم اتصال به دستگاه BitBox لطفا ارتباط خود را بررسی کنید.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "شرایط خدمات",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8155,10 +8127,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "دستگاه جفت نمی شود. ابتدا فرآیند جفت سازی را تکمیل کنید.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC تعادل تعادل تعادل",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8195,10 +8163,6 @@
   "payPriceRefreshIn": "قیمت در ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "عملیات لغو شد. لطفا دوباره امتحان کنید.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "کد QR نشان داده شده در کیف پول بول",
   "@passportStep3": {
@@ -10057,10 +10021,6 @@
   "sellReceiveAmount": "شما دریافت خواهید کرد",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "پاسخ Invalid از دستگاه BitBox لطفا دوباره امتحان کنید.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "تنظیمات",
   "@settingsScreenTitle": {

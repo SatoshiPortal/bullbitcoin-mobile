@@ -5936,18 +5936,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "No active connection to BitBox device.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "Device mismatch detected.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"
@@ -6224,38 +6212,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
-  },
-  "bitboxCubitPermissionDenied": "USB permission denied. Please grant permission to access your BitBox device.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "No BitBox device found. Please connect your device and try again.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "Failed to establish secure connection. Please try again.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "Operation timed out. Please try again.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "Failed to connect to BitBox device. Please check your connection.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "Invalid response from BitBox device. Please try again.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "Operation was cancelled. Please try again.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "advancedOptionsTitle": "Advanced options",
   "@advancedOptionsTitle": {

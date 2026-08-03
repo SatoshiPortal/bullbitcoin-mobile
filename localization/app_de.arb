@@ -156,7 +156,6 @@
   "recoverbullSelectVaultImportSuccess": "Ihr Tresor wurde erfolgreich importiert",
   "mempoolServerNotUsed": "Nicht verwendet (eigener Server aktiv)",
   "recoverbullSelectErrorPrefix": "Fehler:",
-  "bitboxErrorDeviceMismatch": "Gerätefehler erkannt.",
   "arkReceiveBtcAddress": "Adresse",
   "exchangeLandingRecommendedExchange": "Empfohlene Bitcoin-Börse",
   "backupWalletHowToDecideVaultMoreInfo": "Besuchen Sie recoverybull.com für weitere Informationen.",
@@ -684,11 +683,9 @@
   "importQrDeviceJadeName": "Blockstream Jade",
   "importWalletImportMnemonic": "Mnemonik importieren",
   "bip85NextMnemonic": "Nächster Mnemonic",
-  "bitboxErrorNoActiveConnection": "Keine aktive Verbindung zum BitBox-Gerät.",
   "dcaFundAccountButton": "Ihr Konto aufladen",
   "arkSendTitle": "Senden",
   "transactionDetailLabelAmountReceived": "Erhaltener Betrag",
-  "bitboxCubitOperationTimeout": "Der Vorgang hat zu lange gedauert. Bitte versuchen Sie es erneut.",
   "receivePaymentReceived": "Zahlung erhalten!",
   "backupWalletHowToDecideVaultCloudSecurity": "Cloud-Speicheranbieter wie Google oder Apple haben keinen Zugriff auf Ihre Bitcoin, da das Verschlüsselungspasswort sehr sicher ist. Sie können nur dann auf Ihre Bitcoin zugreifen, wenn sie im unwahrscheinlichen Fall mit dem Schlüsselserver zusammenarbeiten (dem Online-Dienst, der Ihr Verschlüsselungspasswort speichert). Sollte der Schlüsselserver jemals gehackt werden, könnte Ihr Bitcoin in der Google- oder Apple-Cloud gefährdet sein.",
   "howToDecideBackupText1": "Eine der häufigsten Ursachen, warum Menschen ihre Bitcoin verlieren, ist der Verlust ihrer physischen Sicherung. Jeder, der Ihre physische Sicherung findet, kann alle Ihre Bitcoin entnehmen. Wenn Sie sehr zuversichtlich sind, dass Sie sie gut verstecken und nie verlieren werden, ist dies eine gute Option.",
@@ -1266,7 +1263,6 @@
   "recoverbullSelectQuickAndEasy": "Schnell und einfach",
   "exchangeFileUploadTitle": "Sicherer Datei-Upload",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Sie sind zuversichtlich in Ihren Sicherheitsvorkehrungen, um Ihre Bitcoin-Seed-Wörter zu verstecken und zu bewahren.",
-  "bitboxCubitHandshakeFailed": "Fehler beim Herstellen einer sicheren Verbindung. Bitte versuchen Sie es erneut",
   "sendErrorAmountAboveSwapLimits": "Betrag über Swap-Grenzwerten.",
   "backupWalletHowToDecideBackupEncryptedVault": "Der verschlüsselte Tresor verhindert, dass Diebe nach Ihrem Backup suchen. Es verhindert auch, dass Sie Ihr Backup versehentlich verlieren, da es in Ihrer Cloud gespeichert wird. Cloud-Speicheranbieter wie Google oder Apple haben keinen Zugriff auf Ihr Bitcoin, da das Verschlüsselungspasswort zu stark ist. Es gibt eine kleine Möglichkeit, dass der Webserver, der die Verschlüsselungsschlüssel Ihres Backups speichert, beeinträchtigt werden könnte. In diesem Fall könnte die Sicherheit des Backups in Ihrem Cloud-Konto gefährdet sein",
   "coreSwapsChainCompletedRefunded": "Überweisung wurde zurückerstattet",
@@ -1355,7 +1351,6 @@
   "visitRecoverBullMessage": "Besuchen Sie recoverbull.com für weitere Informationen.",
   "payMyFiatRecipients": "Meine Fiat-Empfänger",
   "exchangeLandingFeature1": "Bitcoin direkt in Selbstverwahrung kaufen",
-  "bitboxCubitPermissionDenied": "USB-Berechtigung verweigert. Bitte erteilen Sie die Berechtigung für den Zugriff auf Ihr BitBox-Gerät",
   "swapTransferTo": "Überweisung an",
   "testBackupPinMessage": "Testen Sie, um sicherzustellen, dass Sie sich an Ihr Backup-{pinOrPassword} erinnern.",
   "@testBackupPinMessage": {
@@ -2236,7 +2231,6 @@
   "recoverbullRecoveryContinueButton": "Fortfahren",
   "payTimeoutError": "Zahlungszeitüberschreitung. Bitte überprüfen Sie den Status.",
   "kruxStep4": "Von Kamera laden",
-  "bitboxErrorInvalidMagicBytes": "Ungültiges PSBT-Format erkannt.",
   "sellErrorRecalculateFees": "Gebühren konnten nicht neu berechnet werden: {error}.",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2654,7 +2648,6 @@
   },
   "transactionStatusPending": "Ausstehend",
   "settingsSuperuserModeDisabledMessage": "Superuser-Modus deaktiviert",
-  "bitboxCubitConnectionFailed": "BitBox-Gerät nicht verbunden. Bitte überprüfen Sie Ihre Verbindung",
   "settingsTermsOfServiceTitle": "Geschäftsbedingungen",
   "importQrDeviceScanning": "Wird gescannt…",
   "importWalletKeystone": "Keystone",
@@ -2703,7 +2696,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Gerät nicht gepaart. Bitte füllen Sie zuerst den Paarungsprozess aus",
   "sellCrcBalance": "CRC-Saldo",
   "paySelectCoinsManually": "Coins manuell auswählen",
   "replaceByFeeActivatedLabel": "Gebührenerhöhung aktiviert",
@@ -2719,7 +2711,6 @@
     }
   },
   "payPriceRefreshIn": "Der Preis wird aktualisiert in",
-  "bitboxCubitOperationCancelled": "Die Operation wurde abgebrochen. Bitte versuchen Sie es erneut",
   "passportStep3": "Scannen Sie den QR-Code, der in der Bull-Wallet angezeigt wird",
   "jadeStep5": "Wenn Sie Probleme beim Scannen haben:",
   "electrumProtocolError": "Protokoll nicht enthalten (ssl:// oder tcp://).",
@@ -4677,7 +4668,6 @@
   "autoswapActiveCardTitle": "Autoswap ist aktiv",
   "autoswapWarningExplanationBold": "automatisch",
   "autoswapInfoConsentMessage": "Autoswap ist derzeit aktiviert, wird aber erst ausgelöst, wenn Sie zustimmen. Möchten Sie es aktiviert lassen?",
-  "bitboxCubitInvalidResponse": "Ungültige Antwort vom BitBox-Gerät. Bitte versuchen Sie es erneut.",
   "deleteLogsTitle": "Logs löschen",
   "logsDeletedMessage": "Logs gelöscht",
   "sendSelfTransfer": "Eigentransfer",

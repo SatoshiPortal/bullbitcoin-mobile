@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "장치 mismatch 검출.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC 주소",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2062,10 +2058,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "BitBox 장치에 대한 활성 연결이 없습니다.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "계정 생성",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2081,10 +2073,6 @@
   "transactionDetailLabelAmountReceived": "지불 방법",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "가동 시간. 다시 시도하십시오.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "지불받은!",
   "@receivePaymentReceived": {
@@ -3899,10 +3887,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "보안 연결을 설정하는 실패. 다시 시도하십시오.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "금액은 스왑 제한 이상입니다",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4195,10 +4179,6 @@
   "exchangeLandingFeature1": "Bitcoin을 셀프 custody로 바로 구매",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB 권한 거부. BitBox 장치에 액세스 권한을 부여하십시오.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "결제하기",
   "@swapTransferTo": {
@@ -7007,10 +6987,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "PSBT 형식이 감지되었습니다.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "송금 수수료: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -8242,10 +8218,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "BitBox 장치에 연결할 실패. 자주 묻는 질문.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "이용 약관",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8369,10 +8341,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "결합되지 않는 장치. 페어링 프로세스를 먼저 완료하십시오.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "사이트맵 (주)",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8409,10 +8377,6 @@
   "payPriceRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "운영이 취소되었습니다. 다시 시도하십시오.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
   "@passportStep3": {
@@ -10680,10 +10644,6 @@
   "sellReceiveAmount": "당신은받을",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "BitBox 장치에서 잘못된 응답. 다시 시도하십시오.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "계정 설정",
   "@settingsScreenTitle": {

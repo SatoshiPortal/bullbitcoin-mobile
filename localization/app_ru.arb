@@ -158,7 +158,6 @@
   "recoverbullSelectVaultImportSuccess": "Ваше хранилище было успешно импортировано",
   "mempoolServerNotUsed": "Не используется (активный сервер)",
   "recoverbullSelectErrorPrefix": "Ошибка:",
-  "bitboxErrorDeviceMismatch": "Устройства обнаружена ошибка.",
   "arkReceiveBtcAddress": "Адрес BTC",
   "exchangeLandingRecommendedExchange": "Bitcoin Exchange",
   "backupWalletHowToDecideVaultMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
@@ -696,12 +695,10 @@
   "importQrDeviceJadeName": "Жадный блок",
   "importWalletImportMnemonic": "Импорт Mnemonic",
   "bip85NextMnemonic": "Следующий Mnemonic",
-  "bitboxErrorNoActiveConnection": "Нет активного подключения к устройству BitBox.",
   "dcaFundAccountButton": "Фонд вашего счета",
   "transactionFilterAll": "Все",
   "arkSendTitle": "Отправить",
   "transactionDetailLabelAmountReceived": "Полученная сумма",
-  "bitboxCubitOperationTimeout": "Операция была отложена. Попробуй еще раз.",
   "receivePaymentReceived": "Получена оплата!",
   "backupWalletHowToDecideVaultCloudSecurity": "Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Они могут получить доступ к вашему биткойну только в маловероятном случае, если они столкнутся с ключевым сервером (интернет-сервис, который хранит ваш пароль шифрования). Если ключевой сервер когда-либо взломан, ваш биткойн может быть под угрозой с облаком Google или Apple.",
   "howToDecideBackupText1": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
@@ -1293,7 +1290,6 @@
   "recoverbullSelectQuickAndEasy": "Quick & easy",
   "exchangeFileUploadTitle": "Загрузка файла",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Вы уверены в своих собственных возможностях операционной безопасности, чтобы скрыть и сохранить ваши семенные слова Bitcoin.",
-  "bitboxCubitHandshakeFailed": "Не удалось установить безопасное соединение. Попробуй еще раз.",
   "sendErrorAmountAboveSwapLimits": "Сумма выше лимитов на свопы",
   "backupWalletHowToDecideBackupEncryptedVault": "Зашифрованное хранилище предотвращает вас от воров, стремящихся украсть вашу резервную копию. Это также мешает вам случайно потерять резервную копию, поскольку она будет храниться в вашем облаке. Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Существует небольшая вероятность того, что веб-сервер, который хранит ключ шифрования вашего резервного копирования, может быть скомпрометирован. В этом случае безопасность резервного копирования в вашем облачном аккаунте может быть под угрозой.",
   "coreSwapsChainCompletedRefunded": "Перевод был возвращен.",
@@ -1385,7 +1381,6 @@
   "visitRecoverBullMessage": "Посетите Recoverybull.com для получения дополнительной информации.",
   "payMyFiatRecipients": "Мои получатели фиат",
   "exchangeLandingFeature1": "Купить биткойн прямо к самообладанию",
-  "bitboxCubitPermissionDenied": "Разрешение USB отрицается. Пожалуйста, дайте разрешение на доступ к вашему устройству BitBox.",
   "swapTransferTo": "Перевод на",
   "testBackupPinMessage": "Тест, чтобы убедиться, что вы помните свою резервную копию {pinOrPassword}",
   "@testBackupPinMessage": {
@@ -2285,7 +2280,6 @@
   "recoverbullRecoveryContinueButton": "Продолжить",
   "payTimeoutError": "Время оплаты. Пожалуйста, проверьте статус",
   "kruxStep4": "Нажмите кнопку Загрузка с камеры",
-  "bitboxErrorInvalidMagicBytes": "Выявлен неверный формат PSBT.",
   "sellErrorRecalculateFees": "Не удалось пересчитать сборы: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2713,7 +2707,6 @@
   },
   "transactionStatusPending": "Завершение",
   "settingsSuperuserModeDisabledMessage": "Режим Superuser отключен.",
-  "bitboxCubitConnectionFailed": "Не удалось подключиться к устройству BitBox. Пожалуйста, проверьте ваше соединение.",
   "settingsTermsOfServiceTitle": "Условия службы",
   "importQrDeviceScanning": "Сканирование...",
   "importWalletKeystone": "Keystone",
@@ -2762,7 +2755,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Устройство не в паре. Пожалуйста, сначала завершите процесс спаривания.",
   "sellCrcBalance": "CRC Баланс",
   "paySelectCoinsManually": "Выбрать монеты вручную",
   "replaceByFeeActivatedLabel": "Замена по фе активирована",
@@ -2778,7 +2770,6 @@
     }
   },
   "payPriceRefreshIn": "Цена освежится ",
-  "bitboxCubitOperationCancelled": "Операция была отменена. Попробуй еще раз.",
   "passportStep3": "Сканировать код QR, показанный в кошельке Bull",
   "jadeStep5": "Если у вас есть проблемы с сканированием:",
   "electrumProtocolError": "Не включайте протокол (ssl: или tcp://).",
@@ -3536,7 +3527,6 @@
   "importQrDeviceSeedsignerStep7": "На вашем мобильном устройстве нажмите Open Camera",
   "addressViewChangeAddressesDescription": "Показать кошелёк Изменение адресов",
   "sellReceiveAmount": "Вы получите",
-  "bitboxCubitInvalidResponse": "Неверный ответ от устройства BitBox. Попробуй еще раз.",
   "settingsScreenTitle": "Настройка",
   "transactionDetailLabelTransferFee": "Перенос",
   "importQrDeviceKruxStep5": "Сканируйте QR-код, который вы видите на своем устройстве.",

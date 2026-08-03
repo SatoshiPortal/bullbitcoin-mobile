@@ -448,10 +448,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "डिवाइस धुंध का पता लगाया गया।।",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC पता",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2062,10 +2058,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "बिटबॉक्स डिवाइस के लिए कोई सक्रिय कनेक्शन नहीं है।।",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "अपने खाते को फंड करें",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2081,10 +2073,6 @@
   "transactionDetailLabelAmountReceived": "प्राप्त राशि",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "ऑपरेशन समय समाप्त हो गया। फिर से प्रयास करें।।",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "भुगतान प्राप्त हो गया!",
   "@receivePaymentReceived": {
@@ -3899,10 +3887,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "सुरक्षित कनेक्शन स्थापित करने में विफल रहा। फिर से प्रयास करें।।",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "राशि स्वैप सीमा से अधिक है",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4195,10 +4179,6 @@
   "exchangeLandingFeature1": "Bitcoin खरीदने के लिए सीधे",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB अनुमति इनकार कर दिया। कृपया अपने बिटबॉक्स डिवाइस को एक्सेस करने की अनुमति दें।।",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "स्थानांतरण",
   "@swapTransferTo": {
@@ -7007,10 +6987,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT प्रारूप का पता लगाया गया।।",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "शुल्क वापस लेने में विफल: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -8242,10 +8218,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "बिटबॉक्स डिवाइस से कनेक्ट करने में विफल रहा। कृपया अपने कनेक्शन की जांच करें।।",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "सेवा की शर्तें",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8369,10 +8341,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "डिवाइस युग्मित नहीं है। कृपया पहले जोड़ी प्रक्रिया को पूरा करें।।",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC शेष",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8409,10 +8377,6 @@
   "payPriceRefreshIn": "कीमत इस समय में ताज़ा होगी ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "ऑपरेशन रद्द कर दिया गया था। फिर से प्रयास करें।।",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
   "@passportStep3": {
@@ -10680,10 +10644,6 @@
   "sellReceiveAmount": "आप प्राप्त करेंगे",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "बिटबॉक्स डिवाइस से अमान्य प्रतिक्रिया। फिर से प्रयास करें।।",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "सेटिंग्स",
   "@settingsScreenTitle": {

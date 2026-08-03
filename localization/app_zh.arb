@@ -160,7 +160,6 @@
   "recoverbullSelectVaultImportSuccess": "成功进口",
   "mempoolServerNotUsed": "未使用(海关服务器运行)",
   "recoverbullSelectErrorPrefix": "错误:",
-  "bitboxErrorDeviceMismatch": "检测到的装置不匹配.",
   "arkReceiveBtcAddress": "BTC 地址",
   "exchangeLandingRecommendedExchange": "提议交换",
   "backupWalletHowToDecideVaultMoreInfo": "访问后收集更多信息.",
@@ -699,12 +698,10 @@
   "importQrDeviceJadeName": "B. 集群",
   "importWalletImportMnemonic": "导入助记词",
   "bip85NextMnemonic": "接下来的Mnemonic",
-  "bitboxErrorNoActiveConnection": "与BitBox装置没有积极的联系.",
   "dcaFundAccountButton": "基金",
   "transactionFilterAll": "所有人",
   "arkSendTitle": "修正",
   "transactionDetailLabelAmountReceived": "收到的资金",
-  "bitboxCubitOperationTimeout": "该行动已经停止。 请再次审判.",
   "receivePaymentReceived": "收到的捐款!",
   "backupWalletHowToDecideVaultCloudSecurity": "谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 他们只能进入与关键服务器(在线服务,储存你的加密密码)相勾结的不太可能的事件。 如果关键服务器破碎,那么,谷歌或 Apple云可能会有风险.",
   "howToDecideBackupText1": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",
@@ -1296,7 +1293,6 @@
   "recoverbullSelectQuickAndEasy": "快速和容易",
   "exchangeFileUploadTitle": "1. 安全档案库",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
-  "bitboxCubitHandshakeFailed": "未能建立安全的联系。 请再次审判.",
   "sendErrorAmountAboveSwapLimits": "数额高于互换限额",
   "backupWalletHowToDecideBackupEncryptedVault": "被加密的过失使你无法looking望偷走。 这也使你无法意外地失去支持,因为它将储存在你的云层。 谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 储存你的后备加密钥匙的网络服务器可能受到削弱。 在这种情况下,贵云层账户的备份安全可能受到威胁.",
   "coreSwapsChainCompletedRefunded": "转账已退还.",
@@ -1388,7 +1384,6 @@
   "visitRecoverBullMessage": "访问后收集更多信息.",
   "payMyFiatRecipients": "我的信托接受者",
   "exchangeLandingFeature1": "直接采购",
-  "bitboxCubitPermissionDenied": "拒绝美国允许。 请准许使用您的Box装置.",
   "swapTransferTo": "转入",
   "testBackupPinMessage": "努力确保你记住你的支持{pinOrPassword}",
   "@testBackupPinMessage": {
@@ -2288,7 +2283,6 @@
   "recoverbullRecoveryContinueButton": "继续",
   "payTimeoutError": "支付时间。 请检查情况",
   "kruxStep4": "Click Load",
-  "bitboxErrorInvalidMagicBytes": "检测到了无效的PSBT格式.",
   "sellErrorRecalculateFees": "未收回费用:{error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2716,7 +2710,6 @@
   },
   "transactionStatusPending": "待决",
   "settingsSuperuserModeDisabledMessage": "超级用户模式残疾.",
-  "bitboxCubitConnectionFailed": "未能与BitBox装置连接。 请检查您的联系.",
   "settingsTermsOfServiceTitle": "任期",
   "importQrDeviceScanning": "扫描......",
   "importWalletKeystone": "Keystone",
@@ -2764,7 +2757,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "装置不配对。 请首先完成配对过程.",
   "sellCrcBalance": "CRC 结余",
   "paySelectCoinsManually": "手工选编",
   "replaceByFeeActivatedLabel": "替换",
@@ -2780,7 +2772,6 @@
     }
   },
   "payPriceRefreshIn": "价格上涨 ",
-  "bitboxCubitOperationCancelled": "该行动被取消。 请再次审判.",
   "passportStep3": "扫描 Bull 钱包中显示的二维码",
   "jadeStep5": "如果你遇到麻烦,就会:",
   "electrumProtocolError": "不包括议定书.",
@@ -3537,7 +3528,6 @@
   "importQrDeviceSeedsignerStep7": "在你的移动装置上,利用开放式照相机",
   "addressViewChangeAddressesDescription": "显示钱包找零地址",
   "sellReceiveAmount": "页: 1",
-  "bitboxCubitInvalidResponse": "BiBox装置的无效反应。 请再次审判.",
   "settingsScreenTitle": "背景",
   "transactionDetailLabelTransferFee": "汇款",
   "importQrDeviceKruxStep5": "你在你的装置上看到QR编码.",
