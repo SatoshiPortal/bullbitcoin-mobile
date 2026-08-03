@@ -76,7 +76,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                           ),
                   ),
                   const Gap(24.0),
-                  const _SellError(),
+                  const _SellErrorCard(),
                 ],
               ),
             ),
@@ -87,8 +87,8 @@ class SellWalletSelectionScreen extends StatelessWidget {
   }
 }
 
-class _SellError extends StatelessWidget {
-  const _SellError();
+class _SellErrorCard extends StatelessWidget {
+  const _SellErrorCard();
 
   @override
   Widget build(BuildContext context) {

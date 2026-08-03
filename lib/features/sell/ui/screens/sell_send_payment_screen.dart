@@ -317,7 +317,7 @@ class _BottomButtons extends StatelessWidget {
     );
     return Column(
       children: [
-        const _SellError(),
+        const _SellErrorCard(),
         if (wallet != null && !wallet.isLiquid) ...[
           BBButton.big(
             label: context.loc.sellAdvancedSettings,
@@ -349,8 +349,8 @@ class _BottomButtons extends StatelessWidget {
   }
 }
 
-class _SellError extends StatelessWidget {
-  const _SellError();
+class _SellErrorCard extends StatelessWidget {
+  const _SellErrorCard();
 
   @override
   Widget build(BuildContext context) {

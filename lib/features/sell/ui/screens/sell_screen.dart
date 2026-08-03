@@ -73,7 +73,7 @@ class _SellScreenState extends State<SellScreen> {
                   },
                 ),
                 const Gap(16.0),
-                const _SellError(),
+                const _SellErrorCard(),
                 const Spacer(),
                 SellAmountInputBottomButtons(
                   formKey: _formKey,
@@ -98,8 +98,8 @@ class _SellScreenState extends State<SellScreen> {
   }
 }
 
-class _SellError extends StatelessWidget {
-  const _SellError();
+class _SellErrorCard extends StatelessWidget {
+  const _SellErrorCard();
 
   @override
   Widget build(BuildContext context) {

@@ -168,7 +168,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             _buildDetailRow(
               context,
               context.loc.sellOrderNumber,
-              order?.orderNumber.toString() ?? 'Loading...',
+              order?.orderNumber.toString() ?? context.loc.sellLoadingGeneric,
               copyValue: order?.orderNumber.toString(),
             ),
             const Gap(48),
