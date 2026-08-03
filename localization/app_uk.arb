@@ -3597,14 +3597,6 @@
   },
   "recoverbullSelectFetchDriveFilesError": "Заборонено фіксувати всі резервні копії приводу",
   "psbtFlowLoadFromCamera": "Натисніть завантаження з камери",
-  "addressViewErrorLoadingMoreAddresses": "{error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Партнерство",
   "sendBuildingTransaction": "Будівельна угода...",
   "electrumConfirm": "Підтвердження",
@@ -3631,14 +3623,6 @@
   },
   "rbfTitle": "Замінити платіж",
   "backupWalletVaultProviderCustomLocation": "Місцезнаходження",
-  "addressViewErrorLoadingAddresses": "Адреса завантаження: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Тип підключення не ініціюється.",
   "ledgerErrorUnknown": "Невідома помилка",
   "ledgerProcessingVerifySubtext": "Будь ласка, підтвердіть адресу на пристрої Ledger.",
@@ -5275,5 +5259,7 @@
   "receiveMessageForSender": "Повідомлення для відправника",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin увімкнено, але в цьому гаманці ще немає коштів для участі. Він активується, щойно ви отримаєте кошти.",
-  "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin."
+  "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
+  "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
+  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз."
 }

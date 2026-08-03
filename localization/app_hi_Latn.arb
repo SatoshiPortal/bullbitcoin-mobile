@@ -10658,27 +10658,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "Addresses load karne mein error: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Koi address nahi mila",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "Aur addresses load karne mein error: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "Change addresses jaldi aa raha hai",
   "@addressViewChangeAddressesComingSoon": {
@@ -13673,5 +13655,7 @@
   "receiveMessageForSender": "Sender ke liye message",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
-  "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai."
+  "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
+  "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein."
 }

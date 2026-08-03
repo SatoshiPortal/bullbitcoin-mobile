@@ -12147,27 +12147,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "No addresses found",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "Change addresses coming soon",
   "@addressViewChangeAddressesComingSoon": {
@@ -15024,5 +15006,13 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "addressViewErrorWalletNotFound": "This wallet could not be found.",
+  "@addressViewErrorWalletNotFound": {
+    "description": "Shown when the wallet backing the addresses screen has no stored metadata"
+  },
+  "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
+  "@addressViewErrorLoadFailed": {
+    "description": "Shown when loading or paginating the wallet address list fails"
   }
 }

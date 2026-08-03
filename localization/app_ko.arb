@@ -10343,15 +10343,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "오류 로딩 주소: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "관련 기사",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10481,15 +10472,6 @@
   "backupWalletVaultProviderCustomLocation": "주문 위치",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "오류 로드 주소: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "연결 유형은 초기화되지 않습니다.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13278,5 +13260,7 @@
   "receiveMessageForSender": "보내는 사람에게 전할 메시지",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
-  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다."
+  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다.",
+  "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
+  "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요."
 }

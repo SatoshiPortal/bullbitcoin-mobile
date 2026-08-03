@@ -10343,15 +10343,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "त्रुटि अधिक पते लोड हो रहा है: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "कॉपी",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10481,15 +10472,6 @@
   "backupWalletVaultProviderCustomLocation": "कस्टम स्थान",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "त्रुटि लोडिंग पते: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "कनेक्शन का प्रकार प्रारंभिक नहीं है।।",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13468,5 +13450,7 @@
   "receiveMessageForSender": "भेजने वाले के लिए संदेश",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
-  "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।"
+  "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
+  "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
+  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।"
 }

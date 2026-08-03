@@ -3776,23 +3776,7 @@
   "arkAboutShow": "Afficher",
   "arkAboutHide": "Masquer",
   "arkContinueButton": "Continuer",
-  "addressViewErrorLoadingAddresses": "Erreur lors du chargement des adresses : {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Aucune adresse trouvée",
-  "addressViewErrorLoadingMoreAddresses": "Erreur lors du chargement d'adresses supplémentaires : {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
@@ -5289,5 +5273,7 @@
   "receiveAdditionalInformationPlaceholder": "Ajouter un montant ou un message pour l'expéditeur",
   "receiveMessageForSender": "Message pour l'expéditeur",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds."
+  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds.",
+  "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
+  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer."
 }

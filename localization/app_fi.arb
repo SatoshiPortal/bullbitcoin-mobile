@@ -3724,23 +3724,7 @@
   "arkAboutShow": "Näytä",
   "arkAboutHide": "Piilota",
   "arkContinueButton": "Jatka",
-  "addressViewErrorLoadingAddresses": "Osoitteiden lataus epäonnistui: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Osoitteita ei löytynyt",
-  "addressViewErrorLoadingMoreAddresses": "Lisää osoitteita ladattaessa tapahtui virhe: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "appStartupErrorTitle": "Käynnistysvirhe",
@@ -5270,5 +5254,7 @@
   "receiveMessageForSender": "Viesti lähettäjälle",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin on käytössä, mutta tässä lompakossa ei vielä ole osallistumiseen tarvittavaa saldoa. Se aktivoituu, kun vastaanotat varoja.",
-  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin."
+  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin.",
+  "addressViewErrorWalletNotFound": "Tätä lompakkoa ei löytynyt.",
+  "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen."
 }

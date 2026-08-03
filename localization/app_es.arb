@@ -3790,23 +3790,7 @@
   "arkAboutShow": "Mostrar",
   "arkAboutHide": "Ocultar",
   "arkContinueButton": "Continuar",
-  "addressViewErrorLoadingAddresses": "Error al cargar las direcciones: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "No se encontraron direcciones",
-  "addressViewErrorLoadingMoreAddresses": "Error al cargar más direcciones: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Exhiba direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
@@ -5270,5 +5254,7 @@
   "receiveMessageForSender": "Mensaje para el remitente",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin está activado, pero esta cartera todavía no tiene saldo para contribuir. Se activará cuando recibas fondos.",
-  "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin."
+  "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin.",
+  "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
+  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo."
 }

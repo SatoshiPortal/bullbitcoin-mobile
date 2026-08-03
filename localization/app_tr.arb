@@ -10264,15 +10264,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Hata daha fazla adres yükleme: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Kopya kopya",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10402,15 +10393,6 @@
   "backupWalletVaultProviderCustomLocation": "Özel konum",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "Hata yükleme adresleri: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "Bağlantı türü ilklenmedi.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13278,5 +13260,7 @@
   "receiveMessageForSender": "Gönderen için mesaj",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
-  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür."
+  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
+  "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
+  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin."
 }

@@ -3480,9 +3480,7 @@
   "arkAboutShow": "ჩვენება",
   "arkAboutHide": "დამალვა",
   "arkContinueButton": "გაგრძელება",
-  "addressViewErrorLoadingAddresses": "მისამართების ჩატვირთვის შეცდომა: {error}",
   "addressViewNoAddressesFound": "მისამართები ვერ მოიძებნა",
-  "addressViewErrorLoadingMoreAddresses": "დამატებითი მისამართების ჩატვირთვის შეცდომა: {error}",
   "addressViewChangeAddressesComingSoon": "ხურდის მისამართები მალე დაემატება",
   "addressViewChangeAddressesDescription": "საფულის ხურდის მისამართების ჩვენება",
   "appStartupErrorTitle": "გაშვების შეცდომა",
@@ -3904,5 +3902,7 @@
   "receiveMessageForSender": "შეტყობინება გამგზავნს",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin ჩართულია, მაგრამ ამ საფულეს ჯერ არ აქვს ბალანსი მონაწილეობის მისაღებად. ის გააქტიურდება თანხის მიღებისთანავე.",
-  "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში."
+  "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში.",
+  "addressViewErrorWalletNotFound": "ეს საფულე ვერ მოიძებნა.",
+  "addressViewErrorLoadFailed": "თქვენი მისამართების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა."
 }

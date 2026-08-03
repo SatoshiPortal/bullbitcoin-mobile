@@ -10109,15 +10109,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Chyba načítání více adres: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Čeština",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10235,15 +10226,6 @@
   "backupWalletVaultProviderCustomLocation": "Vlastní umístění",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "Adresy chyb: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "Typ připojení není iniciován.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -13278,5 +13260,7 @@
   "receiveMessageForSender": "Zpráva pro odesílatele",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
-  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin."
+  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
+  "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
+  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu."
 }
