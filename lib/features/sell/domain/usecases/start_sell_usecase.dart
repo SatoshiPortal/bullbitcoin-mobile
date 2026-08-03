@@ -9,7 +9,6 @@ import 'package:meta/meta.dart';
 
 /// Loads the data needed to open the sell amount-input screen: the exchange user
 /// summary and the user's bitcoin unit.
-
 class StartSellUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final GetSettingsUsecase _getSettingsUsecase;

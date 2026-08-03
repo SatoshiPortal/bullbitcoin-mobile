@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -33,12 +32,13 @@ Future<String> _defaultLiquidTxidFromPset(String pset) async =>
 
 /// Builds, signs and broadcasts the payin transaction for a sell order.
 ///
-/// The broadcast is the point of no return: once it succeeds the user's money
-/// has moved, so the payin is reported as a success even if the after-the-fact
+/// The broadcast is the point of no return: once it succeeds the money has
+/// moved, so the payin is reported as a success even if the after-the-fact
 /// bookkeeping (transaction labelling) fails — that is logged but never turned
 /// into a [SellSendPaymentFailure], which would otherwise invite a double-spend
 /// retry. Every failure before or during broadcast is mapped to a sealed
-/// [SellFailure], and the raw exception never leaves the boundary.
+/// [SellFailure]; the raw exception is logged for diagnosis but never carried
+/// in the failure value that reaches bloc state.
 class ConfirmSellPayinUsecase {
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
@@ -46,8 +46,6 @@ class ConfirmSellPayinUsecase {
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
-  final CalculateBitcoinAbsoluteFeesUsecase
-  _calculateBitcoinAbsoluteFeesUsecase;
   final LabelsFacade _labelsFacade;
   final BitcoinTxidFromPsbt _bitcoinTxidFromPsbt;
   final LiquidTxidFromPset _liquidTxidFromPset;
@@ -59,15 +57,13 @@ class ConfirmSellPayinUsecase {
     required this._signLiquidTxUsecase,
     required this._broadcastBitcoinTransactionUsecase,
     required this._broadcastLiquidTransactionUsecase,
-    required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._labelsFacade,
     this._bitcoinTxidFromPsbt = _defaultBitcoinTxidFromPsbt,
     this._liquidTxidFromPset = _defaultLiquidTxidFromPset,
   });
 
   @useResult
-  Future<Result<({String txid, int? updatedAbsoluteFees}), SellFailure>>
-  execute({
+  Future<Result<String, SellFailure>> execute({
     required Wallet wallet,
     required SellOrder sellOrder,
     required int? absoluteFees,
@@ -77,7 +73,6 @@ class ConfirmSellPayinUsecase {
     final payinAmountSat = ConvertAmount.btcToSats(sellOrder.payinAmount);
 
     final String txid;
-    final int? updatedAbsoluteFees;
     try {
       if (wallet.isLiquid) {
         final pset = await _prepareLiquidSendUsecase.execute(
@@ -94,7 +89,6 @@ class ConfirmSellPayinUsecase {
         // Derive the txid before broadcasting so nothing fallible runs after
         // the money has moved.
         txid = await _liquidTxidFromPset(signedPset);
-        updatedAbsoluteFees = null;
         await _broadcastLiquidTransactionUsecase.execute(signedPset);
       } else {
         if (absoluteFees == null) {
@@ -108,8 +102,6 @@ class ConfirmSellPayinUsecase {
           selectedInputs: selectedInputs.isNotEmpty ? selectedInputs : null,
           replaceByFee: replaceByFee,
         );
-        updatedAbsoluteFees = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(psbt: preparedSend.unsignedPsbt);
         final signedTx = await _signBitcoinTxUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
           walletId: wallet.id,
@@ -121,11 +113,7 @@ class ConfirmSellPayinUsecase {
         );
       }
     } catch (e, st) {
-      log.severe(
-        message: 'sell confirm payin failed',
-        error: e.runtimeType,
-        trace: st,
-      );
+      log.severe(message: 'sell confirm payin failed', error: e, trace: st);
       return Err(SellSendPaymentFailure(e.runtimeType.toString()));
     }
 
@@ -133,7 +121,7 @@ class ConfirmSellPayinUsecase {
     // never demote a completed payin to a failure.
     await _storeSellLabel(walletId: wallet.id, txid: txid);
 
-    return Ok((txid: txid, updatedAbsoluteFees: updatedAbsoluteFees));
+    return Ok(txid);
   }
 
   Future<void> _storeSellLabel({
@@ -151,7 +139,7 @@ class ConfirmSellPayinUsecase {
     } catch (e, st) {
       log.warning(
         'sell payin label store failed (payin already broadcast)',
-        error: e.runtimeType,
+        error: e,
         trace: st,
       );
     }

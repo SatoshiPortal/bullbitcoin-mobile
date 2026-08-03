@@ -254,9 +254,11 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       orderId: paymentState.sellOrder.orderId,
     )) {
       case Ok(:final value):
-        emit(paymentState.copyWith(sellOrder: value));
-      case Err(:final failure):
-        emit(paymentState.copyWith(error: failure));
+        emit(paymentState.copyWith(sellOrder: value, error: null));
+      case Err():
+        // Background refresh: the use-case already logged it. Don't surface a
+        // transient failure; the next refresh heals it.
+        return;
     }
   }
 
@@ -276,9 +278,15 @@ class SellBloc extends Bloc<SellEvent, SellState> {
 
     final wallet = sellPaymentState.selectedWallet;
     if (wallet == null) {
+      log.severe(
+        error: 'no wallet selected to send payment',
+        trace: StackTrace.current,
+      );
       emit(
         sellPaymentState.copyWith(
-          error: const SellUnexpectedFailure(),
+          error: const SellUnexpectedFailure(
+            'no wallet selected to send payment',
+          ),
           isConfirmingPayment: false,
         ),
       );
@@ -299,13 +307,17 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           sellPaymentState.copyWith(error: failure, isConfirmingPayment: false),
         );
         return;
-      case Ok(:final value):
-        final updatedState = value.updatedAbsoluteFees != null
-            ? sellPaymentState.copyWith(absoluteFees: value.updatedAbsoluteFees)
-            : sellPaymentState;
+      case Ok():
+        // The payin is broadcast; the payment flow is done. Stop the status
+        // poller so it doesn't keep firing no-op events on the success state.
+        _stopPolling();
         // 5s delay gives backend time to register the 0 conf
         await Future.delayed(const Duration(seconds: 5));
-        emit(updatedState.toSuccessState(sellOrder: updatedState.sellOrder));
+        emit(
+          sellPaymentState.toSuccessState(
+            sellOrder: sellPaymentState.sellOrder,
+          ),
+        );
     }
   }
 
@@ -323,8 +335,9 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     )) {
       case Ok(:final value):
         latestOrder = value;
-      case Err(:final failure):
-        emit(sellPaymentState.copyWith(error: failure));
+      case Err():
+        // Background retry: the use-case already logged it. Don't paint a
+        // persistent error on a transient blip — the next poll heals it.
         return;
     }
 
@@ -336,11 +349,17 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       _stopPolling();
       emit(
         sellPaymentState
-            .copyWith(sellOrder: latestOrder, isPolling: false)
+            .copyWith(sellOrder: latestOrder, isPolling: false, error: null)
             .toSuccessState(sellOrder: latestOrder),
       );
     } else {
-      emit(sellPaymentState.copyWith(sellOrder: latestOrder, isPolling: true));
+      emit(
+        sellPaymentState.copyWith(
+          sellOrder: latestOrder,
+          isPolling: true,
+          error: null,
+        ),
+      );
     }
   }
 

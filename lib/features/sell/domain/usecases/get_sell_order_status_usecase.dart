@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:meta/meta.dart';
 
 /// Fetches the latest state of a sell order while polling.
-
 class GetSellOrderStatusUsecase {
   final GetOrderUsecase _getOrderUsecase;
 

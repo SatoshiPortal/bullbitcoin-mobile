@@ -15,7 +15,6 @@ import 'package:meta/meta.dart';
 /// Recomputes the absolute network fee of an already-created sell payin when the
 /// user changes coin selection or RBF, by building a throwaway transaction to a
 /// wallet-owned address.
-
 class RecalculateSellPayinFeesUsecase {
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;

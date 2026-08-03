@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -31,9 +30,6 @@ class MockBroadcastBitcoinTransactionUsecase extends Mock
 class MockBroadcastLiquidTransactionUsecase extends Mock
     implements BroadcastLiquidTransactionUsecase {}
 
-class MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
-    implements CalculateBitcoinAbsoluteFeesUsecase {}
-
 class MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class MockWallet extends Mock implements Wallet {}
@@ -49,7 +45,6 @@ void main() {
   late MockSignLiquidTxUsecase signLiquid;
   late MockBroadcastBitcoinTransactionUsecase broadcastBitcoin;
   late MockBroadcastLiquidTransactionUsecase broadcastLiquid;
-  late MockCalculateBitcoinAbsoluteFeesUsecase calculateBitcoin;
   late MockLabelsFacade labelsFacade;
   late ConfirmSellPayinUsecase usecase;
 
@@ -67,7 +62,6 @@ void main() {
     signLiquid = MockSignLiquidTxUsecase();
     broadcastBitcoin = MockBroadcastBitcoinTransactionUsecase();
     broadcastLiquid = MockBroadcastLiquidTransactionUsecase();
-    calculateBitcoin = MockCalculateBitcoinAbsoluteFeesUsecase();
     labelsFacade = MockLabelsFacade();
     usecase = ConfirmSellPayinUsecase(
       prepareBitcoinSendUsecase: prepareBitcoin,
@@ -76,7 +70,6 @@ void main() {
       signLiquidTxUsecase: signLiquid,
       broadcastBitcoinTransactionUsecase: broadcastBitcoin,
       broadcastLiquidTransactionUsecase: broadcastLiquid,
-      calculateBitcoinAbsoluteFeesUsecase: calculateBitcoin,
       labelsFacade: labelsFacade,
       // Inject deterministic txid derivation so the money path is testable
       // without a real BDK/LWK transaction.
@@ -114,9 +107,6 @@ void main() {
       (_) async => (unsignedPsbt: 'psbt', txSize: 110, isToSelf: false),
     );
     when(
-      () => calculateBitcoin.execute(psbt: any(named: 'psbt')),
-    ).thenAnswer((_) async => 250);
-    when(
       () => signBitcoin.execute(
         psbt: any(named: 'psbt'),
         walletId: any(named: 'walletId'),
@@ -128,30 +118,25 @@ void main() {
   }
 
   group('ConfirmSellPayinUsecase', () {
-    test(
-      'bitcoin happy path → Ok(txid, updatedFees), broadcasts and labels',
-      () async {
-        stubBitcoinHappyPath();
-        when(
-          () => labelsFacade.store(any()),
-        ).thenAnswer((_) async => Ok<Label, LabelFailure>(MockLabel()));
+    test('bitcoin happy path → Ok(txid), broadcasts and labels', () async {
+      stubBitcoinHappyPath();
+      when(
+        () => labelsFacade.store(any()),
+      ).thenAnswer((_) async => Ok<Label, LabelFailure>(MockLabel()));
 
-        final result = await usecase.execute(
-          wallet: wallet(isLiquid: false),
-          sellOrder: order(),
-          absoluteFees: 300,
-        );
+      final result = await usecase.execute(
+        wallet: wallet(isLiquid: false),
+        sellOrder: order(),
+        absoluteFees: 300,
+      );
 
-        expect(result, isA<Ok>());
-        final value = (result as Ok).value;
-        expect(value.txid, 'btc-txid');
-        expect(value.updatedAbsoluteFees, 250);
-        verify(
-          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
-        ).called(1);
-        verify(() => labelsFacade.store(any())).called(1);
-      },
-    );
+      expect(result, isA<Ok>());
+      expect((result as Ok).value, 'btc-txid');
+      verify(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      ).called(1);
+      verify(() => labelsFacade.store(any())).called(1);
+    });
 
     test(
       'labelling failure after a successful broadcast still returns Ok — the '
@@ -169,7 +154,7 @@ void main() {
         );
 
         expect(result, isA<Ok>());
-        expect((result as Ok).value.txid, 'btc-txid');
+        expect((result as Ok).value, 'btc-txid');
       },
     );
 

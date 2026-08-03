@@ -106,8 +106,6 @@ class SellLocator {
             locator<BroadcastBitcoinTransactionUsecase>(),
         broadcastLiquidTransactionUsecase:
             locator<BroadcastLiquidTransactionUsecase>(),
-        calculateBitcoinAbsoluteFeesUsecase:
-            locator<CalculateBitcoinAbsoluteFeesUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );

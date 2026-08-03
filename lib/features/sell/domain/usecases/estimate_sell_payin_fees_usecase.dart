@@ -18,7 +18,6 @@ import 'package:meta/meta.dart';
 /// order is created: fetches the exchange rate, derives the required amount,
 /// enforces the sufficient-balance rule, and computes the absolute network fee
 /// by building a throwaway transaction to a wallet-owned address.
-
 class EstimateSellPayinFeesUsecase {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
