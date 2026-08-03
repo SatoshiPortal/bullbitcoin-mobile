@@ -6,8 +6,22 @@ import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_vie
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LegacySeedViewScreen extends StatelessWidget {
+class LegacySeedViewScreen extends StatefulWidget {
   const LegacySeedViewScreen({super.key});
+
+  @override
+  State<LegacySeedViewScreen> createState() => _LegacySeedViewScreenState();
+}
+
+class _LegacySeedViewScreenState extends State<LegacySeedViewScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch once on mount. Triggering the fetch from BlocBuilder.builder
+    // instead re-fires on every rebuild when the result is an empty success
+    // (the user has no legacy seeds), which loops indefinitely.
+    context.read<LegacySeedViewCubit>().fetchOldSeeds();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +40,6 @@ class LegacySeedViewScreen extends StatelessWidget {
         ),
         body: BlocBuilder<LegacySeedViewCubit, LegacySeedViewState>(
           builder: (context, state) {
-            if (!state.loading &&
-                state.seeds.isEmpty &&
-                state.failure == null) {
-              context.read<LegacySeedViewCubit>().fetchOldSeeds();
-            }
             if (state.loading) {
               return const Center(child: CircularProgressIndicator());
             }
