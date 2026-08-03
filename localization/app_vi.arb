@@ -3738,5 +3738,6 @@
   "addressViewErrorWalletNotFound": "Không tìm thấy ví này.",
   "addressViewErrorLoadFailed": "Không thể tải địa chỉ của bạn. Vui lòng thử lại.",
   "sellErrorFeesNotCalculated": "Phí giao dịch chưa được tính toán. Vui lòng thử lại.",
-  "sellErrorLoadUtxos": "Không thể tải coins. Vui lòng thử lại."
+  "sellErrorLoadUtxos": "Không thể tải coins. Vui lòng thử lại.",
+  "sellErrorSendPayment": "Không thể gửi thanh toán. Vui lòng thử lại."
 }

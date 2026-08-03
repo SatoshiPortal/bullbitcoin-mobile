@@ -3753,5 +3753,6 @@
   "addressViewErrorWalletNotFound": "Pochi hii haikupatikana.",
   "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
   "sellErrorFeesNotCalculated": "Ada za muamala hazijahesabiwa. Tafadhali jaribu tena.",
-  "sellErrorLoadUtxos": "Imeshindwa kupakia sarafu. Tafadhali jaribu tena."
+  "sellErrorLoadUtxos": "Imeshindwa kupakia sarafu. Tafadhali jaribu tena.",
+  "sellErrorSendPayment": "Imeshindwa kutuma malipo. Tafadhali jaribu tena."
 }
