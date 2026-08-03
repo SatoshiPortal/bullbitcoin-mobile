@@ -84,9 +84,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     emit(const AppStartupState.loadingInProgress());
 
     try {
-      // Log app version on startup
+      // Log app version on startup. `fine`, not `info`: the logger drops
+      // Level.INFO records from the on-disk file, so an `info` version
+      // line never reaches a shared log — leaving every export unable to
+      // identify which build produced it.
       final packageInfo = await PackageInfo.fromPlatform();
-      log.info(
+      log.fine(
         'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
       );
 
@@ -150,7 +153,13 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         // rather than in `SwapWatcherService`: migrations above have
         // finished, so this reads an already-open database instead of
         // racing SQLite init the way the watcher's constructor did.
+        //
+        // Bracketed by two markers so an export distinguishes "startup
+        // never got here" from "the census read hung" — without them the
+        // two are identical in the log: silence.
+        log.fine('[Startup] running swap census');
         await _logSwapCensusUsecase.execute();
+        log.fine('[Startup] swap census done');
       } else {
         // This is a fresh install, so reset the app data that might still be
         //  there from a previous install.
