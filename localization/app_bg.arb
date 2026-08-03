@@ -7493,10 +7493,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Неуспешно запазване на настройките",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "Лека верификация",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -9048,15 +9044,6 @@
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
-  "autoswapSaveErrorMessage": "Неуспешно запазване на настройките: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payCompleted": "Плащането завършено!",
   "@payCompleted": {
     "description": "Title for payment completed screen"
@@ -10551,7 +10538,6 @@
   "autoswapRecipientWalletInfo": "Изберете кой биткойн портфейл ще получи прехвърлените средства (задължително)",
   "autoswapDefaultWalletLabel": "Биткойн портфейл",
   "autoswapSave": "Запази",
-  "autoswapSaveError": "Неуспешно запазване на настройките: {error}",
   "electrumTitle": "Настройки на Electrum сървър",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",

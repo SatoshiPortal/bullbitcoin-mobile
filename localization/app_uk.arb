@@ -3278,14 +3278,6 @@
   "recoverbullWaiting": "Чекати",
   "backupWalletVaultProviderGoogleDrive": "Українська",
   "bitboxCubitDeviceNotFound": "Не знайдено пристрій BitBox. Будь ласка, підключіть пристрій і спробуйте знову.",
-  "autoswapSaveError": "Не вдалося зберегти налаштування: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Стандартний знімок",
   "swapContinue": "Продовжити",
   "arkSettleButton": "Смітт",
@@ -3477,7 +3469,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Не вдалося зберегти налаштування",
   "exchangeFeatureBankTransfers": "• Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "dcaConfirmAutoMessage": "Купити замовлення будуть розміщені автоматично на ці налаштування. Ви можете відключити їх в будь-який час.",
   "arkCollaborativeRedeem": "Колегативний червоний",
@@ -3983,14 +3974,6 @@
   "torSettingsTitle": "Налаштування Tor",
   "backupSettingsRevealing": "Відновлення ...",
   "payTotal": "Всього",
-  "autoswapSaveErrorMessage": "Не вдалося зберегти налаштування: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Адреса блискавки",
   "addressViewTitle": "Адреса Подробиці",
   "bitboxScreenManagePermissionsButton": "Керування додатками",

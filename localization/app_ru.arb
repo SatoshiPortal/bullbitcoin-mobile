@@ -2994,14 +2994,6 @@
   "transactionLabelRecipientAddress": "Адрес получателя",
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "bitboxCubitDeviceNotFound": "Устройство BitBox не найдено. Пожалуйста, подключите ваше устройство и попробуйте снова.",
-  "autoswapSaveError": "Невозможно сохранить настройки: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Стандартный вывод",
   "swapContinue": "Продолжить",
   "arkSettleButton": "Настройка",
@@ -3251,7 +3243,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Не удалось сохранить настройки",
   "exchangeAccountInfoVerificationLightVerification": "Легкая проверка",
   "exchangeFeatureBankTransfers": "• Отправить банковские переводы и оплатить счета",
   "sellSendPaymentInstantPayments": "Мгновенные платежи",
@@ -3948,14 +3939,6 @@
   "torSettingsTitle": "Параметры Tor",
   "backupSettingsRevealing": "Откровение...",
   "payTotal": "Итого",
-  "autoswapSaveErrorMessage": "Невозможно сохранить настройки: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Адрес освещения",
   "addressViewTitle": "Подробности адресов",
   "payCompleted": "Выплата завершена!",

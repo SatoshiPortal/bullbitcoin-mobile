@@ -1490,14 +1490,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Cuando está habilitado, las transferencias automáticas con comisiones superiores al límite establecido siempre serán bloqueadas",
   "autoswapAlwaysBlockInfoDisabled": "Cuando está deshabilitado, se le dará la opción de permitir una transferencia automática que fue bloqueada debido a comisiones altas",
   "autoswapSaveButton": "Guardar",
-  "autoswapSaveErrorMessage": "Error al guardar la configuración: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap está activado",
   "autoswapWarningCardSubtitle": "Se disparará un intercambio si el saldo de su billetera de pagos instantáneos supera 0'02 BTC.",
   "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
@@ -1509,7 +1501,6 @@
   "autoswapLoadSettingsError": "Error al cargar la configuración de intercambio automático",
   "autoswapUpdateSettingsError": "Error al actualizar la configuración de intercambio automático",
   "autoswapSelectWalletError": "Seleccione una billetera Bitcoin receptora",
-  "autoswapAutoSaveError": "Error al guardar la configuración",
   "autoswapMinimumThresholdErrorBtc": "El umbral mínimo de saldo es {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -3523,14 +3514,6 @@
   "autoswapRecipientWalletInfo": "Elija cual billetera Bitcoin recibirá los fondos transferidos (obligatorio)",
   "autoswapDefaultWalletLabel": "Billetera Bitcoin",
   "autoswapSave": "Guardar",
-  "autoswapSaveError": "Error al guardar la configuración: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Configuración del servidor Electrum",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",

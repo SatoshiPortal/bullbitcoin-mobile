@@ -9033,15 +9033,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "Ayarları kurtarmak için başarısız oldu: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "swapContinue": "Devam etmeye devam et",
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
@@ -9765,10 +9756,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "Ayarları kurtarmak için başarısız oldu",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "Işık doğrulama",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -11736,15 +11723,6 @@
   "payTotal": "Toplam",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "Ayarları kurtarmak için başarısız oldu: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "Lightning address",
   "@exchangeDcaAddressLabelLightning": {

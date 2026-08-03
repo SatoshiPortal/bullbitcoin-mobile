@@ -8958,15 +8958,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "Přeskočit nastavení: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Standardní výběr",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -9642,10 +9633,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "Přeskočit nastavení",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "Světelná ověření",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -11537,15 +11524,6 @@
   "payTotal": "Celkem",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "Přeskočit nastavení: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "Blesková adresa",
   "@exchangeDcaAddressLabelLightning": {

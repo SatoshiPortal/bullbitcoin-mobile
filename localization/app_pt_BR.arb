@@ -8818,15 +8818,6 @@
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
   },
-  "autoswapSaveError": "Falhado para salvar configurações: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "pinButtonConfirm": "Confirmação",
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
@@ -9904,10 +9895,6 @@
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
   },
-  "autoswapAutoSaveError": "Falhado para salvar configurações",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
@@ -9977,15 +9964,6 @@
   "payReplaceByFeeActivated": "Substitui-a-taxa activada",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
-  },
-  "autoswapSaveErrorMessage": "Falhado para salvar configurações: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenManagePermissionsButton": "Gerenciar Permissões de Aplicativos",
   "@bitboxScreenManagePermissionsButton": {

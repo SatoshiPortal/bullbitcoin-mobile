@@ -2194,15 +2194,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "ছেটিংছ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap পৰামৰ্শযোগ্য",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -2274,10 +2265,6 @@
   "autoswapSelectWalletError": "অনুগ্ৰহ কৰি এটা প্ৰাপক Bitcoin ৱালেট বাছনি কৰক",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "ছেটিংছ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "ন্যূনতম বেলেঞ্চ সীমা হ'ল {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -7966,15 +7953,6 @@
   "autoswapSave": "সংৰক্ষণ কৰক",
   "@autoswapSave": {
     "description": "Save button label"
-  },
-  "autoswapSaveError": "ছেটিংছ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumTitle": "Electrum চাৰ্ভাৰ ছেটিংছ",
   "@electrumTitle": {

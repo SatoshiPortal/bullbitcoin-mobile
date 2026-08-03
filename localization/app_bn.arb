@@ -8877,15 +8877,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "সেটিংস সংরক্ষণ ব্যর্থ হয়েছে: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "স্ট্যান্ডার্ড উত্তোলন",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -9593,10 +9584,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "সেটিংস সংরক্ষণ করতে ব্যর্থ হয়েছে",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "লাইট যাচাইকরণ",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -11541,15 +11528,6 @@
   "payTotal": "মোট",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "সেটিংস সংরক্ষণ ব্যর্থ হয়েছে: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "লাইটনিং ঠিকানা",
   "@exchangeDcaAddressLabelLightning": {

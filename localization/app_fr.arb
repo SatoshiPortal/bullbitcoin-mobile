@@ -1487,14 +1487,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Lorsque activé, les transferts automatiques avec des frais dépassant la limite définie seront toujours bloqués",
   "autoswapAlwaysBlockInfoDisabled": "Lorsque désactivé, vous aurez la possibilité d'autoriser un transfert automatique bloqué en raison de frais élevés",
   "autoswapSaveButton": "Enregistrer",
-  "autoswapSaveErrorMessage": "Échec de l'enregistrement des paramètres : {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "L'échange automatique est activé.",
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
@@ -1506,7 +1498,6 @@
   "autoswapLoadSettingsError": "Échec du chargement des paramètres de transfert automatique",
   "autoswapUpdateSettingsError": "Échec de la mise à jour des paramètres de transfert automatique",
   "autoswapSelectWalletError": "Veuillez sélectionner un portefeuille Bitcoin destinataire",
-  "autoswapAutoSaveError": "Échec de l'enregistrement des paramètres",
   "autoswapMinimumThresholdErrorBtc": "Le seuil de solde minimum est de {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -3509,14 +3500,6 @@
   "autoswapRecipientWalletInfo": "Choisissez quel portefeuille Bitcoin recevra les fonds transférés (obligatoire)",
   "autoswapDefaultWalletLabel": "Portefeuille Bitcoin",
   "autoswapSave": "Enregistrer",
-  "autoswapSaveError": "Échec de l'enregistrement des paramètres : {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Paramètres du serveur Electrum",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",

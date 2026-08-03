@@ -9108,15 +9108,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "설정 저장 실패: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "표준 인출",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -9844,10 +9835,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "설정 저장 실패",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "빛 검증",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -11845,15 +11832,6 @@
   "payTotal": "·",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "설정 저장 실패: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "연락처",
   "@exchangeDcaAddressLabelLightning": {
