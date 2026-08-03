@@ -19,7 +19,10 @@ typedef Mnemonic = ({
 
 /// What the suggestion chips are currently answering: the focused field and
 /// the prefix it holds.
-typedef _HintQuery = ({int index, String prefix});
+/// [revision] only exists to force a notification: records compare
+/// structurally, so an unchanged index and prefix would be swallowed even when
+/// the candidate pool behind them has changed.
+typedef _HintQuery = ({int index, String prefix, int revision});
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
@@ -331,7 +334,12 @@ class MnemonicSentenceWidget extends StatefulWidget {
 }
 
 class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
-  final ValueNotifier<_HintQuery> _hint = ValueNotifier((index: 0, prefix: ''));
+  final ValueNotifier<_HintQuery> _hint = ValueNotifier((
+    index: 0,
+    prefix: '',
+    revision: 0,
+  ));
+  int _revision = 0;
   final List<VoidCallback> _textListeners = [];
   List<FocusNode> _focusNodes = [];
   String? _candidatesKey;
@@ -349,7 +357,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     if (!identical(oldWidget.controllers, widget.controllers)) {
       _detach(oldWidget.controllers);
       _attach();
-      _hint.value = (index: 0, prefix: '');
+      _hint.value = (index: 0, prefix: '', revision: ++_revision);
     }
   }
 
@@ -388,21 +396,16 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   }
 
   void _onTextChanged(int index) {
-    if (_hint.value.index == index) _refreshHint(index);
-    _maybeAutoFill(index);
-  }
-
-  /// The words worth offering for the field at [index].
-  ///
-  /// Every word of the list, except on the last field: there the checksum
-  /// pins the answer down to a handful of words, so offering the other 2000
-  /// would only be offering ways to fail.
-  List<String> _pool(int index) {
-    if (index == widget.controllers.length - 1) {
-      final candidates = _lastWordCandidates();
-      if (candidates != null) return candidates;
+    final hinted = _hint.value.index;
+    if (hinted == index) {
+      _refreshHint(index);
+    } else if (hinted == widget.controllers.length - 1) {
+      // The candidate pool of the last field is derived from every other word,
+      // so a change anywhere invalidates it - typically the clear button, which
+      // edits a field without moving focus.
+      _refreshHint(hinted, force: true);
     }
-    return widget.language.list;
+    _maybeAutoFill(index);
   }
 
   /// Cached: the answer only changes when a word other than the last does,
@@ -423,11 +426,28 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     return _candidates;
   }
 
-  void _refreshHint(int index) {
-    _hint.value = (index: index, prefix: widget.controllers[index].text.trim());
+  /// [force] bumps [_revision] so the notifier fires even though index and
+  /// prefix are unchanged: `_HintQuery` is a record, so equal values are not
+  /// notified. Left alone otherwise, to keep an unchanged prefix free.
+  void _refreshHint(int index, {bool force = false}) {
+    if (force) _revision++;
+    _hint.value = (
+      index: index,
+      prefix: widget.controllers[index].text.trim(),
+      revision: _revision,
+    );
   }
 
   /// Completes the field as soon as the prefix leaves a single possibility.
+  ///
+  /// Deliberately resolved against the **whole** wordlist, including on the
+  /// last field where the chips are narrowed to the checksum candidates.
+  /// Completing from the candidates instead would absorb a transcription
+  /// error: if an earlier word was mistyped into another valid word, the real
+  /// last word is not a candidate, yet a two letter prefix of it can single
+  /// out a different candidate. The sentence would then pass the checksum and
+  /// be accepted - turning the one error the checksum exists to catch into a
+  /// silently restored wrong wallet.
   ///
   /// Runs on the text-change notification rather than during build, where the
   /// previous implementation scheduled it as a post-frame side effect.
@@ -437,9 +457,10 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     if (prefix.isEmpty) return;
 
     // Stop at the second match: only ambiguity matters here, not the count.
-    final matches = _pool(
-      index,
-    ).where((word) => word.startsWith(prefix)).take(2).toList();
+    final matches = widget.language.list
+        .where((word) => word.startsWith(prefix))
+        .take(2)
+        .toList();
     if (matches.length == 1 && matches.first != prefix) {
       widget.controllers[index].text = matches.first;
       _focusNext(index + 1);
@@ -463,8 +484,11 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       valueListenable: _hint,
       builder: (context, query, _) {
         final isLastWord = query.index == widget.controllers.length - 1;
-        final pool = _pool(query.index);
-        final predicting = isLastWord && !identical(pool, widget.language.list);
+        // Null means the question does not apply - an earlier word is missing
+        // or unknown - which is exactly the signal for falling back.
+        final candidates = isLastWord ? _lastWordCandidates() : null;
+        final pool = candidates ?? widget.language.list;
+        final predicting = candidates != null;
 
         // Materialized: elementAt on a lazy where() walks the wordlist again
         // for every chip the list scrolls to.

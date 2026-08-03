@@ -20,7 +20,7 @@ const validWords = [
   'senior',
 ];
 
-Future<Mnemonic?> pumpWidget(
+Future<void> pumpWidget(
   WidgetTester tester, {
   bip39.MnemonicLength length = bip39.MnemonicLength.words12,
   bool allowAutoFillWords = false,
@@ -45,7 +45,6 @@ Future<Mnemonic?> pumpWidget(
       ),
     ),
   );
-  return null;
 }
 
 Finder wordField(int index) => find.byType(TextField).at(index);
@@ -231,6 +230,97 @@ void main() {
       await fillAll(tester, [...validWords.take(10), '', '']);
 
       await tester.tap(wordField(11));
+      await tester.pump();
+
+      expect(find.textContaining('possible last words'), findsNothing);
+    });
+
+    testWidgets('does not auto fill the last field from the candidates', (
+      tester,
+    ) async {
+      // A transcription error that is itself a valid word: shell -> sell.
+      // The real last word 'senior' is then not a candidate, but 'se' singles
+      // out exactly one candidate. Completing to it would produce a sentence
+      // with a valid checksum, silently accepting the wrong mnemonic.
+      final typed = [...validWords.take(11)];
+      typed[3] = 'sell';
+      final candidates = bip39.Mnemonic.lastWordCandidates(words: typed);
+      final trap = candidates.where((w) => w.startsWith('se')).toList();
+      expect(trap, hasLength(1), reason: 'the trap must exist to be tested');
+      expect(trap.first, isNot('senior'));
+
+      Mnemonic? submitted;
+      await pumpWidget(
+        tester,
+        onSubmit: (m) => submitted = m,
+        allowAutoFillWords: true,
+      );
+      await fillAll(tester, [...typed, '']);
+      await tester.tap(wordField(11));
+      await tester.pump();
+      await tester.enterText(wordField(11), 'se');
+      await tester.pump();
+
+      // the field keeps what the user typed
+      expect(
+        tester.widget<TextField>(wordField(11)).controller!.text,
+        equals('se'),
+      );
+
+      // and the wrong sentence is never submitted
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      expect(submitted, isNull);
+    });
+
+    testWidgets('still completes the real last word, then fails the checksum', (
+      tester,
+    ) async {
+      // Same typo as above. 'seni' is unique in the wordlist ('senior') but
+      // matches no candidate, so the user must still get their word - and the
+      // checksum must then surface the typo instead of absorbing it.
+      final typed = [...validWords.take(11)];
+      typed[3] = 'sell';
+
+      var submitted = false;
+      await pumpWidget(
+        tester,
+        onSubmit: (_) => submitted = true,
+        allowAutoFillWords: true,
+      );
+      await fillAll(tester, [...typed, '']);
+      await tester.tap(wordField(11));
+      await tester.pump();
+      await tester.enterText(wordField(11), 'seni');
+      await tester.pump();
+
+      expect(
+        tester.widget<TextField>(wordField(11)).controller!.text,
+        equals('senior'),
+      );
+
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      expect(submitted, isFalse);
+      expect(
+        tester.widget<TextField>(wordField(11)).controller!.text,
+        isEmpty,
+        reason: 'an invalid checksum clears the last word',
+      );
+    });
+
+    testWidgets('refreshes the candidates when another field is cleared', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(11), '']);
+      await tester.tap(wordField(11));
+      await tester.pump();
+      expect(find.text('128 possible last words'), findsOneWidget);
+
+      // Clearing an earlier word does not move focus, yet it invalidates the
+      // candidate pool: the label must fall back, not keep a stale count.
+      await tester.tap(find.byIcon(Icons.close).first);
       await tester.pump();
 
       expect(find.textContaining('possible last words'), findsNothing);

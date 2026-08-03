@@ -14939,6 +14939,11 @@
   },
   "mnemonicPossibleLastWords": "{count} possible last words",
   "@mnemonicPossibleLastWords": {
-    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed"
+    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
