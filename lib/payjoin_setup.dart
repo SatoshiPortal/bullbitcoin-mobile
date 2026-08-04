@@ -23,6 +23,7 @@ abstract final class PayjoinSetup {
     GetIt locator,
     SqliteDatabase database, {
     String? databasePath,
+    bool startRecovery = true,
   }) {
     final runtime = RecoverablePayjoin(() async {
       final path =
@@ -54,12 +55,19 @@ abstract final class PayjoinSetup {
     _registerRoles(locator, runtime.payjoin);
     locator.registerSingleton<PayjoinLifecycle>(runtime);
 
-    // Opening the package database and resuming sessions must not delay runApp.
-    unawaited(
-      Future<void>(() async {
-        await runtime.resume();
-      }),
-    );
+    // Opening the package database and resuming sessions must not delay
+    // runApp. Background isolates (workmanager handler) register the roles
+    // but must NOT start recovery: the engine's own invariant is that only
+    // the foreground composition root resumes sessions — a BG isolate would
+    // open payjoin.sqlite concurrently with the foreground engine and run
+    // the legacy migration + recovery sweep inside a ~30s iOS budget.
+    if (startRecovery) {
+      unawaited(
+        Future<void>(() async {
+          await runtime.resume();
+        }),
+      );
+    }
   }
 
   static void _registerRoles(GetIt locator, Payjoin payjoin) {

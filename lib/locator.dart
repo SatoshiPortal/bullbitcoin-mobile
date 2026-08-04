@@ -55,6 +55,7 @@ class AppLocator {
     GetIt locator,
     SqliteDatabase database, {
     String? payjoinDatabasePath,
+    bool startPayjoinRecovery = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -71,7 +72,12 @@ class AppLocator {
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
     CoreLocator.registerFacades(locator);
-    PayjoinSetup.setup(locator, database, databasePath: payjoinDatabasePath);
+    PayjoinSetup.setup(
+      locator,
+      database,
+      databasePath: payjoinDatabasePath,
+      startRecovery: startPayjoinRecovery,
+    );
 
     SyncLocator.setup(locator);
 

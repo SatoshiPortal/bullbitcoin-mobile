@@ -38,7 +38,13 @@ Future<bool> tasksHandler(String task) async {
       await driftIsolate.connect(singleClientMode: true),
     );
     final locator = GetIt.asNewInstance();
-    await AppLocator.setup(locator, sqlite);
+    // No payjoin recovery here: only the foreground composition root resumes
+    // sessions. A stale persisted schedule firing before the first foreground
+    // launch of this build would otherwise open payjoin.sqlite in this
+    // isolate, run the legacy migration and the full recovery sweep —
+    // concurrently with the foreground engine on the same database, inside a
+    // ~30s iOS background budget.
+    await AppLocator.setup(locator, sqlite, startPayjoinRecovery: false);
 
     final syncWalletUsecase = locator<SyncWalletUsecase>();
     final getWalletsUsecase = locator<GetWalletsUsecase>();
