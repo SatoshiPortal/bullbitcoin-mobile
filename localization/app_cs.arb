@@ -3440,10 +3440,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "Prosím, počkejte, když načteme váš záložní soubor.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -5715,10 +5711,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "Nebyly nalezeny žádné starší semena.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "arkAboutDustValue": "{dust} SATS",
   "@arkAboutDustValue": {
     "description": "Dust value format",
@@ -7961,10 +7953,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Protézy:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "receiveAddressCopied": "Adresa kopírována do schránky",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -8272,10 +8260,6 @@
   "exchangeRecipientsTitle": "Příjemci",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(prázdný)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Derivační cesta",
   "@importWatchOnlyDerivationPath": {
@@ -9744,10 +9728,6 @@
   "@arkSendConfirmMessage": {
     "description": "Message displayed on send confirmation page"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin vytváření času",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -10283,10 +10263,6 @@
   "dcaConfirmFrequencyHourly": "Každou hodinu",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "Čeština",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC Kód",
   "@sellSwiftCode": {

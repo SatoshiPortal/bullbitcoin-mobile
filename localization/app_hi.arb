@@ -3290,10 +3290,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "विरासत के बीज",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "जब हम आपकी बैकअप फ़ाइल प्राप्त करते हैं तो कृपया प्रतीक्षा करें।।",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -5715,10 +5711,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "कोई विरासत के बीज नहीं मिला।।",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "arkAboutDustValue": "{dust} SATS",
   "@arkAboutDustValue": {
     "description": "Dust value format",
@@ -8062,10 +8054,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "पासफ्रास:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "जारी",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -8393,10 +8381,6 @@
   "exchangeRecipientsTitle": "प्राप्तकर्ता",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(empty)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "डेरिवेशन पथ",
   "@importWatchOnlyDerivationPath": {
@@ -9958,10 +9942,6 @@
   "@arkSendConfirmMessage": {
     "description": "Message displayed on send confirmation page"
   },
-  "bitcoinSettingsLegacySeedsTitle": "लेगेसी सीड्स",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin बनाने का समय",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -10533,10 +10513,6 @@
   "dcaConfirmFrequencyHourly": "हर घंटे",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "मेन्यूनिक",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC कोड",
   "@sellSwiftCode": {

@@ -662,10 +662,6 @@
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "bitcoinSettingsImportWalletTitle": "Wallet Import Karo",
   "@bitcoinSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
@@ -3535,26 +3531,6 @@
   "gotItButton": "Samajh Gaya",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "legacySeedViewScreenTitle": "Purane Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
-  "legacySeedViewNoSeedsMessage": "Koi purana seed nahi mila.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
-  },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
-  "legacySeedViewEmptyPassphrase": "(khaali)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "enterBackupKeyManuallyTitle": "Backup key haath se daalo",
   "@enterBackupKeyManuallyTitle": {

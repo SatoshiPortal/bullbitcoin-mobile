@@ -29,7 +29,6 @@ import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
-import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
@@ -89,7 +88,6 @@ class AppLocator {
     AppStartupLocator.setup(locator);
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
-    LegacySeedViewLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
     SettingsLocator.setup(locator);
     BitcoinPriceLocator.setup(locator);

@@ -2778,10 +2778,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "Стари семена",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "Моля, изчакайте докато заредим вашето резервно копие.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4500,10 +4496,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "Не са намерени стари seed фрази",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "keystoneStep5": "   - Увеличете яркостта на екрана на вашето устройство",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -6169,10 +6161,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Паролни фрази:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "Продължи",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -6423,10 +6411,6 @@
   "exchangeRecipientsTitle": "Получатели",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "==WEBLATE_PART==",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Път на деривация",
   "@importWatchOnlyDerivationPath": {
@@ -7569,10 +7553,6 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Стари семена",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Време на създаване на Payjoin",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -8026,10 +8006,6 @@
   "receiveAddLabel": "Добави етикет",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
-  },
-  "legacySeedViewMnemonicLabel": "Мнемонична фраза",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC код",
   "@sellSwiftCode": {

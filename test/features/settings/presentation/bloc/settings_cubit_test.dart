@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -46,8 +45,6 @@ class _MockSetIsDevModeUsecase extends Mock implements SetIsDevModeUsecase {}
 
 class _MockSetThemeModeUsecase extends Mock implements SetThemeModeUsecase {}
 
-class _MockGetOldSeedsUsecase extends Mock implements GetOldSeedsUsecase {}
-
 class _MockRevokeArkUsecase extends Mock implements RevokeArkUsecase {}
 
 class _MockSetErrorReportingUsecase extends Mock
@@ -79,7 +76,6 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setIsSuperuserUsecase,
     required super.setIsDevModeUsecase,
     required super.setThemeModeUsecase,
-    required super.getOldSeedsUsecase,
     required super.revokeArkUsecase,
     required super.setErrorReportingUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
@@ -114,7 +110,6 @@ void main() {
       setIsSuperuserUsecase: _MockSetIsSuperuserUsecase(),
       setIsDevModeUsecase: _MockSetIsDevModeUsecase(),
       setThemeModeUsecase: _MockSetThemeModeUsecase(),
-      getOldSeedsUsecase: _MockGetOldSeedsUsecase(),
       revokeArkUsecase: _MockRevokeArkUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setExchangeTestnetBasicAuthUsecase:

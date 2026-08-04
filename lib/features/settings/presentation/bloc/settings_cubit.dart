@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -41,7 +40,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setIsSuperuserUsecase,
     required this._setIsDevModeUsecase,
     required this._setThemeModeUsecase,
-    required this._getOldSeedsUsecase,
     required this._revokeArkUsecase,
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
@@ -73,7 +71,6 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final SetThemeModeUsecase _setThemeModeUsecase;
-  final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
@@ -100,8 +97,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
-
-    await checkHasLegacySeeds();
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -177,11 +172,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
     );
-  }
-
-  Future<void> checkHasLegacySeeds() async {
-    final seeds = await _getOldSeedsUsecase.execute();
-    emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
   }
 
   Future<void> toggleDevMode(bool isEnabled, {WalletBloc? walletBloc}) async {

@@ -3290,10 +3290,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "레거시 씨앗",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "귀하의 백업 파일을 fetch하는 동안 기다려 주십시오.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -5715,10 +5711,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "레거시 씨앗이 없습니다.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "arkAboutDustValue": "{dust} 토스",
   "@arkAboutDustValue": {
     "description": "Dust value format",
@@ -8062,10 +8054,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "계속하기",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -8393,10 +8381,6 @@
   "exchangeRecipientsTitle": "관련 기사",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(요금)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Derivation 경로",
   "@importWatchOnlyDerivationPath": {
@@ -9958,10 +9942,6 @@
   "@arkSendConfirmMessage": {
     "description": "Message displayed on send confirmation page"
   },
-  "bitcoinSettingsLegacySeedsTitle": "레거시 씨앗",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin 생성 시간",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -10533,10 +10513,6 @@
   "dcaConfirmFrequencyHourly": "매시간",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic의 특징",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC 부호",
   "@sellSwiftCode": {
