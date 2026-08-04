@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class RecipientsListTab extends StatefulWidget {
   const RecipientsListTab({this.hookError, super.key});

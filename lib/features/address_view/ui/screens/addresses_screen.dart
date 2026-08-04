@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_failur
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key, required this.walletId});

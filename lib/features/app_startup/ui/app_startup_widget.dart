@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart'
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:url_launcher/url_launcher.dart';
 
 class AppStartupWidget extends StatefulWidget {

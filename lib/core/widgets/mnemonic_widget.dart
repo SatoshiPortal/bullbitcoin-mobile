@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 typedef Mnemonic = ({
   String label,

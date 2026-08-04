@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/device_instructions.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ShowPsbtScreen extends StatelessWidget {
