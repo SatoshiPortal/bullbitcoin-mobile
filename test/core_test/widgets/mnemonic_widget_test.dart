@@ -25,6 +25,7 @@ Future<void> pumpWidget(
   bip39.MnemonicLength length = bip39.MnemonicLength.words12,
   bool allowAutoFillWords = false,
   bool allowMultipleMnemonicLength = true,
+  String? externalError,
   required void Function(Mnemonic) onSubmit,
 }) async {
   await tester.pumpWidget(
@@ -40,6 +41,7 @@ Future<void> pumpWidget(
             allowMultipleMnemonicLength: allowMultipleMnemonicLength,
             allowLabel: false,
             allowPassphrase: false,
+            externalError: externalError,
           ),
         ),
       ),
@@ -148,6 +150,42 @@ void main() {
 
       expect(submitted, isFalse);
       expect(find.text('Enter all words of your mnemonic'), findsOneWidget);
+    });
+
+    testWidgets('renders a caller-owned external error above the button', (
+      tester,
+    ) async {
+      await pumpWidget(
+        tester,
+        onSubmit: (_) {},
+        externalError: 'A label is required to import a mnemonic',
+      );
+
+      // Shown without any submit, and stays put (persisted by the caller),
+      // unlike a one-shot snackbar.
+      expect(
+        find.text('A label is required to import a mnemonic'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a local entry error takes precedence over the external one', (
+      tester,
+    ) async {
+      await pumpWidget(
+        tester,
+        onSubmit: (_) {},
+        externalError: 'external error message',
+      );
+
+      // Submitting an incomplete sentence raises a local entry error, which is
+      // the more relevant message and must win.
+      await fillAll(tester, [...validWords.take(11), '']);
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+
+      expect(find.text('Enter all words of your mnemonic'), findsOneWidget);
+      expect(find.text('external error message'), findsNothing);
     });
 
     testWidgets('reports an invalid checksum without echoing the word', (

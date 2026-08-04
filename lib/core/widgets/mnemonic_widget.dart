@@ -36,6 +36,8 @@ class MnemonicWidget extends StatefulWidget {
   final bool allowMultipleMnemonicLength;
   final bool allowAutoFillWords;
 
+  final String? externalError;
+
   const MnemonicWidget({
     super.key,
     this.language = bip39.Language.english,
@@ -46,6 +48,7 @@ class MnemonicWidget extends StatefulWidget {
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
     this.allowAutoFillWords = true,
+    this.externalError,
   });
 
   @override
@@ -151,6 +154,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final errorMessage =
+        _failure?.toTranslated(context) ?? widget.externalError;
+
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: Column(
@@ -191,10 +197,10 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             ),
           ],
 
-          if (_failure != null) ...[
+          if (errorMessage != null) ...[
             const Gap(16),
             BBText(
-              _failure!.toTranslated(context),
+              errorMessage,
               style: context.font.bodyMedium,
               color: context.appColors.error,
             ),
