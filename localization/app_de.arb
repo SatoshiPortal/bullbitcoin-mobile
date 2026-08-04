@@ -156,12 +156,10 @@
   "recoverbullSelectVaultImportSuccess": "Ihr Tresor wurde erfolgreich importiert",
   "mempoolServerNotUsed": "Nicht verwendet (eigener Server aktiv)",
   "recoverbullSelectErrorPrefix": "Fehler:",
-  "bitboxErrorDeviceMismatch": "Gerätefehler erkannt.",
   "arkReceiveBtcAddress": "Adresse",
   "exchangeLandingRecommendedExchange": "Empfohlene Bitcoin-Börse",
   "backupWalletHowToDecideVaultMoreInfo": "Besuchen Sie recoverybull.com für weitere Informationen.",
   "recoverbullGoBackEdit": "<< Zurück und bearbeiten",
-  "importWatchOnlyWalletGuides": "Wallet-Anleitungen",
   "receiveConfirming": "Bestätigung läuft… ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -468,7 +466,6 @@
   "testBackupTapWordsInOrder": "Tippen Sie auf die Wiederherstellungswörter in der\nrichtigen Reihenfolge",
   "transactionSwapDescLnSendExpired": "Dieser Swap ist abgelaufen. Ihr Geld wird automatisch an Ihre Wallet zurücküberwiesen",
   "testBackupButton": "Backup testen",
-  "receiveNotePlaceholder": "Anmerkung",
   "coreScreensInternalTransfer": "Interne Übertragung",
   "sendSwapWillTakeTime": "Die Bestätigung kann einige Zeit dauern",
   "autoswapSelectWalletError": "Bitte wählen Sie eine Bitcoin-Empfänger-Wallet aus.",
@@ -685,11 +682,9 @@
   "importQrDeviceJadeName": "Blockstream Jade",
   "importWalletImportMnemonic": "Mnemonik importieren",
   "bip85NextMnemonic": "Nächster Mnemonic",
-  "bitboxErrorNoActiveConnection": "Keine aktive Verbindung zum BitBox-Gerät.",
   "dcaFundAccountButton": "Ihr Konto aufladen",
   "arkSendTitle": "Senden",
   "transactionDetailLabelAmountReceived": "Erhaltener Betrag",
-  "bitboxCubitOperationTimeout": "Der Vorgang hat zu lange gedauert. Bitte versuchen Sie es erneut.",
   "receivePaymentReceived": "Zahlung erhalten!",
   "backupWalletHowToDecideVaultCloudSecurity": "Cloud-Speicheranbieter wie Google oder Apple haben keinen Zugriff auf Ihre Bitcoin, da das Verschlüsselungspasswort sehr sicher ist. Sie können nur dann auf Ihre Bitcoin zugreifen, wenn sie im unwahrscheinlichen Fall mit dem Schlüsselserver zusammenarbeiten (dem Online-Dienst, der Ihr Verschlüsselungspasswort speichert). Sollte der Schlüsselserver jemals gehackt werden, könnte Ihr Bitcoin in der Google- oder Apple-Cloud gefährdet sein.",
   "howToDecideBackupText1": "Eine der häufigsten Ursachen, warum Menschen ihre Bitcoin verlieren, ist der Verlust ihrer physischen Sicherung. Jeder, der Ihre physische Sicherung findet, kann alle Ihre Bitcoin entnehmen. Wenn Sie sehr zuversichtlich sind, dass Sie sie gut verstecken und nie verlieren werden, ist dies eine gute Option.",
@@ -978,7 +973,6 @@
   },
   "kruxStep15": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert.",
   "fundExchangeETransferLabelSecretQuestion": "Geheime Frage",
-  "importColdcardButtonPurchase": "Kaufeinrichtung",
   "jadeStep15": "Die Transaktion ist bereit zum Senden! Sobald Sie auf „Senden“ klicken, wird die Transaktion im Bitcoin-Netzwerk veröffentlicht und die Mittel werden übertragen.",
   "confirmButton": "Bestätigen",
   "transactionSwapInfoClaimableTransfer": "Der Swap wird innerhalb weniger Sekunden automatisch abgeschlossen. Ist dies nicht der Fall, können Sie einen manuellen Antrag stellen, indem Sie auf die Schaltfläche „Swap erneut anfordern“ klicken",
@@ -1267,7 +1261,6 @@
   "recoverbullSelectQuickAndEasy": "Schnell und einfach",
   "exchangeFileUploadTitle": "Sicherer Datei-Upload",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Sie sind zuversichtlich in Ihren Sicherheitsvorkehrungen, um Ihre Bitcoin-Seed-Wörter zu verstecken und zu bewahren.",
-  "bitboxCubitHandshakeFailed": "Fehler beim Herstellen einer sicheren Verbindung. Bitte versuchen Sie es erneut",
   "sendErrorAmountAboveSwapLimits": "Betrag über Swap-Grenzwerten.",
   "backupWalletHowToDecideBackupEncryptedVault": "Der verschlüsselte Tresor verhindert, dass Diebe nach Ihrem Backup suchen. Es verhindert auch, dass Sie Ihr Backup versehentlich verlieren, da es in Ihrer Cloud gespeichert wird. Cloud-Speicheranbieter wie Google oder Apple haben keinen Zugriff auf Ihr Bitcoin, da das Verschlüsselungspasswort zu stark ist. Es gibt eine kleine Möglichkeit, dass der Webserver, der die Verschlüsselungsschlüssel Ihres Backups speichert, beeinträchtigt werden könnte. In diesem Fall könnte die Sicherheit des Backups in Ihrem Cloud-Konto gefährdet sein",
   "coreSwapsChainCompletedRefunded": "Überweisung wurde zurückerstattet",
@@ -1356,7 +1349,6 @@
   "visitRecoverBullMessage": "Besuchen Sie recoverbull.com für weitere Informationen.",
   "payMyFiatRecipients": "Meine Fiat-Empfänger",
   "exchangeLandingFeature1": "Bitcoin direkt in Selbstverwahrung kaufen",
-  "bitboxCubitPermissionDenied": "USB-Berechtigung verweigert. Bitte erteilen Sie die Berechtigung für den Zugriff auf Ihr BitBox-Gerät",
   "swapTransferTo": "Überweisung an",
   "testBackupPinMessage": "Testen Sie, um sicherzustellen, dass Sie sich an Ihr Backup-{pinOrPassword} erinnern.",
   "@testBackupPinMessage": {
@@ -2237,7 +2229,6 @@
   "recoverbullRecoveryContinueButton": "Fortfahren",
   "payTimeoutError": "Zahlungszeitüberschreitung. Bitte überprüfen Sie den Status.",
   "kruxStep4": "Von Kamera laden",
-  "bitboxErrorInvalidMagicBytes": "Ungültiges PSBT-Format erkannt.",
   "sellErrorRecalculateFees": "Gebühren konnten nicht neu berechnet werden: {error}.",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2461,7 +2452,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Ein Gerät kaufen",
   "sellMinimumAmount": "Mindestverkaufsmenge: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2655,7 +2645,6 @@
   },
   "transactionStatusPending": "Ausstehend",
   "settingsSuperuserModeDisabledMessage": "Superuser-Modus deaktiviert",
-  "bitboxCubitConnectionFailed": "BitBox-Gerät nicht verbunden. Bitte überprüfen Sie Ihre Verbindung",
   "settingsTermsOfServiceTitle": "Geschäftsbedingungen",
   "importQrDeviceScanning": "Wird gescannt…",
   "importWalletKeystone": "Keystone",
@@ -2704,7 +2693,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Gerät nicht gepaart. Bitte füllen Sie zuerst den Paarungsprozess aus",
   "sellCrcBalance": "CRC-Saldo",
   "paySelectCoinsManually": "Coins manuell auswählen",
   "replaceByFeeActivatedLabel": "Gebührenerhöhung aktiviert",
@@ -2720,7 +2708,6 @@
     }
   },
   "payPriceRefreshIn": "Der Preis wird aktualisiert in",
-  "bitboxCubitOperationCancelled": "Die Operation wurde abgebrochen. Bitte versuchen Sie es erneut",
   "passportStep3": "Scannen Sie den QR-Code, der in der Bull-Wallet angezeigt wird",
   "jadeStep5": "Wenn Sie Probleme beim Scannen haben:",
   "electrumProtocolError": "Protokoll nicht enthalten (ssl:// oder tcp://).",
@@ -2935,14 +2922,6 @@
   "transactionLabelRecipientAddress": "Empfängeradresse",
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "bitboxCubitDeviceNotFound": "Kein BitBox-Gerät gefunden. Bitte verbinden Sie Ihr Gerät und versuchen Sie es erneut",
-  "autoswapSaveError": "Fehler beim Speichern der Einstellungen: {error}.",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Standardauszahlung",
   "swapContinue": "Fortfahren",
   "arkSettleButton": "Einrichten",
@@ -3189,7 +3168,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Fehler beim Speichern von Einstellungen.",
   "exchangeAccountInfoVerificationLightVerification": "Light KYC-Überprüfung",
   "exchangeFeatureBankTransfers": "Banküberweisungen tätigen und Rechnungen bezahlen",
   "sellSendPaymentInstantPayments": "Sofortzahlungen",
@@ -3369,14 +3347,6 @@
   "recoverbullSelectFetchDriveFilesError": "Nicht alle Laufwerkssicherungen abrufen.",
   "psbtFlowLoadFromCamera": "Von Kamera laden",
   "exchangeAccountInfoVerificationLimitedVerification": "Begrenzte Überprüfung",
-  "addressViewErrorLoadingMoreAddresses": "Fehler beim Laden von mehr Adressen: {error}.",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Kopieren",
   "sendBuildingTransaction": "Transaktion wird erstellt…",
   "fundExchangeMethodEmailETransfer": "E-Mail E-Transfer",
@@ -3417,14 +3387,6 @@
   "settingsSuperuserModeUnlockedMessage": "Superuser-Modus entsperrt!",
   "pickPinInsteadButton": "PIN wählen",
   "backupWalletVaultProviderCustomLocation": "Benutzerdefinierter Speicherort",
-  "addressViewErrorLoadingAddresses": "Fehler beim Laden von Adressen: {error}.",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Verbindungstyp nicht initialisiert.",
   "transactionListOngoingTransfersDescription": "Diese Überweisungen werden derzeit durchgeführt. Ihr Geld ist sicher und wird nach Abschluss der Überweisung verfügbar sein.",
   "ledgerErrorUnknown": "Unbekannter Fehler",
@@ -3807,7 +3769,6 @@
   "allWordsSelectedMessage": "Sie haben alle Wörter ausgewählt.",
   "bitboxActionPairDeviceTitle": "BitBox-Gerät",
   "buyKYCLevel2": "Stufe 2 – Erweitert",
-  "receiveAmount": "Betrag (optional)",
   "testBackupErrorSelectAllWords": "Bitte wählen Sie alle Wörter.",
   "buyLevel1Limit": "Grenzwert: {amount}",
   "@buyLevel1Limit": {
@@ -3900,14 +3861,6 @@
   "torSettingsTitle": "Tor-Einstellungen",
   "backupSettingsRevealing": "Wird wiederholt…",
   "payTotal": "Insgesamt",
-  "autoswapSaveErrorMessage": "Fehler beim Speichern der Einstellungen: {error}.",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Lightning-Adresse",
   "addressViewTitle": "Adressdetails",
   "payCompleted": "Zahlung abgeschlossen!",
@@ -4712,7 +4665,6 @@
   "autoswapActiveCardTitle": "Autoswap ist aktiv",
   "autoswapWarningExplanationBold": "automatisch",
   "autoswapInfoConsentMessage": "Autoswap ist derzeit aktiviert, wird aber erst ausgelöst, wenn Sie zustimmen. Möchten Sie es aktiviert lassen?",
-  "bitboxCubitInvalidResponse": "Ungültige Antwort vom BitBox-Gerät. Bitte versuchen Sie es erneut.",
   "deleteLogsTitle": "Logs löschen",
   "logsDeletedMessage": "Logs gelöscht",
   "sendSelfTransfer": "Eigentransfer",
@@ -5215,6 +5167,17 @@
   "transactionDetailLabelPayjoinAborted": "Abgebrochen",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-Gebührenbeitrag",
   "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin-Hinweis",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin-Hinweis",
+  "settingsPayjoinAdvancedTitle": "Erweiterte Payjoin-Einstellungen",
+  "receiveAdditionalInformation": "Zusätzliche Informationen",
+  "receiveAdditionalInformationPlaceholder": "Betrag oder Nachricht an den Sender hinzufügen",
+  "receiveMessageForSender": "Nachricht an den Sender",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin ist aktiviert, aber dieses Wallet hat noch kein Guthaben für einen Beitrag. Es wird aktiv, sobald du Guthaben empfängst.",
+  "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht.",
+  "addressViewErrorWalletNotFound": "Diese Wallet konnte nicht gefunden werden.",
+  "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
   "torSettingsStatusCensored": "Verbindung scheint gefiltert",
   "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
   "torSettingsBootstrapProgress": "Verbinden… {percent}%",

@@ -1559,10 +1559,6 @@
   "@receiveAddress": {
     "description": "Label for generated address"
   },
-  "receiveAmount": "Amount (optional)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "receiveNoteLabel": "Note",
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
@@ -1659,10 +1655,6 @@
   "receiveFeeExplanation": "This fee will be deducted from the amount sent",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
-  },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
   },
   "receiveReceiveAmount": "Receive Amount",
   "@receiveReceiveAmount": {
@@ -5461,15 +5453,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "Failed to save settings: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -5541,10 +5524,6 @@
   "autoswapSelectWalletError": "Please select a recipient Bitcoin wallet",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "Failed to save settings",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold is {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -5957,18 +5936,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "No active connection to BitBox device.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "Device mismatch detected.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"
@@ -6245,38 +6212,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
-  },
-  "bitboxCubitPermissionDenied": "USB permission denied. Please grant permission to access your BitBox device.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "No BitBox device found. Please connect your device and try again.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "Failed to establish secure connection. Please try again.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "Operation timed out. Please try again.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "Failed to connect to BitBox device. Please check your connection.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "Invalid response from BitBox device. Please try again.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "Operation was cancelled. Please try again.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "advancedOptionsTitle": "Advanced options",
   "@advancedOptionsTitle": {
@@ -10118,14 +10053,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importWatchOnlyBuyDevice": "Buy a device",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
-  "importWatchOnlyWalletGuides": "Wallet guides",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyCopiedToClipboard": "Copied to clipboard",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -10792,10 +10719,6 @@
   "importColdcardButtonInstructions": "Instructions",
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
-  },
-  "importColdcardButtonPurchase": "Purchase device",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardQInstructionsTitle": {
@@ -11627,15 +11550,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "autoswapSaveError": "Failed to save settings: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum Server Settings",
   "@electrumTitle": {
     "description": "AppBar title for Electrum settings screen"
@@ -12155,27 +12069,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "No addresses found",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "Change addresses coming soon",
   "@addressViewChangeAddressesComingSoon": {
@@ -14829,13 +14725,25 @@
   "@settingsPayjoinTitle": {
     "description": "Title of the payjoin settings screen"
   },
-  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to the person you are transacting with — someone you are already paying anyway.",
+  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to your counterparty.",
   "@settingsPayjoinPrivacyGainExplanation": {
     "description": "First disclosure paragraph on the payjoin settings screen: the privacy benefit and the UTXO-exposure risk it trades against"
   },
-  "settingsPayjoinV1DirectoryLeakExplanation": "If the person you are paying uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
+  "settingsPayjoinV1DirectoryLeakExplanation": "If your counterparty uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
   "@settingsPayjoinV1DirectoryLeakExplanation": {
     "description": "Second disclosure paragraph on the payjoin settings screen: a v1 (non-v2) counterparty leaks the same UTXO to the payjoin directory"
+  },
+  "settingsPayjoinDisclaimerTitle": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerTitle": {
+    "description": "Title of the one-time payjoin disclaimer pop-up (also reachable from the payjoin settings screen)."
+  },
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerRowLabel": {
+    "description": "Settings row that re-opens the payjoin disclaimer pop-up."
+  },
+  "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
+  "@settingsPayjoinAdvancedTitle": {
+    "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
   "settingsPayjoinEnabledLabel": "Payjoin enabled",
   "@settingsPayjoinEnabledLabel": {
@@ -14913,9 +14821,9 @@
   "@transactionPayjoinFeeContributionExplanation": {
     "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
   },
-  "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
-  "@sendPayjoinWillBeAttempted": {
-    "description": "Confirm-screen indicator shown when a payjoin will be attempted for the send."
+  "sendPayjoinLabel": "Payjoin",
+  "@sendPayjoinLabel": {
+    "description": "Row title on the send confirmation details showing (with a tick) that this send will attempt a payjoin."
   },
   "sendSentWithoutPayjoin": "Sent without Payjoin: the recipient did not complete the Payjoin, so a standard transaction was broadcast instead.",
   "@sendSentWithoutPayjoin": {
@@ -14977,7 +14885,7 @@
   "@announcementAutoswapTitle": {
     "description": "Title of the home announcement informing the user that autoswap is currently enabled."
   },
-  "announcementAutoswapDescription": "Your Bitcoin is automatically swapped to Liquid.",
+  "announcementAutoswapDescription": "Your Liquid is automatically swapped to Bitcoin.",
   "@announcementAutoswapDescription": {
     "description": "Description of the home announcement informing the user that autoswap is enabled."
   },
@@ -14997,9 +14905,21 @@
   "@announcementDismissConfirmRead": {
     "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
   },
-  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no confirmed balance yet to contribute. It will activate once you receive funds.",
+  "receiveAdditionalInformation": "Additional Information",
+  "receiveMessageForSender": "Message For Sender",
+  "@receiveMessageForSender": {
+    "description": "Field on the receive additional-information page for the counterparty-visible message — becomes the BIP21 message= parameter (and the lightning swap description). Formerly called Note."
+  },
+  "receiveAdditionalInformationPlaceholder": "Add an amount or message for sender",
+  "@receiveAdditionalInformationPlaceholder": {
+    "description": "Placeholder on the Additional Information receive tile when neither amount nor message is set yet."
+  },
+  "@receiveAdditionalInformation": {
+    "description": "Receive-screen tile unifying the optional amount and message; tapping opens the additional-information page to edit both."
+  },
+  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no balance yet to contribute. It will activate once you receive funds.",
   "@receivePayjoinAwaitingFunds": {
-    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no confirmed balance."
+    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no balance."
   },
   "receivePayjoinQrBadge": "Payjoin",
   "@receivePayjoinQrBadge": {
@@ -15008,6 +14928,14 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "addressViewErrorWalletNotFound": "This wallet could not be found.",
+  "@addressViewErrorWalletNotFound": {
+    "description": "Shown when the wallet backing the addresses screen has no stored metadata"
+  },
+  "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
+  "@addressViewErrorLoadFailed": {
+    "description": "Shown when loading or paginating the wallet address list fails"
   },
   "torSettingsStatusCensored": "Connection appears filtered",
   "@torSettingsStatusCensored": {

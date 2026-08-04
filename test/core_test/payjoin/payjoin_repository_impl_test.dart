@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
@@ -73,6 +74,7 @@ PayjoinReceiverModel _receiverModel({
   String? proposalPsbt,
   String? txId,
   int? amountSat,
+  bool hasRequest = true,
   // Defaults to already-elapsed (createdAt: 0) so isExpiryTimePassed is true
   // by default. Pass a large value to get a not-yet-expired model instead
   // (e.g. to exercise resume's live-session branches).
@@ -88,8 +90,8 @@ PayjoinReceiverModel _receiverModel({
         maxFeeRateSatPerVb: BigInt.from(10),
         createdAt: 0,
         expireAfterSec: expireAfterSec,
-        originalTxBytes: Uint8List.fromList([1, 2, 3]),
-        originalTxId: originalTxId,
+        originalTxBytes: hasRequest ? Uint8List.fromList([1, 2, 3]) : null,
+        originalTxId: hasRequest ? originalTxId : null,
         proposalPsbt: proposalPsbt,
         txId: txId,
         amountSat: amountSat,
@@ -231,8 +233,12 @@ void main() {
     // empty by default, overridden in the sweep tests. Only runs from
     // resumePayjoinsOnStartup, never the constructor.
     when(() => localDatasource.fetchReceivers()).thenAnswer((_) async => []);
+    when(
+      () => localDatasource.fetchReceivers(onlyOngoing: true),
+    ).thenAnswer((_) async => []);
     when(() => localDatasource.fetchSenders()).thenAnswer((_) async => []);
     when(() => localDatasource.update(any())).thenAnswer((_) async {});
+    when(() => localDatasource.deleteReceiver(any())).thenAnswer((_) async {});
 
     // Passive watchers must never fire spuriously: an empty sync stream and
     // a not-found transaction lookup keep _watchForFallback/_watchForBroadcast
@@ -297,6 +303,84 @@ void main() {
             isExpired: isExpired,
           )
           as PayjoinReceiverModel;
+
+  group('disabling receivers', () {
+    test(
+      'stops and deletes an endpoint that no sender has contacted',
+      () async {
+        final receiver = _receiverModel(
+          hasRequest: false,
+          expireAfterSec: 9999999999,
+        );
+        when(
+          () => localDatasource.fetchReceivers(onlyOngoing: true),
+        ).thenAnswer((_) async => [receiver]);
+        when(
+          () => localDatasource.fetchReceiver(receiver.id),
+        ).thenAnswer((_) async => receiver);
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+
+        await repository.disableReceivers();
+
+        verify(() => pdkDatasource.stopPolling(receiver.id)).called(1);
+        verify(() => localDatasource.deleteReceiver(receiver.id)).called(1);
+        verifyNever(
+          () => serversPort.runWithFallback<void>(
+            network: any(named: 'network'),
+            operation: any(named: 'operation'),
+          ),
+        );
+      },
+    );
+
+    test('keeps a receiver whose proposal is already committed', () async {
+      final receiver = _receiverModel(
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => localDatasource.fetchReceivers(onlyOngoing: true),
+      ).thenAnswer((_) async => [receiver]);
+      when(
+        () => localDatasource.fetchReceiver(receiver.id),
+      ).thenAnswer((_) async => receiver);
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      await repository.disableReceivers();
+
+      verifyNever(() => localDatasource.deleteReceiver(any()));
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+    });
+
+    test(
+      'removes an expired idle receiver instead of persisting history',
+      () async {
+        final receiver = _receiverModel(hasRequest: false);
+        when(
+          () => localDatasource.fetchReceiver(receiver.id),
+        ).thenAnswer((_) async => receiver);
+        final repository = buildRepository();
+        addTearDown(repository.dispose);
+        final emitted = <Payjoin>[];
+        final sub = repository.payjoinStream.listen(emitted.add);
+        addTearDown(sub.cancel);
+
+        expiredController.add(receiver.copyWith(isExpired: true));
+        await pumpEventQueue();
+
+        verify(() => localDatasource.deleteReceiver(receiver.id)).called(1);
+        verifyNever(() => localDatasource.update(any()));
+        expect(emitted.single.status, PayjoinStatus.expired);
+      },
+    );
+  });
 
   group('below-minimum decline', () {
     test(
@@ -1577,6 +1661,156 @@ void main() {
       await sub.cancel();
     });
 
+    test('serializes an observed fallback with proposal persistence so the '
+        'proposal cannot resurrect an aborted receiver', () async {
+      final syncController = StreamController<Wallet>.broadcast();
+      addTearDown(syncController.close);
+      when(
+        () => walletRepository.walletSyncFinishedStream,
+      ).thenAnswer((_) => syncController.stream);
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _testSettings(payjoinMinAmountSat: 10000));
+
+      final origin = WalletMetadataService.encodeOrigin(
+        fingerprint: '00000000',
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+      );
+      when(() => walletMetadataDatasource.fetch('w1')).thenAnswer(
+        (_) async => WalletMetadataModel(
+          id: origin,
+          masterFingerprint: '00000000',
+          xpubFingerprint: '00000000',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: false,
+        ),
+      );
+      when(() => seedDatasource.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(mnemonicWords: ['abandon'])
+                as MnemonicSeedModel,
+      );
+      when(
+        () => bdkWalletDatasource.getUtxos(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async => [
+          WalletUtxoModel.bitcoin(
+            txId: 'candidate-utxo',
+            vout: 0,
+            amountSat: BigInt.from(100000),
+            scriptPubkey: Uint8List.fromList([0]),
+            address: 'tb1qtest',
+            isExternalKeyChain: false,
+            confirmations: 1,
+          ),
+        ],
+      );
+      when(
+        () => bdkWalletDatasource.createIsMineChecker(
+          wallet: any(named: 'wallet'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Uint8List _) => true,
+      );
+      when(
+        () =>
+            bdkWalletDatasource.createPsbtSigner(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async =>
+            (String psbt) => psbt,
+      );
+
+      final requestModel = _receiverModel(
+        amountSat: 50000,
+        expireAfterSec: 9999999999,
+      );
+      final proposedModel = requestModel.copyWith(
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        txId: 'payjoin-txid',
+      );
+      var persistedModel = requestModel;
+      final persistedUpdates = <PayjoinReceiverModel>[];
+      final proposalPersisted = Completer<void>();
+      final fallbackPersisted = Completer<void>();
+      when(
+        () => localDatasource.fetchReceiver(requestModel.id),
+      ).thenAnswer((_) async => persistedModel);
+      when(() => localDatasource.update(any())).thenAnswer((invocation) async {
+        final model = invocation.positionalArguments.single as PayjoinModel;
+        if (model case final PayjoinReceiverModel receiver
+            when receiver.id == requestModel.id) {
+          persistedModel = receiver;
+          persistedUpdates.add(receiver);
+          if (receiver.proposalPsbt != null && !receiver.isAborted) {
+            if (!proposalPersisted.isCompleted) proposalPersisted.complete();
+          }
+          if (receiver.isAborted && !fallbackPersisted.isCompleted) {
+            fallbackPersisted.complete();
+          }
+        }
+      });
+
+      final proposalStarted = Completer<void>();
+      final releaseProposal = Completer<void>();
+      when(
+        () => pdkDatasource.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          hasOwnedInputs: any(named: 'hasOwnedInputs'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+        ),
+      ).thenAnswer((_) async {
+        proposalStarted.complete();
+        await releaseProposal.future;
+        return proposedModel;
+      });
+
+      final fallbackLookupCompleted = Completer<void>();
+      when(
+        () => walletTransactionRepository.getWalletTransaction(
+          'orig-txid',
+          walletId: 'w1',
+        ),
+      ).thenAnswer((_) async {
+        fallbackLookupCompleted.complete();
+        return _testWalletTx(txId: 'orig-txid', walletId: 'w1');
+      });
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+      requestsController.add(requestModel);
+      await proposalStarted.future;
+
+      syncController.add(_testWallet(origin: 'w1'));
+      await fallbackLookupCompleted.future;
+      await Future<void>.delayed(Duration.zero);
+      expect(fallbackPersisted.isCompleted, isFalse);
+
+      releaseProposal.complete();
+      await proposalPersisted.future;
+      await fallbackPersisted.future;
+
+      final proposedIndex = persistedUpdates.indexWhere(
+        (model) => model.proposalPsbt != null && !model.isAborted,
+      );
+      final abortedIndex = persistedUpdates.indexWhere(
+        (model) => model.isAborted,
+      );
+      expect(proposedIndex, greaterThanOrEqualTo(0));
+      expect(abortedIndex, greaterThan(proposedIndex));
+      expect(persistedModel.isAborted, isTrue);
+      expect(persistedModel.proposalPsbt, proposedModel.proposalPsbt);
+      expect(persistedModel.txId, isNull);
+    });
+
     test('idempotent: a session already terminal (isAborted set by whichever '
         'path got there first) is left untouched, not re-persisted or '
         're-emitted', () async {
@@ -1695,6 +1929,167 @@ void main() {
       expect(emitted, hasLength(2));
       expect(emitted.last.status, PayjoinStatus.aborted);
       await sub.cancel();
+    });
+  });
+
+  group('confirmed-first input preference in the propose path', () {
+    // _filterAvailableUtxos must hand PDK's tryPreservingPrivacy only
+    // confirmed candidates when any exist: PDK selects on privacy heuristics
+    // alone, and a payjoin spending our unconfirmed input can be invalidated
+    // by an RBF of that input's parent after both sides consider the payment
+    // done. Unconfirmed-only wallets still contribute (payjoin eligibility
+    // deliberately counts unconfirmed balance), so the preference must fall
+    // back rather than filter to nothing — and it must not fire at all when
+    // the confirmed candidates are too small for the payment.
+    BitcoinWalletUtxoModel utxo({
+      required String txId,
+      required int confirmations,
+      int amountSat = 100000,
+    }) =>
+        WalletUtxoModel.bitcoin(
+              txId: txId,
+              vout: 0,
+              amountSat: BigInt.from(amountSat),
+              scriptPubkey: Uint8List.fromList([0]),
+              address: 'tb1qtest',
+              isExternalKeyChain: false,
+              confirmations: confirmations,
+            )
+            as BitcoinWalletUtxoModel;
+
+    // Arranges the full propose path (same scaffolding as the watcher-arming
+    // group's request test) and returns the inputPairs the repository handed
+    // to proposePayjoin for the given wallet utxo set.
+    List<PayjoinInputPairModel> proposedPairsFor(
+      FakeAsync async,
+      List<WalletUtxoModel> utxos,
+    ) {
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _testSettings(payjoinMinAmountSat: 10000));
+      final origin = WalletMetadataService.encodeOrigin(
+        fingerprint: '00000000',
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+      );
+      when(() => walletMetadataDatasource.fetch('w1')).thenAnswer(
+        (_) async => WalletMetadataModel(
+          id: origin,
+          masterFingerprint: '00000000',
+          xpubFingerprint: '00000000',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: false,
+        ),
+      );
+      when(() => seedDatasource.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(mnemonicWords: ['abandon'])
+                as MnemonicSeedModel,
+      );
+      when(
+        () => bdkWalletDatasource.getUtxos(wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async => utxos);
+      when(
+        () => bdkWalletDatasource.createIsMineChecker(
+          wallet: any(named: 'wallet'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Uint8List _) => true,
+      );
+      when(
+        () =>
+            bdkWalletDatasource.createPsbtSigner(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async =>
+            (String psbt) => psbt,
+      );
+      final requestModel = _receiverModel(
+        id: 'pj1',
+        walletId: 'w1',
+        amountSat: 10000,
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => localDatasource.fetchReceiver('pj1'),
+      ).thenAnswer((_) async => requestModel);
+      // No txId on the returned model: the broadcast watcher never arms, so
+      // the propose call is the last interaction this test cares about.
+      when(
+        () => pdkDatasource.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          hasOwnedInputs: any(named: 'hasOwnedInputs'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            requestModel.copyWith(proposalPsbt: 'cHNidP9wcm9wb3NhbA=='),
+      );
+
+      buildRepository();
+      requestsController.add(requestModel);
+      async.flushMicrotasks();
+
+      return verify(
+            () => pdkDatasource.proposePayjoin(
+              receiverModel: any(named: 'receiverModel'),
+              hasOwnedInputs: any(named: 'hasOwnedInputs'),
+              hasReceiverOutput: any(named: 'hasReceiverOutput'),
+              inputPairs: captureAny(named: 'inputPairs'),
+              processPsbt: any(named: 'processPsbt'),
+            ),
+          ).captured.single
+          as List<PayjoinInputPairModel>;
+    }
+
+    test('only confirmed utxos are offered when one covers the payment', () {
+      fakeAsync((async) {
+        final pairs = proposedPairsFor(async, [
+          utxo(txId: 'unconfirmed-utxo', confirmations: 0),
+          utxo(txId: 'confirmed-utxo', confirmations: 2),
+        ]);
+
+        expect(pairs.map((p) => p.txId), ['confirmed-utxo']);
+      });
+    });
+
+    test('a confirmed utxo too small for the payment does not shut out a '
+        'well-sized unconfirmed one — forcing dust on avoid_uih would trade '
+        "the proposal's privacy gain for the RBF mitigation", () {
+      fakeAsync((async) {
+        // Payment is 10 000 sat (see proposedPairsFor's receiver model).
+        final pairs = proposedPairsFor(async, [
+          utxo(txId: 'confirmed-dust', confirmations: 2, amountSat: 1000),
+          utxo(txId: 'unconfirmed-usable', confirmations: 0),
+        ]);
+
+        expect(
+          pairs.map((p) => p.txId),
+          containsAll(['confirmed-dust', 'unconfirmed-usable']),
+        );
+      });
+    });
+
+    test('unconfirmed utxos are still offered when nothing is confirmed — '
+        'fresh wallets must activate payjoin immediately', () {
+      fakeAsync((async) {
+        final pairs = proposedPairsFor(async, [
+          utxo(txId: 'unconfirmed-a', confirmations: 0),
+          utxo(txId: 'unconfirmed-b', confirmations: 0),
+        ]);
+
+        expect(
+          pairs.map((p) => p.txId),
+          containsAll(['unconfirmed-a', 'unconfirmed-b']),
+        );
+      });
     });
   });
 

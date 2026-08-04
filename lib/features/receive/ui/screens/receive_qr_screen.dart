@@ -1,4 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -17,21 +20,19 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_bottom_sheet.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
 class ReceiveQrPage extends StatelessWidget {
-  const ReceiveQrPage({super.key, this.wallet});
-
-  final Wallet? wallet;
+  const ReceiveQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +56,11 @@ class ReceiveQrPage extends StatelessWidget {
           // const ReceiveNetworkSelection(),
           Gap(gap),
           const ReceiveQRDetails(),
-          Gap(gap),
-          ReceiveInfoDetails(wallet: wallet),
-          Gap(gap),
+          // Half-gaps below the address block: matches the address→payjoin
+          // spacing inside ReceiveQRDetails so the stack reads evenly.
+          Gap(gap / 2),
+          const ReceiveInfoDetails(),
+          Gap(gap / 2),
           if (showAddressVerification) ...[
             if (isLedger)
               const Column(children: [VerifyAddressOnLedgerButton()]),
@@ -66,7 +69,7 @@ class ReceiveQrPage extends StatelessWidget {
             Gap(gap),
           ],
           if (!isLightning) const ReceiveNewAddressButton(),
-          const Gap(40),
+          Gap(gap / 2),
         ],
       ),
     );
@@ -146,7 +149,7 @@ class ReceiveQRDetails extends StatelessWidget {
               ),
             ),
           Gap(gap),
-          Center(child: QrDisplayWidget(data: qrData)),
+          Center(child: QrDisplayWidget(data: qrData, size: 217)),
           Gap(gap),
           if (isBitcoin && isPayjoinAwaitingFunds) ...[
             InfoCard(
@@ -220,6 +223,9 @@ class ReceiveQRDetails extends StatelessWidget {
               ],
             ),
           ),
+          // Payjoin toggle directly under the address (self-gating: renders
+          // nothing on Liquid/Lightning or non-payjoin-capable wallets).
+          ReceivePayjoinToggleTile(topGap: gap),
         ],
       ),
     );
@@ -227,77 +233,48 @@ class ReceiveQRDetails extends StatelessWidget {
 }
 
 class ReceiveInfoDetails extends StatelessWidget {
-  const ReceiveInfoDetails({super.key, this.wallet});
+  const ReceiveInfoDetails({super.key});
 
-  final Wallet? wallet;
+  /// Suffix showing the unit the user entered in, when it wasn't BTC:
+  /// sats → " (N sats)", fiat → " (~X CUR)". Entered-in-BTC shows nothing —
+  /// the BTC value on the row already IS what the user typed.
+  String _enteredUnitSuffix(BuildContext context, int amountSat) {
+    final state = context.read<ReceiveBloc>().state;
+    if (state.inputAmountCurrencyCode == BitcoinUnit.btc.code) return '';
+    if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      return ' (${FormatAmount.sats(amountSat)})';
+    }
+    return ' (~${state.formattedConfirmedAmountFiat})';
+  }
 
   @override
   Widget build(BuildContext context) {
     final amountSat = context.select(
       (ReceiveBloc bloc) => bloc.state.confirmedAmountSat,
     );
-    final amountEquivalent = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedConfirmedAmountFiat,
-    );
     final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
-
-    final isLn = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state.type == ReceiveType.lightning,
+    final type = context.select<ReceiveBloc, ReceiveType?>(
+      (bloc) => bloc.state.type,
     );
 
-    if (isLn) return const ReceiveLnInfoDetails();
+    if (type == ReceiveType.lightning) return const ReceiveLnInfoDetails();
 
-    final gap = Device.screen.height * 0.02;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
+          // Amount + note unified behind one element (product decision
+          // 2026-07-26): the sheet edits both, this tile just summarises.
           BorderedTappableTile(
-            onTap: () => ReceiveAmountBottomSheet.showBottomSheet(context),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      BBText(
-                        context.loc.receiveAmount,
-                        style: context.font.bodyLarge,
-                        color: context.appColors.secondary,
-                      ),
-                      const Gap(4),
-                      CurrencyText(
-                        amountSat ?? 0,
-                        showFiat: false,
-                        style: context.font.bodyMedium,
-                      ),
-                      BBText(
-                        '~$amountEquivalent',
-                        style: context.font.bodyLarge,
-                        color: context.appColors.onSurfaceVariant,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            // This tile renders for both the bitcoin and the liquid QR page;
+            // the two amount routes share the 'amount' path but live under
+            // different parents, so push the one matching the current flow.
+            onTap: () => context.pushNamed(
+              type == ReceiveType.liquid
+                  ? ReceiveRoute.liquidAmount.name
+                  : ReceiveRoute.bitcoinAmount.name,
             ),
-          ),
-          Gap(gap),
-          BorderedTappableTile(
-            onTap: () async {
-              final bloc = context.read<ReceiveBloc>();
-              final saved = await LabelEntryBottomSheet.note(
-                context,
-                title: context.loc.receiveNote,
-                initialValue: bloc.state.note,
-                hint: context.loc.receiveNotePlaceholder,
-                suggestionsFuture: bloc.fetchDistinctLabels(),
-              );
-              if (saved == null) return;
-              bloc.add(ReceiveNoteChanged(saved));
-              bloc.add(const ReceiveNoteSaved());
-            },
             child: Row(
               children: [
                 Expanded(
@@ -305,20 +282,40 @@ class ReceiveInfoDetails extends StatelessWidget {
                     crossAxisAlignment: .start,
                     children: [
                       BBText(
-                        '${context.loc.receiveNote} (optional)',
+                        context.loc.receiveAdditionalInformation,
                         style: context.font.bodyLarge,
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
-                      BBText(
-                        note.isNotEmpty ? note : context.loc.receiveEnterHere,
-                        style: context.font.bodyMedium,
-                        maxLines: 4,
-                        overflow: .ellipsis,
-                      ),
+                      // Amount row: the BIP21 string always carries BTC, so
+                      // always show the BTC value; when the user entered in
+                      // another unit (sats or fiat), show that alongside.
+                      if (amountSat != null)
+                        BBText(
+                          '${context.loc.coreScreensAmountLabel}: '
+                          '${FormatAmount.btc(ConvertAmount.satsToBtc(amountSat))}'
+                          '${_enteredUnitSuffix(context, amountSat)}',
+                          style: context.font.bodyMedium,
+                          maxLines: 1,
+                          overflow: .ellipsis,
+                        ),
+                      if (note.isNotEmpty)
+                        BBText(
+                          '${context.loc.receiveMessageForSender}: $note',
+                          style: context.font.bodyMedium,
+                          maxLines: 2,
+                          overflow: .ellipsis,
+                        ),
+                      if (amountSat == null && note.isEmpty)
+                        BBText(
+                          context.loc.receiveAdditionalInformationPlaceholder,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurfaceVariant,
+                        ),
                     ],
                   ),
                 ),
+                Icon(Icons.edit, size: 20, color: context.appColors.secondary),
               ],
             ),
           ),

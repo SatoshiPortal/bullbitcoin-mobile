@@ -10,9 +10,10 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     String? triggerBalanceSatsInput,
     String? feeThresholdInput,
     @Default(false) bool enabledToggle,
-    String? error,
-    MinimumAmountThresholdException? amountThresholdError,
-    MaximumFeeThresholdException? feeThresholdError,
+    AutoswapFailure? failure,
+    AutoswapFailure? amountThresholdFailure,
+    AutoswapFailure? triggerBalanceFailure,
+    AutoswapFailure? feeThresholdFailure,
     AutoSwap? settings,
     BitcoinUnit? bitcoinUnit,
     @Default(false) bool alwaysBlock,
@@ -23,6 +24,8 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
   }) = _AutoSwapSettingsState;
 
   const AutoSwapSettingsState._();
+
+  BitcoinUnit get unit => bitcoinUnit ?? BitcoinUnit.sats;
 
   AutoSwapSettingsState toggleBitcoinUnit() {
     if (bitcoinUnit == null) return this;
@@ -62,44 +65,7 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
       bitcoinUnit: newUnit,
       amountThresholdInput: newAmountThresholdInput,
       triggerBalanceSatsInput: newTriggerBalanceSatsInput,
-      amountThresholdError: null,
-    );
-  }
-
-  AutoSwapSettingsState updateTriggerBalance(
-    String sanitizedValue,
-    BitcoinUnit currentUnit,
-  ) {
-    String? triggerBalanceError;
-    if (sanitizedValue.isNotEmpty &&
-        amountThresholdInput != null &&
-        amountThresholdInput!.isNotEmpty) {
-      int balanceThresholdSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(amountThresholdInput ?? '0') ?? 0;
-        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        balanceThresholdSats = int.tryParse(amountThresholdInput ?? '0') ?? 0;
-      }
-
-      int triggerBalanceSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(sanitizedValue) ?? 0;
-        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        triggerBalanceSats = int.tryParse(sanitizedValue) ?? 0;
-      }
-
-      if (triggerBalanceSats > 0 &&
-          balanceThresholdSats > 0 &&
-          triggerBalanceSats < 2 * balanceThresholdSats) {
-        triggerBalanceError = 'autoswapTriggerBalanceError';
-      }
-    }
-
-    return copyWith(
-      triggerBalanceSatsInput: sanitizedValue,
-      error: triggerBalanceError,
+      amountThresholdFailure: null,
     );
   }
 }

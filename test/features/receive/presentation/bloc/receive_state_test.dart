@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -105,6 +107,7 @@ void main() {
   PayjoinReceiver payjoinWith({
     required PayjoinStatus status,
     int? amountSat,
+    bool hasRequest = false,
   }) =>
       Payjoin.receiver(
             status: status,
@@ -115,8 +118,83 @@ void main() {
             createdAt: DateTime(2026),
             expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
             amountSat: amountSat,
+            originalTxBytes: hasRequest ? Uint8List.fromList([1]) : null,
           )
           as PayjoinReceiver;
+
+  group('ReceiveState.paymentRequest BIP21 composition', () {
+    // The QR/clipboard string is the user-facing contract of the whole
+    // Additional Information flow: the amount parameter must always be
+    // denominated in BTC per BIP21 (regardless of the sats/fiat unit the
+    // user typed in) and the note must travel as message=.
+    test('bitcoin: amount is always in BTC and the note becomes message=', () {
+      final state = buildState(
+        payjoinGloballyEnabled: false,
+      ).copyWith(confirmedAmountSat: 50000, note: 'lunch money');
+
+      final uri = Uri.parse(state.paymentRequest);
+      expect(uri.scheme, 'bitcoin');
+      expect(uri.path, 'bc1qtestaddress');
+      expect(uri.queryParameters['amount'], '0.0005');
+      expect(uri.queryParameters['message'], 'lunch money');
+    });
+
+    test('bitcoin: an amount alone produces amount= and no message=', () {
+      final state = buildState(
+        payjoinGloballyEnabled: false,
+      ).copyWith(confirmedAmountSat: 123456789);
+
+      final uri = Uri.parse(state.paymentRequest);
+      expect(uri.queryParameters['amount'], '1.23456789');
+      expect(uri.queryParameters.containsKey('message'), isFalse);
+    });
+
+    test('bitcoin: a note alone produces message= and no amount=', () {
+      final state = buildState(
+        payjoinGloballyEnabled: false,
+      ).copyWith(note: 'just a note');
+
+      final uri = Uri.parse(state.paymentRequest);
+      expect(uri.queryParameters['message'], 'just a note');
+      expect(uri.queryParameters.containsKey('amount'), isFalse);
+    });
+
+    test('bitcoin: payjoin params are merged on top of amount and message, '
+        'not instead of them', () {
+      final state = buildState(
+        payjoinGloballyEnabled: true,
+        payjoin: payjoinWith(status: PayjoinStatus.started),
+      ).copyWith(confirmedAmountSat: 50000, note: 'pj note');
+
+      final uri = Uri.parse(state.paymentRequest);
+      expect(uri.queryParameters['amount'], '0.0005');
+      expect(uri.queryParameters['message'], 'pj note');
+      expect(uri.queryParameters['pj'], 'https://payjo.in');
+    });
+
+    test('liquid: amount is in BTC (L-BTC) units and the note becomes '
+        'message=', () {
+      final state = ReceiveState(
+        type: ReceiveType.liquid,
+        wallet: localWallet(),
+        liquidAddress: WalletAddress(
+          walletId: 'w1',
+          index: 0,
+          address: 'lq1qqtestaddress',
+          createdAt: DateTime(2026),
+          updatedAt: DateTime(2026),
+        ),
+        confirmedAmountSat: 50000,
+        note: 'liquid note',
+      );
+
+      final uri = Uri.parse(state.paymentRequest);
+      expect(uri.scheme, 'liquidnetwork');
+      expect(uri.queryParameters['amount'], '0.0005');
+      expect(uri.queryParameters['message'], 'liquid note');
+      expect(uri.queryParameters['assetid'], isNotEmpty);
+    });
+  });
 
   group('ReceiveState.isPayjoinFlowOwningNavigation', () {
     test('false for a non-Bitcoin receive type, even with a payjoin set', () {
@@ -158,7 +236,7 @@ void main() {
       ]) {
         final state = ReceiveState(
           type: ReceiveType.bitcoin,
-          payjoin: payjoinWith(status: status),
+          payjoin: payjoinWith(status: status, hasRequest: true),
         );
 
         expect(
@@ -167,6 +245,15 @@ void main() {
           reason: 'status: $status',
         );
       }
+    });
+
+    test('false when an idle receiver expires before any sender request', () {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        payjoin: payjoinWith(status: PayjoinStatus.expired),
+      );
+
+      expect(state.isPayjoinFlowOwningNavigation, isFalse);
     });
   });
 

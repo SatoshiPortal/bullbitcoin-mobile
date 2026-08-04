@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class AutoSwapWarningCard extends StatelessWidget {
   const AutoSwapWarningCard({
@@ -44,10 +44,28 @@ class AutoSwapWarningCard extends StatelessWidget {
             const Gap(14),
             Expanded(
               child: isActiveMode
-                  ? BBText(
-                      context.loc.autoswapActiveCardTitle,
-                      style: context.font.bodyMedium,
-                      color: context.appColors.onSurface,
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText(
+                          context.loc.autoswapActiveCardTitle,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                        const Gap(2),
+                        GestureDetector(
+                          onTap: () {
+                            onTap();
+                          },
+                          child: Text(
+                            context.loc.autoswapWarningCardSubtitle,
+                            style: context.font.bodySmall?.copyWith(
+                              decoration: TextDecoration.underline,
+                              color: context.appColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

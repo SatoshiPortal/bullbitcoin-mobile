@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/i
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:satoshifier/enums/derivation.dart' as satoshifier;
 
 class WatchOnlyDetailsWidget extends StatelessWidget {

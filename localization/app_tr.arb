@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Cihaz yanlış uyumlu tespit edildi.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC adresi",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -466,10 +462,6 @@
   "recoverbullGoBackEdit": "<< Go back and edit",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "Cüzdan kılavuzları",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Onaylanıyor... ({count}/{required})",
   "@receiveConfirming": {
@@ -1384,10 +1376,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Not",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Change",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -2058,10 +2046,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "BitBox cihazına aktif bir bağlantı yok.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "Hesabınızı finanse edin",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2077,10 +2061,6 @@
   "transactionDetailLabelAmountReceived": "$ aldı",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "Operasyon zamanı çıktı. Lütfen tekrar deneyin.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Ödeme alındı!",
   "@receivePaymentReceived": {
@@ -2969,10 +2949,6 @@
   "fundExchangeETransferLabelSecretQuestion": "Gizli soru",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "Satın alma cihazı satın alın",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
   "@jadeStep15": {
@@ -3891,10 +3867,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "Güvenli bağlantı kurmak için başarısız oldu. Lütfen tekrar deneyin.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Miktarın üzerinde",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4183,10 +4155,6 @@
   "exchangeLandingFeature1": "Bitcoin'i doğrudan kendi kendine özgü olarak satın alın",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB izni reddetti. BitBox cihazınıza erişmek için izin verin.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Transfer to Transferi",
   "@swapTransferTo": {
@@ -6979,10 +6947,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT formatı tespit edildi.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "Ücretleri yeniden hesaplamak için başarısız oldu: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -7664,10 +7628,6 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "importWatchOnlyBuyDevice": "Bir cihaz satın alın",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "Asgari satış miktarı: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -8188,10 +8148,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "BitBox cihazına bağlanmak için başarısız oldu. Lütfen bağlantınızı kontrol edin.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "Hizmet Şartları",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8302,10 +8258,6 @@
   "@walletButtonReceive": {
     "description": "Button label to receive funds"
   },
-  "bitboxCubitDeviceNotPaired": "Cihaz çiftleştirilmedi. Lütfen ilk önce çiftleşme sürecini tamamlamak.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC Denge dengesi",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8342,10 +8294,6 @@
   "payPriceRefreshIn": "Fiyat yenilenecek ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Operasyon iptal edildi. Lütfen tekrar deneyin.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Bull cüzdanında gösterilen QR kodu",
   "@passportStep3": {
@@ -9036,15 +8984,6 @@
   "bitboxCubitDeviceNotFound": "BitBox cihazı bulunamadı. Lütfen cihazınıza bağlanır ve tekrar deneyin.",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "Ayarları kurtarmak için başarısız oldu: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "swapContinue": "Devam etmeye devam et",
   "@swapContinue": {
@@ -9770,10 +9709,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Ayarları kurtarmak için başarısız oldu",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "Işık doğrulama",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -10268,15 +10203,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Hata daha fazla adres yükleme: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Kopya kopya",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10406,15 +10332,6 @@
   "backupWalletVaultProviderCustomLocation": "Özel konum",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "Hata yükleme adresleri: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "Bağlantı türü ilklenmedi.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -10636,10 +10553,6 @@
   "sellReceiveAmount": "Alacaksınız",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "BitBox cihazından gelen uygun yanıt. Lütfen tekrar deneyin.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "Ayarlar",
   "@settingsScreenTitle": {
@@ -11507,10 +11420,6 @@
   "@bitboxActionPairDeviceTitle": {
     "description": "Title for pair device action"
   },
-  "receiveAmount": "(Selam)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Lütfen tüm kelimeleri seçin",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -11762,15 +11671,6 @@
   "payTotal": "Toplam",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "Ayarları kurtarmak için başarısız oldu: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "Lightning address",
   "@exchangeDcaAddressLabelLightning": {
@@ -13278,6 +13178,17 @@
   "transactionDetailLabelPayjoinAborted": "İptal edildi",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
   "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin bilgilendirmesi",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
+  "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
+  "receiveAdditionalInformation": "Ek bilgiler",
+  "receiveAdditionalInformationPlaceholder": "Bir tutar veya gönderen için mesaj ekleyin",
+  "receiveMessageForSender": "Gönderen için mesaj",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
+  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
+  "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
+  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
   "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
   "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
   "torSettingsBootstrapProgress": "Bağlanıyor… %{percent}",

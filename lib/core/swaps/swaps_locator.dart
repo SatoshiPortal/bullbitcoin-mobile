@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.d
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
@@ -29,6 +30,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/interface_adapters/blockchain_adapter.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -59,6 +61,12 @@ class SwapsLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+    );
+    locator.registerLazySingleton<AutoSwapSettingsRepository>(
+      () => locator<BoltzSwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+      ),
     );
   }
 
@@ -202,18 +210,17 @@ class SwapsLocator {
     );
     locator.registerFactory<GetAutoSwapSettingsUsecase>(
       () => GetAutoSwapSettingsUsecase(
-        repository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
+        repository: locator<AutoSwapSettingsRepository>(),
       ),
     );
     locator.registerFactory<SaveAutoSwapSettingsUsecase>(
       () => SaveAutoSwapSettingsUsecase(
-        repository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
+        repository: locator<AutoSwapSettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchAutoSwapSettingsUsecase>(
+      () => WatchAutoSwapSettingsUsecase(
+        repository: locator<AutoSwapSettingsRepository>(),
       ),
     );
     locator.registerFactory<DisableAutoswapWarningUsecase>(

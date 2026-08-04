@@ -927,14 +927,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  gap:
-    dependency: "direct main"
-    description:
-      name: gap
-      sha256: f19387d4e32f849394758b91377f9153a1b41d79513ef7668c088c77dbc6955d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   get_it:
     dependency: "direct main"
     description:
@@ -1056,7 +1048,7 @@ packages:
     source: hosted
     version: "2.0.0"
   hex:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hex
       sha256: "4e7cd54e4b59ba026432a6be2dd9d96e4c5205725194997193bf871703b82c4a"
@@ -1545,10 +1537,11 @@ packages:
   payjoin:
     dependency: "direct main"
     description:
-      name: payjoin
-      sha256: "2b8e3f2c0f78e2054fcee9c25a8ce670df3fb4bec7ea66c4524dbac5e5b654eb"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"
+      resolved-ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"
+      url: "https://github.com/SatoshiPortal/payjoin-dart"
+    source: git
     version: "0.1.2"
   permission_handler:
     dependency: "direct main"

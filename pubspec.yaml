@@ -24,7 +24,6 @@ dependencies:
   get_it: ^9.1.1
   flutter_animate: ^4.5.2
   flutter_svg: ^2.2.4
-  gap: ^3.0.1
   go_router: ^17.0.0
   flutter_secure_storage:
     git:
@@ -38,7 +37,15 @@ dependencies:
       path: flutter_secure_storage
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
-  payjoin: ^0.1.2
+  # Vendored copy of pub.dev payjoin 0.1.2 with the payjoin Rust crate
+  # exact-pinned to 1.0.0-rc.5: rc.6 (published 2026-07-23) broke the
+  # package's from-source FFI build (UriExt/PjUri API changes), failing every
+  # fresh CI/container build. Point back to pub.dev once upstream ships a
+  # release built against a newer payjoin-ffi.
+  payjoin:
+    git:
+      url: https://github.com/SatoshiPortal/payjoin-dart
+      ref: 26595d9821250bbd88f4e43b97acc85f17a93d71
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -62,7 +69,6 @@ dependencies:
       ref: 9a39efafc0897fb2653f874b80c88117a00ecbef
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
-  hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^1.1.0
   freezed_annotation: ^3.1.0

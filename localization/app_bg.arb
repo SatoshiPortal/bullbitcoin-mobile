@@ -628,10 +628,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Установено несъответствие на устройството.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "Посетете recoverbull.com за повече информация.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
@@ -639,10 +635,6 @@
   "recoverbullGoBackEdit": "<< Върнете се назад и редактирайте",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "Ръководства за портфейли",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Потвърждаване... ({count}/{required})",
   "@receiveConfirming": {
@@ -1303,10 +1295,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "Бележка",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "Промяна",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -1836,10 +1824,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "Няма активна връзка с BitBox устройство.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "transactionFilterAll": "Всички",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
@@ -1851,10 +1835,6 @@
   "transactionDetailLabelAmountReceived": "Получена сума",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "Операцията изтече. Моля, опитайте отново.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Платежът е получен!",
   "@receivePaymentReceived": {
@@ -3208,10 +3188,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "Не успях да установя защитена връзка. Моля, опитайте отново.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Сумата е над лимитите за обмен",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3405,10 +3381,6 @@
   "payMyFiatRecipients": "Моите фиатни получатели",
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
-  },
-  "bitboxCubitPermissionDenied": "USB разрешение отказано. Моля, дайте разрешение за достъп до вашето BitBox устройство.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Прехвърля към",
   "@swapTransferTo": {
@@ -5430,10 +5402,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Открит е невалиден PSBT формат.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "testBackupErrorNoMnemonic": "Няма заредена мнемонична фраза.",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
@@ -5919,10 +5887,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Купете устройство",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "Минимална сума за продажба: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -6300,10 +6264,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "Неуспешно свързване към BitBox устройство. Моля, проверете връзката си.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "Условия за ползване",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -6415,10 +6375,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Устройството не е сдвоено. Моля, завършете процеса на сдвояване първо.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "Баланс CRC",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -6451,10 +6407,6 @@
   "payPriceRefreshIn": "Цената ще се обнови след ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Операцията беше прекъсната. Моля, опитайте отново.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
   "@passportStep3": {
@@ -6985,10 +6937,6 @@
   "@backupWalletVaultProviderGoogleDrive": {
     "description": "Name of Google Drive vault provider option"
   },
-  "bitboxCubitDeviceNotFound": "Не е намерено устройство BitBox. Моля свържете устройството си и опитайте отново.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
   "buyStandardWithdrawal": "Стандартно теглене",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -7496,10 +7444,6 @@
         "type": "int"
       }
     }
-  },
-  "autoswapAutoSaveError": "Неуспешно запазване на настройките",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "exchangeAccountInfoVerificationLightVerification": "Лека верификация",
   "@exchangeAccountInfoVerificationLightVerification": {
@@ -8155,10 +8099,6 @@
   "sellReceiveAmount": "Ще получите",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "Невалиден отговор от BitBox устройство. Моля, опитайте отново.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "Настройки",
   "@settingsScreenTitle": {
@@ -8823,10 +8763,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Сума (по избор)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Моля, изберете всички думи.",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -9055,15 +8991,6 @@
   "payTotal": "Общо",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "Неуспешно запазване на настройките: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payCompleted": "Плащането завършено!",
   "@payCompleted": {
@@ -10358,7 +10285,6 @@
   "importColdcardScanNfcSheetTitle": "Докоснете вашия {deviceName}, за да импортирате описателя на портфейла през NFC",
   "importColdcardButtonOpenCamera": "Отвори камерата",
   "importColdcardButtonInstructions": "Инструкции",
-  "importColdcardButtonPurchase": "Купи устройство",
   "importColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
   "importColdcardQStep1": "Влезте в устройството си Coldcard Q",
   "importColdcardQStep2": "Добавете защитна парола, ако имате такава (по избор)",
@@ -10559,7 +10485,6 @@
   "autoswapRecipientWalletInfo": "Изберете кой биткойн портфейл ще получи прехвърлените средства (задължително)",
   "autoswapDefaultWalletLabel": "Биткойн портфейл",
   "autoswapSave": "Запази",
-  "autoswapSaveError": "Неуспешно запазване на настройките: {error}",
   "electrumTitle": "Настройки на Electrum сървър",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -10661,9 +10586,7 @@
   "arkAboutShow": "Покажи",
   "arkAboutHide": "Скрий",
   "arkContinueButton": "Продължи",
-  "addressViewErrorLoadingAddresses": "Грешка при зареждане на адресите: {error}",
   "addressViewNoAddressesFound": "Не са намерени адреси",
-  "addressViewErrorLoadingMoreAddresses": "Грешка при зареждане на повече адреси: {error}",
   "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
   "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",
   "appStartupErrorTitle": "Грешка при стартиране",
@@ -10967,6 +10890,17 @@
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
   "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Уведомление за Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
+  "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
+  "receiveAdditionalInformation": "Допълнителна информация",
+  "receiveAdditionalInformationPlaceholder": "Добавете сума или съобщение за изпращача",
+  "receiveMessageForSender": "Съобщение за изпращача",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
+  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
+  "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
+  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
   "torSettingsStatusCensored": "Връзката изглежда филтрирана",
   "torSettingsDescCensored": "Tor не успя да достигне мрежата. Това обикновено означава, че връзката се филтрира.",
   "torSettingsBootstrapProgress": "Свързване… {percent}%",

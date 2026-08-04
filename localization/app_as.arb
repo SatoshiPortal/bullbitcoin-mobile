@@ -621,7 +621,6 @@
   "receivePayjoinActivated": "Payjoin সক্ৰিয় কৰা হৈছে",
   "receiveLightningInvoice": "Lightning invoice",
   "receiveAddress": "গ্ৰহণ ঠিকনা",
-  "receiveAmount": "পৰিমাণ (ঐচ্ছিক)",
   "receiveNoteLabel": "টোকা",
   "receiveEnterHere": "ইয়াত দিয়ক...",
   "receiveSwapID": "Swap ID",
@@ -652,7 +651,6 @@
     }
   },
   "receiveFeeExplanation": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
-  "receiveNotePlaceholder": "টোকা",
   "receiveReceiveAmount": "গ্ৰহণ কৰা পৰিমাণ",
   "receiveSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
   "receiveServerNetworkFees": "চাৰ্ভাৰ নেটৱৰ্ক মাচুল",
@@ -2196,15 +2194,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "ছেটিংছ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap পৰামৰ্শযোগ্য",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -2276,10 +2265,6 @@
   "autoswapSelectWalletError": "অনুগ্ৰহ কৰি এটা প্ৰাপক Bitcoin ৱালেট বাছনি কৰক",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "ছেটিংছ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "ন্যূনতম বেলেঞ্চ সীমা হ'ল {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -2692,18 +2677,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "BitBox ডিভাইচৰ সৈতে কোনো সক্ৰিয় সংযোগ নাই।",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "ডিভাইচৰ অসামঞ্জস্য ধৰা পৰিছে।",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "অবৈধ PSBT ফৰ্মেট ধৰা পৰিছে।",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "ডিভাইচ পেয়াৰ কৰা হোৱা নাই। অনুগ্ৰহ কৰি প্ৰথমে পেয়াৰিং প্ৰক্ৰিয়া সম্পন্ন কৰক।",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"
@@ -2980,38 +2953,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
-  },
-  "bitboxCubitPermissionDenied": "USB অনুমতি অস্বীকাৰ কৰা হৈছে। অনুগ্ৰহ কৰি আপোনাৰ BitBox ডিভাইচ অ্যাক্সেস কৰিবলৈ অনুমতি প্ৰদান কৰক।",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "কোনো BitBox ডিভাইচ পোৱা নগ'ল। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচ সংযুক্ত কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "ডিভাইচ যুগ্মিত হোৱা নাই। অনুগ্ৰহ কৰি প্ৰথমে যুগ্মিতকৰণ প্ৰক্ৰিয়া সম্পন্ন কৰক।",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "সুৰক্ষিত সংযোগ স্থাপন কৰিবলৈ বিফল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "অপাৰেশনৰ সময় উত্তীৰ্ণ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "BitBox ডিভাইচৰ সৈতে সংযুক্ত হ'বলৈ বিফল হৈছে। অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক।",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "BitBox ডিভাইচৰ পৰা অবৈধ সঁহাৰি। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "অপাৰেশন বাতিল কৰা হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "advancedOptionsTitle": "উন্নত বিকল্পসমূহ",
   "@advancedOptionsTitle": {
@@ -6631,14 +6572,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importWatchOnlyBuyDevice": "ডিভাইচ কিনক",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
-  "importWatchOnlyWalletGuides": "Wallet গাইড",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyCopiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -7246,10 +7179,6 @@
   "importColdcardButtonInstructions": "নিৰ্দেশনা",
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
-  },
-  "importColdcardButtonPurchase": "ডিভাইচ ক্ৰয় কৰক",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "importColdcardInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
   "@importColdcardInstructionsTitle": {
@@ -7969,15 +7898,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "autoswapSaveError": "ছেটিংছ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum চাৰ্ভাৰ ছেটিংছ",
   "@electrumTitle": {
     "description": "AppBar title for Electrum settings screen"
@@ -8490,27 +8410,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "ঠিকনা লোড কৰাত ত্ৰুটি: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "কোনো ঠিকনা পোৱা নগ'ল",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "অধিক ঠিকনা লোড কৰাত ত্ৰুটি: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "পৰিৱৰ্তন ঠিকনা শীঘ্ৰে আহিছে",
   "@addressViewChangeAddressesComingSoon": {
@@ -10319,6 +10221,17 @@
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
   "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "settingsPayjoinDisclaimerTitle": "Payjoin দাবীত্যাগ",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবীত্যাগ",
+  "settingsPayjoinAdvancedTitle": "Payjoin ৰ উন্নত ছেটিংছ",
+  "receiveAdditionalInformation": "অতিৰিক্ত তথ্য",
+  "receiveAdditionalInformationPlaceholder": "পৰিমাণ বা প্ৰেৰকৰ বাবে বাৰ্তা যোগ কৰক",
+  "receiveMessageForSender": "প্ৰেৰকৰ বাবে বাৰ্তা",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin সক্ৰিয় কৰা হৈছে, কিন্তু এই ৱালেটত এতিয়াও অৱদান দিবলৈ কোনো বেলেঞ্চ নাই। আপুনি ধন লাভ কৰিলেই ই সক্ৰিয় হ’ব।",
+  "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
+  "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
+  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
   "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
   "torSettingsBootstrapProgress": "সংযোগ কৰি আছে… {percent}%",

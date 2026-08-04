@@ -1895,6 +1895,14 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
+  /// The sender's choice on the confirm screen: attempt the payjoin or send
+  /// a plain transaction. Ignored once signing has started — the decision is
+  /// consumed by [signTransaction]'s payjoin branch.
+  void togglePayjoin(bool attempt) {
+    if (state.signingTransaction || state.txId != null) return;
+    emit(state.copyWith(payjoinOptedOut: !attempt));
+  }
+
   Future<void> signTransaction() async {
     try {
       emit(state.copyWith(signingTransaction: true));

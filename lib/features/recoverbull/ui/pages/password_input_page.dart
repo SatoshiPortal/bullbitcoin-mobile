@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:bb_mobile/features/recoverbull/utils/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 enum InputType { pin, password, vaultKey }

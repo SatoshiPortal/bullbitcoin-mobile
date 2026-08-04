@@ -1440,10 +1440,6 @@
   "@receiveAddress": {
     "description": "Label for generated address"
   },
-  "receiveAmount": "Raashi (optional)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "receiveNoteLabel": "Note",
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
@@ -1540,10 +1536,6 @@
   "receiveFeeExplanation": "Yeh fee bheji gayi raashi se kati jayegi",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
-  },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
   },
   "receiveReceiveAmount": "Prapt Raashi",
   "@receiveReceiveAmount": {
@@ -4360,15 +4352,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "Settings save karne mein dikkat aayi: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap recommend kiya jaata hai",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -4440,10 +4423,6 @@
   "autoswapSelectWalletError": "Kripya ek recipient Bitcoin wallet chuniye",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "Settings save karne mein dikkat aayi",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold {amount} BTC hai",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -4856,18 +4835,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "BitBox device se koi active connection nahi hai.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "Device mismatch detect hua.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detect hua.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "Device pair nahi hua. Pehle pairing process complete karo.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"
@@ -5144,38 +5111,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
-  },
-  "bitboxCubitPermissionDenied": "USB permission deny hua. Apne BitBox device ka access dene ke liye permission do.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "Koi BitBox device nahi mila. Device connect karo aur phir try karo.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "Device pair nahi hua. Pehle pairing process complete karo.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "Secure connection establish nahi ho payi. Phir try karo.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "Operation timeout ho gayi. Phir try karo.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "BitBox device se connect nahi ho paya. Apna connection check karo.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "BitBox device se invalid response. Phir try karo.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "Operation cancel hua. Phir try karo.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "advancedOptionsTitle": "Advanced options",
   "@advancedOptionsTitle": {
@@ -8803,14 +8738,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importWatchOnlyBuyDevice": "Device kharido",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
-  "importWatchOnlyWalletGuides": "Wallet guides",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyCopiedToClipboard": "Clipboard mein copy hua",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -9418,10 +9345,6 @@
   "importColdcardButtonInstructions": "Instructions",
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
-  },
-  "importColdcardButtonPurchase": "Device kharido",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "importColdcardInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardInstructionsTitle": {
@@ -10145,15 +10068,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "autoswapSaveError": "Settings save karne mein fail: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum Server Settings",
   "@electrumTitle": {
     "description": "AppBar title for Electrum settings screen"
@@ -10666,27 +10580,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "Addresses load karne mein error: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Koi address nahi mila",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "Aur addresses load karne mein error: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "Change addresses jaldi aa raha hai",
   "@addressViewChangeAddressesComingSoon": {
@@ -13673,6 +13569,17 @@
   "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
   "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Payjoin Disclaimer",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin Disclaimer",
+  "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
+  "receiveAdditionalInformation": "Additional Information",
+  "receiveAdditionalInformationPlaceholder": "Amount ya sender ke liye message add karein",
+  "receiveMessageForSender": "Sender ke liye message",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
+  "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
+  "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
   "torSettingsStatusCensored": "Connection filtered lag raha hai",
   "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
   "torSettingsBootstrapProgress": "Connect ho raha hai… {percent}%",

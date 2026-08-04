@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.d
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/check_payjoin_relay_health_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/disable_payjoin_receivers_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoins_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -100,6 +101,11 @@ class PayjoinLocator {
     );
     locator.registerFactory<BroadcastOriginalTransactionUsecase>(
       () => BroadcastOriginalTransactionUsecase(
+        payjoinRepository: locator<PayjoinRepository>(),
+      ),
+    );
+    locator.registerFactory<DisablePayjoinReceiversUsecase>(
+      () => DisablePayjoinReceiversUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
       ),
     );

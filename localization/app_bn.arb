@@ -456,10 +456,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "ডিভাইস মিল খাপ খায় না সনাক্ত হয়েছে।",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC ঠিকানা",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -475,10 +471,6 @@
   "recoverbullGoBackEdit": "<< ফিরে যান এবং সম্পাদনা করুন",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "ওয়ালেট নির্দেশিকা",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "নিশ্চিত করা হচ্ছে... ({count}/{required})",
   "@receiveConfirming": {
@@ -1378,10 +1370,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "receiveNotePlaceholder": "নোট",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "sendChange": "চেঞ্জ",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -2039,10 +2027,6 @@
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
   },
-  "bitboxErrorNoActiveConnection": "BitBox ডিভাইসের সাথে কোনো সক্রিয় সংযোগ নেই।",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2058,10 +2042,6 @@
   "transactionDetailLabelAmountReceived": "প্রাপ্ত পরিমাণ",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "ক্রিয়াটি সময়সীমা অতিক্রম করেছে। দয়া করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "পেমেন্ট প্রাপ্ত হয়েছে!",
   "@receivePaymentReceived": {
@@ -2921,10 +2901,6 @@
   "fundExchangeETransferLabelSecretQuestion": "গোপন প্রশ্ন",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "ডিভাইস ক্রয় করুন",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "এটি এখন ব্রডকাস্ট করার জন্য প্রস্তুত! ব্রডকাস্ট ক্লিক করলে লেনদেনটি বিটকয়েন নেটওয়ার্কে প্রকাশিত হবে এবং তহবিল পাঠিয়ে দেওয়া হবে।",
   "@jadeStep15": {
@@ -3825,10 +3801,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "নিরাপদ সংযোগ স্থাপন করতে ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "পরিমাণ স্যুইপ সীমার ওপর",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4113,10 +4085,6 @@
   "exchangeLandingFeature1": "Bitcoin সরাসরি নিজস্ব জিম্মায় কিনুন",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB অনুমতি অস্বীকৃত। আপনার বিটবক্স ডিভাইস অ্যাক্সেস করার জন্য অনুমতি দিন।",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "প্রাপকের ঠিকানায় স্থানান্তর",
   "@swapTransferTo": {
@@ -6828,10 +6796,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "PSBT ফরম্যাট অবৈধ সনাক্ত হয়েছে।",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "ফি পুনরায় গণনা করতে ব্যর্থ: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -7530,10 +7494,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "একটি ডিভাইস কিনুন",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "ন্যূনতম বিক্রি পরিমাণ: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -8029,10 +7989,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "BitBox ডিভাইসের সাথে সংযোগ স্থাপন করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার সংযোগটি পরীক্ষা করুন।",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "সেবার শর্তাবলী",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8152,10 +8108,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "ডিভাইস জোড়া করা হয়নি। দয়া করে প্রথমে জোড়া প্রক্রিয়া সম্পূর্ণ করুন।",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC ব্যালেন্স",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8188,10 +8140,6 @@
   "payPriceRefreshIn": "দাম আপডেট হবে ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "ক্রিয়া বাতিল করা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Bull Bitcoin ওয়ালেট-এ প্রদর্শিত QR কোড স্ক্যান করুন",
   "@passportStep3": {
@@ -8880,15 +8828,6 @@
   "bitboxCubitDeviceNotFound": "কোন বিটবক্স ডিভাইস পাওয়া যায়নি। অনুগ্রহ করে আপনার ডিভাইসটি সংযোগ করুন এবং আবার চেষ্টা করুন।",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "সেটিংস সংরক্ষণ ব্যর্থ হয়েছে: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyStandardWithdrawal": "স্ট্যান্ডার্ড উত্তোলন",
   "@buyStandardWithdrawal": {
@@ -9598,10 +9537,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "সেটিংস সংরক্ষণ করতে ব্যর্থ হয়েছে",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "লাইট যাচাইকরণ",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -10092,15 +10027,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "আরও ঠিকানা লোড করতে সমস্যা হয়েছে: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "কপি",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10226,15 +10152,6 @@
   "backupWalletVaultProviderCustomLocation": "নিজস্ব স্থান",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "ঠিকানাগুলো লোড করতে সমস্যা হয়েছে: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "সংযোগ ধরণ শুরু করা হয়নি।",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -10456,10 +10373,6 @@
   "sellReceiveAmount": "আপনি পাবেন",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "BitBox ডিভাইস থেকে অবৈধ উত্তর পাওয়া গেছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "সেটিংস",
   "@settingsScreenTitle": {
@@ -11311,10 +11224,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "পরিমাণ (ঐচ্ছিক)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "অনুগ্রহ করে সব শব্দ বেছে নিন।",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -11567,15 +11476,6 @@
   "payTotal": "মোট",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "সেটিংস সংরক্ষণ ব্যর্থ হয়েছে: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "লাইটনিং ঠিকানা",
   "@exchangeDcaAddressLabelLightning": {
@@ -13488,6 +13388,17 @@
   "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
   "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
+  "settingsPayjoinDisclaimerTitle": "Payjoin দাবিত্যাগ",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবিত্যাগ",
+  "settingsPayjoinAdvancedTitle": "উন্নত Payjoin সেটিংস",
+  "receiveAdditionalInformation": "অতিরিক্ত তথ্য",
+  "receiveAdditionalInformationPlaceholder": "একটি পরিমাণ বা প্রেরকের জন্য বার্তা যোগ করুন",
+  "receiveMessageForSender": "প্রেরকের জন্য বার্তা",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin চালু আছে, কিন্তু এই ওয়ালেটে অবদান রাখার মতো কোনো ব্যালেন্স নেই। অর্থ পাওয়ার পর এটি সক্রিয় হবে।",
+  "announcementAutoswapDescription": "আপনার Liquid স্বয়ংক্রিয়ভাবে Bitcoin-এ রূপান্তরিত হয়।",
+  "addressViewErrorWalletNotFound": "এই ওয়ালেটটি খুঁজে পাওয়া যায়নি।",
+  "addressViewErrorLoadFailed": "আপনার ঠিকানাগুলো লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "torSettingsStatusCensored": "সংযোগ ফিল্টার করা মনে হচ্ছে",
   "torSettingsDescCensored": "Tor নেটওয়ার্কে পৌঁছাতে পারেনি। সাধারণত এর মানে সংযোগ ফিল্টার করা হচ্ছে।",
   "torSettingsBootstrapProgress": "সংযোগ করা হচ্ছে… {percent}%",

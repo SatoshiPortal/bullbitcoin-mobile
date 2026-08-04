@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/recoverbull_google_drive/presentation/recover
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 

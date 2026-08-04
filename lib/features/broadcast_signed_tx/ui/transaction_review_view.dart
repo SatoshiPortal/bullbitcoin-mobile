@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 /// A reusable transaction confirm/review screen that displays transaction
 /// details before broadcasting.

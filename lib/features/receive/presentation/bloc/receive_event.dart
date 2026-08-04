@@ -27,6 +27,10 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveLightningSwapUpdated;
   const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
       ReceivePayjoinSettingChanged;
-  const factory ReceiveEvent.receivePayjoinToggled(bool enabled) =
-      ReceivePayjoinToggled;
+  const factory ReceiveEvent.receivePayjoinMinAmountChanged(int amountSat) =
+      ReceivePayjoinMinAmountChanged;
+  const factory ReceiveEvent.receivePayjoinToggled(
+    bool enabled,
+    Future<bool> Function() requestConsent,
+  ) = ReceivePayjoinToggled;
 }

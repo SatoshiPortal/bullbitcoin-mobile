@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -41,9 +46,24 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
+    required this._watchPayjoinEnabledChangesUsecase,
     required this._setPayjoinMinAmountUsecase,
     required this._setPayjoinExpireAfterSecUsecase,
-  }) : super(const SettingsState());
+  }) : super(const SettingsState()) {
+    _payjoinEnabledSubscription = _watchPayjoinEnabledChangesUsecase
+        .execute()
+        .listen((enabled) {
+          if (isClosed || state.storedSettings == null) return;
+          if (state.isPayjoinEnabled == enabled) return;
+          emit(
+            state.copyWith(
+              storedSettings: state.storedSettings!.copyWith(
+                isPayjoinEnabled: enabled,
+              ),
+            ),
+          );
+        });
+  }
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
@@ -59,8 +79,16 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
+  final WatchPayjoinEnabledChangesUsecase _watchPayjoinEnabledChangesUsecase;
   final SetPayjoinMinAmountUsecase _setPayjoinMinAmountUsecase;
   final SetPayjoinExpireAfterSecUsecase _setPayjoinExpireAfterSecUsecase;
+  late final StreamSubscription<bool> _payjoinEnabledSubscription;
+
+  @override
+  Future<void> close() async {
+    await _payjoinEnabledSubscription.cancel();
+    return super.close();
+  }
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
@@ -72,6 +100,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
+
     await checkHasLegacySeeds();
   }
 
@@ -217,29 +246,40 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> togglePayjoinEnabled(bool enabled) async {
-    final settings = state.storedSettings;
+  Future<Result<bool, SettingsFailure>> togglePayjoinEnabled(
+    bool enabled, {
+    required Future<bool> Function() requestConsent,
+  }) async {
     log.config(
-      'Payjoin enabled toggled: $enabled was ${settings?.isPayjoinEnabled}',
+      'Payjoin enabled toggled: $enabled was ${state.isPayjoinEnabled}',
     );
-    await _setPayjoinEnabledUsecase.execute(enabled);
-    emit(
-      state.copyWith(
-        storedSettings: settings?.copyWith(isPayjoinEnabled: enabled),
-      ),
+    final result = await _setPayjoinEnabledUsecase.execute(
+      enabled,
+      requestConsent: requestConsent,
     );
+    return result.fold((updated) {
+      final settings = state.storedSettings;
+      if (settings != null && settings.isPayjoinEnabled != updated) {
+        emit(
+          state.copyWith(
+            storedSettings: settings.copyWith(isPayjoinEnabled: updated),
+          ),
+        );
+      }
+      return Ok(updated);
+    }, (failure) => Err(failure));
   }
 
   /// Throws [ArgumentError] via the usecase if [amountSat] is out of the
   /// [PayjoinConstants] bounds — callers (the payjoin settings screen)
   /// validate first, but the domain has the final say.
   Future<void> setPayjoinMinAmount(int amountSat) async {
-    final settings = state.storedSettings;
     log.config(
       'Payjoin min amount set to: $amountSat was '
-      '${settings?.payjoinMinAmountSat}',
+      '${state.storedSettings?.payjoinMinAmountSat}',
     );
     await _setPayjoinMinAmountUsecase.execute(amountSat);
+    final settings = state.storedSettings;
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(payjoinMinAmountSat: amountSat),
@@ -249,12 +289,12 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   /// See [setPayjoinMinAmount]'s doc comment — same bounds-enforcement shape.
   Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
-    final settings = state.storedSettings;
     log.config(
       'Payjoin expiry set to: $expireAfterSec was '
-      '${settings?.payjoinExpireAfterSec}',
+      '${state.storedSettings?.payjoinExpireAfterSec}',
     );
     await _setPayjoinExpireAfterSecUsecase.execute(expireAfterSec);
+    final settings = state.storedSettings;
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(

@@ -318,7 +318,6 @@
   "receivePayjoinActivated": "Payjoin activé",
   "receiveLightningInvoice": "Facture Lightning",
   "receiveAddress": "Adresse de réception",
-  "receiveAmount": "Montant (optionnel)",
   "receiveNoteLabel": "Note",
   "receiveEnterHere": "Entrez ici...",
   "receiveSwapID": "ID d'échange",
@@ -349,7 +348,6 @@
     }
   },
   "receiveFeeExplanation": "Ces frais seront déduits du montant envoyé",
-  "receiveNotePlaceholder": "Note",
   "receiveReceiveAmount": "Montant à recevoir",
   "receiveSendNetworkFee": "Frais de réseau d'envoi",
   "receiveServerNetworkFees": "Frais de réseau du serveur",
@@ -1489,14 +1487,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Lorsque activé, les transferts automatiques avec des frais dépassant la limite définie seront toujours bloqués",
   "autoswapAlwaysBlockInfoDisabled": "Lorsque désactivé, vous aurez la possibilité d'autoriser un transfert automatique bloqué en raison de frais élevés",
   "autoswapSaveButton": "Enregistrer",
-  "autoswapSaveErrorMessage": "Échec de l'enregistrement des paramètres : {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "L'échange automatique est activé.",
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
@@ -1508,7 +1498,6 @@
   "autoswapLoadSettingsError": "Échec du chargement des paramètres de transfert automatique",
   "autoswapUpdateSettingsError": "Échec de la mise à jour des paramètres de transfert automatique",
   "autoswapSelectWalletError": "Veuillez sélectionner un portefeuille Bitcoin destinataire",
-  "autoswapAutoSaveError": "Échec de l'enregistrement des paramètres",
   "autoswapMinimumThresholdErrorBtc": "Le seuil de solde minimum est de {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -1683,9 +1672,6 @@
   "bitboxErrorMultipleDevicesFound": "Plusieurs appareils BitBox trouvés. Veuillez vous assurer qu'un seul appareil est connecté.",
   "bitboxErrorDeviceNotFound": "Appareil BitBox introuvable.",
   "bitboxErrorConnectionTypeNotInitialized": "Type de connexion non initialisé.",
-  "bitboxErrorNoActiveConnection": "Aucune connexion active à l'appareil BitBox.",
-  "bitboxErrorDeviceMismatch": "Incompatibilité d'appareil détectée.",
-  "bitboxErrorInvalidMagicBytes": "Format PSBT invalide détecté.",
   "bitboxErrorDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
   "bitboxErrorHandshakeFailed": "Échec de l'établissement de la connexion sécurisée. Veuillez réessayer.",
   "bitboxErrorOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
@@ -1761,14 +1747,6 @@
   "bitboxScreenManagePermissionsButton": "Gérer les permissions de l'application",
   "bitboxScreenNeedHelpButton": "Besoin d'aide ?",
   "bitboxScreenDefaultWalletLabel": "Portefeuille BitBox",
-  "bitboxCubitPermissionDenied": "Permission USB refusée. Veuillez accorder la permission pour accéder à votre appareil BitBox.",
-  "bitboxCubitDeviceNotFound": "Aucun appareil BitBox trouvé. Veuillez connecter votre appareil et réessayer.",
-  "bitboxCubitDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
-  "bitboxCubitHandshakeFailed": "Échec de l'établissement d'une connexion sécurisée. Veuillez réessayer.",
-  "bitboxCubitOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
-  "bitboxCubitConnectionFailed": "Échec de la connexion à l'appareil BitBox. Veuillez vérifier votre connexion.",
-  "bitboxCubitInvalidResponse": "Réponse invalide de l'appareil BitBox. Veuillez réessayer.",
-  "bitboxCubitOperationCancelled": "L'opération a été annulée. Veuillez réessayer.",
   "advancedOptionsTitle": "Options avancées",
   "replaceByFeeActivatedLabel": "Remplacement par frais activé",
   "replaceByFeeBroadcastButton": "Diffuser",
@@ -3112,8 +3090,6 @@
   "importWatchOnlyDerivationPath": "Chemin de dérivation",
   "importWatchOnlyImportButton": "Importer le portefeuille en lecture seule",
   "importWatchOnlyCancel": "Annuler",
-  "importWatchOnlyBuyDevice": "Acheter un appareil",
-  "importWatchOnlyWalletGuides": "Guides de portefeuille",
   "importWatchOnlyCopiedToClipboard": "Copié dans le presse-papiers",
   "importWatchOnlySelectDerivation": "Sélectionner la dérivation",
   "importWatchOnlyType": "Type",
@@ -3303,7 +3279,6 @@
   "importColdcardDescription": "Importez le QR code descripteur de portefeuille de votre Coldcard Q",
   "importColdcardButtonOpenCamera": "Ouvrir la caméra",
   "importColdcardButtonInstructions": "Instructions",
-  "importColdcardButtonPurchase": "Acheter l'appareil",
   "importColdcardInstructionsTitle": "Instructions Coldcard Q",
   "importColdcardInstructionsStep1": "Connectez-vous à votre appareil Coldcard Q",
   "importColdcardInstructionsStep2": "Entrez une phrase secrète si applicable",
@@ -3511,14 +3486,6 @@
   "autoswapRecipientWalletInfo": "Choisissez quel portefeuille Bitcoin recevra les fonds transférés (obligatoire)",
   "autoswapDefaultWalletLabel": "Portefeuille Bitcoin",
   "autoswapSave": "Enregistrer",
-  "autoswapSaveError": "Échec de l'enregistrement des paramètres : {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Paramètres du serveur Electrum",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -3778,23 +3745,7 @@
   "arkAboutShow": "Afficher",
   "arkAboutHide": "Masquer",
   "arkContinueButton": "Continuer",
-  "addressViewErrorLoadingAddresses": "Erreur lors du chargement des adresses : {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Aucune adresse trouvée",
-  "addressViewErrorLoadingMoreAddresses": "Erreur lors du chargement d'adresses supplémentaires : {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
@@ -5258,8 +5209,8 @@
   "consolidationSuccessBody": "Vos pièces sont en cours de regroupement. Cela se terminera une fois confirmé par le réseau.",
   "consolidationSuccessTitle": "Consolidation démarrée",
   "settingsPayjoinTitle": "Payjoin",
-  "settingsPayjoinPrivacyGainExplanation": "Le payjoin apporte un gain de confidentialité majeur contre l'analyse de la chaîne : il brise l'hypothèse selon laquelle toutes les entrées d'une transaction appartiennent à la même personne. La contrepartie est un risque : accepter un payjoin révèle un de vos UTXOs à la personne avec qui vous transactez — quelqu'un à qui vous payez de toute façon.",
-  "settingsPayjoinV1DirectoryLeakExplanation": "Si la personne que vous payez utilise une ancienne version du payjoin (v1) plutôt que la version actuelle (v2), ce même UTXO peut aussi être révélé au répertoire payjoin (payjoin directory), un relais tiers utilisé pour coordonner le payjoin.",
+  "settingsPayjoinPrivacyGainExplanation": "Le payjoin apporte un gain de confidentialité majeur contre l'analyse de la chaîne : il brise l'hypothèse selon laquelle toutes les entrées d'une transaction appartiennent à la même personne. La contrepartie est un risque : accepter un payjoin révèle un de vos UTXOs à votre contrepartie.",
+  "settingsPayjoinV1DirectoryLeakExplanation": "Si votre contrepartie utilise une ancienne version du payjoin (v1) plutôt que la version actuelle (v2), ce même UTXO peut aussi être révélé au répertoire payjoin (payjoin directory), un relais tiers utilisé pour coordonner le payjoin.",
   "settingsPayjoinEnabledLabel": "Payjoin activé",
   "settingsPayjoinMinAmountTitle": "Montant minimum",
   "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin est refusé et le paiement est reçu normalement.",
@@ -5279,11 +5230,21 @@
   "announcementPayjoinTitle": "Augmentez votre confidentialité",
   "announcementPayjoinDescription": "Activez le Payjoin pour rendre vos paiements Bitcoin plus privés.",
   "announcementAutoswapTitle": "Autoswap est activé",
-  "announcementAutoswapDescription": "Vos bitcoins sont automatiquement convertis vers Liquid.",
+  "announcementAutoswapDescription": "Vos bitcoins Liquid sont automatiquement convertis vers Bitcoin.",
   "announcementDismissConfirmTitle": "Ignorer cette annonce ?",
   "announcementDismissConfirmBody": "Lisez pour en savoir plus, ou ignorez pour la masquer. Les annonces ignorées ne réapparaîtront plus.",
   "announcementDismissConfirmAction": "Ignorer",
   "announcementDismissConfirmRead": "Lire",
+  "settingsPayjoinDisclaimerTitle": "Avertissement Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Avertissement Payjoin",
+  "settingsPayjoinAdvancedTitle": "Réglages avancés du Payjoin",
+  "receiveAdditionalInformation": "Informations complémentaires",
+  "receiveAdditionalInformationPlaceholder": "Ajouter un montant ou un message pour l'expéditeur",
+  "receiveMessageForSender": "Message pour l'expéditeur",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds.",
+  "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
+  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
   "torSettingsStatusCensored": "Connexion semble filtrée",
   "torSettingsDescCensored": "Tor n’a pas pu joindre le réseau. Cela indique souvent une connexion filtrée.",
   "torSettingsBootstrapProgress": "Connexion… {percent} %",

@@ -318,7 +318,6 @@
   "receivePayjoinActivated": "Payjoin activado",
   "receiveLightningInvoice": "Factura Lightning",
   "receiveAddress": "Dirección de Recepción",
-  "receiveAmount": "Cantidad (opcional)",
   "receiveNoteLabel": "Nota",
   "receiveEnterHere": "Ingrese aquí…",
   "receiveSwapID": "ID de intercambio",
@@ -349,7 +348,6 @@
     }
   },
   "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
-  "receiveNotePlaceholder": "Nota",
   "receiveReceiveAmount": "Monto a recibir",
   "receiveSendNetworkFee": "Comisión de red de envío",
   "receiveServerNetworkFees": "Comisiones de red del servidor",
@@ -1492,14 +1490,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Cuando está habilitado, las transferencias automáticas con comisiones superiores al límite establecido siempre serán bloqueadas",
   "autoswapAlwaysBlockInfoDisabled": "Cuando está deshabilitado, se le dará la opción de permitir una transferencia automática que fue bloqueada debido a comisiones altas",
   "autoswapSaveButton": "Guardar",
-  "autoswapSaveErrorMessage": "Error al guardar la configuración: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap está activado",
   "autoswapWarningCardSubtitle": "Se disparará un intercambio si el saldo de su billetera de pagos instantáneos supera 0'02 BTC.",
   "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
@@ -1511,7 +1501,6 @@
   "autoswapLoadSettingsError": "Error al cargar la configuración de intercambio automático",
   "autoswapUpdateSettingsError": "Error al actualizar la configuración de intercambio automático",
   "autoswapSelectWalletError": "Seleccione una billetera Bitcoin receptora",
-  "autoswapAutoSaveError": "Error al guardar la configuración",
   "autoswapMinimumThresholdErrorBtc": "El umbral mínimo de saldo es {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -1686,9 +1675,6 @@
   "bitboxErrorMultipleDevicesFound": "Se encontraron múltiples dispositivos BitBox. Asegúrese de que solo un dispositivo esté conectado.",
   "bitboxErrorDeviceNotFound": "Dispositivo BitBox no encontrado.",
   "bitboxErrorConnectionTypeNotInitialized": "Tipo de conexión no inicializado.",
-  "bitboxErrorNoActiveConnection": "No hay conexión activa con el dispositivo BitBox.",
-  "bitboxErrorDeviceMismatch": "Se detectó una incompatibilidad de dispositivo.",
-  "bitboxErrorInvalidMagicBytes": "Se detectó un formato PSBT inválido.",
   "bitboxErrorDeviceNotPaired": "Dispositivo no emparejado. Complete primero el proceso de emparejamiento.",
   "bitboxErrorHandshakeFailed": "Error al establecer conexión segura. Inténtelo de nuevo.",
   "bitboxErrorOperationTimeout": "La operación expiró. Inténtelo de nuevo.",
@@ -1764,14 +1750,6 @@
   "bitboxScreenManagePermissionsButton": "Gestionar permisos de la aplicación",
   "bitboxScreenNeedHelpButton": "¿Necesita ayuda?",
   "bitboxScreenDefaultWalletLabel": "Billetera BitBox",
-  "bitboxCubitPermissionDenied": "Permiso USB denegado. Por favor otorgue permiso para acceder a su dispositivo BitBox.",
-  "bitboxCubitDeviceNotFound": "No se encontró ningún dispositivo BitBox. Por favor conecte su dispositivo e inténtelo de nuevo.",
-  "bitboxCubitDeviceNotPaired": "Dispositivo no emparejado. Por favor complete primero el proceso de emparejamiento.",
-  "bitboxCubitHandshakeFailed": "Error al establecer conexión segura. Inténtelo de nuevo.",
-  "bitboxCubitOperationTimeout": "La operación expiró. Inténtelo de nuevo.",
-  "bitboxCubitConnectionFailed": "Error al conectar con el dispositivo BitBox. Por favor verifique su conexión.",
-  "bitboxCubitInvalidResponse": "Respuesta inválida del dispositivo BitBox. Inténtelo de nuevo.",
-  "bitboxCubitOperationCancelled": "La operación fue cancelada. Inténtelo de nuevo.",
   "advancedOptionsTitle": "Opciones avanzadas",
   "replaceByFeeActivatedLabel": "Reemplazo por tarifa activado",
   "replaceByFeeBroadcastButton": "Transmitir",
@@ -3111,8 +3089,6 @@
   "importWatchOnlyDerivationPath": "Ruta de derivación",
   "importWatchOnlyImportButton": "Importar Billetera de Solo Lectura",
   "importWatchOnlyCancel": "Cancelar",
-  "importWatchOnlyBuyDevice": "Comprar un dispositivo",
-  "importWatchOnlyWalletGuides": "Guías de billetera",
   "importWatchOnlyCopiedToClipboard": "Copiado al portapapeles",
   "importWatchOnlySelectDerivation": "Seleccionar derivación",
   "importWatchOnlyType": "Tipo",
@@ -3306,7 +3282,6 @@
   "importColdcardDescription": "Importa el código QR descriptor de billetera de tu Coldcard Q",
   "importColdcardButtonOpenCamera": "Abrir la cámara",
   "importColdcardButtonInstructions": "Instrucciones",
-  "importColdcardButtonPurchase": "Comprar dispositivo",
   "importColdcardInstructionsTitle": "Instrucciones Coldcard Q",
   "importColdcardInstructionsStep1": "Inicia sesión en tu dispositivo Coldcard Q",
   "importColdcardInstructionsStep2": "Ingresa una frase de contraseña si corresponde",
@@ -3525,14 +3500,6 @@
   "autoswapRecipientWalletInfo": "Elija cual billetera Bitcoin recibirá los fondos transferidos (obligatorio)",
   "autoswapDefaultWalletLabel": "Billetera Bitcoin",
   "autoswapSave": "Guardar",
-  "autoswapSaveError": "Error al guardar la configuración: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Configuración del servidor Electrum",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -3792,23 +3759,7 @@
   "arkAboutShow": "Mostrar",
   "arkAboutHide": "Ocultar",
   "arkContinueButton": "Continuar",
-  "addressViewErrorLoadingAddresses": "Error al cargar las direcciones: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "No se encontraron direcciones",
-  "addressViewErrorLoadingMoreAddresses": "Error al cargar más direcciones: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Exhiba direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
@@ -5264,6 +5215,17 @@
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribución a la comisión de Payjoin",
   "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
+  "settingsPayjoinAdvancedTitle": "Ajustes avanzados de Payjoin",
+  "receiveAdditionalInformation": "Información adicional",
+  "receiveAdditionalInformationPlaceholder": "Añade un monto o un mensaje para el remitente",
+  "receiveMessageForSender": "Mensaje para el remitente",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin está activado, pero esta cartera todavía no tiene saldo para contribuir. Se activará cuando recibas fondos.",
+  "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin.",
+  "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
+  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
   "torSettingsStatusCensored": "La conexión parece filtrada",
   "torSettingsDescCensored": "Tor no pudo alcanzar la red. A menudo significa que la conexión está filtrada.",
   "torSettingsBootstrapProgress": "Conectando… {percent}%",

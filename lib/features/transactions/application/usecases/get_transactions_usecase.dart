@@ -163,7 +163,14 @@ class GetTransactionsUsecase {
         ...swaps
             .where((s) => !(s.recovered && s.status.isTerminal))
             .map((s) => Transaction(swap: s)),
-        ...payjoins.map((p) => Transaction(payjoin: p)),
+        // An aborted Payjoin means its original transaction was successfully
+        // broadcast or observed. If that wallet transaction is not visible in
+        // this fetch yet, do not render the terminal session as a second
+        // standalone `0 sats / pending` row; the real transaction will be
+        // joined through originalTxId once wallet sync catches up.
+        ...payjoins
+            .where((p) => !p.isAborted)
+            .map((p) => Transaction(payjoin: p)),
         // If walletId is not null, the orders should be linked to a wallet transaction.
         // TODO: We could still check on the address of the order to see if it
         // is related to the wallet id, even without a wallet transaction yet.

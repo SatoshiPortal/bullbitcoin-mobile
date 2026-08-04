@@ -54,7 +54,6 @@ graph TB
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ANNOUNCEMENTS --> SETTINGS
-    ANNOUNCEMENTS --> TX_HISTORY
     APP_STARTUP --> WALLETS
     APP_STARTUP --> TOR
     AUTOSWAPS --> TRANSFER

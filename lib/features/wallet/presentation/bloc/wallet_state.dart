@@ -79,4 +79,23 @@ sealed class WalletState with _$WalletState {
       liquidWallet.balanceSat.toInt(),
     );
   }
+
+  /// "Autoswap is active" tick card (restored from the last release, which
+  /// showed it whenever autoswap was enabled): once the warning has been
+  /// acknowledged, it appears only while the Liquid balance has actually
+  /// passed the trigger threshold — i.e. while a swap is imminent — so it
+  /// never overlaps with [showAutoSwapDefaultEnabledWarning] (which owns
+  /// the un-acknowledged state).
+  bool showAutoSwapActiveStatus() {
+    if (autoSwapSettings == null ||
+        !autoSwapSettings!.enabled ||
+        autoSwapSettings!.showWarning) {
+      return false;
+    }
+    final liquidWallet = defaultLiquidWallet();
+    if (liquidWallet == null) return false;
+    return autoSwapSettings!.passedRequiredBalance(
+      liquidWallet.balanceSat.toInt(),
+    );
+  }
 }
