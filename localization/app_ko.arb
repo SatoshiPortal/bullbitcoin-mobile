@@ -1896,10 +1896,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "· Tor 프록시는 Bitcoin (Liquid)에만 적용됩니다.\n· 과태 Orbot 항구는 9050입니다\n• Ensure Orbot은 활성화하기 전에 실행됩니다.\n· 연결은 Tor를 통해 더 느릴 수 있습니다",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "Bitcoin 주소",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -9590,10 +9586,6 @@
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
   },
-  "torSettingsInfoTitle": "자주 묻는 질문",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
   "importColdcardInstructionsStep7": "모바일 장치에서 \"오픈 카메라\"를 탭",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
@@ -12555,5 +12547,26 @@
   "coreSwapsStatusAwaitingClaim": "수령 대기 중",
   "coreSwapsStatusUnknown": "알 수 없음",
   "sendSwapExpiredTitle": "주문 만료",
-  "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다."
+  "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다.",
+  "torSettingsStatusCensored": "연결이 차단된 것으로 보입니다",
+  "torSettingsDescCensored": "Tor가 네트워크에 연결하지 못했습니다. 보통 연결이 차단되고 있다는 뜻입니다.",
+  "torSettingsBootstrapProgress": "연결 중… {percent}%",
+  "recoverbullPhaseNetworkInfo": "네트워크 정보를 가져오는 중",
+  "recoverbullLongestStep": "가장 오래 걸리는 단계입니다. 첫 실행은 1분 이상 걸릴 수 있습니다.",
+  "recoverbullTorOffline": "인터넷 연결이 없는 것 같습니다.",
+  "recoverbullTorClockSkewed": "기기 시계가 맞지 않아 Tor가 중계 서버 인증서를 확인할 수 없습니다. 날짜와 시간 설정을 확인하세요.",
+  "recoverbullTorCantStart": "지금은 Tor가 연결하지 못했습니다. 다시 시도해 주세요.",
+  "recoverbullServerUnreachableTorOk": "Tor는 작동하지만 백업 서버가 응답하지 않았습니다. 첫 실행 직후에는 시간이 걸릴 수 있습니다.",
+  "torSettingsEmbeddedTitle": "내장 Tor",
+  "torSettingsEmbeddedDescription": "내장 Tor는 RecoverBull과 Bitcoin Electrum .onion 서버에서 사용됩니다. 앱의 다른 트래픽은 그대로 직접 연결됩니다.",
+  "torSettingsTransportMode": "연결 방식",
+  "torSettingsModeAutomatic": "자동",
+  "torSettingsModeDirect": "직접",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "먼저 Tor에 직접 연결하고, 네트워크가 Tor를 차단하는 것으로 보이면 Snowflake를 사용합니다.",
+  "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
+  "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
+  "torSettingsActiveTransport": "활성 전송: {transport}",
+  "torSettingsExternalProxyTitle": "외부 Tor 프록시(고급)",
+  "torSettingsExternalProxyDescription": "활성화하면 Bitcoin Electrum 서버와 암호화된 백업이 내장 Tor 대신 설정된 포트의 Orbot을 통해 전달됩니다. Liquid는 이를 통해 전달되지 않습니다."
 }

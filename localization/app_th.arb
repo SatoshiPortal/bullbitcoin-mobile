@@ -1896,10 +1896,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• • • TorDB ใช้ได้เฉพาะ Bitcoin (ไม่ใช่ของเหลว)\n• • • ค่าเริ่มต้นหรือพอร์ตดิจิตอลคือ 9050\n• ตรวจสอบให้แน่ใจหรือหรือบัญชี\n• • • การเชื่อมต่ออาจช้าผ่าน Tor",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "โทรศัพท์",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -9590,10 +9586,6 @@
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
   },
-  "torSettingsInfoTitle": "ข้อมูลที่สําคัญ",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
   "importColdcardInstructionsStep7": "บนโทรศัพท์มือถือของคุณแตะ \"เปิดกล้อง\"",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
@@ -12559,5 +12551,26 @@
   "coreSwapsStatusAwaitingClaim": "รอการรับ",
   "coreSwapsStatusUnknown": "ไม่ทราบ",
   "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
-  "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ"
+  "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ",
+  "torSettingsStatusCensored": "การเชื่อมต่อดูเหมือนถูกกรอง",
+  "torSettingsDescCensored": "Tor ไม่สามารถเข้าถึงเครือข่ายได้ ซึ่งมักหมายความว่าการเชื่อมต่อกำลังถูกกรอง",
+  "torSettingsBootstrapProgress": "กำลังเชื่อมต่อ… {percent}%",
+  "recoverbullPhaseNetworkInfo": "กำลังดึงข้อมูลเครือข่าย",
+  "recoverbullLongestStep": "นี่เป็นขั้นตอนที่นานที่สุด การเริ่มครั้งแรกอาจใช้เวลามากกว่าหนึ่งนาที",
+  "recoverbullTorOffline": "ดูเหมือนว่าไม่มีการเชื่อมต่ออินเทอร์เน็ต",
+  "recoverbullTorClockSkewed": "นาฬิกาของอุปกรณ์ไม่ตรง Tor จึงไม่สามารถตรวจสอบใบรับรองของรีเลย์ได้ โปรดตรวจสอบการตั้งค่าวันที่และเวลา",
+  "recoverbullTorCantStart": "ขณะนี้ Tor เชื่อมต่อไม่สำเร็จ โปรดลองอีกครั้ง",
+  "recoverbullServerUnreachableTorOk": "Tor ทำงานอยู่ แต่เซิร์ฟเวอร์สำรองข้อมูลไม่ตอบสนอง หลังจากเริ่มครั้งแรกอาจใช้เวลาสักครู่",
+  "torSettingsEmbeddedTitle": "Tor ในตัว",
+  "torSettingsEmbeddedDescription": "Tor ในตัวใช้โดย RecoverBull และเซิร์ฟเวอร์ Bitcoin Electrum ที่เป็น .onion ส่วนการรับส่งข้อมูลอื่นของแอปยังคงเชื่อมต่อโดยตรง",
+  "torSettingsTransportMode": "วิธีการเชื่อมต่อ",
+  "torSettingsModeAutomatic": "อัตโนมัติ",
+  "torSettingsModeDirect": "โดยตรง",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "ลองเชื่อมต่อ Tor โดยตรงก่อน และใช้ Snowflake หากเครือข่ายดูเหมือนจะบล็อก Tor",
+  "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
+  "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
+  "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
+  "torSettingsExternalProxyTitle": "พร็อกซี Tor ภายนอก (ขั้นสูง)",
+  "torSettingsExternalProxyDescription": "เมื่อเปิดใช้งาน เซิร์ฟเวอร์ Bitcoin Electrum และข้อมูลสำรองที่เข้ารหัสจะผ่าน Orbot ที่พอร์ตที่กำหนดไว้ แทน Tor ในตัว ส่วน Liquid จะไม่ผ่าน Orbot เลย"
 }
