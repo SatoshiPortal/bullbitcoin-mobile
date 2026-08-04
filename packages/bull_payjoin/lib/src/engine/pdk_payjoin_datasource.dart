@@ -205,6 +205,7 @@ class PdkPayjoinDatasource {
     required String originalPsbt,
     required int amountSat,
     required double networkFeesSatPerVb,
+    required Future<void> Function(PayjoinSenderModel model) persistBeforePost,
     int? expireAfterSec,
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
@@ -232,11 +233,8 @@ class PdkPayjoinDatasource {
       throw SendCreationException(e.toString());
     }
 
-    await postOriginalProposal(withReplyKey, persister);
-    _log.info('[sender] original proposal posted for $senderLogRef');
-
-    // Create and store the model with the data needed to keep track of the
-    // payjoin session
+    // Create the model with the data needed to keep track of the payjoin
+    // session BEFORE publishing anything.
     final model =
         PayjoinModel.sender(
               uri: parsedUri.asString(),
@@ -251,13 +249,32 @@ class PdkPayjoinDatasource {
             )
             as PayjoinSenderModel;
 
-    // Start listening for a payjoin proposal from the receiver. Same
-    // ordering caveat as startListeningForRequest above: this runs before
-    // the repository persists `model`, benign given the polling interval.
-    startListeningForProposal(model);
+    // Write-ahead: the caller persists the session row here, before the
+    // signed original reaches the directory. A crash after the POST with no
+    // durable row would leave a broadcastable payment with no fallback
+    // watcher, no input reservation and no duplicate guard — a retry would
+    // post a SECOND signed original for the same payment, potentially on
+    // different inputs, and both could confirm. If this throws, nothing was
+    // published and the creation aborts cleanly.
+    await persistBeforePost(model);
+
+    await postOriginalProposal(withReplyKey, persister);
+    _log.info('[sender] original proposal posted for $senderLogRef');
+
+    // The POST transitioned the session to PollingForProposal, but `model`
+    // above still carries the PRE-POST session JSON (WithReplyKey) — that
+    // pre-POST state is what the write-ahead needed, but the proposal poll
+    // below replays `sender` and only proceeds on PollingForProposal.
+    // Refresh the model to the post-POST state or the poll never advances.
+    final postedModel = model.copyWith(sender: persister.toJson());
+
+    // Start listening for a payjoin proposal from the receiver. The session
+    // row is already persisted, so a proposal arriving immediately still
+    // finds it.
+    startListeningForProposal(postedModel);
     _log.info('[sender poll] started for $senderLogRef');
 
-    return model;
+    return postedModel;
   }
 
   Future<void> postOriginalProposal(

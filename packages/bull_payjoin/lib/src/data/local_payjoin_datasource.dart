@@ -26,6 +26,21 @@ class LocalPayjoinDatasource {
     }
   }
 
+  /// Updates only the persisted session state (the `sender` JSON) of an
+  /// existing sender row. The write-ahead persist before the directory POST
+  /// stores the PRE-POST session state (WithReplyKey); once the POST
+  /// transitions the session to PollingForProposal, this brings the row to
+  /// the live state so a resume replays PollingForProposal instead of
+  /// stalling on the pre-POST state. A no-op when no row matches (tests that
+  /// never persisted).
+  Future<void> updateSenderSessionState(PayjoinSenderModel sender) async {
+    await (_db.update(
+      _db.payjoinSenders,
+    )..where((row) => row.uri.equals(sender.id))).write(
+      PayjoinSendersCompanion(sender: Value(sender.sender)),
+    );
+  }
+
   /// Replaces only a sender that expired without a known broadcast outcome.
   /// Completed and aborted payments remain immutable so retry cannot create a
   /// second payment for an already-resolved request.

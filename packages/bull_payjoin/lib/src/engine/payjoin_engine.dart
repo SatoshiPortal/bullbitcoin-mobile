@@ -309,23 +309,38 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       networkFeesSatPerVb: networkFeesSatPerVb,
       amountSat: amountSat,
       expireAfterSec: expireAfterSec,
+      // Write-ahead: the datasource invokes this AFTER the session is built
+      // but BEFORE the signed original is posted to the directory. A crash
+      // after the POST with no persisted row would leave a broadcastable
+      // payment with no fallback watcher, no input reservation
+      // (getUtxosFrozenByOngoingPayjoins reads persisted rows only) and no
+      // duplicate guard above — a retry would post a SECOND signed original
+      // for the same payment, potentially on different inputs, and both
+      // could confirm. A persist failure therefore aborts the creation
+      // before any publication; a POST failure after a successful persist
+      // deliberately keeps the row (the receiver may still have received
+      // the original) and lets the expiry fallback settle the payment.
+      persistBeforePost: (model) async {
+        if (existing == null) {
+          await _localPayjoinDatasource.storeSender(model);
+        } else {
+          final replaced = await _localPayjoinDatasource.replaceExpiredSender(
+            model,
+          );
+          if (!replaced) {
+            throw StateError(
+              'The expired Payjoin session could not be replaced',
+            );
+          }
+        }
+      },
     );
 
-    try {
-      if (existing == null) {
-        await _localPayjoinDatasource.storeSender(model);
-      } else {
-        final replaced = await _localPayjoinDatasource.replaceExpiredSender(
-          model,
-        );
-        if (!replaced) {
-          throw StateError('The expired Payjoin session could not be replaced');
-        }
-      }
-    } catch (_) {
-      _pdkPayjoinDatasource.stopPolling(model.id);
-      rethrow;
-    }
+    // The datasource returned the session in its post-POST state
+    // (PollingForProposal); the write-ahead persist above stored the
+    // pre-POST one. Bring the row to the live state so a resume replays
+    // PollingForProposal instead of stalling on the pre-POST state.
+    await _localPayjoinDatasource.updateSenderSessionState(model);
 
     _watchForFallback(
       payjoinId: model.id,
@@ -368,18 +383,33 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final freshModel = payjoin is PayjoinReceiver
         ? await _localPayjoinDatasource.fetchReceiver(payjoin.id)
         : await _localPayjoinDatasource.fetchSender(payjoin.id);
-    if (freshModel != null) {
-      final freshEntity = freshModel.toEntity();
-      if (!freshEntity.canManuallyBroadcastOriginal) {
-        _log.warning(
-          'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
-          'already completed or a proposal is in flight',
-        );
-        return freshEntity;
-      }
+    if (freshModel == null) {
+      // No persisted row: nothing to broadcast against. Broadcasting the
+      // caller's copy would leave no local record of the outcome (no aborted
+      // marker, no fallback watcher) — the same hazard as a stale entity.
+      _log.warning(
+        'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
+        'session not found locally',
+      );
+      return null;
+    }
+    final freshEntity = freshModel.toEntity();
+    if (!freshEntity.canManuallyBroadcastOriginal) {
+      _log.warning(
+        'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
+        'already completed or a proposal is in flight',
+      );
+      return freshEntity;
     }
 
-    final result = await _broadcastOriginalTransaction(payjoin);
+    // Broadcast the FRESH entity, not the caller's: after an expired-sender
+    // retry (replaceExpiredSender swaps in a new original PSBT, possibly on
+    // different inputs since expiry released the old ones), a stale UI
+    // snapshot passes the guard above on the new row but its originalPsbt is
+    // the OLD transaction. Broadcasting the caller's copy would send the old
+    // original while the new session gets marked aborted against it — and
+    // old and new payments need not conflict, so both can confirm.
+    final result = await _broadcastOriginalTransaction(freshEntity);
     // Emit on the stream so OTHER live watchers of this same session (e.g. a
     //  transaction-details screen open alongside the receive screen) learn of
     //  the abort without waiting for a reload. Internal callers keep the
@@ -1627,7 +1657,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// the session, and [_stopWatching] tears down both together. Mirrors
   /// [_watchForBroadcast]'s passive+active polling exactly.
   ///
-  /// Idempotent, same as [_watchForBroadcast].
+  /// Idempotent per (session, txid): re-arming the same original txid is a
+  /// no-op, but a retried sender (see [createPayjoinSender]'s
+  /// `replaceExpiredSender` path) arms the NEW original txid ALONGSIDE the
+  /// superseded one. Both stay watched on purpose: the receiver still holds
+  /// the old original from the first directory POST and can broadcast it
+  /// (BIP78 invites this) — seeing it land must still resolve the retried
+  /// session to aborted, or its own expiry fallback would broadcast the new
+  /// original on top of an already-settled payment (the two need not share
+  /// inputs, so both could confirm). [_stopWatching] tears down every txid
+  /// of the session.
   void _watchForFallback({
     required String payjoinId,
     required String walletId,
@@ -1640,12 +1679,20 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     pollTimers: _fallbackPollTimers,
     onSeen: _onOriginalTransactionSeen,
     kind: 'fallback',
+    // '|' never appears in a session id: a sender id is a percent-encoded
+    // BIP21 URI, a receiver id is a 16-hex-char sha256 prefix.
+    watchKey: '$payjoinId|$originalTxId',
   );
 
   /// Shared engine behind [_watchForBroadcast] and [_watchForFallback]. See
   /// those wrappers for the per-kind rationale; the two registries stay
   /// separate because both watches can be live for one session at once and
   /// [_stopWatching] tears them down together.
+  ///
+  /// [watchKey] is the registry/dedup key and defaults to [payjoinId]; the
+  /// fallback watcher passes a per-txid key so one session can watch several
+  /// original txids at once (sender retry). [onSeen] always receives the
+  /// bare [payjoinId], never the composite key.
   void _watchForTransaction({
     required String payjoinId,
     required String walletId,
@@ -1654,8 +1701,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required Map<String, Timer> pollTimers,
     required Future<void> Function(String payjoinId) onSeen,
     required String kind,
+    String? watchKey,
   }) {
-    if (watchers.containsKey(payjoinId)) return;
+    final key = watchKey ?? payjoinId;
+    if (watchers.containsKey(key)) return;
 
     // Best-effort: failing to arm the watch (e.g. a wallet lookup throwing
     // synchronously) must never take down the proposal/broadcast/resume
@@ -1687,7 +1736,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             );
           });
 
-      watchers[payjoinId] = subscription;
+      watchers[key] = subscription;
 
       _scheduleTransactionPoll(
         payjoinId: payjoinId,
@@ -1698,6 +1747,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         onSeen: onSeen,
         kind: kind,
         attempt: 0,
+        watchKey: key,
       );
     } catch (e) {
       // logRefForId: payjoinId is the raw session id, which for a sender IS
@@ -1715,6 +1765,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// `watchers` map is the single source of truth for "still watched": once
   /// [_stopWatching] removed the session, a pending poll callback becomes a
   /// no-op.
+  ///
+  /// [watchKey] is the registry key (see [_watchForTransaction]); [onSeen]
+  /// still receives the bare [payjoinId].
   void _scheduleTransactionPoll({
     required String payjoinId,
     required String walletId,
@@ -1724,20 +1777,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required Future<void> Function(String payjoinId) onSeen,
     required String kind,
     required int attempt,
+    String? watchKey,
   }) {
+    final key = watchKey ?? payjoinId;
     if (attempt >= broadcastPollMaxAttempts) {
       // The passive sync-driven watcher stays armed; only stop forcing syncs.
       //  Drop the fired timer from the map so it doesn't falsely advertise an
       //  active poll (its cancel() is already a no-op).
-      pollTimers.remove(payjoinId);
+      pollTimers.remove(key);
       return;
     }
 
     var delay = broadcastPollInitialDelay * (1 << attempt.clamp(0, 30));
     if (delay > broadcastPollMaxDelay) delay = broadcastPollMaxDelay;
 
-    pollTimers[payjoinId] = Timer(delay, () async {
-      if (!watchers.containsKey(payjoinId)) return;
+    pollTimers[key] = Timer(delay, () async {
+      if (!watchers.containsKey(key)) return;
 
       var visible = false;
       try {
@@ -1752,7 +1807,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       // Re-check: the session may have resolved through the passive watcher
       // (or been torn down) while the sync'd lookup was in flight.
-      if (!watchers.containsKey(payjoinId)) return;
+      if (!watchers.containsKey(key)) return;
 
       if (visible) {
         // Guarded: this runs inside a Timer callback, so a throw would be an
@@ -1762,7 +1817,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         } catch (e) {
           _log.warning('Payjoin $kind completion handler failed: $e');
         }
-        if (watchers.containsKey(payjoinId)) {
+        if (watchers.containsKey(key)) {
           _scheduleTransactionPoll(
             payjoinId: payjoinId,
             walletId: walletId,
@@ -1772,6 +1827,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             onSeen: onSeen,
             kind: kind,
             attempt: attempt + 1,
+            watchKey: key,
           );
         }
       } else {
@@ -1784,6 +1840,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           onSeen: onSeen,
           kind: kind,
           attempt: attempt + 1,
+          watchKey: key,
         );
       }
     });
@@ -1907,10 +1964,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (broadcastSubscription != null) {
       unawaited(broadcastSubscription.cancel());
     }
-    _fallbackPollTimers.remove(payjoinId)?.cancel();
-    final fallbackSubscription = _fallbackWatchers.remove(payjoinId);
-    if (fallbackSubscription != null) {
-      unawaited(fallbackSubscription.cancel());
+    // Fallback entries are keyed per (session, txid) — '$payjoinId|$txId' —
+    // because a retried sender watches its superseded original alongside the
+    // new one (see _watchForFallback). Tear down every txid of the session.
+    final fallbackTimerKeys = _fallbackPollTimers.keys
+        .where((k) => k == payjoinId || k.startsWith('$payjoinId|'))
+        .toList();
+    for (final k in fallbackTimerKeys) {
+      _fallbackPollTimers.remove(k)?.cancel();
+    }
+    final fallbackWatcherKeys = _fallbackWatchers.keys
+        .where((k) => k == payjoinId || k.startsWith('$payjoinId|'))
+        .toList();
+    for (final k in fallbackWatcherKeys) {
+      final sub = _fallbackWatchers.remove(k);
+      if (sub != null) unawaited(sub.cancel());
     }
     _pdkPayjoinDatasource.stopPolling(payjoinId);
   }

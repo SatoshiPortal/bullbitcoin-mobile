@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -252,6 +253,7 @@ void main() {
         networkFeesSatPerVb: 1,
         amountSat: model.amountSat,
         expireAfterSec: null,
+        persistBeforePost: any(named: 'persistBeforePost'),
       ),
     );
   });
@@ -479,4 +481,192 @@ void main() {
       ).called(3);
     },
   );
+
+  group('audit reproducers (H1, H2)', () {
+    test(
+      'manual fallback broadcasts the persisted entity, not the caller copy',
+      () async {
+        // The persisted row is the fresh session — e.g. after an
+        // expired-sender retry swapped in a new original PSBT.
+        final fresh = sender();
+        await local.storeSender(fresh);
+        when(
+          () => blockchain.broadcastPsbt(
+            network: any(named: 'network'),
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async {});
+
+        // The caller holds a STALE snapshot of the same session: same id,
+        // but the superseded original PSBT.
+        final stale = (fresh.toEntity() as internal.PayjoinSender).copyWith(
+          originalPsbt: 'b2xkc3RhbGU=',
+        );
+
+        await engine.tryBroadcastOriginalTransaction(stale);
+
+        final captured = verify(
+          () => blockchain.broadcastPsbt(
+            network: any(named: 'network'),
+            psbt: captureAny(named: 'psbt'),
+          ),
+        ).captured;
+        expect(
+          captured.single,
+          fresh.originalPsbt,
+          reason:
+              'broadcasting the caller\'s stale entity sends the SUPERSEDED '
+              'original while the fresh session gets marked aborted against '
+              'it — old and new need not conflict, so both can confirm',
+        );
+      },
+    );
+
+    test('a retried sender watches its own new original transaction', () async {
+      // First attempt: a live sender, whose fallback watcher arms on its
+      // original txid at creation.
+      final first = sender();
+      when(
+        () => pdk.createSender(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          originalPsbt: any(named: 'originalPsbt'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          amountSat: any(named: 'amountSat'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          persistBeforePost: any(named: 'persistBeforePost'),
+        ),
+      ).thenAnswer((inv) async {
+        // Mirror the real datasource: the write-ahead persist runs before
+        // the (mocked) directory publication.
+        final persist =
+            inv.namedArguments[#persistBeforePost]
+                as Future<void> Function(PayjoinSenderModel);
+        await persist(first);
+        return first;
+      });
+      final walletEvents = StreamController<void>.broadcast();
+      addTearDown(walletEvents.close);
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => walletEvents.stream);
+
+      await engine.createPayjoinSender(
+        walletId: first.walletId,
+        isTestnet: true,
+        bip21: first.id,
+        originalPsbt: first.originalPsbt,
+        amountSat: first.amountSat,
+        networkFeesSatPerVb: 1,
+      );
+
+      // The first attempt expires with its automatic fallback broadcast
+      // having failed (e.g. offline): the session becomes retryable and its
+      // watcher deliberately stays armed.
+      await local.markExpired(first.copyWith(isExpired: true));
+
+      // Retry: a NEW original PSBT, hence a NEW original txid.
+      final retried = sender().copyWith(originalTxId: 'retried-tx');
+      when(
+        () => pdk.createSender(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          originalPsbt: any(named: 'originalPsbt'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          amountSat: any(named: 'amountSat'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          persistBeforePost: any(named: 'persistBeforePost'),
+        ),
+      ).thenAnswer((inv) async {
+        final persist =
+            inv.namedArguments[#persistBeforePost]
+                as Future<void> Function(PayjoinSenderModel);
+        await persist(retried);
+        return retried;
+      });
+
+      await engine.createPayjoinSender(
+        walletId: retried.walletId,
+        isTestnet: true,
+        bip21: retried.id,
+        originalPsbt: retried.originalPsbt,
+        amountSat: retried.amountSat,
+        networkFeesSatPerVb: 1,
+      );
+
+      // The new original lands on-chain (the receiver broadcasts it, as
+      // BIP78's fallback allows). The retried session must converge to
+      // aborted — it can only do so if its OWN txid is being watched.
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (inv) async => inv.namedArguments[#transactionId] == 'retried-tx',
+      );
+      walletEvents.add(null);
+
+      final deadline = DateTime.now().add(const Duration(seconds: 5));
+      PayjoinSenderModel? row;
+      while (DateTime.now().isBefore(deadline)) {
+        row = await local.fetchSender(first.id);
+        if (row?.isAborted == true) break;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      expect(
+        row?.isAborted,
+        isTrue,
+        reason:
+            'a fallback watcher deduped on the session id alone keeps '
+            'watching the SUPERSEDED original and never arms the new one',
+      );
+    });
+
+    test(
+      'the persisted sender session state matches the returned model',
+      () async {
+        // The write-ahead persist stores the PRE-POST session state; the
+        // datasource returns the model refreshed to the POST-POST state
+        // (PollingForProposal). The engine must bring the row to that same
+        // live state, or a resume replays the pre-POST state and the
+        // proposal poll never advances (the stall this guards).
+        final model = sender();
+        when(
+          () => pdk.createSender(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            originalPsbt: any(named: 'originalPsbt'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            amountSat: any(named: 'amountSat'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+            persistBeforePost: any(named: 'persistBeforePost'),
+          ),
+        ).thenAnswer((inv) async {
+          final persist =
+              inv.namedArguments[#persistBeforePost]
+                  as Future<void> Function(PayjoinSenderModel);
+          await persist(model);
+          return model;
+        });
+
+        await engine.createPayjoinSender(
+          walletId: model.walletId,
+          isTestnet: model.isTestnet,
+          bip21: model.id,
+          originalPsbt: model.originalPsbt,
+          amountSat: model.amountSat,
+          networkFeesSatPerVb: 1,
+        );
+
+        final persisted = await local.fetchSender(model.id);
+        expect(persisted, isNotNull);
+        expect(persisted!.sender, model.sender);
+      },
+    );
+  });
 }
