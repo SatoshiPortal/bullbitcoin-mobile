@@ -59,6 +59,18 @@ class Schema13To14 {
       () => m.createIndex(schema14.orderSwapsLocalPayinTxid),
       'order_swaps_local_payin_txid index',
     );
+
+    await _addColumnIfNotExists(
+      () => m.addColumn(schema14.settings, schema14.settings.torTransportMode),
+      'settings.tor_transport_mode column',
+    );
+    await _addColumnIfNotExists(
+      () => m.addColumn(
+        schema14.settings,
+        schema14.settings.lastSuccessfulTorTransport,
+      ),
+      'settings.last_successful_tor_transport column',
+    );
   }
 }
 
@@ -75,6 +87,21 @@ Future<void> _createIfNotExists(
     if (!e.toString().contains('already exists')) rethrow;
     log.warning(
       'Schema13To14: $description already exists — skipping create',
+      error: e,
+    );
+  }
+}
+
+Future<void> _addColumnIfNotExists(
+  Future<void> Function() addColumn,
+  String description,
+) async {
+  try {
+    await addColumn();
+  } catch (e) {
+    if (!e.toString().contains('duplicate column name')) rethrow;
+    log.warning(
+      'Schema13To14: $description already exists — skipping add',
       error: e,
     );
   }
