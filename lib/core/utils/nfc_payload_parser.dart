@@ -21,6 +21,15 @@ String? payloadFromNdefRecords(List<ndef.NDEFRecord> records) {
   return _payloadFromRecord(records.last);
 }
 
+String? pushTxUriFromNdefRecords(List<ndef.NDEFRecord> records) {
+  for (final record in records.whereType<ndef.UriRecord>()) {
+    final uri = record.iriString;
+    if (uri != null && uri.isNotEmpty) return uri;
+  }
+
+  return null;
+}
+
 String? _payloadFromBitcoinExternalRecords(List<ndef.NDEFRecord> records) {
   final txnPayload = _externalPayloadForType(records, _bitcoinTxnType);
   if (txnPayload != null) {

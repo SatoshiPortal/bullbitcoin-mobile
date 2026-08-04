@@ -13136,7 +13136,6 @@
   "nfcInvalidData": "कोई समर्थित NFC डेटा नहीं मिला",
   "nfcConnectionLost": "NFC कनेक्शन टूट गया। अपने डिवाइस को NFC टैग के पास रखें और फिर से प्रयास करें।",
   "nfcWriteFailed": "NFC ट्रांसफर विफल रहा। कृपया फिर से प्रयास करें।",
-  "nfcError": "NFC त्रुटि: {error}",
   "sendErrorInvoiceExpired": "यह चालान समाप्त हो चुका है। प्राप्तकर्ता से नया चालान मांगें।",
   "psbtFlowSignViaNfc": "NFC के ज़रिए साइन करें",
   "psbtFlowSignViaNfcSheetTitle": "PSBT को NFC के ज़रिए भेजने के लिए अपने {deviceName} को टैप करें",

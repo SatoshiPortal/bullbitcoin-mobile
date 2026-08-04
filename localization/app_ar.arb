@@ -12915,7 +12915,6 @@
   "nfcInvalidData": "لم يُعثر على بيانات NFC مدعومة",
   "nfcConnectionLost": "انقطع اتصال NFC. قرّب جهازك من علامة NFC وحاول مجددًا.",
   "nfcWriteFailed": "فشل نقل البيانات عبر NFC. يرجى المحاولة مرة أخرى.",
-  "nfcError": "خطأ NFC: {error}",
   "deleteLogsTitle": "حذف السجلات",
   "logsDeletedMessage": "تم حذف السجلات",
   "sendSelfTransfer": "تحويل ذاتي",

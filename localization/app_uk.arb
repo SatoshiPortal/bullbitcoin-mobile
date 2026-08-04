@@ -5087,7 +5087,6 @@
   "nfcInvalidData": "Не знайдено підтримуваних даних NFC",
   "nfcConnectionLost": "З'єднання NFC втрачено. Тримайте пристрій біля NFC-мітки та спробуйте ще раз.",
   "nfcWriteFailed": "Передавання через NFC не вдалося. Спробуйте ще раз.",
-  "nfcError": "Помилка NFC: {error}",
   "sendCoordinatingPayjoinTransaction": "Узгодження транзакції Payjoin.",
   "sendErrorInvoiceExpired": "Термін дії цього рахунку минув. Попросіть отримувача створити новий рахунок.",
   "psbtFlowSignViaNfc": "Підписати через NFC",

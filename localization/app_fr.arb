@@ -5078,7 +5078,6 @@
   "nfcInvalidData": "Aucune donnée NFC prise en charge n'a été trouvée",
   "nfcConnectionLost": "Connexion NFC perdue. Maintenez votre appareil près de la puce NFC et réessayez.",
   "nfcWriteFailed": "Le transfert NFC a échoué. Veuillez réessayer.",
-  "nfcError": "Erreur NFC : {error}",
   "sendCoordinatingPayjoinTransaction": "Coordination d'une transaction Payjoin.",
   "sendErrorInvoiceExpired": "Cette facture a expiré. Demandez une nouvelle facture au destinataire.",
   "psbtFlowSignViaNfc": "Signer via NFC",

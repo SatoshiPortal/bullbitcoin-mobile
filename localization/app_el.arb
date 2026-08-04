@@ -13021,7 +13021,6 @@
   "nfcInvalidData": "Δεν βρέθηκαν υποστηριζόμενα δεδομένα NFC",
   "nfcConnectionLost": "Η σύνδεση NFC χάθηκε. Κρατήστε τη συσκευή σας κοντά στην ετικέτα NFC και δοκιμάστε ξανά.",
   "nfcWriteFailed": "Η μεταφορά NFC απέτυχε. Δοκιμάστε ξανά.",
-  "nfcError": "Σφάλμα NFC: {error}",
   "deleteLogsTitle": "Διαγραφή αρχείων καταγραφής",
   "logsDeletedMessage": "Τα αρχεία καταγραφής διαγράφηκαν",
   "sendSelfTransfer": "Αυτομεταφορά",

@@ -5096,7 +5096,6 @@
   "nfcInvalidData": "Поддерживаемые данные NFC не найдены",
   "nfcConnectionLost": "Соединение NFC потеряно. Поднесите устройство к метке NFC и попробуйте снова.",
   "nfcWriteFailed": "Передача по NFC не удалась. Попробуйте снова.",
-  "nfcError": "Ошибка NFC: {error}",
   "sendCoordinatingPayjoinTransaction": "Согласование транзакции Payjoin.",
   "sendErrorInvoiceExpired": "Срок действия этого счета-фактуры истек. Попросите получателя выставить новый.",
   "psbtFlowSignViaNfc": "Подписать через NFC",

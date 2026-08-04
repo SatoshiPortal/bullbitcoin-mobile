@@ -11,7 +11,6 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
@@ -76,27 +75,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: state.unsignedPsbt),
   );
 
-  Future<void> onNfcScanned(NFCTag tag) async {
+  Future<void> onPushTxPayload(String uriString) async {
     emit(state.copyWith(failure: null));
     try {
-      final ndefRecords = await FlutterNfcKit.readNDEFRecords();
+      final pushTx = Uri.tryParse(uriString);
 
-      if (ndefRecords.isEmpty) {
+      if (pushTx == null || !pushTx.hasScheme) {
         emit(state.copyWith(failure: const InvalidPushTxFailure()));
         return;
       }
 
-      final payload = ndefRecords.first.toString();
-      final uriRegex = RegExp('uri=([^ ]+)');
-      final match = uriRegex.firstMatch(payload);
-
-      if (match == null) {
-        emit(state.copyWith(failure: const InvalidPushTxFailure()));
-        return;
-      }
-
-      final uriString = match.group(1)!;
-      final pushTx = Uri.parse(uriString);
       final fragmentParams = Uri.splitQueryString(pushTx.fragment);
 
       if (fragmentParams.isEmpty ||

@@ -13319,7 +13319,6 @@
   "nfcInvalidData": "Koi supported NFC data nahi mila",
   "nfcConnectionLost": "NFC connection toot gaya. Apna device NFC tag ke paas rakho aur phir try karo.",
   "nfcWriteFailed": "NFC transfer fail ho gaya. Kripya phir try karo.",
-  "nfcError": "NFC error: {error}",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
   "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
   "psbtFlowSignViaNfc": "NFC Se Sign Karo",

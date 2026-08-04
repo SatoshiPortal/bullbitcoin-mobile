@@ -4980,7 +4980,6 @@
   "nfcInvalidData": "未找到受支持的 NFC 数据",
   "nfcConnectionLost": "NFC 连接已断开。请将设备靠近 NFC 标签后重试。",
   "nfcWriteFailed": "NFC 传输失败，请重试。",
-  "nfcError": "NFC 错误：{error}",
   "sendCoordinatingPayjoinTransaction": "正在协调 Payjoin 交易。",
   "sendErrorInvoiceExpired": "该发票已过期，请向收款人索取新的发票。",
   "psbtFlowSignViaNfc": "通过 NFC 签名",

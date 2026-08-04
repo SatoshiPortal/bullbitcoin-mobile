@@ -2234,7 +2234,6 @@
   "nfcInvalidData": "მხარდაჭერილი NFC მონაცემები ვერ მოიძებნა",
   "nfcConnectionLost": "NFC კავშირი დაიკარგა. მიიტანეთ თქვენი მოწყობილობა NFC ტეგთან და სცადეთ ხელახლა.",
   "nfcWriteFailed": "NFC გადაცემა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
-  "nfcError": "NFC შეცდომა: {error}",
   "shareLogsLabel": "ჟურნალების გაზიარება",
   "deleteLogsTitle": "ჟურნალების წაშლა",
   "logsDeletedMessage": "ჟურნალები წაშლილია",

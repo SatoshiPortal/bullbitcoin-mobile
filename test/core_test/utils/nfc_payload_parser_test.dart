@@ -113,4 +113,48 @@ void main() {
       expect(payloadFromNdefRecords([]), isNull);
     });
   });
+
+  group('pushTxUriFromNdefRecords', () {
+    const pushTxUri =
+        'https://coldcard.com/pushtx#t=AgAAAAABAA&c=x0PSGeD-JzE7Vg';
+
+    test('returns the uri record verbatim, fragment included', () {
+      final record = ndef.UriRecord()..iriString = pushTxUri;
+
+      expect(pushTxUriFromNdefRecords([record]), pushTxUri);
+    });
+
+    test('finds a uri record that is not the last record', () {
+      final records = [
+        ndef.UriRecord()..iriString = pushTxUri,
+        ndef.TextRecord(text: 'trailing note'),
+      ];
+
+      expect(pushTxUriFromNdefRecords(records), pushTxUri);
+    });
+
+    test('returns null when no record carries a uri', () {
+      final records = [ndef.TextRecord(text: 'not a uri')];
+
+      expect(pushTxUriFromNdefRecords(records), isNull);
+    });
+
+    test('returns null for empty records', () {
+      expect(pushTxUriFromNdefRecords([]), isNull);
+    });
+
+    test('leaves the bitcoin payload path untouched', () {
+      final txnPayload = Uint8List.fromList([2, 0, 0, 0, 255]);
+      final records = [
+        ndef.UriRecord()..iriString = pushTxUri,
+        ndef.ExternalRecord(
+          decodedType: 'bitcoin.org:txn',
+          payload: txnPayload,
+        ),
+      ];
+
+      expect(payloadFromNdefRecords(records), '02000000ff');
+      expect(pushTxUriFromNdefRecords(records), pushTxUri);
+    });
+  });
 }

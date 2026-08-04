@@ -13016,7 +13016,6 @@
   "nfcInvalidData": "Nenhum dado NFC compatível foi encontrado",
   "nfcConnectionLost": "Conexão NFC perdida. Aproxime seu dispositivo da tag NFC e tente novamente.",
   "nfcWriteFailed": "Falha na transferência NFC. Tente novamente.",
-  "nfcError": "Erro de NFC: {error}",
   "deleteLogsTitle": "Excluir registros",
   "logsDeletedMessage": "Registros excluídos",
   "logsViewerDeleteTitle": "Excluir registros",

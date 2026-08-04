@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
+import 'package:bb_mobile/core/nfc/nfc_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
@@ -40,6 +41,7 @@ class CoreLocator {
     Bip85DerivationsLocator.registerDatasources(locator);
     LedgerLocator.registerDatasources(locator);
     BitBoxCoreLocator.registerDatasources(locator);
+    NfcLocator.registerDatasources(locator);
   }
 
   static void registerPorts(GetIt locator) {
