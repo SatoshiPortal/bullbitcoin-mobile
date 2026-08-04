@@ -12,6 +12,17 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+// Beta-channel signing, back-ported from the current tree so that a beta built
+// from this legacy tag carries the SAME applicationId (.beta suffix) and the
+// SAME signing cert as a beta built from develop. Android matches upgrades on
+// applicationId + signing cert, so both are required for the new build to
+// install over this one and see its secure-storage data.
+def betaKeystoreProperties = new Properties()
+def betaKeystorePropertiesFile = rootProject.file('key-beta.properties')
+if (betaKeystorePropertiesFile.exists()) {
+    betaKeystoreProperties.load(new FileInputStream(betaKeystorePropertiesFile))
+}
+
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
@@ -56,11 +67,36 @@ android {
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
         }
+        beta {
+            keyAlias betaKeystoreProperties['keyAlias']
+            keyPassword betaKeystoreProperties['keyPassword']
+            storeFile betaKeystoreProperties['storeFile'] ? file(betaKeystoreProperties['storeFile']) : null
+            storePassword betaKeystoreProperties['storePassword']
+        }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            // No signingConfig here on purpose: AGP resolves a build-type
+            // signingConfig ahead of a flavor's, which would stop the beta
+            // flavor from using its own key. Set per-flavor below instead.
+        }
+    }
+
+    flavorDimensions = ['channel']
+    productFlavors {
+        production {
+            dimension 'channel'
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+        beta {
+            dimension 'channel'
+            applicationIdSuffix '.beta'
+            if (betaKeystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.beta
+            }
         }
     }
 
