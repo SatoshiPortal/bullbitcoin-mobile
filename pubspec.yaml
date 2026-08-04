@@ -140,7 +140,6 @@ dependencies:
   meta: ^1.17.0
   workmanager: ^0.9.0
   path: ^1.9.1
-  http: ^1.6.0
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
