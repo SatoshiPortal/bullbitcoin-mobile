@@ -602,10 +602,14 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             .where((word) => word.startsWith(query.prefix))
             .toList();
 
+        // The field already holds the single matching word: the question is
+        // answered, so both the chips and the count label leave.
+        final completed = hints.length == 1 && hints.first == query.prefix;
+
         return Column(
           crossAxisAlignment: .start,
           children: [
-            if (predicting) ...[
+            if (predicting && !completed) ...[
               BBText(
                 context.loc.mnemonicPossibleLastWords(pool.length),
                 style: context.font.labelSmall,
@@ -615,7 +619,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             ],
             SizedBox(
               height: height,
-              child: hints.length == 1 && hints.first == query.prefix
+              child: completed
                   ? null
                   : ListView.separated(
                       key: ValueKey(query.index),

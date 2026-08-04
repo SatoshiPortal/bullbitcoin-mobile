@@ -290,6 +290,25 @@ void main() {
       expect(find.text('128 possible last words'), findsOneWidget);
     });
 
+    testWidgets('hides the count once the last word is complete', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(11), '']);
+
+      await tester.tap(wordField(11));
+      await tester.pump();
+      expect(find.text('128 possible last words'), findsOneWidget);
+
+      await tester.enterText(wordField(11), 'sen');
+      await tester.pump();
+      await tester.tap(find.text('senior'));
+      await tester.pump();
+
+      // The question is answered: like the chips, the label leaves.
+      expect(find.textContaining('possible last words'), findsNothing);
+    });
+
     testWidgets('tapping a chip on the last field dismisses the keyboard', (
       tester,
     ) async {
