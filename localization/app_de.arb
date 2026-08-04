@@ -5043,7 +5043,6 @@
   "nfcInvalidData": "Es wurden keine unterstützten NFC-Daten gefunden",
   "nfcConnectionLost": "NFC-Verbindung unterbrochen. Halten Sie Ihr Gerät in die Nähe des NFC-Tags und versuchen Sie es erneut.",
   "nfcWriteFailed": "NFC-Übertragung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-  "nfcError": "NFC-Fehler: {error}",
   "psbtFlowSignViaNfc": "Per NFC signieren",
   "psbtFlowSignViaNfcSheetTitle": "Halten Sie Ihr Telefon an Ihr {deviceName}, um das PSBT per NFC zu senden",
   "psbtFlowColdcardQInstructionsTitle": "Coldcard Q-Anleitung",

@@ -6405,15 +6405,6 @@
   "@nfcWriteFailed": {
     "description": "Error message shown when an NFC write to a hardware wallet fails"
   },
-  "nfcError": "NFC error: {error}",
-  "@nfcError": {
-    "description": "Error message shown when an NFC operation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "shareLogsLabel": "Share logs",
   "@shareLogsLabel": {
     "description": "List tile label to share application logs"
@@ -14936,5 +14927,21 @@
   "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
   "@addressViewErrorLoadFailed": {
     "description": "Shown when loading or paginating the wallet address list fails"
+  },
+  "nfcTimeout": "No NFC tag detected. Hold your phone still against the NFC symbol on your device and try again.",
+  "@nfcTimeout": {
+    "description": "Shown when NFC polling times out without finding a tag"
+  },
+  "nfcBusy": "Another NFC operation is still finishing. Wait a moment and try again.",
+  "@nfcBusy": {
+    "description": "Shown when an NFC scan is requested while one is already running"
+  },
+  "nfcUnsupportedTag": "This NFC tag is not supported.",
+  "@nfcUnsupportedTag": {
+    "description": "Shown when the detected NFC tag cannot carry NDEF data"
+  },
+  "nfcScanInstructions": "Hold your phone against the NFC symbol on your device.",
+  "@nfcScanInstructions": {
+    "description": "Instruction shown under the NFC scanning animation"
   }
 }

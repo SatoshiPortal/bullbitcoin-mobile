@@ -13156,7 +13156,6 @@
   "nfcInvalidData": "কোনো সমর্থিত NFC ডেটা পাওয়া যায়নি",
   "nfcConnectionLost": "NFC সংযোগ বিচ্ছিন্ন হয়ে গেছে। আপনার ডিভাইসটি NFC ট্যাগের কাছে ধরে রাখুন এবং আবার চেষ্টা করুন।",
   "nfcWriteFailed": "NFC স্থানান্তর ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "nfcError": "NFC ত্রুটি: {error}",
   "sendErrorInvoiceExpired": "এই চালানের মেয়াদ শেষ হয়েছে। প্রাপকের কাছে নতুন একটি চালান চান।",
   "psbtFlowSignViaNfc": "NFC দিয়ে সাইন করুন",
   "psbtFlowSignViaNfcSheetTitle": "NFC-এর মাধ্যমে PSBT পাঠাতে আপনার {deviceName}-এ ট্যাপ করুন",

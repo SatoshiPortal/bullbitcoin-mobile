@@ -10119,7 +10119,6 @@
   "nfcInvalidData": "Не бяха намерени поддържани NFC данни",
   "nfcConnectionLost": "Връзката с NFC е изгубена. Задръжте устройството си близо до NFC тага и опитайте отново.",
   "nfcWriteFailed": "Прехвърлянето през NFC не бе успешно. Моля, опитайте отново.",
-  "nfcError": "Грешка в NFC: {error}",
   "deleteLogsTitle": "Изтрий логовете",
   "logsDeletedMessage": "Логовете са изтрити",
   "sendSelfTransfer": "Прехвърляне към себе си",

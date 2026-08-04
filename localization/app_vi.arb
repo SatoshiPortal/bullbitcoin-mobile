@@ -2069,7 +2069,6 @@
   "nfcInvalidData": "Không tìm thấy dữ liệu NFC được hỗ trợ",
   "nfcConnectionLost": "Mất kết nối NFC. Giữ thiết bị của bạn gần thẻ NFC và thử lại.",
   "nfcWriteFailed": "Truyền dữ liệu NFC thất bại. Vui lòng thử lại.",
-  "nfcError": "Lỗi NFC: {error}",
   "shareLogsLabel": "Chia sẻ nhật ký",
   "deleteLogsTitle": "Xóa nhật ký",
   "logsDeletedMessage": "Đã xóa nhật ký",

@@ -13021,7 +13021,6 @@
   "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC",
   "nfcConnectionLost": "Připojení NFC bylo ztraceno. Přiložte zařízení k NFC štítku a zkuste to znovu.",
   "nfcWriteFailed": "Přenos NFC selhal. Zkuste to prosím znovu.",
-  "nfcError": "Chyba NFC: {error}",
   "deleteLogsTitle": "Smazat logy",
   "logsDeletedMessage": "Logy smazány",
   "sendSelfTransfer": "Vlastní převod",

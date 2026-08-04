@@ -12915,7 +12915,6 @@
   "nfcInvalidData": "ไม่พบข้อมูล NFC ที่รองรับ",
   "nfcConnectionLost": "การเชื่อมต่อ NFC ขาดหาย กรุณาถืออุปกรณ์ไว้ใกล้แท็ก NFC แล้วลองใหม่อีกครั้ง",
   "nfcWriteFailed": "การถ่ายโอนผ่าน NFC ล้มเหลว กรุณาลองใหม่อีกครั้ง",
-  "nfcError": "ข้อผิดพลาด NFC: {error}",
   "deleteLogsTitle": "ลบบันทึก",
   "logsDeletedMessage": "ลบบันทึกแล้ว",
   "sendSelfTransfer": "โอนให้ตัวเอง",

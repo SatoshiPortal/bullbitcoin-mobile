@@ -2069,7 +2069,6 @@
   "nfcInvalidData": "Աջակցվող NFC տվյալներ չեն գտնվել",
   "nfcConnectionLost": "NFC կապը կորավ։ Պահեք ձեր սարքը NFC պիտակի մոտ և կրկին փորձեք։",
   "nfcWriteFailed": "NFC փոխանցումը ձախողվեց։ Խնդրում ենք կրկին փորձել։",
-  "nfcError": "NFC սխալ․ {error}",
   "shareLogsLabel": "Կիսվել մատյաններով",
   "deleteLogsTitle": "Ջնջել մատյանները",
   "logsDeletedMessage": "Մատյանները ջնջվեցին",
