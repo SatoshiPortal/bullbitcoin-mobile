@@ -379,13 +379,91 @@ void main() {
 
       await tester.tap(wordField(0));
       await tester.pump();
-      // 'zoo' is the only english word starting with 'zoo'.
-      await tester.enterText(wordField(0), 'zoo');
+      // 'aba' can only be 'abandon'.
+      await tester.enterText(wordField(0), 'aba');
       await tester.pump();
 
       expect(
         tester.widget<TextField>(wordField(0)).controller!.text,
-        equals('zoo'),
+        equals('abandon'),
+      );
+      // The completion was the only possibility left: the field locks, but
+      // focus stays put and the keyboard stays up - no automatic advance.
+      expect(
+        tester.widget<TextField>(wordField(0)).focusNode!.hasFocus,
+        isTrue,
+      );
+
+      // A stray keystroke is swallowed instead of breaking the word.
+      await tester.enterText(wordField(0), 'abandonx');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(0)).controller!.text,
+        equals('abandon'),
+      );
+    });
+
+    testWidgets('the clear icon unlocks an auto-filled field', (tester) async {
+      await pumpWidget(tester, onSubmit: (_) {}, allowAutoFillWords: true);
+
+      await tester.tap(wordField(0));
+      await tester.pump();
+      await tester.enterText(wordField(0), 'aba');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(0)).controller!.text,
+        equals('abandon'),
+      );
+
+      await tester.tap(find.byIcon(Icons.close).first);
+      await tester.pump();
+      expect(tester.widget<TextField>(wordField(0)).controller!.text, isEmpty);
+
+      // Editable again right away, focus never left: 'abi' -> 'ability'.
+      await tester.enterText(wordField(0), 'abi');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(0)).controller!.text,
+        equals('ability'),
+      );
+      expect(
+        tester.widget<TextField>(wordField(0)).focusNode!.hasFocus,
+        isTrue,
+      );
+    });
+
+    testWidgets('only the last word dismisses the keyboard', (tester) async {
+      // shell -> sell keeps every word valid but moves the checksum.
+      final typed = [...validWords.take(11)];
+      typed[3] = 'sell';
+
+      await pumpWidget(tester, onSubmit: (_) {}, allowAutoFillWords: true);
+      await fillAll(tester, [...typed, '']);
+      await tester.tap(wordField(11));
+      await tester.pump();
+      await tester.enterText(wordField(11), 'seni');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(11)).controller!.text,
+        equals('senior'),
+      );
+      // The sentence is complete: the one place the keyboard may go.
+      expect(
+        tester.widget<TextField>(wordField(11)).focusNode!.hasFocus,
+        isFalse,
+      );
+
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+
+      // Cleared by the parent on the checksum failure: editable again, so
+      // the word can be retyped.
+      expect(tester.widget<TextField>(wordField(11)).controller!.text, isEmpty);
+      await tester.enterText(wordField(11), 'seni');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(11)).controller!.text,
+        equals('senior'),
       );
     });
   });

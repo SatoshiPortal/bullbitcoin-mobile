@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -214,15 +215,21 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
 /// A single word field.
 ///
-/// Stateless on purpose: the [TextField] is built once and never rebuilt by a
-/// keystroke. Only the index badge and the clear button depend on the typed
-/// text, and each subscribes to the controller on its own.
+/// Stateless on purpose: the [TextField] is never rebuilt by a keystroke.
+/// Only the index badge and the clear button depend on the typed text, and
+/// each subscribes to the controller on its own; the field itself rebuilds
+/// once per auto fill, when [fieldLock] starts swallowing its edits.
 class MnemonicWord extends StatelessWidget {
   final bip39.Language language;
   final int index;
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onComplete;
+
+  /// Set by the auto fill once it completes the word: the field keeps focus
+  /// and the keyboard, but swallows any further edit until it is emptied, so
+  /// a stray keystroke cannot break a word that was the only possibility left.
+  final ValueListenable<bool> fieldLock;
 
   const MnemonicWord({
     super.key,
@@ -231,6 +238,7 @@ class MnemonicWord extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.onComplete,
+    required this.fieldLock,
   });
 
   String get displayIndex {
@@ -277,35 +285,54 @@ class MnemonicWord extends StatelessWidget {
           ),
           const Gap(4),
           Expanded(
-            child: TextField(
-              enableSuggestions: false,
-              autocorrect: false,
-              controller: controller,
-              inputFormatters: [
-                // Keeps the previous behaviour of lowercasing as you type.
-                // Same length in and out, so the caret position stays valid.
-                TextInputFormatter.withFunction(
-                  (_, value) => value.copyWith(text: value.text.toLowerCase()),
-                ),
-              ],
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.text,
-              ),
-              focusNode: focusNode,
-              clipBehavior: .antiAliasWithSaveLayer,
-              onEditingComplete: onComplete,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.only(right: 8),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
-                ),
-              ),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: fieldLock,
+              builder: (context, locked, _) {
+                return TextField(
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  controller: controller,
+                  inputFormatters: [
+                    // A locked word was the only possibility left: swallow any
+                    // further edit instead of closing the keyboard - the field
+                    // stays focused and editable, but the word cannot be
+                    // broken. The clear icon still unlocks it.
+                    TextInputFormatter.withFunction(
+                      (oldValue, newValue) => locked ? oldValue : newValue,
+                    ),
+                    // Keeps the previous behaviour of lowercasing as you type.
+                    // Same length in and out, so the caret position stays valid.
+                    TextInputFormatter.withFunction(
+                      (_, value) =>
+                          value.copyWith(text: value.text.toLowerCase()),
+                    ),
+                  ],
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.text,
+                  ),
+                  focusNode: focusNode,
+                  clipBehavior: .antiAliasWithSaveLayer,
+                  onEditingComplete: onComplete,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(right: 8),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: context.appColors.transparent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: context.appColors.transparent,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: context.appColors.transparent,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           ValueListenableBuilder<TextEditingValue>(
@@ -355,6 +382,11 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   int _revision = 0;
   final List<VoidCallback> _textListeners = [];
   List<FocusNode> _focusNodes = [];
+
+  /// One lock per field, set by the auto fill: a completed word was the only
+  /// possibility left, so further typing could only break it. Emptied fields
+  /// are editable again, whatever emptied them.
+  final List<ValueNotifier<bool>> _fieldLocks = [];
   String? _candidatesKey;
   List<String>? _candidates;
 
@@ -389,6 +421,9 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       });
       return node;
     });
+    _fieldLocks.addAll(
+      List.generate(widget.controllers.length, (_) => ValueNotifier(false)),
+    );
     for (var index = 0; index < widget.controllers.length; index++) {
       final position = index;
       void listener() => _onTextChanged(position);
@@ -406,9 +441,19 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       node.dispose();
     }
     _focusNodes = [];
+    for (final lock in _fieldLocks) {
+      lock.dispose();
+    }
+    _fieldLocks.clear();
   }
 
   void _onTextChanged(int index) {
+    // A locked field can only be emptied - by the clear icon, or by the
+    // parent clearing the last word on a checksum failure - and an emptied
+    // field is editable again.
+    if (widget.controllers[index].text.isEmpty) {
+      _fieldLocks[index].value = false;
+    }
     final hinted = _hint.value.index;
     if (hinted == index) {
       _refreshHint(index);
@@ -464,6 +509,11 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   ///
   /// Runs on the text-change notification rather than during build, where the
   /// previous implementation scheduled it as a post-frame side effect.
+  ///
+  /// The completed field locks: the match was the only one left, so another
+  /// keystroke could only break a certain word. Focus stays put and the
+  /// keyboard stays up - except on the last word, where a completed sentence
+  /// is the natural moment to dismiss it. The clear icon unlocks the field.
   void _maybeAutoFill(int index) {
     if (!widget.allowAutoFillWords) return;
     final prefix = widget.controllers[index].text.trim();
@@ -476,7 +526,10 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
         .toList();
     if (matches.length == 1 && matches.first != prefix) {
       widget.controllers[index].text = matches.first;
-      _focusNext(index + 1);
+      _fieldLocks[index].value = true;
+      if (index == widget.controllers.length - 1) {
+        _focusNodes[index].unfocus();
+      }
     }
   }
 
@@ -557,6 +610,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             language: widget.language,
             focusNode: _focusNodes[index],
             onComplete: () => _focusNext(index + 1),
+            fieldLock: _fieldLocks[index],
           ),
       ],
     );
