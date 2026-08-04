@@ -182,14 +182,20 @@ void main() {
       );
 
       expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
-      verify(
+      // Pin the decoded bytes, not just that the call happened: proves the
+      // spaces were stripped and the codec produced the right bytes, rather
+      // than merely not throwing. fetch(identifier, password, salt) — the two
+      // captureAny() slots yield [identifier, salt] in order.
+      final captured = verify(
         () => remote.fetch(
+          captureAny(),
           any(),
-          any(),
-          any(),
+          captureAny(),
           externalProxy: any(named: 'externalProxy'),
         ),
-      ).called(1);
+      ).captured;
+      expect(captured[0], [0xde, 0xad, 0xbe, 0xef]);
+      expect(captured[1], [0x00, 0x11]);
     });
 
     test('uppercase input still decodes', () async {
@@ -198,6 +204,18 @@ void main() {
       final result = await repository.fetchVaultKey('ABCD', 'password', 'EF01');
 
       expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
+      // Proves convert case-folds (RFC 4648): 'ABCD'/'EF01' decode to the same
+      // bytes as lowercase, with no manual .toLowerCase() in _normalizeHex.
+      final captured = verify(
+        () => remote.fetch(
+          captureAny(),
+          any(),
+          captureAny(),
+          externalProxy: any(named: 'externalProxy'),
+        ),
+      ).captured;
+      expect(captured[0], [0xab, 0xcd]);
+      expect(captured[1], [0xef, 0x01]);
     });
 
     test('odd-length input is rejected before any network call '

@@ -181,6 +181,6 @@ class RecoverBullRepository {
   /// Vault keys and server identifiers reach us as raw user input (typed or
   /// pasted — the recovery screen has no input formatter). Strip formatting
   /// whitespace before decoding so a spaced or newline-terminated key (the
-  /// reveal screen shows the key in 4-char groups) still decodes. 
+  /// reveal screen shows the key in 4-char groups) still decodes.
   String _normalizeHex(String input) => input.replaceAll(RegExp(r'\s'), '');
 }
