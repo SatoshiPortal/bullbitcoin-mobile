@@ -79,18 +79,28 @@ class StorageLocator {
               'StorageLocator: fss10 readAll returned ${data.length} entries',
             );
 
-            // Belt-and-suspenders: if FSS10 returns empty but the SQLite DB
-            // from a prior install exists, treat it as a silent failure and
-            // route to FSS9.
+            // Belt-and-suspenders: if FSS10 returns empty but data from a prior
+            // install exists, treat it as a silent failure and route to FSS9.
             if (data.isEmpty) {
               final docsDir = await getApplicationDocumentsDirectory();
               final dbFile = File(
                 p.join(docsDir.path, 'bullbitcoin_sqlite.sqlite'),
               );
-              if (await dbFile.exists()) {
+              // A pre-v5 ("BULL" 0.x) install has no SQLite database — it kept
+              // everything in Hive. Probing only for the database made such a
+              // device look like a fresh install: it committed to fss10 and its
+              // fss9/ESP secrets (seed material included) stayed invisible on
+              // every later launch, flag included. Measured on a real
+              // 0.4.3 → 6.13 upgrade.
+              final hasLegacyHiveBoxes = await docsDir.list().any(
+                (entity) => entity.path.endsWith('.hive'),
+              );
+              if (await dbFile.exists() || hasLegacyHiveBoxes) {
                 log.warning(
-                  'StorageLocator: fss10 readAll returned empty but database '
-                  'exists — silent failure detected, falling back to fss9',
+                  'StorageLocator: fss10 readAll returned empty but prior '
+                  'install data exists (database: '
+                  '${await dbFile.exists()}, hive boxes: $hasLegacyHiveBoxes) '
+                  '— silent failure detected, falling back to fss9',
                 );
                 throw Exception(
                   'FSS10 silent failure: prior install data exists '
@@ -98,7 +108,8 @@ class StorageLocator {
                 );
               }
               log.fine(
-                'StorageLocator: readAll empty + no database = fresh install',
+                'StorageLocator: readAll empty + no database or hive boxes = '
+                'fresh install',
               );
             }
 
