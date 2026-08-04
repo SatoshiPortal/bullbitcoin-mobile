@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/consolidation/presentation/consolidation_stat
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 /// Confirmation + progress screen for consolidating a Liquid wallet. Styled to
 /// match the Send confirm screen (top bar, header, info rows, primary button).

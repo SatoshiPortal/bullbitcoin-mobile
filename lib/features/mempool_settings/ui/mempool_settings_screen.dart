@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/mempool_settings/presentation/mempool_setting
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class MempoolSettingsScreen extends StatefulWidget {
   const MempoolSettingsScreen({super.key});

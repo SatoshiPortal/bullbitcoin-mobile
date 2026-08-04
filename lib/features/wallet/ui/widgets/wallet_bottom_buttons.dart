@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_exte
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class WalletBottomButtons extends StatelessWidget {

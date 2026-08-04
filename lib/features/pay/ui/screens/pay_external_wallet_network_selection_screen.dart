@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const PayExternalWalletNetworkSelectionScreen({super.key});

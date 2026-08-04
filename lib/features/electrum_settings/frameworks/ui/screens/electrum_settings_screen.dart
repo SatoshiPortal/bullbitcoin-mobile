@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/tor_p
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ElectrumSettingsScreen extends StatelessWidget {
   const ElectrumSettingsScreen({super.key});
