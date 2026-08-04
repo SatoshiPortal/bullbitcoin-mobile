@@ -2,23 +2,22 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
-import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:bull_tor/tor.dart';
 
 class _MockRemote extends Mock implements RecoverBullRemoteDatasource {}
 
 class _MockSettings extends Mock implements RecoverbullSettingsDatasource {}
 
-class _MockTorConfig extends Mock implements TorConfigPort {}
-
 void main() {
+  final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 9050);
+
   setUpAll(() {
     registerFallbackValue(<int>[]);
-    registerFallbackValue(const TorProxyConfig(port: 0));
+    registerFallbackValue(endpoint);
   });
 
   late _MockRemote remote;
@@ -26,31 +25,21 @@ void main() {
 
   setUp(() {
     remote = _MockRemote();
-    final torConfig = _MockTorConfig();
-    when(
-      () => torConfig.getAvailableExternalTorConfig(),
-    ).thenAnswer((_) async => null);
     repository = RecoverBullRepository(
       remoteDatasource: remote,
       recoverbullSettingsDatasource: _MockSettings(),
-      torConfigPort: torConfig,
     );
   });
 
   void stubFetchThrows(Object error) {
     when(
-      () => remote.fetch(
-        any(),
-        any(),
-        any(),
-        externalProxy: any(named: 'externalProxy'),
-      ),
+      () => remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
     ).thenThrow(error);
   }
 
   // identifier/salt must be valid hex (the repo HEX-decodes them).
   Future<Result<String, RecoverBullCoreFailure>> fetch() =>
-      repository.fetchVaultKey('00', 'password', '00');
+      repository.fetchVaultKey('00', 'password', '00', endpoint);
 
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
     test('401 -> KeyServerInvalidCredentialsFailure (no raw leak)', () async {
@@ -136,12 +125,7 @@ void main() {
 
   test('success -> Ok with hex-encoded key', () async {
     when(
-      () => remote.fetch(
-        any(),
-        any(),
-        any(),
-        externalProxy: any(named: 'externalProxy'),
-      ),
+      () => remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
     ).thenAnswer((_) async => [0xab, 0xcd]);
 
     final result = await fetch();
@@ -158,12 +142,8 @@ void main() {
   group('hex input normalization and strict decoding (identifier/salt)', () {
     void stubFetchOk() {
       when(
-        () => remote.fetch(
-          any(),
-          any(),
-          any(),
-          externalProxy: any(named: 'externalProxy'),
-        ),
+        () =>
+            remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
       ).thenAnswer((_) async => [0xab, 0xcd]);
     }
 
@@ -179,6 +159,7 @@ void main() {
         'de ad be ef',
         'password',
         '00 11',
+        endpoint,
       );
 
       expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
@@ -191,7 +172,7 @@ void main() {
           captureAny(),
           any(),
           captureAny(),
-          externalProxy: any(named: 'externalProxy'),
+          endpoint: any(named: 'endpoint'),
         ),
       ).captured;
       expect(captured[0], [0xde, 0xad, 0xbe, 0xef]);
@@ -201,7 +182,12 @@ void main() {
     test('uppercase input still decodes', () async {
       stubFetchOk();
 
-      final result = await repository.fetchVaultKey('ABCD', 'password', 'EF01');
+      final result = await repository.fetchVaultKey(
+        'ABCD',
+        'password',
+        'EF01',
+        endpoint,
+      );
 
       expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
       // Proves convert case-folds (RFC 4648): 'ABCD'/'EF01' decode to the same
@@ -211,7 +197,7 @@ void main() {
           captureAny(),
           any(),
           captureAny(),
-          externalProxy: any(named: 'externalProxy'),
+          endpoint: any(named: 'endpoint'),
         ),
       ).captured;
       expect(captured[0], [0xab, 0xcd]);
@@ -225,7 +211,12 @@ void main() {
       // Under package:hex "abc" was silently decoded as "0abc" -> a different,
       // wrong key, and the request proceeded. Under package:convert it throws,
       // is caught, and mapped to a failure *before* remote.fetch is reached.
-      final result = await repository.fetchVaultKey('abc', 'password', '00');
+      final result = await repository.fetchVaultKey(
+        'abc',
+        'password',
+        '00',
+        endpoint,
+      );
 
       expect(result, isA<Err<String, RecoverBullCoreFailure>>());
       expect(
@@ -233,31 +224,28 @@ void main() {
         isA<RecoverBullUnexpectedCoreFailure>(),
       );
       verifyNever(
-        () => remote.fetch(
-          any(),
-          any(),
-          any(),
-          externalProxy: any(named: 'externalProxy'),
-        ),
+        () =>
+            remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
       );
     });
 
     test('non-hex input is rejected before any network call', () async {
       stubFetchOk();
 
-      final result = await repository.fetchVaultKey('zz', 'password', '00');
+      final result = await repository.fetchVaultKey(
+        'zz',
+        'password',
+        '00',
+        endpoint,
+      );
 
       expect(
         (result as Err<String, RecoverBullCoreFailure>).failure,
         isA<RecoverBullUnexpectedCoreFailure>(),
       );
       verifyNever(
-        () => remote.fetch(
-          any(),
-          any(),
-          any(),
-          externalProxy: any(named: 'externalProxy'),
-        ),
+        () =>
+            remote.fetch(any(), any(), any(), endpoint: any(named: 'endpoint')),
       );
     });
   });

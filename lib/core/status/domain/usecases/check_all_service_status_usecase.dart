@@ -2,26 +2,31 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
-import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
-import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 
 class CheckAllServiceStatusUsecase {
+  /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
+  /// and hold the whole screen. Generous enough for a warm client to answer and
+  /// for a cold direct bootstrap to usually finish, short enough that a blocked
+  /// network reports `offline` instead of hanging.
+  static const _torStatusTimeout = Duration(seconds: 20);
+
   final ElectrumConnectivityPort _electrumConnectivityPort;
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
   final FeesRepository _feesRepository;
-  final RecoverBullRepository _recoverBullRepository;
   final WalletRepository _walletRepository;
-  final TorStatusUsecase _torStatusUsecase;
+  final EnsureTorReadyUsecase _ensureTorReadyUsecase;
+  final CheckServerConnectionUsecase _checkServerConnectionUsecase;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -29,9 +34,9 @@ class CheckAllServiceStatusUsecase {
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
     required this._feesRepository,
-    required this._recoverBullRepository,
     required this._walletRepository,
-    required this._torStatusUsecase,
+    required this._ensureTorReadyUsecase,
+    required this._checkServerConnectionUsecase,
   });
 
   Future<AllServicesStatus> execute({required Network network}) async {
@@ -221,44 +226,61 @@ class CheckAllServiceStatusUsecase {
     }
   }
 
+  /// `unknown` — not `offline` — when this wallet has no encrypted backup:
+  /// Tor is then unused, so there is nothing to report either way.
+  ///
+  /// For a wallet that does use it, answering means starting the client. That
+  /// is the point of a connectivity screen, and it costs nothing in practice:
+  /// app startup already warms Tor for exactly these wallets, so this adopts
+  /// the running client instead of booting a second one.
   Future<ServiceStatusInfo> _checkTorConnection() async {
-    var status = ServiceStatusInfo(
+    final status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
       name: 'Tor',
       lastChecked: DateTime.now(),
     );
 
-    final torStatus = await _torStatusUsecase.execute();
-    switch (torStatus) {
-      case TorStatus.online:
-        status = status.copyWith(status: ServiceStatus.online);
-      case TorStatus.offline:
-        status = status.copyWith(status: ServiceStatus.offline);
-      default:
-        status = status.copyWith(status: ServiceStatus.unknown);
-    }
-    return status;
+    if (!await _walletRepository.isTorRequired()) return status;
+
+    // Bounded on purpose. Adopting a warm client answers immediately, but when
+    // the startup warm-up failed — launched offline, or Tor blocked — this call
+    // starts a fresh bootstrap, and every other row on the screen waits on it
+    // through the single `Future.wait`. A censored network can spend the whole
+    // direct budget and then the Snowflake one, so an unbounded wait here means
+    // minutes of a blank connectivity screen.
+    return status.copyWith(
+      status: switch (await _ensureTorReadyUsecase.execute().timeout(
+        _torStatusTimeout,
+        onTimeout: () => const TorUninitialized(),
+      )) {
+        TorReady(:final route) when route.source == TorSource.embedded =>
+          ServiceStatus.online,
+        _ => ServiceStatus.offline,
+      },
+    );
   }
 
   Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
-    var status = ServiceStatusInfo(
+    final status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
       name: 'Recoverbull',
       lastChecked: DateTime.now(),
     );
 
-    final isTorRequired = await _walletRepository.isTorRequired();
-    final torStatus = await _torStatusUsecase.execute();
-    if (isTorRequired && torStatus == TorStatus.online) {
-      try {
-        await _recoverBullRepository.checkConnection();
-        status = status.copyWith(status: ServiceStatus.online);
-      } catch (e) {
-        status = status.copyWith(status: ServiceStatus.offline);
-      }
-    }
+    if (!await _walletRepository.isTorRequired()) return status;
 
-    return status;
+    // Delegated rather than reimplemented: this is the same "can we reach the
+    // key server over Tor" question the RecoverBull flow asks, and one answer
+    // for both keeps the screen and the flow from disagreeing.
+    return status.copyWith(
+      status:
+          await _checkServerConnectionUsecase.execute().timeout(
+            _torStatusTimeout,
+            onTimeout: () => false,
+          )
+          ? ServiceStatus.online
+          : ServiceStatus.offline,
+    );
   }
 
   AllServicesStatus _createUnknownStatus(DateTime now) {

@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -30,8 +29,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkForExistingDefaultWalletsUsecase,
     required this._checkLegacyInstallUsecase,
     required this._checkBackupUsecase,
-    required this._isTorRequiredUsecase,
-    required this._initTorUsecase,
+    required this._initializeRequiredTorUsecase,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -43,8 +41,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   _checkForExistingDefaultWalletsUsecase;
   final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
-  final IsTorRequiredUsecase _isTorRequiredUsecase;
-  final InitTorUsecase _initTorUsecase;
+  final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -116,17 +113,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         await _resetAppDataUsecase.execute();
       }
 
-      // Run Tor initialization in background
-      try {
-        final isTorRequired = await _isTorRequiredUsecase.execute();
-        if (isTorRequired) unawaited(_initTorUsecase.execute());
-      } catch (e) {
-        log.severe(
-          message: 'Tor initialization check failed',
-          error: e,
-          trace: StackTrace.current,
-        );
-      }
+      // Warm the embedded client without delaying the startup screen. The
+      // coordinator makes this single-flight with any concurrent consumer.
+      unawaited(_initializeTorInBackground());
 
       emit(
         AppStartupState.success(
@@ -172,5 +161,17 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       'App startup blocked on keychain (device not unlocked since '
       'boot) — staying on splash, will retry on lifecycle resumed',
     );
+  }
+
+  Future<void> _initializeTorInBackground() async {
+    try {
+      await _initializeRequiredTorUsecase.execute();
+    } catch (error, stackTrace) {
+      log.severe(
+        message: 'Required Tor initialization failed',
+        error: error,
+        trace: stackTrace,
+      );
+    }
   }
 }
