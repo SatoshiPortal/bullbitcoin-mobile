@@ -217,8 +217,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 ///
 /// Stateless on purpose: the [TextField] is never rebuilt by a keystroke.
 /// Only the index badge and the clear button depend on the typed text, and
-/// each subscribes to the controller on its own; the field itself rebuilds
-/// once per auto fill, when [fieldLock] starts swallowing its edits.
+/// each subscribes on its own; the field itself rebuilds once per auto fill,
+/// when [fieldLock] starts swallowing its edits.
 class MnemonicWord extends StatelessWidget {
   final bip39.Language language;
   final int index;
@@ -231,6 +231,12 @@ class MnemonicWord extends StatelessWidget {
   /// a stray keystroke cannot break a word that was the only possibility left.
   final ValueListenable<bool> fieldLock;
 
+  /// Non-null on the last field only: the checksum candidates, derived from
+  /// every other word. The badge then answers "is this word acceptable", not
+  /// "is this a word" - a wordlist word that cannot close the sentence is the
+  /// wrong word, and the badge says so.
+  final ValueListenable<List<String>?>? candidates;
+
   const MnemonicWord({
     super.key,
     this.language = bip39.Language.english,
@@ -239,6 +245,7 @@ class MnemonicWord extends StatelessWidget {
     required this.focusNode,
     required this.onComplete,
     required this.fieldLock,
+    this.candidates,
   });
 
   String get displayIndex {
@@ -258,10 +265,18 @@ class MnemonicWord extends StatelessWidget {
       height: 41,
       child: Row(
         children: [
-          ValueListenableBuilder<TextEditingValue>(
-            valueListenable: controller,
-            builder: (context, value, _) {
-              final word = value.text.trim();
+          ListenableBuilder(
+            listenable: candidates == null
+                ? controller
+                : Listenable.merge([controller, candidates!]),
+            builder: (context, _) {
+              final word = controller.text.trim();
+              // With a candidate pool (last field), acceptability means
+              // closing the checksum; without one, plain wordlist membership.
+              final pool = candidates?.value;
+              final isValid = pool != null
+                  ? pool.contains(word)
+                  : language.isValid(word);
               return Container(
                 height: 34,
                 width: 34,
@@ -269,7 +284,7 @@ class MnemonicWord extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: word.isEmpty
                       ? context.appColors.onSurface
-                      : language.isValid(word)
+                      : isValid
                       ? context.appColors.success
                       : context.appColors.error,
                   borderRadius: BorderRadius.circular(4),
@@ -387,6 +402,11 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// possibility left, so further typing could only break it. Emptied fields
   /// are editable again, whatever emptied them.
   final List<ValueNotifier<bool>> _fieldLocks = [];
+
+  /// The last field's checksum candidates, mirrored as a listenable so the
+  /// last badge can judge acceptability against the pool - and refresh when
+  /// another word changes the pool.
+  final ValueNotifier<List<String>?> _candidatePool = ValueNotifier(null);
   String? _candidatesKey;
   List<String>? _candidates;
 
@@ -402,6 +422,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     if (!identical(oldWidget.controllers, widget.controllers)) {
       _detach(oldWidget.controllers);
       _attach();
+      _candidatesKey = null;
+      _candidatePool.value = null;
       _hint.value = (index: 0, prefix: '', revision: ++_revision);
     }
   }
@@ -410,6 +432,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void dispose() {
     _detach(widget.controllers);
     _hint.dispose();
+    _candidatePool.dispose();
     super.dispose();
   }
 
@@ -453,6 +476,12 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     // field is editable again.
     if (widget.controllers[index].text.isEmpty) {
       _fieldLocks[index].value = false;
+    }
+    // The pool is derived from every word but the last; the cached answer is
+    // a new instance only when it actually changed.
+    final pool = _lastWordCandidates();
+    if (!identical(pool, _candidatePool.value)) {
+      _candidatePool.value = pool;
     }
     final hinted = _hint.value.index;
     if (hinted == index) {
@@ -611,6 +640,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             focusNode: _focusNodes[index],
             onComplete: () => _focusNext(index + 1),
             fieldLock: _fieldLocks[index],
+            candidates: index == count - 1 ? _candidatePool : null,
           ),
       ],
     );

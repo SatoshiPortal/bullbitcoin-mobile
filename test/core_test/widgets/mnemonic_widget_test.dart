@@ -56,6 +56,27 @@ Future<void> fillAll(WidgetTester tester, List<String> words) async {
   await tester.pump();
 }
 
+/// The color of the square index badge of field [index] - the widget that
+/// answers "is this word acceptable".
+Color badgeColor(WidgetTester tester, int index) {
+  final displayIndex = index + 1;
+  final label = displayIndex < 10 ? '0$displayIndex' : '$displayIndex';
+  final badge = tester.widget<Container>(
+    find
+        .ancestor(
+          of: find.text(label),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Container &&
+                widget.constraints?.maxWidth == 34 &&
+                widget.constraints?.maxHeight == 34,
+          ),
+        )
+        .first,
+  );
+  return (badge.decoration! as BoxDecoration).color!;
+}
+
 void main() {
   group('MnemonicWidget', () {
     testWidgets('renders 12 fields for a 12 word sentence', (tester) async {
@@ -430,6 +451,35 @@ void main() {
         tester.widget<TextField>(wordField(0)).focusNode!.hasFocus,
         isTrue,
       );
+    });
+
+    testWidgets('marks a last word that cannot close the checksum as wrong', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(11), '']);
+
+      // Reference colors from the first field: unknown word, then valid word.
+      await tester.enterText(wordField(0), 'zzzz');
+      await tester.pump();
+      final invalidColor = badgeColor(tester, 0);
+      await tester.enterText(wordField(0), validWords.first);
+      await tester.pump();
+      final validColor = badgeColor(tester, 0);
+
+      await tester.tap(wordField(11));
+      await tester.pump();
+
+      // 'zoo' is a wordlist word, but not one of this sentence's checksum
+      // candidates: on the last field that makes it the wrong word.
+      await tester.enterText(wordField(11), 'zoo');
+      await tester.pump();
+      expect(badgeColor(tester, 11), equals(invalidColor));
+
+      // The real last word is both a wordlist word and a candidate.
+      await tester.enterText(wordField(11), 'senior');
+      await tester.pump();
+      expect(badgeColor(tester, 11), equals(validColor));
     });
 
     testWidgets('only the last word dismisses the keyboard', (tester) async {
