@@ -75,7 +75,6 @@ dependencies:
   convert: ^3.1.2
   crypto: ^3.0.7
   synchronized: ^3.4.0
-  decimal: ^3.2.4
   hive: ^2.2.3
   json_annotation: ^4.9.0
   flutter_localizations:
