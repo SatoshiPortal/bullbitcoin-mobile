@@ -1,8 +1,6 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 class Bip39WordList {
-  static List<String> english() => bip39.Language.english.list;
-
   /// The words that give [words] a valid checksum once appended to it.
   ///
   /// The last word of a sentence carries the whole checksum, so only a small
