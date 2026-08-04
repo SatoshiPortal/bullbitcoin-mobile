@@ -237,6 +237,11 @@ void main() {
     when(
       () => sellOrder.bitcoinAddress,
     ).thenReturn('bc1q0000000000000000000000000000000000000');
+    // The post-broadcast completion only succeeds once the exchange sees the
+    // payin; default to seen, tests that need otherwise re-stub it.
+    when(
+      () => sellOrder.payinStatus,
+    ).thenReturn(OrderPayinStatus.inProgress);
     when(
       () => sellOrder.confirmationDeadline,
     ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
@@ -317,6 +322,29 @@ void main() {
   tearDown(() => bloc.close());
 
   group('SellBloc — broadcast latch', () {
+    test(
+      'audit reproducer (H6): a wallet selection during confirmation '
+      'is ignored',
+      () async {
+        bloc.seed(
+          (bloc.state as SellPaymentState).copyWith(isConfirmingPayment: true),
+        );
+
+        bloc.add(SellEvent.walletSelected(wallet: wallet));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        expect(
+          bloc.state,
+          isA<SellPaymentState>(),
+          reason:
+              'tearing down the payment state mid-confirmation orphans the '
+              'in-flight payment and lets a later payjoin resolution latch '
+              'onto a different order',
+        );
+        expect((bloc.state as SellPaymentState).isConfirmingPayment, isTrue);
+      },
+    );
+
     test('Payjoin toggle is ignored while confirmation is in flight', () async {
       bloc.seed(
         (bloc.state as SellPaymentState).copyWith(isConfirmingPayment: true),
@@ -603,6 +631,9 @@ void main() {
       () async {
         final refreshedOrder = _MockSellOrder();
         when(() => refreshedOrder.orderId).thenReturn('order-1');
+        when(
+          () => refreshedOrder.payinStatus,
+        ).thenReturn(OrderPayinStatus.inProgress);
         when(
           () => getOrder.execute(orderId: any(named: 'orderId')),
         ).thenAnswer((_) async => refreshedOrder);

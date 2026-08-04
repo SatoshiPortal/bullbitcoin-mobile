@@ -152,6 +152,7 @@ void main() {
 
   late _MockPrepareBitcoinSend prepareBitcoinSend;
   late _MockSignBitcoinTx signBitcoinTx;
+  late _MockConvertSatsToCurrency convertSats;
   late _MockBroadcastBitcoin broadcastBitcoin;
   late _MockCalculateBitcoinFees calculateBitcoinFees;
   late _MockGetNetworkFees getNetworkFees;
@@ -227,6 +228,7 @@ void main() {
     refreshPayOrder = _MockRefreshPayOrder();
     sendWithPayjoin = _MockSendWithPayjoin();
     watchPayjoin = _MockWatchPayjoin();
+    convertSats = _MockConvertSatsToCurrency();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     payOrder = _MockPayOrder();
     wallet = _MockWallet();
@@ -238,6 +240,11 @@ void main() {
     when(() => payOrder.payinAmount).thenReturn(0.001);
     when(() => payOrder.payoutCurrency).thenReturn('CAD');
     when(() => payOrder.bitcoinAddress).thenReturn(payinAddress);
+    // The post-broadcast completion only succeeds once the exchange sees the
+    // payin; default to seen, tests that need otherwise re-stub it.
+    when(
+      () => payOrder.payinStatus,
+    ).thenReturn(OrderPayinStatus.inProgress);
 
     when(
       () => prepareBitcoinSend.execute(
@@ -288,7 +295,7 @@ void main() {
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
-      convertSatsToCurrencyAmountUsecase: _MockConvertSatsToCurrency(),
+      convertSatsToCurrencyAmountUsecase: convertSats,
       getAddressAtIndexUsecase: _MockGetAddressAtIndex(),
       getWalletUtxosUsecase: _MockGetWalletUtxos(),
       getOrderUsecase: getOrder,
@@ -878,5 +885,69 @@ void main() {
         ),
       ).called(1);
     });
+  });
+
+  group('PayBloc — audit reproducers (H6, H7)', () {
+    test(
+      'a wallet selection during confirmation is ignored (H6)',
+      () async {
+        bloc.seed(paymentState(isConfirmingPayment: true));
+        when(
+          () => convertSats.execute(currencyCode: any(named: 'currencyCode')),
+        ).thenAnswer((_) async => 100000.0);
+
+        bloc.add(PayEvent.walletSelected(wallet: wallet));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        expect(
+          bloc.state,
+          isA<PayPaymentState>(),
+          reason:
+              'tearing down the payment state mid-confirmation orphans the '
+              'in-flight payment and lets a later payjoin resolution latch '
+              'onto a different order',
+        );
+        expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
+      },
+    );
+
+    test(
+      'a rate-conversion failure surfaces an error, not a stuck spinner (H7)',
+      () async {
+        bloc.seed(
+          PayState.walletSelection(
+            selectedRecipient: recipient,
+            userSummary: userSummary,
+            amount: const FiatAmount(50),
+          ),
+        );
+        when(
+          () => convertSats.execute(currencyCode: any(named: 'currencyCode')),
+        ).thenThrow(StateError('price API unavailable'));
+
+        final states = <PayState>[];
+        final subscription = bloc.stream.listen(states.add);
+        bloc.add(PayEvent.walletSelected(wallet: wallet));
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        await subscription.cancel();
+
+        final last = bloc.state;
+        expect(
+          last,
+          isA<PayWalletSelectionState>(),
+          reason: 'the handler must recover to the wallet-selection state',
+        );
+        final selection = last as PayWalletSelectionState;
+        expect(
+          selection.error,
+          isNotNull,
+          reason:
+              'awaited outside any try, a price-API failure escapes the '
+              'handler: no error state, and the order-creation spinner '
+              'stays latched with no retry path',
+        );
+        expect(selection.isCreatingPayOrder, isFalse);
+      },
+    );
   });
 }

@@ -119,6 +119,24 @@ class PayBloc extends Bloc<PayEvent, PayState>
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
   String? _activePayjoinSessionId;
 
+  /// The order the active payjoin session pays for. A session resolution is
+  /// only allowed to latch/complete the payment state while this still
+  /// matches the current order — otherwise the session belongs to a
+  /// torn-down order and must not mark the new one as paid.
+  String? _activePayjoinOrderId;
+
+  /// A payment is committed once its transaction is on the wire
+  /// (`isPayinBroadcast`), while it is being prepared/signed/broadcast
+  /// (`isConfirmingPayment`), and for the whole payjoin negotiation (the
+  /// session owns the eventual broadcast). Tearing down the payment state
+  /// in any of those windows can pay an order twice.
+  bool get _hasPaymentInFlight {
+    final current = _currentPaymentState;
+    return _activePayjoinSessionId != null ||
+        (current != null &&
+            (current.isConfirmingPayment || current.isPayinBroadcast));
+  }
+
   /// Bumped whenever the cached previews stop describing the payin being built
   /// (typed rate, coin selection, RBF, a refreshed payin amount). A preview
   /// build that started under an older epoch is discarded on return instead of
@@ -176,6 +194,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayAmountInputContinuePressed event,
     Emitter<PayState> emit,
   ) async {
+    // Never tear down a payment in flight: going back to the amount input
+    // drops the payment state, and the payjoin session of the current order
+    // would keep negotiating orphaned — its resolution could then latch onto
+    // a later order's payment state.
+    if (_hasPaymentInFlight) return;
+
     // We should be on a PayAmountInputState here
     final amountInputState = state.cleanAmountInputState;
     if (amountInputState == null) {
@@ -208,6 +232,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayWalletSelected event,
     Emitter<PayState> emit,
   ) async {
+    // Never tear down a payment in flight to start a new order: the pending
+    // transaction pays the CURRENT order, and a new order built on top of an
+    // active payjoin session inherits its resolution (cross-order latch —
+    // the new order would show a success screen without ever being paid).
+    if (_hasPaymentInFlight) return;
+
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe(
@@ -219,37 +249,43 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
     emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
 
-    int requiredAmountSat;
-    final exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase
-        .execute(currencyCode: walletSelectionState.currency.code);
-
-    requiredAmountSat = ConvertAmount.fiatToSats(
-      walletSelectionState.amount.amount,
-      exchangeRateEstimate,
-    );
-
-    if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
-      emit(
-        walletSelectionState.copyWith(
-          error: PayError.unexpected(
-            message: 'Insufficient balance. Required: $requiredAmountSat sats',
-          ),
-        ),
-      );
-      return;
-    }
     int absoluteFees = 0;
     // Carried into the payment state so the confirmation screen can offer the
     // fee modal (#2521): it needs the presets to price the tiles and a vsize to
     // check an absolute custom fee against the relay floor.
     FeeOptions? bitcoinFees;
     int? bitcoinTxSize;
+    // Assigned inside the try: the rate fetch can fail, and that failure must
+    // surface through the catch below. Awaited outside any try (as this used
+    // to be), a price-API failure escaped the handler entirely — no error
+    // state, and the order-creation spinner stayed latched with no retry path.
+    double exchangeRateEstimate = 0.0;
     // This builds a brand-new payment state, with its own order, wallet and
     // empty preview cache. A preview still in flight for the previous one would
     // otherwise land in that cache and price this payin with the last order's
     // fees.
     _bitcoinPreviewEpoch++;
     try {
+      exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: walletSelectionState.currency.code,
+      );
+
+      final requiredAmountSat = ConvertAmount.fiatToSats(
+        walletSelectionState.amount.amount,
+        exchangeRateEstimate,
+      );
+
+      if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+        emit(
+          walletSelectionState.copyWith(
+            error: PayError.unexpected(
+              message: 'Insufficient balance. Required: $requiredAmountSat sats',
+            ),
+          ),
+        );
+        return;
+      }
+
       final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
           .execute(walletId: event.wallet.id, index: 0);
 
@@ -361,6 +397,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayExternalWalletNetworkSelected event,
     Emitter<PayState> emit,
   ) async {
+    // Same guard as _onWalletSelected: switching the network rebuilds the
+    // order, which must never happen while a payment is in flight.
+    if (_hasPaymentInFlight) return;
+
     // We should be on a PayWalletSelection state here
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
@@ -577,7 +617,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
                 : absoluteFeesUpdated / preparedSend.txSize,
             expireAfterSec: payjoinWindow.inSeconds,
           );
-          _watchPayjoin(payjoinSender.id);
+          _watchPayjoin(
+            payjoinSender.id,
+            orderId: payPaymentState.payOrder.orderId,
+          );
           waitingForPayjoin = true;
         } else {
           final signedTx = await _signBitcoinTxUsecase.execute(
@@ -613,8 +656,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
   }
 
-  void _watchPayjoin(String sessionId) {
+  void _watchPayjoin(String sessionId, {required String orderId}) {
     _activePayjoinSessionId = sessionId;
+    _activePayjoinOrderId = orderId;
     unawaited(_payjoinSubscription?.cancel());
     _payjoinSubscription = _watchPayjoinUsecase
         .execute(sessionId)
@@ -624,7 +668,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
             log.warning('Payjoin session watch failed');
             Future<void>.delayed(const Duration(seconds: 5), () {
               if (!isClosed && _activePayjoinSessionId == sessionId) {
-                _watchPayjoin(sessionId);
+                _watchPayjoin(sessionId, orderId: orderId);
               }
             });
           },
@@ -641,9 +685,24 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final subscription = _payjoinSubscription;
     _payjoinSubscription = null;
     _activePayjoinSessionId = null;
+    final sessionOrderId = _activePayjoinOrderId;
+    _activePayjoinOrderId = null;
     await subscription?.cancel();
     final current = _currentPaymentState;
     if (current == null) return;
+
+    // The session must belong to the order currently on screen. If the
+    // payment state was torn down and rebuilt around it (a guard bypass, a
+    // state reset), its resolution belongs to the OLD order: latching its
+    // txid here would mark the NEW order paid without a sat moving for it.
+    if (current.payOrder.orderId != sessionOrderId) {
+      log.severe(
+        error:
+            'Resolved Payjoin session belongs to a different order; ignoring',
+        trace: StackTrace.current,
+      );
+      return;
+    }
 
     if (session.isExpired) {
       emit(current.copyWith(isConfirmingPayment: false, error: null));
@@ -931,6 +990,19 @@ class PayBloc extends Bloc<PayEvent, PayState>
         message:
             'Expected FiatPaymentOrder but received a different order type',
       );
+    }
+
+    // Success requires the exchange to actually see the payin — the same
+    // gate the periodic order poll applies. Five seconds is not always
+    // enough for the backend to register the 0-conf; in that case stay in
+    // the confirming state and let the poll take the order to success when
+    // the payment shows up, rather than celebrating an order the exchange
+    // has never seen paid.
+    final payinStatus = latestOrder.payinStatus;
+    if (payinStatus != OrderPayinStatus.inProgress &&
+        payinStatus != OrderPayinStatus.awaitingConfirmation &&
+        payinStatus != OrderPayinStatus.completed) {
+      return;
     }
 
     emit(paymentState.toSuccessState(payOrder: latestOrder));
