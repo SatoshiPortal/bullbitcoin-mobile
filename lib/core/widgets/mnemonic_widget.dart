@@ -406,7 +406,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// One lock per field, set by the auto fill: a completed word was the only
   /// possibility left, so further typing could only break it. Emptied fields
   /// are editable again, whatever emptied them.
-  final List<ValueNotifier<bool>> _fieldLocks = [];
+  List<ValueNotifier<bool>> _fieldLocks = [];
 
   /// The last field's checksum candidates, mirrored as a listenable so the
   /// last badge can judge acceptability against the pool - and refresh when
@@ -425,17 +425,36 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void didUpdateWidget(MnemonicSentenceWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.controllers, widget.controllers)) {
+      final retiredNodes = _focusNodes;
+      final retiredLocks = _fieldLocks;
       _detach(oldWidget.controllers);
       _attach();
       _candidatesKey = null;
       _candidatePool.value = null;
       _hint.value = (index: 0, prefix: '', revision: ++_revision);
+      // The old fields still reference these until they rebuild later in
+      // this frame: dispose only once the tree no longer holds them, the
+      // same courtesy the parent extends to the old controllers.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (final node in retiredNodes) {
+          node.dispose();
+        }
+        for (final lock in retiredLocks) {
+          lock.dispose();
+        }
+      });
     }
   }
 
   @override
   void dispose() {
     _detach(widget.controllers);
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    for (final lock in _fieldLocks) {
+      lock.dispose();
+    }
     _hint.dispose();
     _candidatePool.dispose();
     super.dispose();
@@ -449,8 +468,9 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       });
       return node;
     });
-    _fieldLocks.addAll(
-      List.generate(widget.controllers.length, (_) => ValueNotifier(false)),
+    _fieldLocks = List.generate(
+      widget.controllers.length,
+      (_) => ValueNotifier(false),
     );
     for (var index = 0; index < widget.controllers.length; index++) {
       final position = index;
@@ -465,14 +485,6 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       controllers[i].removeListener(_textListeners[i]);
     }
     _textListeners.clear();
-    for (final node in _focusNodes) {
-      node.dispose();
-    }
-    _focusNodes = [];
-    for (final lock in _fieldLocks) {
-      lock.dispose();
-    }
-    _fieldLocks.clear();
   }
 
   void _onTextChanged(int index) {
