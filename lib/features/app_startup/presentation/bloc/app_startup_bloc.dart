@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -29,6 +30,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._resetAppDataUsecase,
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
+    required this._checkLegacyInstallUsecase,
     required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
     required this._requiresMigrationUsecase,
@@ -46,6 +48,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
+  final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
   final RequiresMigrationUsecase _requiresMigrationUsecase;
@@ -86,6 +89,22 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       log.info(
         'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
       );
+
+      final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
+          .execute();
+
+      // Pre-v5 ("BULL") installs are no longer migrated: gate them behind a
+      // backup screen. Only when the new DB is empty — the legacy marker can
+      // survive a failed migration while the user has since set up working
+      // v5+ wallets, and those current seeds are not legacy-format: gating
+      // such an install would show a backup screen missing its live wallets
+      // and instruct deleting them.
+      if (!doDefaultWalletsExist &&
+          await _checkLegacyInstallUsecase.execute()) {
+        log.warning('Legacy (pre-v5) install detected — backup gate shown');
+        emit(const AppStartupState.legacyBackupRequired());
+        return;
+      }
 
       // SQL Migrations
       // emit(const AppStartupState.failure(null));
@@ -132,8 +151,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       }
 
       // all here future migration calls
-      final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
-          .execute();
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {

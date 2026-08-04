@@ -5225,5 +5225,13 @@
   "receivePayjoinAwaitingFunds": "Payjoin está activado, pero esta cartera todavía no tiene saldo para contribuir. Se activará cuando recibas fondos.",
   "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin.",
   "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
-  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo."
+  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
+  "legacyBackupTitle": "Copia de seguridad necesaria",
+  "legacyBackupWalletLabel": "Monedero",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupReinstallTitle": "Próximos pasos",
+  "legacyBackupMessage": "Esta versión de la aplicación es demasiado antigua para actualizarse automáticamente. Para conservar tus bitcoin, anota la(s) frase(s) de recuperación a continuación, luego elimina y reinstala la aplicación.",
+  "legacyBackupReinstallMessage": "Elimina esta aplicación y reinstálala desde la tienda. Durante la configuración, elige recuperar un monedero existente e introduce tu frase de recuperación.",
+  "legacyBackupConfirm": "He anotado todas las frases de recuperación y passphrases anteriores",
+  "legacyBackupNoSeedsMessage": "No se pudo leer ninguna frase de recuperación de esta instalación. NO elimines la aplicación — contacta primero con soporte."
 }

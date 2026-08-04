@@ -5247,5 +5247,13 @@
   "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
   "mnemonicPossibleLastWords": "{count} derniers mots possibles",
   "mnemonicInvalidChecksumError": "Cette phrase de récupération n’est pas valide. Un mot est mal saisi ou mal placé.",
-  "mnemonicUnknownWordError": "Certains mots ne figurent pas dans la liste de récupération — les numéros en rouge les indiquent."
+  "mnemonicUnknownWordError": "Certains mots ne figurent pas dans la liste de récupération — les numéros en rouge les indiquent.",
+  "legacyBackupTitle": "Sauvegarde requise",
+  "legacyBackupMessage": "Cette version de l'application est trop ancienne pour être mise à jour automatiquement. Pour conserver vos bitcoin, notez la ou les phrases de récupération ci-dessous, puis supprimez et réinstallez l'application.",
+  "legacyBackupWalletLabel": "Portefeuille",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupConfirm": "J'ai noté toutes les phrases de récupération et passphrases ci-dessus",
+  "legacyBackupReinstallMessage": "Supprimez cette application et réinstallez-la depuis le store. Lors de la configuration, choisissez de récupérer un portefeuille existant et saisissez votre phrase de récupération.",
+  "legacyBackupReinstallTitle": "Prochaines étapes",
+  "legacyBackupNoSeedsMessage": "Aucune phrase de récupération n'a pu être lue sur cette installation. Ne supprimez PAS l'application — contactez d'abord le support."
 }
