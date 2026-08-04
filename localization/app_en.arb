@@ -14636,5 +14636,29 @@
   "torSettingsExternalProxyDescription": "When enabled, Bitcoin Electrum servers and encrypted backups go through Orbot at the configured port instead of embedded Tor. Liquid is never routed through it.",
   "@torSettingsExternalProxyDescription": {
     "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
+  },
+  "recoverbullPhaseNetworkInfo": "Retrieving network information",
+  "@recoverbullPhaseNetworkInfo": {
+    "description": "Caption shown while Tor downloads directory information. Covers the whole directory phase, which is 85% of bootstrap."
+  },
+  "recoverbullLongestStep": "This is the longest step. A first start can take over a minute.",
+  "@recoverbullLongestStep": {
+    "description": "Reassurance shown once bootstrap has been running a while without visible progress."
+  },
+  "recoverbullTorOffline": "There seems to be no internet connection.",
+  "@recoverbullTorOffline": {
+    "description": "Shown when Tor reports the device has no TCP connectivity. Hedged wording: the upstream diagnostic is best-effort."
+  },
+  "recoverbullTorClockSkewed": "Your device clock is off, so Tor cannot verify relay certificates. Check your date and time settings.",
+  "@recoverbullTorClockSkewed": {
+    "description": "Shown when Tor reports clock skew, which breaks certificate validation. Actionable: the user can fix the clock."
+  },
+  "recoverbullTorCantStart": "Tor could not connect right now. Please try again.",
+  "@recoverbullTorCantStart": {
+    "description": "Generic Tor bootstrap failure, for blockages with no actionable cause."
+  },
+  "recoverbullServerUnreachableTorOk": "Tor is working, but the backup server did not answer. This can take a moment right after a first start.",
+  "@recoverbullServerUnreachableTorOk": {
+    "description": "Shown when Tor is up but the RecoverBull onion service did not answer, so the failure is localised to the server."
   }
 }
