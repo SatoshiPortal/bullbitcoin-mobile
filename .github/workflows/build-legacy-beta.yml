@@ -16,15 +16,20 @@ name: Build Legacy Beta (v0.4.3)
 # only installability and the signing cert matter.
 
 on:
+  # Triggered by pushing to this branch, NOT by workflow_dispatch: GitHub only
+  # lists dispatchable workflows that exist on the default branch, and this file
+  # deliberately lives only here. A push-triggered workflow runs from the pushed
+  # ref, so no change to develop is needed. To rebuild (e.g. with another SDK),
+  # bump FLUTTER_VERSION below or push an empty commit.
+  push:
+    branches: [test/legacy-0.4.3-beta]
   workflow_dispatch:
-    inputs:
-      flutter_version:
-        description: >
-          Flutter SDK tag to build with. 3.29.2 is the stable released the day
-          before the v0.4.3 tag; try 3.27.4 or 3.24.5 if dependency resolution
-          or the legacy Gradle plugin loading fails.
-        type: string
-        default: 3.29.2
+
+env:
+  # 3.29.2 is the stable released the day before the v0.4.3 tag. Try 3.27.4
+  # then 3.24.5 if dependency resolution or the legacy Gradle plugin loading
+  # fails.
+  FLUTTER_VERSION: 3.29.2
 
 jobs:
   build:
@@ -64,12 +69,12 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV"
           echo "$JAVA_HOME_21_X64/bin" >> "$GITHUB_PATH"
 
-      - name: Install Flutter ${{ inputs.flutter_version }}
+      - name: Install Flutter ${{ env.FLUTTER_VERSION }}
         # Cloned straight from flutter/flutter at the requested tag rather than
         # via a third-party setup action: one less unpinned dependency on a
         # runner that holds signing secrets.
         run: |
-          git clone --depth 1 --branch "${{ inputs.flutter_version }}" \
+          git clone --depth 1 --branch "$FLUTTER_VERSION" \
             https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
 
