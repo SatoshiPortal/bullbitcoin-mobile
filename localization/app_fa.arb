@@ -1625,10 +1625,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "راهنمای کیف پول",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "تایید...{count}/{required}",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -3712,10 +3708,6 @@
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "importColdcardButtonPurchase": "خرید دستگاه",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "حالا آماده پخش است! به محض اینکه شما بر روی پخش کلیک کنید، معامله در شبکه Bitcoin منتشر خواهد شد و وجوه ارسال خواهد شد.",
   "@jadeStep15": {
@@ -7595,10 +7587,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "خرید یک دستگاه",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "حداقل فروش: {amount}",
   "@sellMinimumAmount": {

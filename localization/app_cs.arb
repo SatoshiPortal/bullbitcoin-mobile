@@ -758,10 +758,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "Průvodce peněženkami",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Potvrzení ... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -3127,10 +3123,6 @@
   "fundExchangeETransferLabelSecretQuestion": "Tajná otázka",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "Nákup zařízení",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
   "@jadeStep15": {
@@ -7596,10 +7588,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "Koupit zařízení",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "Minimální cena prodeje: {amount}",
   "@sellMinimumAmount": {

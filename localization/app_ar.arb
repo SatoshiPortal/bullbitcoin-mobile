@@ -439,10 +439,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "أدلة الجدارة",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Confirming... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2791,10 +2787,6 @@
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "importColdcardButtonPurchase": "جهاز الشراء",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
   "@jadeStep15": {
@@ -7204,10 +7196,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "اشتري جهاز",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "الحد الأدنى للبيع: {amount}",
   "@sellMinimumAmount": {

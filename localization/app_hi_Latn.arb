@@ -8738,14 +8738,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importWatchOnlyBuyDevice": "Device kharido",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
-  "importWatchOnlyWalletGuides": "Wallet guides",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyCopiedToClipboard": "Clipboard mein copy hua",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -9353,10 +9345,6 @@
   "importColdcardButtonInstructions": "Instructions",
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
-  },
-  "importColdcardButtonPurchase": "Device kharido",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "importColdcardInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardInstructionsTitle": {

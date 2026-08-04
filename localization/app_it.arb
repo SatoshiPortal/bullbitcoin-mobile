@@ -163,7 +163,6 @@
   "exchangeLandingRecommendedExchange": "Scambio Bitcoin consigliato",
   "backupWalletHowToDecideVaultMoreInfo": "Visitare Recoverbull.com per ulteriori informazioni.",
   "recoverbullGoBackEdit": "Torna indietro e modifica",
-  "importWatchOnlyWalletGuides": "Guide del portafoglio",
   "receiveConfirming": "Conferma... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -1000,7 +999,6 @@
   },
   "kruxStep15": "La transazione verrà importata nel portafoglio Bull Bitcoin.",
   "fundExchangeETransferLabelSecretQuestion": "Domanda segreta",
-  "importColdcardButtonPurchase": "Dispositivo di acquisto",
   "jadeStep15": "Ora è pronto a trasmettere! Non appena si fa clic sulla trasmissione, la transazione verrà pubblicata sulla rete Bitcoin e i fondi saranno inviati.",
   "confirmButton": "Conferma",
   "transactionSwapInfoClaimableTransfer": "Il trasferimento sarà completato automaticamente entro pochi secondi. In caso contrario, è possibile provare un reclamo manuale facendo clic sul pulsante \"Retry Transfer Claim\".",
@@ -2507,7 +2505,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Acquistare un dispositivo",
   "sellMinimumAmount": "Importo minimo di vendita: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {

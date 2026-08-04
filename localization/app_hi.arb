@@ -464,10 +464,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "वॉलेट गाइड",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "पुष्टिकरण... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2961,10 +2957,6 @@
   "fundExchangeETransferLabelSecretQuestion": "गुप्त प्रश्न",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "खरीद उपकरण",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
   "@jadeStep15": {
@@ -7689,10 +7681,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "एक उपकरण खरीदें",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "न्यूनतम विक्रय राशि: {amount}",
   "@sellMinimumAmount": {
