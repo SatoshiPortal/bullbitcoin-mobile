@@ -14945,5 +14945,13 @@
         "type": "int"
       }
     }
+  },
+  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
+  "@mnemonicInvalidChecksumError": {
+    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
+  },
+  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
+  "@mnemonicUnknownWordError": {
+    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
   }
 }

@@ -1,9 +1,10 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/failures/mnemonic_entry_failure.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/bip39.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
+import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -58,7 +59,7 @@ class MnemonicWidget extends StatefulWidget {
 /// rebuild. This state rebuilds on the rare events only — length change and
 /// submit error.
 class _MnemonicWidgetState extends State<MnemonicWidget> {
-  Exception? _error;
+  MnemonicEntryFailure? _failure;
   late bip39.MnemonicLength length;
   late List<TextEditingController> _controllers;
   String passphrase = '';
@@ -86,11 +87,11 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
       List.generate(count, (_) => TextEditingController());
 
   void onSubmit() {
-    setState(() => _error = null);
+    setState(() => _failure = null);
     final words = _words;
 
     if (words.any((word) => word.isEmpty)) {
-      setState(() => _error = EmptyMnemonicWordsError());
+      setState(() => _failure = const MnemonicEntryIncompleteFailure());
       return;
     }
 
@@ -107,11 +108,23 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
         language: widget.language,
       ));
     } catch (e) {
-      // if checksum is invalid, clear the last word
+      // The boundary where a library exception becomes a failure. Only the
+      // *kind* of exception crosses: every `bip39.MnemonicException` message
+      // embeds the offending word, so `e.toString()` would put a piece of the
+      // user's seed on screen and into anything that later logs the failure.
       if (e is bip39.MnemonicInvalidChecksumException) {
+        // The checksum lives in the last word, so that is the one to retype.
         _controllers.last.clear();
       }
-      setState(() => _error = MnemonicException(e.toString()));
+      setState(
+        () => _failure = switch (e) {
+          bip39.MnemonicInvalidChecksumException() =>
+            const MnemonicEntryInvalidChecksumFailure(),
+          bip39.MnemonicWordNotFoundException() =>
+            const MnemonicEntryUnknownWordFailure(),
+          _ => MnemonicEntryUnexpectedFailure('${e.runtimeType}'),
+        },
+      );
     }
   }
 
@@ -125,7 +138,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
     setState(() {
       length = value;
       _controllers = _newControllers(length.words);
-      _error = null;
+      _failure = null;
     });
     // Dispose only once the tree no longer references them.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -177,10 +190,10 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             ),
           ],
 
-          if (_error != null) ...[
+          if (_failure != null) ...[
             const Gap(16),
             BBText(
-              _error!.toString(),
+              _failure!.toTranslated(context),
               style: context.font.bodyMedium,
               color: context.appColors.error,
             ),
@@ -627,12 +640,4 @@ class _HintChip extends StatelessWidget {
       ),
     );
   }
-}
-
-class MnemonicException extends BullException {
-  MnemonicException(super.message);
-}
-
-class EmptyMnemonicWordsError extends MnemonicException {
-  EmptyMnemonicWordsError() : super('Enter all words of your mnemonic');
 }

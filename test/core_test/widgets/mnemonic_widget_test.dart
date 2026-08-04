@@ -129,6 +129,52 @@ void main() {
       expect(find.text('Enter all words of your mnemonic'), findsOneWidget);
     });
 
+    testWidgets('reports an invalid checksum without echoing the word', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+
+      await fillAll(tester, [...validWords.take(11), 'zoo']);
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+
+      expect(
+        find.text(
+          'This recovery phrase is not valid. '
+          'A word is either mistyped or out of order.',
+        ),
+        findsOneWidget,
+      );
+      // bip39_mnemonic raises 'Mnemonic checksum zoo is invalid'. That message
+      // carries a word of the user's seed, so none of it may reach the screen.
+      expect(find.textContaining('checksum'), findsNothing);
+    });
+
+    testWidgets('reports an unknown word without echoing it', (tester) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+
+      // 'zzzz' is not in the english wordlist.
+      await fillAll(tester, [...validWords.take(11), 'zzzz']);
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+
+      expect(
+        find.text(
+          'Some words are not in the recovery word list '
+          '— the red numbers show which.',
+        ),
+        findsOneWidget,
+      );
+      // The typed field legitimately shows 'zzzz'; the failure message must
+      // not. Only plain Text widgets are checked, not the EditableText inputs.
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Text && widget.data?.contains('zzzz') == true,
+        ),
+        findsNothing,
+      );
+    });
+
     testWidgets('changing the length resets every field', (tester) async {
       await pumpWidget(tester, onSubmit: (_) {});
       await fillAll(tester, validWords);
