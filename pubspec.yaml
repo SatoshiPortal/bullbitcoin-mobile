@@ -68,7 +68,6 @@ dependencies:
       ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
-  hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^1.1.0
   freezed_annotation: ^3.1.0

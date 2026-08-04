@@ -372,10 +372,6 @@
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
-  "bitboxErrorDeviceMismatch": "Device mismatch εντοπίστηκε.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC διεύθυνση διεύθυνση",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -383,10 +379,6 @@
   "exchangeLandingRecommendedExchange": "Προτεινόμενο Bitcoin Exchange",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "importWatchOnlyWalletGuides": "Wallet οδηγούς",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Επιβεβαίωση ... ({count}/{required})",
   "@receiveConfirming": {
@@ -1759,17 +1751,9 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "Καμία ενεργή σύνδεση με τη συσκευή BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "transactionFilterAll": "Όλα όλα",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "bitboxCubitOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Η πληρωμή έλαβε!",
   "@receivePaymentReceived": {
@@ -2493,10 +2477,6 @@
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "importColdcardButtonPurchase": "Εργαλείο αγοράς",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@jadeStep15": {
@@ -3267,10 +3247,6 @@
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
   },
-  "bitboxCubitHandshakeFailed": "Απέτυχε να δημιουργήσει ασφαλή σύνδεση. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Ποσό είναι πάνω από όρια ανταλλαγής",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3519,10 +3495,6 @@
   "exchangeLandingFeature1": "Αγοράστε Bitcoin απευθείας στην αυτο-κατηγορία",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "Η άδεια USB αρνήθηκε. Σας παρακαλούμε να δώσετε άδεια πρόσβασης στη συσκευή BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Μεταφορά",
   "@swapTransferTo": {
@@ -5834,10 +5806,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Η μορφή Invalid PSBT εντοπίστηκε.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "Απέτυχε να υπολογίσει τα τέλη: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -6418,10 +6386,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Αγοράστε μια συσκευή",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "Ελάχιστη ποσότητα πώλησης: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -6848,10 +6812,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "Επιθυμήθηκε να συνδεθεί με τη συσκευή BitBox. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "Όροι Υπηρεσίας",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -6933,10 +6893,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Συσκευή που δεν συνδυάζονται. Παρακαλούμε να ολοκληρώσετε πρώτα τη διαδικασία ζευγαρώματος.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC ισορροπία ισορροπία",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -6964,10 +6920,6 @@
   "payPriceRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Η επιχείρηση ακυρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@passportStep3": {
@@ -7552,15 +7504,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "Απέτυχε να σώσει τις ρυθμίσεις: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Πρότυπο απόσυρση",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -8132,10 +8075,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Αποζημιωμένος για να σώσει τις ρυθμίσεις",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "Επαλήθευση φωτός",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -8500,15 +8439,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Error φόρτωσης περισσότερες διευθύνσεις: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Αντιγραφή",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -8613,15 +8543,6 @@
   "settingsSuperuserModeUnlockedMessage": "Η λειτουργία Superuser ξεκλειδώθηκε!",
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
-  },
-  "addressViewErrorLoadingAddresses": "Error φόρτωσης διευθύνσεων: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "Ο τύπος σύνδεσης που δεν έχει οριστικοποιηθεί.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -8795,10 +8716,6 @@
   "sellReceiveAmount": "Θα λάβετε",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "Ακυρωμένη απάντηση από τη συσκευή BitBox. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "Ρυθμίσεις",
   "@settingsScreenTitle": {
@@ -12278,15 +12195,6 @@
   "@arkConfirmedBalance": {
     "description": "Label for confirmed balance row"
   },
-  "autoswapSaveErrorMessage": "Απέτυχε να σώσει τις ρυθμίσεις: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaLightningAddressLabel": "Lightning διεύθυνση Lightning",
   "@dcaLightningAddressLabel": {
     "description": "Label for Lightning address detail row (shown only for Lightning network)"
@@ -13278,5 +13186,7 @@
   "receiveMessageForSender": "Μήνυμα για τον αποστολέα",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
-  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin."
+  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
+  "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
+  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά."
 }

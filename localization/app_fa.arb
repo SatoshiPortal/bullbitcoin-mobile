@@ -237,27 +237,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "خطا در بارگذاری آدرس‌ها: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "هیچ آدرسی پیدا نشد",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "خطا در بارگذاری آدرس‌های بیشتر: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "آدرس های تغییر به زودی",
   "@addressViewChangeAddressesComingSoon": {
@@ -1635,10 +1617,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "عدم تطابق دستگاه شناسایی شده است.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "برای کسب اطلاعات بیشتر به Recoverybull.com مراجعه کنید.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
@@ -1646,10 +1624,6 @@
   "recoverbullGoBackEdit": ">> بازگشت و ویرایش",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "راهنمای کیف پول",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "تایید...{count}/{required}",
   "@receiveConfirming": {
@@ -2977,10 +2951,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "هیچ اتصال فعال با دستگاه BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "بودجه حساب شما",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2996,10 +2966,6 @@
   "transactionDetailLabelAmountReceived": "مبلغ دریافت شده",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "عملیات زمان بندی شده لطفا دوباره امتحان کنید.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "پرداخت!",
   "@receivePaymentReceived": {
@@ -3742,10 +3708,6 @@
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "importColdcardButtonPurchase": "خرید دستگاه",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "حالا آماده پخش است! به محض اینکه شما بر روی پخش کلیک کنید، معامله در شبکه Bitcoin منتشر خواهد شد و وجوه ارسال خواهد شد.",
   "@jadeStep15": {
@@ -4527,10 +4489,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "شکست در ایجاد ارتباط امن لطفا دوباره امتحان کنید.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "مقدار بالاتر از حد مبادله",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4767,10 +4725,6 @@
   "exchangeLandingFeature1": "خرید Bitcoin مستقیم به Self-custody",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "اجازه USB رد شد. اجازه دسترسی به دستگاه BitBox خود را بدهید.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "انتقال",
   "@swapTransferTo": {
@@ -7081,10 +7035,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "فرمت Invalid PSBT شناسایی شده است.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "dcaSetupFrequencyError": "لطفا یک فرکانس انتخاب کنید",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -7638,10 +7588,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "خرید یک دستگاه",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "حداقل فروش: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -8062,10 +8008,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "عدم اتصال به دستگاه BitBox لطفا ارتباط خود را بررسی کنید.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "شرایط خدمات",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8173,10 +8115,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "دستگاه جفت نمی شود. ابتدا فرآیند جفت سازی را تکمیل کنید.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC تعادل تعادل تعادل",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8213,10 +8151,6 @@
   "payPriceRefreshIn": "قیمت در ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "عملیات لغو شد. لطفا دوباره امتحان کنید.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "کد QR نشان داده شده در کیف پول بول",
   "@passportStep3": {
@@ -8810,15 +8744,6 @@
   "bitboxCubitDeviceNotFound": "هیچ دستگاه BitBox پیدا نشد. لطفا دستگاه خود را متصل کنید و دوباره امتحان کنید.",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "شکست برای ذخیره تنظیمات: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyStandardWithdrawal": "خروج استاندارد",
   "@buyStandardWithdrawal": {
@@ -10084,10 +10009,6 @@
   "sellReceiveAmount": "شما دریافت خواهید کرد",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "پاسخ Invalid از دستگاه BitBox لطفا دوباره امتحان کنید.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "تنظیمات",
   "@settingsScreenTitle": {
@@ -12220,10 +12141,6 @@
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "autoswapAutoSaveError": "شکست برای ذخیره تنظیمات",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "googleAppleCloudRecommendation": "گوگل یا Apple Cloud : ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
@@ -12326,15 +12243,6 @@
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
-  },
-  "autoswapSaveErrorMessage": "شکست برای ذخیره تنظیمات: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "googleDriveSignInMessage": "شما باید به Google Drive وارد شوید",
   "@googleDriveSignInMessage": {
@@ -13278,5 +13186,7 @@
   "receiveMessageForSender": "پیام برای فرستنده",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin فعال است، اما این کیف پول هنوز موجودی‌ای برای مشارکت ندارد. پس از دریافت وجه فعال خواهد شد.",
-  "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود."
+  "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود.",
+  "addressViewErrorWalletNotFound": "این کیف پول پیدا نشد.",
+  "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید."
 }

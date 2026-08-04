@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "อุปกรณ์ตรวจจับข้อบกพร่อง.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "ที่อยู่อีเมล",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -466,10 +462,6 @@
   "recoverbullGoBackEdit": "<<",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "คู่มือ",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "กำลังยืนยัน... ({count}/{required})",
   "@receiveConfirming": {
@@ -2062,10 +2054,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "ไม่มีการเชื่อมต่อการใช้งานบน BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "บัญชีบัญชีของคุณ",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2081,10 +2069,6 @@
   "transactionDetailLabelAmountReceived": "จํานวน",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "เวลาทํางาน กรุณาลองอีกครั้ง.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "ชําระเงิน!",
   "@receivePaymentReceived": {
@@ -2973,10 +2957,6 @@
   "fundExchangeETransferLabelSecretQuestion": "คําถาม",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "ซื้ออุปกรณ์",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "ตอนนี้พร้อมที่จะออกอากาศ! ทันทีที่คุณคลิกออกอากาศ, การทําธุรกรรมจะตีพิมพ์บนเครือข่าย Bitcoin และเงินจะส่ง.",
   "@jadeStep15": {
@@ -3899,10 +3879,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "ค้นหาการเชื่อมต่อที่ปลอดภัย กรุณาลองอีกครั้ง.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "จํานวนเงินข้างต้น",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4195,10 +4171,6 @@
   "exchangeLandingFeature1": "ซื้อ Bitcoin ตรงกับตนเอง",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "การละเมิด USB กรุณาอนุญาตให้เข้าถึงอุปกรณ์ BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "การโอนเงิน",
   "@swapTransferTo": {
@@ -7710,10 +7682,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "ซื้ออุปกรณ์",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "จำนวนขายขั้นต่ำ: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -8238,10 +8206,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "เก็บไปยังอุปกรณ์ BitBox โปรดตรวจสอบการเชื่อมต่อของคุณ.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "ข้อกําหนดในการให้บริการ",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8361,10 +8325,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "อุปกรณ์ไม่ขาย กรุณาเสร็จสิ้นขั้นตอนราคาแรก.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "ซีดี สมดุล",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8401,10 +8361,6 @@
   "payPriceRefreshIn": "ราคาจะผ่อนคลาย ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "ตรวจสอบ กรุณาลองอีกครั้ง.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "สแกนรหัส QR จะแสดงในกระเป๋าเงิน",
   "@passportStep3": {
@@ -9099,15 +9055,6 @@
   "bitboxCubitDeviceNotFound": "ไม่มีโทรศัพท์มือถือ กรุณาเชื่อมต่ออุปกรณ์และลองอีกครั้ง.",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "บันทึกการตั้งค่าไม่สำเร็จ: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyStandardWithdrawal": "การถอนเงินมาตรฐาน",
   "@buyStandardWithdrawal": {
@@ -9837,10 +9784,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "ตรวจสอบการตั้งค่า",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "การตรวจสอบแสง",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -10335,15 +10278,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "เกิดข้อผิดพลาดในการโหลดที่อยู่เพิ่มเติม: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "คัดลอก",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10473,15 +10407,6 @@
   "backupWalletVaultProviderCustomLocation": "สถานที่ที่กําหนดเอง",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "เกิดข้อผิดพลาดในการโหลดที่อยู่: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "ประเภทการเชื่อมต่อไม่เริ่มต้น.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -10703,10 +10628,6 @@
   "sellReceiveAmount": "คุณจะได้รับ",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "การตอบสนองจากอุปกรณ์ BitBox กรุณาลองอีกครั้ง.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "การตั้งค่า",
   "@settingsScreenTitle": {
@@ -11855,15 +11776,6 @@
   "payTotal": "ทั้งหมด",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "บันทึกการตั้งค่าไม่สำเร็จ: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "ที่อยู่",
   "@exchangeDcaAddressLabelLightning": {
@@ -13278,5 +13190,7 @@
   "receiveMessageForSender": "ข้อความสำหรับผู้ส่ง",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
-  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ"
+  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
+  "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง"
 }
