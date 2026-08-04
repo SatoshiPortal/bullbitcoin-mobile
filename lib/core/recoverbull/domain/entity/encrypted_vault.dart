@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:hex/hex.dart';
+import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 class EncryptedVault {
@@ -13,14 +13,14 @@ class EncryptedVault {
 
   static bool isValid(String file) => recoverbull.BullBackup.isValid(file);
 
-  String get salt => HEX.encode(backup.salt);
+  String get salt => convert.hex.encode(backup.salt);
 
   String get derivationPath {
     if (backup.path == null) throw EncryptedVaultMissingPath();
     return backup.path!;
   }
 
-  String get id => HEX.encode(backup.id);
+  String get id => convert.hex.encode(backup.id);
 
   DateTime get createdAt =>
       DateTime.fromMillisecondsSinceEpoch(backup.createdAt);
