@@ -1,0 +1,140 @@
+name: Build Legacy Beta (v0.4.3)
+
+# Throwaway workflow for a single purpose: produce a BETA-signed APK of the
+# legacy v0.4.3 app so the pre-v5 backup gate can be tested on a device.
+#
+# Why it exists at all: the gate only fires on an install that carries real
+# legacy data, and Android only accepts an upgrade when applicationId AND the
+# signing cert match. The beta key lives exclusively in GitHub secrets, so both
+# APKs (this one and the one from the remove-hive branch) must be built here to
+# share the same cert.
+#
+# Deliberately NOT the containerized `make android beta` chain from develop:
+# neither the makefile nor Containerfile.app exists on this March-2025 tree, and
+# porting them would mean rebuilding the whole reproducible-build stack against
+# an old Flutter/AGP. Reproducibility is irrelevant for a throwaway test APK —
+# only installability and the signing cert matter.
+
+on:
+  workflow_dispatch:
+    inputs:
+      flutter_version:
+        description: >
+          Flutter SDK tag to build with. 3.29.2 is the stable released the day
+          before the v0.4.3 tag; try 3.27.4 or 3.24.5 if dependency resolution
+          or the legacy Gradle plugin loading fails.
+        type: string
+        default: 3.29.2
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    # Least privilege: this job only checks out and uploads an artifact.
+    permissions:
+      contents: read
+    steps:
+      # Action SHAs are pinned (not mutable tags) exactly as in
+      # build-android.yml on develop: this job handles the beta signing
+      # secrets, so a retag must never be able to execute here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Resolve short commit SHA
+        id: meta
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          # Keep the Android SDK and the tool cache: unlike the containerized
+          # build on develop, this one uses the runner's own SDK and JDK.
+          android: false
+          tool-cache: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Select JDK 21
+        # The legacy tree compiles Java/Kotlin to 21 (android/build.gradle).
+        run: |
+          if [ -z "$JAVA_HOME_21_X64" ]; then
+            echo "::error::JDK 21 is not present on this runner image."
+            exit 1
+          fi
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_21_X64/bin" >> "$GITHUB_PATH"
+
+      - name: Install Flutter ${{ inputs.flutter_version }}
+        # Cloned straight from flutter/flutter at the requested tag rather than
+        # via a third-party setup action: one less unpinned dependency on a
+        # runner that holds signing secrets.
+        run: |
+          git clone --depth 1 --branch "${{ inputs.flutter_version }}" \
+            https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Toolchain versions
+        run: |
+          flutter --version
+          java -version
+          rustc --version
+
+      - name: Add Rust Android target
+        # bdk_flutter / lwk / boltz / payjoin_flutter build Rust through
+        # cargokit; only arm64 is needed for the test device.
+        run: rustup target add aarch64-linux-android
+
+      - name: Dependencies
+        run: flutter pub get
+
+      - name: Code generation
+        # The legacy tree ships no generated sources (freezed / json /
+        # hive adapters), same as its era CI did.
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # Same secret handling as build-android.yml on develop: fail loud rather
+      # than emit an unsigned or debug-signed beta. The presence check lives in
+      # the run body because the `secrets` context is unavailable in `if:`.
+      - name: Configure beta signing key
+        env:
+          BETA_KEYSTORE_BASE64: ${{ secrets.BETA_KEYSTORE_BASE64 }}
+          BETA_KEY_ALIAS: ${{ secrets.BETA_KEY_ALIAS }}
+          BETA_KEY_PASSWORD: ${{ secrets.BETA_KEY_PASSWORD }}
+          BETA_STORE_PASSWORD: ${{ secrets.BETA_STORE_PASSWORD }}
+        run: |
+          if [ -z "$BETA_KEYSTORE_BASE64" ] || [ -z "$BETA_KEY_ALIAS" ] \
+            || [ -z "$BETA_KEY_PASSWORD" ] || [ -z "$BETA_STORE_PASSWORD" ]; then
+            echo "::error::Beta signing secrets (BETA_KEYSTORE_BASE64/BETA_KEY_ALIAS/BETA_KEY_PASSWORD/BETA_STORE_PASSWORD) are not all set; refusing to build an unsigned beta."
+            exit 1
+          fi
+          echo "$BETA_KEYSTORE_BASE64" | base64 -d > android/app/beta-upload.keystore
+          cat > android/key-beta.properties <<EOF
+          storeFile=beta-upload.keystore
+          storePassword=$BETA_STORE_PASSWORD
+          keyAlias=$BETA_KEY_ALIAS
+          keyPassword=$BETA_KEY_PASSWORD
+          EOF
+
+      - name: Build beta APK (arm64)
+        run: |
+          flutter build apk --release --flavor beta \
+            --target-platform android-arm64
+
+      - name: Verify signature and record hash
+        run: |
+          cp build/app/outputs/flutter-apk/app-beta-release.apk BULL-legacy-beta.apk
+          {
+            echo "### Legacy beta APK"
+            echo '```'
+            sha256sum BULL-legacy-beta.apk
+            "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs \
+              BULL-legacy-beta.apk | grep -i "signer #1 certificate SHA-256" || true
+            echo '```'
+            echo "Install over/under the develop beta only if the certificate digest matches."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: BULL-legacy-beta-${{ steps.meta.outputs.sha_short }}
+          path: BULL-legacy-beta.apk
+          retention-days: 30
