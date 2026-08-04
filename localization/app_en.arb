@@ -14583,5 +14583,58 @@
         "type": "int"
       }
     }
+  },
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "@torSettingsEmbeddedTitle": {
+    "description": "Heading for embedded Tor settings"
+  },
+  "torSettingsEmbeddedDescription": "Embedded Tor is used by RecoverBull and Bitcoin Electrum .onion servers. Other app traffic remains direct.",
+  "@torSettingsEmbeddedDescription": {
+    "description": "Explains which traffic uses embedded Tor"
+  },
+  "torSettingsTransportMode": "Connection method",
+  "@torSettingsTransportMode": {
+    "description": "Label for the embedded Tor transport selector"
+  },
+  "torSettingsModeAutomatic": "Automatic",
+  "@torSettingsModeAutomatic": {
+    "description": "Automatic Tor transport mode label"
+  },
+  "torSettingsModeDirect": "Direct",
+  "@torSettingsModeDirect": {
+    "description": "Direct Tor transport mode label"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsExternalProxyTitle": "External Tor proxy (advanced)",
+  "@torSettingsExternalProxyTitle": {
+    "description": "Heading for the optional Orbot override"
+  },
+  "torSettingsExternalProxyDescription": "When enabled, Bitcoin Electrum servers and encrypted backups go through Orbot at the configured port instead of embedded Tor. Liquid is never routed through it.",
+  "@torSettingsExternalProxyDescription": {
+    "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
   }
 }

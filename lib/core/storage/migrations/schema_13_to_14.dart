@@ -8,11 +8,11 @@ import 'package:drift/drift.dart';
 /// - Records which home announcements the user has dismissed (announcement id
 ///   + dismissal timestamp). New table, created empty.
 ///
-/// Schema 14 also briefly carried the Payjoin policy columns on `settings` and
-/// an `is_aborted` flag on the payjoin tables. Payjoin now owns its own
-/// database (payjoin.sqlite, see the bull_payjoin package), and 14 was never
-/// released — every tag up to v6.12.5 ships schema 13 — so those columns were
-/// folded out of this step rather than added and then migrated away.
+/// During development, schema 14 briefly carried the Payjoin policy columns on
+/// `settings` and an `is_aborted` flag on the payjoin tables. Payjoin now owns
+/// its own database (payjoin.sqlite, see the bull_payjoin package), so those
+/// columns were folded out before schema 14 shipped in v6.13.0 rather than
+/// added and then migrated away.
 ///
 /// Adds the order_swaps table and indexes for crash-safe Exchange transfers.
 /// The table includes the nullable quoted_amount_sat column used to validate

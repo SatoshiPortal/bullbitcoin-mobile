@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bull_tor/tor.dart';
 
 class SettingsModel {
   final int id;
@@ -12,6 +13,8 @@ class SettingsModel {
   final bool isDevModeEnabled;
   final bool useTorProxy;
   final int torProxyPort;
+  final TorTransportMode torTransportMode;
+  final TorTransport? lastSuccessfulTorTransport;
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
@@ -28,6 +31,8 @@ class SettingsModel {
     required this.isDevModeEnabled,
     required this.useTorProxy,
     required this.torProxyPort,
+    required this.torTransportMode,
+    this.lastSuccessfulTorTransport,
     required this.themeMode,
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
@@ -46,6 +51,8 @@ class SettingsModel {
       isDevModeEnabled: isDevModeEnabled,
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
+      torTransportMode: torTransportMode.name,
+      lastSuccessfulTorTransport: lastSuccessfulTorTransport?.name,
       themeMode: themeMode.name,
       isErrorReportingEnabled: isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
@@ -65,6 +72,15 @@ class SettingsModel {
       isDevModeEnabled: row.isDevModeEnabled,
       useTorProxy: row.useTorProxy,
       torProxyPort: row.torProxyPort,
+      torTransportMode: TorTransportMode.values.firstWhere(
+        (mode) => mode.name == row.torTransportMode,
+        orElse: () => TorTransportMode.automatic,
+      ),
+      lastSuccessfulTorTransport: switch (row.lastSuccessfulTorTransport) {
+        'direct' => TorTransport.direct,
+        'snowflake' => TorTransport.snowflake,
+        _ => null,
+      },
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,
