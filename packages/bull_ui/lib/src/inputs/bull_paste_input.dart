@@ -2,7 +2,7 @@ import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// A read-only field with a paste button that fills it from the clipboard —
 /// duplicated from `core/widgets/inputs/paste_input.dart`.

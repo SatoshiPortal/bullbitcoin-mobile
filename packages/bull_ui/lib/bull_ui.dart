@@ -84,7 +84,7 @@ export 'package:flutter/material.dart'
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
-export 'package:gap/gap.dart' show Gap;
+export 'src/layout/gap.dart' show Gap;
 
 // Theme.
 export 'src/theme/bull_icon.dart';
