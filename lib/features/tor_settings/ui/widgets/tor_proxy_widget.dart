@@ -39,7 +39,7 @@ class TorProxyWidget extends StatelessWidget {
 
         if (useTorProxy) ...[
           const Gap(16),
-          TorConnectionStatusCard(status: torState.status),
+          TorConnectionStatusCard(connection: torState.connection),
           const Gap(16),
           Card(
             child: SettingsEntryItem(

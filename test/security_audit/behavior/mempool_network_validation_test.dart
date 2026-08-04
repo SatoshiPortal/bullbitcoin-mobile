@@ -7,13 +7,20 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
+import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempool_server_validator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _bitcoinMainnetGenesis =
     '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f';
+
+class _NoTorSessionPort implements MempoolTorSessionPort {
+  @override
+  Future<MempoolTorRoute?> open({required String serverUrl}) async => null;
+}
 
 void main() {
   late HttpServer server;
@@ -40,7 +47,10 @@ void main() {
   });
 
   test('rejects a Bitcoin server configured as a Liquid mempool', () async {
-    final validator = HttpMempoolServerValidator();
+    final validator = HttpMempoolServerValidator(
+      torSessionPort: _NoTorSessionPort(),
+      torHttpClientFactory: const TorHttpClientFactory(),
+    );
 
     final result = await validator.validateServer(
       url: '${server.address.address}:${server.port}',
@@ -62,7 +72,10 @@ void main() {
   test(
     'rejects a Bitcoin mainnet server configured as Liquid testnet',
     () async {
-      final validator = HttpMempoolServerValidator();
+      final validator = HttpMempoolServerValidator(
+        torSessionPort: _NoTorSessionPort(),
+        torHttpClientFactory: const TorHttpClientFactory(),
+      );
 
       final result = await validator.validateServer(
         url: '${server.address.address}:${server.port}',

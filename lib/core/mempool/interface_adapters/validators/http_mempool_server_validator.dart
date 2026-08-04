@@ -1,17 +1,24 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
+import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
+import 'package:bull_tor/tor.dart';
 
 class HttpMempoolServerValidator implements MempoolServerValidatorPort {
-  final TorDatasource? _torDatasource;
+  final MempoolTorSessionPort _torSessionPort;
+  final TorHttpClientFactory _torHttpClientFactory;
 
-  HttpMempoolServerValidator({this._torDatasource});
+  HttpMempoolServerValidator({
+    required this._torSessionPort,
+    required this._torHttpClientFactory,
+  });
   static const _timeout = Duration(seconds: 5);
 
   /// Genesis block hash per network — the chain's own, checksum-protected
@@ -30,9 +37,29 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
     required MempoolServerNetwork network,
     bool enableSsl = true,
   }) async {
+    MempoolTorRoute? route;
+    HttpClient? torClient;
     try {
       final normalizedUrl = NormalizedMempoolUrl(url, enableSsl: enableSsl);
       final fullUrl = normalizedUrl.fullUrl;
+
+      final uri = Uri.parse(fullUrl);
+      if (uri.host.toLowerCase().endsWith('.onion')) {
+        try {
+          route = await _torSessionPort.open(serverUrl: fullUrl);
+          if (route == null) {
+            return const Err(MempoolValidationTorNotRunningFailure());
+          }
+          torClient = _torHttpClientFactory.create(route.endpoint);
+        } on Exception catch (error, stackTrace) {
+          log.severe(
+            message: 'Tor route setup failed',
+            error: error,
+            trace: stackTrace,
+          );
+          return const Err(MempoolValidationTorNotRunningFailure());
+        }
+      }
 
       final dio = Dio(
         BaseOptions(
@@ -42,10 +69,9 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
           sendTimeout: _timeout,
         ),
       );
-      if (Uri.parse(fullUrl).host.endsWith('.onion') &&
-          _torDatasource != null) {
-        (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient =
-            _torDatasource.httpClient;
+      if (torClient != null) {
+        (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () =>
+            torClient!;
       }
 
       // Use a simple endpoint to verify the server is a valid mempool instance.
@@ -117,6 +143,15 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
       return const Err(
         MempoolUnexpectedFailure('Unexpected validation failure'),
       );
+    } finally {
+      // The validator owns both resources for an onion attempt. Clearnet
+      // validation leaves both null and never opens a Tor session.
+      try {
+        torClient?.close(force: true);
+      } catch (_) {}
+      try {
+        await route?.close();
+      } catch (_) {}
     }
   }
 

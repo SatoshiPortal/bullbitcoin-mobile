@@ -16,7 +16,7 @@ class TorSettingsRouter {
     name: TorSettingsRoute.torSettings.name,
     path: TorSettingsRoute.torSettings.path,
     builder: (context, state) => BlocProvider(
-      create: (context) => locator<TorSettingsCubit>()..init(),
+      create: (context) => locator<TorSettingsCubit>(),
       child: const TorSettingsScreen(),
     ),
   );

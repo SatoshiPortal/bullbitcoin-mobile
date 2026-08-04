@@ -13,7 +13,6 @@ import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
-import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
@@ -33,7 +32,6 @@ class CoreLocator {
         warningCallback: log.warning,
       ),
     );
-    await TorLocator.registerDatasources(locator);
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources(locator);
@@ -58,7 +56,6 @@ class CoreLocator {
 
   static Future<void> registerRepositories(GetIt locator) async {
     bull_tor.TorLocator.registerRepositories(locator);
-    await TorLocator.registerRepositories(locator);
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
@@ -93,7 +90,6 @@ class CoreLocator {
     StorageLocator.registerUsecases(locator);
     SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases(locator);
-    TorLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);

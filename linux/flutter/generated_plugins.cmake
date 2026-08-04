@@ -16,7 +16,6 @@ list(APPEND FLUTTER_FFI_PLUGIN_LIST
   jni
   onion
   rust_lib_bull_sdk
-  tor
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
