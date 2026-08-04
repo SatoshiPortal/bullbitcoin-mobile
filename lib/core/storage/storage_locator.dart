@@ -8,18 +8,8 @@ import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_legacy_datasource_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
-import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as fss10;
 import 'package:flutter_secure_storage_legacy/flutter_secure_storage.dart'
     as fss9;
@@ -242,60 +232,11 @@ class StorageLocator {
       () => secureStorageDatasource,
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
-
-    locator.registerLazySingleton<MigrationSecureStorageDatasource>(
-      () => MigrationSecureStorageDatasource(secureStorageDatasource),
-    );
-    // OldHiveDatasource opens its Hive box (and reads the keychain for the
-    // encryption key) lazily on first `getValue`/`saveValue`. Keeping this
-    // out of DI bootstrap avoids hitting -25308 on pre-first-unlock iOS
-    // launches — the box is only needed by legacy v4/v5 migration paths.
-    locator.registerLazySingleton<OldHiveDatasource>(
-      () => OldHiveDatasource(secureStorageDatasource),
-    );
-  }
-
-  static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<OldSeedRepository>(
-      () => OldSeedRepository(locator<MigrationSecureStorageDatasource>()),
-    );
-    locator.registerLazySingleton<OldWalletRepository>(
-      () => OldWalletRepository(locator<OldHiveDatasource>()),
-    );
   }
 
   static void registerUsecases(GetIt locator) {
-    locator.registerFactory<MigrateToV5HiveToSqliteToUsecase>(
-      () => MigrateToV5HiveToSqliteToUsecase(
-        newSeedRepository: locator<SeedRepository>(),
-        oldSeedRepository: locator<OldSeedRepository>(),
-        oldWalletRepository: locator<OldWalletRepository>(),
-        newWalletRepository: locator<WalletRepository>(),
-        secureStorage: locator<MigrationSecureStorageDatasource>(),
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-    locator.registerFactory<GetOldSeedsUsecase>(
-      () => GetOldSeedsUsecase(
-        oldSeedRepository: locator<OldSeedRepository>(),
-        oldWalletRepository: locator<OldWalletRepository>(),
-      ),
-    );
     locator.registerFactory<GetAllSeedsUsecase>(
       () => GetAllSeedsUsecase(seedRepository: locator<SeedRepository>()),
-    );
-    locator.registerFactory<MigrateToV4LegacyUsecase>(
-      () =>
-          MigrateToV4LegacyUsecase(locator<MigrationSecureStorageDatasource>()),
-    );
-    locator.registerFactory<RequiresMigrationUsecase>(
-      () => RequiresMigrationUsecase(
-        locator<MigrationSecureStorageDatasource>(),
-        locator<WalletRepository>(),
-      ),
     );
   }
 }

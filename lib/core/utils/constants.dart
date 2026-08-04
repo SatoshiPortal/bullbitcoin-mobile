@@ -35,16 +35,6 @@ class SecureStorageKeyPrefixConstants {
   static const swapKeyIndex = 'swap_master_key_index_';
 }
 
-class HiveBoxNameConstants {
-  static const settings = 'settings';
-  static const electrumServers = 'electrumServers';
-  static const walletMetadata = 'walletMetadata';
-  static const pdkPayjoins = 'pdkPayjoins';
-  static const boltzSwaps = 'boltzSwaps';
-  static const labels = 'labels';
-  static const labelsByRef = 'labelsByRef';
-}
-
 class AssetConstants {
   static const lbtcMainnet =
       '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';

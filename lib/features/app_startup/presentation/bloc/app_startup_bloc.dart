@@ -1,9 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
-import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
-import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -31,15 +28,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
     required this._checkLegacyInstallUsecase,
-    required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
-    required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
-    required this._requiresMigrationUsecase,
     required this._checkBackupUsecase,
     required this._isTorRequiredUsecase,
     required this._initTorUsecase,
-  }) : _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
-       _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
-       super(const AppStartupState.initial()) {
+  }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
   }
@@ -49,9 +41,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
   final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
-  final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
-  final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
-  final RequiresMigrationUsecase _requiresMigrationUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
@@ -106,51 +95,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         return;
       }
 
-      // SQL Migrations
-      // emit(const AppStartupState.failure(null));
-      // return;
-      final migrationRequired = await _requiresMigrationUsecase.execute();
-      if (migrationRequired == null) {
-        emit(const AppStartupState.loadingInProgress());
-      } else {
-        emit(const AppStartupState.loadingInProgress(requiresMigration: true));
-
-        switch (migrationRequired) {
-          case MigrationRequired.v4:
-            await _migrateToV4LegacyUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
-          case MigrationRequired.v5:
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
-        }
-      }
-
-      // all here future migration calls
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
