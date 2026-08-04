@@ -27,7 +27,7 @@ import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_st
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 

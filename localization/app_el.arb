@@ -380,10 +380,6 @@
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
-  "importWatchOnlyWalletGuides": "Wallet οδηγούς",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Επιβεβαίωση ... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2481,10 +2477,6 @@
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "importColdcardButtonPurchase": "Εργαλείο αγοράς",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@jadeStep15": {
@@ -6393,10 +6385,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "Αγοράστε μια συσκευή",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "Ελάχιστη ποσότητα πώλησης: {amount}",
   "@sellMinimumAmount": {

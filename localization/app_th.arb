@@ -463,10 +463,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "คู่มือ",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "กำลังยืนยัน... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2961,10 +2957,6 @@
   "fundExchangeETransferLabelSecretQuestion": "คําถาม",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "ซื้ออุปกรณ์",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "ตอนนี้พร้อมที่จะออกอากาศ! ทันทีที่คุณคลิกออกอากาศ, การทําธุรกรรมจะตีพิมพ์บนเครือข่าย Bitcoin และเงินจะส่ง.",
   "@jadeStep15": {
@@ -7689,10 +7681,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "ซื้ออุปกรณ์",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "จำนวนขายขั้นต่ำ: {amount}",
   "@sellMinimumAmount": {

@@ -463,10 +463,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "Cüzdan kılavuzları",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Onaylanıyor... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2953,10 +2949,6 @@
   "fundExchangeETransferLabelSecretQuestion": "Gizli soru",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "Satın alma cihazı satın alın",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
   "@jadeStep15": {
@@ -7635,10 +7627,6 @@
   "fundExchangeMethodInstantSepa": "Anında ve standart SEPA transferi",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "importWatchOnlyBuyDevice": "Bir cihaz satın alın",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "Asgari satış miktarı: {amount}",
   "@sellMinimumAmount": {

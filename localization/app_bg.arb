@@ -636,10 +636,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "Ръководства за портфейли",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "Потвърждаване... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -5891,10 +5887,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Купете устройство",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "Минимална сума за продажба: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -10293,7 +10285,6 @@
   "importColdcardScanNfcSheetTitle": "Докоснете вашия {deviceName}, за да импортирате описателя на портфейла през NFC",
   "importColdcardButtonOpenCamera": "Отвори камерата",
   "importColdcardButtonInstructions": "Инструкции",
-  "importColdcardButtonPurchase": "Купи устройство",
   "importColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
   "importColdcardQStep1": "Влезте в устройството си Coldcard Q",
   "importColdcardQStep2": "Добавете защитна парола, ако имате такава (по избор)",

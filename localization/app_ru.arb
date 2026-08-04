@@ -162,7 +162,6 @@
   "exchangeLandingRecommendedExchange": "Bitcoin Exchange",
   "backupWalletHowToDecideVaultMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
   "recoverbullGoBackEdit": "<< Назад и редакцию",
-  "importWatchOnlyWalletGuides": "Настенные гиды",
   "receiveConfirming": "{count}/{required}",
   "@receiveConfirming": {
     "placeholders": {
@@ -998,7 +997,6 @@
   },
   "kruxStep15": "Сделка будет импортирована в кошельке Bull Bitcoin.",
   "fundExchangeETransferLabelSecretQuestion": "Секретный вопрос",
-  "importColdcardButtonPurchase": "Устройство покупки",
   "jadeStep15": "Теперь он готов к трансляции! Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin и средства будут отправлены.",
   "confirmButton": "Подтверждение",
   "transactionSwapInfoClaimableTransfer": "Перенос будет завершен автоматически в течение нескольких секунд. Если нет, вы можете попробовать ручное утверждение, нажав на кнопку \"Заявка на перенос\".",
@@ -2506,7 +2504,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Купить устройство",
   "sellMinimumAmount": "Минимальная сумма продажи: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {

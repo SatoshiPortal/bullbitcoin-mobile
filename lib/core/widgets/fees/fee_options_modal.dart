@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 /// Shared fee-selection bottom sheet — mounted by both the Bitcoin send
 /// confirm screen and the swap confirm page. The widget depends only on

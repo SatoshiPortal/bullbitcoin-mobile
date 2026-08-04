@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class CustomServerInput {
   final String url;

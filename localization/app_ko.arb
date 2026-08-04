@@ -463,10 +463,6 @@
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
   },
-  "importWatchOnlyWalletGuides": "지갑 가이드",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "receiveConfirming": "확인... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2961,10 +2957,6 @@
   "fundExchangeETransferLabelSecretQuestion": "비밀 질문",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "구매 장치",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
   "@jadeStep15": {
@@ -7689,10 +7681,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "제품구매",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "최소 판매량: {amount}",
   "@sellMinimumAmount": {
