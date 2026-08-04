@@ -267,7 +267,7 @@ RUN fvm dart --disable-analytics
 # Wrap rustup with a thin shim that does two things before delegating to the
 # real binary.
 #
-# (1) Version pin. cargokit (payjoin_flutter, tor, bull_sdk's rust_builder)
+# (1) Version pin. cargokit (payjoin_flutter, tor, onion, bull_sdk's rust_builder)
 # hard-codes `rustup run stable cargo build` and `rustup toolchain install
 # stable` — its toolchain option is a fixed stable/beta/nightly enum, so it
 # cannot name a version. An explicit `rustup run stable` outranks both
