@@ -46,6 +46,22 @@ class NoElectrumServersConfiguredException extends ElectrumFallbackException {
     : super('No Electrum servers configured for $network.');
 }
 
+/// A `.onion` server was reached for without a Tor route to carry it.
+///
+/// Connecting anyway would hand the hidden-service address to the device's DNS
+/// resolver — the exact disclosure the user chose an onion server to avoid —
+/// and fail regardless, since no resolver can answer for `.onion`. The attempt
+/// is therefore abandoned before a socket is opened.
+///
+/// Reachable today when a Liquid server is configured as an onion address: LWK
+/// exposes no SOCKS parameter, so that route cannot be built at all.
+class OnionServerWithoutTorException extends ElectrumFallbackException {
+  final String url;
+
+  OnionServerWithoutTorException(this.url)
+    : super('No Tor route available for onion Electrum server $url.');
+}
+
 /// Every server in the active set failed with a transient error.
 ///
 /// The active set is resolved once and is *either* all custom *or* all default
