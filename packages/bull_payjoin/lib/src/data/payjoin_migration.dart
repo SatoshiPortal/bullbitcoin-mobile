@@ -12,15 +12,15 @@ const _legacyImportName = 'root-payjoin-v1';
 
 Future<void> importLegacyPayjoinData(
   PayjoinDatabase database,
-  PayjoinLegacyDataPort source,
-) async {
+  PayjoinLegacyDataPort source, {
+  PayjoinLogPort? log,
+}) async {
   final completed = await (database.select(
     database.payjoinMigrations,
   )..where((row) => row.name.equals(_legacyImportName))).getSingleOrNull();
   if (completed != null) return;
 
-  final snapshot = await source.readSnapshot();
-  _validateSnapshot(snapshot);
+  final snapshot = _quarantineSnapshot(await source.readSnapshot(), log: log);
   final sourceDigest = _snapshotDigest(snapshot);
 
   await database.transaction(() async {
@@ -113,29 +113,89 @@ Future<void> importLegacyPayjoinData(
   });
 }
 
-void _validateSnapshot(PayjoinLegacySnapshot snapshot) {
+/// Keeps only the rows that satisfy the import invariants and reports the
+/// discarded ones. A single corrupt legacy row must not fail the whole
+/// import forever: the caller maps any throw to a permanent
+/// PayjoinMigrationFailure, and `reservedOutpoints()` gates coin selection —
+/// so one bad row would brick every bitcoin send in the app with no
+/// recovery path. Skipped rows are lost for good (the one-shot marker still
+/// records the import), which is why every skip is logged. A corrupt policy
+/// falls back to the defaults (disabled, conservative bounds) rather than
+/// failing: the user can re-enable payjoin in settings.
+PayjoinLegacySnapshot _quarantineSnapshot(
+  PayjoinLegacySnapshot snapshot, {
+  PayjoinLogPort? log,
+}) {
+  var skippedSenders = 0;
   final senderIds = <String>{};
+  final senders = <PayjoinLegacySender>[];
   for (final sender in snapshot.senders) {
-    if (sender.uri.trim().isEmpty || !senderIds.add(sender.uri)) {
-      throw StateError('Invalid or duplicate legacy Payjoin sender');
-    }
-    if (sender.walletId.trim().isEmpty || sender.expireAfterSec <= 0) {
-      throw StateError('Invalid legacy Payjoin sender');
+    if (sender.uri.trim().isNotEmpty &&
+        senderIds.add(sender.uri) &&
+        sender.walletId.trim().isNotEmpty &&
+        sender.expireAfterSec > 0) {
+      senders.add(sender);
+    } else {
+      skippedSenders++;
     }
   }
+  var skippedReceivers = 0;
   final receiverIds = <String>{};
+  final receivers = <PayjoinLegacyReceiver>[];
   for (final receiver in snapshot.receivers) {
-    if (receiver.id.trim().isEmpty || !receiverIds.add(receiver.id)) {
-      throw StateError('Invalid or duplicate legacy Payjoin receiver');
-    }
-    if (receiver.walletId.trim().isEmpty || receiver.expireAfterSec <= 0) {
-      throw StateError('Invalid legacy Payjoin receiver');
+    if (receiver.id.trim().isNotEmpty &&
+        receiverIds.add(receiver.id) &&
+        receiver.walletId.trim().isNotEmpty &&
+        receiver.expireAfterSec > 0) {
+      receivers.add(receiver);
+    } else {
+      skippedReceivers++;
     }
   }
-  PayjoinPolicy(
-    enabled: snapshot.policy.enabled,
-    minimumAmount: Sats.fromInt(snapshot.policy.minimumAmountSat),
-    sessionLifetime: Duration(seconds: snapshot.policy.sessionLifetimeSeconds),
+
+  var policy = snapshot.policy;
+  try {
+    PayjoinPolicy(
+      enabled: policy.enabled,
+      minimumAmount: Sats.fromInt(policy.minimumAmountSat),
+      sessionLifetime: Duration(seconds: policy.sessionLifetimeSeconds),
+    );
+  } catch (_) {
+    final defaults = PayjoinPolicy.defaults();
+    policy = PayjoinLegacyPolicy(
+      enabled: defaults.enabled,
+      minimumAmountSat: defaults.minimumAmount.value.toInt(),
+      sessionLifetimeSeconds: defaults.sessionLifetime.inSeconds,
+    );
+    log?.write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.warning,
+        code: PayjoinLogCode.migrationFailure,
+        error: StateError(
+          'Legacy Payjoin policy was invalid; imported defaults instead',
+        ),
+      ),
+    );
+  }
+
+  if (skippedSenders > 0 || skippedReceivers > 0) {
+    log?.write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.warning,
+        code: PayjoinLogCode.migrationFailure,
+        error: StateError(
+          'Skipped $skippedSenders invalid legacy Payjoin sender(s) and '
+          '$skippedReceivers receiver(s) during import',
+        ),
+      ),
+    );
+  }
+
+  return PayjoinLegacySnapshot(
+    sourceSchemaVersion: snapshot.sourceSchemaVersion,
+    senders: senders,
+    receivers: receivers,
+    policy: policy,
   );
 }
 

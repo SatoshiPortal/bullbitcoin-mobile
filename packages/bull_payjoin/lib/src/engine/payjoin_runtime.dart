@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_migration.dart';
@@ -32,10 +34,27 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   // other's destination, and the order of `openPayjoin` calls would silently
   // decide where a session's failures are reported.
   final payjoinLog = logger.PayjoinLogger(log);
-  PayjoinDatabase? database;
+  var database = await _tryOpenDatabase(databasePath, payjoinLog);
+  if (database == null) {
+    // Self-heal: a corrupt database file or a schema downgrade would
+    // otherwise fail every open retry identically — and because
+    // reservedOutpoints() gates coin selection, that bricks every bitcoin
+    // send in the app until reinstall. Move the unreadable file aside (kept
+    // for forensics) and retry once with a fresh database; the legacy import
+    // below re-populates it from the root database's legacy tables. Sessions
+    // created after that import are lost, but their funds are not: a
+    // sender's counterparty still holds the original and can broadcast it,
+    // and a receiver's sender owns their own fallback.
+    database = await _quarantineAndReopenDatabase(databasePath, payjoinLog);
+    if (database == null) {
+      return const Err(
+        PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
+      );
+    }
+  }
+
   try {
-    database = PayjoinDatabase.open(databasePath);
-    await importLegacyPayjoinData(database, legacyData);
+    await importLegacyPayjoinData(database, legacyData, log: log);
     final local = LocalPayjoinDatasource(db: database);
     final policy = PayjoinPolicyStore(database);
     await policy.load();
@@ -62,17 +81,81 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     final roles = _PayjoinRoles(engine, policy, wallet);
     return Ok(_PayjoinLifecycle(database, engine, roles.payjoin));
   } catch (error, trace) {
+    // No quarantine-and-retry here: with the import's row-level quarantine,
+    // a post-open throw is an IO/disk problem or a bug — a fresh file would
+    // not help and would needlessly discard readable payjoin history.
     payjoinLog.severe(
       message: 'Could not open or migrate Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
     );
-    await database?.close();
+    await database.close();
     return const Err(
       PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
     );
   }
+}
+
+Future<PayjoinDatabase?> _tryOpenDatabase(
+  String databasePath,
+  logger.PayjoinLogger payjoinLog,
+) async {
+  try {
+    final database = PayjoinDatabase.open(databasePath);
+    // Force the lazy open NOW: drift spawns the background isolate, opens
+    // the file and runs schema migrations on the first statement, so a
+    // corrupt file or a schema downgrade surfaces here rather than
+    // mid-import.
+    await database.customSelect('SELECT 1').getSingle();
+    return database;
+  } catch (error, trace) {
+    payjoinLog.severe(
+      message: 'Could not open Payjoin storage',
+      code: PayjoinLogCode.migrationFailure,
+      error: error,
+      trace: trace,
+    );
+    return null;
+  }
+}
+
+Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
+  String databasePath,
+  logger.PayjoinLogger payjoinLog,
+) async {
+  try {
+    final suffix =
+        '.unreadable-${DateTime.now().toUtc().millisecondsSinceEpoch}';
+    // The WAL and SHM siblings belong to the unreadable database: leaving
+    // them in place would let SQLite replay them into the FRESH database
+    // created at the same path. Rename all three together.
+    for (final path in [
+      databasePath,
+      '$databasePath-wal',
+      '$databasePath-shm',
+    ]) {
+      final file = File(path);
+      if (file.existsSync()) await file.rename('$path$suffix');
+    }
+  } catch (error, trace) {
+    payjoinLog.severe(
+      message: 'Could not quarantine unreadable Payjoin storage',
+      code: PayjoinLogCode.migrationFailure,
+      error: error,
+      trace: trace,
+    );
+    return null;
+  }
+  payjoinLog.warning(
+    '',
+    code: PayjoinLogCode.migrationFailure,
+    error: StateError(
+      'Moved unreadable Payjoin database aside and reopened a fresh one; '
+      'sessions created after the legacy import were lost',
+    ),
+  );
+  return _tryOpenDatabase(databasePath, payjoinLog);
 }
 
 final class _PayjoinLifecycle implements PayjoinLifecycle {

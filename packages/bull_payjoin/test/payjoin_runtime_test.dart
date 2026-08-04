@@ -143,7 +143,7 @@ void main() {
     await lifecycle.dispose();
   });
 
-  test('returns a migration failure for invalid legacy policy', () async {
+  test('falls back to default policy for invalid legacy policy', () async {
     final log = _LogPort();
     final result = await open(
       const PayjoinLegacyPolicy(
@@ -154,9 +154,26 @@ void main() {
       log: log,
     );
 
-    expect(result, isA<Err<PayjoinLifecycle, PayjoinFailure>>());
-    expect(log.events, hasLength(1));
-    expect(log.events.single.code, PayjoinLogCode.migrationFailure);
-    expect(log.events.single.trace, isNotNull);
+    // An invalid legacy policy must not brick the open: the import
+    // quarantines it and falls back to the defaults (disabled, conservative
+    // bounds), reporting the substitution as a warning.
+    final lifecycle = switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    final policy = await lifecycle.payjoin.policy.load();
+    final loaded = switch (policy) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    final defaults = PayjoinPolicy.defaults();
+    expect(loaded.enabled, defaults.enabled);
+    expect(loaded.minimumAmount.value, defaults.minimumAmount.value);
+    expect(loaded.sessionLifetime, defaults.sessionLifetime);
+    expect(
+      log.events.where((e) => e.code == PayjoinLogCode.migrationFailure),
+      isNotEmpty,
+    );
+    await lifecycle.dispose();
   });
 }

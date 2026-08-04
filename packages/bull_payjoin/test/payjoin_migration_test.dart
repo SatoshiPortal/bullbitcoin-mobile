@@ -138,25 +138,125 @@ void main() {
     expect(source.reads, 1);
   });
 
-  test('rolls back every target write when validation fails', () async {
+  test('audit reproducer (H5): invalid rows are quarantined, not fatal', () async {
     final valid = _snapshot();
     final source = _LegacyData(
       PayjoinLegacySnapshot(
         sourceSchemaVersion: valid.sourceSchemaVersion,
+        // Duplicate uri: one corrupt row must not brick the whole import —
+        // the caller maps any throw to a permanent migration failure, and
+        // reservedOutpoints() gates coin selection app-wide.
         senders: [valid.senders.single, valid.senders.single],
         receivers: valid.receivers,
         policy: valid.policy,
       ),
     );
 
-    await expectLater(
-      importLegacyPayjoinData(database, source),
-      throwsStateError,
+    await importLegacyPayjoinData(database, source);
+
+    expect(await database.select(database.payjoinSenders).get(), hasLength(1));
+    expect(
+      await database.select(database.payjoinReceivers).get(),
+      hasLength(1),
+    );
+    expect(await database.select(database.payjoinPolicies).get(), hasLength(1));
+    final marker = await database
+        .select(database.payjoinMigrations)
+        .getSingle();
+    expect(marker.senderCount, 1);
+    expect(marker.receiverCount, 1);
+  });
+
+  test('quarantines rows with blank ids or non-positive expiry', () async {
+    final valid = _snapshot();
+    final badSender = PayjoinLegacySender(
+      uri: 'bitcoin:bad?pj=https://payjo.in/bad',
+      isTestnet: false,
+      protocolState: '[]',
+      walletId: ' ',
+      originalPsbt: 'psbt',
+      originalTransactionId: 'tx',
+      amountSat: 1,
+      createdAt: 1,
+      expireAfterSec: 86400,
+      proposalPsbt: null,
+      transactionId: null,
+      isExpired: false,
+      isCompleted: false,
+      isAborted: false,
+    );
+    final badReceiver = PayjoinLegacyReceiver(
+      id: 'bad-receiver',
+      address: 'bc1qbad',
+      isTestnet: false,
+      protocolState: '[]',
+      walletId: 'wallet',
+      payjoinUri: 'bitcoin:bad?pj=https://payjo.in/bad',
+      maximumFeeRateSatPerVbyte: BigInt.from(1),
+      createdAt: 1,
+      expireAfterSec: 0,
+      originalTransaction: null,
+      originalTransactionId: null,
+      amountSat: null,
+      proposalPsbt: null,
+      transactionId: null,
+      isExpired: false,
+      isCompleted: false,
+      isAborted: false,
+    );
+    final source = _LegacyData(
+      PayjoinLegacySnapshot(
+        sourceSchemaVersion: valid.sourceSchemaVersion,
+        senders: [valid.senders.single, badSender],
+        receivers: [valid.receivers.single, badReceiver],
+        policy: valid.policy,
+      ),
     );
 
-    expect(await database.select(database.payjoinSenders).get(), isEmpty);
-    expect(await database.select(database.payjoinReceivers).get(), isEmpty);
-    expect(await database.select(database.payjoinPolicies).get(), isEmpty);
-    expect(await database.select(database.payjoinMigrations).get(), isEmpty);
+    await importLegacyPayjoinData(database, source);
+
+    expect(await database.select(database.payjoinSenders).get(), hasLength(1));
+    expect(
+      await database.select(database.payjoinReceivers).get(),
+      hasLength(1),
+    );
   });
+
+  test(
+    'falls back to default policy when the legacy policy is invalid',
+    () async {
+      final valid = _snapshot();
+      final source = _LegacyData(
+        PayjoinLegacySnapshot(
+          sourceSchemaVersion: valid.sourceSchemaVersion,
+          senders: valid.senders,
+          receivers: valid.receivers,
+          // Below the 1000-sat minimum: invalid per PayjoinPolicy.
+          policy: const PayjoinLegacyPolicy(
+            enabled: true,
+            minimumAmountSat: 10,
+            sessionLifetimeSeconds: 7200,
+          ),
+        ),
+      );
+
+      await importLegacyPayjoinData(database, source);
+
+      final policy = await database
+          .select(database.payjoinPolicies)
+          .getSingle();
+      final defaults = PayjoinPolicy.defaults();
+      expect(policy.enabled, defaults.enabled);
+      expect(policy.minimumAmountSat, defaults.minimumAmount.value.toInt());
+      expect(
+        policy.sessionLifetimeSeconds,
+        defaults.sessionLifetime.inSeconds,
+      );
+      // Sessions still import.
+      expect(
+        await database.select(database.payjoinSenders).get(),
+        hasLength(1),
+      );
+    },
+  );
 }
