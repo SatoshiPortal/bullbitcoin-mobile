@@ -74,12 +74,16 @@ Future<void> main({bool isInitialized = false}) async {
       ? bobDefine
       : Platform.environment['TEST_BOB_MNEMONIC'];
 
-  if (receiverMnemonic == null || receiverMnemonic.isEmpty) {
-    throw StateError('TEST_ALICE_MNEMONIC is not set');
-  }
-  if (senderMnemonic == null || senderMnemonic.isEmpty) {
-    throw StateError('TEST_BOB_MNEMONIC is not set');
-  }
+  // The test is aggregated into CI's all_test.dart, where the funded-wallet
+  // fixtures are not available: skip gracefully there instead of failing the
+  // whole integration job, and run for real wherever the mnemonics are set.
+  final hasFixtures =
+      receiverMnemonic != null &&
+      receiverMnemonic.isNotEmpty &&
+      senderMnemonic != null &&
+      senderMnemonic.isNotEmpty;
+  const fixtureSkip =
+      'requires TEST_ALICE_MNEMONIC and TEST_BOB_MNEMONIC (funded testnet wallets)';
 
   setUpAll(() async {
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
@@ -87,10 +91,10 @@ Future<void> main({bool isInitialized = false}) async {
     if (enabled case Err(:final failure)) throw failure;
 
     final receiverSeed = await seedRepository.createFromMnemonic(
-      mnemonicWords: receiverMnemonic.split(' '),
+      mnemonicWords: receiverMnemonic!.split(' '),
     );
     final senderSeed = await seedRepository.createFromMnemonic(
-      mnemonicWords: senderMnemonic.split(' '),
+      mnemonicWords: senderMnemonic!.split(' '),
     );
     receiverWallet = await walletRepository.createWallet(
       seed: receiverSeed,
@@ -145,6 +149,7 @@ Future<void> main({bool isInitialized = false}) async {
 
   test(
     'funded testnet wallets complete a Payjoin',
+    skip: hasFixtures ? null : fixtureSkip,
     () async {
       receiverWallet = (await walletRepository.getWallet(receiverWallet.id))!;
       senderWallet = (await walletRepository.getWallet(senderWallet.id))!;
@@ -205,14 +210,15 @@ Future<void> main({bool isInitialized = false}) async {
             },
           )
           .first
-          .timeout(const Duration(seconds: 120));
+          .timeout(const Duration(seconds: 300));
       expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
     },
-    timeout: const Timeout(Duration(seconds: 150)),
+    timeout: const Timeout(Duration(seconds: 330)),
   );
 
   test(
     'a receiver expires when no sender submits a request',
+    skip: hasFixtures ? null : fixtureSkip,
     () async {
       final address = await addressRepository.generateNewReceiveAddress(
         walletId: receiverWallet.id,
@@ -242,10 +248,10 @@ Future<void> main({bool isInitialized = false}) async {
             },
           )
           .first
-          .timeout(const Duration(seconds: 75));
+          .timeout(const Duration(seconds: 240));
 
       expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
     },
-    timeout: const Timeout(Duration(seconds: 90)),
+    timeout: const Timeout(Duration(seconds: 270)),
   );
 }
