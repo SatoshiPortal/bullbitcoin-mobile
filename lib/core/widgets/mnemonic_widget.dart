@@ -309,12 +309,17 @@ class MnemonicWord extends StatelessWidget {
                   controller: controller,
                   inputFormatters: [
                     // A locked word was the only possibility left: swallow any
-                    // further edit instead of closing the keyboard - the field
-                    // stays focused and editable, but the word cannot be
-                    // broken. The clear icon still unlocks it.
-                    TextInputFormatter.withFunction(
-                      (oldValue, newValue) => locked ? oldValue : newValue,
-                    ),
+                    // further typing instead of closing the keyboard - the
+                    // field stays focused and editable, but the word cannot be
+                    // broken. A deletion empties the field instead, which
+                    // unlocks it: backspace is the user's undo instinct, and
+                    // the clear icon remains the explicit way out.
+                    TextInputFormatter.withFunction((oldValue, newValue) {
+                      if (!locked) return newValue;
+                      final isDeletion =
+                          newValue.text.length < oldValue.text.length;
+                      return isDeletion ? TextEditingValue.empty : oldValue;
+                    }),
                     // Keeps the previous behaviour of lowercasing as you type.
                     // Same length in and out, so the caret position stays valid.
                     TextInputFormatter.withFunction(

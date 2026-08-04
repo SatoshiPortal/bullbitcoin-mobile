@@ -453,6 +453,39 @@ void main() {
       );
     });
 
+    testWidgets('backspace on an auto-filled word empties and unlocks it', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {}, allowAutoFillWords: true);
+
+      await tester.tap(wordField(0));
+      await tester.pump();
+      await tester.enterText(wordField(0), 'aba');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(0)).controller!.text,
+        equals('abandon'),
+      );
+
+      // A deletion is the user's undo instinct: the field empties (as the
+      // clear icon would) instead of ignoring the keystroke.
+      await tester.enterText(wordField(0), 'abando');
+      await tester.pump();
+      expect(tester.widget<TextField>(wordField(0)).controller!.text, isEmpty);
+      expect(
+        tester.widget<TextField>(wordField(0)).focusNode!.hasFocus,
+        isTrue,
+      );
+
+      // Unlocked: typing completes again.
+      await tester.enterText(wordField(0), 'abi');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(0)).controller!.text,
+        equals('ability'),
+      );
+    });
+
     testWidgets('marks a last word that cannot close the checksum as wrong', (
       tester,
     ) async {
