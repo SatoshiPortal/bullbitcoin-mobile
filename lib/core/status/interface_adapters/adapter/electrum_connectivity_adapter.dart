@@ -53,6 +53,9 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
         (server) => _serverStatusPort.checkElectrum(
           url: server.url,
           network: serverNetwork,
+          // Default servers serve CA-signed certs and must validate
+          // strictly; only the user's own custom servers may be self-signed.
+          skipCertValidation: server.isCustom,
         ),
       ),
     );

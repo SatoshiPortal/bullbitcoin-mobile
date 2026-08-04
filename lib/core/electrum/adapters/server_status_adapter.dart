@@ -58,6 +58,7 @@ class ServerStatusAdapter implements ServerStatusPort {
   Future<ElectrumServerStatus> checkElectrum({
     required String url,
     required ElectrumServerNetwork network,
+    required bool skipCertValidation,
     int? timeout,
   }) async {
     try {
@@ -79,6 +80,7 @@ class ServerStatusAdapter implements ServerStatusPort {
         uri: uri,
         request: request,
         timeoutSeconds: effectiveTimeout,
+        skipCertValidation: skipCertValidation,
       );
 
       if (response.isEmpty) return ElectrumServerStatus.offline;
@@ -135,13 +137,18 @@ class ServerStatusAdapter implements ServerStatusPort {
     required Uri uri,
     required String request,
     required int timeoutSeconds,
+    required bool skipCertValidation,
   }) async {
+    // A null onBadCertificate callback enforces strict CA validation — used
+    // for default servers, which all serve CA-signed certs. Validation is
+    // skipped only for user-configured custom servers (personal nodes),
+    // where the user vouches for the endpoint.
     final Socket socket = uri.scheme == 'ssl'
         ? await SecureSocket.connect(
             uri.host,
             uri.port,
             timeout: Duration(seconds: timeoutSeconds),
-            onBadCertificate: (_) => true, // accept self-signed certs
+            onBadCertificate: skipCertValidation ? (_) => true : null,
           )
         : await Socket.connect(
             uri.host,

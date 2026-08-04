@@ -61,9 +61,12 @@ class AddCustomServerUsecase {
 
       // Step 2: verify the server actually serves chain data by fetching a
       // known historical tx (falls back to server.version on testnets).
+      // Self-signed certs are tolerated here: this is the user's own server
+      // (personal nodes commonly use self-signed certs).
       final protocolStatus = await _serverStatusPort.checkElectrum(
         url: server.url,
         network: server.network,
+        skipCertValidation: true,
       );
       if (protocolStatus == ElectrumServerStatus.offline) {
         return const Err(ElectrumServerUnreachableFailure());
