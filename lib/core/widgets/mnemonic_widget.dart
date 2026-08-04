@@ -575,7 +575,13 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
 
   void _onHintTap(int index, String word) {
     widget.controllers[index].text = word;
-    _focusNext(index + 1);
+    // Like the auto fill, a tapped chip completes the sentence on the last
+    // field: the same natural moment to dismiss the keyboard.
+    if (index == widget.controllers.length - 1) {
+      _focusNodes[index].unfocus();
+    } else {
+      _focusNext(index + 1);
+    }
   }
 
   Widget _buildHintsList() {

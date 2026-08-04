@@ -290,6 +290,31 @@ void main() {
       expect(find.text('128 possible last words'), findsOneWidget);
     });
 
+    testWidgets('tapping a chip on the last field dismisses the keyboard', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, [...validWords.take(11), '']);
+
+      await tester.tap(wordField(11));
+      await tester.pump();
+      await tester.enterText(wordField(11), 'sen');
+      await tester.pump();
+      await tester.tap(find.text('senior'));
+      await tester.pump();
+
+      expect(
+        tester.widget<TextField>(wordField(11)).controller!.text,
+        equals('senior'),
+      );
+      // A tapped chip completes the sentence, like the auto fill: the same
+      // natural moment to dismiss the keyboard.
+      expect(
+        tester.widget<TextField>(wordField(11)).focusNode!.hasFocus,
+        isFalse,
+      );
+    });
+
     testWidgets('falls back to the full list while earlier words are missing', (
       tester,
     ) async {
