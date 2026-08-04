@@ -26,10 +26,11 @@ on:
   workflow_dispatch:
 
 env:
-  # 3.29.2 is the stable released the day before the v0.4.3 tag. Try 3.27.4
-  # then 3.24.5 if dependency resolution or the legacy Gradle plugin loading
-  # fails.
-  FLUTTER_VERSION: 3.29.2
+  # 3.27.4 is the last stable BEFORE 3.29, which removed support for applying
+  # Flutter's Gradle plugins imperatively (`apply from: app_plugin_loader
+  # .gradle`) — still how this March-2025 tree wires them, so 3.29.x fails hard
+  # at `assembleBetaRelease`. Drop to 3.24.5 if 3.27.4 also refuses.
+  FLUTTER_VERSION: 3.27.4
 
 jobs:
   build:
