@@ -1,35 +1,24 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/confirm_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/estimate_sell_payin_fees_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/recalculate_sell_payin_fees_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/start_sell_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_sell_order_status_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
-import 'package:bb_mobile/core/utils/liquid_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/load_sell_utxos_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,24 +30,14 @@ part 'sell_state.dart';
 
 class SellBloc extends Bloc<SellEvent, SellState> {
   SellBloc({
-    required this._getExchangeUserSummaryUsecase,
-    required this._getSettingsUsecase,
+    required this._startSellUsecase,
+    required this._confirmSellPayinUsecase,
     required this._createSellOrderUsecase,
     required this._refreshSellOrderUsecase,
-    required this._prepareBitcoinSendUsecase,
-    required this._prepareLiquidSendUsecase,
-    required this._signBitcoinTxUsecase,
-    required this._signLiquidTxUsecase,
-    required this._broadcastBitcoinTransactionUsecase,
-    required this._broadcastLiquidTransactionUsecase,
-    required this._getNetworkFeesUsecase,
-    required this._calculateLiquidAbsoluteFeesUsecase,
-    required this._calculateBitcoinAbsoluteFeesUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
-    required this._getAddressAtIndexUsecase,
-    required this._getWalletUtxosUsecase,
-    required this._getOrderUsecase,
-    required this._labelsFacade,
+    required this._estimateSellPayinFeesUsecase,
+    required this._recalculateSellPayinFeesUsecase,
+    required this._loadSellUtxosUsecase,
+    required this._getSellOrderStatusUsecase,
   }) : super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -75,40 +54,27 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     on<SellLoadUtxos>(_onLoadUtxos);
   }
 
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final StartSellUsecase _startSellUsecase;
+  final ConfirmSellPayinUsecase _confirmSellPayinUsecase;
   final CreateSellOrderUsecase _createSellOrderUsecase;
   final RefreshSellOrderUsecase _refreshSellOrderUsecase;
-  final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
-  final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
-  final SignBitcoinTxUsecase _signBitcoinTxUsecase;
-  final SignLiquidTxUsecase _signLiquidTxUsecase;
-  final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
-  final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
-  final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
-  final CalculateBitcoinAbsoluteFeesUsecase
-  _calculateBitcoinAbsoluteFeesUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
-  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
-  final GetWalletUtxosUsecase _getWalletUtxosUsecase;
-  final GetOrderUsecase _getOrderUsecase;
-  final LabelsFacade _labelsFacade;
+  final EstimateSellPayinFeesUsecase _estimateSellPayinFeesUsecase;
+  final RecalculateSellPayinFeesUsecase _recalculateSellPayinFeesUsecase;
+  final LoadSellUtxosUsecase _loadSellUtxosUsecase;
+  final GetSellOrderStatusUsecase _getSellOrderStatusUsecase;
   Timer? _pollingTimer;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
-    try {
-      final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      final settings = await _getSettingsUsecase.execute();
-
-      emit(
-        SellState.amountInput(
-          userSummary: userSummary,
-          bitcoinUnit: settings.bitcoinUnit,
-        ),
-      );
-    } on GetExchangeUserSummaryException catch (e) {
-      emit(SellState.initial(getUserSummaryException: e));
+    switch (await _startSellUsecase.execute()) {
+      case Ok(:final value):
+        emit(
+          SellState.amountInput(
+            userSummary: value.userSummary,
+            bitcoinUnit: value.bitcoinUnit,
+          ),
+        );
+      case Err(:final failure):
+        emit(SellState.initial(failure: failure));
     }
   }
 
@@ -149,9 +115,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     SellWalletSelected event,
     Emitter<SellState> emit,
   ) async {
-    int absoluteFees = 0;
-    double exchangeRateEstimate = 0.0;
-
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe(
@@ -161,133 +124,79 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       return;
     }
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
-    try {
-      int requiredAmountSat;
-      exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: walletSelectionState.fiatCurrency.code,
-      );
 
-      if (walletSelectionState.orderAmount.isFiat) {
-        requiredAmountSat = ConvertAmount.fiatToSats(
-          walletSelectionState.orderAmount.amount,
-          exchangeRateEstimate,
-        );
-      } else {
-        // The order amount is in BTC
-        requiredAmountSat = ConvertAmount.btcToSats(
-          walletSelectionState.orderAmount.amount,
-        );
-      }
-
-      if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+    final int absoluteFees;
+    final double exchangeRateEstimate;
+    switch (await _estimateSellPayinFeesUsecase.execute(
+      wallet: event.wallet,
+      orderAmount: walletSelectionState.orderAmount,
+      fiatCurrency: walletSelectionState.fiatCurrency,
+    )) {
+      case Err(:final failure):
         emit(
           walletSelectionState.copyWith(
-            error: SellError.insufficientBalance(
-              requiredAmountSat: requiredAmountSat,
-            ),
-          ),
-        );
-        return;
-      }
-
-      final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
-          .execute(walletId: event.wallet.id, index: 0);
-
-      if (event.wallet.isLiquid) {
-        final pset = await _prepareLiquidSendUsecase.execute(
-          walletId: event.wallet.id,
-          address: dummyAddressForFeeCalculation.address,
-          amountSat: requiredAmountSat,
-          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
-          feeRate: const RelativeFee(25),
-        );
-        absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: pset,
-        );
-      } else {
-        final bitcoinFees = await _getNetworkFeesUsecase.execute(
-          isLiquid: false,
-        );
-        final fastestFee = bitcoinFees.fastest;
-
-        final preparedSend = await _prepareBitcoinSendUsecase.execute(
-          walletId: event.wallet.id,
-          address: dummyAddressForFeeCalculation.address,
-          amountSat: requiredAmountSat,
-          networkFee: fastestFee,
-        );
-        absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: preparedSend.unsignedPsbt,
-        );
-      }
-    } catch (e) {
-      emit(
-        walletSelectionState.copyWith(
-          error: SellError.unexpected(
-            message: 'Failed to prepare transaction: $e',
-          ),
-        ),
-      );
-      return;
-    }
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
-    try {
-      final createdSellOrder = await _createSellOrderUsecase.execute(
-        orderAmount: walletSelectionState.orderAmount,
-        currency: walletSelectionState.fiatCurrency,
-        network: event.wallet.isLiquid
-            ? OrderBitcoinNetwork.liquid
-            : OrderBitcoinNetwork.bitcoin,
-      );
-
-      if (!event.wallet.isLiquid) {
-        final utxos = await _getWalletUtxosUsecase.execute(
-          walletId: event.wallet.id,
-        );
-        emit(
-          walletSelectionState.toSendPaymentState(
-            selectedWallet: event.wallet,
-            createdSellOrder: createdSellOrder,
-            absoluteFees: absoluteFees,
-            utxos: utxos,
-            exchangeRateEstimate: exchangeRateEstimate,
-          ),
-        );
-      } else {
-        emit(
-          walletSelectionState.toSendPaymentState(
-            selectedWallet: event.wallet,
-            createdSellOrder: createdSellOrder,
-            absoluteFees: absoluteFees,
-            exchangeRateEstimate: exchangeRateEstimate,
-          ),
-        );
-      }
-      _startPolling();
-    } on PrepareLiquidSendException catch (e) {
-      emit(
-        walletSelectionState.copyWith(
-          error: SellError.unexpected(message: e.message),
-        ),
-      );
-    } on PrepareBitcoinSendException catch (e) {
-      emit(
-        walletSelectionState.copyWith(
-          error: SellError.unexpected(message: e.message),
-        ),
-      );
-    } on SellError catch (e) {
-      emit(walletSelectionState.copyWith(error: e));
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-    } finally {
-      if (state is SellWalletSelectionState) {
-        emit(
-          (state as SellWalletSelectionState).copyWith(
+            error: failure,
             isCreatingSellOrder: false,
           ),
         );
-      }
+        return;
+      case Ok(:final value):
+        absoluteFees = value.absoluteFees;
+        exchangeRateEstimate = value.exchangeRateEstimate;
+    }
+
+    switch (await _createSellOrderUsecase.execute(
+      orderAmount: walletSelectionState.orderAmount,
+      currency: walletSelectionState.fiatCurrency,
+      network: event.wallet.isLiquid
+          ? OrderBitcoinNetwork.liquid
+          : OrderBitcoinNetwork.bitcoin,
+    )) {
+      case Err(:final failure):
+        emit(
+          walletSelectionState.copyWith(
+            error: failure,
+            isCreatingSellOrder: false,
+          ),
+        );
+        return;
+      case Ok(:final value):
+        if (!event.wallet.isLiquid) {
+          final List<WalletUtxo> utxos;
+          switch (await _loadSellUtxosUsecase.execute(
+            walletId: event.wallet.id,
+          )) {
+            case Err(:final failure):
+              emit(
+                walletSelectionState.copyWith(
+                  error: failure,
+                  isCreatingSellOrder: false,
+                ),
+              );
+              return;
+            case Ok(value: final loadedUtxos):
+              utxos = loadedUtxos;
+          }
+          emit(
+            walletSelectionState.toSendPaymentState(
+              selectedWallet: event.wallet,
+              createdSellOrder: value,
+              absoluteFees: absoluteFees,
+              utxos: utxos,
+              exchangeRateEstimate: exchangeRateEstimate,
+            ),
+          );
+        } else {
+          emit(
+            walletSelectionState.toSendPaymentState(
+              selectedWallet: event.wallet,
+              createdSellOrder: value,
+              absoluteFees: absoluteFees,
+              exchangeRateEstimate: exchangeRateEstimate,
+            ),
+          );
+        }
+        _startPolling();
     }
   }
 
@@ -307,33 +216,23 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     }
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
 
-    try {
-      final createdSellOrder = await _createSellOrderUsecase.execute(
-        orderAmount: walletSelectionState.orderAmount,
-        currency: walletSelectionState.fiatCurrency,
-        network: event.network,
-      );
-
-      // Proceed to confirmation state
-      emit(
-        walletSelectionState.toReceivePaymentState(
-          createdSellOrder: createdSellOrder,
-        ),
-      );
-      _startPolling();
-    } on SellError catch (e) {
-      emit(walletSelectionState.copyWith(error: e));
-    } catch (e) {
-      // Log unexpected errors
-      log.severe(error: e, trace: StackTrace.current);
-    } finally {
-      if (state is SellWalletSelectionState) {
+    switch (await _createSellOrderUsecase.execute(
+      orderAmount: walletSelectionState.orderAmount,
+      currency: walletSelectionState.fiatCurrency,
+      network: event.network,
+    )) {
+      case Err(:final failure):
         emit(
-          (state as SellWalletSelectionState).copyWith(
+          walletSelectionState.copyWith(
+            error: failure,
             isCreatingSellOrder: false,
           ),
         );
-      }
+      case Ok(:final value):
+        emit(
+          walletSelectionState.toReceivePaymentState(createdSellOrder: value),
+        );
+        _startPolling();
     }
   }
 
@@ -351,16 +250,15 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       return;
     }
 
-    try {
-      final refreshedOrder = await _refreshSellOrderUsecase.execute(
-        orderId: paymentState.sellOrder.orderId,
-      );
-
-      emit(paymentState.copyWith(sellOrder: refreshedOrder));
-    } on SellError catch (e) {
-      emit(paymentState.copyWith(error: e));
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+    switch (await _refreshSellOrderUsecase.execute(
+      orderId: paymentState.sellOrder.orderId,
+    )) {
+      case Ok(:final value):
+        emit(paymentState.copyWith(sellOrder: value, error: null));
+      case Err():
+        // Background refresh: the use-case already logged it. Don't surface a
+        // transient failure; the next refresh heals it.
+        return;
     }
   }
 
@@ -378,136 +276,48 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       return;
     }
 
+    final wallet = sellPaymentState.selectedWallet;
+    if (wallet == null) {
+      log.severe(
+        error: 'no wallet selected to send payment',
+        trace: StackTrace.current,
+      );
+      emit(
+        sellPaymentState.copyWith(
+          error: const SellUnexpectedFailure(
+            'no wallet selected to send payment',
+          ),
+          isConfirmingPayment: false,
+        ),
+      );
+      return;
+    }
+
     emit(sellPaymentState.copyWith(isConfirmingPayment: true));
-    try {
-      final wallet = sellPaymentState.selectedWallet;
-      if (wallet == null) {
-        throw const SellError.unexpected(
-          message: 'No wallet selected to send payment',
+
+    switch (await _confirmSellPayinUsecase.execute(
+      wallet: wallet,
+      sellOrder: sellPaymentState.sellOrder,
+      absoluteFees: sellPaymentState.absoluteFees,
+      selectedInputs: sellPaymentState.selectedUtxos,
+      replaceByFee: sellPaymentState.replaceByFee,
+    )) {
+      case Err(:final failure):
+        emit(
+          sellPaymentState.copyWith(error: failure, isConfirmingPayment: false),
         );
-      }
-      final isLiquid = wallet.isLiquid;
-      final payinAmountSat = ConvertAmount.btcToSats(
-        sellPaymentState.sellOrder.payinAmount,
-      );
-      if (isLiquid) {
-        final pset = await _prepareLiquidSendUsecase.execute(
-          walletId: wallet.id,
-          address: sellPaymentState.sellOrder.liquidAddress!,
-          amountSat: payinAmountSat,
-          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
-          feeRate: const RelativeFee(25),
-        );
-        final signedPset = await _signLiquidTxUsecase.execute(
-          pset: pset,
-          walletId: wallet.id,
-        );
-        await _broadcastLiquidTransactionUsecase.execute(signedPset);
-        final tx = await LiquidTx.fromPset(signedPset);
-        final txid = tx.txid;
-        await _labelsFacade.store(
-          NewLabel.tx(
-            transactionId: txid,
-            label: LabelSystem.exchangeSell.label,
-            origin: wallet.id,
+        return;
+      case Ok():
+        // The payin is broadcast; the payment flow is done. Stop the status
+        // poller so it doesn't keep firing no-op events on the success state.
+        _stopPolling();
+        // 5s delay gives backend time to register the 0 conf
+        await Future.delayed(const Duration(seconds: 5));
+        emit(
+          sellPaymentState.toSuccessState(
+            sellOrder: sellPaymentState.sellOrder,
           ),
         );
-      } else {
-        final absoluteFees = sellPaymentState.absoluteFees;
-        if (absoluteFees == null) {
-          throw const SellError.unexpected(
-            message: 'Transaction fees not calculated. Please try again.',
-          );
-        }
-
-        final preparedSend = await _prepareBitcoinSendUsecase.execute(
-          walletId: wallet.id,
-          address: sellPaymentState.sellOrder.bitcoinAddress!,
-          amountSat: payinAmountSat,
-          networkFee: NetworkFee.absolute(absoluteFees),
-          selectedInputs: sellPaymentState.selectedUtxos.isNotEmpty
-              ? sellPaymentState.selectedUtxos
-              : null,
-          replaceByFee: sellPaymentState.replaceByFee,
-        );
-        final absoluteFeesUpdated = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(psbt: preparedSend.unsignedPsbt);
-        emit(sellPaymentState.copyWith(absoluteFees: absoluteFeesUpdated));
-        final signedTx = await _signBitcoinTxUsecase.execute(
-          psbt: preparedSend.unsignedPsbt,
-          walletId: wallet.id,
-        );
-        await _broadcastBitcoinTransactionUsecase.execute(
-          signedTx.signedPsbt,
-          isPsbt: true,
-        );
-        final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
-        final txid = tx.txid;
-        await _labelsFacade.store(
-          NewLabel.tx(
-            transactionId: txid,
-            label: LabelSystem.exchangeSell.label,
-            origin: wallet.id,
-          ),
-        );
-      }
-      // 5s delay gives backend time to register the 0 conf
-      await Future.delayed(const Duration(seconds: 5));
-      final latestOrder = await _getOrderUsecase.execute(
-        orderId: sellPaymentState.sellOrder.orderId,
-      );
-
-      if (latestOrder is! SellOrder) {
-        throw const SellError.unexpected(
-          message: 'Expected SellOrder but received a different order type',
-        );
-      }
-
-      emit(
-        sellPaymentState.toSuccessState(sellOrder: sellPaymentState.sellOrder),
-      );
-    } on PrepareLiquidSendException catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.message),
-          isConfirmingPayment: false,
-        ),
-      );
-    } on PrepareBitcoinSendException catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } on SignLiquidTxException catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } on SignBitcoinTxException catch (e) {
-      // Handle SellError and emit error state
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } catch (e) {
-      // Log unexpected errors
-      log.severe(error: e, trace: StackTrace.current);
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: e.toString()),
-          isConfirmingPayment: false,
-        ),
-      );
-    } finally {
-      if (state is SellPaymentState) {
-        emit((state as SellPaymentState).copyWith(isConfirmingPayment: false));
-      }
     }
   }
 
@@ -519,37 +329,37 @@ class SellBloc extends Bloc<SellEvent, SellState> {
 
     final sellPaymentState = state as SellPaymentState;
 
-    try {
-      final latestOrder = await _getOrderUsecase.execute(
-        orderId: sellPaymentState.sellOrder.orderId,
-      );
-
-      if (latestOrder is! SellOrder) {
-        log.severe(
-          error: 'Expected SellOrder but received a different order type',
-          trace: StackTrace.current,
-        );
+    final SellOrder latestOrder;
+    switch (await _getSellOrderStatusUsecase.execute(
+      orderId: sellPaymentState.sellOrder.orderId,
+    )) {
+      case Ok(:final value):
+        latestOrder = value;
+      case Err():
+        // Background retry: the use-case already logged it. Don't paint a
+        // persistent error on a transient blip — the next poll heals it.
         return;
-      }
+    }
 
-      final payinStatus = latestOrder.payinStatus;
+    final payinStatus = latestOrder.payinStatus;
 
-      if (payinStatus == OrderPayinStatus.inProgress ||
-          payinStatus == OrderPayinStatus.awaitingConfirmation ||
-          payinStatus == OrderPayinStatus.completed) {
-        _stopPolling();
-        emit(
-          sellPaymentState
-              .copyWith(sellOrder: latestOrder, isPolling: false)
-              .toSuccessState(sellOrder: latestOrder),
-        );
-      } else {
-        emit(
-          sellPaymentState.copyWith(sellOrder: latestOrder, isPolling: true),
-        );
-      }
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+    if (payinStatus == OrderPayinStatus.inProgress ||
+        payinStatus == OrderPayinStatus.awaitingConfirmation ||
+        payinStatus == OrderPayinStatus.completed) {
+      _stopPolling();
+      emit(
+        sellPaymentState
+            .copyWith(sellOrder: latestOrder, isPolling: false, error: null)
+            .toSuccessState(sellOrder: latestOrder),
+      );
+    } else {
+      emit(
+        sellPaymentState.copyWith(
+          sellOrder: latestOrder,
+          isPolling: true,
+          error: null,
+        ),
+      );
     }
   }
 
@@ -599,15 +409,11 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     final wallet = sellPaymentState.selectedWallet;
     if (wallet == null) return;
 
-    try {
-      final utxos = await _getWalletUtxosUsecase.execute(walletId: wallet.id);
-      emit(sellPaymentState.copyWith(utxos: utxos));
-    } catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(message: 'Failed to load UTXOs: $e'),
-        ),
-      );
+    switch (await _loadSellUtxosUsecase.execute(walletId: wallet.id)) {
+      case Ok(:final value):
+        emit(sellPaymentState.copyWith(utxos: value));
+      case Err(:final failure):
+        emit(sellPaymentState.copyWith(error: failure));
     }
   }
 
@@ -618,56 +424,20 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     final wallet = sellPaymentState.selectedWallet;
     if (wallet == null) return;
 
-    try {
-      final payinAmountSat = ConvertAmount.btcToSats(
-        sellPaymentState.sellOrder.payinAmount,
-      );
+    final payinAmountSat = ConvertAmount.btcToSats(
+      sellPaymentState.sellOrder.payinAmount,
+    );
 
-      if (wallet.isLiquid) {
-        final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
-            .execute(walletId: wallet.id, index: 0);
-        final pset = await _prepareLiquidSendUsecase.execute(
-          walletId: wallet.id,
-          address: dummyAddressForFeeCalculation.address,
-          amountSat: payinAmountSat,
-          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
-          feeRate: const RelativeFee(25),
-        );
-        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: pset,
-        );
-        emit(sellPaymentState.copyWith(absoluteFees: absoluteFees));
-      } else {
-        final bitcoinFees = await _getNetworkFeesUsecase.execute(
-          isLiquid: false,
-        );
-        final fastestFee = bitcoinFees.fastest;
-
-        final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
-            .execute(walletId: wallet.id, index: 0);
-        final preparedSend = await _prepareBitcoinSendUsecase.execute(
-          walletId: wallet.id,
-          address: dummyAddressForFeeCalculation.address,
-          amountSat: payinAmountSat,
-          networkFee: fastestFee,
-          selectedInputs: sellPaymentState.selectedUtxos.isNotEmpty
-              ? sellPaymentState.selectedUtxos
-              : null,
-          replaceByFee: sellPaymentState.replaceByFee,
-        );
-        final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: preparedSend.unsignedPsbt,
-        );
-        emit(sellPaymentState.copyWith(absoluteFees: absoluteFees));
-      }
-    } catch (e) {
-      emit(
-        sellPaymentState.copyWith(
-          error: SellError.unexpected(
-            message: 'Failed to recalculate fees: $e',
-          ),
-        ),
-      );
+    switch (await _recalculateSellPayinFeesUsecase.execute(
+      wallet: wallet,
+      amountSat: payinAmountSat,
+      selectedInputs: sellPaymentState.selectedUtxos,
+      replaceByFee: sellPaymentState.replaceByFee,
+    )) {
+      case Ok(:final value):
+        emit(sellPaymentState.copyWith(absoluteFees: value));
+      case Err(:final failure):
+        emit(sellPaymentState.copyWith(error: failure));
     }
   }
 

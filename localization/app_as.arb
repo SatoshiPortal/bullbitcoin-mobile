@@ -715,12 +715,10 @@
   "sellWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা বিক্ৰী কৰিব বিচাৰে?",
   "sellExternalWallet": "বাহ্যিক wallet",
   "sellFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা বিক্ৰী কৰক",
-  "sellAboveMaxAmountError": "আপুনি এই wallet-ৰ সৈতে বিক্ৰী কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি বিক্ৰী কৰিবলৈ চেষ্টা কৰিছে।",
-  "sellBelowMinAmountError": "আপুনি এই wallet-ৰ সৈতে বিক্ৰী কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম বিক্ৰী কৰিবলৈ চেষ্টা কৰিছে।",
-  "sellInsufficientBalanceError": "এই বিক্ৰী অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
+  "sellAboveMaxAmountError": "এই ৱালেটেৰে বিক্ৰী কৰিব পৰা সৰ্বোচ্চ পৰিমাণ হৈছে {amount}।",
+  "sellBelowMinAmountError": "এই ৱালেটেৰে বিক্ৰী কৰিব পৰা নূন্যতম পৰিমাণ হৈছে {amount}।",
+  "sellInsufficientBalanceError": "এই বিক্ৰী অৰ্ডাৰটো সম্পূৰ্ণ কৰিবলৈ নিৰ্বাচিত ৱালেটত পৰ্যাপ্ত বেলেঞ্চ নাই। প্ৰয়োজন: {amount}।",
   "sellUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "sellOrderNotFoundError": "বিক্ৰী অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "sellOrderAlreadyConfirmedError": "এই বিক্ৰী অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
   "sellSelectNetwork": "নেটৱৰ্ক বাছক",
   "sellHowToPayInvoice": "আপুনি এই invoice কেনেকৈ পৰিশোধ কৰিব বিচাৰে?",
   "sellBitcoinOnChain": "Bitcoin অন-চেইন",
@@ -4275,10 +4273,6 @@
   "@sellOrderFailed": {
     "description": "Error message when order fails"
   },
-  "sellInsufficientBalance": "Wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "sellMinimumAmount": "সৰ্বনিম্ন বিক্ৰয়ৰ পৰিমাণ: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -4296,10 +4290,6 @@
         "type": "String"
       }
     }
-  },
-  "sellNetworkError": "নেটৱৰ্ক ত্ৰুটি। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sellRateExpired": "বিনিময় হাৰৰ মেয়াদ উত্তীৰ্ণ হৈছে। নৱীকৰণ কৰা হৈছে...",
   "@sellRateExpired": {
@@ -8977,47 +8967,10 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellErrorPrepareTransaction": "লেনদেন প্ৰস্তুত কৰিবলৈ বিফল হৈছে: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "পৰিশোধ পঠোৱাৰ বাবে কোনো wallet বাছি লোৱা হোৱা নাই",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
-  },
   "sellErrorFeesNotCalculated": "লেনদেনৰ মাচুল গণনা কৰা হোৱা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "sellErrorSendPayment": "পেমেণ্ট পঠাবলৈ ব্যৰ্থ হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
-  },
-  "sellErrorUnexpectedOrderType": "SellOrder আশা কৰা হৈছিল কিন্তু ভিন্ন order type পোৱা গৈছে",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
-  "sellErrorLoadUtxos": "UTXO লোড কৰিবলৈ বিফল হৈছে: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "মাচুল পুনৰ গণনা কৰিবলৈ বিফল হৈছে: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
   },
   "sellLoadingGeneric": "লোড হৈছে...",
   "@sellLoadingGeneric": {
@@ -10231,5 +10184,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin সক্ৰিয় কৰা হৈছে, কিন্তু এই ৱালেটত এতিয়াও অৱদান দিবলৈ কোনো বেলেঞ্চ নাই। আপুনি ধন লাভ কৰিলেই ই সক্ৰিয় হ’ব।",
   "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
-  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "sellErrorLoadUtxos": "মুদ্ৰা লোড কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

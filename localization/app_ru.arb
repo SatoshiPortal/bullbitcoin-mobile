@@ -601,7 +601,7 @@
   "addressCardCopiedMessage": "Адрес, скопированный в буфер обмена",
   "totalFeeLabel": "Итого",
   "mempoolCustomServerBottomSheetDescription": "Введите URL-адрес вашего пользовательского сервера mempool. Сервер будет проверен до сохранения.",
-  "sellBelowMinAmountError": "Вы пытаетесь продать ниже минимальной суммы, которую можно продать с этим кошельком.",
+  "sellBelowMinAmountError": "Минимальная сумма, которую можно продать с этого кошелька, составляет {amount}.",
   "buyAwaitingConfirmation": "Пробуждение подтверждения ",
   "payExpired": "Заключено",
   "exchangeSecurityAccessSettingsButton": "Параметры доступа",
@@ -801,7 +801,6 @@
   "arkUnifiedAddressCopied": "Единый адрес",
   "transactionSwapDescLnSendCompleted": "Освещение было отправлено успешно! Теперь твой обмен завершен.",
   "exchangeDcaCancelDialogCancelButton": "Отмена",
-  "sellOrderAlreadyConfirmedError": "Этот ордер на продажу уже подтвержден.",
   "paySinpeEnviado": "СИНПЕ ЭНВИАДО!",
   "withdrawConfirmPhone": "Телефон",
   "payNoDetailsAvailable": "Подробности отсутствуют",
@@ -961,7 +960,6 @@
   "payTotalAmount": "Общая сумма",
   "exchangeLegacyTransactionsTitle": "Наследственные транзакции",
   "autoswapWarningDontShowAgain": "Не повторяйте это предупреждение снова.",
-  "sellInsufficientBalance": "Недостаточный баланс кошелька",
   "recoverWalletButton": "Recover Wallet",
   "mempoolCustomServerDeleteMessage": "Вы уверены, что хотите удалить этот пользовательский сервер mempool? Вместо этого будет использоваться сервер по умолчанию.",
   "coldcardStep6": "   - Увеличить яркость экрана на вашем устройстве",
@@ -1461,15 +1459,6 @@
   "receiveWaitForSenderToFinish": "Ожидайте, что отправитель завершит сделку payjoin",
   "arkSetupTitle": "Настройка ковчега",
   "seedsignerStep3": "Сканировать код QR, показанный в кошельке Bull",
-  "sellErrorLoadUtxos": "Не удалось загрузить UTXO: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Удаление счета-фактуры...",
   "importColdcardInstructionsStep5": "Выберите \"Export Wallet\"",
   "electrumStopGapTooHighError": "Стоп Гэп кажется слишком высоким. {maxStopGap}",
@@ -1694,7 +1683,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "Ожидаемый SellOrder, но получил другой тип заказа",
   "pinCreateHeadline": "Создать новый значок",
   "transactionSwapProgressConfirmed": "Подтверждено",
   "sellRoutingNumber": "Номер маршрутизации",
@@ -1744,7 +1732,7 @@
   "connectingToKeyServer": "Подключение к Key Server через Tor.\nЭто может занять до минуты.",
   "bitboxErrorDeviceNotFound": "Устройство BitBox не найдено.",
   "ledgerScanningMessage": "Поиск устройств Ledger поблизости...",
-  "sellInsufficientBalanceError": "Недостаток баланса в выбранном кошельке для завершения этого ордера на продажу.",
+  "sellInsufficientBalanceError": "Недостаточно средств в выбранном кошельке для завершения этого ордера на продажу. Требуется: {amount}.",
   "transactionSwapDescLnReceivePending": "Ваш обмен был инициирован. Мы ожидаем, что платеж будет получен в Lightning Network.",
   "tryAgainButton": "Попробуйте снова",
   "psbtFlowHoldSteady": "Держите QR-код устойчивым и сосредоточенным",
@@ -2278,15 +2266,6 @@
   "recoverbullRecoveryContinueButton": "Продолжить",
   "payTimeoutError": "Время оплаты. Пожалуйста, проверьте статус",
   "kruxStep4": "Нажмите кнопку Загрузка с камеры",
-  "sellErrorRecalculateFees": "Не удалось пересчитать сборы: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Выберите частоту",
   "testBackupErrorNoMnemonic": "No mnemonic Load",
   "payInvoiceExpired": "Срок действия счета-фактуры",
@@ -2814,7 +2793,6 @@
   "addressViewCopyAddress": "Копировать адрес",
   "receiveBitcoin": "Bitcoin",
   "pinAuthenticationTitle": "Аутентификация",
-  "sellErrorNoWalletSelected": "Нет кошелька, выбранного для отправки платежа",
   "fundExchangeCrIbanCrcRecipientNameHelp": "Используйте наше официальное фирменное имя. Не используйте «Bull Bitcoin».",
   "receiveVerifyAddressLedger": "Проверка Адреса на Ledger",
   "howToDecideButton": "Как решить?",
@@ -3441,7 +3419,7 @@
   "exchangeAppSettingsPreferredLanguageLabel": "Предпочтительный язык",
   "walletDeletionConfirmationMessage": "Вы уверены, что хотите удалить этот кошелек?",
   "rbfTitle": "Заменить:",
-  "sellAboveMaxAmountError": "Вы пытаетесь продать выше максимальной суммы, которая может быть продана с этим кошельком.",
+  "sellAboveMaxAmountError": "Максимальная сумма, которую можно продать с этого кошелька, составляет {amount}.",
   "settingsSuperuserModeUnlockedMessage": "Режим Superuser разблокирован!",
   "pickPinInsteadButton": "Выберите PIN вместо >>",
   "backupWalletVaultProviderCustomLocation": "Пользовательское местоположение",
@@ -3510,16 +3488,6 @@
   "settingsTorSettingsTitle": "Параметры Tor",
   "importQrDeviceKeystoneStep2": "Разблокируйте его, введя PIN-код",
   "receiveBitcoinTransactionWillTakeTime": "Биткоин-транзакция займет некоторое время, чтобы подтвердить.",
-  "sellOrderNotFoundError": "Заказ на продажу не был найден. Попробуй еще раз.",
-  "sellErrorPrepareTransaction": "Не удалось подготовить сделку: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Оплата онлайн-билей",
   "importQrDeviceSeedsignerStep7": "На вашем мобильном устройстве нажмите Open Camera",
   "addressViewChangeAddressesDescription": "Показать кошелёк Изменение адресов",
@@ -3549,6 +3517,7 @@
   "payAdvancedOptions": "Дополнительные варианты",
   "sendSigningTransaction": "Подписание сделки...",
   "sellErrorFeesNotCalculated": "Плата за операции не рассчитана. Попробуй еще раз.",
+  "sellErrorSendPayment": "Не удалось отправить платёж. Пожалуйста, попробуйте ещё раз.",
   "dcaAddressLiquid": "Жидкий адрес",
   "buyVerificationInProgress": "Проводится проверка...",
   "transactionSwapDescChainPaid": "Ваша сделка была передана. Сейчас мы ждем подтверждения транзакции блокировки.",
@@ -3874,7 +3843,6 @@
   "backupWalletInstructionNoPassphrase": "Ваша резервная копия не защищена фразой. Добавьте пароль в резервную копию позже, создав новый кошелек.",
   "transactionDetailLabelSwapId": "Идентификатор швапа",
   "sendSwapFailed": "Свопа провалилась. Ваш возврат будет обработан в ближайшее время.",
-  "sellNetworkError": "Сетевая ошибка. Пожалуйста, попробуйте еще раз",
   "sendHardwareWallet": "Оборудование",
   "sendUserRejected": "Пользователь отказался на устройстве",
   "swapSubtractFeesLabel": "Вычитать сборы из суммы",
@@ -5240,5 +5208,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin включён, но в этом кошельке пока нет средств для участия. Он активируется, как только вы получите средства.",
   "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin.",
   "addressViewErrorWalletNotFound": "Не удалось найти этот кошелёк.",
-  "addressViewErrorLoadFailed": "Не удалось загрузить ваши адреса. Пожалуйста, попробуйте снова."
+  "addressViewErrorLoadFailed": "Не удалось загрузить ваши адреса. Пожалуйста, попробуйте снова.",
+  "sellErrorLoadUtxos": "Не удалось загрузить монеты. Пожалуйста, попробуйте снова."
 }

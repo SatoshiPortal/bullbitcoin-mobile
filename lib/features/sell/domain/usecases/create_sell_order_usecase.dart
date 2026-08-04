@@ -3,6 +3,9 @@ import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:meta/meta.dart';
 
 class CreateSellOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -15,7 +18,8 @@ class CreateSellOrderUsecase {
     required this._settingsRepository,
   });
 
-  Future<SellOrder> execute({
+  @useResult
+  Future<Result<SellOrder, SellFailure>> execute({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
@@ -31,12 +35,16 @@ class CreateSellOrderUsecase {
         currency: currency,
         network: network,
       );
-      return order;
-    } on SellError {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw SellError.unexpected(message: '$e');
+      return Ok(order);
+    } on UnauthenticatedSellError {
+      return const Err(SellUnauthenticatedFailure());
+    } on BelowMinAmountSellError catch (e) {
+      return Err(SellBelowMinAmountFailure(minAmountSat: e.minAmountSat));
+    } on AboveMaxAmountSellError catch (e) {
+      return Err(SellAboveMaxAmountFailure(maxAmountSat: e.maxAmountSat));
+    } catch (e, st) {
+      log.severe(message: 'create sell order failed', error: e, trace: st);
+      return Err(SellUnexpectedFailure(e.toString()));
     }
   }
 }

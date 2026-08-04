@@ -374,12 +374,10 @@
   "sellWhichWalletQuestion": "Mistä lompakosta haluat myydä?",
   "sellExternalWallet": "Ulkoinen lompakko",
   "sellFromAnotherWallet": "Myy toisesta Bitcoin-lompakosta",
-  "sellAboveMaxAmountError": "Yrität myydä isomman määrän kuin tästä lompakosta on mahdollista.",
-  "sellBelowMinAmountError": "Myyntisi on alle tämän lompakon minimi määrän.",
-  "sellInsufficientBalanceError": "Valitun lompakon saldo ei riitä tämän myyntitilauksen suorittamiseen.",
+  "sellAboveMaxAmountError": "Suurin summa, jonka voi myydä tällä lompakolla, on {amount}.",
+  "sellBelowMinAmountError": "Pienin summa, jonka voi myydä tällä lompakolla, on {amount}.",
+  "sellInsufficientBalanceError": "Valitun lompakon saldo ei riitä tämän myyntitoimeksiannon suorittamiseen. Vaaditaan: {amount}.",
   "sellUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
-  "sellOrderNotFoundError": "Myyntitilausta ei löytynyt. Yritä uudelleen.",
-  "sellOrderAlreadyConfirmedError": "Tämä myyntitilaus on jo vahvistettu.",
   "sellSelectNetwork": "Valitse verkko",
   "sellHowToPayInvoice": "Kuinka haluat maksaa tämän laskun?",
   "sellBitcoinOnChain": "Bitcoin on-chain",
@@ -2166,7 +2164,6 @@
   "sellProcessingOrder": "Käsitellään tilausta...",
   "sellOrderPlaced": "Myyntitilaus lähetetty onnistuneesti",
   "sellOrderFailed": "Myyntitilauksen lähetys epäonnistui",
-  "sellInsufficientBalance": "Lompakon saldo ei riitä",
   "sellMinimumAmount": "Minimimyyntimäärä: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2183,7 +2180,6 @@
       }
     }
   },
-  "sellNetworkError": "Verkkovirhe. Yritä uudelleen",
   "sellRateExpired": "Vaihtokurssi vanhentunut. Päivitän...",
   "sellUpdatingRate": "Päivitetään vaihtokurssia...",
   "sellCurrentRate": "Nykyinen kurssi",
@@ -3863,36 +3859,8 @@
   "sellViewDetailsButton": "Näytä tiedot",
   "sellKycPendingTitle": "KYC-vahvistus kesken",
   "sellKycPendingDescription": "Sinun on ensin suoritettava henkilöllisyyden varmistus",
-  "sellErrorPrepareTransaction": "Tapahtuman valmistelu epäonnistui: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "Maksuun ei ole valittu lompakkoa",
   "sellErrorFeesNotCalculated": "Transaktio kuluja ei laskettu. Yritä uudelleen.",
-  "sellErrorUnexpectedOrderType": "Odotettiin SellOrder-pyyntöä, mutta vastaanotettiin eri tyyppinen pyyntö",
-  "sellErrorLoadUtxos": "UTXOjen lataus epäonnistui: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "Kulujen uudelleenlaskenta epäonnistui: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
+  "sellErrorSendPayment": "Maksun lähettäminen epäonnistui. Yritä uudelleen.",
   "sellLoadingGeneric": "Ladataan...",
   "allSeedViewTitle": "Näytä siemenlauseet",
   "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos käytössä on paljon siemenlauseita.",
@@ -5225,5 +5193,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin on käytössä, mutta tässä lompakossa ei vielä ole osallistumiseen tarvittavaa saldoa. Se aktivoituu, kun vastaanotat varoja.",
   "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin.",
   "addressViewErrorWalletNotFound": "Tätä lompakkoa ei löytynyt.",
-  "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen."
+  "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen.",
+  "sellErrorLoadUtxos": "Kolikoiden lataaminen epäonnistui. Yritä uudelleen."
 }

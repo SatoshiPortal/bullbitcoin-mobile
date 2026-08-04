@@ -1792,7 +1792,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "आप इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि से कम बेचने की कोशिश कर रहे हैं।",
+  "sellBelowMinAmountError": "इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि {amount} है।",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2391,10 +2391,6 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "sellOrderAlreadyConfirmedError": "यह बिक्री ऑर्डर पहले ही पुष्टि हो चुका है।",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
@@ -2851,10 +2847,6 @@
   "autoswapWarningDontShowAgain": "इस चेतावनी को फिर से दिखाना नहीं है।।",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
-  },
-  "sellInsufficientBalance": "अपर्याप्त वॉलेट शेष",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
   },
   "recoverWalletButton": "वॉलेट को पुनर्प्राप्त करें",
   "@recoverWalletButton": {
@@ -4487,16 +4479,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "लोड करने में विफल: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "डिकोडिंग चालान..।",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5164,10 +5146,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "Expected विक्रेता लेकिन एक अलग आदेश प्रकार प्राप्त किया",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
   "pinCreateHeadline": "नया पिन बनाएं",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -5345,7 +5323,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "इस बिक्री ऑर्डर को पूरा करने के लिए चुने गए वॉलेट में अपर्याप्त शेष है।",
+  "sellInsufficientBalanceError": "इस बिक्री ऑर्डर को पूरा करने के लिए चयनित वॉलेट में पर्याप्त बैलेंस नहीं है। आवश्यक: {amount}।",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -6979,16 +6957,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "शुल्क वापस लेने में विफल: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "एक आवृत्ति का चयन करें",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8508,10 +8476,6 @@
   "pinAuthenticationTitle": "प्रमाणीकरण",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "भुगतान भेजने के लिए कोई वॉलेट नहीं चुना गया",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "हमारे आधिकारिक कॉर्पोरेट नाम का उपयोग करें। \"Bull बिटकॉइन\" का उपयोग न करें।।",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10396,7 +10360,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "आप इस वॉलेट से बेची जा सकने वाली अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।",
+  "sellAboveMaxAmountError": "इस वॉलेट से बेची जा सकने वाली अधिकतम राशि {amount} है।",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10603,20 +10567,6 @@
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "sellOrderNotFoundError": "बिक्री ऑर्डर नहीं मिला। कृपया पुनः प्रयास करें।",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellErrorPrepareTransaction": "लेनदेन तैयार करने में विफल: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "ऑनलाइन बिल भुगतान",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -10711,6 +10661,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "लेनदेन शुल्क की गणना नहीं की जाती है। फिर से प्रयास करें।।",
+  "sellErrorSendPayment": "भुगतान भेजने में विफल। कृपया पुनः प्रयास करें।",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
@@ -11641,10 +11592,6 @@
   "sendSwapFailed": "स्वैप विफल रहा। आपकी वापसी शीघ्र ही संसाधित की जाएगी।।",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "नेटवर्क त्रुटि। फिर से प्रयास करें",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "हार्डवेयर वॉलेट",
   "@sendHardwareWallet": {
@@ -13378,5 +13325,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
   "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
-  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।"
+  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "sellErrorLoadUtxos": "सिक्के लोड करने में विफल। कृपया पुनः प्रयास करें।"
 }

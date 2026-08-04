@@ -1678,7 +1678,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "أنت تحاول بيع أقل من المبلغ الأدنى الذي يمكن بيعه بهذه المحفظة.",
+  "sellBelowMinAmountError": "الحد الأدنى للمبلغ الذي يمكن بيعه بهذه المحفظة هو {amount}.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2251,10 +2251,6 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "sellOrderAlreadyConfirmedError": "تم تأكيد أمر البيع هذا.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "سنبي إنفيدو!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
@@ -2685,10 +2681,6 @@
   "exchangeLegacyTransactionsTitle": "معاملات الإرث",
   "@exchangeLegacyTransactionsTitle": {
     "description": "Title for the legacy transactions section in exchange"
-  },
-  "sellInsufficientBalance": "عدم كفاية رصيد المحفظة",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
   },
   "recoverWalletButton": "Recover Wallet",
   "@recoverWalletButton": {
@@ -4237,16 +4229,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "لم يحمّل أجهزة التكسس: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "فواتير تنازلية...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -4863,10 +4845,6 @@
   "@coreSwapsStatusInProgress": {
     "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
   },
-  "sellErrorUnexpectedOrderType": "متوقّع (سيلوردر) لكنّه حصل على نوع مختلف",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
   "pinCreateHeadline": "إنشاء دبوس جديد",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -5036,7 +5014,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "عدم كفاية التوازن في المحفظة المختارة لإكمال أمر البيع هذا.",
+  "sellInsufficientBalanceError": "الرصيد غير كافٍ في المحفظة المحددة لإتمام أمر البيع هذا. المطلوب: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -6548,16 +6526,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "عدم إعادة حساب الرسوم: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "يرجى اختيار التردد",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -7991,10 +7959,6 @@
   "pinAuthenticationTitle": "التوثيق",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "لا توجد محفظة اختيرت لإرسال الدفع",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "استخدم اسم شركتنا الرسمي لا تستخدم \"بول بيتكين\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -9737,7 +9701,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "أنت تحاول بيع أعلى من المبلغ الأقصى الذي يمكن بيعه بهذه المحفظة.",
+  "sellAboveMaxAmountError": "الحد الأقصى للمبلغ الذي يمكن بيعه بهذه المحفظة هو {amount}.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -9932,20 +9896,6 @@
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "sellOrderNotFoundError": "لم يتم العثور على أمر البيع أرجوك حاول مرة أخرى.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellErrorPrepareTransaction": "عدم إعداد المعاملة: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "importQrDeviceSeedsignerStep7": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
   "@importQrDeviceSeedsignerStep7": {
     "description": "SeedSigner instruction step 7"
@@ -10036,6 +9986,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "رسوم المعاملات غير محسوبة أرجوك حاول مرة أخرى.",
+  "sellErrorSendPayment": "فشل إرسال الدفعة. يرجى المحاولة مرة أخرى.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
@@ -10917,10 +10868,6 @@
   "sendSwapFailed": "لقد فشل المبادلة ردك سيتم تجهيزه قريباً.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "خطأ الشبكة حاول مرة أخرى",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "الوادى الصلب",
   "@sendHardwareWallet": {
@@ -13191,5 +13138,6 @@
   "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
   "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
-  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى."
+  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
+  "sellErrorLoadUtxos": "فشل تحميل العملات. يرجى المحاولة مرة أخرى."
 }

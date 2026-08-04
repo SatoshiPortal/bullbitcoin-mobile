@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
@@ -83,7 +84,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                           ),
                   ),
                   const Gap(24.0),
-                  const _SellError(),
+                  const _SellErrorCard(),
                 ],
               ),
             ),
@@ -94,8 +95,8 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   }
 }
 
-class _SellError extends StatelessWidget {
-  const _SellError();
+class _SellErrorCard extends StatelessWidget {
+  const _SellErrorCard();
 
   @override
   Widget build(BuildContext context) {

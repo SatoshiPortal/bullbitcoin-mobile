@@ -781,47 +781,10 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellErrorPrepareTransaction": "شکست در آماده سازی معامله: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "هیچ کیف پولی برای ارسال پرداخت",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
-  },
   "sellErrorFeesNotCalculated": "هزینه های معاملات محاسبه نمی شود. لطفا دوباره امتحان کنید.",
+  "sellErrorSendPayment": "ارسال پرداخت انجام نشد. لطفاً دوباره تلاش کنید.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
-  },
-  "sellErrorUnexpectedOrderType": "پیش بینی سفارش فروش اما دریافت یک نوع سفارش مختلف",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
-  "sellErrorLoadUtxos": "شکست خورده برای بارگیری UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "عدم محاسبه هزینه ها: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
   },
   "sellLoadingGeneric": "بارگذاری ...",
   "@sellLoadingGeneric": {
@@ -2718,7 +2681,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "شما در حال تلاش برای فروش زیر حداقل مبلغی هستید که می توانید با این کیف پول به فروش برسانید.",
+  "sellBelowMinAmountError": "حداقل مبلغی که می‌توان با این کیف پول فروخت {amount} است.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -3234,10 +3197,6 @@
   "@arkUnifiedAddressCopied": {
     "description": "SnackBar message when unified address is copied to clipboard"
   },
-  "sellOrderAlreadyConfirmedError": "این سفارش فروش تاکنون تایید شده است.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
@@ -3606,10 +3565,6 @@
   "exchangeLegacyTransactionsTitle": "معاملات میراث",
   "@exchangeLegacyTransactionsTitle": {
     "description": "Title for the legacy transactions section in exchange"
-  },
-  "sellInsufficientBalance": "عدم تعادل کیف پول",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
   },
   "recoverWalletButton": "بازیابی کیف پول",
   "@recoverWalletButton": {
@@ -5698,7 +5653,7 @@
   "@bitboxErrorDeviceNotFound": {
     "description": "Error when BitBox device cannot be found"
   },
-  "sellInsufficientBalanceError": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش فروش.",
+  "sellInsufficientBalanceError": "موجودی کیف پول انتخاب‌شده برای تکمیل این سفارش فروش کافی نیست. مورد نیاز: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -9827,7 +9782,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "شما در حال تلاش برای فروش بیش از حداکثر مبلغی هستید که می توانید با این کیف پول به فروش برسانید.",
+  "sellAboveMaxAmountError": "حداکثر مبلغی که می‌توان با این کیف پول فروخت {amount} است.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10001,10 +9956,6 @@
   "receiveBitcoinTransactionWillTakeTime": "معامله Bitcoin مدتی طول می کشد تا تایید شود.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "سفارش فروش پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "sellReceiveAmount": "شما دریافت خواهید کرد",
   "@sellReceiveAmount": {
@@ -10895,10 +10846,6 @@
   "sendSwapFailed": "مبادله شکست خورد. بازپرداخت شما به زودی پردازش خواهد شد.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "خطای شبکه لطفا دوباره امتحان کنید",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "کیف پول سخت افزاری",
   "@sendHardwareWallet": {
@@ -13188,5 +13135,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin فعال است، اما این کیف پول هنوز موجودی‌ای برای مشارکت ندارد. پس از دریافت وجه فعال خواهد شد.",
   "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود.",
   "addressViewErrorWalletNotFound": "این کیف پول پیدا نشد.",
-  "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید."
+  "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "sellErrorLoadUtxos": "بارگذاری سکه‌ها ناموفق بود. لطفاً دوباره تلاش کنید."
 }

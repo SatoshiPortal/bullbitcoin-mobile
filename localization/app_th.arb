@@ -1792,7 +1792,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "คุณพยายามที่จะขายด้านล่างขั้นต่ําที่สามารถขายกับกระเป๋าสตางค์นี้.",
+  "sellBelowMinAmountError": "จำนวนเงินขั้นต่ำที่สามารถขายได้ด้วยกระเป๋าเงินนี้คือ {amount}",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2391,10 +2391,6 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "sellOrderAlreadyConfirmedError": "การขายนี้ได้รับการยืนยัน.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
@@ -2851,10 +2847,6 @@
   "autoswapWarningDontShowAgain": "อย่าแสดงการแจ้งเตือนนี้อีกครั้ง.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
-  },
-  "sellInsufficientBalance": "ยอดคงเหลือของกระเป๋าเงิน",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
   },
   "recoverWalletButton": "การกู้คืนกระเป๋าสตางค์",
   "@recoverWalletButton": {
@@ -4487,16 +4479,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "โหลด UTXO ไม่สำเร็จ: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "ใบแจ้งหนี้ ...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5164,10 +5146,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "คาดว่าจะขายคําสั่งซื้อ แต่ได้รับประเภทที่แตกต่างกัน",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
   "pinCreateHeadline": "สร้างเข็มใหม่",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -5345,7 +5323,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "สมดุลไม่เพียงพอในกระเป๋าเงินที่เลือกเสร็จสมบูรณ์.",
+  "sellInsufficientBalanceError": "ยอดคงเหลือในกระเป๋าเงินที่เลือกไม่เพียงพอที่จะทำรายการขายนี้ให้เสร็จสมบูรณ์ ต้องการ: {amount}",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -6975,20 +6953,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "รูปแบบ PSBT ตรวจจับ.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
-  "sellErrorRecalculateFees": "คำนวณค่าธรรมเนียมใหม่ไม่สำเร็จ: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "เลือกความถี่",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8504,10 +8468,6 @@
   "pinAuthenticationTitle": "ข้อควรระวัง",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "ไม่มีกระเป๋าสตางค์ที่เลือกเพื่อชําระเงิน",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "ใช้ชื่อบริษัทอย่างเป็นทางการ อย่าใช้ \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10392,7 +10352,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.",
+  "sellAboveMaxAmountError": "จำนวนเงินสูงสุดที่สามารถขายได้ด้วยกระเป๋าเงินนี้คือ {amount}",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10599,20 +10559,6 @@
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "sellOrderNotFoundError": "ราคาขายไม่ได้ กรุณาลองอีกครั้ง.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellErrorPrepareTransaction": "เตรียมธุรกรรมไม่สำเร็จ: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "ชําระเงินออนไลน์",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -10707,6 +10653,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "ค่าธรรมเนียมการทําธุรกรรมไม่คํานวณ กรุณาลองอีกครั้ง.",
+  "sellErrorSendPayment": "ส่งการชำระเงินไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
@@ -11637,10 +11584,6 @@
   "sendSwapFailed": "สัญญาณล้มเหลว การคืนเงินของคุณจะถูกประมวลผล.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "สัญญาณเครือข่าย กรุณาลองอีกครั้ง",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "ฮาร์ดแวร์",
   "@sendHardwareWallet": {
@@ -13192,5 +13135,6 @@
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
   "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
-  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง"
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "sellErrorLoadUtxos": "โหลดเหรียญไม่สำเร็จ กรุณาลองอีกครั้ง"
 }

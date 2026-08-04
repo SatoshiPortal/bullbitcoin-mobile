@@ -601,7 +601,7 @@
   "addressCardCopiedMessage": "Endereço copiado para clipboard",
   "totalFeeLabel": "Taxa total",
   "mempoolCustomServerBottomSheetDescription": "Digite a URL do seu servidor de mempool personalizado. O servidor será validado antes de salvar.",
-  "sellBelowMinAmountError": "Você está tentando vender abaixo da quantidade mínima que pode ser vendida com esta carteira.",
+  "sellBelowMinAmountError": "O valor mínimo que pode ser vendido com esta carteira é {amount}.",
   "buyAwaitingConfirmation": "Aguardando confirmação ",
   "payExpired": "Expirou",
   "exchangeSecurityAccessSettingsButton": "Configurações de acesso",
@@ -800,7 +800,6 @@
   "arkUnifiedAddressCopied": "Endereço unificado copiado",
   "transactionSwapDescLnSendCompleted": "O pagamento Lightning foi enviado com sucesso! A tua troca já está completa.",
   "exchangeDcaCancelDialogCancelButton": "Cancelar",
-  "sellOrderAlreadyConfirmedError": "Esta ordem de venda já foi confirmada.",
   "paySinpeEnviado": "SINPE ENVIADO!",
   "withdrawConfirmPhone": "Telefone",
   "payNoDetailsAvailable": "Sem detalhes disponíveis",
@@ -960,7 +959,6 @@
   "payTotalAmount": "Montante total",
   "exchangeLegacyTransactionsTitle": "Transações Legadas",
   "autoswapWarningDontShowAgain": "Não mostre este aviso novamente.",
-  "sellInsufficientBalance": "Balança de carteira insuficiente",
   "recoverWalletButton": "Recuperar Carteira",
   "mempoolCustomServerDeleteMessage": "Tem a certeza de que deseja excluir este servidor de mempool personalizado? O servidor padrão será usado em vez disso.",
   "coldcardStep6": "   - Aumente o brilho da tela em seu dispositivo",
@@ -1460,15 +1458,6 @@
   "receiveWaitForSenderToFinish": "Aguarde o remetente para terminar a transação payjoin",
   "arkSetupTitle": "Configuração de arca",
   "seedsignerStep3": "Digitalizar o código QR mostrado na carteira Bull",
-  "sellErrorLoadUtxos": "Falhado para carregar UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Fatura decodificação...",
   "importColdcardInstructionsStep5": "Selecione \"Export Wallet\"",
   "electrumStopGapTooHighError": "Pare Gap parece muito alto. (Max. {maxStopGap})",
@@ -1693,7 +1682,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "SellOrder esperado, mas recebeu um tipo de ordem diferente",
   "pinCreateHeadline": "Criar novo pino",
   "transactionSwapProgressConfirmed": "Confirmado",
   "sellRoutingNumber": "Número de roteamento",
@@ -1743,7 +1731,7 @@
   "connectingToKeyServer": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
   "bitboxErrorDeviceNotFound": "Dispositivo BitBox não encontrado.",
   "ledgerScanningMessage": "Procurando dispositivos Ledger nas proximidades...",
-  "sellInsufficientBalanceError": "Equilíbrio insuficiente na carteira selecionada para completar esta ordem de venda.",
+  "sellInsufficientBalanceError": "Saldo insuficiente na carteira selecionada para concluir esta ordem de venda. Necessário: {amount}.",
   "transactionSwapDescLnReceivePending": "A tua troca foi iniciada. Estamos à espera de um pagamento a ser recebido na Rede Lightning.",
   "tryAgainButton": "Tente novamente",
   "psbtFlowHoldSteady": "Mantenha o código QR estável e centralizado",
@@ -2261,15 +2249,6 @@
   "recoverbullRecoveryContinueButton": "Continue",
   "payTimeoutError": "Tempo de pagamento. Por favor verifique o status",
   "kruxStep4": "Clique em Carregar da câmera",
-  "sellErrorRecalculateFees": "Falhado em taxas recalculadas: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Por favor, selecione uma frequência",
   "testBackupErrorNoMnemonic": "Nenhum mnemônico carregado",
   "payInvoiceExpired": "Fatura expirada",
@@ -2796,7 +2775,6 @@
   "addressViewCopyAddress": "Endereço de cópia",
   "receiveBitcoin": "Bitcoin",
   "pinAuthenticationTitle": "Autenticação",
-  "sellErrorNoWalletSelected": "Nenhuma carteira selecionada para enviar pagamento",
   "fundExchangeCrIbanCrcRecipientNameHelp": "Use nosso nome corporativo oficial. Não use \"Bull Bitcoin\".",
   "receiveVerifyAddressLedger": "Verificar endereço no Ledger",
   "howToDecideButton": "Como decidir?",
@@ -3418,7 +3396,7 @@
   "exchangeAppSettingsPreferredLanguageLabel": "Língua preferencial",
   "walletDeletionConfirmationMessage": "Tens a certeza que queres apagar esta carteira?",
   "rbfTitle": "Substituir por taxa",
-  "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
+  "sellAboveMaxAmountError": "O valor máximo que pode ser vendido com esta carteira é {amount}.",
   "settingsSuperuserModeUnlockedMessage": "Modo Superuser desbloqueado!",
   "pickPinInsteadButton": "Escolha PIN em vez >>",
   "backupWalletVaultProviderCustomLocation": "Localização personalizada",
@@ -3487,16 +3465,6 @@
   "settingsTorSettingsTitle": "Configurações do Tor",
   "importQrDeviceKeystoneStep2": "Desbloqueie-o digitando seu PIN",
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin transação levará um tempo para confirmar.",
-  "sellOrderNotFoundError": "A ordem de venda não foi encontrada. Por favor, tente novamente.",
-  "sellErrorPrepareTransaction": "Falhado para preparar a transação: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Pagamento de Bill Online",
   "importQrDeviceSeedsignerStep7": "No seu dispositivo móvel, toque em Abrir Câmara",
   "addressViewChangeAddressesDescription": "Carteira de exibição Alterar endereços",
@@ -3526,6 +3494,7 @@
   "payAdvancedOptions": "Opções avançadas",
   "sendSigningTransaction": "Assinar transação...",
   "sellErrorFeesNotCalculated": "Taxas de transação não calculadas. Por favor, tente novamente.",
+  "sellErrorSendPayment": "Falha ao enviar o pagamento. Por favor, tente novamente.",
   "dcaAddressLiquid": "Endereço líquido",
   "buyVerificationInProgress": "Verificação em andamento...",
   "transactionSwapDescChainPaid": "A sua transação foi transmitida. Estamos agora à espera que a transação de bloqueio seja confirmada.",
@@ -3849,7 +3818,6 @@
   "backupWalletInstructionNoPassphrase": "Seu backup não é protegido por senha. Adicione uma senha ao seu backup mais tarde, criando uma nova carteira.",
   "transactionDetailLabelSwapId": "ID do balanço",
   "sendSwapFailed": "A troca falhou. Seu reembolso será processado em breve.",
-  "sellNetworkError": "Erro de rede. Por favor, tente novamente",
   "sendHardwareWallet": "Carteira de hardware",
   "sendUserRejected": "Usuário rejeitado no dispositivo",
   "swapSubtractFeesLabel": "Subtrair taxas de montante",
@@ -5289,5 +5257,6 @@
   "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Será ativado assim que receber fundos.",
   "announcementAutoswapDescription": "O seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
-  "addressViewErrorLoadFailed": "Não foi possível carregar os seus endereços. Tente novamente."
+  "addressViewErrorLoadFailed": "Não foi possível carregar os seus endereços. Tente novamente.",
+  "sellErrorLoadUtxos": "Falha ao carregar moedas. Por favor, tente novamente."
 }

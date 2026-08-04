@@ -2012,7 +2012,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "S touto peněženkou se snažíte prodat minimální částku, která může být prodána.",
+  "sellBelowMinAmountError": "Minimální částka, kterou lze prodat s touto peněženkou, je {amount}.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2582,10 +2582,6 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "sellOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
@@ -3021,10 +3017,6 @@
   "autoswapWarningDontShowAgain": "Nevykazujte tuto varování znovu.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
-  },
-  "sellInsufficientBalance": "Nedostatečná vyváženost peněženky",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
   },
   "recoverWalletButton": "Obnovit peněženku",
   "@recoverWalletButton": {
@@ -4559,16 +4551,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "Podařilo se načíst UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Dekódovací faktura...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5192,10 +5174,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "Očekávané SellOrder ale obdržel jiný typ objednávky",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
   "sellRoutingNumber": "Číslo směrování",
   "@sellRoutingNumber": {
     "description": "Label for bank routing/transit number"
@@ -5353,7 +5331,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "Nedostatečná vyváženost v zvolené peněžence dokončit tuto prodejní objednávku.",
+  "sellInsufficientBalanceError": "Nedostatečný zůstatek ve vybrané peněžence pro dokončení tohoto prodejního příkazu. Požadováno: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -6918,16 +6896,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "Přepočtení poplatků: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Vyberte frekvenci",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8379,10 +8347,6 @@
   "receiveBitcoin": "Čeština",
   "@receiveBitcoin": {
     "description": "Label for receiving Bitcoin on the base layer"
-  },
-  "sellErrorNoWalletSelected": "Žádná peněženka vybrána k odeslání platby",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10154,7 +10118,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "S touto peněženkou se snažíte prodat nad maximální částku, která může být prodána.",
+  "sellAboveMaxAmountError": "Maximální částka, kterou lze prodat s touto peněženkou, je {amount}.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10349,20 +10313,6 @@
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "sellOrderNotFoundError": "Prodejní objednávka nebyla nalezena. Prosím, zkuste to znovu.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellErrorPrepareTransaction": "Vypnuto k přípravě transakce: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Online platba za účet",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -10453,6 +10403,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "Transakční poplatky nejsou vypočítány. Prosím, zkuste to znovu.",
+  "sellErrorSendPayment": "Odeslání platby se nezdařilo. Zkuste to prosím znovu.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
@@ -11337,10 +11288,6 @@
   "sendSwapFailed": "Swap selhal. Vaše náhrada bude zpracována krátce.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "Chyba sítě. Prosím, zkuste to znovu",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "Hardware Peněženka",
   "@sendHardwareWallet": {
@@ -13188,5 +13135,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
   "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
-  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu."
+  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
+  "sellErrorLoadUtxos": "Načtení mincí se nezdařilo. Prosím, zkuste to znovu."
 }

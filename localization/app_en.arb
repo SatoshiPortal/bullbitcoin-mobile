@@ -1889,29 +1889,36 @@
   "@sellFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
   },
-  "sellAboveMaxAmountError": "You are trying to sell above the maximum amount that can be sold with this wallet.",
+  "sellAboveMaxAmountError": "The maximum amount that can be sold with this wallet is {amount}.",
   "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
+    "description": "Error message for amount above maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-  "sellBelowMinAmountError": "You are trying to sell below the minimum amount that can be sold with this wallet.",
+  "sellBelowMinAmountError": "The minimum amount that can be sold with this wallet is {amount}.",
   "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
+    "description": "Error message for amount below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-  "sellInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this sell order.",
+  "sellInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this sell order. Required: {amount}.",
   "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
+    "description": "Error message for insufficient balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "sellUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@sellUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
-  },
-  "sellOrderNotFoundError": "The sell order was not found. Please try again.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellOrderAlreadyConfirmedError": "This sell order has already been confirmed.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "sellSelectNetwork": "Select Network",
   "@sellSelectNetwork": {
@@ -7639,10 +7646,6 @@
   "@sellOrderFailed": {
     "description": "Error message when order fails"
   },
-  "sellInsufficientBalance": "Insufficient wallet balance",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "sellMinimumAmount": "Minimum sell amount: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -7660,10 +7663,6 @@
         "type": "String"
       }
     }
-  },
-  "sellNetworkError": "Network error. Please try again",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sellRateExpired": "Exchange rate expired. Refreshing...",
   "@sellRateExpired": {
@@ -12637,47 +12636,17 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellErrorPrepareTransaction": "Failed to prepare transaction: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "No wallet selected to send payment",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
-  },
   "sellErrorFeesNotCalculated": "Transaction fees not calculated. Please try again.",
   "@sellErrorFeesNotCalculated": {
-    "description": "Error message when transaction fees calculation failed"
+    "description": "Error shown when transaction fee estimation or payment preparation fails"
   },
-  "sellErrorUnexpectedOrderType": "Expected SellOrder but received a different order type",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
+  "sellErrorSendPayment": "Failed to send the payment. Please try again.",
+  "@sellErrorSendPayment": {
+    "description": "Error shown when signing or broadcasting the sell payment fails"
   },
-  "sellErrorLoadUtxos": "Failed to load UTXOs: {error}",
+  "sellErrorLoadUtxos": "Failed to load coins. Please try again.",
   "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "Failed to recalculate fees: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
+    "description": "Error shown when loading wallet UTXOs fails"
   },
   "sellLoadingGeneric": "Loading...",
   "@sellLoadingGeneric": {

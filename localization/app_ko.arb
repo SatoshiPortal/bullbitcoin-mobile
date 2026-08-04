@@ -1792,7 +1792,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "이 지갑과 함께 판매 할 수있는 최소 금액 아래 판매하려고합니다.",
+  "sellBelowMinAmountError": "이 지갑으로 판매할 수 있는 최소 금액은 {amount}입니다.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2391,10 +2391,6 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "sellOrderAlreadyConfirmedError": "이 판매 순서는 이미 확인되었습니다.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE 엔비 아도!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
@@ -2851,10 +2847,6 @@
   "autoswapWarningDontShowAgain": "이 경고를 다시 표시하지 마십시오.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
-  },
-  "sellInsufficientBalance": "충분한 지갑 균형",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
   },
   "recoverWalletButton": "지갑 복구",
   "@recoverWalletButton": {
@@ -4487,16 +4479,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "UTXO를로드 실패 : {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "해독 송장 ...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5164,10 +5146,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "예상된 SellOrder 하지만 다른 주문 유형을 받았다",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
   "pinCreateHeadline": "새 핀 만들기",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -5345,7 +5323,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 판매 주문을 완료합니다.",
+  "sellInsufficientBalanceError": "선택한 지갑의 잔액이 부족하여 이 판매 주문을 완료할 수 없습니다. 필요 금액: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -6979,16 +6957,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "송금 수수료: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "주파수 선택",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8508,10 +8476,6 @@
   "pinAuthenticationTitle": "회사연혁",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "지불을 보내려는 지갑 없음",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "공식 법인 이름을 사용하십시오. \"Bull Bitcoin\"을 사용하지 마십시오.",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10396,7 +10360,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
+  "sellAboveMaxAmountError": "이 지갑으로 판매할 수 있는 최대 금액은 {amount}입니다.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10603,20 +10567,6 @@
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "sellOrderNotFoundError": "판매 주문은 찾을 수 없습니다. 다시 시도하십시오.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellErrorPrepareTransaction": "거래 준비 실패: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "온라인 빌 지불",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -10711,6 +10661,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "거래 수수료는 계산되지 않습니다. 다시 시도하십시오.",
+  "sellErrorSendPayment": "결제를 보내지 못했습니다. 다시 시도해 주세요.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
@@ -11641,10 +11592,6 @@
   "sendSwapFailed": "스왑 실패. 환불은 곧 처리됩니다.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "네트워크 오류. 다시 시도",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "하드웨어 지갑",
   "@sendHardwareWallet": {
@@ -13188,5 +13135,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
   "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다.",
   "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
-  "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요."
+  "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "sellErrorLoadUtxos": "코인 로드에 실패했습니다. 다시 시도해 주세요."
 }
