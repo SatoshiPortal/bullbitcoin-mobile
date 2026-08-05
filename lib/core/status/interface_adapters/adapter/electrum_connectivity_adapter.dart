@@ -1,20 +1,20 @@
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
   final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
-  final SettingsRepository _settingsRepository;
 
   ElectrumConnectivityAdapter({
     required this._electrumServerRepository,
+    required this._electrumSettingsRepository,
     required this._serverStatusPort,
-    required this._settingsRepository,
   });
 
   @override
@@ -24,18 +24,24 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
       isLiquid: network.isLiquid,
     );
 
-    final (serversResult, _) = await (
+    final (serversResult, settingsResult) = await (
       _electrumServerRepository.fetchAll(
         isTestnet: serverNetwork.isTestnet,
         isLiquid: serverNetwork.isLiquid,
       ),
-      _settingsRepository.fetch(),
+      _electrumSettingsRepository.fetchByNetwork(serverNetwork),
     ).wait;
 
     final servers = serversResult.fold(
       (value) => value,
       (failure) => throw Exception(
         failure.logMessage ?? 'Failed to fetch electrum servers',
+      ),
+    );
+    final settings = settingsResult.fold(
+      (value) => value,
+      (failure) => throw Exception(
+        failure.logMessage ?? 'Failed to fetch electrum settings',
       ),
     );
 
@@ -53,9 +59,9 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
         (server) => _serverStatusPort.checkElectrum(
           url: server.url,
           network: serverNetwork,
-          // Default servers serve CA-signed certs and must validate
-          // strictly; only the user's own custom servers may be self-signed.
-          skipCertValidation: server.isCustom,
+          // The user's own setting, so "online" here means the sync can
+          // actually reach the server too.
+          validateDomain: settings.validateDomain,
         ),
       ),
     );

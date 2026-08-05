@@ -38,11 +38,11 @@ class _MockEnvironmentPort extends Mock implements EnvironmentPort {}
 
 const _network = ElectrumServerNetwork.bitcoinMainnet;
 
-ElectrumSettings _settings() => ElectrumSettings(
+ElectrumSettings _settings({bool validateDomain = true}) => ElectrumSettings(
   stopGap: 20,
   timeout: 5,
   retry: 1,
-  validateDomain: true,
+  validateDomain: validateDomain,
   network: _network,
 );
 
@@ -66,6 +66,7 @@ void main() {
 
   group('AddCustomServerUsecase', () {
     late _MockServerRepository serverRepo;
+    late _MockSettingsRepository electrumSettingsRepo;
     late _MockServerStatusPort statusPort;
     late _MockAppSettingsRepository appSettingsRepo;
     late AddCustomServerUsecase usecase;
@@ -81,10 +82,12 @@ void main() {
 
     setUp(() {
       serverRepo = _MockServerRepository();
+      electrumSettingsRepo = _MockSettingsRepository();
       statusPort = _MockServerStatusPort();
       appSettingsRepo = _MockAppSettingsRepository();
       usecase = AddCustomServerUsecase(
         electrumServerRepository: serverRepo,
+        electrumSettingsRepository: electrumSettingsRepo,
         serverStatusPort: statusPort,
         settingsRepository: appSettingsRepo,
       );
@@ -151,6 +154,92 @@ void main() {
         expect(
           (result as Err).failure,
           isA<ElectrumServerUnreachableFailure>(),
+        );
+      },
+    );
+
+    test(
+      'probes with the user validateDomain setting, not a fixed one',
+      () async {
+        when(
+          () => serverRepo.fetchByUrl(any()),
+        ).thenAnswer((_) async => Ok(null));
+        when(() => appSettingsRepo.fetch()).thenAnswer(
+          (_) async => SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            useTorProxy: false,
+            torProxyPort: 9050,
+          ),
+        );
+        when(
+          () => statusPort.checkSocket(
+            url: any(named: 'url'),
+            useTorProxy: any(named: 'useTorProxy'),
+            torProxyPort: any(named: 'torProxyPort'),
+          ),
+        ).thenAnswer((_) async => ElectrumServerStatus.online);
+        when(
+          () => electrumSettingsRepo.fetchByNetwork(_network),
+        ).thenAnswer((_) async => Ok(_settings(validateDomain: false)));
+        when(
+          () => statusPort.checkElectrum(
+            url: any(named: 'url'),
+            network: _network,
+            validateDomain: any(named: 'validateDomain'),
+          ),
+        ).thenAnswer((_) async => ElectrumServerStatus.offline);
+
+        final result = await usecase.execute(request());
+
+        expect(result, isA<Err>());
+        verify(
+          () => statusPort.checkElectrum(
+            url: any(named: 'url'),
+            network: _network,
+            validateDomain: false,
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'propagates the load failure when electrum settings are unreadable',
+      () async {
+        when(
+          () => serverRepo.fetchByUrl(any()),
+        ).thenAnswer((_) async => Ok(null));
+        when(() => appSettingsRepo.fetch()).thenAnswer(
+          (_) async => SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            useTorProxy: false,
+            torProxyPort: 9050,
+          ),
+        );
+        when(
+          () => statusPort.checkSocket(
+            url: any(named: 'url'),
+            useTorProxy: any(named: 'useTorProxy'),
+            torProxyPort: any(named: 'torProxyPort'),
+          ),
+        ).thenAnswer((_) async => ElectrumServerStatus.online);
+        when(() => electrumSettingsRepo.fetchByNetwork(_network)).thenAnswer(
+          (_) async => const Err(ElectrumLoadFailure('raw db error')),
+        );
+
+        final result = await usecase.execute(request());
+
+        expect(result, isA<Err>());
+        expect((result as Err).failure, isA<ElectrumLoadFailure>());
+        verifyNever(
+          () => statusPort.checkElectrum(
+            url: any(named: 'url'),
+            network: _network,
+            validateDomain: any(named: 'validateDomain'),
+          ),
         );
       },
     );

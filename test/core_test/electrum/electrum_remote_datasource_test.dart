@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'self_signed_electrum_server.dart';
+
 /// The datasource must open the socket described by the resolved connection
 /// instead of always forcing CA-validated TLS. These tests pin the three
 /// decisions it makes: the url scheme, and the `validateDomain` flag.
@@ -17,39 +19,10 @@ void main() {
   const txid =
       'cca7507897abc89628f450e8b1e0c6fca4ec3f7b34cccf55f3f531c659ff4d79';
 
-  late Directory certDir;
-  late SecurityContext serverContext;
+  late SelfSignedElectrumServer fixture;
 
-  setUpAll(() async {
-    certDir = Directory.systemTemp.createTempSync('electrum_ds_test');
-    final result = await Process.run('openssl', [
-      'req',
-      '-x509',
-      '-newkey',
-      'rsa:2048',
-      '-keyout',
-      '${certDir.path}/key.pem',
-      '-out',
-      '${certDir.path}/cert.pem',
-      '-days',
-      '1',
-      '-nodes',
-      '-subj',
-      '/CN=localhost',
-      '-addext',
-      'subjectAltName=DNS:localhost,IP:127.0.0.1',
-      '-addext',
-      'basicConstraints=critical,CA:FALSE',
-    ]);
-    if (result.exitCode != 0) {
-      throw StateError('openssl failed to build a test cert: ${result.stderr}');
-    }
-    serverContext = SecurityContext()
-      ..useCertificateChain('${certDir.path}/cert.pem')
-      ..usePrivateKey('${certDir.path}/key.pem');
-  });
-
-  tearDownAll(() => certDir.deleteSync(recursive: true));
+  setUpAll(() async => fixture = await SelfSignedElectrumServer.create());
+  tearDownAll(() => fixture.dispose());
 
   late SqliteDatabase db;
   late ElectrumRemoteDatasource datasource;
@@ -60,18 +33,6 @@ void main() {
   });
 
   tearDown(() => db.close());
-
-  /// Answers anything with a well-formed but useless JSON-RPC reply.
-  void serve(Stream<Socket> server) {
-    server.listen(
-      (socket) => socket.listen(
-        (_) => socket.write('{"id":1,"result":"00"}\n'),
-        onError: (_) {},
-        onDone: socket.destroy,
-      ),
-      onError: (_) {},
-    );
-  }
 
   Future<String> errorFor(ElectrumConnection connection) async {
     try {
@@ -95,7 +56,7 @@ void main() {
   test('tcp:// reaches a plain server without attempting TLS', () async {
     final server = await ServerSocket.bind('127.0.0.1', 0);
     addTearDown(server.close);
-    serve(server);
+    serveElectrumStub(server);
 
     final error = await errorFor(
       connectionTo('tcp://127.0.0.1:${server.port}', validateDomain: true),
@@ -105,9 +66,13 @@ void main() {
   });
 
   test('ssl:// with validateDomain false accepts a self-signed cert', () async {
-    final server = await SecureServerSocket.bind('127.0.0.1', 0, serverContext);
+    final server = await SecureServerSocket.bind(
+      '127.0.0.1',
+      0,
+      fixture.securityContext,
+    );
     addTearDown(server.close);
-    serve(server);
+    serveElectrumStub(server);
 
     final error = await errorFor(
       connectionTo('ssl://127.0.0.1:${server.port}', validateDomain: false),
@@ -118,9 +83,13 @@ void main() {
   });
 
   test('ssl:// with validateDomain true rejects a self-signed cert', () async {
-    final server = await SecureServerSocket.bind('127.0.0.1', 0, serverContext);
+    final server = await SecureServerSocket.bind(
+      '127.0.0.1',
+      0,
+      fixture.securityContext,
+    );
     addTearDown(server.close);
-    serve(server);
+    serveElectrumStub(server);
 
     final error = await errorFor(
       connectionTo('ssl://127.0.0.1:${server.port}', validateDomain: true),
@@ -132,7 +101,7 @@ void main() {
   test('a bare host:port url still defaults to TLS', () async {
     final server = await ServerSocket.bind('127.0.0.1', 0);
     addTearDown(server.close);
-    serve(server);
+    serveElectrumStub(server);
 
     final error = await errorFor(
       connectionTo('127.0.0.1:${server.port}', validateDomain: true),

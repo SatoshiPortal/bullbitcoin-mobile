@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -12,11 +14,13 @@ import 'package:meta/meta.dart';
 
 class AddCustomServerUsecase {
   final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
   final SettingsRepository _settingsRepository;
 
   AddCustomServerUsecase({
     required this._electrumServerRepository,
+    required this._electrumSettingsRepository,
     required this._serverStatusPort,
     required this._settingsRepository,
   });
@@ -61,12 +65,23 @@ class AddCustomServerUsecase {
 
       // Step 2: verify the server actually serves chain data by fetching a
       // known historical tx (falls back to server.version on testnets).
-      // Self-signed certs are tolerated here: this is the user's own server
-      // (personal nodes commonly use self-signed certs).
+      // Probe with the user's own validateDomain setting: accepting a
+      // certificate the sync would refuse saves a server that can never be
+      // used, and the failure only surfaces later as a broken sync.
+      final ElectrumSettings electrumSettings;
+      switch (await _electrumSettingsRepository.fetchByNetwork(
+        server.network,
+      )) {
+        case Ok(:final value):
+          electrumSettings = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
+
       final protocolStatus = await _serverStatusPort.checkElectrum(
         url: server.url,
         network: server.network,
-        skipCertValidation: true,
+        validateDomain: electrumSettings.validateDomain,
       );
       if (protocolStatus == ElectrumServerStatus.offline) {
         return const Err(ElectrumServerUnreachableFailure());

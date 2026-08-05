@@ -15,17 +15,19 @@ abstract class ServerStatusPort {
   /// otherwise broken — fetching a real tx proves it can answer wallet
   /// queries. Falls back to `server.version` on testnets (no stable txid).
   ///
-  /// [skipCertValidation] must be true only for user-configured custom
-  /// servers (personal nodes commonly use self-signed certs). It disables
-  /// ALL certificate checks — chain, expiry, hostname — so an active MITM is
-  /// indistinguishable from the user's node; the user vouches for the
-  /// endpoint. Default servers must pass strict CA validation — accepting
-  /// any certificate there would let a network attacker MITM the probe and
-  /// make a malicious server look healthy.
+  /// [validateDomain] must mirror the user's electrum setting of the same
+  /// name — the flag the BDK/LWK sync obeys. When true, the certificate
+  /// chain, expiry and hostname must all check out; when false, every check
+  /// is skipped, so an active MITM becomes indistinguishable from the user's
+  /// own node and the user vouches for the endpoint.
+  ///
+  /// Probing with anything else makes this check lie: a laxer probe reports
+  /// a server online that the sync will then refuse, and a stricter one hides
+  /// a server that would have worked.
   Future<ElectrumServerStatus> checkElectrum({
     required String url,
     required ElectrumServerNetwork network,
-    required bool skipCertValidation,
+    required bool validateDomain,
     int? timeout,
   });
 }
