@@ -11,11 +11,11 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -200,7 +200,15 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                       child: Column(
                         mainAxisSize: .min,
                         children: [
-                          const FaIcon(FontAwesomeIcons.github),
+                          SvgPicture.asset(
+                            'assets/icons/github.svg',
+                            width: 24,
+                            height: 24,
+                            colorFilter: ColorFilter.mode(
+                              context.appColors.onSurface,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                           const Gap(8),
                           Text(
                             context.loc.settingsGithubLabel,

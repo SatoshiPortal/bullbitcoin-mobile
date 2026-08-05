@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
@@ -43,13 +42,21 @@ class ExchangeHomeScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return BBPullableBody(
-      onRefresh: () async {
-        await context.read<ExchangeCubit>().fetchUserSummary();
-      },
-      slivers: [
-        SliverStack(
-          children: [
+    // The transparent app bar floats over the scrollable content (the
+    // colored top section extends behind it). A static overlay is almost
+    // identical to the previous pinned SliverAppBar inside a SliverStack:
+    // the bar never scrolls away, and the theme pins scrolledUnderElevation
+    // to 0 so no tint appears on scroll. One accepted difference: a drag
+    // starting on the bar's buttons no longer scrolls the list, since the
+    // bar is now a Stack sibling above the scroll view instead of a sliver
+    // inside it.
+    return Stack(
+      children: [
+        BBPullableBody(
+          onRefresh: () async {
+            await context.read<ExchangeCubit>().fetchUserSummary();
+          },
+          slivers: [
             SliverList(
               delegate: SliverChildListDelegate([
                 const ExchangeHomeTopSection(),
@@ -68,153 +75,155 @@ class ExchangeHomeScreen extends StatelessWidget {
                 ),
               ]),
             ),
-            BlocBuilder<PriceChartCubit, PriceChartState>(
-              builder: (context, priceChartState) {
-                final showChart = priceChartState.showChart;
-
-                return SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  floating: true,
-                  pinned: true,
-                  elevation: 0,
-                  centerTitle: true,
-                  title: showChart ? null : const TopBarBullLogo(),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: showChart
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.arrow_back,
-                              color: context.appColors.onPrimary,
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              context.read<PriceChartCubit>().hideChart();
-                            },
-                          )
-                        : SizedBox(
-                            width: 96,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  visualDensity: VisualDensity.compact,
-                                  icon: Icon(
-                                    Icons.show_chart,
-                                    color: context.appColors.onPrimary,
-                                    size: 24,
-                                  ),
-                                  onPressed: () {
-                                    context.read<PriceChartCubit>().showChart();
-                                  },
-                                ),
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  visualDensity: VisualDensity.compact,
-                                  icon: Icon(
-                                    Icons.chat_bubble_outline,
-                                    color: context.appColors.onPrimary,
-                                    size: 24,
-                                  ),
-                                  onPressed: () {
-                                    final notLoggedIn = context
-                                        .read<ExchangeCubit>()
-                                        .state
-                                        .notLoggedIn;
-                                    if (notLoggedIn) {
-                                      context.pushNamed(
-                                        ExchangeRoute
-                                            .exchangeLoginForSupport
-                                            .name,
-                                      );
-                                    } else {
-                                      context.pushNamed(
-                                        ExchangeSupportChatRoute
-                                            .supportChat
-                                            .name,
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                  ),
-                  leadingWidth: showChart ? 56 : 112,
-                  actionsIconTheme: IconThemeData(
-                    color: context.appColors.onPrimary,
-                    size: 24,
-                  ),
-                  actionsPadding: const EdgeInsets.only(right: 16),
-                  actions: showChart
-                      ? null
-                      : [
-                          IconButton(
-                            onPressed: () {
-                              context.pushNamed(
-                                TransactionsRoute.transactions.name,
-                              );
-                            },
-                            visualDensity: VisualDensity.compact,
-                            color: context.appColors.onPrimary,
-                            iconSize: 32,
-                            icon: const Icon(Icons.history),
-                          ),
-                          const Gap(16),
-                          InkWell(
-                            onTap: () =>
-                                context.pushNamed(SettingsRoute.settings.name),
-                            child: Image.asset(
-                              Assets.icons.settingsLine.path,
-                              width: 32,
-                              height: 32,
-                              color: context.appColors.onPrimary,
-                            ),
-                          ),
-                        ],
-                );
-              },
-            ),
           ],
+          bottomChild: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: BBButton.big(
+                    iconData: Icons.arrow_downward,
+                    label: context.loc.exchangeHomeDepositButton,
+                    iconFirst: true,
+                    onPressed: () =>
+                        context.pushNamed(FundExchangeRoute.fundExchange.name),
+                    bgColor: context.appColors.secondaryFixed,
+                    textColor: context.appColors.onSecondaryFixed,
+                    outlined: true,
+                    borderColor: context.appColors.onSecondaryFixed,
+                  ),
+                ),
+                const Gap(4),
+                Expanded(
+                  child: BBButton.big(
+                    iconData: Icons.arrow_upward,
+                    label: context.loc.exchangeHomeWithdrawButton,
+                    iconFirst: true,
+                    disabled: false,
+                    onPressed: () =>
+                        context.pushNamed(WithdrawRoute.withdraw.name),
+                    bgColor: context.appColors.secondaryFixed,
+                    textColor: context.appColors.onSecondaryFixed,
+                    outlined: true,
+                    borderColor: context.appColors.onSecondaryFixed,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: BlocBuilder<PriceChartCubit, PriceChartState>(
+            builder: (context, priceChartState) {
+              final showChart = priceChartState.showChart;
+
+              return AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: true,
+                title: showChart ? null : const TopBarBullLogo(),
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: showChart
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: context.appColors.onPrimary,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            context.read<PriceChartCubit>().hideChart();
+                          },
+                        )
+                      : SizedBox(
+                          width: 96,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                visualDensity: VisualDensity.compact,
+                                icon: Icon(
+                                  Icons.show_chart,
+                                  color: context.appColors.onPrimary,
+                                  size: 24,
+                                ),
+                                onPressed: () {
+                                  context.read<PriceChartCubit>().showChart();
+                                },
+                              ),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                visualDensity: VisualDensity.compact,
+                                icon: Icon(
+                                  Icons.chat_bubble_outline,
+                                  color: context.appColors.onPrimary,
+                                  size: 24,
+                                ),
+                                onPressed: () {
+                                  final notLoggedIn = context
+                                      .read<ExchangeCubit>()
+                                      .state
+                                      .notLoggedIn;
+                                  if (notLoggedIn) {
+                                    context.pushNamed(
+                                      ExchangeRoute
+                                          .exchangeLoginForSupport
+                                          .name,
+                                    );
+                                  } else {
+                                    context.pushNamed(
+                                      ExchangeSupportChatRoute.supportChat.name,
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+                leadingWidth: showChart ? 56 : 112,
+                actionsIconTheme: IconThemeData(
+                  color: context.appColors.onPrimary,
+                  size: 24,
+                ),
+                actionsPadding: const EdgeInsets.only(right: 16),
+                actions: showChart
+                    ? null
+                    : [
+                        IconButton(
+                          onPressed: () {
+                            context.pushNamed(
+                              TransactionsRoute.transactions.name,
+                            );
+                          },
+                          visualDensity: VisualDensity.compact,
+                          color: context.appColors.onPrimary,
+                          iconSize: 32,
+                          icon: const Icon(Icons.history),
+                        ),
+                        const Gap(16),
+                        InkWell(
+                          onTap: () =>
+                              context.pushNamed(SettingsRoute.settings.name),
+                          child: Image.asset(
+                            Assets.icons.settingsLine.path,
+                            width: 32,
+                            height: 32,
+                            color: context.appColors.onPrimary,
+                          ),
+                        ),
+                      ],
+              );
+            },
+          ),
         ),
       ],
-      bottomChild: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: BBButton.big(
-                iconData: Icons.arrow_downward,
-                label: context.loc.exchangeHomeDepositButton,
-                iconFirst: true,
-                onPressed: () =>
-                    context.pushNamed(FundExchangeRoute.fundExchange.name),
-                bgColor: context.appColors.secondaryFixed,
-                textColor: context.appColors.onSecondaryFixed,
-                outlined: true,
-                borderColor: context.appColors.onSecondaryFixed,
-              ),
-            ),
-            const Gap(4),
-            Expanded(
-              child: BBButton.big(
-                iconData: Icons.arrow_upward,
-                label: context.loc.exchangeHomeWithdrawButton,
-                iconFirst: true,
-                disabled: false,
-                onPressed: () => context.pushNamed(WithdrawRoute.withdraw.name),
-                bgColor: context.appColors.secondaryFixed,
-                textColor: context.appColors.onSecondaryFixed,
-                outlined: true,
-                borderColor: context.appColors.onSecondaryFixed,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

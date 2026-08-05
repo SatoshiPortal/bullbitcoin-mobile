@@ -177,16 +177,35 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             }
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://accounts')) {
+            // Exact host matching — a startsWith('https://accounts') prefix
+            // check would also match lookalike hosts such as
+            // https://accounts.evil.com.
+            final uri = Uri.tryParse(request.url);
+            if (uri == null || uri.scheme != 'https') {
+              // Host only — never the full URL, whose query params may
+              // carry tokens.
+              log.warning(
+                'Blocked webview navigation: '
+                '${uri == null ? 'unparseable URL' : 'non-https host ${uri.host}'}',
+              );
+              return NavigationDecision.prevent;
+            }
+
+            final authHost = Uri.parse(_bbAuthUrl).host;
+            if (uri.host == authHost) {
               return NavigationDecision.navigate;
             }
 
-            if (request.url.startsWith('https://www.bullbitcoin.com') &&
+            if (uri.host == 'www.bullbitcoin.com' &&
                 (request.url.contains('terms') ||
                     request.url.contains('privacy'))) {
               return NavigationDecision.navigate;
             }
 
+            // Logged so a legitimate navigation blocked in the field (e.g.
+            // a cross-host redirect between auth instances) is diagnosable
+            // from user logs.
+            log.warning('Blocked webview navigation to host: ${uri.host}');
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
