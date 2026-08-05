@@ -20,7 +20,6 @@ export 'package:bb_mobile/features/labels/router.dart';
 export 'package:bb_mobile/features/labels/locator.dart';
 export 'package:bb_mobile/features/labels/ui/page.dart';
 export 'package:bb_mobile/features/labels/ui/label_text.dart';
-export 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 export 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 
 /// Public contract of the labels feature.

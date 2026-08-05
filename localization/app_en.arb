@@ -14936,5 +14936,22 @@
   "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
   "@addressViewErrorLoadFailed": {
     "description": "Shown when loading or paginating the wallet address list fails"
+  },
+  "mnemonicPossibleLastWords": "{count} possible last words",
+  "@mnemonicPossibleLastWords": {
+    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
+  "@mnemonicInvalidChecksumError": {
+    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
+  },
+  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
+  "@mnemonicUnknownWordError": {
+    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
   }
 }
