@@ -11,8 +11,6 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dar
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -21,8 +19,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -45,8 +44,8 @@ class _MockGetReceiveAddressUsecase extends Mock
 class _MockGetAddressAtIndexUsecase extends Mock
     implements GetAddressAtIndexUsecase {}
 
-class _MockCreateReceiveSwapUsecase extends Mock
-    implements CreateReceiveSwapUsecase {}
+class _MockCreateReceiveOrderSwapUsecase extends Mock
+    implements CreateReceiveOrderSwapUsecase {}
 
 class _MockReceiveWithPayjoinUsecase extends Mock
     implements ReceiveWithPayjoinUsecase {}
@@ -59,13 +58,12 @@ class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 class _MockWatchWalletTransactionByAddressUsecase extends Mock
     implements WatchWalletTransactionByAddressUsecase {}
 
-class _MockWatchSwapUsecase extends Mock implements WatchSwapUsecase {}
+class _MockWatchReceiveOrderSwapUsecase extends Mock
+    implements WatchReceiveOrderSwapUsecase {}
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class _MockLabel extends Mock implements Label {}
-
-class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
 
 class _MockWatchPayjoinEnabledChangesUsecase extends Mock
     implements WatchPayjoinEnabledChangesUsecase {}
@@ -161,14 +159,13 @@ void main() {
     convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
     getReceiveAddressUsecase: getReceiveAddress,
     getAddressAtIndexUsecase: _MockGetAddressAtIndexUsecase(),
-    createReceiveSwapUsecase: _MockCreateReceiveSwapUsecase(),
+    createReceiveOrderSwapUsecase: _MockCreateReceiveOrderSwapUsecase(),
     receiveWithPayjoinUsecase: receiveWithPayjoin,
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
     watchPayjoinUsecase: watchPayjoin,
     watchWalletTransactionByAddressUsecase: watchWalletTransaction,
-    watchSwapUsecase: _MockWatchSwapUsecase(),
+    watchReceiveOrderSwapUsecase: _MockWatchReceiveOrderSwapUsecase(),
     labelsFacade: labels,
-    getSwapLimitsUsecase: _MockGetSwapLimitsUsecase(),
     watchPayjoinEnabledChangesUsecase: watchPayjoinEnabledChanges,
     watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
     setReceivePayjoinEnabledUsecase: setPayjoinEnabled,

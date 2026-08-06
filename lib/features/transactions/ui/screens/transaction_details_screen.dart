@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dar
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/order_swap_status_description.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_progress_indicator.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_description.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
@@ -68,7 +69,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOrderType = tx?.isOrder == true;
     final walletTransaction = tx?.walletTransaction;
     final swap = tx?.swap;
-    final isChainSwap = swap?.isChainSwap ?? false;
+    final orderSwap = tx?.orderSwap;
+    final isChainSwap = tx?.isChainSwap ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -135,6 +137,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                 const Gap(16),
                 if (isOngoingSwap == true && swap != null) ...[
                   SwapStatusDescription(swap: swap),
+                  const Gap(16),
+                ],
+                if (isOngoingSwap == true && orderSwap != null) ...[
+                  OrderSwapStatusDescription(orderSwap: orderSwap),
                   const Gap(16),
                 ],
                 if (isOrderType &&
@@ -224,7 +230,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                     walletTransaction?.isBitcoin == true &&
                     wallet?.signsLocally == true &&
                     tx?.txId != null &&
-                    swap == null)
+                    tx?.isSwap != true)
                   BBButton.big(
                     label: context.loc.transactionDetailAccelerate,
                     onPressed: () {

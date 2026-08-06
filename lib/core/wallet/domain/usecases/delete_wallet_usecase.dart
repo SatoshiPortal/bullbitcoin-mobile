@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
@@ -47,7 +48,15 @@ class DeleteWalletUsecase {
         );
         if (!stillUsed) {
           try {
-            await _seedRepository.delete(wallet.masterFingerprint);
+            final result = await _seedRepository.delete(
+              wallet.masterFingerprint,
+            );
+            if (result case Err(:final failure)) {
+              log.warning(
+                'DeleteWalletUsecase: seed cleanup failed for $walletId '
+                '(${failure.runtimeType})',
+              );
+            }
           } catch (e) {
             log.warning(
               'DeleteWalletUsecase: failed to clean up seed for $walletId: $e',

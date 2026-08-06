@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -25,6 +26,9 @@ class _MockExchangeOrderRepository extends Mock
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
 
+class _MockGetTransactionOrderSwapsUsecase extends Mock
+    implements GetTransactionOrderSwapsUsecase {}
+
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
@@ -32,6 +36,7 @@ void main() {
   late _MockPayjoinRepository payjoinRepository;
   late _MockExchangeOrderRepository mainnetOrderRepository;
   late _MockExchangeOrderRepository testnetOrderRepository;
+  late _MockGetTransactionOrderSwapsUsecase getOrderSwaps;
   late GetTransactionsUsecase usecase;
 
   PayjoinReceiver receiver(PayjoinStatus status) =>
@@ -54,6 +59,7 @@ void main() {
     payjoinRepository = _MockPayjoinRepository();
     mainnetOrderRepository = _MockExchangeOrderRepository();
     testnetOrderRepository = _MockExchangeOrderRepository();
+    getOrderSwaps = _MockGetTransactionOrderSwapsUsecase();
 
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
@@ -73,6 +79,9 @@ void main() {
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => []);
     when(() => mainnetOrderRepository.getOrders()).thenAnswer((_) async => []);
+    when(
+      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => []);
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -82,6 +91,7 @@ void main() {
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
       labelExchangeOrdersUsecase: _MockLabelExchangeOrdersUsecase(),
+      getTransactionOrderSwapsUsecase: getOrderSwaps,
     );
   });
 

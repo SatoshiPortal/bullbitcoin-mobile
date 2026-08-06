@@ -140,7 +140,7 @@
   "wizardJourneyTip3": "আপোনাৰ নিজা Bitcoin নডৰ সৈতে সংযোগ কৰক",
   "wizardJourneyTip4": "আপোনাৰ নিজা Mempool অন্বেষকৰ সৈতে সংযোগ কৰক",
   "wizardJourneyTip5": "KYC অবিহনে Bitcoin আৰু Liquid ৰ মাজত স্থানান্তৰ কৰক",
-  "wizardJourneyTip6": "আপোনাৰ autoswap ছেটিংসমূহ কাষ্টমাইজ কৰক",
+  "wizardJourneyTip6": "আপোনাৰ autotransfer ছেটিংসমূহ কাষ্টমাইজ কৰক",
   "wizardJourneyTip7": "Bitcoin (BTC) আৰু Satoshis (sats) ৰ মাজত সলনি কৰক",
   "wizardJourneyTip8": "আপোনাৰ হাৰ্ডৱেৰ ৱালেটৰ বাবে air-gap লেনদেন সৃষ্টি কৰক",
   "@wizardPageIndicator": {
@@ -220,24 +220,24 @@
   "coreSwapsActionClaim": "দাবী কৰক",
   "coreSwapsActionClose": "বন্ধ কৰক",
   "coreSwapsActionRefund": "ঘূৰাই দিয়ক",
-  "coreSwapsLnReceivePending": "Swap এতিয়াও আৰম্ভ হোৱা নাই।",
+  "coreSwapsLnReceivePending": "Transfer এতিয়াও আৰম্ভ হোৱা নাই।",
   "coreSwapsLnReceivePaid": "প্ৰেৰকে invoice পৰিশোধ কৰিছে।",
-  "coreSwapsLnReceiveClaimable": "Swap দাবী কৰিবলৈ সাজু।",
-  "coreSwapsLnReceiveRefundable": "Swap ঘূৰাই দিবলৈ সাজু।",
-  "coreSwapsLnReceiveCanCoop": "Swap অতি সোনকালে সম্পন্ন হ'ব।",
-  "coreSwapsLnReceiveCompleted": "Swap সম্পন্ন হৈছে।",
-  "coreSwapsLnReceiveExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে।",
-  "coreSwapsLnReceiveFailed": "Swap বিফল হৈছে।",
-  "coreSwapsLnSendPending": "Swap এতিয়াও আৰম্ভ হোৱা নাই।",
+  "coreSwapsLnReceiveClaimable": "Transfer দাবী কৰিবলৈ সাজু।",
+  "coreSwapsLnReceiveRefundable": "Transfer ঘূৰাই দিবলৈ সাজু।",
+  "coreSwapsLnReceiveCanCoop": "Transfer অতি সোনকালে সম্পন্ন হ'ব।",
+  "coreSwapsLnReceiveCompleted": "Transfer সম্পন্ন হৈছে।",
+  "coreSwapsLnReceiveExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে।",
+  "coreSwapsLnReceiveFailed": "Transfer বিফল হৈছে।",
+  "coreSwapsLnSendPending": "Transfer এতিয়াও আৰম্ভ হোৱা নাই।",
   "coreSwapsLnSendPaid": "আপোনাৰ পৰিশোধ নিশ্চিত হোৱাৰ পিছত invoice পৰিশোধ কৰা হ'ব।",
-  "coreSwapsLnSendClaimable": "Swap দাবী কৰিবলৈ সাজু।",
-  "coreSwapsLnSendRefundable": "Swap ঘূৰাই দিবলৈ সাজু।",
-  "coreSwapsLnSendCanCoop": "Swap অতি সোনকালে সম্পন্ন হ'ব।",
-  "coreSwapsLnSendCompletedRefunded": "Swap ঘূৰাই দিয়া হৈছে।",
-  "coreSwapsLnSendCompletedSuccess": "Swap সফলভাৱে সম্পন্ন হৈছে।",
-  "coreSwapsLnSendExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
-  "coreSwapsLnSendFailedRefunding": "Swap অতি সোনকালে ঘূৰাই দিয়া হ'ব।",
-  "coreSwapsLnSendFailed": "Swap বিফল হৈছে।",
+  "coreSwapsLnSendClaimable": "Transfer দাবী কৰিবলৈ সাজু।",
+  "coreSwapsLnSendRefundable": "Transfer ঘূৰাই দিবলৈ সাজু।",
+  "coreSwapsLnSendCanCoop": "Transfer অতি সোনকালে সম্পন্ন হ'ব।",
+  "coreSwapsLnSendCompletedRefunded": "Transfer ঘূৰাই দিয়া হৈছে।",
+  "coreSwapsLnSendCompletedSuccess": "Transfer সফলভাৱে সম্পন্ন হৈছে।",
+  "coreSwapsLnSendExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে",
+  "coreSwapsLnSendFailedRefunding": "Transfer অতি সোনকালে ঘূৰাই দিয়া হ'ব।",
+  "coreSwapsLnSendFailed": "Transfer বিফল হৈছে।",
   "coreSwapsChainPending": "Transfer এতিয়াও আৰম্ভ হোৱা নাই।",
   "coreSwapsChainPaid": "Transfer প্ৰদানকাৰীৰ পৰিশোধ নিশ্চিতকৰণৰ বাবে অপেক্ষা কৰি আছে। ইয়াত অলপ সময় লাগিব পাৰে।",
   "coreSwapsChainClaimable": "Transfer দাবী কৰিবলৈ সাজু।",
@@ -547,7 +547,7 @@
   "walletDeletionConfirmationDeleteButton": "মচক",
   "walletDeletionFailedTitle": "মচিবলৈ বিফল হৈছে",
   "walletDeletionErrorDefaultWallet": "আপুনি ডিফল্ট wallet মচিব নোৱাৰিব।",
-  "walletDeletionErrorOngoingSwaps": "চলমান swap থকা wallet মচিব নোৱাৰিব।",
+  "walletDeletionErrorOngoingSwaps": "চলমান transfer থকা wallet মচিব নোৱাৰিব।",
   "walletDeletionErrorWalletNotFound": "আপুনি মচিব বিচৰা wallet বিদ্যমান নাই।",
   "walletDeletionErrorGeneric": "Wallet মচিবলৈ বিফল হৈছে, পুনৰ চেষ্টা কৰক।",
   "walletDeletionFailedOkButton": "ঠিক আছে",
@@ -602,7 +602,7 @@
   "sendCouldNotBuildTransaction": "লেনদেন তৈয়াৰ কৰিব পৰা নগ'ল",
   "sendHighFeeWarning": "উচ্চ মাচুলৰ সতৰ্কবাণী",
   "sendSlowPaymentWarning": "লেহেমীয়া পৰিশোধৰ সতৰ্কবাণী",
-  "sendSlowPaymentWarningDescription": "Bitcoin swap নিশ্চিত হ'বলৈ সময় লাগিব।",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfer নিশ্চিত হ'বলৈ সময় লাগিব।",
   "sendAdvancedSettings": "উন্নত ছেটিংছ",
   "sendConfirm": "নিশ্চিত কৰক",
   "sendBroadcastTransaction": "লেনদেন প্ৰচাৰ কৰক",
@@ -623,10 +623,10 @@
   "receiveAddress": "গ্ৰহণ ঠিকনা",
   "receiveNoteLabel": "টোকা",
   "receiveEnterHere": "ইয়াত দিয়ক...",
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "receiveTotalFee": "মুঠ মাচুল",
   "receiveNetworkFee": "নেটৱৰ্ক মাচুল",
-  "receiveBoltzSwapFee": "Boltz Swap মাচুল",
+  "receiveBoltzSwapFee": "Boltz Transfer মাচুল",
   "receiveCopyOrScanAddressOnly": "কেৱল ঠিকনা কপি বা স্কেন কৰক",
   "receiveNewAddress": "নতুন ঠিকনা",
   "receiveVerifyAddressOnLedger": "Ledger-ত ঠিকনা যাচাই কৰক",
@@ -654,7 +654,7 @@
   "receiveReceiveAmount": "গ্ৰহণ কৰা পৰিমাণ",
   "receiveSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
   "receiveServerNetworkFees": "চাৰ্ভাৰ নেটৱৰ্ক মাচুল",
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "receiveTransferFee": "Transfer মাচুল",
   "receiveVerifyAddressError": "ঠিকনা যাচাই কৰিবলৈ অক্ষম: Wallet বা ঠিকনাৰ তথ্য অনুপস্থিত",
   "receiveVerifyAddressLedger": "Ledger-ত ঠিকনা যাচাই কৰক",
@@ -927,7 +927,7 @@
   },
   "transactionDetailTitle": "লেনদেনৰ বিৱৰণ",
   "transactionDetailTransferProgress": "Transfer অগ্ৰগতি",
-  "transactionDetailSwapProgress": "Swap অগ্ৰগতি",
+  "transactionDetailSwapProgress": "Transfer অগ্ৰগতি",
   "transactionDetailRetryTransfer": "Transfer {action} পুনৰ চেষ্টা কৰক",
   "@transactionDetailRetryTransfer": {
     "placeholders": {
@@ -936,7 +936,7 @@
       }
     }
   },
-  "transactionDetailRetrySwap": "Swap {action} পুনৰ চেষ্টা কৰক",
+  "transactionDetailRetrySwap": "Transfer {action} পুনৰ চেষ্টা কৰক",
   "@transactionDetailRetrySwap": {
     "placeholders": {
       "action": {
@@ -972,9 +972,9 @@
   "transactionStatusPaymentInProgress": "পৰিশোধ চলি আছে",
   "transactionStatusPaymentRefunded": "পৰিশোধ ঘূৰাই দিয়া হৈছে",
   "transactionStatusTransferFailed": "Transfer বিফল হৈছে",
-  "transactionStatusSwapFailed": "Swap বিফল হৈছে",
+  "transactionStatusSwapFailed": "Transfer বিফল হৈছে",
   "transactionStatusTransferExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে",
-  "transactionStatusSwapExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
+  "transactionStatusSwapExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusPayjoinRequested": "Payjoin অনুৰোধ কৰা হৈছে",
   "transactionLabelTransactionId": "লেনদেন ID",
   "transactionLabelToWallet": "Wallet লৈ",
@@ -988,17 +988,17 @@
   "transactionLabelStatus": "স্থিতি",
   "transactionLabelConfirmationTime": "নিশ্চিতকৰণৰ সময়",
   "transactionLabelTransferId": "Transfer ID",
-  "transactionLabelSwapId": "Swap ID",
+  "transactionLabelSwapId": "Transfer ID",
   "transactionLabelTransferStatus": "Transfer স্থিতি",
-  "transactionLabelSwapStatus": "Swap স্থিতি",
+  "transactionLabelSwapStatus": "Transfer স্থিতি",
   "transactionLabelSwapStatusRefunded": "ঘূৰাই দিয়া হৈছে",
   "transactionLabelLiquidTransactionId": "Liquid লেনদেন ID",
   "transactionLabelBitcoinTransactionId": "Bitcoin লেনদেন ID",
   "transactionLabelTotalTransferFees": "মুঠ Transfer মাচুল",
-  "transactionLabelTotalSwapFees": "মুঠ Swap মাচুল",
+  "transactionLabelTotalSwapFees": "মুঠ Transfer মাচুল",
   "transactionLabelNetworkFee": "নেটৱৰ্ক মাচুল",
   "transactionLabelTransferFee": "Transfer মাচুল",
-  "transactionLabelBoltzSwapFee": "Boltz Swap মাচুল",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer মাচুল",
   "transactionLabelCreatedAt": "তৈয়াৰ হৈছে",
   "transactionLabelCompletedAt": "সম্পন্ন হৈছে",
   "transactionLabelPayjoinStatus": "Payjoin স্থিতি",
@@ -1033,20 +1033,20 @@
   "transactionSwapProgressCompleted": "সম্পন্ন হৈছে",
   "transactionSwapProgressInProgress": "চলি আছে",
   "transactionSwapStatusTransferStatus": "Transfer স্থিতি",
-  "transactionSwapStatusSwapStatus": "Swap স্থিতি",
-  "transactionSwapDescLnReceivePending": "আপোনাৰ swap আৰম্ভ হৈছে। আমি Lightning Network-ত পৰিশোধ গ্ৰহণৰ বাবে অপেক্ষা কৰিছো।",
+  "transactionSwapStatusSwapStatus": "Transfer স্থিতি",
+  "transactionSwapDescLnReceivePending": "আপোনাৰ transfer আৰম্ভ হৈছে। আমি Lightning Network-ত পৰিশোধ গ্ৰহণৰ বাবে অপেক্ষা কৰিছো।",
   "transactionSwapDescLnReceivePaid": "পৰিশোধ গ্ৰহণ হৈছে! আমি এতিয়া আপোনাৰ wallet-লৈ অন-চেইন লেনদেন প্ৰচাৰ কৰিছো।",
-  "transactionSwapDescLnReceiveClaimable": "অন-চেইন লেনদেন নিশ্চিত হৈছে। আমি এতিয়া আপোনাৰ swap সম্পন্ন কৰিবলৈ ধন দাবী কৰিছো।",
-  "transactionSwapDescLnReceiveCompleted": "আপোনাৰ swap সফলভাৱে সম্পন্ন হৈছে! ধন এতিয়া আপোনাৰ wallet-ত উপলব্ধ হ'ব লাগে।",
-  "transactionSwapDescLnReceiveFailed": "আপোনাৰ swap-ত সমস্যা হৈছে। যদি 24 ঘণ্টাৰ ভিতৰত ধন ঘূৰাই দিয়া নহয়, তেন্তে সহায়ৰ সৈতে যোগাযোগ কৰক।",
-  "transactionSwapDescLnReceiveExpired": "এই swap মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰেৰণ কৰা যিকোনো ধন স্বয়ংক্ৰিয়ভাৱে প্ৰেৰকলৈ ঘূৰাই দিয়া হ'ব।",
-  "transactionSwapDescLnReceiveDefault": "আপোনাৰ swap চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
-  "transactionSwapDescLnSendPending": "আপোনাৰ swap আৰম্ভ হৈছে। আমি আপোনাৰ ধন লক কৰিবলৈ অন-চেইন লেনদেন প্ৰচাৰ কৰিছো।",
+  "transactionSwapDescLnReceiveClaimable": "অন-চেইন লেনদেন নিশ্চিত হৈছে। আমি এতিয়া আপোনাৰ transfer সম্পন্ন কৰিবলৈ ধন দাবী কৰিছো।",
+  "transactionSwapDescLnReceiveCompleted": "আপোনাৰ transfer সফলভাৱে সম্পন্ন হৈছে! ধন এতিয়া আপোনাৰ wallet-ত উপলব্ধ হ'ব লাগে।",
+  "transactionSwapDescLnReceiveFailed": "আপোনাৰ transfer-ত সমস্যা হৈছে। যদি 24 ঘণ্টাৰ ভিতৰত ধন ঘূৰাই দিয়া নহয়, তেন্তে সহায়ৰ সৈতে যোগাযোগ কৰক।",
+  "transactionSwapDescLnReceiveExpired": "এই transfer মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰেৰণ কৰা যিকোনো ধন স্বয়ংক্ৰিয়ভাৱে প্ৰেৰকলৈ ঘূৰাই দিয়া হ'ব।",
+  "transactionSwapDescLnReceiveDefault": "আপোনাৰ transfer চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
+  "transactionSwapDescLnSendPending": "আপোনাৰ transfer আৰম্ভ হৈছে। আমি আপোনাৰ ধন লক কৰিবলৈ অন-চেইন লেনদেন প্ৰচাৰ কৰিছো।",
   "transactionSwapDescLnSendPaid": "আপোনাৰ অন-চেইন লেনদেন প্ৰচাৰ কৰা হৈছে। 1 নিশ্চিতকৰণৰ পিছত Lightning পৰিশোধ পঠোৱা হ'ব।",
-  "transactionSwapDescLnSendCompleted": "Lightning পৰিশোধ সফলভাৱে পঠোৱা হৈছে! আপোনাৰ swap এতিয়া সম্পন্ন হৈছে।",
-  "transactionSwapDescLnSendFailed": "আপোনাৰ swap-ত সমস্যা হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ wallet-লৈ ঘূৰাই দিয়া হ'ব।",
-  "transactionSwapDescLnSendExpired": "এই swap মেয়াদ উত্তীৰ্ণ হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ wallet-লৈ ঘূৰাই দিয়া হ'ব।",
-  "transactionSwapDescLnSendDefault": "আপোনাৰ swap চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
+  "transactionSwapDescLnSendCompleted": "Lightning পৰিশোধ সফলভাৱে পঠোৱা হৈছে! আপোনাৰ transfer এতিয়া সম্পন্ন হৈছে।",
+  "transactionSwapDescLnSendFailed": "আপোনাৰ transfer-ত সমস্যা হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ wallet-লৈ ঘূৰাই দিয়া হ'ব।",
+  "transactionSwapDescLnSendExpired": "এই transfer মেয়াদ উত্তীৰ্ণ হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ wallet-লৈ ঘূৰাই দিয়া হ'ব।",
+  "transactionSwapDescLnSendDefault": "আপোনাৰ transfer চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
   "transactionSwapDescChainPending": "আপোনাৰ transfer তৈয়াৰ হৈছে কিন্তু এতিয়াও আৰম্ভ হোৱা নাই।",
   "transactionSwapDescChainPaid": "আপোনাৰ লেনদেন প্ৰচাৰ কৰা হৈছে। আমি এতিয়া lockup লেনদেন নিশ্চিত হোৱাৰ বাবে অপেক্ষা কৰিছো।",
   "transactionSwapDescChainClaimable": "Lockup লেনদেন নিশ্চিত হৈছে। আপুনি এতিয়া আপোনাৰ transfer সম্পন্ন কৰিবলৈ ধন দাবী কৰিছে।",
@@ -1058,16 +1058,16 @@
   "transactionSwapInfoFailedExpired": "যদি আপোনাৰ কোনো প্ৰশ্ন বা উদ্বেগ আছে, অনুগ্ৰহ কৰি সহায়ৰ বাবে সহায়ৰ সৈতে যোগাযোগ কৰক।",
   "transactionSwapInfoChainDelay": "ব্লকচেইন নিশ্চিতকৰণৰ সময়ৰ কাৰণে অন-চেইন transfer সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
   "transactionSwapInfoClaimableTransfer": "Transfer কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে সম্পন্ন হ'ব। নহ'লে, \"Transfer Claim পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে দাবী কৰাৰ চেষ্টা কৰিব পাৰে।",
-  "transactionSwapInfoClaimableSwap": "Swap কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে সম্পন্ন হ'ব। নহ'লে, \"Swap Claim পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে দাবী কৰাৰ চেষ্টা কৰিব পাৰে।",
+  "transactionSwapInfoClaimableSwap": "Transfer কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে সম্পন্ন হ'ব। নহ'লে, \"Transfer Claim পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে দাবী কৰাৰ চেষ্টা কৰিব পাৰে।",
   "transactionSwapInfoRefundableTransfer": "এই transfer কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে ঘূৰাই দিয়া হ'ব। নহ'লে, \"Transfer Refund পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে ঘূৰাই দিয়াৰ চেষ্টা কৰিব পাৰে।",
-  "transactionSwapInfoRefundableSwap": "এই swap কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে ঘূৰাই দিয়া হ'ব। নহ'লে, \"Swap Refund পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে ঘূৰাই দিয়াৰ চেষ্টা কৰিব পাৰে।",
+  "transactionSwapInfoRefundableSwap": "এই transfer কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে ঘূৰাই দিয়া হ'ব। নহ'লে, \"Transfer Refund পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে ঘূৰাই দিয়াৰ চেষ্টা কৰিব পাৰে।",
   "transactionListOngoingTransfersTitle": "চলমান Transfer",
   "transactionListOngoingTransfersDescription": "এই transfer-সমূহ বৰ্তমান চলি আছে। আপোনাৰ ধন সুৰক্ষিত আৰু transfer সম্পন্ন হোৱাৰ পিছত উপলব্ধ হ'ব।",
   "transactionListLoadingTransactions": "লেনদেন লোড হৈ আছে...",
   "transactionListNoTransactions": "এতিয়ালৈ কোনো লেনদেন নাই।",
   "transactionListToday": "আজি",
   "transactionListYesterday": "কালি",
-  "transactionSwapDoNotUninstall": "Swap সম্পন্ন নোহোৱালৈ এপ্প আনইনষ্টল নকৰিব।",
+  "transactionSwapDoNotUninstall": "Transfer সম্পন্ন নোহোৱালৈ এপ্প আনইনষ্টল নকৰিব।",
   "transactionFeesDeductedFrom": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
   "transactionFeesTotalDeducted": "এয়া প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা মুঠ মাচুল",
   "transactionLabelSendAmount": "প্ৰেৰণ পৰিমাণ",
@@ -1105,14 +1105,14 @@
   "transactionDetailLabelCreatedAt": "তৈয়াৰ হৈছে",
   "transactionDetailLabelCompletedAt": "সম্পন্ন হৈছে",
   "transactionDetailLabelTransferId": "Transfer ID",
-  "transactionDetailLabelSwapId": "Swap ID",
+  "transactionDetailLabelSwapId": "Transfer ID",
   "transactionDetailLabelTransferStatus": "Transfer স্থিতি",
-  "transactionDetailLabelSwapStatus": "Swap স্থিতি",
+  "transactionDetailLabelSwapStatus": "Transfer স্থিতি",
   "transactionDetailLabelRefunded": "ঘূৰাই দিয়া হৈছে",
   "transactionDetailLabelLiquidTxId": "Liquid লেনদেন ID",
   "transactionDetailLabelBitcoinTxId": "Bitcoin লেনদেন ID",
   "transactionDetailLabelTransferFees": "Transfer মাচুল",
-  "transactionDetailLabelSwapFees": "Swap মাচুল",
+  "transactionDetailLabelSwapFees": "Transfer মাচুল",
   "transactionDetailLabelSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
   "transactionDetailLabelTransferFee": "Transfer মাচুল",
   "transactionDetailLabelPayjoinStatus": "Payjoin স্থিতি",
@@ -1842,11 +1842,11 @@
   },
   "swapYouPay": "আপুনি পৰিশোধ কৰিব",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "swapYouReceive": "আপুনি পাব",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "swapAvailableBalance": "উপলব্ধ বেলেঞ্চ",
   "@swapAvailableBalance": {
@@ -1870,15 +1870,15 @@
   },
   "swapTransferPendingTitle": "স্থানান্তৰ বিচাৰাধীন",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "swapTransferPendingMessage": "স্থানান্তৰ চলি আছে। Bitcoin লেনদেন নিশ্চিত হ'বলৈ কিছু সময় লাগিব পাৰে। আপুনি ঘৰলৈ ওভতি অপেক্ষা কৰিব পাৰে।",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "swapTransferCompletedTitle": "স্থানান্তৰ সম্পন্ন হৈছে",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "swapTransferCompletedMessage": "বাহ, আপুনি অপেক্ষা কৰিলে! স্থানান্তৰ সফলতাৰে সম্পন্ন হৈছে।",
   "@swapTransferCompletedMessage": {
@@ -1886,7 +1886,7 @@
   },
   "swapTransferRefundInProgressTitle": "স্থানান্তৰ ঘূৰাই দিয়া চলি আছে",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapTransferRefundInProgressMessage": "স্থানান্তৰত সমস্যা হৈছিল। আপোনাৰ ঘূৰণী চলি আছে।",
   "@swapTransferRefundInProgressMessage": {
@@ -1894,7 +1894,7 @@
   },
   "swapTransferRefundedTitle": "স্থানান্তৰ ঘূৰাই দিয়া হৈছে",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "swapTransferRefundedMessage": "স্থানান্তৰ সফলতাৰে ঘূৰাই দিয়া হৈছে।",
   "@swapTransferRefundedMessage": {
@@ -1904,15 +1904,15 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "swapErrorBalanceTooLow": "ন্যূনতম swap পৰিমাণৰ বাবে বেলেঞ্চ বৰ কম",
+  "swapErrorBalanceTooLow": "ন্যূনতম transfer পৰিমাণৰ বাবে বেলেঞ্চ বৰ কম",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
-  "swapErrorAmountExceedsMaximum": "পৰিমাণ সৰ্বোচ্চ swap পৰিমাণ অতিক্ৰম কৰিছে",
+  "swapErrorAmountExceedsMaximum": "পৰিমাণ সৰ্বোচ্চ transfer পৰিমাণ অতিক্ৰম কৰিছে",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
-  "swapErrorAmountBelowMinimum": "পৰিমাণ ন্যূনতম swap পৰিমাণতকৈ কম: {min} sats",
+  "swapErrorAmountBelowMinimum": "পৰিমাণ ন্যূনতম transfer পৰিমাণতকৈ কম: {min} sats",
   "@swapErrorAmountBelowMinimum": {
     "description": "Error shown when amount is below minimum",
     "placeholders": {
@@ -1921,7 +1921,7 @@
       }
     }
   },
-  "swapErrorAmountAboveMaximum": "পৰিমাণ সৰ্বোচ্চ swap পৰিমাণ অতিক্ৰম কৰিছে: {max} sats",
+  "swapErrorAmountAboveMaximum": "পৰিমাণ সৰ্বোচ্চ transfer পৰিমাণ অতিক্ৰম কৰিছে: {max} sats",
   "@swapErrorAmountAboveMaximum": {
     "description": "Error shown when amount is above maximum",
     "placeholders": {
@@ -1936,7 +1936,7 @@
   },
   "swapTransferTitle": "স্থানান্তৰ",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "swapExternalTransferLabel": "বাহ্যিক স্থানান্তৰ",
   "@swapExternalTransferLabel": {
@@ -2124,7 +2124,7 @@
   },
   "autoswapSettingsTitle": "স্বয়ংক্ৰিয় স্থানান্তৰ ছেটিংছ",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "autoswapEnableToggleLabel": "স্বয়ংক্ৰিয় স্থানান্তৰ সক্ষম কৰক",
   "@autoswapEnableToggleLabel": {
@@ -2138,13 +2138,13 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "autoswapBaseBalanceInfoText": "এটা autoswap ৰ পিছত আপোনাৰ instant payment ৱালেটৰ বেলেঞ্চ এই লক্ষ্য বেলেঞ্চলৈ ঘূৰি আহিব।",
+  "autoswapBaseBalanceInfoText": "এটা autotransfer ৰ পিছত আপোনাৰ instant payment ৱালেটৰ বেলেঞ্চ এই লক্ষ্য বেলেঞ্চলৈ ঘূৰি আহিব।",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
-  "autoswapTriggerAtBalanceInfoText": "আপোনাৰ বেলেঞ্চ এই সৰ্বোচ্চ বেলেঞ্চৰ ওপৰলৈ গ'লে Autoswap সক্ৰিয় হ'ব।",
+  "autoswapTriggerAtBalanceInfoText": "আপোনাৰ বেলেঞ্চ এই সৰ্বোচ্চ বেলেঞ্চৰ ওপৰলৈ গ'লে Autotransfer সক্ৰিয় হ'ব।",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "autoswapMaxFeeLabel": "সৰ্বোচ্চ স্থানান্তৰ মাচুল",
   "@autoswapMaxFeeLabel": {
@@ -2194,29 +2194,29 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapWarningCardTitle": "Autoswap পৰামৰ্শযোগ্য",
+  "autoswapWarningCardTitle": "Autotransfer পৰামৰ্শযোগ্য",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "autoswapWarningCardSubtitle": "অধিক জানিবলৈ, নিষ্ক্ৰিয় বা কনফিগাৰ কৰিবলৈ ক্লিক কৰক",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
-  "autoswapActiveCardTitle": "Autoswap সক্ৰিয় আছে",
+  "autoswapActiveCardTitle": "Autotransfer সক্ৰিয় আছে",
   "@autoswapActiveCardTitle": {
-    "description": "Title text shown when autoswap is enabled and active"
+    "description": "Title text shown when autotransfer is enabled and active"
   },
-  "autoswapWarningDescription": "Autoswap নিশ্চিত কৰে যে আপুনি ভুলক্ৰমে Instant Payment Wallet ত বেছি ধন নাৰাখে, যি দীৰ্ঘমিয়াদী সঞ্চয়ৰ বাবে সুৰক্ষিত নহয়।",
+  "autoswapWarningDescription": "Autotransfer নিশ্চিত কৰে যে আপুনি ভুলক্ৰমে Instant Payment Wallet ত বেছি ধন নাৰাখে, যি দীৰ্ঘমিয়াদী সঞ্চয়ৰ বাবে সুৰক্ষিত নহয়।",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
-  "autoswapWarningTitle": "Autoswap নিম্নলিখিত ছেটিংছৰ সৈতে সক্ষম আছে",
+  "autoswapWarningTitle": "Autotransfer নিম্নলিখিত ছেটিংছৰ সৈতে সক্ষম আছে",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
-  "autoswapWarningExplanation": "যেতিয়া আপোনাৰ বেলেঞ্চ সৰ্বোচ্চ বেলেঞ্চ অতিক্ৰম কৰে, এটা swap স্বয়ংক্ৰিয়ভাৱে সক্ৰিয় হ'ব। লক্ষ্য বেলেঞ্চ আপোনাৰ Instant Payments ৱালেটত ৰখা হ'ব আৰু বাকী পৰিমাণ আপোনাৰ Secure Bitcoin Wallet লৈ swap কৰা হ'ব।",
+  "autoswapWarningExplanation": "যেতিয়া আপোনাৰ বেলেঞ্চ সৰ্বোচ্চ বেলেঞ্চ অতিক্ৰম কৰে, এটা transfer স্বয়ংক্ৰিয়ভাৱে সক্ৰিয় হ'ব। লক্ষ্য বেলেঞ্চ আপোনাৰ Instant Payments ৱালেটত ৰখা হ'ব আৰু বাকী পৰিমাণ আপোনাৰ Secure Bitcoin Wallet লৈ transfer কৰা হ'ব।",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "autoswapWarningExplanationBold": "স্বয়ংক্ৰিয়ভাৱে",
   "@autoswapWarningExplanationBold": {
@@ -2224,41 +2224,41 @@
   },
   "autoswapWarningDontShowAgain": "এই সতৰ্কবাণী পুনৰ নেদেখুৱাব।",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
-  "autoswapWarningSettingsLink": "মোক autoswap ছেটিংছলৈ লৈ যাওক",
+  "autoswapWarningSettingsLink": "মোক autotransfer ছেটিংছলৈ লৈ যাওক",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "autoswapWarningOkButton": "ঠিক আছে",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
-  "autoswapInfoTitle": "Autoswap পৰামৰ্শযোগ্য",
+  "autoswapInfoTitle": "Autotransfer পৰামৰ্শযোগ্য",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapInfoDismissButton": "হয়, ধন্যবাদ",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "autoswapInfoSettingsButton": "নহয়, মই বিপদ বুজি পাওঁ",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to disable autoswap"
+    "description": "Secondary button to disable autotransfer"
   },
-  "autoswapInfoRemindLater": "Autoswap ছেটিংছ কনফিগাৰ কৰক",
+  "autoswapInfoRemindLater": "Autotransfer ছেটিংছ কনফিগাৰ কৰক",
   "@autoswapInfoRemindLater": {
-    "description": "Tertiary action to navigate to autoswap settings"
+    "description": "Tertiary action to navigate to autotransfer settings"
   },
-  "autoswapInfoConsentMessage": "Autoswap বৰ্তমান সক্ষম আছে কিন্তু আপোনাৰ সন্মতি নোলোৱালৈকে সক্ৰিয় নহ'ব। আপুনি ইয়াক চালু ৰাখিব বিচাৰেনে?",
+  "autoswapInfoConsentMessage": "Autotransfer বৰ্তমান সক্ষম আছে কিন্তু আপোনাৰ সন্মতি নোলোৱালৈকে সক্ৰিয় নহ'ব। আপুনি ইয়াক চালু ৰাখিব বিচাৰেনে?",
   "@autoswapInfoConsentMessage": {
-    "description": "Consent message explaining autoswap status"
+    "description": "Consent message explaining autotransfer status"
   },
-  "autoswapLoadSettingsError": "স্বয়ংক্ৰিয় swap ছেটিংছ লোড কৰিবলৈ ব্যৰ্থ হৈছে",
+  "autoswapLoadSettingsError": "স্বয়ংক্ৰিয় transfer ছেটিংছ লোড কৰিবলৈ ব্যৰ্থ হৈছে",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
   },
-  "autoswapUpdateSettingsError": "স্বয়ংক্ৰিয় swap ছেটিংছ আপডেট কৰিবলৈ ব্যৰ্থ হৈছে",
+  "autoswapUpdateSettingsError": "স্বয়ংক্ৰিয় transfer ছেটিংছ আপডেট কৰিবলৈ ব্যৰ্থ হৈছে",
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
@@ -3217,15 +3217,15 @@
   },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "totalFeesLabel": "মুঠ ফি",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "totalFeeLabel": "মুঠ ফি",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "networkFeeLabel": "নেটৱৰ্ক ফি",
   "@networkFeeLabel": {
@@ -3237,7 +3237,7 @@
   },
   "sendNetworkFeesLabel": "প্ৰেৰণ নেটৱৰ্ক ফি",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "confirmButtonLabel": "নিশ্চিত কৰক",
   "@confirmButtonLabel": {
@@ -3437,9 +3437,9 @@
   "@payLiquidFee": {
     "description": "Label for Liquid Network transaction fee"
   },
-  "paySwapFee": "Swap ফি",
+  "paySwapFee": "Transfer ফি",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "payServiceFee": "সেৱা ফি",
   "@payServiceFee": {
@@ -3480,21 +3480,21 @@
       }
     }
   },
-  "payRequiresSwap": "এই পেমেণ্টৰ বাবে এটা Swap প্ৰয়োজন",
+  "payRequiresSwap": "এই পেমেণ্টৰ বাবে এটা Transfer প্ৰয়োজন",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
-  "paySwapInProgress": "Swap চলি আছে...",
+  "paySwapInProgress": "Transfer চলি আছে...",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
-  "paySwapCompleted": "Swap সম্পন্ন হৈছে",
+  "paySwapCompleted": "Transfer সম্পন্ন হৈছে",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
-  "paySwapFailed": "Swap বিফল হৈছে",
+  "paySwapFailed": "Transfer বিফল হৈছে",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "payBroadcastingTransaction": "লেনদেন broadcast কৰা হৈছে...",
   "@payBroadcastingTransaction": {
@@ -3802,25 +3802,25 @@
   "@sendUnfreezeCoin": {
     "description": "Action to allow spending frozen UTXO"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
-  "sendInitiatingSwap": "Swap আৰম্ভ কৰা হৈছে...",
+  "sendInitiatingSwap": "Transfer আৰম্ভ কৰা হৈছে...",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
-  "sendSwapDetails": "Swap বিৱৰণ",
+  "sendSwapDetails": "Transfer বিৱৰণ",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
-  "sendSwapAmount": "Swap পৰিমাণ",
+  "sendSwapAmount": "Transfer পৰিমাণ",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
-  "sendSwapFeeEstimate": "আনুমানিক swap ফি: {amount}",
+  "sendSwapFeeEstimate": "আনুমানিক transfer ফি: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -3829,24 +3829,24 @@
   },
   "sendSwapTimeEstimate": "আনুমানিক সময়: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
       }
     }
   },
-  "sendConfirmSwap": "Swap নিশ্চিত কৰক",
+  "sendConfirmSwap": "Transfer নিশ্চিত কৰক",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
-  "sendSwapCancelled": "Swap বাতিল কৰা হৈছে",
+  "sendSwapCancelled": "Transfer বাতিল কৰা হৈছে",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
-  "sendSwapTimeout": "Swap সময় উত্তীৰ্ণ হৈছে",
+  "sendSwapTimeout": "Transfer সময় উত্তীৰ্ণ হৈছে",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "sendCustomFeeRate": "কাষ্টম ফি হাৰ",
   "@sendCustomFeeRate": {
@@ -3954,25 +3954,25 @@
       }
     }
   },
-  "sendSwapId": "Swap ID",
+  "sendSwapId": "Transfer ID",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "sendSendAmount": "প্ৰেৰণ পৰিমাণ",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendReceiveAmount": "গ্ৰহণ পৰিমাণ",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "sendSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক ফি",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "sendTransferFee": "Transfer ফি",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "sendTransferFeeDescription": "এইটো প্ৰেৰণ কৰা পৰিমাণৰ পৰা কটা মুঠ ফি",
   "@sendTransferFeeDescription": {
@@ -4006,23 +4006,23 @@
   "@sendCoordinatingPayjoinTransaction": {
     "description": "Message shown while coordinating Payjoin send transaction"
   },
-  "sendSwapInProgressInvoice": "Swap চলি আছে। Invoice কেইছেকেণ্ডমানৰ ভিতৰত পৰিশোধ কৰা হ'ব।",
+  "sendSwapInProgressInvoice": "Transfer চলি আছে। Invoice কেইছেকেণ্ডমানৰ ভিতৰত পৰিশোধ কৰা হ'ব।",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
-  "sendSwapInProgressBitcoin": "Swap চলি আছে। Bitcoin লেনদেন নিশ্চিত হ'বলৈ অলপ সময় লাগিব পাৰে। আপুনি ঘৰলৈ উভতি আহি অপেক্ষা কৰিব পাৰে।",
+  "sendSwapInProgressBitcoin": "Transfer চলি আছে। Bitcoin লেনদেন নিশ্চিত হ'বলৈ অলপ সময় লাগিব পাৰে। আপুনি ঘৰলৈ উভতি আহি অপেক্ষা কৰিব পাৰে।",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
-  "sendSwapRefundInProgress": "Swap ঘূৰাই দিয়া চলি আছে",
+  "sendSwapRefundInProgress": "Transfer ঘূৰাই দিয়া চলি আছে",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
-  "sendSwapFailed": "Swap বিফল হৈছে। আপোনাৰ ঘূৰাই দিয়া ধন অতি সোনকালে প্ৰক্ৰিয়া কৰা হ'ব।",
+  "sendSwapFailed": "Transfer বিফল হৈছে। আপোনাৰ ঘূৰাই দিয়া ধন অতি সোনকালে প্ৰক্ৰিয়া কৰা হ'ব।",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
-  "sendSwapRefundCompleted": "Swap ঘূৰাই দিয়া সম্পন্ন হৈছে",
+  "sendSwapRefundCompleted": "Transfer ঘূৰাই দিয়া সম্পন্ন হৈছে",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -4042,13 +4042,13 @@
   "@sendPaymentWillTakeTime": {
     "description": "Title warning of delayed payment"
   },
-  "sendSwapInitiated": "Swap আৰম্ভ হৈছে",
+  "sendSwapInitiated": "Transfer আৰম্ভ হৈছে",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "sendSwapWillTakeTime": "নিশ্চিত হ'বলৈ অলপ সময় লাগিব",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "sendSuccessfullySent": "সফলভাৱে পঠোৱা হৈছে",
   "@sendSuccessfullySent": {
@@ -4095,9 +4095,9 @@
   "@sendErrorArkExperimentalOnly": {
     "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
-  "sendErrorSwapCreationFailed": "Swap তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
+  "sendErrorSwapCreationFailed": "Transfer তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorInsufficientBalanceForPayment": "এই পেমেণ্ট কৰিবলৈ পৰ্যাপ্ত বেলেন্স নাই",
   "@sendErrorInsufficientBalanceForPayment": {
@@ -4116,43 +4116,43 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "sendErrorInsufficientBalanceForSwap": "Liquid ৰ জৰিয়তে এই Swap পৰিশোধ কৰিবলৈ পৰ্যাপ্ত বেলেন্স নাই আৰু Bitcoin ৰ জৰিয়তে পৰিশোধ কৰিবলৈ Swap সীমাৰ মাজত নাই।",
+  "sendErrorInsufficientBalanceForSwap": "Liquid ৰ জৰিয়তে এই Transfer পৰিশোধ কৰিবলৈ পৰ্যাপ্ত বেলেন্স নাই আৰু Bitcoin ৰ জৰিয়তে পৰিশোধ কৰিবলৈ Transfer সীমাৰ মাজত নাই।",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
-  "sendErrorAmountBelowSwapLimits": "পৰিমাণ Swap সীমাতকৈ কম",
+  "sendErrorAmountBelowSwapLimits": "পৰিমাণ Transfer সীমাতকৈ কম",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "sendErrorAmountBelowSwapLimitsBitcoin": "সৰু পেমেণ্ট কৰিবলৈ Instant Payments ত ধন যোগ কৰাৰ কথা বিবেচনা কৰক।",
   "@sendErrorAmountBelowSwapLimitsBitcoin": {
     "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
-  "sendErrorAmountAboveSwapLimits": "পৰিমাণ Swap সীমাতকৈ বেছি",
+  "sendErrorAmountAboveSwapLimits": "পৰিমাণ Transfer সীমাতকৈ বেছি",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
-  "sendErrorAmountBelowMinimum": "পৰিমাণ সৰ্বনিম্ন Swap সীমাতকৈ কম: {minLimit} sats",
+  "sendErrorAmountBelowMinimum": "পৰিমাণ সৰ্বনিম্ন Transfer সীমাতকৈ কম: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
       }
     }
   },
-  "sendErrorAmountAboveMaximum": "পৰিমাণ সৰ্বোচ্চ Swap সীমাতকৈ বেছি: {maxLimit} sats",
+  "sendErrorAmountAboveMaximum": "পৰিমাণ সৰ্বোচ্চ Transfer সীমাতকৈ বেছি: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
       }
     }
   },
-  "sendErrorSwapFeesNotLoaded": "Swap ফি লোড হোৱা নাই",
+  "sendErrorSwapFeesNotLoaded": "Transfer ফি লোড হোৱা নাই",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "sendErrorInsufficientFundsForFees": "পৰিমাণ আৰু ফি কভাৰ কৰিবলৈ পৰ্যাপ্ত ধন নাই",
   "@sendErrorInsufficientFundsForFees": {
@@ -4162,21 +4162,21 @@
   "@sendErrorBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "sendErrorBalanceTooLowForMinimum": "সৰ্বনিম্ন Swap পৰিমাণৰ বাবে বেলেন্স অপৰ্যাপ্ত",
+  "sendErrorBalanceTooLowForMinimum": "সৰ্বনিম্ন Transfer পৰিমাণৰ বাবে বেলেন্স অপৰ্যাপ্ত",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
-  "sendErrorAmountExceedsMaximum": "পৰিমাণ সৰ্বোচ্চ Swap পৰিমাণ অতিক্ৰম কৰিছে",
+  "sendErrorAmountExceedsMaximum": "পৰিমাণ সৰ্বোচ্চ Transfer পৰিমাণ অতিক্ৰম কৰিছে",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
-  "sendErrorLiquidWalletRequired": "Liquid ৰ পৰা Lightning Swap কৰিবলৈ Liquid Wallet ব্যৱহাৰ কৰিব লাগিব",
+  "sendErrorLiquidWalletRequired": "Liquid ৰ পৰা Lightning Transfer কৰিবলৈ Liquid Wallet ব্যৱহাৰ কৰিব লাগিব",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
-  "sendErrorBitcoinWalletRequired": "Bitcoin ৰ পৰা Lightning Swap কৰিবলৈ Bitcoin Wallet ব্যৱহাৰ কৰিব লাগিব",
+  "sendErrorBitcoinWalletRequired": "Bitcoin ৰ পৰা Lightning Transfer কৰিবলৈ Bitcoin Wallet ব্যৱহাৰ কৰিব লাগিব",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "sendErrorInsufficientFundsForPayment": "এই পেমেণ্ট কৰিবলৈ পৰ্যাপ্ত ধন উপলব্ধ নাই।",
   "@sendErrorInsufficientFundsForPayment": {
@@ -4186,9 +4186,9 @@
   "@sendTypeSend": {
     "description": "Send type name for Bitcoin/Liquid transactions"
   },
-  "sendTypeSwap": "Swap",
+  "sendTypeSwap": "Transfer",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sellAmount": "বিক্ৰয়ৰ পৰিমাণ",
   "@sellAmount": {
@@ -7776,11 +7776,11 @@
   },
   "swapTitle": "আভ্যন্তৰীণ Transfer",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "swapInfoBanner": "আপোনাৰ wallet সমূহৰ মাজত নিৰৱচ্ছিন্নভাৱে Bitcoin transfer কৰক। দৈনন্দিন খৰচৰ বাবে কেৱল Instant Payment Wallet ত পুঁজি ৰাখক।",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "swapMax": "সৰ্বোচ্চ",
   "@swapMax": {
@@ -7788,15 +7788,15 @@
   },
   "swapContinue": "অব্যাহত ৰাখক",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "swapConfirmTitle": "Transfer নিশ্চিত কৰক",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "swapProgressTitle": "আভ্যন্তৰীণ Transfer",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "swapProgressPending": "Transfer বাকী আছে",
   "@swapProgressPending": {
@@ -9247,7 +9247,7 @@
   },
   "walletAutoTransferBlockedTitle": "স্বয়ংক্ৰিয় ট্ৰান্সফাৰ বাধা প্ৰাপ্ত",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "walletAutoTransferBlockedMessage": "{amount} BTC ট্ৰান্সফাৰ কৰিবলৈ চেষ্টা কৰা হৈছে। বৰ্তমানৰ মাচুল হৈছে ট্ৰান্সফাৰ পৰিমাণৰ {currentFee}% আৰু মাচুলৰ সীমা {thresholdFee}%-ত ছেট কৰা আছে",
   "@walletAutoTransferBlockedMessage": {
@@ -9420,13 +9420,13 @@
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
   },
-  "systemLabelSwaps": "Swap",
+  "systemLabelSwaps": "Transfer",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
-  "systemLabelAutoSwap": "স্বয়ংক্ৰিয় Swap",
+  "systemLabelAutoSwap": "স্বয়ংক্ৰিয় Transfer",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "systemLabelPayjoin": "Payjoin",
   "@systemLabelPayjoin": {
@@ -9956,40 +9956,40 @@
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
   "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
   "coreSwapsStatusRefunded": "ঘূৰাই দিয়া হৈছে",
-  "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ",
-  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি 1টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
-  "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
+  "swapRestoreTitle": "Transfer পুনৰুদ্ধাৰ",
+  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো transfer নাই} =1{আপুনি 1টা transfer পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা transfer পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
+  "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো transfer পোৱা নগ'ল",
   "swapRestoreRecoverableSection": "পুনৰুদ্ধাৰযোগ্য",
-  "swapRestoreAllSection": "সকলো swap",
-  "swapRestoreFailed": "Swap পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল",
+  "swapRestoreAllSection": "সকলো transfer",
+  "swapRestoreFailed": "Transfer পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল",
   "swapRestoreKindLightningSend": "Lightning প্ৰেৰণ",
   "swapRestoreKindLightningReceive": "Lightning গ্ৰহণ",
   "swapRestoreKindCrossChain": "Cross Chain",
-  "swapRescueTitle": "Swap ৰক্ষা কৰক",
+  "swapRescueTitle": "Transfer ৰক্ষা কৰক",
   "swapRescueTypeLabel": "ধৰণ",
   "swapRescueStatusLabel": "স্থিতি",
   "swapRescueAmountLabel": "পৰিমাণ",
   "swapRescueRouteLabel": "ৰুট",
   "swapRescueCreatedLabel": "তৈয়াৰ হৈছে",
-  "swapRescueIdLabel": "Swap আইডি",
+  "swapRescueIdLabel": "Transfer আইডি",
   "swapRescueWalletLabel": "wallet লৈ পুনৰুদ্ধাৰ কৰক",
   "swapRescueWalletHint": "এটা wallet বাছনি কৰক",
   "swapRescueButton": "পুনৰুদ্ধাৰ কৰক",
-  "swapRescueSuccess": "Swap পুনৰুদ্ধাৰ কৰা হ'ল — ই এতিয়া পুনৰ আৰম্ভ হ'ব",
+  "swapRescueSuccess": "Transfer পুনৰুদ্ধাৰ কৰা হ'ল — ই এতিয়া পুনৰ আৰম্ভ হ'ব",
   "receivePayjoinNoUtxos": "ইয়াক সক্ষম কৰিবলৈ প্ৰথমে পুঁজি গ্ৰহণ কৰক।\npayjoin ব্যৱহাৰ কৰিবলৈ UTXO প্ৰয়োজন।",
   "receiveLiquidRiskDisclosureLabel": "পৰিশোধবোৰ Liquid L-BTC (BTC নহয়) লৈ ৰূপান্তৰিত কৰা হ'ব। অধিক জানক।",
   "transactionLabelNetworkFees": "নেটৱৰ্ক ফি",
   "walletLiquidRiskDisclosureLabel": "এই পুঁজিবোৰ Liquid L-BTC (BTC নহয়)। অধিক জানক।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ খোলক",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "nfcNotAvailable": "এই ডিভাইচত NFC সমৰ্থিত নহয়",
   "nfcDisabled": "NFC নিষ্ক্ৰিয় কৰা আছে। ছেটিংছত ইয়াক সক্ষম কৰক।",
   "nfcInvalidData": "কোনো সমৰ্থিত NFC ডাটা পোৱা নগ'ল",
   "nfcConnectionLost": "NFC সংযোগ বিচ্ছিন্ন হ'ল। আপোনাৰ ডিভাইচ NFC ট্যাগৰ ওচৰত ধৰি ৰাখক আৰু পুনৰ চেষ্টা কৰক।",
   "nfcWriteFailed": "NFC স্থানান্তৰ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "nfcError": "NFC ত্ৰুটি: {error}",
-  "sendErrorHardwareWalletCannotSwap": "Hardware wallet swap ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallet transfer ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
   "sendErrorInvoiceExpired": "এই invoice ৰ মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
   "psbtFlowSignViaNfc": "NFC ৰ জৰিয়তে স্বাক্ষৰ কৰক",
   "psbtFlowSignViaNfcSheetTitle": "PSBT NFC ৰ জৰিয়তে পঠিয়াবলৈ আপোনাৰ {deviceName} টেপ কৰক",
@@ -10068,7 +10068,7 @@
   "noteVisibleToSenderNotice": "এই টোকা আপোনাৰ QR বা invoice ৰ প্ৰাপকক দেখা যাব।",
   "viewerAddressTab": "ঠিকনা",
   "viewerPaymentUriTab": "পৰিশোধ URI",
-  "transactionSwapOpenWithin24h": "আপোনাৰ swap সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপটো খোলক।",
+  "transactionSwapOpenWithin24h": "আপোনাৰ transfer সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপটো খোলক।",
   "recipientsScreenTitle": "প্ৰাপক বাছক",
   "recipientsScreenSubtitle": "আপুনি কাক পৰিশোধ কৰি আছে?",
   "recipientsTabNew": "নতুন প্ৰাপক",

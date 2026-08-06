@@ -601,12 +601,16 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: .end,
               mainAxisSize: .min,
               children: [
-                BBText(
-                  swap.id,
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
+                Expanded(
+                  child: BBText(
+                    swap.id,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.secondary,
+                    ),
+                    textAlign: .end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: .end,
                 ),
                 const Gap(4),
                 InkWell(

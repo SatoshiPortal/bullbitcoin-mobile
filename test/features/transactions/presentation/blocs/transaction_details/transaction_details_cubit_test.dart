@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -17,7 +16,9 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,7 +51,11 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 class _MockBroadcastOriginalTransactionUsecase extends Mock
     implements BroadcastOriginalTransactionUsecase {}
 
-class _MockProcessSwapUsecase extends Mock implements ProcessSwapUsecase {}
+class _MockGetTransactionOrderSwapUsecase extends Mock
+    implements GetTransactionOrderSwapUsecase {}
+
+class _MockWatchTransactionOrderSwapUsecase extends Mock
+    implements WatchTransactionOrderSwapUsecase {}
 
 Wallet _testWallet({String origin = 'w1'}) => Wallet(
   origin: origin,
@@ -113,15 +118,16 @@ void main() {
     getWalletUsecase: getWallet,
     getTransactionsByTxIdUsecase: getTransactionsByTxId,
     getWalletTransactionUsecase: getWalletTransaction,
+    getTransactionOrderSwapUsecase: _MockGetTransactionOrderSwapUsecase(),
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxId,
     getSwapUsecase: _MockGetSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
     getOrderUsecase: _MockGetOrderUsecase(),
     watchSwapUsecase: _MockWatchSwapUsecase(),
     watchPayjoinUsecase: watchPayjoin,
+    watchTransactionOrderSwapUsecase: _MockWatchTransactionOrderSwapUsecase(),
     labelsFacade: _MockLabelsFacade(),
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
-    processSwapUsecase: _MockProcessSwapUsecase(),
   );
 
   setUpAll(() {

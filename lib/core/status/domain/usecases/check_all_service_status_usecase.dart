@@ -9,8 +9,6 @@ import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repositor
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -19,7 +17,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckAllServiceStatusUsecase {
   final ElectrumConnectivityPort _electrumConnectivityPort;
-  final BoltzSwapRepository _boltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinRepository _payjoinRepository;
   final FeesRepository _feesRepository;
@@ -31,7 +28,6 @@ class CheckAllServiceStatusUsecase {
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
-    required this._boltzSwapRepository,
     required this._exchangeRateRepository,
     required this._payjoinRepository,
     required this._feesRepository,
@@ -50,7 +46,6 @@ class CheckAllServiceStatusUsecase {
         _checkInternetConnection(),
         _checkBitcoinElectrumServer(network),
         _checkLiquidElectrumServer(network),
-        _checkBoltzService(network),
         _checkPayjoinService(),
         _checkPricerService(network),
         _checkMempoolService(network),
@@ -63,13 +58,12 @@ class CheckAllServiceStatusUsecase {
         internetConnection: results[0],
         bitcoinElectrum: results[1],
         liquidElectrum: results[2],
-        boltz: results[3],
-        payjoin: results[4],
-        pricer: results[5],
-        mempool: results[6],
-        tor: results[7],
-        recoverbull: results[8],
-        ark: results[9],
+        payjoin: results[3],
+        pricer: results[4],
+        mempool: results[5],
+        tor: results[6],
+        recoverbull: results[7],
+        ark: results[8],
         lastChecked: now,
       );
     } catch (e) {
@@ -119,26 +113,6 @@ class CheckAllServiceStatusUsecase {
       return ServiceStatusInfo(
         status: ServiceStatus.offline,
         name: 'Liquid Electrum',
-        lastChecked: DateTime.now(),
-      );
-    }
-  }
-
-  Future<ServiceStatusInfo> _checkBoltzService(Network network) async {
-    try {
-      await _boltzSwapRepository.updateSwapLimitsAndFees(
-        SwapType.bitcoinToLightning,
-      );
-
-      return ServiceStatusInfo(
-        status: ServiceStatus.online,
-        name: 'Boltz',
-        lastChecked: DateTime.now(),
-      );
-    } catch (e) {
-      return ServiceStatusInfo(
-        status: ServiceStatus.offline,
-        name: 'Boltz',
         lastChecked: DateTime.now(),
       );
     }
@@ -317,11 +291,6 @@ class CheckAllServiceStatusUsecase {
       liquidElectrum: ServiceStatusInfo(
         status: ServiceStatus.unknown,
         name: 'Liquid Electrum',
-        lastChecked: now,
-      ),
-      boltz: ServiceStatusInfo(
-        status: ServiceStatus.unknown,
-        name: 'Boltz',
         lastChecked: now,
       ),
       payjoin: ServiceStatusInfo(

@@ -8,7 +8,9 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
@@ -18,6 +20,7 @@ class GetTransactionsUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
+  final GetTransactionOrderSwapsUsecase _getTransactionOrderSwapsUsecase;
 
   GetTransactionsUsecase({
     required this._settingsRepository,
@@ -27,6 +30,7 @@ class GetTransactionsUsecase {
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
     required this._labelExchangeOrdersUsecase,
+    required this._getTransactionOrderSwapsUsecase,
   });
 
   Future<List<Transaction>> execute({
@@ -41,7 +45,13 @@ class GetTransactionsUsecase {
           : _mainnetExchangeOrderRepository;
 
       // Fetch wallet transactions, payjoins, orders and swaps
-      final (walletTransactions, payjoins, orders, swaps) = await (
+      final (
+        walletTransactions,
+        payjoins,
+        orders,
+        swaps,
+        loadedOrderSwaps,
+      ) = await (
         _walletTransactionRepository.getWalletTransactions(
           walletId: walletId,
           sync: sync,
@@ -53,7 +63,9 @@ class GetTransactionsUsecase {
         ),
         orderRepository.getOrders(),
         _boltzSwapRepository.getAllSwaps(walletId: walletId),
+        _getTransactionOrderSwapsUsecase.execute(walletId: walletId),
       ).wait;
+      final orderSwaps = [...loadedOrderSwaps];
 
       if (orders.isNotEmpty) await _labelExchangeOrdersUsecase.execute();
 
@@ -77,6 +89,15 @@ class GetTransactionsUsecase {
         } catch (_) {
           // If no swap is found, it means the transaction is not a swap
           swap = null;
+        }
+        OrderSwapRecord? orderSwap;
+        try {
+          orderSwap = orderSwaps.firstWhere(
+            (candidate) => candidate.localPayinTransactionId == wt.txId,
+          );
+          orderSwaps.remove(orderSwap);
+        } catch (_) {
+          orderSwap = null;
         }
         Payjoin? payjoin;
         try {
@@ -111,6 +132,7 @@ class GetTransactionsUsecase {
         return Transaction(
           walletTransaction: wt,
           swap: swap,
+          orderSwap: orderSwap,
           payjoin: payjoin,
           order: order,
         );
@@ -171,6 +193,7 @@ class GetTransactionsUsecase {
         ...payjoins
             .where((p) => !p.isAborted)
             .map((p) => Transaction(payjoin: p)),
+        ...orderSwaps.map((orderSwap) => Transaction(orderSwap: orderSwap)),
         // If walletId is not null, the orders should be linked to a wallet transaction.
         // TODO: We could still check on the address of the order to see if it
         // is related to the wallet id, even without a wallet transaction yet.

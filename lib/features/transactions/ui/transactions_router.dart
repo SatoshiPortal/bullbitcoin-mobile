@@ -14,6 +14,7 @@ enum TransactionsRoute {
   transactionDetails('/transaction/:txId'),
   swapTransactionDetails('/transaction/swap/:swapId'),
   payjoinTransactionDetails('/transaction/payjoin/:payjoinId'),
+  orderSwapTransactionDetails('/transaction/order-swap/:localId'),
   orderTransactionDetails('/transaction/order/:orderId');
 
   const TransactionsRoute(this.path);
@@ -83,6 +84,19 @@ class TransactionsRouter {
         return BlocProvider(
           create: (context) =>
               locator<TransactionDetailsCubit>()..initByPayjoinId(payjoinId),
+          child: const TransactionDetailsScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      name: TransactionsRoute.orderSwapTransactionDetails.name,
+      path: TransactionsRoute.orderSwapTransactionDetails.path,
+      builder: (context, state) {
+        final localId = state.pathParameters['localId']!;
+        return BlocProvider(
+          create: (context) =>
+              locator<TransactionDetailsCubit>()
+                ..initByOrderSwapLocalId(localId),
           child: const TransactionDetailsScreen(),
         );
       },

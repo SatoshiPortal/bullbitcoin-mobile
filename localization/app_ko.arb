@@ -50,7 +50,7 @@
   },
   "transactionLabelSwapId": "스왑 ID",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "dcaChooseWalletTitle": "비트코인 지갑 선택",
   "@dcaChooseWalletTitle": {
@@ -90,7 +90,7 @@
   },
   "transactionSwapDescLnSendPending": "스왑이 시작되었습니다. 우리는 당신의 자금을 잠그기 위해 on-chain 거래를 방송하고 있습니다.",
   "@transactionSwapDescLnSendPending": {
-    "description": "Description for pending Lightning send swap"
+    "description": "Description for pending Lightning send transfer"
   },
   "payInstitutionNumber": "기관 번호",
   "@payInstitutionNumber": {
@@ -114,7 +114,7 @@
   },
   "sendSendNetworkFee": "네트워크 수수료",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "exchangeDcaUnableToGetConfig": "DCA 구성을 얻을 수 없음",
   "@exchangeDcaUnableToGetConfig": {
@@ -234,11 +234,11 @@
   },
   "transactionLabelPreimage": "제품정보",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "coreSwapsChainCanCoop": "전송은 순간적으로 완료됩니다.",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "importColdcardInstructionsStep2": "적용 가능한 경우 passphrase를 입력하십시오",
   "@importColdcardInstructionsStep2": {
@@ -258,7 +258,7 @@
   },
   "systemLabelAutoSwap": "자동차 교환",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "fundExchangeSinpeTitle": "SINPE 전송",
   "@fundExchangeSinpeTitle": {
@@ -315,7 +315,7 @@
   },
   "transactionSwapDescChainPending": "전송이 생성되었지만 아직 시작되지 않았습니다.",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "coreScreensTransferFeeLabel": "송금 수수료",
   "@coreScreensTransferFeeLabel": {
@@ -329,9 +329,9 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionSwapStatusSwapStatus": "Swap 상태",
+  "transactionSwapStatusSwapStatus": "Transfer 상태",
   "@transactionSwapStatusSwapStatus": {
-    "description": "Header for swap status section"
+    "description": "Header for transfer status section"
   },
   "arkAboutDurationSeconds": "{seconds} 초",
   "@arkAboutDurationSeconds": {
@@ -380,7 +380,7 @@
   },
   "receiveServerNetworkFees": "서버 네트워크 요금",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "importQrDeviceImporting": "지갑 가져 오기 ...",
   "@importQrDeviceImporting": {
@@ -433,7 +433,7 @@
   },
   "transactionFilterTransfer": "지원하다",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "recoverbullSelectVaultImportSuccess": "당신의 vault는 성공적으로 수입되었습니다",
   "@recoverbullSelectVaultImportSuccess": {
@@ -554,9 +554,9 @@
   "@importQrDeviceSpecterName": {
     "description": "Name of Specter device"
   },
-  "transactionDetailLabelSwapFees": "Swap 수수료",
+  "transactionDetailLabelSwapFees": "Transfer 수수료",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "broadcastSignedTxFee": "요금안내",
   "@broadcastSignedTxFee": {
@@ -613,9 +613,9 @@
   "@payServiceFee": {
     "description": "Label for service provider fee"
   },
-  "transactionStatusSwapExpired": "Swap 만료",
+  "transactionStatusSwapExpired": "Transfer 만료",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "swapAmountPlaceholder": "0 댓글",
   "@swapAmountPlaceholder": {
@@ -934,9 +934,9 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "Swap 만료",
+  "coreSwapsLnSendExpired": "Transfer 만료",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
   "sellSendPaymentUsdBalance": "100원 (주)",
   "@sellSendPaymentUsdBalance": {
@@ -1020,7 +1020,7 @@
   },
   "coreSwapsChainFailedRefunding": "송금은 곧 환불됩니다.",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "선택 금액",
   "@sendSelectAmount": {
@@ -1128,7 +1128,7 @@
   },
   "transactionSwapDescChainFailed": "전송에 문제가 있었다. 자금이 24 시간 이내에 반환되지 않은 경우 지원에 문의하십시오.",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "testBackupWarningMessage": "백업없이, 당신은 결국 돈에 액세스 잃게됩니다. 백업을 수행하는 것이 중요합니다.",
   "@testBackupWarningMessage": {
@@ -1154,9 +1154,9 @@
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
   },
-  "autoswapWarningTitle": "Autoswap은 다음과 같은 설정으로 활성화됩니다",
+  "autoswapWarningTitle": "Autotransfer은 다음과 같은 설정으로 활성화됩니다",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "seedsignerStep1": "당신의 SeedSigner 장치 켜기",
   "@seedsignerStep1": {
@@ -1172,7 +1172,7 @@
   },
   "transactionSwapDescLnSendDefault": "교환은 진행 중입니다. 이 프로세스는 자동화되어 완료할 수 있습니다.",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "recoverbullErrorMissingBytes": "Tor 응답에서 바이트를 밀어. Retry 하지만 문제가 발생하면 Tor와 일부 장치에 대한 알려진 문제입니다.",
   "@recoverbullErrorMissingBytes": {
@@ -1192,7 +1192,7 @@
   },
   "sendSendAmount": "결제하기",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "선택된 utxos는 필요한 금액을 커버하지 않습니다",
   "@sendSelectedUtxosInsufficient": {
@@ -1200,7 +1200,7 @@
   },
   "swapErrorBalanceTooLow": "최소 스왑 금액의 균형 너무 낮은",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "그들은 다른 플랫폼에 Bitcoin을 보낼 것을 요청",
   "@fundExchangeWarningTactic5": {
@@ -1272,7 +1272,7 @@
   },
   "payRequiresSwap": "이 지불은 교환을 요구합니다",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "2FA 및 암호 관리",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -1284,7 +1284,7 @@
   },
   "transactionSwapDescLnSendFailed": "교환에 문제가 있습니다. 당신의 자금은 지갑에 자동으로 반환됩니다.",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "sendCoinAmount": "금액: {amount}",
   "@sendCoinAmount": {
@@ -1317,7 +1317,7 @@
   },
   "sendErrorSwapFeesNotLoaded": "인출 수수료로드되지 않음",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "관련 기사",
   "@walletDetailsCopyButton": {
@@ -1374,7 +1374,7 @@
   },
   "transactionSwapDescLnSendExpired": "이 스왑이 만료되었습니다. 귀하의 자금은 지갑에 자동으로 반환됩니다.",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "testBackupButton": "시험 백업",
   "@testBackupButton": {
@@ -1390,7 +1390,7 @@
   },
   "sendSwapWillTakeTime": "확인하는 동안 걸릴 것입니다",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "autoswapSelectWalletError": "Bitcoin 지갑을 선택하십시오",
   "@autoswapSelectWalletError": {
@@ -1499,7 +1499,7 @@
   },
   "systemLabelSwaps": "스왑",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
   "sendOpenTheCamera": "카메라 열기",
   "@sendOpenTheCamera": {
@@ -1511,7 +1511,7 @@
   },
   "sendSwapId": "스왑 ID",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "electrumServerOnline": "- 한국어",
   "@electrumServerOnline": {
@@ -1535,7 +1535,7 @@
   },
   "receiveSendNetworkFee": "네트워크 수수료",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "autoswapRecipientWalletInfoText": "Bitcoin 지갑이 전송 된 자금을받을 수 있음을 선택하십시오 (필수)",
   "@autoswapRecipientWalletInfoText": {
@@ -1604,11 +1604,11 @@
   },
   "autoswapWarningOkButton": "이름 *",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "swapTitle": "내부 전송",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "sendOutputTooSmall": "먼지 한계의 밑에 산출",
   "@sendOutputTooSmall": {
@@ -1693,7 +1693,7 @@
   },
   "sendErrorLiquidWalletRequired": "액체 지갑은 교환을 번개하기 위해 액체를 사용해야합니다",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "arkDurationMinutes": "{minutes} 분",
   "@arkDurationMinutes": {
@@ -1726,7 +1726,7 @@
   },
   "transactionSwapDescLnReceiveExpired": "이 스왑이 만료되었습니다. 송금된 모든 자금은 자동으로 발송됩니다.",
   "@transactionSwapDescLnReceiveExpired": {
-    "description": "Description for expired Lightning receive swap"
+    "description": "Description for expired Lightning receive transfer"
   },
   "sellKYCApproved": "KYC 승인",
   "@sellKYCApproved": {
@@ -1762,11 +1762,11 @@
   },
   "swapTransferPendingMessage": "전송은 진행 중입니다. Bitcoin 거래는 확인하는 동안 걸릴 수 있습니다. 집과 대기를 반환 할 수 있습니다.",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "비트코인",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "testBackupDecryptVault": "암호 해독",
   "@testBackupDecryptVault": {
@@ -1786,7 +1786,7 @@
   },
   "totalFeeLabel": "총 비용",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "사용자 정의 mempool 서버의 URL을 입력하십시오. 서버는 저장하기 전에 유효합니다.",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -1839,7 +1839,7 @@
   },
   "swapTransferTitle": "지원하다",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "testBackupSuccessTitle": "성공적으로 완료된 테스트!",
   "@testBackupSuccessTitle": {
@@ -1863,7 +1863,7 @@
   },
   "transactionSwapProgressClaim": "계정 만들기",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "exchangeHomeDeposit": "계좌정보",
   "@exchangeHomeDeposit": {
@@ -1998,7 +1998,7 @@
   },
   "sendErrorAmountBelowMinimum": "최소 스왑 제한 아래의 금액: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -2137,7 +2137,7 @@
   },
   "transactionLabelReceiveAmount": "결제하기",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "sendServerNetworkFees": "서버 네트워크 요금",
   "@sendServerNetworkFees": {
@@ -2242,7 +2242,7 @@
   },
   "coreSwapsLnSendPaid": "청구서는 결제 후 지불됩니다.",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
   "fundExchangeCrBankTransferDescription2": "· 자금은 계정 잔액에 추가됩니다.",
   "@fundExchangeCrBankTransferDescription2": {
@@ -2252,9 +2252,9 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "transactionLabelSwapStatus": "Swap 상태",
+  "transactionLabelSwapStatus": "Transfer 상태",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "이름 *",
   "@walletDeletionConfirmationCancelButton": {
@@ -2319,7 +2319,7 @@
   },
   "swapYouPay": "결제하기",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "암호화된 vault",
   "@encryptedVaultTitle": {
@@ -2365,11 +2365,11 @@
   },
   "transactionSwapProgressCompleted": "지원하다",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "sendErrorBitcoinWalletRequired": "Bitcoin 지갑은 비트 코인을 번개 스왑에 사용해야합니다",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "보안 PIN 관리",
   "@pinCodeManageTitle": {
@@ -2385,7 +2385,7 @@
   },
   "transactionSwapDescLnSendCompleted": "번개 결제가 성공적으로 전송되었습니다! 지금 스왑이 완료됩니다.",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "exchangeDcaCancelDialogCancelButton": "이름 *",
   "@exchangeDcaCancelDialogCancelButton": {
@@ -2520,9 +2520,9 @@
   "@sendSignWithBitBox": {
     "description": "Button to sign transaction with BitBox hardware wallet"
   },
-  "sendSwapRefundInProgress": "Swap에서 환불 진행",
+  "sendSwapRefundInProgress": "Transfer에서 환불 진행",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "exchangeKycLimited": "가격 :",
   "@exchangeKycLimited": {
@@ -2700,7 +2700,7 @@
   },
   "coreSwapsLnSendPending": "스왑은 아직 초기화되지 않습니다.",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "recoverbullVaultCreatedSuccess": "Vault는 성공적으로 만들었습니다",
   "@recoverbullVaultCreatedSuccess": {
@@ -2741,7 +2741,7 @@
   },
   "transactionSwapProgressInitiated": "지원하다",
   "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
+    "description": "Transfer progress step: initiated"
   },
   "fundExchangeTitle": "투자정보",
   "@fundExchangeTitle": {
@@ -2850,7 +2850,7 @@
   },
   "autoswapWarningDontShowAgain": "이 경고를 다시 표시하지 마십시오.",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "sellInsufficientBalance": "충분한 지갑 균형",
   "@sellInsufficientBalance": {
@@ -2878,7 +2878,7 @@
   },
   "coreSwapsLnReceivePaid": "Sender는 청구서를 지불했습니다.",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
   "payInProgress": "결제 진행 중!",
   "@payInProgress": {
@@ -3029,7 +3029,7 @@
   },
   "transferIdLabel": "전송 ID",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "지갑을 선택하십시오",
   "@paySelectActiveWallet": {
@@ -3068,9 +3068,9 @@
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "sendSwapInitiated": "Swap 시작",
+  "sendSwapInitiated": "Transfer 시작",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "백업 파일을 저장하는 동시에 백업 키를 저장하지 않는 것이 중요합니다. 항상 별도의 장치 또는 별도의 클라우드 공급자에 저장합니다.",
   "@backupSettingsKeyWarningMessage": {
@@ -3227,7 +3227,7 @@
   },
   "receiveSwapId": "스왑 ID",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "transactionLabelCompletedAt": "관련 기사",
   "@transactionLabelCompletedAt": {
@@ -3243,11 +3243,11 @@
   },
   "swapTransferRefundInProgressTitle": "진행중인 송금",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "견적 요청",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "recoverbullSelectCustomLocationProvider": "주문 위치",
   "@recoverbullSelectCustomLocationProvider": {
@@ -3356,7 +3356,7 @@
   },
   "autoswapInfoSettingsButton": "설정 설정",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "withdrawRecipientsNewTab": "새로운 수신자",
   "@withdrawRecipientsNewTab": {
@@ -3661,7 +3661,7 @@
   },
   "autoswapWarningCardSubtitle": "스왑은 즉시 지불 잔액이 0.02 BTC를 초과하면 트리거됩니다.",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "transactionStatusConfirmed": "이름 *",
   "@transactionStatusConfirmed": {
@@ -3673,7 +3673,7 @@
   },
   "transactionLabelSendAmount": "결제하기",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "testedStatus": "시험하는",
   "@testedStatus": {
@@ -3705,7 +3705,7 @@
   },
   "transactionLabelReceiveNetworkFee": "네트워크 수수료",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "bitboxScreenTroubleshootingTitle": "BitBox02 문제 해결",
   "@bitboxScreenTroubleshootingTitle": {
@@ -3797,7 +3797,7 @@
   },
   "transactionSwapDescChainExpired": "이 전송은 만료되었습니다. 귀하의 자금은 지갑에 자동으로 반환됩니다.",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
   "payValidating": "유효...",
   "@payValidating": {
@@ -3817,7 +3817,7 @@
   },
   "transactionLabelSwapStatusRefunded": "결제하기",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "연락처",
   "@receiveLightningInvoice": {
@@ -3881,7 +3881,7 @@
   },
   "sendErrorAmountAboveSwapLimits": "금액은 스왑 제한 이상입니다",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "암호화된 vault는 사용자의 백업을 훔쳐보고 thieves에서 당신을 방지합니다. 클라우드에 저장되기 때문에 실수로 백업을 잃는 것을 방지합니다. Google 또는 Apple과 같은 클라우드 스토리지 제공 업체는 암호화 암호가 너무 강하기 때문에 Bitcoin에 액세스 할 수 없습니다. 백업 암호화 키를 저장하는 웹 서버가 손상 될 수있는 작은 가능성이 있습니다. 이 이벤트에서 클라우드 계정의 백업 보안은 위험에있을 수 있습니다.",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -3889,7 +3889,7 @@
   },
   "coreSwapsChainCompletedRefunded": "전송은 환불되었습니다.",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "payClabeHint": "CLABE 번호 입력",
   "@payClabeHint": {
@@ -3957,7 +3957,7 @@
   },
   "swapTransferRefundedTitle": "송금",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "BitBox 장치에 연결할 실패. 자주 묻는 질문.",
   "@bitboxErrorConnectionFailed": {
@@ -4117,7 +4117,7 @@
   },
   "transactionSwapProgressInProgress": "진행 중",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "fundExchangeWarningConfirmation": "나는 내가 다른 사람에 의해 Bitcoin을 구입하는 것을 요청하지 않다는 것을 확인합니다.",
   "@fundExchangeWarningConfirmation": {
@@ -4141,16 +4141,16 @@
   },
   "sendErrorAmountAboveMaximum": "최대 스왑 제한 위 금액: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap이 완료되었습니다.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer이 완료되었습니다.",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
   "importColdcardScanning": "스캔 ...",
   "@importColdcardScanning": {
@@ -4192,7 +4192,7 @@
   },
   "transactionSwapDescLnReceiveDefault": "교환은 진행 중입니다. 이 프로세스는 자동화되어 완료할 수 있습니다.",
   "@transactionSwapDescLnReceiveDefault": {
-    "description": "Default description for Lightning receive swap"
+    "description": "Default description for Lightning receive transfer"
   },
   "selectCoinsManuallyLabel": "동전을 수동으로",
   "@selectCoinsManuallyLabel": {
@@ -4282,9 +4282,9 @@
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
   },
-  "paySwapFee": "Swap 수수료",
+  "paySwapFee": "Transfer 수수료",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "Exchange 계정 설정",
   "@exchangeAccountSettingsTitle": {
@@ -4385,7 +4385,7 @@
   },
   "transactionSwapDoNotUninstall": "스왑이 완료 될 때까지 앱을 제거하지 마십시오.",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "payDefaultCommentHint": "자주 묻는 질문",
   "@payDefaultCommentHint": {
@@ -4437,7 +4437,7 @@
   },
   "sendTransferFee": "송금 수수료",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "IBAN 계정 번호 (콜론 전용)",
   "@fundExchangeLabelIbanCrcOnly": {
@@ -4453,7 +4453,7 @@
   },
   "sendInitiatingSwap": "시작 ...",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "Lightning 네트워크",
   "@sellLightningNetwork": {
@@ -4545,7 +4545,7 @@
   },
   "transactionSwapBitcoinToLiquid": "비트코인",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "Bank 세부사항",
   "@sellBankDetails": {
@@ -4573,7 +4573,7 @@
   },
   "coreSwapsStatusPending": "관련 기사",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "electrumDragToReorder": "(지게 눌러 드래그 및 변경 우선 순위)",
   "@electrumDragToReorder": {
@@ -4583,9 +4583,9 @@
   "@keystoneStep4": {
     "description": "Keystone troubleshooting header"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap은 잔액이 최대 잔액 위에 올라갈 때 트리거됩니다.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer은 잔액이 최대 잔액 위에 올라갈 때 트리거됩니다.",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency 교환 서비스는 Bull Bitcoin 모바일 애플리케이션에서 사용할 수 없습니다.",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -4601,11 +4601,11 @@
   },
   "swapErrorAmountExceedsMaximum": "금액은 최대 스왑 금액을 초과합니다",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
   "transactionLabelTotalSwapFees": "총 스왑 수수료",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "계정 정보",
   "@errorLabel": {
@@ -4685,7 +4685,7 @@
   },
   "transactionDetailRetrySwap": "리트리 스왑 {action}",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
@@ -4695,23 +4695,23 @@
   "sendErrorSwapCreationFailed": "스왑을 생성하는 실패.",
   "sendErrorInvoiceMustContainAmount": "인보이스에는 금액이 포함되어야 합니다",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorHardwareWalletCannotSwap": "하드웨어 지갑은 스왑에 사용할 수 없습니다.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "유효한 균형 자료 없음",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
   },
-  "autoswapWarningCardTitle": "Autoswap 사용 가능",
+  "autoswapWarningCardTitle": "Autotransfer 사용 가능",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "coreSwapsChainCompletedSuccess": "전송은 성공적으로 완료됩니다.",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "physicalBackupRecommendation": "물리적 백업: ",
   "@physicalBackupRecommendation": {
@@ -4784,7 +4784,7 @@
   },
   "coreSwapsLnReceiveFailed": "스왑 실패.",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "미국 달러로 송금 (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -4979,7 +4979,7 @@
   },
   "autoswapWarningExplanation": "잔액이 최대 잔액을 초과하면 스왑이 트리거됩니다. 대상 잔액은 즉시 결제 지갑에 보관되며 나머지 금액은 Secure Bitcoin Wallet으로 교환됩니다.",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "recoverbullVaultRecoveryTitle": "Recoverbull vault 복구",
   "@recoverbullVaultRecoveryTitle": {
@@ -4995,11 +4995,11 @@
   },
   "transactionSwapDescChainClaimable": "Lockup 거래가 확인되었습니다. 송금을 완료하기 위해 자금을 주장하고 있습니다.",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
-  "sendSwapDetails": "Swap 세부사항",
+  "sendSwapDetails": "Transfer 세부사항",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "12 단어를 통해 지갑을 복구.",
   "@onboardingPhysicalBackupDescription": {
@@ -5084,7 +5084,7 @@
   },
   "transactionSwapDescChainRefundable": "송금은 환불됩니다. 당신의 자금은 지갑에 자동으로 반환됩니다.",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "sendPaymentWillTakeTime": "지불은 시간을 가지고 갈 것입니다",
   "@sendPaymentWillTakeTime": {
@@ -5152,7 +5152,7 @@
   },
   "coreSwapsStatusInProgress": "진행 중",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "confirmAccessPinTitle": "액세스 확인 {pinOrPassword}",
   "@confirmAccessPinTitle": {
@@ -5174,7 +5174,7 @@
   },
   "transactionSwapProgressConfirmed": "이름 *",
   "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
+    "description": "Transfer progress step: confirmed"
   },
   "sellRoutingNumber": "연락처",
   "@sellRoutingNumber": {
@@ -5351,7 +5351,7 @@
   },
   "transactionSwapDescLnReceivePending": "스왑이 시작되었습니다. Lightning Network에서 결제를 기다리고 있습니다.",
   "@transactionSwapDescLnReceivePending": {
-    "description": "Description for pending Lightning receive swap"
+    "description": "Description for pending Lightning receive transfer"
   },
   "tryAgainButton": "다시 시도",
   "@tryAgainButton": {
@@ -5363,7 +5363,7 @@
   },
   "swapConfirmTitle": "자주 묻는 질문",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "이 정보 ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -5571,11 +5571,11 @@
   },
   "transactionSwapDescChainCompleted": "전송이 성공적으로 완료되었습니다! 자금은 이제 지갑에서 사용할 수 있어야 합니다.",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
-  "coreSwapsLnSendRefundable": "Swap은 환불이 가능합니다.",
+  "coreSwapsLnSendRefundable": "Transfer은 환불이 가능합니다.",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "backupInstruction2": "백업하지 않고 휴대 전화를 잃거나 깰 경우, 또는 Bull Bitcoin 앱을 제거하면 Bitcoins가 영원히 잃을 것입니다.",
   "@backupInstruction2": {
@@ -5754,7 +5754,7 @@
   },
   "sendErrorInsufficientBalanceForSwap": "Liquid를 통해 이 스왑을 지불하고 Bitcoin을 통해 지불 할 수 없습니다.",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "블록스트림 제이드 PSBT 관련 기사",
   "@psbtFlowJadeTitle": {
@@ -5846,7 +5846,7 @@
   },
   "coreSwapsLnSendCanCoop": "스왑은 순간적으로 완료됩니다.",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "electrumServerNotUsed": "이름 *",
   "@electrumServerNotUsed": {
@@ -5979,9 +5979,9 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap은 청구 될 준비가되어 있습니다.",
+  "coreSwapsLnReceiveClaimable": "Transfer은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "pinButtonCreate": "PIN 만들기",
   "@pinButtonCreate": {
@@ -6078,7 +6078,7 @@
   },
   "transactionSwapProgressFundsClaimed": "펀드\n이름 *",
   "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
+    "description": "Transfer progress step: funds claimed"
   },
   "recoverbullSelectAppleIcloud": "애플 iCloud",
   "@recoverbullSelectAppleIcloud": {
@@ -6103,7 +6103,7 @@
   },
   "coreSwapsLnReceiveCanCoop": "스왑은 순간적으로 완료됩니다.",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "addressViewAddressesTitle": "이름 *",
   "@addressViewAddressesTitle": {
@@ -6115,7 +6115,7 @@
   },
   "transactionSwapProgressPaymentMade": "제품 정보\n이름 *",
   "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
+    "description": "Transfer progress step: payment made"
   },
   "importQrDeviceSpecterStep4": "선택된 방법에 따라 프롬프트를 따르십시오",
   "@importQrDeviceSpecterStep4": {
@@ -6123,7 +6123,7 @@
   },
   "coreSwapsChainPending": "전송은 아직 초기화되지 않습니다.",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "importWalletImportWatchOnly": "가져오기 watch-only",
   "@importWalletImportWatchOnly": {
@@ -6170,9 +6170,9 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap은 활성",
+  "autoswapInfoTitle": "Autotransfer은 활성",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "transactionLabelPayjoinStatus": "Payjoin 상태",
   "@transactionLabelPayjoinStatus": {
@@ -6216,7 +6216,7 @@
   },
   "coreSwapsLnSendFailed": "스왑 실패.",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "recoverbullErrorDecryptFailed": "Vault를 해독하는 실패",
   "@recoverbullErrorDecryptFailed": {
@@ -6228,7 +6228,7 @@
   },
   "totalFeesLabel": "총 수수료",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "귀하의 결제가 시작되고 수신자는 거래가 1 확인 onchain을받습니다.",
   "@payInProgressDescription": {
@@ -6290,7 +6290,7 @@
   },
   "coreSwapsChainRefundable": "전송은 환불 될 준비가되어 있습니다.",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "buyInputCompleteKyc": "완료 KYC",
   "@buyInputCompleteKyc": {
@@ -6298,7 +6298,7 @@
   },
   "transactionFeesTotalDeducted": "전송 금액에서 공제 된 총 수수료입니다",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "autoswapMaxFee": "Max Transfer 수수료",
   "@autoswapMaxFee": {
@@ -6567,11 +6567,11 @@
   },
   "receiveBoltzSwapFee": "Boltz 교환 수수료",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "swapInfoBanner": "지갑 사이에 Bitcoin을 원활하게 전송합니다. 일일 지출에 대한 Instant Payment Wallet 만 유지하십시오.",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "payRBFEnabled": "RBF 지원",
   "@payRBFEnabled": {
@@ -6595,7 +6595,7 @@
   },
   "sendSwapTimeout": "시간 교환",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "네트워크 수수료",
   "@networkFeesLabel": {
@@ -6607,7 +6607,7 @@
   },
   "sendSwapInProgressBitcoin": "스왑은 진행 중입니다. Bitcoin 거래는 확인하는 동안 걸릴 수 있습니다. 집과 대기를 반환 할 수 있습니다.",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "electrumDeleteServerTitle": "사용자 정의 서버",
   "@electrumDeleteServerTitle": {
@@ -6720,7 +6720,7 @@
   },
   "transactionSwapDescLnReceiveCompleted": "스왑이 성공적으로 완료되었습니다! 자금은 이제 지갑에서 사용할 수 있어야 합니다.",
   "@transactionSwapDescLnReceiveCompleted": {
-    "description": "Description for completed Lightning receive swap"
+    "description": "Description for completed Lightning receive transfer"
   },
   "psbtFlowSignTransaction": "로그인",
   "@psbtFlowSignTransaction": {
@@ -6756,11 +6756,11 @@
   },
   "coreSwapsLnSendCompletedRefunded": "교환은 환불되었습니다.",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
-  "transactionSwapInfoClaimableSwap": "스왑은 몇 초 안에 자동으로 완료됩니다. 그렇지 않으면 \"Retry Swap Claim\"버튼을 클릭하여 수동 청구를 시도 할 수 있습니다.",
+  "transactionSwapInfoClaimableSwap": "스왑은 몇 초 안에 자동으로 완료됩니다. 그렇지 않으면 \"Retry Transfer Claim\"버튼을 클릭하여 수동 청구를 시도 할 수 있습니다.",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "mempoolCustomServerLabel": "제품정보",
   "@mempoolCustomServerLabel": {
@@ -7027,7 +7027,7 @@
   },
   "coreSwapsChainFailed": "전송 실패.",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "더 보기",
   "@transactionDetailAddNote": {
@@ -7214,7 +7214,7 @@
   },
   "walletDeletionErrorOngoingSwaps": "지속적인 스왑으로 지갑을 삭제할 수 없습니다.",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "BitBox에 연결",
   "@bitboxScreenConnecting": {
@@ -7226,7 +7226,7 @@
   },
   "transactionLabelServerNetworkFees": "서버 네트워크 요금",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "importQrDeviceSeedsignerStep10": "설정 완료",
   "@importQrDeviceSeedsignerStep10": {
@@ -7323,7 +7323,7 @@
   },
   "coreSwapsChainPaid": "전송 공급자의 지불을 기다리고 확인을받을. 완료하는 동안이 걸릴 수 있습니다.",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "arkConfirmed": "이름 *",
   "@arkConfirmed": {
@@ -7385,7 +7385,7 @@
   },
   "transactionSwapDescLnSendPaid": "당신의 온체인 거래가 방송되었습니다. 1 확인 후, 번개 결제가 전송됩니다.",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "exchangeFileUploadAddMoreFiles": "더 많은 파일 추가",
   "@exchangeFileUploadAddMoreFiles": {
@@ -7393,7 +7393,7 @@
   },
   "transactionSwapDescChainDefault": "전송은 진행 중입니다. 이 프로세스는 자동화되어 완료할 수 있습니다.",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "onboardingBullBitcoin": "비트코인",
   "@onboardingBullBitcoin": {
@@ -7401,7 +7401,7 @@
   },
   "coreSwapsChainClaimable": "전송은 청구 될 준비가되어 있습니다.",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "dcaNetworkLightning": "Lightning 네트워크",
   "@dcaNetworkLightning": {
@@ -7437,7 +7437,7 @@
   },
   "transactionLabelTransferId": "전송 ID",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "지원하다",
   "@sendTitle": {
@@ -7520,7 +7520,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swaps는 확인 시간을 취할 것입니다.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfers는 확인 시간을 취할 것입니다.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7570,7 +7570,7 @@
   },
   "sendSwapCancelled": "취소 취소",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "없음 ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -7587,7 +7587,7 @@
   },
   "swapTransferCompletedTitle": "결제 완료",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "torSettingsStatusDisconnected": "연결하기",
   "@torSettingsStatusDisconnected": {
@@ -7655,11 +7655,11 @@
   },
   "sendTypeSwap": "스왑",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sendErrorAmountExceedsMaximum": "금액은 최대 스왑 금액을 초과합니다",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "거래가 성공적으로 서명했습니다",
   "@bitboxActionSignTransactionSuccess": {
@@ -7770,7 +7770,7 @@
   },
   "sendNetworkFeesLabel": "네트워크 수수료",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "electrumUnknownError": "오류가 발생했습니다",
   "@electrumUnknownError": {
@@ -7780,9 +7780,9 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "autoswapBaseBalanceInfoText": "즉시 지불 지갑 잔액은 autoswap 후에 이 표적 균형에 돌려보낼 것입니다.",
+  "autoswapBaseBalanceInfoText": "즉시 지불 지갑 잔액은 autotransfer 후에 이 표적 균형에 돌려보낼 것입니다.",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "recoverbullSelectDecryptVault": "암호 해독",
   "@recoverbullSelectDecryptVault": {
@@ -7826,9 +7826,9 @@
   "@receiveTitle": {
     "description": "Main screen title for receive feature"
   },
-  "transactionSwapInfoRefundableSwap": "이 스왑은 몇 초 안에 자동으로 환불됩니다. \"Retry Swap Refund\"버튼을 클릭하여 수동 환불을 시도 할 수 있습니다.",
+  "transactionSwapInfoRefundableSwap": "이 스왑은 몇 초 안에 자동으로 환불됩니다. \"Retry Transfer Refund\"버튼을 클릭하여 수동 환불을 시도 할 수 있습니다.",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "payCancelPayment": "결제 방법",
   "@payCancelPayment": {
@@ -8147,7 +8147,7 @@
   },
   "transactionFeesDeductedFrom": "이 요금은 전송된 금액에서 공제됩니다",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "buyConfirmYouPay": "결제하기",
   "@buyConfirmYouPay": {
@@ -8224,7 +8224,7 @@
   },
   "transactionLabelSendNetworkFees": "네트워크 수수료",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "transactionLabelAddress": "이름 *",
   "@transactionLabelAddress": {
@@ -8302,7 +8302,7 @@
   },
   "coreSwapsChainExpired": "이동 Expired",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "(선택 사항)",
   "@payDefaultCommentOptional": {
@@ -8479,7 +8479,7 @@
   },
   "coreSwapsStatusFailed": "뚱 베어",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "transactionFilterSell": "구매하기",
   "@transactionFilterSell": {
@@ -8642,9 +8642,9 @@
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
   },
-  "autoswapWarningDescription": "Autoswap은 실수로 장기 저장을 위해 안전하지 않은 Instant Payment Wallet에서 너무 많은 돈을 유지하지 않습니다.",
+  "autoswapWarningDescription": "Autotransfer은 실수로 장기 저장을 위해 안전하지 않은 Instant Payment Wallet에서 너무 많은 돈을 유지하지 않습니다.",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "fundExchangeSinpeAddedToBalance": "결제가 전송되면 계정 잔액에 추가됩니다.",
   "@fundExchangeSinpeAddedToBalance": {
@@ -8679,9 +8679,9 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "transactionDetailLabelSwapStatus": "Swap 상태",
+  "transactionDetailLabelSwapStatus": "Transfer 상태",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "여권은 자신의 QR 코드를 보여줍니다.",
   "@passportStep10": {
@@ -8907,9 +8907,9 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap은 환불이 가능합니다.",
+  "coreSwapsLnReceiveRefundable": "Transfer은 환불이 가능합니다.",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "bitcoinSettingsElectrumServerTitle": "Electrum 서버 설정",
   "@bitcoinSettingsElectrumServerTitle": {
@@ -8988,7 +8988,7 @@
       }
     }
   },
-  "sendSwapRefundCompleted": "Swap 환불 완료",
+  "sendSwapRefundCompleted": "Transfer 환불 완료",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -8996,9 +8996,9 @@
   "@torSettingsStatusUnknown": {
     "description": "Status title when Tor status is unknown"
   },
-  "sendConfirmSwap": "Swap을 확인",
+  "sendConfirmSwap": "Transfer을 확인",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "로그 아웃 - 곧 출시",
   "@exchangeLogoutComingSoon": {
@@ -9066,7 +9066,7 @@
   },
   "swapContinue": "계속하기",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "arkSettleButton": "옵션 정보",
   "@arkSettleButton": {
@@ -9123,7 +9123,7 @@
   },
   "receiveSwapID": "스왑 ID",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Bitcoin 설정",
   "@settingsBitcoinSettingsTitle": {
@@ -9151,7 +9151,7 @@
   },
   "coreSwapsActionClose": "뚱 베어",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "kruxStep6": "문제가 있는 경우:",
   "@kruxStep6": {
@@ -9443,7 +9443,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "금액은 스왑 제한 이하입니다",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "지불 방법",
   "@payPrivatePayment": {
@@ -9487,9 +9487,9 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "autoswapWarningSettingsLink": "Autoswap 설정 가져 오기",
+  "autoswapWarningSettingsLink": "Autotransfer 설정 가져 오기",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "payLiquidNetwork": "액체 네트워크",
   "@payLiquidNetwork": {
@@ -9828,7 +9828,7 @@
   },
   "coreSwapsLnSendFailedRefunding": "스왑은 곧 환불됩니다.",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
   "dcaWalletTypeLightning": "번개 네트워크 (LN)",
   "@dcaWalletTypeLightning": {
@@ -9836,7 +9836,7 @@
   },
   "transactionSwapProgressBroadcasted": "방송",
   "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
+    "description": "Transfer progress step: transaction broadcasted"
   },
   "exchangeBitcoinWalletsSaveSuccess": "지갑 주소 성공적으로 저장",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -9952,7 +9952,7 @@
   },
   "coreSwapsLnReceivePending": "스왑은 아직 초기화되지 않습니다.",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "arkSendConfirmMessage": "전송하기 전에 거래의 세부 사항을 확인하시기 바랍니다.",
   "@arkSendConfirmMessage": {
@@ -9972,7 +9972,7 @@
   },
   "transactionSwapInfoFailedExpired": "질문이나 우려 사항이 있는 경우, 지원 담당자에게 연락해 주십시오.",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "memorizePasswordWarning": "지갑에 액세스할 수 있도록 {pinOrPassword}를 기억해야합니다. 적어도 6개의 손가락이어야 합니다. 이 {pinOrPassword}를 잃으면 백업을 복구 할 수 없습니다.",
   "@memorizePasswordWarning": {
@@ -10057,7 +10057,7 @@
   },
   "coreSwapsStatusExpired": "구매하기",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "fundExchangeCanadaPostStep3": "3. 명세 당신이 적재하고 싶은 총계를 말하십시오",
   "@fundExchangeCanadaPostStep3": {
@@ -10235,7 +10235,7 @@
   },
   "sendSubmarineSwap": "Submarine 교환",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "액체 거래 ID",
   "@transactionLabelLiquidTransactionId": {
@@ -10255,7 +10255,7 @@
   },
   "sendSwapFeeEstimate": "예상 스왑 수수료: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -10264,7 +10264,7 @@
   },
   "coreSwapsLnReceiveExpired": "구매하기.",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
   "fundExchangeOnlineBillPaymentLabelBillerName": "이 이름의 은행 목록 검색",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
@@ -10451,7 +10451,7 @@
   },
   "paySwapFailed": "스왑 실패",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "autoswapMaxFeeLabel": "Max Transfer 수수료",
   "@autoswapMaxFeeLabel": {
@@ -10585,7 +10585,7 @@
   },
   "coreSwapsLnReceiveCompleted": "스왑이 완료되었습니다.",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "backupWalletErrorGoogleDriveSave": "Google 드라이브를 저장하는 실패",
   "@backupWalletErrorGoogleDriveSave": {
@@ -10724,7 +10724,7 @@
   },
   "transactionSwapDescChainPaid": "귀하의 거래는 방송되었습니다. 우리는 이제 잠금 거래를 기다리고 있습니다.",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "mempoolSettingsUseForFeeEstimation": "이용 약관",
   "@mempoolSettingsUseForFeeEstimation": {
@@ -10736,7 +10736,7 @@
   },
   "coreSwapsStatusCompleted": "지원하다",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "fundExchangeCrIbanUsdDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
@@ -10757,7 +10757,7 @@
   },
   "swapProgressTitle": "내부 전송",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "pinButtonConfirm": "제품정보",
   "@pinButtonConfirm": {
@@ -10790,7 +10790,7 @@
   },
   "autoswapInfoDismissButton": "그것을, 다시 표시하지 마십시오",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "importQrDevicePassportStep12": "설치 완료.",
   "@importQrDevicePassportStep12": {
@@ -10897,7 +10897,7 @@
   },
   "transactionStatusSwapFailed": "스왑 실패",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "콜롬비아",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -10913,11 +10913,11 @@
   },
   "transactionLabelBoltzSwapFee": "Boltz 교환 수수료",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
   "transactionSwapDescLnReceiveFailed": "교환에 문제가 있습니다. 자금이 24 시간 이내에 반환되지 않은 경우 지원에 문의하십시오.",
   "@transactionSwapDescLnReceiveFailed": {
-    "description": "Description for failed Lightning receive swap"
+    "description": "Description for failed Lightning receive transfer"
   },
   "sellOrderNumber": "주문 번호",
   "@sellOrderNumber": {
@@ -10936,9 +10936,9 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "transactionDetailSwapProgress": "Swap 진행",
+  "transactionDetailSwapProgress": "Transfer 진행",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "arkAboutDurationMinute": "{minutes} 분",
   "@arkAboutDurationMinute": {
@@ -10971,7 +10971,7 @@
   },
   "swapTransferPendingTitle": "전송 Pending",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "사용자 정의 서버는 성공적으로 저장",
   "@mempoolCustomServerSaveSuccess": {
@@ -10979,7 +10979,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "최소 스왑 금액의 균형 너무 낮은",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "testBackupSuccessMessage": "Bitcoin 지갑에 액세스 할 수 있습니다",
   "@testBackupSuccessMessage": {
@@ -11239,7 +11239,7 @@
   },
   "sendSwapInProgressInvoice": "스왑은 진행 중입니다. 송장은 몇 초 안에 지급됩니다.",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "이름 *",
   "@arkReceiveButton": {
@@ -11271,15 +11271,15 @@
   },
   "paySwapInProgress": "진행 중...",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "모든 3개의 지갑 유형은 동기화이고 그들의 균형 및 거래는 곧 나타납니다. sync가 완료될 때까지 기다릴 수 있고, 지갑 유형이 가져올지 확인해야 합니다.",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap은 청구 될 준비가되어 있습니다.",
+  "coreSwapsLnSendClaimable": "Transfer은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "fundExchangeMethodCrIbanCrcSubtitle": "Costa Rican Colón (CRC)의 송금 자금",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
@@ -11323,7 +11323,7 @@
   },
   "walletAutoTransferBlockedTitle": "자동 이동 차단",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "Blockstream 제이드 지침",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -11417,7 +11417,7 @@
   },
   "coreSwapsActionRefund": "구매하기",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "payInsufficientBalance": "선택한 지갑에 충분한 잔액이 이 지불 순서를 완료합니다.",
   "@payInsufficientBalance": {
@@ -11429,7 +11429,7 @@
   },
   "sendSwapTimeEstimate": "예상시간: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -11462,7 +11462,7 @@
   },
   "coreSwapsActionClaim": "계정 만들기",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "BitBox 장치는 이제 잠금 해제하고 사용할 준비가되어 있습니다.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -11559,7 +11559,7 @@
   },
   "transactionSwapProgressInvoicePaid": "연락처\n뚱 베어",
   "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
+    "description": "Transfer progress step: Lightning invoice paid"
   },
   "sendInsufficientFunds": "충분한 자금",
   "@sendInsufficientFunds": {
@@ -11571,7 +11571,7 @@
   },
   "sendSwapAmount": "스왑 금액",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "autoswapTitle": "Auto Transfer 설정",
   "@autoswapTitle": {
@@ -11608,7 +11608,7 @@
   },
   "autoswapSettingsTitle": "Auto Transfer 설정",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "이름 *",
   "@payFirstNameHint": {
@@ -11636,11 +11636,11 @@
   },
   "transactionDetailLabelSwapId": "스왑 ID",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "sendSwapFailed": "스왑 실패. 환불은 곧 처리됩니다.",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "네트워크 오류. 다시 시도",
   "@sellNetworkError": {
@@ -11722,7 +11722,7 @@
   },
   "transactionSwapDescLnReceivePaid": "결제가 접수되었습니다! 이제 지갑에 온체인 트랜잭션을 방송하고 있습니다.",
   "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
+    "description": "Description for paid Lightning receive transfer"
   },
   "transactionNoteUpdateButton": "(주)",
   "@transactionNoteUpdateButton": {
@@ -11868,7 +11868,7 @@
   },
   "transactionSwapDescLnReceiveClaimable": "On-chain 거래가 확인되었습니다. 우리는 지금 당신의 스왑을 완료하기 위해 자금 주장.",
   "@transactionSwapDescLnReceiveClaimable": {
-    "description": "Description for claimable Lightning receive swap"
+    "description": "Description for claimable Lightning receive transfer"
   },
   "dcaPaymentMethodLabel": "지불 방법",
   "@dcaPaymentMethodLabel": {
@@ -12090,7 +12090,7 @@
   },
   "sendReceiveAmount": "결제하기",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "시험 회복",
   "@recoverbullTestRecovery": {
@@ -12220,9 +12220,9 @@
   "@exchangeStatisticsTotalAmount": {
     "description": "Label for total amount statistic"
   },
-  "paySwapCompleted": "Swap 완료",
+  "paySwapCompleted": "Transfer 완료",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "묘사 (선택)",
   "@receiveDescription": {
@@ -12426,7 +12426,7 @@
   "wizardJourneyTip3": "자체 Bitcoin 노드에 연결",
   "wizardJourneyTip4": "자체 Mempool 익스플로러에 연결",
   "wizardJourneyTip5": "KYC 없이 Bitcoin과 Liquid 간 전송",
-  "wizardJourneyTip6": "autoswap 설정 맞춤화",
+  "wizardJourneyTip6": "autotransfer 설정 맞춤화",
   "wizardJourneyTip7": "Bitcoin (BTC)와 Satoshis (sats) 간 전환",
   "wizardJourneyTip8": "하드웨어 지갑을 위한 air-gap 거래 생성",
   "@wizardPageIndicator": {
@@ -12903,7 +12903,7 @@
   "walletLiquidRiskDisclosureLabel": "이 자금은 Liquid L-BTC입니다(BTC 아님). 자세히 알아보기.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
   "liquidRiskDisclosureTitle": "Instant Payment Wallet Liquid Bitcoin 위험 고지",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "noteVisibleToSenderNotice": "이 메모는 QR 코드 또는 인보이스를 받는 상대방에게 표시됩니다.",
   "viewerAddressTab": "주소",
   "viewerPaymentUriTab": "결제 URI",
@@ -12921,9 +12921,9 @@
   "fundExchangeCopRedirectMessage": "결제를 진행하기 위해 외부 페이지로 이동합니다.",
   "fundExchangeCopOpenPaymentLink": "결제 링크 열기",
   "fundExchangeCopFailedToOpenLink": "결제 링크를 열 수 없습니다. 다시 시도하거나 고객 지원팀에 문의해 주세요.",
-  "autoswapActiveCardTitle": "Autoswap 활성화됨",
+  "autoswapActiveCardTitle": "Autotransfer 활성화됨",
   "autoswapWarningExplanationBold": "자동으로",
-  "autoswapInfoConsentMessage": "Autoswap이 현재 활성화되어 있지만 동의하기 전까지는 실행되지 않습니다. 계속 켜두시겠습니까?",
+  "autoswapInfoConsentMessage": "Autotransfer이 현재 활성화되어 있지만 동의하기 전까지는 실행되지 않습니다. 계속 켜두시겠습니까?",
   "nfcNotAvailable": "이 기기는 NFC를 지원하지 않습니다",
   "nfcDisabled": "NFC가 비활성화되어 있습니다. 설정에서 활성화해 주세요.",
   "nfcInvalidData": "지원되는 NFC 데이터를 찾을 수 없습니다",

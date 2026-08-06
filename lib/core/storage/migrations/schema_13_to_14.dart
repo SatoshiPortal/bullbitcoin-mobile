@@ -30,6 +30,8 @@ import 'package:drift/drift.dart';
 /// Adds the dismissed_announcements table:
 /// - Records which home announcements the user has dismissed (announcement id
 ///   + dismissal timestamp). New table, created empty.
+///
+/// Adds the order_swaps table and indexes for crash-safe Exchange transfers.
 class Schema13To14 {
   static Future<void> migrate(Migrator m, Schema14 schema14) async {
     try {
@@ -86,5 +88,14 @@ class Schema13To14 {
         error: e,
       );
     }
+
+    await m.createTable(schema14.orderSwaps);
+    await m.createIndex(schema14.orderSwapsRequestId);
+    await m.createIndex(schema14.orderSwapsLocalStatus);
+    await m.createIndex(schema14.orderSwapsSourceWallet);
+    await m.createIndex(schema14.orderSwapsDestinationWallet);
+    await m.createIndex(schema14.orderSwapsBitcoinTxid);
+    await m.createIndex(schema14.orderSwapsLiquidTxid);
+    await m.createIndex(schema14.orderSwapsLocalPayinTxid);
   }
 }

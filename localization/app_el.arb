@@ -47,9 +47,9 @@
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
   },
-  "transactionLabelSwapId": "Swap ID",
+  "transactionLabelSwapId": "Transfer ID",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "torSettingsPortHint": "905050",
   "@torSettingsPortHint": {
@@ -93,7 +93,7 @@
   },
   "sendSendNetworkFee": "Στείλε δίκτυο Fee",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "psbtFlowClickScan": "Κάντε κλικ",
   "@psbtFlowClickScan": {
@@ -200,7 +200,7 @@
   },
   "coreSwapsChainCanCoop": "Η μεταφορά θα ολοκληρωθεί στιγμιαία.",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "importColdcardInstructionsStep2": "Εισαγάγετε ένα παθητικό εάν εφαρμόζεται",
   "@importColdcardInstructionsStep2": {
@@ -214,9 +214,9 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Swap",
+  "systemLabelAutoSwap": "Transfer",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "fundExchangeSinpeTitle": "SINPE Transfer",
   "@fundExchangeSinpeTitle": {
@@ -271,9 +271,9 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionSwapStatusSwapStatus": "Swap status",
+  "transactionSwapStatusSwapStatus": "Transfer status",
   "@transactionSwapStatusSwapStatus": {
-    "description": "Header for swap status section"
+    "description": "Header for transfer status section"
   },
   "arkAboutDurationSeconds": "{seconds} δευτερόλεπτα",
   "@arkAboutDurationSeconds": {
@@ -322,7 +322,7 @@
   },
   "receiveServerNetworkFees": "Δίκτυο server Fees",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "importQrDeviceImporting": "Εισαγωγή πορτοφόλι ...",
   "@importQrDeviceImporting": {
@@ -366,7 +366,7 @@
   },
   "transactionFilterTransfer": "Μεταφορά",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "mempoolServerNotUsed": "Δεν χρησιμοποιείται (συνεργάτης πελατών)",
   "@mempoolServerNotUsed": {
@@ -471,9 +471,9 @@
   "@importQrDeviceSpecterName": {
     "description": "Name of Specter device"
   },
-  "transactionDetailLabelSwapFees": "Swap τέλη",
+  "transactionDetailLabelSwapFees": "Transfer τέλη",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "broadcastSignedTxFee": "Fee",
   "@broadcastSignedTxFee": {
@@ -530,9 +530,9 @@
   "@payServiceFee": {
     "description": "Label for service provider fee"
   },
-  "transactionStatusSwapExpired": "Swap Expired",
+  "transactionStatusSwapExpired": "Transfer Expired",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "swapAmountPlaceholder": "0",
   "@swapAmountPlaceholder": {
@@ -812,9 +812,9 @@
   "@payPendingPayments": {
     "description": "Filter for pending payments"
   },
-  "coreSwapsLnSendExpired": "Swap Expired",
+  "coreSwapsLnSendExpired": "Transfer Expired",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
   "sellSendPaymentUsdBalance": "USD USD USD USD USD USD ισορροπία ισορροπία",
   "@sellSendPaymentUsdBalance": {
@@ -890,7 +890,7 @@
   },
   "coreSwapsChainFailedRefunding": "Η μεταφορά θα επιστραφεί σύντομα.",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "Επιλέξτε ποσό",
   "@sendSelectAmount": {
@@ -1012,9 +1012,9 @@
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
   },
-  "autoswapWarningTitle": "Το Autoswap ενεργοποιείται με τις ακόλουθες ρυθμίσεις:",
+  "autoswapWarningTitle": "Το Autotransfer ενεργοποιείται με τις ακόλουθες ρυθμίσεις:",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "seedsignerStep1": "Μετατρέψτε τη συσκευή SeedSigner",
   "@seedsignerStep1": {
@@ -1038,7 +1038,7 @@
   },
   "sendSendAmount": "Στείλε ποσό",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "Το επιλεγμένο utxos δεν καλύπτει απαιτούμενο ποσό",
   "@sendSelectedUtxosInsufficient": {
@@ -1046,7 +1046,7 @@
   },
   "swapErrorBalanceTooLow": "Ισορροπία πολύ χαμηλή για το ελάχιστο ποσό ανταλλαγής",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "Ζητούν να στείλουν Bitcoin σε άλλη πλατφόρμα",
   "@fundExchangeWarningTactic5": {
@@ -1106,7 +1106,7 @@
   },
   "payRequiresSwap": "Αυτή η πληρωμή απαιτεί ανταλλαγή",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "Διαχείριση 2FA και κωδικού πρόσβασης",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -1137,9 +1137,9 @@
   "@ledgerVerifyButton": {
     "description": "Button label to start address verification on Ledger"
   },
-  "sendErrorSwapFeesNotLoaded": "Τα τέλη Swap δεν φορτώνονται",
+  "sendErrorSwapFeesNotLoaded": "Τα τέλη Transfer δεν φορτώνονται",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "Αντιγραφή",
   "@walletDetailsCopyButton": {
@@ -1200,7 +1200,7 @@
   },
   "sendSwapWillTakeTime": "Θα χρειαστεί λίγος χρόνος για να επιβεβαιωθεί",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "autoswapSelectWalletError": "Επιλέξτε ένα πορτοφόλι Bitcoin παραλήπτη",
   "@autoswapSelectWalletError": {
@@ -1307,9 +1307,9 @@
   "@bitboxScreenEnterPasswordSubtext": {
     "description": "Subtext when waiting for password"
   },
-  "systemLabelSwaps": "Swaps",
+  "systemLabelSwaps": "Transfers",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
   "sendOpenTheCamera": "Ανοίξτε την κάμερα",
   "@sendOpenTheCamera": {
@@ -1319,9 +1319,9 @@
   "@passportStep11": {
     "description": "Passport instruction to return to app"
   },
-  "sendSwapId": "Swap ID",
+  "sendSwapId": "Transfer ID",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "electrumServerOnline": "Online",
   "@electrumServerOnline": {
@@ -1341,7 +1341,7 @@
   },
   "receiveSendNetworkFee": "Στείλε δίκτυο Fee",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "withdrawAboveMaxAmountError": "Προσπαθείτε να αποσύρετε πάνω από το μέγιστο ποσό.",
   "@withdrawAboveMaxAmountError": {
@@ -1385,11 +1385,11 @@
   },
   "autoswapWarningOkButton": "ΕΝΤΆΞΕΙ",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "swapTitle": "Εσωτερική μεταφορά",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "sendOutputTooSmall": "Παραγωγή κάτω από το όριο σκόνης",
   "@sendOutputTooSmall": {
@@ -1458,7 +1458,7 @@
   },
   "sendErrorLiquidWalletRequired": "Το υγρό πορτοφόλι πρέπει να χρησιμοποιηθεί για ένα υγρό για την εναλλαγή κεραυνών",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "dcaSetupInsufficientBalance": "Ανεπαρκή ισορροπία",
   "@dcaSetupInsufficientBalance": {
@@ -1510,11 +1510,11 @@
   },
   "swapTransferPendingMessage": "Η μεταφορά βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "L-BTC - BTC",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "transactionDetailBumpFees": "Bump χρεώσεις",
   "@transactionDetailBumpFees": {
@@ -1530,7 +1530,7 @@
   },
   "totalFeeLabel": "Total Fee",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "Εισάγετε το URL του προσαρμοσμένου διακομιστή mempool σας. Ο διακομιστής θα επικυρωθεί πριν από την αποταμίευση.",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -1574,7 +1574,7 @@
   },
   "swapTransferTitle": "Μεταφορά",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "sendConfirmCustomFee": "Επιβεβαίωση προσαρμοσμένη αμοιβή",
   "@sendConfirmCustomFee": {
@@ -1590,7 +1590,7 @@
   },
   "transactionSwapProgressClaim": "Αξιώσεις",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "exchangeHomeDeposit": "Προκαταβολή",
   "@exchangeHomeDeposit": {
@@ -1708,7 +1708,7 @@
   },
   "sendErrorAmountBelowMinimum": "Ποσό κάτω από το ελάχιστο όριο ανταλλαγής: {minLimit} καθόταν",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -1883,7 +1883,7 @@
   },
   "coreSwapsLnSendPaid": "Το Invoice θα πληρωθεί μετά την επιβεβαίωση της πληρωμής σας.",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
   "fundExchangeCrBankTransferDescription2": ". Τα κεφάλαια θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrBankTransferDescription2": {
@@ -1893,9 +1893,9 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "transactionLabelSwapStatus": "Καθεστώς Swap",
+  "transactionLabelSwapStatus": "Καθεστώς Transfer",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "Ακύρωση",
   "@walletDeletionConfirmationCancelButton": {
@@ -1943,7 +1943,7 @@
   },
   "swapYouPay": "Πληρώνετε",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "Αποκρυπτωμένο θησαυροφυλάκιο",
   "@encryptedVaultTitle": {
@@ -1979,11 +1979,11 @@
   },
   "transactionSwapProgressCompleted": "Πλήρης",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "sendErrorBitcoinWalletRequired": "Bitcoin πορτοφόλι πρέπει να χρησιμοποιηθεί για ένα bitcoin για την εναλλαγή κεραυνών",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "Διαχείριση του PIN ασφαλείας σας",
   "@pinCodeManageTitle": {
@@ -2104,9 +2104,9 @@
   "@sendSignWithBitBox": {
     "description": "Button to sign transaction with BitBox hardware wallet"
   },
-  "sendSwapRefundInProgress": "Swap Refund in Progress",
+  "sendSwapRefundInProgress": "Transfer Refund in Progress",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "exchangeKycLimited": "Limited",
   "@exchangeKycLimited": {
@@ -2264,9 +2264,9 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "Το Swap δεν έχει ακόμη οριστικοποιηθεί.",
+  "coreSwapsLnSendPending": "Το Transfer δεν έχει ακόμη οριστικοποιηθεί.",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "recoverbullVaultCreatedSuccess": "Η Vault δημιούργησε με επιτυχία",
   "@recoverbullVaultCreatedSuccess": {
@@ -2307,7 +2307,7 @@
   },
   "transactionSwapProgressInitiated": "Initiated",
   "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
+    "description": "Transfer progress step: initiated"
   },
   "fundExchangeTitle": "Χρηματοδότηση",
   "@fundExchangeTitle": {
@@ -2396,7 +2396,7 @@
   },
   "autoswapWarningDontShowAgain": "Μην δείξετε ξανά αυτή την προειδοποίηση.",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "sellInsufficientBalance": "Ανεπαρκή ισορροπία πορτοφολιού",
   "@sellInsufficientBalance": {
@@ -2420,7 +2420,7 @@
   },
   "coreSwapsLnReceivePaid": "Ο αποστολέας έχει πληρώσει το τιμολόγιο.",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
   "payInProgress": "Πληρωμή σε εξέλιξη!",
   "@payInProgress": {
@@ -2545,7 +2545,7 @@
   },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "Επιλέξτε ένα πορτοφόλι",
   "@paySelectActiveWallet": {
@@ -2571,9 +2571,9 @@
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "sendSwapInitiated": "Swap Initi",
+  "sendSwapInitiated": "Transfer Initi",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "Είναι εξαιρετικά σημαντικό να μην αποθηκεύσετε το κλειδί ασφαλείας στο ίδιο μέρος όπου εξοικονομείτε το αρχείο αντιγράφων ασφαλείας σας. Πάντα να τα αποθηκεύει σε ξεχωριστές συσκευές ή ξεχωριστά παρόχους cloud.",
   "@backupSettingsKeyWarningMessage": {
@@ -2699,9 +2699,9 @@
   "@coreScreensAmountLabel": {
     "description": "Label for amount field"
   },
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "transactionLabelCompletedAt": "Πλήρης",
   "@transactionLabelCompletedAt": {
@@ -2717,11 +2717,11 @@
   },
   "swapTransferRefundInProgressTitle": "Μεταβίβαση Μεταφοράς σε Πρόοδος",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "Παίρνεις",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "electrumInvalidRetryError": "Invalid Retry Κόμη αξία: {value}",
   "@electrumInvalidRetryError": {
@@ -2810,7 +2810,7 @@
   },
   "autoswapInfoSettingsButton": "Ρυθμίσεις Configure",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "withdrawRecipientsNewTab": "Νέο παραλήπτη",
   "@withdrawRecipientsNewTab": {
@@ -3201,7 +3201,7 @@
   },
   "transactionLabelSwapStatusRefunded": "Υποχρηματοδοτούνται",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "Lightning τιμολόγιο",
   "@receiveLightningInvoice": {
@@ -3249,11 +3249,11 @@
   },
   "sendErrorAmountAboveSwapLimits": "Ποσό είναι πάνω από όρια ανταλλαγής",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "coreSwapsChainCompletedRefunded": "Η μεταφορά έχει επιστραφεί.",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "payClabeHint": "Εισάγετε τον αριθμό CLABE",
   "@payClabeHint": {
@@ -3313,7 +3313,7 @@
   },
   "swapTransferRefundedTitle": "Μεταφορά",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "Επιθυμήθηκε να συνδεθεί με τη συσκευή BitBox. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
   "@bitboxErrorConnectionFailed": {
@@ -3445,7 +3445,7 @@
   },
   "transactionSwapProgressInProgress": "Σε εξέλιξη",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "fundExchangeWarningConfirmation": "Επιβεβαιώνω ότι δεν μου ζητείται να αγοράσω Bitcoin από κάποιον άλλο.",
   "@fundExchangeWarningConfirmation": {
@@ -3469,16 +3469,16 @@
   },
   "sendErrorAmountAboveMaximum": "Ποσό πάνω από το μέγιστο όριο ανταλλαγής: {maxLimit} καθόταν",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Το Swap ολοκληρώνεται με επιτυχία.",
+  "coreSwapsLnSendCompletedSuccess": "Το Transfer ολοκληρώνεται με επιτυχία.",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
   "importColdcardScanning": "Σκάνινγκ...",
   "@importColdcardScanning": {
@@ -3580,9 +3580,9 @@
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
   },
-  "paySwapFee": "Swap Fee",
+  "paySwapFee": "Transfer Fee",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "Exchange Account Ρυθμίσεις",
   "@exchangeAccountSettingsTitle": {
@@ -3715,15 +3715,15 @@
   },
   "sendTransferFee": "Μεταφορά",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "Αριθμός λογαριασμού IBAN (μόνο για τις Αποικίες)",
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "sendInitiatingSwap": "Initiating swap...",
+  "sendInitiatingSwap": "Initiating transfer...",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "Δίκτυο Lightning Network",
   "@sellLightningNetwork": {
@@ -3803,7 +3803,7 @@
   },
   "transactionSwapBitcoinToLiquid": "BTC - L-BTC",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "Λεπτομέρειες της Τράπεζας",
   "@sellBankDetails": {
@@ -3831,7 +3831,7 @@
   },
   "coreSwapsStatusPending": "Pending",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "electrumDragToReorder": "(Long Press to drag and Change Prior)",
   "@electrumDragToReorder": {
@@ -3851,11 +3851,11 @@
   },
   "swapErrorAmountExceedsMaximum": "Ποσό υπερβαίνει το μέγιστο ποσό ανταλλαγής",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
-  "transactionLabelTotalSwapFees": "Σύνολο τέλη Swap",
+  "transactionLabelTotalSwapFees": "Σύνολο τέλη Transfer",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "Error",
   "@errorLabel": {
@@ -3921,9 +3921,9 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
@@ -3933,11 +3933,11 @@
   "sendErrorSwapCreationFailed": "Απέτυχε να δημιουργήσει ανταλλαγή.",
   "sendErrorInvoiceMustContainAmount": "Το τιμολόγιο πρέπει να περιέχει ποσό",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorHardwareWalletCannotSwap": "Τα hardware πορτοφόλια δεν μπορούν να χρησιμοποιηθούν για ανταλλαγές.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "Δεν υπάρχουν διαθέσιμα δεδομένα ισορροπίας",
   "@arkNoBalanceData": {
@@ -3945,7 +3945,7 @@
   },
   "coreSwapsChainCompletedSuccess": "Η μεταφορά ολοκληρώνεται με επιτυχία.",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "autoswapMaxBalance": "Μέγιστο Υπόλοιπο Instant Wallet",
   "@autoswapMaxBalance": {
@@ -4006,7 +4006,7 @@
   },
   "coreSwapsLnReceiveFailed": "Σουβάλι.",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Μεταφορά κεφαλαίων σε δολάρια ΗΠΑ (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -4163,7 +4163,7 @@
   },
   "autoswapWarningExplanation": "Όταν η ισορροπία σας υπερβαίνει τη μέγιστη ισορροπία, θα προκληθεί ανταλλαγή. Η ισορροπία στόχου θα διατηρηθεί στο πορτοφόλι πληρωμών Instant και το υπόλοιπο ποσό θα μεταφερθεί στο Secure Bitcoin Wallet σας.",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "passportStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@passportStep14": {
@@ -4173,9 +4173,9 @@
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
   },
-  "sendSwapDetails": "Λεπτομέρειες Swap",
+  "sendSwapDetails": "Λεπτομέρειες Transfer",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "Ανακαλύψτε το πορτοφόλι σας μέσω 12 λέξεων.",
   "@onboardingPhysicalBackupDescription": {
@@ -4307,7 +4307,7 @@
   },
   "coreSwapsStatusInProgress": "Σε εξέλιξη",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "sellErrorUnexpectedOrderType": "Αναμένεται SellOrder αλλά έλαβε διαφορετικό τύπο παραγγελίας",
   "@sellErrorUnexpectedOrderType": {
@@ -4319,7 +4319,7 @@
   },
   "transactionSwapProgressConfirmed": "Επιβεβαιώθηκε",
   "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
+    "description": "Transfer progress step: confirmed"
   },
   "sellRoutingNumber": "Routing Number",
   "@sellRoutingNumber": {
@@ -4467,7 +4467,7 @@
   },
   "transactionSwapDescLnReceivePending": "Η ανταλλαγή σας έχει ξεκινήσει. Αναμένουμε μια πληρωμή που πρέπει να ληφθεί στο Lightning Network.",
   "@transactionSwapDescLnReceivePending": {
-    "description": "Description for pending Lightning receive swap"
+    "description": "Description for pending Lightning receive transfer"
   },
   "tryAgainButton": "Δοκιμάστε ξανά",
   "@tryAgainButton": {
@@ -4475,7 +4475,7 @@
   },
   "swapConfirmTitle": "Επιβεβαίωση Μεταφορά",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
@@ -4648,9 +4648,9 @@
   "@dcaSelectFrequencyLabel": {
     "description": "Label above frequency selection radio buttons"
   },
-  "coreSwapsLnSendRefundable": "Το Swap είναι έτοιμο να επιστραφεί.",
+  "coreSwapsLnSendRefundable": "Το Transfer είναι έτοιμο να επιστραφεί.",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "backupInstruction2": "Χωρίς αντίγραφα ασφαλείας, αν χάσετε ή σπάσει το τηλέφωνό σας ή αν απεγκαταστήσετε την εφαρμογή Bull Bitcoin, τα bitcoins σας θα χαθούν για πάντα.",
   "@backupInstruction2": {
@@ -4797,7 +4797,7 @@
   },
   "sendErrorInsufficientBalanceForSwap": "Όχι αρκετή ισορροπία για να πληρώσει αυτή την ανταλλαγή μέσω της Liquid και όχι εντός ορίων ανταλλαγής για να πληρώσει μέσω Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Οδηγίες Οδηγίες Οδηγίες",
   "@psbtFlowJadeTitle": {
@@ -4875,9 +4875,9 @@
       }
     }
   },
-  "coreSwapsLnSendCanCoop": "Το Swap θα ολοκληρώσει στιγμιαία.",
+  "coreSwapsLnSendCanCoop": "Το Transfer θα ολοκληρώσει στιγμιαία.",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "electrumServerNotUsed": "Δεν χρησιμοποιείται",
   "@electrumServerNotUsed": {
@@ -4970,9 +4970,9 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Το Swap είναι έτοιμο να διεκδικήσει.",
+  "coreSwapsLnReceiveClaimable": "Το Transfer είναι έτοιμο να διεκδικήσει.",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "pinButtonCreate": "Δημιουργήστε PIN",
   "@pinButtonCreate": {
@@ -5061,7 +5061,7 @@
   },
   "transactionSwapProgressFundsClaimed": "Ταμεία\nΑπαιτείται",
   "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
+    "description": "Transfer progress step: funds claimed"
   },
   "dcaAddressLightning": "Lightning διεύθυνση Lightning",
   "@dcaAddressLightning": {
@@ -5080,9 +5080,9 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Το Swap θα ολοκληρώσει στιγμιαία.",
+  "coreSwapsLnReceiveCanCoop": "Το Transfer θα ολοκληρώσει στιγμιαία.",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "addressViewAddressesTitle": "Απαιτήσεις",
   "@addressViewAddressesTitle": {
@@ -5094,7 +5094,7 @@
   },
   "transactionSwapProgressPaymentMade": "Πληρωμή πληρωμής\nMade Made",
   "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
+    "description": "Transfer progress step: payment made"
   },
   "importQrDeviceSpecterStep4": "Ακολουθήστε τις προσφορές σύμφωνα με την επιλεγμένη μέθοδο σας",
   "@importQrDeviceSpecterStep4": {
@@ -5102,7 +5102,7 @@
   },
   "coreSwapsChainPending": "Η μεταφορά δεν έχει ακόμη οριστικοποιηθεί.",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "importWalletImportWatchOnly": "Εισαγωγή ρολόι μόνο",
   "@importWalletImportWatchOnly": {
@@ -5145,9 +5145,9 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap είναι ενεργό",
+  "autoswapInfoTitle": "Autotransfer είναι ενεργό",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "transactionLabelPayjoinStatus": "Payjoin status",
   "@transactionLabelPayjoinStatus": {
@@ -5187,7 +5187,7 @@
   },
   "coreSwapsLnSendFailed": "Σουβάλι.",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "keystoneStep9": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Keystone σας.",
   "@keystoneStep9": {
@@ -5195,7 +5195,7 @@
   },
   "totalFeesLabel": "Σύνολο τελών",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "Η πληρωμή σας έχει ξεκινήσει και ο παραλήπτης θα λάβει τα κεφάλαια αφού η συναλλαγή σας λάβει 1 επιβεβαίωση στοchain.",
   "@payInProgressDescription": {
@@ -5253,7 +5253,7 @@
   },
   "coreSwapsChainRefundable": "Η μεταφορά είναι έτοιμη να επιστραφεί.",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "buyInputCompleteKyc": "Πλήρης KYC",
   "@buyInputCompleteKyc": {
@@ -5469,13 +5469,13 @@
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails"
   },
-  "receiveBoltzSwapFee": "Boltz Swap Fee",
+  "receiveBoltzSwapFee": "Boltz Transfer Fee",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "swapInfoBanner": "Μεταφορά Bitcoin απρόσκοπτα μεταξύ των πορτοφολών σας. Διατηρήστε χρήματα μόνο στο Instant Payment Wallet για καθημερινές δαπάνες.",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "payRBFEnabled": "RBF επέτρεψε",
   "@payRBFEnabled": {
@@ -5493,9 +5493,9 @@
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
   },
-  "sendSwapTimeout": "Ο Swap χρονοντήθηκε",
+  "sendSwapTimeout": "Ο Transfer χρονοντήθηκε",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "Network χρεώσεις",
   "@networkFeesLabel": {
@@ -5507,7 +5507,7 @@
   },
   "sendSwapInProgressBitcoin": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "electrumDeleteServerTitle": "Διαγράψτε Custom Server",
   "@electrumDeleteServerTitle": {
@@ -5625,9 +5625,9 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "Το Swap έχει επιστραφεί.",
+  "coreSwapsLnSendCompletedRefunded": "Το Transfer έχει επιστραφεί.",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
   "mempoolCustomServerLabel": "CUSTOM",
   "@mempoolCustomServerLabel": {
@@ -5850,7 +5850,7 @@
   },
   "coreSwapsChainFailed": "Μεταφορά Απέτυχε.",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "Προσθήκη σημείωση",
   "@transactionDetailAddNote": {
@@ -6017,7 +6017,7 @@
   },
   "walletDeletionErrorOngoingSwaps": "Δεν μπορείτε να διαγράψετε ένα πορτοφόλι με συνεχείς ανταλλαγές.",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "Συνδέοντας με το BitBox",
   "@bitboxScreenConnecting": {
@@ -6106,7 +6106,7 @@
   },
   "coreSwapsChainPaid": "Περιμένοντας την πληρωμή του παρόχου μεταφοράς για να λάβετε επιβεβαίωση. Αυτό μπορεί να πάρει λίγο χρόνο για να ολοκληρωθεί.",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "importQrDevicePassportStep6": "Επιλέξτε \"Single-sig\"",
   "@importQrDevicePassportStep6": {
@@ -6158,7 +6158,7 @@
   },
   "coreSwapsChainClaimable": "Η μεταφορά είναι έτοιμη να διεκδικηθεί.",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "arkAboutEsploraUrl": "Esplora URL",
   "@arkAboutEsploraUrl": {
@@ -6186,7 +6186,7 @@
   },
   "transactionLabelTransferId": "Transfer ID",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "Αποστολή αποστολής",
   "@sendTitle": {
@@ -6257,7 +6257,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swaps θα χρειαστεί χρόνος για να επιβεβαιωθεί.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfers θα χρειαστεί χρόνος για να επιβεβαιωθεί.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -6301,13 +6301,13 @@
   "@rbfEstimatedDelivery": {
     "description": "Estimated confirmation time for fastest fee"
   },
-  "sendSwapCancelled": "Swap ακυρώθηκε",
+  "sendSwapCancelled": "Transfer ακυρώθηκε",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "swapTransferCompletedTitle": "Μεταφορά",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "torSettingsStatusDisconnected": "Αποσυνδεδεδεμένοι",
   "@torSettingsStatusDisconnected": {
@@ -6357,13 +6357,13 @@
   "@bitboxActionVerifyAddressProcessing": {
     "description": "Processing text for verify address"
   },
-  "sendTypeSwap": "Swap",
+  "sendTypeSwap": "Transfer",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sendErrorAmountExceedsMaximum": "Ποσό υπερβαίνει το μέγιστο ποσό ανταλλαγής",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "Η συναλλαγή που υπογράφηκε με επιτυχία",
   "@bitboxActionSignTransactionSuccess": {
@@ -6429,7 +6429,7 @@
   },
   "transactionHistoryTitle": "Ιστορικό συναλλαγών",
   "transactionHistoryHeading": "Ιστορικό συναλλαγών",
-  "exportTransactionsDescription": "Εξαγωγή όλων των συναλλαγών του πορτοφολιού σας (Bitcoin, Liquid, Lightning και swaps) ως αρχείο CSV. Προαιρετικά φιλτράρετε ανά εύρος ημερομηνιών.",
+  "exportTransactionsDescription": "Εξαγωγή όλων των συναλλαγών του πορτοφολιού σας (Bitcoin, Liquid, Lightning και transfers) ως αρχείο CSV. Προαιρετικά φιλτράρετε ανά εύρος ημερομηνιών.",
   "exportTransactionsStartDate": "Ημερομηνία έναρξης",
   "exportTransactionsEndDate": "Ημερομηνία λήξης",
   "exportTransactionsAnyDate": "Οποιαδήποτε",
@@ -6474,7 +6474,7 @@
   },
   "sendNetworkFeesLabel": "Στείλε δίκτυο Fees",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "electrumUnknownError": "Ένα λάθος συνέβη",
   "@electrumUnknownError": {
@@ -6870,7 +6870,7 @@
   },
   "coreSwapsChainExpired": "Μεταφορά Επέκτευξη",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "Default Σχόλιο (προαιρετικό)",
   "@payDefaultCommentOptional": {
@@ -7014,7 +7014,7 @@
   },
   "coreSwapsStatusFailed": "Φθάνατο",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "transactionFilterSell": "Πώληση",
   "@transactionFilterSell": {
@@ -7178,9 +7178,9 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "transactionDetailLabelSwapStatus": "Καθεστώς Swap",
+  "transactionDetailLabelSwapStatus": "Καθεστώς Transfer",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "Το διαβατήριο θα σας δείξει τον δικό του κωδικό QR.",
   "@passportStep10": {
@@ -7363,9 +7363,9 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Το Swap είναι έτοιμο να επιστραφεί.",
+  "coreSwapsLnReceiveRefundable": "Το Transfer είναι έτοιμο να επιστραφεί.",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "bitcoinSettingsElectrumServerTitle": "Electrum Server Guidelines",
   "@bitcoinSettingsElectrumServerTitle": {
@@ -7436,7 +7436,7 @@
       }
     }
   },
-  "sendSwapRefundCompleted": "Swap Refund ολοκληρώθηκε",
+  "sendSwapRefundCompleted": "Transfer Refund ολοκληρώθηκε",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -7444,9 +7444,9 @@
   "@torSettingsStatusUnknown": {
     "description": "Status title when Tor status is unknown"
   },
-  "sendConfirmSwap": "Επιβεβαίωση Swap",
+  "sendConfirmSwap": "Επιβεβαίωση Transfer",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "Log Out - Έρχεται σύντομα",
   "@exchangeLogoutComingSoon": {
@@ -7510,7 +7510,7 @@
   },
   "swapContinue": "Συνεχίστε να συνεχίζετε",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή ",
   "@electrumAddFailedError": {
@@ -7553,9 +7553,9 @@
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
   },
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Bitcoin ρυθμίσεις Bitcoin",
   "@settingsBitcoinSettingsTitle": {
@@ -7579,7 +7579,7 @@
   },
   "coreSwapsActionClose": "Κλείστε κοντά",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "kruxStep6": "Αν έχετε πρόβλημα σάρωση:",
   "@kruxStep6": {
@@ -7812,7 +7812,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "Ποσό είναι κάτω από όρια ανταλλαγής",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "Ιδιωτική πληρωμή",
   "@payPrivatePayment": {
@@ -7836,7 +7836,7 @@
   },
   "autoswapWarningSettingsLink": "Πάρε με στις ρυθμίσεις αυτόματης πώλησης",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "payLiquidNetwork": "Liquid Network",
   "@payLiquidNetwork": {
@@ -8099,9 +8099,9 @@
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
   },
-  "coreSwapsLnSendFailedRefunding": "Το Swap θα επιστραφεί σύντομα.",
+  "coreSwapsLnSendFailedRefunding": "Το Transfer θα επιστραφεί σύντομα.",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
   "dcaWalletTypeLightning": "Lightning Network (LN)",
   "@dcaWalletTypeLightning": {
@@ -8109,7 +8109,7 @@
   },
   "transactionSwapProgressBroadcasted": "Broadcasted",
   "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
+    "description": "Transfer progress step: transaction broadcasted"
   },
   "exchangeBitcoinWalletsSaveSuccess": "Η διεύθυνση Wallet έσωσε με επιτυχία",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -8195,9 +8195,9 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "Το Swap δεν έχει ακόμη οριστικοποιηθεί.",
+  "coreSwapsLnReceivePending": "Το Transfer δεν έχει ακόμη οριστικοποιηθεί.",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "arkSendConfirmMessage": "Παρακαλούμε επιβεβαιώστε τις λεπτομέρειες της συναλλαγής σας πριν στείλετε.",
   "@arkSendConfirmMessage": {
@@ -8272,7 +8272,7 @@
   },
   "coreSwapsStatusExpired": "Επεκτάθηκαν",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "payFee": "Fee",
   "@payFee": {
@@ -8402,9 +8402,9 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "Liquid συναλλαγών ID",
   "@transactionLabelLiquidTransactionId": {
@@ -8424,16 +8424,16 @@
   },
   "sendSwapFeeEstimate": "Εκτιμώμενη αμοιβή ανταλλαγής: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnReceiveExpired": "Η Swap επεκτάθηκε.",
+  "coreSwapsLnReceiveExpired": "Η Transfer επεκτάθηκε.",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "Περιορισμένη επαλήθευση",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -8575,7 +8575,7 @@
   },
   "paySwapFailed": "Ο Σουβάλ απέτυχε",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "importMnemonicBalance": "Balance: {amount}",
   "@importMnemonicBalance": {
@@ -8675,9 +8675,9 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "Το Swap ολοκληρώνεται.",
+  "coreSwapsLnReceiveCompleted": "Το Transfer ολοκληρώνεται.",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "settingsTorSettingsTitle": "Οι ρυθμίσεις Tor",
   "@settingsTorSettingsTitle": {
@@ -8812,7 +8812,7 @@
   },
   "coreSwapsStatusCompleted": "Πλήρης",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "fundExchangeCrIbanUsdDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
@@ -8829,7 +8829,7 @@
   },
   "swapProgressTitle": "Εσωτερική μεταφορά",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "pinButtonConfirm": "Επιβεβαίωση",
   "@pinButtonConfirm": {
@@ -8849,7 +8849,7 @@
   },
   "autoswapInfoDismissButton": "Got it, μην το δείξετε ξανά",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "importQrDevicePassportStep12": "Setup πλήρης.",
   "@importQrDevicePassportStep12": {
@@ -8936,7 +8936,7 @@
   },
   "transactionStatusSwapFailed": "Σουβάλι",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -8950,9 +8950,9 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer Fee",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
   "sellOrderNumber": "Αριθμός εντολών",
   "@sellOrderNumber": {
@@ -8971,9 +8971,9 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "transactionDetailSwapProgress": "Swap Progress",
+  "transactionDetailSwapProgress": "Transfer Progress",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "arkAboutDurationMinute": "{minutes} λεπτό",
   "@arkAboutDurationMinute": {
@@ -9002,7 +9002,7 @@
   },
   "swapTransferPendingTitle": "Μεταφορά",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "Custom server έσωσε με επιτυχία",
   "@mempoolCustomServerSaveSuccess": {
@@ -9010,7 +9010,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "Ισορροπία πολύ χαμηλή για το ελάχιστο ποσό ανταλλαγής",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "electrumTimeout": "Timeout (δεύτεροι)",
   "@electrumTimeout": {
@@ -9245,7 +9245,7 @@
   },
   "sendSwapInProgressInvoice": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Το τιμολόγιο θα πληρωθεί σε λίγα δευτερόλεπτα.",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "Παραλαβή",
   "@arkReceiveButton": {
@@ -9267,17 +9267,17 @@
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
   },
-  "paySwapInProgress": "Swap σε εξέλιξη...",
+  "paySwapInProgress": "Transfer σε εξέλιξη...",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "Και οι τρεις τύποι πορτοφολιού συγχρονίζονται και η ισορροπία και οι συναλλαγές τους θα εμφανιστούν σύντομα. Μπορείτε να περιμένετε μέχρι να ολοκληρωθεί η συγχρονισμό ή να προχωρήσετε στην εισαγωγή, εάν είστε σίγουροι ποιο είδος πορτοφολιού που επιθυμείτε να εισάγετε.",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Το Swap είναι έτοιμο να διεκδικήσει.",
+  "coreSwapsLnSendClaimable": "Το Transfer είναι έτοιμο να διεκδικήσει.",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "fundExchangeMethodCrIbanCrcSubtitle": "Μεταφορά κεφαλαίων στην Costa Rican Colón (CRC)",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
@@ -9313,7 +9313,7 @@
   },
   "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Οδηγίες",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -9395,7 +9395,7 @@
   },
   "coreSwapsActionRefund": "Refund",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "payInsufficientBalance": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
   "@payInsufficientBalance": {
@@ -9407,7 +9407,7 @@
   },
   "sendSwapTimeEstimate": "Εκτιμώμενος χρόνος: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -9436,7 +9436,7 @@
   },
   "coreSwapsActionClaim": "Αξιώσεις",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "Η συσκευή BitBox σας είναι τώρα απελευθερωμένη και έτοιμη να χρησιμοποιήσει.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -9517,7 +9517,7 @@
   },
   "transactionSwapProgressInvoicePaid": "Invoice\nPaid",
   "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
+    "description": "Transfer progress step: Lightning invoice paid"
   },
   "sendInsufficientFunds": "Ανεπαρκή κεφάλαια",
   "@sendInsufficientFunds": {
@@ -9527,9 +9527,9 @@
   "@sendSuccessfullySent": {
     "description": "Title for successful send completion"
   },
-  "sendSwapAmount": "Swap Ποσό",
+  "sendSwapAmount": "Transfer Ποσό",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "autoswapTitle": "Ρυθμίσεις αυτόματης μεταφοράς",
   "@autoswapTitle": {
@@ -9562,7 +9562,7 @@
   },
   "autoswapSettingsTitle": "Ρυθμίσεις αυτόματης μεταφοράς",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "Εισάγετε το πρώτο όνομα",
   "@payFirstNameHint": {
@@ -9584,13 +9584,13 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "transactionDetailLabelSwapId": "Swap ID",
+  "transactionDetailLabelSwapId": "Transfer ID",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "sendSwapFailed": "Η ανταλλαγή απέτυχε. Η επιστροφή σας θα υποβληθεί σε επεξεργασία σύντομα.",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "Σφάλμα δικτύου. Παρακαλώ δοκιμάστε ξανά",
   "@sellNetworkError": {
@@ -9668,7 +9668,7 @@
   },
   "transactionSwapDescLnReceivePaid": "Η πληρωμή έχει ληφθεί! Τώρα μεταδίδουμε τη συναλλαγή on-chain στο πορτοφόλι σας.",
   "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
+    "description": "Description for paid Lightning receive transfer"
   },
   "transactionNoteUpdateButton": "Ενημέρωση",
   "@transactionNoteUpdateButton": {
@@ -9967,7 +9967,7 @@
   },
   "sendReceiveAmount": "Αποδεχόμενο ποσό",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "Ανάκτηση",
   "@recoverbullTestRecovery": {
@@ -10073,9 +10073,9 @@
   "@exchangeStatisticsTotalAmount": {
     "description": "Label for total amount statistic"
   },
-  "paySwapCompleted": "Swap ολοκλήρωσε",
+  "paySwapCompleted": "Transfer ολοκλήρωσε",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "Περιγραφή (προαιρετικό)",
   "@receiveDescription": {
@@ -10156,7 +10156,7 @@
   },
   "transactionSwapDescLnSendPending": "Η ανταλλαγή σας έχει ξεκινήσει. Μεταδίδουμε τη συναλλαγή on-chain για να κλειδώσουμε τα χρήματά σας.",
   "@transactionSwapDescLnSendPending": {
-    "description": "Description for pending Lightning send swap"
+    "description": "Description for pending Lightning send transfer"
   },
   "fundExchangeCanadaPostStep6": "6. Το ταμείο θα σας παραδώσει μια παραλαβή, κρατήστε το ως απόδειξη πληρωμής σας",
   "@fundExchangeCanadaPostStep6": {
@@ -10177,7 +10177,7 @@
   },
   "transactionLabelPreimage": "Προεπισκόπηση",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "recoverbullErrorPasswordNotSet": "Το Password δεν είναι set",
   "@recoverbullErrorPasswordNotSet": {
@@ -10197,7 +10197,7 @@
   },
   "transactionSwapDescChainPending": "Η μεταφορά σας έχει δημιουργηθεί αλλά δεν έχει ξεκινήσει ακόμα.",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "recoverbullReenterConfirm": "Σας παρακαλούμε να ξαναμπείτε στο {inputType} για να επιβεβαιώσετε.",
   "@recoverbullReenterConfirm": {
@@ -10273,7 +10273,7 @@
   },
   "transactionSwapDescChainFailed": "Υπήρχε ένα θέμα με τη μεταφορά σας. Παρακαλούμε επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "testBackupWarningMessage": "Χωρίς ένα αντίγραφο ασφαλείας, θα χάσετε τελικά την πρόσβαση στα χρήματά σας. Είναι εξαιρετικά σημαντικό να κάνετε ένα αντίγραφο ασφαλείας.",
   "@testBackupWarningMessage": {
@@ -10289,7 +10289,7 @@
   },
   "transactionSwapDescLnSendDefault": "Η ανταλλαγή σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "recoverbullErrorMissingBytes": "Αποσπώντας bytes από την απάντηση Tor. Προσπαθήστε αλλά αν το θέμα συνεχιστεί, είναι ένα γνωστό θέμα για ορισμένες συσκευές με Tor.",
   "@recoverbullErrorMissingBytes": {
@@ -10313,7 +10313,7 @@
   },
   "transactionSwapDescLnSendFailed": "Υπήρχε ένα θέμα με την ανταλλαγή σας. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "fundExchangeOnlineBillPaymentHelpBillerName": "Προσθέστε αυτή την εταιρεία ως payee - είναι ο επεξεργαστής πληρωμών της Bull Bitcoin",
   "@fundExchangeOnlineBillPaymentHelpBillerName": {
@@ -10329,7 +10329,7 @@
   },
   "transactionSwapDescLnSendExpired": "Αυτή η ανταλλαγή έχει λήξει. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "testBackupDefaultWallets": "Default Wallets",
   "@testBackupDefaultWallets": {
@@ -10387,7 +10387,7 @@
   },
   "transactionSwapDescLnReceiveExpired": "Αυτή η ανταλλαγή έχει λήξει. Κάθε ταμείο που αποστέλλεται θα επιστραφεί αυτόματα στον αποστολέα.",
   "@transactionSwapDescLnReceiveExpired": {
-    "description": "Description for expired Lightning receive swap"
+    "description": "Description for expired Lightning receive transfer"
   },
   "dcaFrequencyMonthly": "μήνα",
   "@dcaFrequencyMonthly": {
@@ -10474,7 +10474,7 @@
   },
   "transactionLabelReceiveAmount": "Αποδεχόμενο ποσό",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {
@@ -10533,7 +10533,7 @@
   },
   "transactionSwapDescLnSendCompleted": "Η πληρωμή Lightning έχει αποσταλεί με επιτυχία! Η ανταλλαγή σας είναι τώρα πλήρης.",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "recoverbullPleaseWait": "Παρακαλώ περιμένετε ενώ θα καθιερώσουμε μια ασφαλή σύνδεση...",
   "@recoverbullPleaseWait": {
@@ -10735,7 +10735,7 @@
   },
   "autoswapWarningCardSubtitle": "Μια ανταλλαγή θα ενεργοποιηθεί εάν η ισορροπία Instant Payments υπερβαίνει το 0,02 BTC.",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "dcaFrequencyDaily": "μέρα",
   "@dcaFrequencyDaily": {
@@ -10743,11 +10743,11 @@
   },
   "transactionLabelSendAmount": "Στείλε ποσό",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "transactionLabelReceiveNetworkFee": "Λήψη δικτύου Fee",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "recoverbullSeeMoreVaults": "Δείτε περισσότερα θησαυροφυλάκια",
   "@recoverbullSeeMoreVaults": {
@@ -10755,7 +10755,7 @@
   },
   "transactionSwapDescChainExpired": "Αυτή η μεταφορά έχει λήξει. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
   "fundExchangeLabelBankAddress": "Διεύθυνση της τράπεζάς μας",
   "@fundExchangeLabelBankAddress": {
@@ -10829,7 +10829,7 @@
   },
   "transactionSwapDescLnReceiveDefault": "Η ανταλλαγή σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
   "@transactionSwapDescLnReceiveDefault": {
-    "description": "Default description for Lightning receive swap"
+    "description": "Default description for Lightning receive transfer"
   },
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
@@ -10857,7 +10857,7 @@
   },
   "transactionSwapDoNotUninstall": "Μην απεγκαταστήσετε την εφαρμογή μέχρι να ολοκληρωθεί η ανταλλαγή.",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "transactionDetailLabelExchangeRate": "Συναλλαγματική ισοτιμία",
   "@transactionDetailLabelExchangeRate": {
@@ -10883,9 +10883,9 @@
   "@dcaConfirmRecurringBuyTitle": {
     "description": "AppBar title for confirmation screen"
   },
-  "autoswapTriggerAtBalanceInfoText": "Το Autoswap θα προκαλέσει όταν η ισορροπία σας υπερβαίνει αυτή τη μέγιστη ισορροπία.",
+  "autoswapTriggerAtBalanceInfoText": "Το Autotransfer θα προκαλέσει όταν η ισορροπία σας υπερβαίνει αυτή τη μέγιστη ισορροπία.",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "exchangeLandingDisclaimerNotAvailable": "Οι υπηρεσίες ανταλλαγής Cryptocurrency δεν είναι διαθέσιμες στην εφαρμογή κινητών τηλεφώνων Bull Bitcoin.",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -10903,9 +10903,9 @@
   "@psbtFlowMoveBack": {
     "description": "Troubleshooting tip to adjust scanning distance"
   },
-  "autoswapWarningCardTitle": "Autoswap είναι ενεργοποιημένη",
+  "autoswapWarningCardTitle": "Autotransfer είναι ενεργοποιημένη",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "physicalBackupRecommendation": "Φυσικό αντίγραφο ασφαλείας: ",
   "@physicalBackupRecommendation": {
@@ -10963,7 +10963,7 @@
   },
   "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος έχει επιβεβαιωθεί. Υποστηρίζετε τώρα τα κεφάλαια για να ολοκληρώσετε τη μεταφορά σας.",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
   "psbtFlowSelectSeed": "Μόλις η συναλλαγή εισαχθεί στο {device}, θα πρέπει να επιλέξετε τον σπόρο με τον οποίο επιθυμείτε να εγγραφείτε.",
   "@psbtFlowSelectSeed": {
@@ -10984,7 +10984,7 @@
   },
   "transactionSwapDescChainRefundable": "Η μεταφορά θα επιστραφεί. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "confirmAccessPinTitle": "Επιβεβαίωση πρόσβασης {pinOrPassword}",
   "@confirmAccessPinTitle": {
@@ -11064,7 +11064,7 @@
   },
   "transactionSwapDescChainCompleted": "Η μεταφορά σας έχει ολοκληρωθεί με επιτυχία! Τα κεφάλαια θα πρέπει τώρα να είναι διαθέσιμα στο πορτοφόλι σας.",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
   "recoverVia12WordsDescription": "Ανακαλύψτε το πορτοφόλι σας μέσω 12 λέξεων.",
   "@recoverVia12WordsDescription": {
@@ -11180,7 +11180,7 @@
   },
   "transactionFeesTotalDeducted": "Αυτό είναι το συνολικό ποσό που αφαιρείται από το ποσό που αποστέλλεται",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "passwordTooCommonError": "Αυτό {pinOrPassword} είναι πολύ συνηθισμένο. Επιλέξτε ένα διαφορετικό.",
   "@passwordTooCommonError": {
@@ -11264,15 +11264,15 @@
   },
   "transactionSwapDescLnReceiveCompleted": "Η ανταλλαγή σας έχει ολοκληρωθεί με επιτυχία! Τα κεφάλαια θα πρέπει τώρα να είναι διαθέσιμα στο πορτοφόλι σας.",
   "@transactionSwapDescLnReceiveCompleted": {
-    "description": "Description for completed Lightning receive swap"
+    "description": "Description for completed Lightning receive transfer"
   },
   "testBackupNext": "Next",
   "@testBackupNext": {
     "description": "Button to proceed to verification quiz"
   },
-  "transactionSwapInfoClaimableSwap": "Η ανταλλαγή θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική αξίωση κάνοντας κλικ στο κουμπί \"Retry Swap Claim\".",
+  "transactionSwapInfoClaimableSwap": "Η ανταλλαγή θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική αξίωση κάνοντας κλικ στο κουμπί \"Retry Transfer Claim\".",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "dcaOrderTypeValue": "Recuring buy",
   "@dcaOrderTypeValue": {
@@ -11344,7 +11344,7 @@
   },
   "transactionLabelServerNetworkFees": "Δίκτυο server Fees",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "fundExchangeETransferDescription": "Κάθε ποσό που στέλνετε από την τράπεζά σας μέσω ηλεκτρονικού ταχυδρομείου E-Transfer χρησιμοποιώντας τις παρακάτω πληροφορίες θα πιστωθεί στην ισορροπία λογαριασμού σας Bull Bitcoin μέσα σε λίγα λεπτά.",
   "@fundExchangeETransferDescription": {
@@ -11378,11 +11378,11 @@
   },
   "transactionSwapDescLnSendPaid": "Η συναλλαγή σας on-chain έχει μεταδοθεί. Μετά από 1 επιβεβαίωση, η πληρωμή Lightning θα αποστέλλεται.",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "transactionSwapDescChainDefault": "Η μεταφορά σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "dcaNetworkLightning": "Δίκτυο Lightning Network",
   "@dcaNetworkLightning": {
@@ -11437,17 +11437,17 @@
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
   },
-  "autoswapBaseBalanceInfoText": "Η άμεση ισορροπία του πορτοφόλι σας θα επιστρέψει σε αυτή την ισορροπία-στόχο μετά από ένα autoswap.",
+  "autoswapBaseBalanceInfoText": "Η άμεση ισορροπία του πορτοφόλι σας θα επιστρέψει σε αυτή την ισορροπία-στόχο μετά από ένα autotransfer.",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "recoverbullSelectDecryptVault": "Decrypt Monkey",
   "@recoverbullSelectDecryptVault": {
     "description": "Primary button text to proceed with vault decryption"
   },
-  "transactionSwapInfoRefundableSwap": "Αυτή η ανταλλαγή θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική επιστροφή κάνοντας κλικ στο κουμπί \"Retry Swap Refund\".",
+  "transactionSwapInfoRefundableSwap": "Αυτή η ανταλλαγή θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική επιστροφή κάνοντας κλικ στο κουμπί \"Retry Transfer Refund\".",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "leaveYourPhone": "αφήστε το τηλέφωνό σας και είναι ",
   "@leaveYourPhone": {
@@ -11508,7 +11508,7 @@
   },
   "transactionFeesDeductedFrom": "Αυτά τα τέλη θα αφαιρεθούν από το ποσό που αποστέλλεται",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "recoverbullTorNotStarted": "Το Tor δεν ξεκινά",
   "@recoverbullTorNotStarted": {
@@ -11537,7 +11537,7 @@
   },
   "transactionLabelSendNetworkFees": "Να στείλετε τέλη δικτύου",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "testBackupConfirm": "Επιβεβαίωση",
   "@testBackupConfirm": {
@@ -11630,9 +11630,9 @@
   "@transactionListToday": {
     "description": "Date label for today's transactions"
   },
-  "autoswapWarningDescription": "Το Autoswap διασφαλίζει ότι δεν κρατάτε τυχαία πάρα πολλά χρήματα στο Instant Payment Wallet, το οποίο δεν είναι ασφαλές για μακροπρόθεσμη αποθήκευση.",
+  "autoswapWarningDescription": "Το Autotransfer διασφαλίζει ότι δεν κρατάτε τυχαία πάρα πολλά χρήματα στο Instant Payment Wallet, το οποίο δεν είναι ασφαλές για μακροπρόθεσμη αποθήκευση.",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "autoswapRecipientWalletPlaceholderRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
@@ -11902,7 +11902,7 @@
   },
   "transactionSwapInfoFailedExpired": "Εάν έχετε οποιεσδήποτε ερωτήσεις ή ανησυχίες, παρακαλούμε επικοινωνήστε με την υποστήριξη για βοήθεια.",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "memorizePasswordWarning": "Πρέπει να απομνημονεύσετε αυτό {pinOrPassword} για να ανακτήσετε την πρόσβαση στο πορτοφόλι σας. Πρέπει να είναι τουλάχιστον 6 ψηφία. Αν χάσετε αυτό {pinOrPassword} δεν μπορείτε να ανακτήσετε το αντίγραφο ασφαλείας σας.",
   "@memorizePasswordWarning": {
@@ -12063,7 +12063,7 @@
   },
   "transactionSwapDescChainPaid": "Η συναλλαγή σας έχει μεταδοθεί. Τώρα περιμένουμε να επιβεβαιωθεί η συναλλαγή κλειδώματος.",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "psbtFlowMoveCloserFurther": "Προσπαθήστε να μετακινήσετε τη συσκευή σας πιο κοντά ή πιο μακριά",
   "@psbtFlowMoveCloserFurther": {
@@ -12104,7 +12104,7 @@
   },
   "transactionSwapDescLnReceiveFailed": "Υπήρχε ένα θέμα με την ανταλλαγή σας. Παρακαλούμε επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
   "@transactionSwapDescLnReceiveFailed": {
-    "description": "Description for failed Lightning receive swap"
+    "description": "Description for failed Lightning receive transfer"
   },
   "backupWalletInstructionLoseBackup": "Αν χάσετε 12 λέξεις αντίγραφα ασφαλείας, δεν θα είστε σε θέση να ανακτήσετε την πρόσβαση στο Bitcoin Wallet.",
   "@backupWalletInstructionLoseBackup": {
@@ -12205,7 +12205,7 @@
   },
   "transactionSwapDescLnReceiveClaimable": "Η συναλλαγή on-chain έχει επιβεβαιωθεί. Υποστηρίζουμε τώρα τα κεφάλαια για να ολοκληρώσουμε την ανταλλαγή σας.",
   "@transactionSwapDescLnReceiveClaimable": {
-    "description": "Description for claimable Lightning receive swap"
+    "description": "Description for claimable Lightning receive transfer"
   },
   "dcaPaymentMethodLabel": "Μέθοδος πληρωμής",
   "@dcaPaymentMethodLabel": {
@@ -12425,7 +12425,7 @@
   "wizardJourneyTip3": "Συνδεθείτε στον δικό σας κόμβο Bitcoin",
   "wizardJourneyTip4": "Συνδεθείτε στον δικό σας εξερευνητή Mempool",
   "wizardJourneyTip5": "Μεταφέρετε μεταξύ Bitcoin και Liquid χωρίς KYC",
-  "wizardJourneyTip6": "Προσαρμόστε τις ρυθμίσεις autoswap",
+  "wizardJourneyTip6": "Προσαρμόστε τις ρυθμίσεις autotransfer",
   "wizardJourneyTip7": "Εναλλάξτε μεταξύ Bitcoin (BTC) και Satoshis (sats)",
   "wizardJourneyTip8": "Δημιουργήστε air-gap συναλλαγές για το hardware wallet σας",
   "@wizardPageIndicator": {
@@ -12445,7 +12445,7 @@
   "legacyStorageIntroDescription": "Το πορτοφόλι σου τρέχει σε λογισμικό που σύντομα θα παύσει να υποστηρίζεται. Δεν μπορεί να ενημερωθεί χωρίς να απεγκαταστήσεις και να επανεγκαταστήσεις την εφαρμογή.",
   "legacyStorageStepBackupWallet": "Δημιούργησε αντίγραφο ασφαλείας του πορτοφολιού",
   "legacyStorageStepExportLabels": "Εξάγαγε τις ετικέτες σου (αν έχεις)",
-  "legacyStorageStepEnsureSwapsCompleted": "Βεβαιώσου ότι όλα τα swaps έχουν ολοκληρωθεί",
+  "legacyStorageStepEnsureSwapsCompleted": "Βεβαιώσου ότι όλα τα transfers έχουν ολοκληρωθεί",
   "legacyStorageStepUninstall": "Απεγκαταστήστε την εφαρμογή από τη συσκευή σας",
   "legacyStorageStepReinstall": "Κατέβασε την πιο πρόσφατη έκδοση και εγκατάστησέ την ξανά",
   "legacyStorageStepRestoreBackup": "Επανάφερε το αντίγραφο ασφαλείας",
@@ -12460,7 +12460,7 @@
   "legacyStorageAreYouSureParagraphTwo": "Η επιλογή Encrypted Vault διαρκεί περίπου 1 λεπτό και δεν απαιτεί ειδικά εργαλεία. Για το φυσικό αντίγραφο, χρειάζεσαι μόνο στυλό και χαρτί.",
   "legacyStorageContinueWithoutBackupButton": "Συνέχιση χωρίς αντίγραφο",
   "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας",
-  "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
+  "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα transfer.",
   "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο",
   "walletSetupErrorTryAgain": "Κάτι πήγε στραβά κατά τη ρύθμιση του πορτοφολιού σας. Παρακαλώ δοκιμάστε ξανά.",
   "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
@@ -12969,7 +12969,7 @@
   "swapRescueAmountLabel": "Ποσό",
   "swapRescueRouteLabel": "Διαδρομή",
   "swapRescueCreatedLabel": "Δημιουργήθηκε",
-  "swapRescueIdLabel": "Swap ID",
+  "swapRescueIdLabel": "Transfer ID",
   "swapRescueWalletLabel": "Επαναφορά σε πορτοφόλι",
   "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
   "swapRescueButton": "Επαναφορά",
@@ -13010,12 +13010,12 @@
   "walletLiquidRiskDisclosureLabel": "Αυτά τα κεφάλαια είναι Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
   "liquidRiskDisclosureSemanticLabel": "Άνοιγμα γνωστοποίησης κινδύνου Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Γνωστοποίηση Κινδύνου Liquid Bitcoin του Instant Payments Wallet",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "fundExchangeScamConsentError": "Αποτυχία καταγραφής της συγκατάθεσής σας. Δοκιμάστε ξανά.",
   "fundExchangeJurisdictionColombia": "🇨🇴 Κολομβία",
-  "autoswapActiveCardTitle": "Autoswap είναι ενεργό",
+  "autoswapActiveCardTitle": "Autotransfer είναι ενεργό",
   "autoswapWarningExplanationBold": "αυτόματα",
-  "autoswapInfoConsentMessage": "Το Autoswap είναι αυτή τη στιγμή ενεργοποιημένο, αλλά δεν θα ενεργοποιηθεί μέχρι να δώσετε τη συγκατάθεσή σας. Θέλετε να παραμείνει ενεργό;",
+  "autoswapInfoConsentMessage": "Το Autotransfer είναι αυτή τη στιγμή ενεργοποιημένο, αλλά δεν θα ενεργοποιηθεί μέχρι να δώσετε τη συγκατάθεσή σας. Θέλετε να παραμείνει ενεργό;",
   "nfcNotAvailable": "Το NFC δεν υποστηρίζεται σε αυτή τη συσκευή",
   "nfcDisabled": "Το NFC είναι απενεργοποιημένο. Ενεργοποιήστε το από τις ρυθμίσεις.",
   "nfcInvalidData": "Δεν βρέθηκαν υποστηριζόμενα δεδομένα NFC",

@@ -53,14 +53,6 @@ sealed class AllServicesStatus with _$AllServicesStatus {
     @Default(
       ServiceStatusInfo(
         status: ServiceStatus.unknown,
-        name: 'Boltz',
-        lastChecked: null,
-      ),
-    )
-    ServiceStatusInfo boltz,
-    @Default(
-      ServiceStatusInfo(
-        status: ServiceStatus.unknown,
         name: 'Payjoin',
         lastChecked: null,
       ),
@@ -115,7 +107,6 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       internetConnection.isOnline &&
       bitcoinElectrum.isOnline &&
       liquidElectrum.isOnline &&
-      boltz.isOnline &&
       // Payjoin is opt-in: disabled is not a fault (see _checkPayjoinService).
       (payjoin.isOnline || payjoin.isDisabled) &&
       pricer.isOnline &&

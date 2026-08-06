@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
+import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
@@ -51,6 +52,7 @@ part 'sqlite_database.g.dart';
     Prices,
     FrozenUtxos,
     DismissedAnnouncements,
+    OrderSwaps,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {

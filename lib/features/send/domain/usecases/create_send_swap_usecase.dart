@@ -1,91 +1,83 @@
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/lightning.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class CreateSendSwapUsecase {
-  final WalletRepository _walletRepository;
-  final BoltzSwapRepository _swapRepository;
+  final SwapFacade _swapFacade;
+  final GetWalletUsecase _getWallet;
+  final GetReceiveAddressUsecase _getReceiveAddress;
+  final DateTime Function() _now;
 
-  CreateSendSwapUsecase({
-    required this._walletRepository,
-    required this._swapRepository,
-  });
+  CreateSendSwapUsecase(
+    this._swapFacade, {
+    required GetWalletUsecase getWalletUsecase,
+    required GetReceiveAddressUsecase getReceiveAddressUsecase,
+    DateTime Function()? now,
+  }) : _getWallet = getWalletUsecase,
+       _getReceiveAddress = getReceiveAddressUsecase,
+       _now = now ?? DateTime.now;
 
-  Future<LnSendSwap> execute({
+  Future<Result<OrderSwapRecord, SendFailure>> execute({
     required String walletId,
-    required SwapType type,
-    String? invoice,
-    String? lnAddress,
-    int? amountSat,
+    required Bolt11PaymentRequest invoice,
+    required int amountSat,
+    String? note,
   }) async {
-    try {
-      if (invoice == null && lnAddress == null) {
-        throw Exception('Invoice or lnAddress must be provided');
-      }
-      if (amountSat == null && lnAddress != null) {
-        throw Exception('Amount must be provided if lnAddress is used');
-      }
-      final finalInvoice =
-          invoice?.toLowerCase() ??
-          await invoiceFromLnAddress(
-            lnAddress: lnAddress!,
-            amountSat: amountSat!,
-          );
-      final wallet = await _walletRepository.getWallet(walletId);
-
-      if (wallet == null) {
-        throw Exception('Wallet not found');
-      }
-
-      final existingSwap = await _swapRepository.getSendSwapByInvoice(
-        invoice: finalInvoice,
+    if (amountSat <= 0) {
+      return const Err(SendInvoiceAmountRequiredFailure());
+    }
+    if (invoice.amountSat > 0 && invoice.amountSat != amountSat) {
+      return const Err(
+        SendInvalidPaymentRequestFailure(
+          logMessage: 'Invoice amount does not match requested amount',
+        ),
       );
-      if (existingSwap != null) return existingSwap;
+    }
+    if (invoice.expiresAt <= _now().millisecondsSinceEpoch ~/ 1000) {
+      return const Err(SendInvoiceExpiredFailure());
+    }
 
-      if (wallet.network.isTestnet) {
-        throw Exception('Swaps are not supported on testnet');
+    try {
+      final wallet = await _getWallet.execute(walletId);
+      if (wallet == null) {
+        return const Err(SendSwapCreationFailure('Wallet not found'));
       }
-
-      if (wallet.network.isLiquid && type != SwapType.liquidToLightning) {
-        throw Exception(
-          'Liquid wallet must be used for a liquid to lightning swap',
+      final inNetwork = wallet.network.isLiquid
+          ? OrderSwapNetwork.liquid
+          : OrderSwapNetwork.bitcoin;
+      if (invoice.isTestnet != wallet.network.isTestnet) {
+        return const Err(
+          SendInvalidPaymentRequestFailure(
+            logMessage: 'Invoice network does not match wallet network',
+          ),
         );
       }
-      if (wallet.network.isBitcoin && type != SwapType.bitcoinToLightning) {
-        throw Exception(
-          'Bitcoin wallet must be used for a liquid to lightning swap',
-        );
+      if (wallet.isBitcoinHardwareWallet) {
+        return const Err(SendHardwareWalletFailure());
       }
 
-      final btcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicElectrumTestUrl
-          : ApiServiceConstants.bbElectrumUrl;
-
-      final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-          : ApiServiceConstants.bbLiquidElectrumUrlPath;
-
-      switch (type) {
-        case SwapType.bitcoinToLightning:
-          return await _swapRepository.createBitcoinToLightningSwap(
-            walletId: walletId,
-            invoice: finalInvoice,
-            electrumUrl: btcElectrumUrl,
-          );
-
-        case SwapType.liquidToLightning:
-          return await _swapRepository.createLiquidToLightningSwap(
-            walletId: walletId,
-            invoice: finalInvoice,
-            electrumUrl: lbtcElectrumUrl,
-          );
-        default:
-          throw Exception('This is not a swap for the send feature!');
-      }
-    } catch (e) {
-      rethrow;
+      final fallback = await _getReceiveAddress.execute(walletId: walletId);
+      final result = await _swapFacade.createOrder(
+        amountSat: BigInt.from(amountSat),
+        isInAmountFixed: false,
+        inNetwork: inNetwork,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: invoice.invoice,
+        fallbackAddress: fallback.address,
+        purpose: OrderSwapPurpose.sendLightning,
+        environment: wallet.network.isTestnet
+            ? OrderSwapEnvironment.testnet
+            : OrderSwapEnvironment.mainnet,
+        sourceWalletId: walletId,
+        note: note,
+      );
+      return result.mapErr(mapSwapFailureToSendFailure);
+    } catch (error) {
+      return Err(SendSwapCreationFailure(error.toString()));
     }
   }
 }

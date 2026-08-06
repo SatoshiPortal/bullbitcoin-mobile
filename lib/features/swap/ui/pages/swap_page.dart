@@ -14,6 +14,8 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
@@ -60,11 +62,6 @@ class SwapPageState extends State<SwapPage> {
             : ConvertAmount.btcToSats(
                 double.tryParse(_amountController.text) ?? 0,
               );
-        _amountSat = bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(_amountController.text) ?? 0
-            : ConvertAmount.btcToSats(
-                double.tryParse(_amountController.text) ?? 0,
-              );
       });
     });
   }
@@ -85,9 +82,6 @@ class SwapPageState extends State<SwapPage> {
           _amountController.text = state.amount;
           final bitcoinUnit = state.bitcoinUnit;
           setState(() {
-            _amountSat = bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(state.amount) ?? 0
-                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
             _amountSat = bitcoinUnit == BitcoinUnit.sats
                 ? int.tryParse(state.amount) ?? 0
                 : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
@@ -246,17 +240,20 @@ class SwapPageState extends State<SwapPage> {
                     BlocSelector<
                       TransferBloc,
                       TransferState,
-                      SwapCreationException?
+                      (SwapCreationException?, SwapFailure?)
                     >(
-                      selector: (state) => state.swapCreationException,
-                      builder: (context, swapCreationError) {
-                        if (swapCreationError == null) {
+                      selector: (state) =>
+                          (state.swapCreationException, state.swapFailure),
+                      builder: (context, errors) {
+                        final (swapCreationError, swapFailure) = errors;
+                        if (swapCreationError == null && swapFailure == null) {
                           return const SizedBox.shrink();
                         }
                         final message =
-                            swapCreationError is InsufficientFundsSwapException
-                            ? context.loc.swapInsufficientFunds
-                            : swapCreationError.message;
+                            swapFailure?.toTranslated(context) ??
+                            (swapCreationError is InsufficientFundsSwapException
+                                ? context.loc.swapInsufficientFunds
+                                : context.loc.sendErrorSwapCreationFailed);
                         return Text(
                           message,
                           style: context.font.labelLarge?.copyWith(

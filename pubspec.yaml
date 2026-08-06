@@ -44,6 +44,7 @@ dependencies:
       url: https://github.com/SatoshiPortal/payjoin-dart
       ref: 26595d9821250bbd88f4e43b97acc85f17a93d71
   qr_flutter: ^4.1.0
+  decimal: ^3.2.4
   dio: ^5.9.0
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7

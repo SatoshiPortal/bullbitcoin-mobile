@@ -5,8 +5,10 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 
 // This use case retrieves transactions by their transaction ID (txId).
 // Two wallet transactions can exist for the same txId if the transaction was
@@ -23,6 +25,7 @@ class GetTransactionsByTxIdUsecase {
   final PayjoinRepository _payjoinRepository;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final GetTransactionOrderSwapsUsecase _getTransactionOrderSwapsUsecase;
 
   GetTransactionsByTxIdUsecase({
     required this._settingsRepository,
@@ -31,6 +34,7 @@ class GetTransactionsByTxIdUsecase {
     required this._payjoinRepository,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
+    required this._getTransactionOrderSwapsUsecase,
   });
 
   Future<List<Transaction>> execute(String txId) async {
@@ -41,12 +45,21 @@ class GetTransactionsByTxIdUsecase {
           : _mainnetExchangeOrderRepository;
 
       // Fetch wallet transactions, swap and payjoins by txId
-      final (walletTransactions, swap, payjoins, order) = await (
+      final (walletTransactions, swap, payjoins, order, orderSwaps) = await (
         _walletTransactionRepository.getWalletTransactions(txId: txId),
         _boltzSwapRepository.getSwapByTxId(txId),
         _payjoinRepository.getPayjoinsByTxId(txId),
         orderRepository.getOrderByTxId(txId),
+        _getTransactionOrderSwapsUsecase.execute(),
       ).wait;
+      OrderSwapRecord? orderSwap;
+      try {
+        orderSwap = orderSwaps.firstWhere(
+          (candidate) => candidate.localPayinTransactionId == txId,
+        );
+      } catch (_) {
+        orderSwap = null;
+      }
 
       if (walletTransactions.isNotEmpty) {
         return walletTransactions.map((walletTransaction) {
@@ -65,12 +78,15 @@ class GetTransactionsByTxIdUsecase {
           return Transaction(
             walletTransaction: walletTransaction,
             swap: swap,
+            orderSwap: orderSwap,
             payjoin: payjoin,
             order: order,
           );
         }).toList();
       } else if (swap != null) {
         return [Transaction(swap: swap)];
+      } else if (orderSwap != null) {
+        return [Transaction(orderSwap: orderSwap)];
       } else if (payjoins.isNotEmpty) {
         return payjoins.map((pj) => Transaction(payjoin: pj)).toList();
       } else if (order != null) {
