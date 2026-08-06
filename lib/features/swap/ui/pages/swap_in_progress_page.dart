@@ -122,26 +122,46 @@ class SwapInProgressPage extends StatelessWidget {
                           textAlign: .center,
                         ),
                       ],
+                      if (swap?.status == SwapStatus.failed ||
+                          swap?.status == SwapStatus.expired) ...[
+                        Text(
+                          swap?.status == SwapStatus.failed
+                              ? context.loc.transactionStatusSwapFailed
+                              : context.loc.transactionStatusSwapExpired,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.error,
+                          ),
+                        ),
+                        const Gap(8),
+                        Text(
+                          swap?.status == SwapStatus.failed
+                              ? context.loc.transactionSwapDescChainFailed
+                              : context.loc.transactionSwapDescChainExpired,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
+                          maxLines: 4,
+                          textAlign: .center,
+                        ),
+                      ],
                     ],
                   ),
                 ),
                 const Spacer(flex: 2),
                 if (!(swap?.status.isTerminal ?? false)) ...[
-                  if (!(swap?.status.isTerminal ?? false)) ...[
-                    InfoCard(
-                      description: context.loc.swapDoNotUninstallWarning,
-                      tagColor: context.appColors.tertiary,
-                      bgColor: context.appColors.warningContainer,
-                      boldDescription: true,
-                    ),
-                    const Gap(12),
-                    InfoCard(
-                      description: context.loc.transactionSwapOpenWithin24h,
-                      tagColor: context.appColors.tertiary,
-                      bgColor: context.appColors.warningContainer,
-                      boldDescription: true,
-                    ),
-                  ],
+                  InfoCard(
+                    description: context.loc.swapDoNotUninstallWarning,
+                    tagColor: context.appColors.tertiary,
+                    bgColor: context.appColors.warningContainer,
+                    boldDescription: true,
+                  ),
+                  const Gap(12),
+                  InfoCard(
+                    description: context.loc.transactionSwapOpenWithin24h,
+                    tagColor: context.appColors.tertiary,
+                    bgColor: context.appColors.warningContainer,
+                    boldDescription: true,
+                  ),
                   const Gap(16),
                 ],
                 BBButton.big(

@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_qr_scanner_page.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,10 +54,19 @@ class SwapRouter {
               listenWhen: (previous, current) =>
                   previous.txId.isEmpty && current.txId.isNotEmpty,
               listener: (context, state) {
-                context.goNamed(
-                  SwapRoute.inProgressSwap.name,
-                  extra: context.read<TransferBloc>(),
-                );
+                final orderSwap = state.orderSwap;
+                if (orderSwap != null) {
+                  context.goNamed(
+                    TransactionsRoute.orderSwapTransactionDetails.name,
+                    pathParameters: {'localId': orderSwap.localId},
+                    queryParameters: {'returnHome': 'true'},
+                  );
+                } else {
+                  context.goNamed(
+                    SwapRoute.inProgressSwap.name,
+                    extra: context.read<TransferBloc>(),
+                  );
+                }
               },
               child: const SwapConfirmPage(),
             ),
