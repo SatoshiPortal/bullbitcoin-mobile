@@ -18,12 +18,26 @@ import 'package:dio/dio.dart';
 import 'package:bull_sdk/boltz.dart' hide Network;
 import 'package:bull_sdk/boltz.dart' as boltz;
 
+typedef BoltzWebSocketFactory =
+    BoltzWebSocket Function(
+      String boltzUrl, {
+      void Function()? onDone,
+      void Function(Object error)? onError,
+    });
+
+BoltzWebSocket _createBoltzWebSocket(
+  String boltzUrl, {
+  void Function()? onDone,
+  void Function(Object error)? onError,
+}) => BoltzWebSocket.create(boltzUrl, onDone: onDone, onError: onError);
+
 class BoltzDatasource {
   final String _baseUrl;
+  final BoltzWebSocketFactory webSocketFactory;
   late String _httpsUrl;
   late final Dio _http;
 
-  late BoltzWebSocket _boltzWebSocket;
+  BoltzWebSocket? _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
 
   /// Default-wallet fingerprint the swap master key is keyed under, bound by
@@ -53,10 +67,10 @@ class BoltzDatasource {
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required this._boltzStore,
+    this.webSocketFactory = _createBoltzWebSocket,
   }) : _baseUrl = url {
     _httpsUrl = 'https://$_baseUrl';
     _http = Dio(BaseOptions(baseUrl: _httpsUrl));
-    _initializeBoltzWebSocket();
   }
 
   Future<void> updateFees({required swap_entity.SwapType swapType}) async {
@@ -1138,7 +1152,9 @@ class BoltzDatasource {
   }
 
   void _initializeBoltzWebSocket() {
-    _boltzWebSocket = BoltzWebSocket.create(
+    if (_boltzWebSocket != null) return;
+
+    final boltzWebSocket = webSocketFactory(
       _baseUrl,
       onDone: () {
         log.warning('[Boltz] websocket closed unexpectedly');
@@ -1148,8 +1164,9 @@ class BoltzDatasource {
         log.warning('[Boltz] websocket error: $error');
       },
     );
+    _boltzWebSocket = boltzWebSocket;
 
-    _boltzWebSocket.stream.listen(
+    boltzWebSocket.stream.listen(
       (event) {
         _reconnectAttempt = 0;
         if (event.id.isEmpty) {
@@ -1170,6 +1187,7 @@ class BoltzDatasource {
   /// On reconnect, reconcile each swap's status over REST: Boltz does not
   /// guarantee replay of events missed while disconnected.
   void _scheduleReconnect() {
+    if (_boltzWebSocket == null) return;
     if (_reconnectTimer?.isActive ?? false) return;
     final delaySeconds = min(60, 1 << min(_reconnectAttempt, 6));
     _reconnectAttempt++;
@@ -1179,7 +1197,7 @@ class BoltzDatasource {
     );
     _reconnectTimer = Timer(Duration(seconds: delaySeconds), () async {
       try {
-        _boltzWebSocket.reconnect();
+        _boltzWebSocket?.reconnect();
         final ids = _subscribedSwapIds.toList();
         _subscribedSwapIds.clear();
         subscribeToSwaps(ids);
@@ -1354,7 +1372,8 @@ class BoltzDatasource {
   void resetStream() {
     _reconnectTimer?.cancel();
     _reconnectAttempt = 0;
-    _boltzWebSocket.dispose();
+    _boltzWebSocket?.dispose();
+    _boltzWebSocket = null;
     _subscribedSwapIds.clear();
     _initializeBoltzWebSocket();
   }
@@ -1368,7 +1387,8 @@ class BoltzDatasource {
     if (newSwapIds.isEmpty) {
       return;
     }
-    _boltzWebSocket.subscribe(newSwapIds);
+    _initializeBoltzWebSocket();
+    _boltzWebSocket!.subscribe(newSwapIds);
     _subscribedSwapIds.addAll(newSwapIds);
   }
 
@@ -1380,7 +1400,7 @@ class BoltzDatasource {
     if (swapIdsToUnsubscribe.isEmpty) {
       return;
     }
-    _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
+    _boltzWebSocket?.unsubscribe(swapIdsToUnsubscribe);
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }
 

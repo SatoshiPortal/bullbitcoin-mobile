@@ -17,6 +17,7 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
   int claimCalls = 0;
   int refundCalls = 0;
   int? lastRefundFees;
+  int swapUpdatesReads = 0;
   Duration claimDelay = Duration.zero;
   Object? claimError;
   String? outspendTxid;
@@ -147,7 +148,10 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
   }) async => SwapTxOutspend(txid: outspendTxid, timestamp: null);
 
   @override
-  Stream<Swap> get swapUpdatesStream => const Stream.empty();
+  Stream<Swap> get swapUpdatesStream {
+    swapUpdatesReads++;
+    return const Stream.empty();
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -242,7 +246,6 @@ void main() {
     boltzRepo: repo,
     walletAddressRepository: FakeWalletAddressRepository(),
     feesRepository: fees,
-    autoStart: false,
   );
 
   group('claim execution', () {
@@ -348,6 +351,15 @@ void main() {
 
       expect(repo.claimCalls, 0);
     });
+  });
+
+  test('does not start watching when constructed', () async {
+    final repo = FakeBoltzSwapRepository(claimableSwap());
+
+    watcher(repo);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(repo.swapUpdatesReads, 0);
   });
 
   group('refund execution', () {

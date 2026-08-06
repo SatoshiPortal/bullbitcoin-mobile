@@ -7,9 +7,7 @@ import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repositor
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/status/interface_adapters/adapter/electrum_connectivity_adapter.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
@@ -28,10 +26,6 @@ class StatusLocator {
     // Usecase
     locator.registerFactory<CheckAllServiceStatusUsecase>(
       () => CheckAllServiceStatusUsecase(
-        boltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
         exchangeRateRepository: locator<ExchangeRateRepository>(
           instanceName: 'mainnetExchangeRateRepository',
         ),

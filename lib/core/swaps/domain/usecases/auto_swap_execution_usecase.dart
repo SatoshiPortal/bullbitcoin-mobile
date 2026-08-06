@@ -168,7 +168,7 @@ class AutoSwapExecutionUsecase {
     final txLabel = NewLabel.tx(
       transactionId: txid,
       origin: defaultLiquidWallet.id,
-      label: 'Auto-Swap',
+      label: 'Auto-Transfer',
     );
     await _labelsFacade.store(txLabel);
 
