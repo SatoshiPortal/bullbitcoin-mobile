@@ -14,6 +14,7 @@ import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:payjoin/payjoin.dart';
 import 'package:payjoin/http.dart' show fetchOhttpKeys;
+import 'package:primitives/primitives.dart' show Outpoint;
 
 /// Fetches the OHTTP key config published by [directoryUrl] through
 /// [ohttpRelayUrl]. Matches the signature of `payjoin/http.dart`'s top-level
@@ -316,7 +317,7 @@ class PdkPayjoinDatasource {
 
   Future<PayjoinReceiverModel> proposePayjoin({
     required PayjoinReceiverModel receiverModel,
-    required bool Function(Uint8List) hasOwnedInputs,
+    required bool Function(Outpoint) ownsOutpoint,
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required String Function(String) processPsbt,
@@ -330,7 +331,7 @@ class PdkPayjoinDatasource {
     final result = await processReceiveSession(
       state: state,
       persister: persister,
-      hasOwnedInputs: hasOwnedInputs,
+      ownsOutpoint: ownsOutpoint,
       hasReceiverOutput: hasReceiverOutput,
       inputPairs: inputPairs,
       receiverModel: receiverModel,
@@ -409,7 +410,7 @@ class PdkPayjoinDatasource {
   Future<({Monitor monitor, String psbt})> processReceiveSession({
     required ReceiveSession state,
     required InMemoryJsonReceiverSessionPersister persister,
-    required bool Function(Uint8List) hasOwnedInputs,
+    required bool Function(Outpoint) ownsOutpoint,
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required PayjoinReceiverModel receiverModel,
@@ -424,7 +425,7 @@ class PdkPayjoinDatasource {
         return _checkProposal(
           state.inner,
           persister,
-          hasOwnedInputs,
+          ownsOutpoint,
           hasReceiverOutput,
           inputPairs,
           receiverModel,
@@ -434,7 +435,7 @@ class PdkPayjoinDatasource {
         return _checkInputsNotOwned(
           state.inner,
           persister,
-          hasOwnedInputs,
+          ownsOutpoint,
           hasReceiverOutput,
           inputPairs,
           receiverModel,
@@ -501,7 +502,7 @@ class PdkPayjoinDatasource {
   Future<({Monitor monitor, String psbt})> _checkProposal(
     UncheckedOriginalPayload inner,
     InMemoryJsonReceiverSessionPersister persister,
-    bool Function(Uint8List) hasOwnedInputs,
+    bool Function(Outpoint) ownsOutpoint,
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
@@ -511,7 +512,7 @@ class PdkPayjoinDatasource {
     return _checkInputsNotOwned(
       next,
       persister,
-      hasOwnedInputs,
+      ownsOutpoint,
       hasReceiverOutput,
       inputPairs,
       receiverModel,
@@ -522,14 +523,14 @@ class PdkPayjoinDatasource {
   Future<({Monitor monitor, String psbt})> _checkInputsNotOwned(
     MaybeInputsOwned inner,
     InMemoryJsonReceiverSessionPersister persister,
-    bool Function(Uint8List) hasOwnedInputs,
+    bool Function(Outpoint) ownsOutpoint,
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
   ) async {
     final next = inner
-        .checkInputsNotOwned(isOwned: _IsScriptOwned(hasOwnedInputs))
+        .checkInputsNotOwned(isOwned: _IsInputOwned(ownsOutpoint))
         .save(persister: persister);
     return _checkNoInputsSeenBefore(
       next,
@@ -1006,6 +1007,20 @@ class _IsScriptOwned implements IsScriptOwned {
 
   @override
   bool callback(Uint8List script) => _fn(script);
+}
+
+/// Bridges the crate's outpoint-keyed ownership callback to the wallet port.
+///
+/// The crate hands an OutPoint rather than a script precisely so the answer
+/// cannot be steered by the sender's PSBT — see
+/// PayjoinWalletPort.createOutpointOwnershipChecker.
+class _IsInputOwned implements IsInputOwned {
+  final bool Function(Outpoint) _fn;
+  _IsInputOwned(this._fn);
+
+  @override
+  bool callback(OutPoint outpoint) =>
+      _fn((txId: outpoint.txid, vout: outpoint.vout));
 }
 
 /// Assume the wallet has not seen the inputs since it is an interactive wallet

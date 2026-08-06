@@ -37,6 +37,18 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   }
 
   @override
+  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
+    required String walletId,
+    required BitcoinNetwork network,
+  }) async {
+    // A watch-only view is enough: ownership is answered from the local index,
+    // no key material involved.
+    final metadata = await _loadMetadata(walletId, network);
+    final wallet = WalletModel.fromMetadata(metadata);
+    return _wallet.createOutpointIsMineChecker(wallet: wallet);
+  }
+
+  @override
   Future<String Function(String psbt)> createPsbtProcessor({
     required String walletId,
     required BitcoinNetwork network,

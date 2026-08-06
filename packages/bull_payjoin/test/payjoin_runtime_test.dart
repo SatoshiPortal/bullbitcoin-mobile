@@ -14,6 +14,13 @@ final class _WalletPort implements PayjoinWalletPort {
       (Uint8List _) => false;
 
   @override
+  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
+    required String walletId,
+    required BitcoinNetwork network,
+  }) async =>
+      (Outpoint _) => false;
+
+  @override
   Future<String Function(String psbt)> createPsbtProcessor({
     required String walletId,
     required BitcoinNetwork network,

@@ -19,11 +19,7 @@ dependencies:
   drift: ^2.29.0
   freezed_annotation: ^3.1.0
   meta: ^1.17.0
-  # Vendored until upstream ships a release compatible with its pinned FFI.
-  payjoin:
-    git:
-      url: https://github.com/SatoshiPortal/payjoin-dart
-      ref: 26595d9821250bbd88f4e43b97acc85f17a93d71
+  payjoin: ^0.2.1+payjoin-1.0.0-rc.8
   primitives:
   sqlite3: ^2.9.4
   synchronized: ^3.4.0

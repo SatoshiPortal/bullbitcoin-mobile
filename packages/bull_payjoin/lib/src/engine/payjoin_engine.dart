@@ -1394,13 +1394,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         walletId: payjoin.walletId,
         network: network,
       );
+      // The input guard asks about outpoints, not scripts: the sender supplies
+      // the previous outputs in its PSBT, so a script-keyed answer could be
+      // steered. The output check below is a different question — it is our own
+      // address, so a script check is the right one there.
+      final ownsOutpointSync = await _wallet.createOutpointOwnershipChecker(
+        walletId: payjoin.walletId,
+        network: network,
+      );
       final signPsbtSync = await _wallet.createPsbtProcessor(
         walletId: payjoin.walletId,
         network: network,
       );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        hasOwnedInputs: isMineSync,
+        ownsOutpoint: ownsOutpointSync,
         hasReceiverOutput: isMineSync,
         inputPairs: inputPairs,
         processPsbt: signPsbtSync,

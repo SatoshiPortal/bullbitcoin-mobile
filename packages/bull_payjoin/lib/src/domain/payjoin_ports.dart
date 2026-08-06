@@ -14,6 +14,21 @@ abstract interface class PayjoinWalletPort {
     required BitcoinNetwork network,
   });
 
+  /// Answers whether an outpoint belongs to this wallet.
+  ///
+  /// Deliberately keyed on the outpoint and never on the previous output's
+  /// scriptPubKey: in a payjoin proposal that script comes from the sender's
+  /// PSBT, so a sender could misdeclare it and make one of our own coins look
+  /// foreign to a script-based check. The outpoint is the consensus identity of
+  /// the input — forging it means spending a different coin.
+  ///
+  /// Must answer for every output the wallet has ever owned, spent included, so
+  /// the receiver's guard has no gap to reason about.
+  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
+    required String walletId,
+    required BitcoinNetwork network,
+  });
+
   Future<String Function(String psbt)> createPsbtProcessor({
     required String walletId,
     required BitcoinNetwork network,
