@@ -62,11 +62,11 @@
   "@coreSwapsLnReceivePaid": {
     "description": "Status message for paid Lightning receive swap"
   },
-  "coreSwapsLnReceiveExpired": "Swap vypršel.",
+  "coreSwapsLnReceiveExpired": "Transfer vypršel.",
   "@coreSwapsLnReceiveExpired": {
     "description": "Status message for expired Lightning receive swap"
   },
-  "coreSwapsLnReceiveFailed": "Swap selhal.",
+  "coreSwapsLnReceiveFailed": "Transfer selhal.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
   },
@@ -74,19 +74,19 @@
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
   },
-  "coreSwapsLnSendExpired": "Swap vypršel",
+  "coreSwapsLnSendExpired": "Transfer vypršel",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap proběhnul úspěšně.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer proběhnul úspěšně.",
   "@coreSwapsLnSendCompletedSuccess": {
     "description": "Status message for successfully completed Lightning send swap"
   },
-  "coreSwapsLnSendFailedRefunding": "Swap bude brzy refundován.",
+  "coreSwapsLnSendFailedRefunding": "Transfer bude brzy refundován.",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
   },
-  "coreSwapsLnSendFailed": "Swap selhal.",
+  "coreSwapsLnSendFailed": "Transfer selhal.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
@@ -556,7 +556,7 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "@systemLabelAutoSwap": {
     "description": "System label for automatic swap transactions"
   },
@@ -629,7 +629,7 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionSwapStatusSwapStatus": "Stav Swapu",
+  "transactionSwapStatusSwapStatus": "Stav Transferu",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
@@ -645,7 +645,7 @@
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
   },
-  "autoswapUpdateSettingsError": "Vypnuto aktualizovat nastavení automatického swapu",
+  "autoswapUpdateSettingsError": "Vypnuto aktualizovat nastavení automatického transferu",
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
@@ -1372,7 +1372,7 @@
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
   },
-  "autoswapWarningTitle": "Autoswap je povolen s následujícími nastaveními:",
+  "autoswapWarningTitle": "Autotransfer je povolen s následujícími nastaveními:",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
@@ -1388,7 +1388,7 @@
   "@transactionLabelStatus": {
     "description": "Label for transaction status"
   },
-  "transactionSwapDescLnSendDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
+  "transactionSwapDescLnSendDefault": "Váš transfer je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
   },
@@ -1488,7 +1488,7 @@
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
   },
-  "transactionSwapDescLnSendFailed": "Byl problém s vaším swapem. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
+  "transactionSwapDescLnSendFailed": "Byl problém s vaším transferem. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
   "@transactionSwapDescLnSendFailed": {
     "description": "Description for failed Lightning send swap"
   },
@@ -1568,7 +1568,7 @@
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
   },
-  "transactionSwapDescLnSendExpired": "Tento swap skončil. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
+  "transactionSwapDescLnSendExpired": "Tento transfer skončil. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
   "@transactionSwapDescLnSendExpired": {
     "description": "Description for expired Lightning send swap"
   },
@@ -1878,7 +1878,7 @@
   "@seedsignerStep5": {
     "description": "SeedSigner troubleshooting tip 1"
   },
-  "transactionSwapDescLnReceiveExpired": "Tento swap skončil. Jakékoliv finanční prostředky budou automaticky vráceny odesílateli.",
+  "transactionSwapDescLnReceiveExpired": "Tento transfer skončil. Jakékoliv finanční prostředky budou automaticky vráceny odesílateli.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
   },
@@ -2367,7 +2367,7 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "transactionLabelSwapStatus": "Stav Swapu",
+  "transactionLabelSwapStatus": "Stav Transferu",
   "@transactionLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2465,7 +2465,7 @@
   "@payBillerName": {
     "description": "Label for biller name field"
   },
-  "sendErrorBitcoinWalletRequired": "Bitcoin peněženka musí být použita pro Bitcoin na blesk swapu",
+  "sendErrorBitcoinWalletRequired": "Bitcoin peněženka musí být použita pro Bitcoin na blesk transferu",
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
@@ -2626,7 +2626,7 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "swapErrorAmountBelowMinimum": "Množství je pod minimálním množstvím swapu: {min} seděly",
+  "swapErrorAmountBelowMinimum": "Množství je pod minimálním množstvím transferu: {min} seděly",
   "@swapErrorAmountBelowMinimum": {
     "description": "Error shown when amount is below minimum",
     "placeholders": {
@@ -2771,7 +2771,7 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "Swap není dosud iniciován.",
+  "coreSwapsLnSendPending": "Transfer není dosud iniciován.",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
@@ -3091,7 +3091,7 @@
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "sendSwapInitiated": "Swap Initiated",
+  "sendSwapInitiated": "Transfer Initiated",
   "@sendSwapInitiated": {
     "description": "Title when chain swap begins"
   },
@@ -3499,7 +3499,7 @@
   "@fundExchangeSepaTitle": {
     "description": "Screen title for SEPA transfer payment details"
   },
-  "autoswapLoadSettingsError": "Přetížené nastavení automatického swapu",
+  "autoswapLoadSettingsError": "Přetížené nastavení automatického transferu",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
   },
@@ -3624,7 +3624,7 @@
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
   },
-  "autoswapWarningCardSubtitle": "Swap bude spuštěn, pokud vaše Instant Payments zůstatek přesahuje 0,02 BTC.",
+  "autoswapWarningCardSubtitle": "Transfer bude spuštěn, pokud vaše Instant Payments zůstatek přesahuje 0,02 BTC.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
@@ -4103,7 +4103,7 @@
   "@bitcoinSettingsMempoolServerTitle": {
     "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
-  "transactionSwapDescLnReceiveDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
+  "transactionSwapDescLnReceiveDefault": "Váš transfer je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
@@ -4183,7 +4183,7 @@
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
   },
-  "paySwapFee": "Swap poplatek",
+  "paySwapFee": "Transfer poplatek",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
@@ -4332,7 +4332,7 @@
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
   },
-  "sendInitiatingSwap": "Zahájení swapu...",
+  "sendInitiatingSwap": "Zahájení transferu...",
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
   },
@@ -4448,7 +4448,7 @@
   "@keystoneStep4": {
     "description": "Keystone troubleshooting header"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap spustí, když vaše zůstatek přesahuje tuto maximální rovnováhu.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer spustí, když vaše zůstatek přesahuje tuto maximální rovnováhu.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -4464,11 +4464,11 @@
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
   },
-  "swapErrorAmountExceedsMaximum": "Množství překračuje maximální částku swapu",
+  "swapErrorAmountExceedsMaximum": "Množství překračuje maximální částku transferu",
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "Celkové poplatky za Swap",
+  "transactionLabelTotalSwapFees": "Celkové poplatky za Transfer",
   "@transactionLabelTotalSwapFees": {
     "description": "Label for total swap fees"
   },
@@ -4540,7 +4540,7 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
     "description": "Button label to retry a failed swap action",
     "placeholders": {
@@ -4549,16 +4549,16 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit transfer.",
   "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
-  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro swapy.",
+  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro transfery.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
-  "autoswapWarningCardTitle": "Autoswap je povoleno",
+  "autoswapWarningCardTitle": "Autotransfer je povoleno",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -4818,7 +4818,7 @@
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
-  "sendSwapDetails": "Detaily Swapu",
+  "sendSwapDetails": "Detaily Transferu",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
   },
@@ -5338,7 +5338,7 @@
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
-  "coreSwapsLnSendRefundable": "Swap je připraven na vrácení peněz.",
+  "coreSwapsLnSendRefundable": "Transfer je připraven na vrácení peněz.",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
@@ -5496,7 +5496,7 @@
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
   },
-  "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento swap pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
+  "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento transfer pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
   },
@@ -5580,7 +5580,7 @@
   "@backupWalletErrorFileSystemPath": {
     "description": "Error when file system path selection fails"
   },
-  "coreSwapsLnSendCanCoop": "Swap bude dokončit momentálně.",
+  "coreSwapsLnSendCanCoop": "Transfer bude dokončit momentálně.",
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
@@ -5707,7 +5707,7 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap je připraven k uplatnění.",
+  "coreSwapsLnReceiveClaimable": "Transfer je připraven k uplatnění.",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
   },
@@ -5821,7 +5821,7 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Swap bude dokončit momentálně.",
+  "coreSwapsLnReceiveCanCoop": "Transfer bude dokončit momentálně.",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
   },
@@ -5882,7 +5882,7 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap je aktivní",
+  "autoswapInfoTitle": "Autotransfer je aktivní",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
@@ -6244,7 +6244,7 @@
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails"
   },
-  "receiveBoltzSwapFee": "Boltz Swap poplatek",
+  "receiveBoltzSwapFee": "Boltz Transfer poplatek",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
@@ -6280,7 +6280,7 @@
   "@backupWalletPhysicalBackupDescription": {
     "description": "Description of physical backup method"
   },
-  "sendSwapInProgressBitcoin": "Swap je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
+  "sendSwapInProgressBitcoin": "Transfer je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
   },
@@ -6413,11 +6413,11 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap byl vrácen.",
+  "coreSwapsLnSendCompletedRefunded": "Transfer byl vrácen.",
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
-  "transactionSwapInfoClaimableSwap": "Výměna bude automaticky dokončena během několika sekund. Pokud ne, můžete zkusit ruční reklamaci kliknutím na tlačítko \"Retry Swap Claim\".",
+  "transactionSwapInfoClaimableSwap": "Výměna bude automaticky dokončena během několika sekund. Pokud ne, můžete zkusit ruční reklamaci kliknutím na tlačítko \"Retry Transfer Claim\".",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
@@ -6809,7 +6809,7 @@
       }
     }
   },
-  "walletDeletionErrorOngoingSwaps": "Nemůžete smazat peněženku s probíhajícími swapy.",
+  "walletDeletionErrorOngoingSwaps": "Nemůžete smazat peněženku s probíhajícími transfery.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -7097,7 +7097,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swapy budou mít čas potvrdit.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfery budou mít čas potvrdit.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7137,7 +7137,7 @@
   "@rbfEstimatedDelivery": {
     "description": "Estimated confirmation time for fastest fee"
   },
-  "sendSwapCancelled": "Swap zrušen",
+  "sendSwapCancelled": "Transfer zrušen",
   "@sendSwapCancelled": {
     "description": "Message when user cancels swap"
   },
@@ -7222,7 +7222,7 @@
   "@sendTypeSwap": {
     "description": "Send type name for Lightning swap transactions"
   },
-  "sendErrorAmountExceedsMaximum": "Množství překračuje maximální částku swapu",
+  "sendErrorAmountExceedsMaximum": "Množství překračuje maximální částku transferu",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
   },
@@ -7286,7 +7286,7 @@
   },
   "transactionHistoryTitle": "Historie transakcí",
   "transactionHistoryHeading": "Historie transakcí",
-  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a transfery) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
   "exportTransactionsStartDate": "Datum od",
   "exportTransactionsEndDate": "Datum do",
   "exportTransactionsAnyDate": "Jakékoli",
@@ -7341,7 +7341,7 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "autoswapBaseBalanceInfoText": "Po autoswapu se vrátí vaše okamžitý zůstatek platební peněženky.",
+  "autoswapBaseBalanceInfoText": "Po autotransferu se vrátí vaše okamžitý zůstatek platební peněženky.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
@@ -7383,7 +7383,7 @@
   "@receiveTitle": {
     "description": "Main screen title for receive feature"
   },
-  "transactionSwapInfoRefundableSwap": "Tento swap se automaticky vrátí během několika sekund. Pokud ne, můžete zkusit manuální vrácení kliknutím na tlačítko \"Retry Swap vracení peněz\".",
+  "transactionSwapInfoRefundableSwap": "Tento transfer se automaticky vrátí během několika sekund. Pokud ne, můžete zkusit manuální vrácení kliknutím na tlačítko \"Retry Transfer vracení peněz\".",
   "@transactionSwapInfoRefundableSwap": {
     "description": "Additional info for refundable swaps"
   },
@@ -8117,7 +8117,7 @@
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
   },
-  "autoswapWarningDescription": "Autoswap zajišťuje, že nemusíte náhodou držet příliš mnoho peněz v Instant Payment Peněženka, která není bezpečná pro dlouhodobé skladování.",
+  "autoswapWarningDescription": "Autotransfer zajišťuje, že nemusíte náhodou držet příliš mnoho peněz v Instant Payment Peněženka, která není bezpečná pro dlouhodobé skladování.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
@@ -8141,7 +8141,7 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "transactionDetailLabelSwapStatus": "Stav Swapu",
+  "transactionDetailLabelSwapStatus": "Stav Transferu",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -8357,7 +8357,7 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap je připraven na vrácení peněz.",
+  "coreSwapsLnReceiveRefundable": "Transfer je připraven na vrácení peněz.",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
@@ -8442,7 +8442,7 @@
   "@torSettingsStatusUnknown": {
     "description": "Status title when Tor status is unknown"
   },
-  "sendConfirmSwap": "Potvrzení Swapu",
+  "sendConfirmSwap": "Potvrzení Transferu",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
   },
@@ -8868,7 +8868,7 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "autoswapWarningSettingsLink": "Vezměte mi na nastavení autoswap",
+  "autoswapWarningSettingsLink": "Vezměte mi na nastavení autotransfer",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
   },
@@ -9295,7 +9295,7 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "Swap zatím nebyl iniciován.",
+  "coreSwapsLnReceivePending": "Transfer zatím nebyl iniciován.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
@@ -9546,7 +9546,7 @@
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
@@ -9566,7 +9566,7 @@
   "@allSeedViewSecurityWarningTitle": {
     "description": "Title for security warning dialog"
   },
-  "sendSwapFeeEstimate": "Odhadované swapové poplatky: {amount}",
+  "sendSwapFeeEstimate": "Odhadované transferové poplatky: {amount}",
   "@sendSwapFeeEstimate": {
     "description": "Estimated cost of swap",
     "placeholders": {
@@ -9738,7 +9738,7 @@
   "@buyViewDetails": {
     "description": "Button to view order details"
   },
-  "paySwapFailed": "Swap selhal",
+  "paySwapFailed": "Transfer selhal",
   "@paySwapFailed": {
     "description": "Error message when swap fails"
   },
@@ -9856,7 +9856,7 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "Swap je dokončen.",
+  "coreSwapsLnReceiveCompleted": "Transfer je dokončen.",
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
   },
@@ -10143,11 +10143,11 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap poplatek",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer poplatek",
   "@transactionLabelBoltzSwapFee": {
     "description": "Label for Boltz swap fee component"
   },
-  "transactionSwapDescLnReceiveFailed": "Byl problém s vaším swapem. Máte-li finanční prostředky vráceny do 24 hodin.",
+  "transactionSwapDescLnReceiveFailed": "Byl problém s vaším transferem. Máte-li finanční prostředky vráceny do 24 hodin.",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
@@ -10448,7 +10448,7 @@
   "@recoverbullErrorFetchKeyFailed": {
     "description": "Error message when server key fetch fails"
   },
-  "sendSwapInProgressInvoice": "Swap je v průběhu. Faktura bude vyplacena během několika sekund.",
+  "sendSwapInProgressInvoice": "Transfer je v průběhu. Faktura bude vyplacena během několika sekund.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
@@ -10476,7 +10476,7 @@
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
   },
-  "paySwapInProgress": "Swap v průběhu...",
+  "paySwapInProgress": "Transfer v průběhu...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
   },
@@ -10484,7 +10484,7 @@
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap je připraven k uplatnění.",
+  "coreSwapsLnSendClaimable": "Transfer je připraven k uplatnění.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
@@ -10751,7 +10751,7 @@
   "@sendSuccessfullySent": {
     "description": "Title for successful send completion"
   },
-  "sendSwapAmount": "Swap částka",
+  "sendSwapAmount": "Transfer částka",
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
@@ -10812,7 +10812,7 @@
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
-  "sendSwapFailed": "Swap selhal. Vaše náhrada bude zpracována krátce.",
+  "sendSwapFailed": "Transfer selhal. Vaše náhrada bude zpracována krátce.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
   },
@@ -11024,7 +11024,7 @@
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
   },
-  "transactionSwapDescLnReceiveClaimable": "Byla potvrzena transakce na řetězci. Nyní prohlašujeme, že finanční prostředky dokončí váš swap.",
+  "transactionSwapDescLnReceiveClaimable": "Byla potvrzena transakce na řetězci. Nyní prohlašujeme, že finanční prostředky dokončí váš transfer.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
@@ -11353,7 +11353,7 @@
   "@exchangeStatisticsTotalAmount": {
     "description": "Label for total amount statistic"
   },
-  "paySwapCompleted": "Swap dokončený",
+  "paySwapCompleted": "Transfer dokončený",
   "@paySwapCompleted": {
     "description": "Status message after successful swap"
   },
@@ -11426,7 +11426,7 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "transactionStatusSwapExpired": "Swap vypršel",
+  "transactionStatusSwapExpired": "Transfer vypršel",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
@@ -11643,7 +11643,7 @@
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
   },
-  "transactionStatusSwapFailed": "Swap selhal.",
+  "transactionStatusSwapFailed": "Transfer selhal.",
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
   },
@@ -11788,7 +11788,7 @@
   "wizardJourneyTip3": "Připojte se k vlastnímu Bitcoin uzlu",
   "wizardJourneyTip4": "Připojte se k vlastnímu Mempool průzkumníku",
   "wizardJourneyTip5": "Převádějte mezi Bitcoinem a Liquid bez KYC",
-  "wizardJourneyTip6": "Přizpůsobte si nastavení autoswapu",
+  "wizardJourneyTip6": "Přizpůsobte si nastavení autotransferu",
   "wizardJourneyTip7": "Přepínejte mezi Bitcoinem (BTC) a Satoshis (sats)",
   "wizardJourneyTip8": "Vytvářejte air-gap transakce pro hardwarovou peněženku",
   "@wizardPageIndicator": {
@@ -11808,7 +11808,7 @@
   "legacyStorageIntroDescription": "Vaše peněženka běží na softwaru, který bude brzy ukončen. Nelze jej aktualizovat bez odinstalování a opětovné instalace aplikace.",
   "legacyStorageStepBackupWallet": "Zazálohujte si peněženku",
   "legacyStorageStepExportLabels": "Exportujte své štítky (pokud je máte)",
-  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny swapy jsou dokončené",
+  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny transfery jsou dokončené",
   "legacyStorageStepUninstall": "Odinstalujte aplikaci ze svého zařízení",
   "legacyStorageStepReinstall": "Stáhněte nejnovější verzi a znovu nainstalujte",
   "legacyStorageStepRestoreBackup": "Obnovte zálohu",
@@ -11823,7 +11823,7 @@
   "legacyStorageAreYouSureParagraphTwo": "Šifrovaná záloha (Encrypted Vault) trvá asi 1 minutu a nepotřebujete žádné speciální nástroje. Pro fyzickou zálohu vám stačí pero a papír.",
   "legacyStorageContinueWithoutBackupButton": "Pokračovat bez zálohy",
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
-  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
+  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení transferu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
   "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
   "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
@@ -12317,26 +12317,26 @@
   "logsExportedMessage": "Záznamy byly úspěšně exportovány",
   "logsExportFailedMessage": "Export záznamů se nezdařil",
   "coreSwapsStatusRefunded": "Vráceno",
-  "swapRestoreTitle": "Obnovení swapu",
-  "swapRestoreActionable": "{count, plural, =0{Žádné swapy k obnovení} =1{Můžete se pokusit obnovit 1 swap. Možná je již v konečném stavu.} other{Můžete se pokusit obnovit {count} swapů. Upozorňujeme, že některé z nich již mohou být v konečném stavu.}}",
-  "swapRestoreNoSwaps": "Nebyly nalezeny žádné swapy k obnovení",
+  "swapRestoreTitle": "Obnovení transferu",
+  "swapRestoreActionable": "{count, plural, =0{Žádné transfery k obnovení} =1{Můžete se pokusit obnovit 1 transfer. Možná je již v konečném stavu.} other{Můžete se pokusit obnovit {count} transferů. Upozorňujeme, že některé z nich již mohou být v konečném stavu.}}",
+  "swapRestoreNoSwaps": "Nebyly nalezeny žádné transfery k obnovení",
   "swapRestoreRecoverableSection": "Obnovitelné",
-  "swapRestoreAllSection": "Všechny swapy",
-  "swapRestoreFailed": "Swapy se nepodařilo obnovit",
+  "swapRestoreAllSection": "Všechny transfery",
+  "swapRestoreFailed": "Transfery se nepodařilo obnovit",
   "swapRestoreKindLightningSend": "Odeslání přes Lightning",
   "swapRestoreKindLightningReceive": "Příjem přes Lightning",
   "swapRestoreKindCrossChain": "Mezi řetězci",
-  "swapRescueTitle": "Záchrana swapu",
+  "swapRescueTitle": "Záchrana transferu",
   "swapRescueTypeLabel": "Typ",
   "swapRescueStatusLabel": "Stav",
   "swapRescueAmountLabel": "Částka",
   "swapRescueRouteLabel": "Trasa",
   "swapRescueCreatedLabel": "Vytvořeno",
-  "swapRescueIdLabel": "ID swapu",
+  "swapRescueIdLabel": "ID transferu",
   "swapRescueWalletLabel": "Obnovit do peněženky",
   "swapRescueWalletHint": "Vyberte peněženku",
   "swapRescueButton": "Obnovit",
-  "swapRescueSuccess": "Swap obnoven — nyní bude pokračovat",
+  "swapRescueSuccess": "Transfer obnoven — nyní bude pokračovat",
   "mempoolServerStatusOnline": "Online",
   "mempoolServerStatusOffline": "Offline",
   "mempoolServerStatusChecking": "Kontrola...",
@@ -12373,12 +12373,12 @@
   "walletLiquidRiskDisclosureLabel": "Tyto prostředky jsou Liquid L-BTC (nikoli BTC). Více informací.",
   "liquidRiskDisclosureSemanticLabel": "Otevřít upozornění na rizika Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Upozornění na rizika Liquid Bitcoin v peněžence Instant Payments",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "fundExchangeScamConsentError": "Nepodařilo se zaregistrovat váš souhlas. Zkuste to prosím znovu.",
   "fundExchangeJurisdictionColombia": "🇨🇴 Kolumbie",
-  "autoswapActiveCardTitle": "Autoswap je aktivní",
+  "autoswapActiveCardTitle": "Autotransfer je aktivní",
   "autoswapWarningExplanationBold": "automaticky",
-  "autoswapInfoConsentMessage": "Autoswap je momentálně povolen, ale nespustí se, dokud s tím nebudete souhlasit. Chcete ho ponechat zapnutý?",
+  "autoswapInfoConsentMessage": "Autotransfer je momentálně povolen, ale nespustí se, dokud s tím nebudete souhlasit. Chcete ho ponechat zapnutý?",
   "nfcNotAvailable": "Toto zařízení nepodporuje NFC",
   "nfcDisabled": "NFC je vypnuté. Zapněte ho v nastavení.",
   "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC",
@@ -12496,7 +12496,7 @@
   "backupWarningTitle": "ZÁLOHUJTE SVOU PENĚŽENKU HNED TEĎ",
   "backupWarningBackupNow": "ANO",
   "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
-  "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
+  "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili transfer.",
   "logsViewerDeleteTitle": "Smazat logy",
   "logsViewerDeleteConfirmation": "Opravdu chcete smazat všechny logy? Tuto akci nelze vrátit zpět.",
   "logsViewerDeleteButton": "Smazat",

@@ -888,7 +888,7 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "Swap মেয়াদোত্তীর্ণ",
+  "coreSwapsLnSendExpired": "Transfer মেয়াদোত্তীর্ণ",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
   },
@@ -2531,7 +2531,7 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "Swap এখনো শুরু হয়নি।",
+  "coreSwapsLnSendPending": "Transfer এখনো শুরু হয়নি।",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
@@ -2999,7 +2999,7 @@
   "@coreScreensAmountLabel": {
     "description": "Label for amount field"
   },
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -3851,7 +3851,7 @@
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap সফলভাবে সম্পন্ন হয়েছে।",
+  "coreSwapsLnSendCompletedSuccess": "Transfer সফলভাবে সম্পন্ন হয়েছে।",
   "@coreSwapsLnSendCompletedSuccess": {
     "description": "Status message for successfully completed Lightning send swap"
   },
@@ -4423,7 +4423,7 @@
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
   },
-  "coreSwapsLnReceiveFailed": "Swap ব্যর্থ হয়েছে।",
+  "coreSwapsLnReceiveFailed": "Transfer ব্যর্থ হয়েছে।",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
   },
@@ -5140,7 +5140,7 @@
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
-  "coreSwapsLnSendRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "coreSwapsLnSendRefundable": "Transfer ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
@@ -5386,7 +5386,7 @@
   "@backupWalletErrorFileSystemPath": {
     "description": "Error when file system path selection fails"
   },
-  "coreSwapsLnSendCanCoop": "Swap এখনই সম্পন্ন হবে।",
+  "coreSwapsLnSendCanCoop": "Transfer এখনই সম্পন্ন হবে।",
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
@@ -5509,7 +5509,7 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
+  "coreSwapsLnReceiveClaimable": "Transfer দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
   },
@@ -5623,7 +5623,7 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Swap এখনই সম্পন্ন হবে।",
+  "coreSwapsLnReceiveCanCoop": "Transfer এখনই সম্পন্ন হবে।",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
   },
@@ -5727,7 +5727,7 @@
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "coreSwapsLnSendFailed": "Swap ব্যর্থ হয়েছে।",
+  "coreSwapsLnSendFailed": "Transfer ব্যর্থ হয়েছে।",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
@@ -6065,7 +6065,7 @@
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails"
   },
-  "receiveBoltzSwapFee": "Boltz Swap ফি",
+  "receiveBoltzSwapFee": "Boltz Transfer ফি",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
@@ -6226,7 +6226,7 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap ফেরত দেওয়া হয়েছে।",
+  "coreSwapsLnSendCompletedRefunded": "Transfer ফেরত দেওয়া হয়েছে।",
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
@@ -6646,7 +6646,7 @@
       }
     }
   },
-  "walletDeletionErrorOngoingSwaps": "চলমান swap-সহ একটি ওয়ালেট মুছতে পারবেন না।",
+  "walletDeletionErrorOngoingSwaps": "চলমান transfer-সহ একটি ওয়ালেট মুছতে পারবেন না।",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -6942,7 +6942,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swap নিশ্চিত হতে সময় লাগবে।",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfer নিশ্চিত হতে সময় লাগবে।",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -8224,7 +8224,7 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "coreSwapsLnReceiveRefundable": "Transfer ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
@@ -8417,7 +8417,7 @@
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
   },
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -9070,7 +9070,7 @@
       }
     }
   },
-  "coreSwapsLnSendFailedRefunding": "Swap শীঘ্রই ফেরত দেওয়া হবে।",
+  "coreSwapsLnSendFailedRefunding": "Transfer শীঘ্রই ফেরত দেওয়া হবে।",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
   },
@@ -9190,7 +9190,7 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "Swap এখনো শুরু হয়নি।",
+  "coreSwapsLnReceivePending": "Transfer এখনো শুরু হয়নি।",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
@@ -9457,7 +9457,7 @@
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
@@ -9486,7 +9486,7 @@
       }
     }
   },
-  "coreSwapsLnReceiveExpired": "Swap মেয়াদোত্তীর্ণ।",
+  "coreSwapsLnReceiveExpired": "Transfer মেয়াদোত্তীর্ণ।",
   "@coreSwapsLnReceiveExpired": {
     "description": "Status message for expired Lightning receive swap"
   },
@@ -9783,7 +9783,7 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "Swap সম্পন্ন হয়েছে।",
+  "coreSwapsLnReceiveCompleted": "Transfer সম্পন্ন হয়েছে।",
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
   },
@@ -10415,7 +10415,7 @@
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
+  "coreSwapsLnSendClaimable": "Transfer দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
@@ -11481,7 +11481,7 @@
   "wizardJourneyTip3": "আপনার নিজস্ব Bitcoin নোডের সাথে সংযোগ করুন",
   "wizardJourneyTip4": "আপনার নিজস্ব Mempool এক্সপ্লোরারের সাথে সংযোগ করুন",
   "wizardJourneyTip5": "KYC ছাড়াই Bitcoin এবং Liquid এর মধ্যে স্থানান্তর করুন",
-  "wizardJourneyTip6": "আপনার autoswap সেটিংস কাস্টমাইজ করুন",
+  "wizardJourneyTip6": "আপনার autotransfer সেটিংস কাস্টমাইজ করুন",
   "wizardJourneyTip7": "Bitcoin (BTC) এবং Satoshis (sats) এর মধ্যে পরিবর্তন করুন",
   "wizardJourneyTip8": "আপনার হার্ডওয়্যার ওয়ালেটের জন্য air-gap লেনদেন তৈরি করুন",
   "@wizardPageIndicator": {
@@ -12513,7 +12513,7 @@
   "walletLiquidRiskDisclosureLabel": "এই তহবিল Liquid L-BTC (BTC নয়)। আরও জানুন।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin ঝুঁকি প্রকাশ খুলুন",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin ঝুঁকি প্রকাশ",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "nfcNotAvailable": "এই ডিভাইসে NFC সমর্থিত নয়",
   "nfcDisabled": "NFC নিষ্ক্রিয় করা আছে। সেটিংসে গিয়ে এটি চালু করুন।",
   "nfcInvalidData": "কোনো সমর্থিত NFC ডেটা পাওয়া যায়নি",

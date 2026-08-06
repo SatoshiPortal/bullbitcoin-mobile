@@ -56,7 +56,7 @@ void main() {
     await tester.pumpWidget(app(const AutoSwapSettingsScreen()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Failed to load auto swap settings'), findsOneWidget);
+    expect(find.text('Failed to load auto transfer settings'), findsOneWidget);
   });
 
   testWidgets('renders a shared failure in the settings bottom sheet', (
@@ -76,6 +76,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Failed to load auto swap settings'), findsOneWidget);
+    expect(find.text('Failed to load auto transfer settings'), findsOneWidget);
   });
 }

@@ -84,7 +84,7 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "coreSwapsLnReceivePending": "Swap abhi shuru nahi hua.",
+  "coreSwapsLnReceivePending": "Transfer abhi shuru nahi hua.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
@@ -92,31 +92,31 @@
   "@coreSwapsLnReceivePaid": {
     "description": "Status message for paid Lightning receive swap"
   },
-  "coreSwapsLnReceiveClaimable": "Swap claim karne ke liye taiyar hai.",
+  "coreSwapsLnReceiveClaimable": "Transfer claim karne ke liye taiyar hai.",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
   },
-  "coreSwapsLnReceiveRefundable": "Swap refund karne ke liye taiyar hai.",
+  "coreSwapsLnReceiveRefundable": "Transfer refund karne ke liye taiyar hai.",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "coreSwapsLnReceiveCanCoop": "Swap thodi der mein poora ho jaayega.",
+  "coreSwapsLnReceiveCanCoop": "Transfer thodi der mein poora ho jaayega.",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
   },
-  "coreSwapsLnReceiveCompleted": "Swap poora ho gaya.",
+  "coreSwapsLnReceiveCompleted": "Transfer poora ho gaya.",
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
   },
-  "coreSwapsLnReceiveExpired": "Swap Khatam Ho Gaya.",
+  "coreSwapsLnReceiveExpired": "Transfer Khatam Ho Gaya.",
   "@coreSwapsLnReceiveExpired": {
     "description": "Status message for expired Lightning receive swap"
   },
-  "coreSwapsLnReceiveFailed": "Swap Fail Ho Gaya.",
+  "coreSwapsLnReceiveFailed": "Transfer Fail Ho Gaya.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
   },
-  "coreSwapsLnSendPending": "Swap abhi shuru nahi hua.",
+  "coreSwapsLnSendPending": "Transfer abhi shuru nahi hua.",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
@@ -124,35 +124,35 @@
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
   },
-  "coreSwapsLnSendClaimable": "Swap claim karne ke liye taiyar hai.",
+  "coreSwapsLnSendClaimable": "Transfer claim karne ke liye taiyar hai.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "coreSwapsLnSendRefundable": "Swap refund karne ke liye taiyar hai.",
+  "coreSwapsLnSendRefundable": "Transfer refund karne ke liye taiyar hai.",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
-  "coreSwapsLnSendCanCoop": "Swap thodi der mein poora ho jaayega.",
+  "coreSwapsLnSendCanCoop": "Transfer thodi der mein poora ho jaayega.",
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap refund ho gaya.",
+  "coreSwapsLnSendCompletedRefunded": "Transfer refund ho gaya.",
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap safaltapurvak poora ho gaya.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer safaltapurvak poora ho gaya.",
   "@coreSwapsLnSendCompletedSuccess": {
     "description": "Status message for successfully completed Lightning send swap"
   },
-  "coreSwapsLnSendExpired": "Swap Khatam Ho Gaya",
+  "coreSwapsLnSendExpired": "Transfer Khatam Ho Gaya",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
   },
-  "coreSwapsLnSendFailedRefunding": "Swap jaldi refund ho jaayega.",
+  "coreSwapsLnSendFailedRefunding": "Transfer jaldi refund ho jaayega.",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
   },
-  "coreSwapsLnSendFailed": "Swap Fail Ho Gaya.",
+  "coreSwapsLnSendFailed": "Transfer Fail Ho Gaya.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
@@ -1136,7 +1136,7 @@
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
-  "walletDeletionErrorOngoingSwaps": "Ongoing swaps wala wallet delete nahi kar sakte.",
+  "walletDeletionErrorOngoingSwaps": "Ongoing transfers wala wallet delete nahi kar sakte.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -1356,7 +1356,7 @@
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swap confirm hone mein samay lagega.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfer confirm hone mein samay lagega.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -1440,7 +1440,7 @@
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -1452,7 +1452,7 @@
   "@receiveNetworkFee": {
     "description": "Label for the network fee in a receive transaction"
   },
-  "receiveBoltzSwapFee": "Boltz Swap Fee",
+  "receiveBoltzSwapFee": "Boltz Transfer Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
@@ -1541,7 +1541,7 @@
   "@receiveServerNetworkFees": {
     "description": "Label for network fees charged by the swap server"
   },
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -2106,7 +2106,7 @@
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
-  "transactionDetailSwapProgress": "Swap ki pragati",
+  "transactionDetailSwapProgress": "Transfer ki pragati",
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
@@ -2119,7 +2119,7 @@
       }
     }
   },
-  "transactionDetailRetrySwap": "Swap dobara karo {action}",
+  "transactionDetailRetrySwap": "Transfer dobara karo {action}",
   "@transactionDetailRetrySwap": {
     "description": "Button label to retry a failed swap action",
     "placeholders": {
@@ -2240,7 +2240,7 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "transactionStatusSwapFailed": "Swap Fail Ho Gaya",
+  "transactionStatusSwapFailed": "Transfer Fail Ho Gaya",
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
   },
@@ -2248,7 +2248,7 @@
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
-  "transactionStatusSwapExpired": "Swap Khatam Ho Gaya",
+  "transactionStatusSwapExpired": "Transfer Khatam Ho Gaya",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
@@ -2304,7 +2304,7 @@
   "@transactionLabelTransferId": {
     "description": "Label for transfer/swap ID"
   },
-  "transactionLabelSwapId": "Swap ID",
+  "transactionLabelSwapId": "Transfer ID",
   "@transactionLabelSwapId": {
     "description": "Label for swap ID"
   },
@@ -2312,7 +2312,7 @@
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionLabelSwapStatus": "Swap ki sthiti",
+  "transactionLabelSwapStatus": "Transfer ki sthiti",
   "@transactionLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2332,7 +2332,7 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "transactionLabelTotalSwapFees": "Kul Swap fees",
+  "transactionLabelTotalSwapFees": "Kul Transfer fees",
   "@transactionLabelTotalSwapFees": {
     "description": "Label for total swap fees"
   },
@@ -2344,7 +2344,7 @@
   "@transactionLabelTransferFee": {
     "description": "Label for transfer fee component"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer Fee",
   "@transactionLabelBoltzSwapFee": {
     "description": "Label for Boltz swap fee component"
   },
@@ -2484,11 +2484,11 @@
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
-  "transactionSwapStatusSwapStatus": "Swap ki Sthiti",
+  "transactionSwapStatusSwapStatus": "Transfer ki Sthiti",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "transactionSwapDescLnReceivePending": "Aapka swap shuru ho gaya hai. Hum Lightning Network par payment aane ka intezaar kar rahe hain.",
+  "transactionSwapDescLnReceivePending": "Aapka transfer shuru ho gaya hai. Hum Lightning Network par payment aane ka intezaar kar rahe hain.",
   "@transactionSwapDescLnReceivePending": {
     "description": "Description for pending Lightning receive swap"
   },
@@ -2496,27 +2496,27 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveClaimable": "On-chain transaction confirm ho gayi. Ab hum aapka swap poora karne ke liye paise claim kar rahe hain.",
+  "transactionSwapDescLnReceiveClaimable": "On-chain transaction confirm ho gayi. Ab hum aapka transfer poora karne ke liye paise claim kar rahe hain.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveCompleted": "Aapka swap kamyabi se poora ho gaya! Paise ab aapke wallet mein milne chahiye.",
+  "transactionSwapDescLnReceiveCompleted": "Aapka transfer kamyabi se poora ho gaya! Paise ab aapke wallet mein milne chahiye.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveFailed": "Aapke swap mein kuch problem aayi. Agar 24 ghante mein paise wapas nahi aaye toh support se sampark karo.",
+  "transactionSwapDescLnReceiveFailed": "Aapke transfer mein kuch problem aayi. Agar 24 ghante mein paise wapas nahi aaye toh support se sampark karo.",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveExpired": "Yeh swap khatam ho gaya. Bheje gaye koi bhi paise bhejne wale ko apne aap wapas ho jayenge.",
+  "transactionSwapDescLnReceiveExpired": "Yeh transfer khatam ho gaya. Bheje gaye koi bhi paise bhejne wale ko apne aap wapas ho jayenge.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveDefault": "Aapka swap chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
+  "transactionSwapDescLnReceiveDefault": "Aapka transfer chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
-  "transactionSwapDescLnSendPending": "Aapka swap shuru ho gaya hai. Hum aapke paise lock karne ke liye on-chain transaction broadcast kar rahe hain.",
+  "transactionSwapDescLnSendPending": "Aapka transfer shuru ho gaya hai. Hum aapke paise lock karne ke liye on-chain transaction broadcast kar rahe hain.",
   "@transactionSwapDescLnSendPending": {
     "description": "Description for pending Lightning send swap"
   },
@@ -2524,19 +2524,19 @@
   "@transactionSwapDescLnSendPaid": {
     "description": "Description for paid Lightning send swap"
   },
-  "transactionSwapDescLnSendCompleted": "Lightning payment kamyabi se bheja gaya! Aapka swap ab poora ho gaya.",
+  "transactionSwapDescLnSendCompleted": "Lightning payment kamyabi se bheja gaya! Aapka transfer ab poora ho gaya.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
   },
-  "transactionSwapDescLnSendFailed": "Aapke swap mein kuch problem aayi. Aapke paise apne aap wallet mein wapas aa jayenge.",
+  "transactionSwapDescLnSendFailed": "Aapke transfer mein kuch problem aayi. Aapke paise apne aap wallet mein wapas aa jayenge.",
   "@transactionSwapDescLnSendFailed": {
     "description": "Description for failed Lightning send swap"
   },
-  "transactionSwapDescLnSendExpired": "Yeh swap khatam ho gaya. Aapke paise apne aap wallet mein wapas aa jayenge.",
+  "transactionSwapDescLnSendExpired": "Yeh transfer khatam ho gaya. Aapke paise apne aap wallet mein wapas aa jayenge.",
   "@transactionSwapDescLnSendExpired": {
     "description": "Description for expired Lightning send swap"
   },
-  "transactionSwapDescLnSendDefault": "Aapka swap chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
+  "transactionSwapDescLnSendDefault": "Aapka transfer chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
   },
@@ -2584,7 +2584,7 @@
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
-  "transactionSwapInfoClaimableSwap": "Swap kuch seconds mein apne aap poora ho jayega. Agar nahi hua toh \"Retry Swap Claim\" button dabake manually claim karne ki koshish karo.",
+  "transactionSwapInfoClaimableSwap": "Transfer kuch seconds mein apne aap poora ho jayega. Agar nahi hua toh \"Retry Transfer Claim\" button dabake manually claim karne ki koshish karo.",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
@@ -2592,7 +2592,7 @@
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
-  "transactionSwapInfoRefundableSwap": "Yeh swap kuch seconds mein apne aap wapas ho jayega. Agar nahi hua toh \"Retry Swap Refund\" button dabake manually refund karne ki koshish karo.",
+  "transactionSwapInfoRefundableSwap": "Yeh transfer kuch seconds mein apne aap wapas ho jayega. Agar nahi hua toh \"Retry Transfer Refund\" button dabake manually refund karne ki koshish karo.",
   "@transactionSwapInfoRefundableSwap": {
     "description": "Additional info for refundable swaps"
   },
@@ -2620,7 +2620,7 @@
   "@transactionListYesterday": {
     "description": "Date label for yesterday's transactions"
   },
-  "transactionSwapDoNotUninstall": "Swap poora hone tak app uninstall mat karo.",
+  "transactionSwapDoNotUninstall": "Transfer poora hone tak app uninstall mat karo.",
   "@transactionSwapDoNotUninstall": {
     "description": "Warning message to not uninstall app during swap"
   },
@@ -2769,7 +2769,7 @@
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
-  "transactionDetailLabelSwapId": "Swap ID",
+  "transactionDetailLabelSwapId": "Transfer ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
@@ -2777,7 +2777,7 @@
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionDetailLabelSwapStatus": "Swap ki sthiti",
+  "transactionDetailLabelSwapStatus": "Transfer ki sthiti",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2797,7 +2797,7 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "transactionDetailLabelSwapFees": "Swap fees",
+  "transactionDetailLabelSwapFees": "Transfer fees",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
   },
@@ -4260,11 +4260,11 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "autoswapBaseBalanceInfoText": "Autoswap ke baad aapka instant payment wallet balance is target balance pe wapas aa jayega.",
+  "autoswapBaseBalanceInfoText": "Autotransfer ke baad aapka instant payment wallet balance is target balance pe wapas aa jayega.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "autoswapTriggerAtBalanceInfoText": "Jab aapka balance is maximum balance se upar jaye, autoswap trigger hoga.",
+  "autoswapTriggerAtBalanceInfoText": "Jab aapka balance is maximum balance se upar jaye, autotransfer trigger hoga.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -4316,7 +4316,7 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapWarningCardTitle": "Autoswap recommend kiya jaata hai",
+  "autoswapWarningCardTitle": "Autotransfer recommend kiya jaata hai",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -4324,19 +4324,19 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "autoswapActiveCardTitle": "Autoswap active hai",
+  "autoswapActiveCardTitle": "Autotransfer active hai",
   "@autoswapActiveCardTitle": {
     "description": "Title text shown when autoswap is enabled and active"
   },
-  "autoswapWarningDescription": "Autoswap ensure karta hai ki Instant Payment Wallet mein zyaada paisa na rahe, jo long-term storage ke liye secure nahi hai.",
+  "autoswapWarningDescription": "Autotransfer ensure karta hai ki Instant Payment Wallet mein zyaada paisa na rahe, jo long-term storage ke liye secure nahi hai.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
-  "autoswapWarningTitle": "Autoswap in settings ke saath enable hai",
+  "autoswapWarningTitle": "Autotransfer in settings ke saath enable hai",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningExplanation": "Jab aapka balance maximum balance se upar jaye, automatically swap trigger hoga. Target balance Instant Payments wallet mein rahega aur baaki amount Secure Bitcoin Wallet mein swap ho jayega.",
+  "autoswapWarningExplanation": "Jab aapka balance maximum balance se upar jaye, automatically transfer trigger hoga. Target balance Instant Payments wallet mein rahega aur baaki amount Secure Bitcoin Wallet mein transfer ho jayega.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
@@ -4348,7 +4348,7 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "autoswapWarningSettingsLink": "Autoswap settings pe le jao",
+  "autoswapWarningSettingsLink": "Autotransfer settings pe le jao",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
   },
@@ -4356,7 +4356,7 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "autoswapInfoTitle": "Autoswap recommend kiya jaata hai",
+  "autoswapInfoTitle": "Autotransfer recommend kiya jaata hai",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
@@ -4368,19 +4368,19 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to disable autoswap"
   },
-  "autoswapInfoRemindLater": "Autoswap Settings Configure Karo",
+  "autoswapInfoRemindLater": "Autotransfer Settings Configure Karo",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to navigate to autoswap settings"
   },
-  "autoswapInfoConsentMessage": "Autoswap abhi enable hai lekin aapki consent ke bina trigger nahi hoga. Kya aap ise on rakhna chahte ho?",
+  "autoswapInfoConsentMessage": "Autotransfer abhi enable hai lekin aapki consent ke bina trigger nahi hoga. Kya aap ise on rakhna chahte ho?",
   "@autoswapInfoConsentMessage": {
     "description": "Consent message explaining autoswap status"
   },
-  "autoswapLoadSettingsError": "Auto swap settings load karne mein dikkat aayi",
+  "autoswapLoadSettingsError": "Auto transfer settings load karne mein dikkat aayi",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
   },
-  "autoswapUpdateSettingsError": "Auto swap settings update karne mein dikkat aayi",
+  "autoswapUpdateSettingsError": "Auto transfer settings update karne mein dikkat aayi",
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
@@ -5199,7 +5199,7 @@
   "@payLiquidFee": {
     "description": "Label for Liquid Network transaction fee"
   },
-  "paySwapFee": "Swap Fee",
+  "paySwapFee": "Transfer Fee",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
@@ -5242,19 +5242,19 @@
       }
     }
   },
-  "payRequiresSwap": "Is payment ke liye swap zaroori hai",
+  "payRequiresSwap": "Is payment ke liye transfer zaroori hai",
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "paySwapInProgress": "Swap chal raha hai...",
+  "paySwapInProgress": "Transfer chal raha hai...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
   },
-  "paySwapCompleted": "Swap poora hua",
+  "paySwapCompleted": "Transfer poora hua",
   "@paySwapCompleted": {
     "description": "Status message after successful swap"
   },
-  "paySwapFailed": "Swap fail ho gaya",
+  "paySwapFailed": "Transfer fail ho gaya",
   "@paySwapFailed": {
     "description": "Error message when swap fails"
   },
@@ -5564,23 +5564,23 @@
   "@sendUnfreezeCoin": {
     "description": "Action to allow spending frozen UTXO"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "sendInitiatingSwap": "Swap shuru ho raha hai...",
+  "sendInitiatingSwap": "Transfer shuru ho raha hai...",
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
   },
-  "sendSwapDetails": "Swap ki Jaankari",
+  "sendSwapDetails": "Transfer ki Jaankari",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
   },
-  "sendSwapAmount": "Swap Raashi",
+  "sendSwapAmount": "Transfer Raashi",
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
-  "sendSwapFeeEstimate": "Anumaan swap fee: {amount}",
+  "sendSwapFeeEstimate": "Anumaan transfer fee: {amount}",
   "@sendSwapFeeEstimate": {
     "description": "Estimated cost of swap",
     "placeholders": {
@@ -5598,15 +5598,15 @@
       }
     }
   },
-  "sendConfirmSwap": "Swap Confirm Karo",
+  "sendConfirmSwap": "Transfer Confirm Karo",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
   },
-  "sendSwapCancelled": "Swap radd ho gaya",
+  "sendSwapCancelled": "Transfer radd ho gaya",
   "@sendSwapCancelled": {
     "description": "Message when user cancels swap"
   },
-  "sendSwapTimeout": "Swap timeout ho gaya",
+  "sendSwapTimeout": "Transfer timeout ho gaya",
   "@sendSwapTimeout": {
     "description": "Error when swap expires"
   },
@@ -5716,7 +5716,7 @@
       }
     }
   },
-  "sendSwapId": "Swap ID",
+  "sendSwapId": "Transfer ID",
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
@@ -5768,23 +5768,23 @@
   "@sendCoordinatingPayjoinTransaction": {
     "description": "Message shown while coordinating Payjoin send transaction"
   },
-  "sendSwapInProgressInvoice": "Swap chal raha hai. Invoice kuch seconds mein pay ho jayega.",
+  "sendSwapInProgressInvoice": "Transfer chal raha hai. Invoice kuch seconds mein pay ho jayega.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "sendSwapInProgressBitcoin": "Swap chal raha hai. Bitcoin transactions confirm hone mein waqt lagta hai. Aap home par wapas ja ke intezaar kar sakte ho.",
+  "sendSwapInProgressBitcoin": "Transfer chal raha hai. Bitcoin transactions confirm hone mein waqt lagta hai. Aap home par wapas ja ke intezaar kar sakte ho.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
   },
-  "sendSwapRefundInProgress": "Swap Refund Chal Raha Hai",
+  "sendSwapRefundInProgress": "Transfer Refund Chal Raha Hai",
   "@sendSwapRefundInProgress": {
     "description": "Title when swap failed and refund is processing"
   },
-  "sendSwapFailed": "Swap fail ho gaya. Aapka refund jald process hoga.",
+  "sendSwapFailed": "Transfer fail ho gaya. Aapka refund jald process hoga.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
   },
-  "sendSwapRefundCompleted": "Swap Refund Poora Hua",
+  "sendSwapRefundCompleted": "Transfer Refund Poora Hua",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -5804,7 +5804,7 @@
   "@sendPaymentWillTakeTime": {
     "description": "Title warning of delayed payment"
   },
-  "sendSwapInitiated": "Swap Shuru Ho Gaya",
+  "sendSwapInitiated": "Transfer Shuru Ho Gaya",
   "@sendSwapInitiated": {
     "description": "Title when chain swap begins"
   },
@@ -5853,7 +5853,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "sendErrorSwapCreationFailed": "Swap banana fail ho gaya.",
+  "sendErrorSwapCreationFailed": "Transfer banana fail ho gaya.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -5878,11 +5878,11 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "sendErrorInsufficientBalanceForSwap": "Liquid se swap pay karne ke liye balance kam hai aur Bitcoin se pay karne ki swap limits mein nahi hai.",
+  "sendErrorInsufficientBalanceForSwap": "Liquid se transfer pay karne ke liye balance kam hai aur Bitcoin se pay karne ki transfer limits mein nahi hai.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
   },
-  "sendErrorAmountBelowSwapLimits": "Raashi swap limits se kam hai",
+  "sendErrorAmountBelowSwapLimits": "Raashi transfer limits se kam hai",
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
@@ -5890,11 +5890,11 @@
   "@sendErrorAmountBelowSwapLimitsBitcoin": {
     "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
-  "sendErrorAmountAboveSwapLimits": "Raashi swap limits se zyada hai",
+  "sendErrorAmountAboveSwapLimits": "Raashi transfer limits se zyada hai",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
   },
-  "sendErrorAmountBelowMinimum": "Raashi minimum swap limit se kam hai: {minLimit} sats",
+  "sendErrorAmountBelowMinimum": "Raashi minimum transfer limit se kam hai: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
     "placeholders": {
@@ -5903,7 +5903,7 @@
       }
     }
   },
-  "sendErrorAmountAboveMaximum": "Raashi maximum swap limit se zyada hai: {maxLimit} sats",
+  "sendErrorAmountAboveMaximum": "Raashi maximum transfer limit se zyada hai: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
     "description": "Error with specific maximum swap amount",
     "placeholders": {
@@ -5912,7 +5912,7 @@
       }
     }
   },
-  "sendErrorSwapFeesNotLoaded": "Swap fees load nahi huyi",
+  "sendErrorSwapFeesNotLoaded": "Transfer fees load nahi huyi",
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
@@ -5924,19 +5924,19 @@
   "@sendErrorBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "sendErrorBalanceTooLowForMinimum": "Minimum swap raashi ke liye balance bahut kam hai",
+  "sendErrorBalanceTooLowForMinimum": "Minimum transfer raashi ke liye balance bahut kam hai",
   "@sendErrorBalanceTooLowForMinimum": {
     "description": "Error when balance is below minimum required for swap"
   },
-  "sendErrorAmountExceedsMaximum": "Raashi maximum swap raashi se zyada hai",
+  "sendErrorAmountExceedsMaximum": "Raashi maximum transfer raashi se zyada hai",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
   },
-  "sendErrorLiquidWalletRequired": "Liquid se Lightning swap ke liye Liquid wallet zaroori hai",
+  "sendErrorLiquidWalletRequired": "Liquid se Lightning transfer ke liye Liquid wallet zaroori hai",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "sendErrorBitcoinWalletRequired": "Bitcoin se Lightning swap ke liye Bitcoin wallet zaroori hai",
+  "sendErrorBitcoinWalletRequired": "Bitcoin se Lightning transfer ke liye Bitcoin wallet zaroori hai",
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
@@ -5948,7 +5948,7 @@
   "@sendTypeSend": {
     "description": "Send type name for Bitcoin/Liquid transactions"
   },
-  "sendTypeSwap": "Swap",
+  "sendTypeSwap": "Transfer",
   "@sendTypeSwap": {
     "description": "Send type name for Lightning swap transactions"
   },
@@ -8413,7 +8413,7 @@
   },
   "transactionHistoryTitle": "Lenden Itihaas",
   "transactionHistoryHeading": "Lenden Itihaas",
-  "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
+  "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur transfers) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
   "exportTransactionsStartDate": "Shuru ki taarikh",
   "exportTransactionsEndDate": "Antim taarikh",
   "exportTransactionsAnyDate": "Koi bhi",
@@ -10954,11 +10954,11 @@
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
   },
-  "systemLabelSwaps": "Swaps",
+  "systemLabelSwaps": "Transfers",
   "@systemLabelSwaps": {
     "description": "System label for swap transactions"
   },
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "@systemLabelAutoSwap": {
     "description": "System label for automatic swap transactions"
   },
@@ -11872,15 +11872,15 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "swapErrorBalanceTooLow": "Minimum swap amount ke liye balance bahut kam hai",
+  "swapErrorBalanceTooLow": "Minimum transfer amount ke liye balance bahut kam hai",
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "swapErrorAmountExceedsMaximum": "Amount maximum swap amount se zyada hai",
+  "swapErrorAmountExceedsMaximum": "Amount maximum transfer amount se zyada hai",
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "swapErrorAmountBelowMinimum": "Amount minimum swap amount se kam hai: {min} sats",
+  "swapErrorAmountBelowMinimum": "Amount minimum transfer amount se kam hai: {min} sats",
   "@swapErrorAmountBelowMinimum": {
     "description": "Error shown when amount is below minimum",
     "placeholders": {
@@ -11889,7 +11889,7 @@
       }
     }
   },
-  "swapErrorAmountAboveMaximum": "Amount maximum swap amount se zyada hai: {max} sats",
+  "swapErrorAmountAboveMaximum": "Amount maximum transfer amount se zyada hai: {max} sats",
   "@swapErrorAmountAboveMaximum": {
     "description": "Error shown when amount is above maximum",
     "placeholders": {
@@ -12055,7 +12055,7 @@
   "@legacyStorageStepExportLabels": {
     "description": "Step 2 in the legacy storage warning checklist"
   },
-  "legacyStorageStepEnsureSwapsCompleted": "Ensure karein ki sabhi swaps poore ho chuke hain",
+  "legacyStorageStepEnsureSwapsCompleted": "Ensure karein ki sabhi transfers poore ho chuke hain",
   "@legacyStorageStepEnsureSwapsCompleted": {
     "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
   },
@@ -12259,7 +12259,7 @@
   "@wizardJourneyTip5": {
     "description": "Tip 5 on the wizard journey page"
   },
-  "wizardJourneyTip6": "Apni autoswap settings customize karein",
+  "wizardJourneyTip6": "Apni autotransfer settings customize karein",
   "@wizardJourneyTip6": {
     "description": "Tip 6 on the wizard journey page"
   },
@@ -12271,7 +12271,7 @@
   "@wizardJourneyTip8": {
     "description": "Tip 8 on the wizard journey page"
   },
-  "legacyStorageHasBackupImportantBody": "Kripya is process ko mat chhodein jab tak ki aapko wallet ka urgent use karne ki bahut zaroorat na ho ya aap kisi swap ke poora hone ka intezaar na kar rahe hon.",
+  "legacyStorageHasBackupImportantBody": "Kripya is process ko mat chhodein jab tak ki aapko wallet ka urgent use karne ki bahut zaroorat na ho ya aap kisi transfer ke poora hone ka intezaar na kar rahe hon.",
   "@legacyStorageHasBackupImportantBody": {
     "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
   },
@@ -12650,40 +12650,40 @@
   "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
   "logsExportFailedMessage": "Logs export karne mein vifal",
   "coreSwapsStatusRefunded": "Refund Hua",
-  "swapRestoreTitle": "Swap Restore",
-  "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap 1 swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
-  "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
+  "swapRestoreTitle": "Transfer Restore",
+  "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi transfer nahi} =1{Aap 1 transfer recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} transfers recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
+  "swapRestoreNoSwaps": "Restore karne ke liye koi transfer nahi mila",
   "swapRestoreRecoverableSection": "Recoverable",
-  "swapRestoreAllSection": "Sabhi swaps",
-  "swapRestoreFailed": "Swaps restore nahi ho sake",
+  "swapRestoreAllSection": "Sabhi transfers",
+  "swapRestoreFailed": "Transfers restore nahi ho sake",
   "swapRestoreKindLightningSend": "Lightning Send",
   "swapRestoreKindLightningReceive": "Lightning Receive",
   "swapRestoreKindCrossChain": "Cross Chain",
-  "swapRescueTitle": "Swap Rescue",
+  "swapRescueTitle": "Transfer Rescue",
   "swapRescueTypeLabel": "Type",
   "swapRescueStatusLabel": "Status",
   "swapRescueAmountLabel": "Amount",
   "swapRescueRouteLabel": "Route",
   "swapRescueCreatedLabel": "Banaya Gaya",
-  "swapRescueIdLabel": "Swap ID",
+  "swapRescueIdLabel": "Transfer ID",
   "swapRescueWalletLabel": "Wallet mein restore karo",
   "swapRescueWalletHint": "Ek wallet chuniye",
   "swapRescueButton": "Restore Karo",
-  "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
+  "swapRescueSuccess": "Transfer restore ho gaya — ab ye resume hoga",
   "receivePayjoinNoUtxos": "Pehle funds receive karo ise enable karne ke liye.\nPayjoin use karne ke liye UTXOs zaroori hain.",
   "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
   "transactionLabelNetworkFees": "Network fees",
   "walletLiquidRiskDisclosureLabel": "Ye funds Liquid L-BTC hain (BTC nahi). Aur jaano.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk disclosure kholo",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin Risk Jaankari",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "nfcNotAvailable": "NFC is device par supported nahi hai",
   "nfcDisabled": "NFC disabled hai. Settings mein ise enable karo.",
   "nfcInvalidData": "Koi supported NFC data nahi mila",
   "nfcConnectionLost": "NFC connection toot gaya. Apna device NFC tag ke paas rakho aur phir try karo.",
   "nfcWriteFailed": "NFC transfer fail ho gaya. Kripya phir try karo.",
   "nfcError": "NFC error: {error}",
-  "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko transfers ke liye use nahi kiya ja sakta.",
   "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
   "psbtFlowSignViaNfc": "NFC Se Sign Karo",
   "psbtFlowSignViaNfcSheetTitle": "PSBT NFC se bhejne ke liye apna {deviceName} tap karo",
@@ -12778,7 +12778,7 @@
   "noteVisibleToSenderNotice": "Ye note aapke QR ya invoice ke praaptakarta ko dikhega.",
   "viewerAddressTab": "Address",
   "viewerPaymentUriTab": "Payment URI",
-  "transactionSwapOpenWithin24h": "Apna swap poora karne ke liye 24 ghante ke andar app kholo.",
+  "transactionSwapOpenWithin24h": "Apna transfer poora karne ke liye 24 ghante ke andar app kholo.",
   "recipientsScreenTitle": "Recipient Select Karo",
   "recipientsScreenSubtitle": "Aap kise pay kar rahe ho?",
   "recipientsTabNew": "Naya recipient",

@@ -59,11 +59,11 @@
   "@coreSwapsStatusRefunded": {
     "description": "Display name for refunded swap status (payment failed, funds returned)"
   },
-  "swapRestoreTitle": "Swap restore",
+  "swapRestoreTitle": "Transfer restore",
   "@swapRestoreTitle": {
     "description": "Title for the swap restore settings page"
   },
-  "swapRestoreActionable": "{count, plural, =0{No swaps to recover} =1{You can attempt recovering 1 swap. It may already be in a terminal status.} other{You can attempt recovering {count} swaps. Note, some of them may already be in a terminal status.}}",
+  "swapRestoreActionable": "{count, plural, =0{No transfers to recover} =1{You can attempt recovering 1 transfer. It may already be in a terminal status.} other{You can attempt recovering {count} transfers. Note, some of them may already be in a terminal status.}}",
   "@swapRestoreActionable": {
     "description": "Header count of restorable swaps with locked, unresolved funds",
     "placeholders": {
@@ -72,7 +72,7 @@
       }
     }
   },
-  "swapRestoreNoSwaps": "No swaps found to restore",
+  "swapRestoreNoSwaps": "No transfers found to restore",
   "@swapRestoreNoSwaps": {
     "description": "Empty state when the restore endpoint returns no swaps"
   },
@@ -80,11 +80,11 @@
   "@swapRestoreRecoverableSection": {
     "description": "Section header for swaps that can be recovered (tappable)"
   },
-  "swapRestoreAllSection": "All swaps",
+  "swapRestoreAllSection": "All transfers",
   "@swapRestoreAllSection": {
     "description": "Section header for the remaining (non-recoverable) swaps"
   },
-  "swapRestoreFailed": "Couldn't restore swaps",
+  "swapRestoreFailed": "Couldn't restore transfers",
   "@swapRestoreFailed": {
     "description": "Error message when restoring swaps fails"
   },
@@ -100,7 +100,7 @@
   "@swapRestoreKindCrossChain": {
     "description": "Label for a chain swap in the restore list"
   },
-  "swapRescueTitle": "Rescue swap",
+  "swapRescueTitle": "Rescue transfer",
   "@swapRescueTitle": {
     "description": "Title of the swap rescue details page"
   },
@@ -124,7 +124,7 @@
   "@swapRescueCreatedLabel": {
     "description": "Detail row label for when the swap was created"
   },
-  "swapRescueIdLabel": "Swap ID",
+  "swapRescueIdLabel": "Transfer ID",
   "@swapRescueIdLabel": {
     "description": "Detail row label for the swap id"
   },
@@ -140,7 +140,7 @@
   "@swapRescueButton": {
     "description": "Button that re-imports the swap and resumes it"
   },
-  "swapRescueSuccess": "Swap restored — it will now resume",
+  "swapRescueSuccess": "Transfer restored — it will now resume",
   "@swapRescueSuccess": {
     "description": "Confirmation shown after a swap is rescued"
   },
@@ -164,7 +164,7 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "coreSwapsLnReceivePending": "Swap is not yet initialized.",
+  "coreSwapsLnReceivePending": "Transfer is not yet initialized.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
@@ -172,31 +172,31 @@
   "@coreSwapsLnReceivePaid": {
     "description": "Status message for paid Lightning receive swap"
   },
-  "coreSwapsLnReceiveClaimable": "Swap is ready to be claimed.",
+  "coreSwapsLnReceiveClaimable": "Transfer is ready to be claimed.",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
   },
-  "coreSwapsLnReceiveRefundable": "Swap is ready to be refunded.",
+  "coreSwapsLnReceiveRefundable": "Transfer is ready to be refunded.",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "coreSwapsLnReceiveCanCoop": "Swap will complete momentarily.",
+  "coreSwapsLnReceiveCanCoop": "Transfer will complete momentarily.",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
   },
-  "coreSwapsLnReceiveCompleted": "Swap is completed.",
+  "coreSwapsLnReceiveCompleted": "Transfer is completed.",
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
   },
-  "coreSwapsLnReceiveExpired": "Swap Expired.",
+  "coreSwapsLnReceiveExpired": "Transfer Expired.",
   "@coreSwapsLnReceiveExpired": {
     "description": "Status message for expired Lightning receive swap"
   },
-  "coreSwapsLnReceiveFailed": "Swap Failed.",
+  "coreSwapsLnReceiveFailed": "Transfer Failed.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
   },
-  "coreSwapsLnSendPending": "Swap is not yet initialized.",
+  "coreSwapsLnSendPending": "Transfer is not yet initialized.",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
@@ -204,35 +204,35 @@
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
   },
-  "coreSwapsLnSendClaimable": "Swap is ready to be claimed.",
+  "coreSwapsLnSendClaimable": "Transfer is ready to be claimed.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "coreSwapsLnSendRefundable": "Swap is ready to be refunded.",
+  "coreSwapsLnSendRefundable": "Transfer is ready to be refunded.",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
-  "coreSwapsLnSendCanCoop": "Swap will complete momentarily.",
+  "coreSwapsLnSendCanCoop": "Transfer will complete momentarily.",
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap has been refunded.",
+  "coreSwapsLnSendCompletedRefunded": "Transfer has been refunded.",
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap is completed successfully.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer is completed successfully.",
   "@coreSwapsLnSendCompletedSuccess": {
     "description": "Status message for successfully completed Lightning send swap"
   },
-  "coreSwapsLnSendExpired": "Swap Expired",
+  "coreSwapsLnSendExpired": "Transfer Expired",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
   },
-  "coreSwapsLnSendFailedRefunding": "Swap will be refunded shortly.",
+  "coreSwapsLnSendFailedRefunding": "Transfer will be refunded shortly.",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
   },
-  "coreSwapsLnSendFailed": "Swap Failed.",
+  "coreSwapsLnSendFailed": "Transfer Failed.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
@@ -1257,7 +1257,7 @@
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
-  "walletDeletionErrorOngoingSwaps": "You cannot delete a wallet with ongoing swaps.",
+  "walletDeletionErrorOngoingSwaps": "You cannot delete a wallet with ongoing transfers.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -1477,7 +1477,7 @@
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swaps will take time to confirm.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfers will take time to confirm.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -1561,7 +1561,7 @@
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -1573,7 +1573,7 @@
   "@receiveNetworkFee": {
     "description": "Label for the network fee in a receive transaction"
   },
-  "receiveBoltzSwapFee": "Boltz Swap Fee",
+  "receiveBoltzSwapFee": "Boltz Transfer Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
@@ -1662,7 +1662,7 @@
   "@receiveServerNetworkFees": {
     "description": "Label for network fees charged by the swap server"
   },
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -2728,7 +2728,7 @@
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
-  "transactionDetailSwapProgress": "Swap Progress",
+  "transactionDetailSwapProgress": "Transfer Progress",
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
@@ -2741,7 +2741,7 @@
       }
     }
   },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
     "description": "Button label to retry a failed swap action",
     "placeholders": {
@@ -2862,7 +2862,7 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "transactionStatusSwapFailed": "Swap Failed",
+  "transactionStatusSwapFailed": "Transfer Failed",
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
   },
@@ -2870,7 +2870,7 @@
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
-  "transactionStatusSwapExpired": "Swap Expired",
+  "transactionStatusSwapExpired": "Transfer Expired",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
@@ -2926,7 +2926,7 @@
   "@transactionLabelTransferId": {
     "description": "Label for transfer/swap ID"
   },
-  "transactionLabelSwapId": "Swap ID",
+  "transactionLabelSwapId": "Transfer ID",
   "@transactionLabelSwapId": {
     "description": "Label for swap ID"
   },
@@ -2934,7 +2934,7 @@
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionLabelSwapStatus": "Swap status",
+  "transactionLabelSwapStatus": "Transfer status",
   "@transactionLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2954,7 +2954,7 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "transactionLabelTotalSwapFees": "Total Swap fees",
+  "transactionLabelTotalSwapFees": "Total Transfer fees",
   "@transactionLabelTotalSwapFees": {
     "description": "Label for total swap fees"
   },
@@ -2966,7 +2966,7 @@
   "@transactionLabelTransferFee": {
     "description": "Label for transfer fee component"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer Fee",
   "@transactionLabelBoltzSwapFee": {
     "description": "Label for Boltz swap fee component"
   },
@@ -3106,11 +3106,11 @@
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
-  "transactionSwapStatusSwapStatus": "Swap Status",
+  "transactionSwapStatusSwapStatus": "Transfer Status",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "transactionSwapDescLnReceivePending": "Your swap has been initiated. We are waiting for a payment to be received on the Lightning Network.",
+  "transactionSwapDescLnReceivePending": "Your transfer has been initiated. We are waiting for a payment to be received on the Lightning Network.",
   "@transactionSwapDescLnReceivePending": {
     "description": "Description for pending Lightning receive swap"
   },
@@ -3118,27 +3118,27 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveClaimable": "The on-chain transaction has been confirmed. We are now claiming the funds to complete your swap.",
+  "transactionSwapDescLnReceiveClaimable": "The on-chain transaction has been confirmed. We are now claiming the funds to complete your transfer.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveCompleted": "Your swap has been completed successfully! The funds should now be available in your wallet.",
+  "transactionSwapDescLnReceiveCompleted": "Your transfer has been completed successfully! The funds should now be available in your wallet.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveFailed": "There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.",
+  "transactionSwapDescLnReceiveFailed": "There was an issue with your transfer. Please contact support if funds have not been returned within 24 hours.",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveExpired": "This swap has expired. Any funds sent will be automatically returned to the sender.",
+  "transactionSwapDescLnReceiveExpired": "This transfer has expired. Any funds sent will be automatically returned to the sender.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveDefault": "Your swap is in progress. This process is automated and may take some time to complete.",
+  "transactionSwapDescLnReceiveDefault": "Your transfer is in progress. This process is automated and may take some time to complete.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
-  "transactionSwapDescLnSendPending": "Your swap has been initiated. We are broadcasting the on-chain transaction to lock your funds.",
+  "transactionSwapDescLnSendPending": "Your transfer has been initiated. We are broadcasting the on-chain transaction to lock your funds.",
   "@transactionSwapDescLnSendPending": {
     "description": "Description for pending Lightning send swap"
   },
@@ -3146,19 +3146,19 @@
   "@transactionSwapDescLnSendPaid": {
     "description": "Description for paid Lightning send swap"
   },
-  "transactionSwapDescLnSendCompleted": "The Lightning payment has been sent successfully! Your swap is now complete.",
+  "transactionSwapDescLnSendCompleted": "The Lightning payment has been sent successfully! Your transfer is now complete.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
   },
-  "transactionSwapDescLnSendFailed": "There was an issue with your swap. Your funds will be returned to your wallet automatically.",
+  "transactionSwapDescLnSendFailed": "There was an issue with your transfer. Your funds will be returned to your wallet automatically.",
   "@transactionSwapDescLnSendFailed": {
     "description": "Description for failed Lightning send swap"
   },
-  "transactionSwapDescLnSendExpired": "This swap has expired. Your funds will be automatically returned to your wallet.",
+  "transactionSwapDescLnSendExpired": "This transfer has expired. Your funds will be automatically returned to your wallet.",
   "@transactionSwapDescLnSendExpired": {
     "description": "Description for expired Lightning send swap"
   },
-  "transactionSwapDescLnSendDefault": "Your swap is in progress. This process is automated and may take some time to complete.",
+  "transactionSwapDescLnSendDefault": "Your transfer is in progress. This process is automated and may take some time to complete.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
   },
@@ -3206,7 +3206,7 @@
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
-  "transactionSwapInfoClaimableSwap": "The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Swap Claim\" button.",
+  "transactionSwapInfoClaimableSwap": "The transfer will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Transfer Claim\" button.",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
@@ -3214,7 +3214,7 @@
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
-  "transactionSwapInfoRefundableSwap": "This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Swap Refund\" button.",
+  "transactionSwapInfoRefundableSwap": "This transfer will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Transfer Refund\" button.",
   "@transactionSwapInfoRefundableSwap": {
     "description": "Additional info for refundable swaps"
   },
@@ -3246,7 +3246,7 @@
   "@transactionListYesterday": {
     "description": "Date label for yesterday's transactions"
   },
-  "transactionSwapDoNotUninstall": "Do not uninstall the app until the swap completes.",
+  "transactionSwapDoNotUninstall": "Do not uninstall the app until the transfer completes.",
   "@transactionSwapDoNotUninstall": {
     "description": "Warning message to not uninstall app during swap"
   },
@@ -3410,7 +3410,7 @@
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
-  "transactionDetailLabelSwapId": "Swap ID",
+  "transactionDetailLabelSwapId": "Transfer ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
@@ -3418,7 +3418,7 @@
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionDetailLabelSwapStatus": "Swap status",
+  "transactionDetailLabelSwapStatus": "Transfer status",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -3438,7 +3438,7 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "transactionDetailLabelSwapFees": "Swap fees",
+  "transactionDetailLabelSwapFees": "Transfer fees",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
   },
@@ -3486,7 +3486,7 @@
   "@liquidRiskDisclosureTitle": {
     "description": "Title for the Liquid Bitcoin risk disclosure bottom sheet"
   },
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "@liquidRiskDisclosureBody": {
     "description": "Long-form disclosure explaining Liquid Bitcoin and Instant Payments wallet risks. Preserve lightweight formatting markers: ## section headings, ### subsection headings, > callouts, - bullets, and **bold bullet labels**."
   },
@@ -5163,15 +5163,15 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "swapErrorBalanceTooLow": "Balance too low for minimum swap amount",
+  "swapErrorBalanceTooLow": "Balance too low for minimum transfer amount",
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "swapErrorAmountExceedsMaximum": "Amount exceeds maximum swap amount",
+  "swapErrorAmountExceedsMaximum": "Amount exceeds maximum transfer amount",
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "swapErrorAmountBelowMinimum": "Amount is below minimum swap amount: {min} sats",
+  "swapErrorAmountBelowMinimum": "Amount is below minimum transfer amount: {min} sats",
   "@swapErrorAmountBelowMinimum": {
     "description": "Error shown when amount is below minimum",
     "placeholders": {
@@ -5180,7 +5180,7 @@
       }
     }
   },
-  "swapErrorAmountAboveMaximum": "Amount exceeds maximum swap amount: {max} sats",
+  "swapErrorAmountAboveMaximum": "Amount exceeds maximum transfer amount: {max} sats",
   "@swapErrorAmountAboveMaximum": {
     "description": "Error shown when amount is above maximum",
     "placeholders": {
@@ -5406,11 +5406,11 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this target balance after an autoswap.",
+  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this target balance after an autotransfer.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this maximum balance.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer will trigger when your balance goes above this maximum balance.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -5462,7 +5462,7 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapWarningCardTitle": "Autoswap is recommended",
+  "autoswapWarningCardTitle": "Autotransfer is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -5470,19 +5470,19 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "autoswapActiveCardTitle": "Autoswap is active",
+  "autoswapActiveCardTitle": "Autotransfer is active",
   "@autoswapActiveCardTitle": {
     "description": "Title text shown when autoswap is enabled and active"
   },
-  "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
+  "autoswapWarningDescription": "Autotransfer ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
-  "autoswapWarningTitle": "Autoswap is enabled with the following settings",
+  "autoswapWarningTitle": "Autotransfer is enabled with the following settings",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered automatically. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
+  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a transfer will be triggered automatically. The target balance will be kept in your Instant Payments wallet and the remaining amount will be transferped into your Secure Bitcoin Wallet.",
   "autoswapWarningExplanationBold": "automatically",
   "@autoswapWarningExplanationBold": {
     "description": "The word 'automatically' to be displayed in bold"
@@ -5494,7 +5494,7 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "autoswapWarningSettingsLink": "Take me to autoswap settings",
+  "autoswapWarningSettingsLink": "Take me to autotransfer settings",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
   },
@@ -5502,7 +5502,7 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "autoswapInfoTitle": "Autoswap is recommended",
+  "autoswapInfoTitle": "Autotransfer is recommended",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
@@ -5514,19 +5514,19 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to disable autoswap"
   },
-  "autoswapInfoRemindLater": "Configure Autoswap Settings",
+  "autoswapInfoRemindLater": "Configure Autotransfer Settings",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to navigate to autoswap settings"
   },
-  "autoswapInfoConsentMessage": "Autoswap is currently enabled but will not trigger until you consent. Would you like to keep it on?",
+  "autoswapInfoConsentMessage": "Autotransfer is currently enabled but will not trigger until you consent. Would you like to keep it on?",
   "@autoswapInfoConsentMessage": {
     "description": "Consent message explaining autoswap status"
   },
-  "autoswapLoadSettingsError": "Failed to load auto swap settings",
+  "autoswapLoadSettingsError": "Failed to load auto transfer settings",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
   },
-  "autoswapUpdateSettingsError": "Failed to update auto swap settings",
+  "autoswapUpdateSettingsError": "Failed to update auto transfer settings",
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
@@ -6378,7 +6378,7 @@
   "@payLiquidFee": {
     "description": "Label for Liquid Network transaction fee"
   },
-  "paySwapFee": "Swap Fee",
+  "paySwapFee": "Transfer Fee",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
@@ -6421,19 +6421,19 @@
       }
     }
   },
-  "payRequiresSwap": "This payment requires a swap",
+  "payRequiresSwap": "This payment requires a transfer",
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "paySwapInProgress": "Swap in progress...",
+  "paySwapInProgress": "Transfer in progress...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
   },
-  "paySwapCompleted": "Swap completed",
+  "paySwapCompleted": "Transfer completed",
   "@paySwapCompleted": {
     "description": "Status message after successful swap"
   },
-  "paySwapFailed": "Swap failed",
+  "paySwapFailed": "Transfer failed",
   "@paySwapFailed": {
     "description": "Error message when swap fails"
   },
@@ -6743,23 +6743,23 @@
   "@sendUnfreezeCoin": {
     "description": "Action to allow spending frozen UTXO"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "sendInitiatingSwap": "Initiating swap...",
+  "sendInitiatingSwap": "Initiating transfer...",
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
   },
-  "sendSwapDetails": "Swap Details",
+  "sendSwapDetails": "Transfer Details",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
   },
-  "sendSwapAmount": "Swap Amount",
+  "sendSwapAmount": "Transfer Amount",
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
-  "sendSwapFeeEstimate": "Estimated swap fee: {amount}",
+  "sendSwapFeeEstimate": "Estimated transfer fee: {amount}",
   "@sendSwapFeeEstimate": {
     "description": "Estimated cost of swap",
     "placeholders": {
@@ -6777,15 +6777,15 @@
       }
     }
   },
-  "sendConfirmSwap": "Confirm Swap",
+  "sendConfirmSwap": "Confirm Transfer",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
   },
-  "sendSwapCancelled": "Swap cancelled",
+  "sendSwapCancelled": "Transfer cancelled",
   "@sendSwapCancelled": {
     "description": "Message when user cancels swap"
   },
-  "sendSwapTimeout": "Swap timed out",
+  "sendSwapTimeout": "Transfer timed out",
   "@sendSwapTimeout": {
     "description": "Error when swap expires"
   },
@@ -6895,7 +6895,7 @@
       }
     }
   },
-  "sendSwapId": "Swap ID",
+  "sendSwapId": "Transfer ID",
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
@@ -6947,23 +6947,23 @@
   "@sendCoordinatingPayjoinTransaction": {
     "description": "Message shown while coordinating Payjoin send transaction"
   },
-  "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
+  "sendSwapInProgressInvoice": "The transfer is in progress. The invoice will be paid in a few seconds.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "sendSwapInProgressBitcoin": "The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "sendSwapInProgressBitcoin": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
   },
-  "sendSwapRefundInProgress": "Swap Refund In Progress",
+  "sendSwapRefundInProgress": "Transfer Refund In Progress",
   "@sendSwapRefundInProgress": {
     "description": "Title when swap failed and refund is processing"
   },
-  "sendSwapFailed": "The swap failed. Your refund will be processed shortly.",
+  "sendSwapFailed": "The transfer failed. Your refund will be processed shortly.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
   },
-  "sendSwapRefundCompleted": "Swap Refund Completed",
+  "sendSwapRefundCompleted": "Transfer Refund Completed",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -6983,7 +6983,7 @@
   "@sendPaymentWillTakeTime": {
     "description": "Title warning of delayed payment"
   },
-  "sendSwapInitiated": "Swap Initiated",
+  "sendSwapInitiated": "Transfer Initiated",
   "@sendSwapInitiated": {
     "description": "Title when chain swap begins"
   },
@@ -7032,11 +7032,11 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "sendErrorSwapCreationFailed": "Failed to create swap.",
+  "sendErrorSwapCreationFailed": "Failed to create transfer.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
-  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for swaps.",
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for transfers.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
@@ -7068,11 +7068,11 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "sendErrorInsufficientBalanceForSwap": "Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.",
+  "sendErrorInsufficientBalanceForSwap": "Not enough balance to pay this transfer via Liquid and not within transfer limits to pay via Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
   },
-  "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
+  "sendErrorAmountBelowSwapLimits": "Amount is below transfer limits",
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
@@ -7080,7 +7080,7 @@
   "@sendErrorAmountBelowSwapLimitsBitcoin": {
     "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
-  "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
+  "sendErrorAmountAboveSwapLimits": "Amount is above transfer limits",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
   },
@@ -7145,7 +7145,7 @@
       }
     }
   },
-  "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
+  "sendErrorAmountBelowMinimum": "Amount below minimum transfer limit: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
     "placeholders": {
@@ -7154,7 +7154,7 @@
       }
     }
   },
-  "sendErrorAmountAboveMaximum": "Amount above maximum swap limit: {maxLimit} sats",
+  "sendErrorAmountAboveMaximum": "Amount above maximum transfer limit: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
     "description": "Error with specific maximum swap amount",
     "placeholders": {
@@ -7163,7 +7163,7 @@
       }
     }
   },
-  "sendErrorSwapFeesNotLoaded": "Swap fees not loaded",
+  "sendErrorSwapFeesNotLoaded": "Transfer fees not loaded",
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
@@ -7175,19 +7175,19 @@
   "@sendErrorBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "sendErrorBalanceTooLowForMinimum": "Balance too low for minimum swap amount",
+  "sendErrorBalanceTooLowForMinimum": "Balance too low for minimum transfer amount",
   "@sendErrorBalanceTooLowForMinimum": {
     "description": "Error when balance is below minimum required for swap"
   },
-  "sendErrorAmountExceedsMaximum": "Amount exceeds maximum swap amount",
+  "sendErrorAmountExceedsMaximum": "Amount exceeds maximum transfer amount",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
   },
-  "sendErrorLiquidWalletRequired": "Liquid wallet must be used for a liquid to lightning swap",
+  "sendErrorLiquidWalletRequired": "Liquid wallet must be used for a liquid to lightning transfer",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "sendErrorBitcoinWalletRequired": "Bitcoin wallet must be used for a bitcoin to lightning swap",
+  "sendErrorBitcoinWalletRequired": "Bitcoin wallet must be used for a bitcoin to lightning transfer",
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
@@ -7199,7 +7199,7 @@
   "@sendTypeSend": {
     "description": "Send type name for Bitcoin/Liquid transactions"
   },
-  "sendTypeSwap": "Swap",
+  "sendTypeSwap": "Transfer",
   "@sendTypeSwap": {
     "description": "Send type name for Lightning swap transactions"
   },
@@ -9783,7 +9783,7 @@
   "@transactionHistoryHeading": {
     "description": "Main heading on the transaction history page"
   },
-  "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
+  "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and transfers) as a CSV file. Optionally filter by date range.",
   "@exportTransactionsDescription": {
     "description": "Description of the CSV export functionality"
   },
@@ -12607,11 +12607,11 @@
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
   },
-  "systemLabelSwaps": "Swaps",
+  "systemLabelSwaps": "Transfers",
   "@systemLabelSwaps": {
     "description": "System label for swap transactions"
   },
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "@systemLabelAutoSwap": {
     "description": "System label for automatic swap transactions"
   },
@@ -12812,7 +12812,7 @@
   "@legacyStorageStepExportLabels": {
     "description": "Step 2 in the legacy storage warning checklist"
   },
-  "legacyStorageStepEnsureSwapsCompleted": "Ensure all swaps are completed",
+  "legacyStorageStepEnsureSwapsCompleted": "Ensure all transfers are completed",
   "@legacyStorageStepEnsureSwapsCompleted": {
     "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
   },
@@ -13016,7 +13016,7 @@
   "@wizardJourneyTip5": {
     "description": "Tip 5 on the wizard journey page"
   },
-  "wizardJourneyTip6": "Customize your autoswap settings",
+  "wizardJourneyTip6": "Customize your autotransfer settings",
   "@wizardJourneyTip6": {
     "description": "Tip 6 on the wizard journey page"
   },
@@ -13028,7 +13028,7 @@
   "@wizardJourneyTip8": {
     "description": "Tip 8 on the wizard journey page"
   },
-  "legacyStorageHasBackupImportantBody": "Please do not skip this process unless you absolutely need to use the wallet urgently or waiting for a swap to complete.",
+  "legacyStorageHasBackupImportantBody": "Please do not skip this process unless you absolutely need to use the wallet urgently or waiting for a transfer to complete.",
   "@legacyStorageHasBackupImportantBody": {
     "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
   },
@@ -13040,7 +13040,7 @@
   "@walletSetupErrorTryAgain": {
     "description": "Generic error shown when default-wallet creation or recovery fails."
   },
-  "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
+  "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your transfer.",
   "@transactionSwapOpenWithin24h": {
     "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
   },
@@ -14313,11 +14313,11 @@
   "@announcementPayjoinDescription": {
     "description": "Description of the home announcement inviting the user to enable payjoin."
   },
-  "announcementAutoswapTitle": "Autoswap is active",
+  "announcementAutoswapTitle": "Autotransfer is active",
   "@announcementAutoswapTitle": {
     "description": "Title of the home announcement informing the user that autoswap is currently enabled."
   },
-  "announcementAutoswapDescription": "Your Liquid is automatically swapped to Bitcoin.",
+  "announcementAutoswapDescription": "Your Liquid is automatically transferped to Bitcoin.",
   "@announcementAutoswapDescription": {
     "description": "Description of the home announcement informing the user that autoswap is enabled."
   },

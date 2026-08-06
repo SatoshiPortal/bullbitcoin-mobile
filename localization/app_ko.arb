@@ -329,7 +329,7 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionSwapStatusSwapStatus": "Swap 상태",
+  "transactionSwapStatusSwapStatus": "Transfer 상태",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
@@ -533,7 +533,7 @@
   "@importQrDeviceSpecterName": {
     "description": "Name of Specter device"
   },
-  "transactionDetailLabelSwapFees": "Swap 수수료",
+  "transactionDetailLabelSwapFees": "Transfer 수수료",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
   },
@@ -588,7 +588,7 @@
   "@payServiceFee": {
     "description": "Label for service provider fee"
   },
-  "transactionStatusSwapExpired": "Swap 만료",
+  "transactionStatusSwapExpired": "Transfer 만료",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
@@ -897,7 +897,7 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "Swap 만료",
+  "coreSwapsLnSendExpired": "Transfer 만료",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
   },
@@ -1101,7 +1101,7 @@
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
   },
-  "autoswapWarningTitle": "Autoswap은 다음과 같은 설정으로 활성화됩니다",
+  "autoswapWarningTitle": "Autotransfer은 다음과 같은 설정으로 활성화됩니다",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
@@ -2141,7 +2141,7 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "transactionLabelSwapStatus": "Swap 상태",
+  "transactionLabelSwapStatus": "Transfer 상태",
   "@transactionLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2396,7 +2396,7 @@
   "@sendSignWithBitBox": {
     "description": "Button to sign transaction with BitBox hardware wallet"
   },
-  "sendSwapRefundInProgress": "Swap에서 환불 진행",
+  "sendSwapRefundInProgress": "Transfer에서 환불 진행",
   "@sendSwapRefundInProgress": {
     "description": "Title when swap failed and refund is processing"
   },
@@ -2910,7 +2910,7 @@
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "sendSwapInitiated": "Swap 시작",
+  "sendSwapInitiated": "Transfer 시작",
   "@sendSwapInitiated": {
     "description": "Title when chain swap begins"
   },
@@ -3941,7 +3941,7 @@
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap이 완료되었습니다.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer이 완료되었습니다.",
   "@coreSwapsLnSendCompletedSuccess": {
     "description": "Status message for successfully completed Lightning send swap"
   },
@@ -4067,7 +4067,7 @@
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
   },
-  "paySwapFee": "Swap 수수료",
+  "paySwapFee": "Transfer 수수료",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
@@ -4348,7 +4348,7 @@
   "@keystoneStep4": {
     "description": "Keystone troubleshooting header"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap은 잔액이 최대 잔액 위에 올라갈 때 트리거됩니다.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer은 잔액이 최대 잔액 위에 올라갈 때 트리거됩니다.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -4462,7 +4462,7 @@
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
-  "autoswapWarningCardTitle": "Autoswap 사용 가능",
+  "autoswapWarningCardTitle": "Autotransfer 사용 가능",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -4742,7 +4742,7 @@
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
-  "sendSwapDetails": "Swap 세부사항",
+  "sendSwapDetails": "Transfer 세부사항",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
   },
@@ -5294,7 +5294,7 @@
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
-  "coreSwapsLnSendRefundable": "Swap은 환불이 가능합니다.",
+  "coreSwapsLnSendRefundable": "Transfer은 환불이 가능합니다.",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
@@ -5671,7 +5671,7 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap은 청구 될 준비가되어 있습니다.",
+  "coreSwapsLnReceiveClaimable": "Transfer은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
   },
@@ -5854,7 +5854,7 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap은 활성",
+  "autoswapInfoTitle": "Autotransfer은 활성",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
@@ -6413,7 +6413,7 @@
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
-  "transactionSwapInfoClaimableSwap": "스왑은 몇 초 안에 자동으로 완료됩니다. 그렇지 않으면 \"Retry Swap Claim\"버튼을 클릭하여 수동 청구를 시도 할 수 있습니다.",
+  "transactionSwapInfoClaimableSwap": "스왑은 몇 초 안에 자동으로 완료됩니다. 그렇지 않으면 \"Retry Transfer Claim\"버튼을 클릭하여 수동 청구를 시도 할 수 있습니다.",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
@@ -7126,7 +7126,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swaps는 확인 시간을 취할 것입니다.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfers는 확인 시간을 취할 것입니다.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7386,7 +7386,7 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "autoswapBaseBalanceInfoText": "즉시 지불 지갑 잔액은 autoswap 후에 이 표적 균형에 돌려보낼 것입니다.",
+  "autoswapBaseBalanceInfoText": "즉시 지불 지갑 잔액은 autotransfer 후에 이 표적 균형에 돌려보낼 것입니다.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
@@ -7428,7 +7428,7 @@
   "@receiveTitle": {
     "description": "Main screen title for receive feature"
   },
-  "transactionSwapInfoRefundableSwap": "이 스왑은 몇 초 안에 자동으로 환불됩니다. \"Retry Swap Refund\"버튼을 클릭하여 수동 환불을 시도 할 수 있습니다.",
+  "transactionSwapInfoRefundableSwap": "이 스왑은 몇 초 안에 자동으로 환불됩니다. \"Retry Transfer Refund\"버튼을 클릭하여 수동 환불을 시도 할 수 있습니다.",
   "@transactionSwapInfoRefundableSwap": {
     "description": "Additional info for refundable swaps"
   },
@@ -8202,7 +8202,7 @@
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
   },
-  "autoswapWarningDescription": "Autoswap은 실수로 장기 저장을 위해 안전하지 않은 Instant Payment Wallet에서 너무 많은 돈을 유지하지 않습니다.",
+  "autoswapWarningDescription": "Autotransfer은 실수로 장기 저장을 위해 안전하지 않은 Instant Payment Wallet에서 너무 많은 돈을 유지하지 않습니다.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
@@ -8239,7 +8239,7 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "transactionDetailLabelSwapStatus": "Swap 상태",
+  "transactionDetailLabelSwapStatus": "Transfer 상태",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -8455,7 +8455,7 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap은 환불이 가능합니다.",
+  "coreSwapsLnReceiveRefundable": "Transfer은 환불이 가능합니다.",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
@@ -8532,7 +8532,7 @@
       }
     }
   },
-  "sendSwapRefundCompleted": "Swap 환불 완료",
+  "sendSwapRefundCompleted": "Transfer 환불 완료",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -8540,7 +8540,7 @@
   "@torSettingsStatusUnknown": {
     "description": "Status title when Tor status is unknown"
   },
-  "sendConfirmSwap": "Swap을 확인",
+  "sendConfirmSwap": "Transfer을 확인",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
   },
@@ -8990,7 +8990,7 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "autoswapWarningSettingsLink": "Autoswap 설정 가져 오기",
+  "autoswapWarningSettingsLink": "Autotransfer 설정 가져 오기",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
   },
@@ -10382,7 +10382,7 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "transactionDetailSwapProgress": "Swap 진행",
+  "transactionDetailSwapProgress": "Transfer 진행",
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
@@ -10698,7 +10698,7 @@
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap은 청구 될 준비가되어 있습니다.",
+  "coreSwapsLnSendClaimable": "Transfer은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
@@ -11587,7 +11587,7 @@
   "@exchangeStatisticsTotalAmount": {
     "description": "Label for total amount statistic"
   },
-  "paySwapCompleted": "Swap 완료",
+  "paySwapCompleted": "Transfer 완료",
   "@paySwapCompleted": {
     "description": "Status message after successful swap"
   },
@@ -11789,7 +11789,7 @@
   "wizardJourneyTip3": "자체 Bitcoin 노드에 연결",
   "wizardJourneyTip4": "자체 Mempool 익스플로러에 연결",
   "wizardJourneyTip5": "KYC 없이 Bitcoin과 Liquid 간 전송",
-  "wizardJourneyTip6": "autoswap 설정 맞춤화",
+  "wizardJourneyTip6": "autotransfer 설정 맞춤화",
   "wizardJourneyTip7": "Bitcoin (BTC)와 Satoshis (sats) 간 전환",
   "wizardJourneyTip8": "하드웨어 지갑을 위한 air-gap 거래 생성",
   "@wizardPageIndicator": {
@@ -12266,7 +12266,7 @@
   "walletLiquidRiskDisclosureLabel": "이 자금은 Liquid L-BTC입니다(BTC 아님). 자세히 알아보기.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
   "liquidRiskDisclosureTitle": "Instant Payment Wallet Liquid Bitcoin 위험 고지",
-  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on transfer providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party transfer provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party transfer provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese transfers are fully non-custodial and trustless, meaning that there is no way for the transfer provider to steal your funds. Bull Bitcoin is not involved in making those transfer transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-transfer and how does it work?\n\nAuto-transfer, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-transfer is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-transfer:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-transfer is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the transfer provider may also charge transfer fees. At the moment, the transfer provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "noteVisibleToSenderNotice": "이 메모는 QR 코드 또는 인보이스를 받는 상대방에게 표시됩니다.",
   "viewerAddressTab": "주소",
   "viewerPaymentUriTab": "결제 URI",
@@ -12284,9 +12284,9 @@
   "fundExchangeCopRedirectMessage": "결제를 진행하기 위해 외부 페이지로 이동합니다.",
   "fundExchangeCopOpenPaymentLink": "결제 링크 열기",
   "fundExchangeCopFailedToOpenLink": "결제 링크를 열 수 없습니다. 다시 시도하거나 고객 지원팀에 문의해 주세요.",
-  "autoswapActiveCardTitle": "Autoswap 활성화됨",
+  "autoswapActiveCardTitle": "Autotransfer 활성화됨",
   "autoswapWarningExplanationBold": "자동으로",
-  "autoswapInfoConsentMessage": "Autoswap이 현재 활성화되어 있지만 동의하기 전까지는 실행되지 않습니다. 계속 켜두시겠습니까?",
+  "autoswapInfoConsentMessage": "Autotransfer이 현재 활성화되어 있지만 동의하기 전까지는 실행되지 않습니다. 계속 켜두시겠습니까?",
   "nfcNotAvailable": "이 기기는 NFC를 지원하지 않습니다",
   "nfcDisabled": "NFC가 비활성화되어 있습니다. 설정에서 활성화해 주세요.",
   "nfcInvalidData": "지원되는 NFC 데이터를 찾을 수 없습니다",
