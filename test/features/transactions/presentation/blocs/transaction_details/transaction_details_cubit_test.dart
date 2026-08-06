@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -13,11 +12,14 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,7 +57,11 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 class _MockBroadcastOriginalTransactionUsecase extends Mock
     implements BroadcastOriginalTransactionUsecase {}
 
-class _MockProcessSwapUsecase extends Mock implements ProcessSwapUsecase {}
+class _MockGetTransactionOrderSwapUsecase extends Mock
+    implements GetTransactionOrderSwapUsecase {}
+
+class _MockWatchTransactionOrderSwapUsecase extends Mock
+    implements WatchTransactionOrderSwapUsecase {}
 
 Wallet _testWallet({String origin = 'w1'}) => Wallet(
   origin: origin,
@@ -70,20 +76,27 @@ Wallet _testWallet({String origin = 'w1'}) => Wallet(
   balanceSat: BigInt.zero,
 );
 
-WalletTransaction _walletTx({required String txId, String walletId = 'w1'}) =>
-    WalletTransaction(
-      walletId: walletId,
-      network: Network.bitcoinMainnet,
-      direction: WalletTransactionDirection.outgoing,
-      status: WalletTransactionStatus.pending,
-      txId: txId,
-      amountSat: 50000,
-      feeSat: 500,
-      vsize: 150,
-      inputs: const [],
-      outputs: const [],
-      isRbf: false,
-    );
+WalletTransaction _walletTx({
+  required String txId,
+  String walletId = 'w1',
+  Network network = Network.bitcoinMainnet,
+  WalletTransactionDirection direction = WalletTransactionDirection.outgoing,
+  int amountSat = 50000,
+  List<Label> labels = const [],
+}) => WalletTransaction(
+  walletId: walletId,
+  network: network,
+  direction: direction,
+  status: WalletTransactionStatus.pending,
+  txId: txId,
+  amountSat: amountSat,
+  feeSat: 500,
+  vsize: 150,
+  inputs: const [],
+  outputs: const [],
+  labels: labels,
+  isRbf: false,
+);
 
 PayjoinSenderSession _sender({
   required PayjoinStatus status,
@@ -111,11 +124,14 @@ void main() {
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByTxIdUsecase watchWalletTransactionByTxId;
   late _MockBroadcastOriginalTransactionUsecase broadcastOriginalTransaction;
+  late _MockGetTransactionOrderSwapUsecase getTransactionOrderSwap;
+  late _MockWatchTransactionOrderSwapUsecase watchTransactionOrderSwap;
 
   TransactionDetailsCubit buildCubit() => TransactionDetailsCubit(
     getWalletUsecase: getWallet,
     getTransactionsByTxIdUsecase: getTransactionsByTxId,
     getWalletTransactionUsecase: getWalletTransaction,
+    getTransactionOrderSwapUsecase: getTransactionOrderSwap,
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxId,
     getSwapUsecase: _MockGetSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
@@ -123,9 +139,9 @@ void main() {
     getOrderUsecase: _MockGetOrderUsecase(),
     watchSwapUsecase: _MockWatchSwapUsecase(),
     watchPayjoinUsecase: watchPayjoin,
+    watchTransactionOrderSwapUsecase: watchTransactionOrderSwap,
     labelsFacade: _MockLabelsFacade(),
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
-    processSwapUsecase: _MockProcessSwapUsecase(),
   );
 
   setUpAll(() {
@@ -141,6 +157,8 @@ void main() {
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransactionByTxId = _MockWatchWalletTransactionByTxIdUsecase();
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
+    getTransactionOrderSwap = _MockGetTransactionOrderSwapUsecase();
+    watchTransactionOrderSwap = _MockWatchTransactionOrderSwapUsecase();
 
     when(
       () => getWallet.execute(any(), sync: any(named: 'sync')),
@@ -174,7 +192,52 @@ void main() {
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((_) => const Stream.empty());
+    when(
+      () => watchTransactionOrderSwap.execute(any()),
+    ).thenAnswer((_) => const Stream.empty());
   });
+
+  test(
+    'loads the destination wallet transaction for a Lightning receive',
+    () async {
+      final orderSwap = _receiveOrderSwap();
+      final walletTransaction = _walletTx(
+        txId: 'liquid-payout-txid',
+        walletId: 'liquid-wallet',
+        network: Network.liquidMainnet,
+        direction: WalletTransactionDirection.incoming,
+        amountSat: 19800,
+        labels: [
+          Label.tx(id: 1, transactionId: 'liquid-payout-txid', label: 'coffee'),
+        ],
+      );
+      when(
+        () => getTransactionOrderSwap.execute(orderSwap.localId),
+      ).thenAnswer((_) async => orderSwap);
+      when(
+        () => getTransactionsByTxId.execute('liquid-payout-txid'),
+      ).thenAnswer(
+        (_) async => [
+          Transaction(
+            walletTransaction: walletTransaction,
+            orderSwap: orderSwap,
+          ),
+        ],
+      );
+      when(
+        () => getWallet.execute('liquid-wallet', sync: false),
+      ).thenAnswer((_) async => _testWallet(origin: 'liquid-wallet'));
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByOrderSwapLocalId(orderSwap.localId);
+
+      expect(cubit.state.transaction?.walletTransaction, walletTransaction);
+      expect(cubit.state.transaction?.txId, 'liquid-payout-txid');
+      expect(cubit.state.transaction?.labels?.single.label, 'coffee');
+      expect(cubit.state.getAmountReceived(), 19800);
+    },
+  );
 
   group('TransactionDetailsCubit.broadcastPayjoinOriginalTx guard', () {
     test(
@@ -608,4 +671,42 @@ void main() {
       },
     );
   });
+}
+
+OrderSwapRecord _receiveOrderSwap() {
+  final createdAt = DateTime.utc(2026, 8, 10);
+  return OrderSwapRecord(
+    localId: 'receive-local',
+    purpose: OrderSwapPurpose.receiveLightning,
+    environment: OrderSwapEnvironment.mainnet,
+    inNetwork: OrderSwapNetwork.lightning,
+    outNetwork: OrderSwapNetwork.liquid,
+    isInAmountFixed: true,
+    requestedAmountSat: BigInt.from(20000),
+    destinationWalletId: 'liquid-wallet',
+    destination: 'liquid-address',
+    fallback: 'atomic-refund',
+    order: OrderSwap(
+      orderId: 'receive-order',
+      orderNumber: 1,
+      inNetwork: OrderSwapNetwork.lightning,
+      outNetwork: OrderSwapNetwork.liquid,
+      payinAmountSat: BigInt.from(20000),
+      payoutAmountSat: BigInt.from(19800),
+      payinCurrency: 'BTCLN',
+      payoutCurrency: 'LBTC',
+      payinMethod: 'Lightning',
+      payoutMethod: 'Liquid',
+      orderType: 'Swap',
+      orderStatus: 'Completed',
+      payinStatus: 'Completed',
+      payoutStatus: 'Completed',
+      messageCode: 'COMPLETED',
+      liquidTransactionId: 'liquid-payout-txid',
+      createdAt: createdAt,
+      confirmationDeadline: createdAt.add(const Duration(minutes: 5)),
+    ),
+    createdAt: createdAt,
+    localStatus: OrderSwapLocalStatus.completed,
+  );
 }

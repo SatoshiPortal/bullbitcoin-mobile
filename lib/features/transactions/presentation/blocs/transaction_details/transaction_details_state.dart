@@ -74,6 +74,11 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     if (isRecoveredSwap && swapClaimedAmountSat != null) {
       return swapClaimedAmountSat!;
     }
+    final orderSwap = transaction?.orderSwap;
+    if (orderSwap != null && transaction?.isIncoming == true) {
+      return orderSwap.order?.payoutAmountSat.toInt() ??
+          orderSwap.requestedAmountSat.toInt();
+    }
     final amount = walletTransaction?.amountSat ?? 0;
     return amount;
   }
