@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "장치 mismatch 검출.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC 주소",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -466,10 +462,6 @@
   "recoverbullGoBackEdit": "<< 돌아가고 편집",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "지갑 가이드",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "확인... ({count}/{required})",
   "@receiveConfirming": {
@@ -2065,10 +2057,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "BitBox 장치에 대한 활성 연결이 없습니다.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "계정 생성",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2084,10 +2072,6 @@
   "transactionDetailLabelAmountReceived": "지불 방법",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "가동 시간. 다시 시도하십시오.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "지불받은!",
   "@receivePaymentReceived": {
@@ -2977,10 +2961,6 @@
   "fundExchangeETransferLabelSecretQuestion": "비밀 질문",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "구매 장치",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
   "@jadeStep15": {
@@ -3903,10 +3883,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "보안 연결을 설정하는 실패. 다시 시도하십시오.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "금액은 스왑 제한 이상입니다",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4199,10 +4175,6 @@
   "exchangeLandingFeature1": "Bitcoin을 셀프 custody로 바로 구매",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB 권한 거부. BitBox 장치에 액세스 권한을 부여하십시오.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "결제하기",
   "@swapTransferTo": {
@@ -7011,10 +6983,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "PSBT 형식이 감지되었습니다.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "송금 수수료: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -7718,10 +7686,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "제품구매",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "최소 판매량: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -8246,10 +8210,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "BitBox 장치에 연결할 실패. 자주 묻는 질문.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "이용 약관",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8373,10 +8333,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "결합되지 않는 장치. 페어링 프로세스를 먼저 완료하십시오.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "사이트맵 (주)",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8413,10 +8369,6 @@
   "payPriceRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "운영이 취소되었습니다. 다시 시도하십시오.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
   "@passportStep3": {
@@ -9111,15 +9063,6 @@
   "bitboxCubitDeviceNotFound": "BitBox 장치가 없습니다. 장치를 연결하고 다시 시도하십시오.",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "설정 저장 실패: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyStandardWithdrawal": "표준 인출",
   "@buyStandardWithdrawal": {
@@ -9849,10 +9792,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "설정 저장 실패",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "빛 검증",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -10347,15 +10286,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "오류 로딩 주소: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "관련 기사",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10485,15 +10415,6 @@
   "backupWalletVaultProviderCustomLocation": "주문 위치",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "오류 로드 주소: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "연결 유형은 초기화되지 않습니다.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -10715,10 +10636,6 @@
   "sellReceiveAmount": "당신은받을",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "BitBox 장치에서 잘못된 응답. 다시 시도하십시오.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "계정 설정",
   "@settingsScreenTitle": {
@@ -11867,15 +11784,6 @@
   "payTotal": "·",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "설정 저장 실패: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "연락처",
   "@exchangeDcaAddressLabelLightning": {
@@ -13282,5 +13190,7 @@
   "receiveMessageForSender": "보내는 사람에게 전할 메시지",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
-  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다."
+  "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다.",
+  "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
+  "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요."
 }

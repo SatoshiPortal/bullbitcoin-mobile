@@ -14,9 +14,20 @@ abstract class ServerStatusPort {
   /// only responds to `server.version` can still be desynced, pruned, or
   /// otherwise broken — fetching a real tx proves it can answer wallet
   /// queries. Falls back to `server.version` on testnets (no stable txid).
+  ///
+  /// [validateDomain] must mirror the user's electrum setting of the same
+  /// name — the flag the BDK/LWK sync obeys. When true, the certificate
+  /// chain, expiry and hostname must all check out; when false, every check
+  /// is skipped, so an active MITM becomes indistinguishable from the user's
+  /// own node and the user vouches for the endpoint.
+  ///
+  /// Probing with anything else makes this check lie: a laxer probe reports
+  /// a server online that the sync will then refuse, and a stricter one hides
+  /// a server that would have worked.
   Future<ElectrumServerStatus> checkElectrum({
     required String url,
     required ElectrumServerNetwork network,
+    required bool validateDomain,
     int? timeout,
   });
 }

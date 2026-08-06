@@ -1487,14 +1487,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Lorsque activé, les transferts automatiques avec des frais dépassant la limite définie seront toujours bloqués",
   "autoswapAlwaysBlockInfoDisabled": "Lorsque désactivé, vous aurez la possibilité d'autoriser un transfert automatique bloqué en raison de frais élevés",
   "autoswapSaveButton": "Enregistrer",
-  "autoswapSaveErrorMessage": "Échec de l'enregistrement des paramètres : {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "L'échange automatique est activé.",
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
@@ -1506,7 +1498,6 @@
   "autoswapLoadSettingsError": "Échec du chargement des paramètres de transfert automatique",
   "autoswapUpdateSettingsError": "Échec de la mise à jour des paramètres de transfert automatique",
   "autoswapSelectWalletError": "Veuillez sélectionner un portefeuille Bitcoin destinataire",
-  "autoswapAutoSaveError": "Échec de l'enregistrement des paramètres",
   "autoswapMinimumThresholdErrorBtc": "Le seuil de solde minimum est de {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -1681,9 +1672,6 @@
   "bitboxErrorMultipleDevicesFound": "Plusieurs appareils BitBox trouvés. Veuillez vous assurer qu'un seul appareil est connecté.",
   "bitboxErrorDeviceNotFound": "Appareil BitBox introuvable.",
   "bitboxErrorConnectionTypeNotInitialized": "Type de connexion non initialisé.",
-  "bitboxErrorNoActiveConnection": "Aucune connexion active à l'appareil BitBox.",
-  "bitboxErrorDeviceMismatch": "Incompatibilité d'appareil détectée.",
-  "bitboxErrorInvalidMagicBytes": "Format PSBT invalide détecté.",
   "bitboxErrorDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
   "bitboxErrorHandshakeFailed": "Échec de l'établissement de la connexion sécurisée. Veuillez réessayer.",
   "bitboxErrorOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
@@ -1759,14 +1747,6 @@
   "bitboxScreenManagePermissionsButton": "Gérer les permissions de l'application",
   "bitboxScreenNeedHelpButton": "Besoin d'aide ?",
   "bitboxScreenDefaultWalletLabel": "Portefeuille BitBox",
-  "bitboxCubitPermissionDenied": "Permission USB refusée. Veuillez accorder la permission pour accéder à votre appareil BitBox.",
-  "bitboxCubitDeviceNotFound": "Aucun appareil BitBox trouvé. Veuillez connecter votre appareil et réessayer.",
-  "bitboxCubitDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
-  "bitboxCubitHandshakeFailed": "Échec de l'établissement d'une connexion sécurisée. Veuillez réessayer.",
-  "bitboxCubitOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
-  "bitboxCubitConnectionFailed": "Échec de la connexion à l'appareil BitBox. Veuillez vérifier votre connexion.",
-  "bitboxCubitInvalidResponse": "Réponse invalide de l'appareil BitBox. Veuillez réessayer.",
-  "bitboxCubitOperationCancelled": "L'opération a été annulée. Veuillez réessayer.",
   "advancedOptionsTitle": "Options avancées",
   "replaceByFeeActivatedLabel": "Remplacement par frais activé",
   "replaceByFeeBroadcastButton": "Diffuser",
@@ -3110,8 +3090,6 @@
   "importWatchOnlyDerivationPath": "Chemin de dérivation",
   "importWatchOnlyImportButton": "Importer le portefeuille en lecture seule",
   "importWatchOnlyCancel": "Annuler",
-  "importWatchOnlyBuyDevice": "Acheter un appareil",
-  "importWatchOnlyWalletGuides": "Guides de portefeuille",
   "importWatchOnlyCopiedToClipboard": "Copié dans le presse-papiers",
   "importWatchOnlySelectDerivation": "Sélectionner la dérivation",
   "importWatchOnlyType": "Type",
@@ -3301,7 +3279,6 @@
   "importColdcardDescription": "Importez le QR code descripteur de portefeuille de votre Coldcard Q",
   "importColdcardButtonOpenCamera": "Ouvrir la caméra",
   "importColdcardButtonInstructions": "Instructions",
-  "importColdcardButtonPurchase": "Acheter l'appareil",
   "importColdcardInstructionsTitle": "Instructions Coldcard Q",
   "importColdcardInstructionsStep1": "Connectez-vous à votre appareil Coldcard Q",
   "importColdcardInstructionsStep2": "Entrez une phrase secrète si applicable",
@@ -3512,14 +3489,6 @@
   "autoswapRecipientWalletInfo": "Choisissez quel portefeuille Bitcoin recevra les fonds transférés (obligatoire)",
   "autoswapDefaultWalletLabel": "Portefeuille Bitcoin",
   "autoswapSave": "Enregistrer",
-  "autoswapSaveError": "Échec de l'enregistrement des paramètres : {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Paramètres du serveur Electrum",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -3779,23 +3748,7 @@
   "arkAboutShow": "Afficher",
   "arkAboutHide": "Masquer",
   "arkContinueButton": "Continuer",
-  "addressViewErrorLoadingAddresses": "Erreur lors du chargement des adresses : {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Aucune adresse trouvée",
-  "addressViewErrorLoadingMoreAddresses": "Erreur lors du chargement d'adresses supplémentaires : {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
@@ -5299,5 +5252,10 @@
   "payjoinBuyRegularSend": "Bitcoin envoyé à votre portefeuille par une transaction ordinaire",
   "payjoinViaPayjoin": "via Payjoin",
   "payjoinViaRegularSend": "par une transaction ordinaire",
-  "payjoinUseToggle": "Utiliser Payjoin"
+  "payjoinUseToggle": "Utiliser Payjoin",
+  "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
+  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
+  "mnemonicPossibleLastWords": "{count} derniers mots possibles",
+  "mnemonicInvalidChecksumError": "Cette phrase de récupération n’est pas valide. Un mot est mal saisi ou mal placé.",
+  "mnemonicUnknownWordError": "Certains mots ne figurent pas dans la liste de récupération — les numéros en rouge les indiquent."
 }

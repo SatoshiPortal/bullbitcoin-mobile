@@ -5496,15 +5496,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "autoswapSaveErrorMessage": "Failed to save settings: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -5576,10 +5567,6 @@
   "autoswapSelectWalletError": "Please select a recipient Bitcoin wallet",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
-  },
-  "autoswapAutoSaveError": "Failed to save settings",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
   },
   "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold is {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
@@ -5992,18 +5979,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "No active connection to BitBox device.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "Device mismatch detected.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"
@@ -6280,38 +6255,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
-  },
-  "bitboxCubitPermissionDenied": "USB permission denied. Please grant permission to access your BitBox device.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "No BitBox device found. Please connect your device and try again.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "Failed to establish secure connection. Please try again.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "Operation timed out. Please try again.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "Failed to connect to BitBox device. Please check your connection.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "Invalid response from BitBox device. Please try again.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "Operation was cancelled. Please try again.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "advancedOptionsTitle": "Advanced options",
   "@advancedOptionsTitle": {
@@ -10157,14 +10100,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importWatchOnlyBuyDevice": "Buy a device",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
-  "importWatchOnlyWalletGuides": "Wallet guides",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyCopiedToClipboard": "Copied to clipboard",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -10831,10 +10766,6 @@
   "importColdcardButtonInstructions": "Instructions",
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
-  },
-  "importColdcardButtonPurchase": "Purchase device",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardQInstructionsTitle": {
@@ -11686,15 +11617,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "autoswapSaveError": "Failed to save settings: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum Server Settings",
   "@electrumTitle": {
     "description": "AppBar title for Electrum settings screen"
@@ -12214,27 +12136,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "No addresses found",
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
-  },
-  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "addressViewChangeAddressesComingSoon": "Change addresses coming soon",
   "@addressViewChangeAddressesComingSoon": {
@@ -15119,5 +15023,30 @@
   "payjoinUseToggle": "Use payjoin",
   "@payjoinUseToggle": {
     "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
+  },
+  "addressViewErrorWalletNotFound": "This wallet could not be found.",
+  "@addressViewErrorWalletNotFound": {
+    "description": "Shown when the wallet backing the addresses screen has no stored metadata"
+  },
+  "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
+  "@addressViewErrorLoadFailed": {
+    "description": "Shown when loading or paginating the wallet address list fails"
+  },
+  "mnemonicPossibleLastWords": "{count} possible last words",
+  "@mnemonicPossibleLastWords": {
+    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
+  "@mnemonicInvalidChecksumError": {
+    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
+  },
+  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
+  "@mnemonicUnknownWordError": {
+    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
   }
 }

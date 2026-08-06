@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/ark_setup/presentation/state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ArkSetupPage extends StatelessWidget {
   const ArkSetupPage({super.key});

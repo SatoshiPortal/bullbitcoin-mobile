@@ -160,12 +160,10 @@
   "recoverbullSelectVaultImportSuccess": "成功进口",
   "mempoolServerNotUsed": "未使用(海关服务器运行)",
   "recoverbullSelectErrorPrefix": "错误:",
-  "bitboxErrorDeviceMismatch": "检测到的装置不匹配.",
   "arkReceiveBtcAddress": "BTC 地址",
   "exchangeLandingRecommendedExchange": "提议交换",
   "backupWalletHowToDecideVaultMoreInfo": "访问后收集更多信息.",
   "recoverbullGoBackEdit": "<背 景",
-  "importWatchOnlyWalletGuides": "钱包向导",
   "receiveConfirming": "1. 确认......({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -702,12 +700,10 @@
   "importQrDeviceJadeName": "B. 集群",
   "importWalletImportMnemonic": "导入助记词",
   "bip85NextMnemonic": "接下来的Mnemonic",
-  "bitboxErrorNoActiveConnection": "与BitBox装置没有积极的联系.",
   "dcaFundAccountButton": "基金",
   "transactionFilterAll": "所有人",
   "arkSendTitle": "修正",
   "transactionDetailLabelAmountReceived": "收到的资金",
-  "bitboxCubitOperationTimeout": "该行动已经停止。 请再次审判.",
   "receivePaymentReceived": "收到的捐款!",
   "backupWalletHowToDecideVaultCloudSecurity": "谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 他们只能进入与关键服务器(在线服务,储存你的加密密码)相勾结的不太可能的事件。 如果关键服务器破碎,那么,谷歌或 Apple云可能会有风险.",
   "howToDecideBackupText1": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",
@@ -1008,7 +1004,6 @@
   },
   "kruxStep15": "该交易将被导入到 Bull Bitcoin 钱包中",
   "fundExchangeETransferLabelSecretQuestion": "保密问题",
-  "importColdcardButtonPurchase": "采购装置",
   "jadeStep15": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "confirmButton": "执 行",
   "transactionSwapInfoClaimableTransfer": "转让将在几秒内自动完成。 否则,你就可以通过点击“Retry Transfer claim”纽州而尝试人工索赔.",
@@ -1300,7 +1295,6 @@
   "recoverbullSelectQuickAndEasy": "快速和容易",
   "exchangeFileUploadTitle": "1. 安全档案库",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
-  "bitboxCubitHandshakeFailed": "未能建立安全的联系。 请再次审判.",
   "sendErrorAmountAboveSwapLimits": "数额高于互换限额",
   "backupWalletHowToDecideBackupEncryptedVault": "被加密的过失使你无法looking望偷走。 这也使你无法意外地失去支持,因为它将储存在你的云层。 谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 储存你的后备加密钥匙的网络服务器可能受到削弱。 在这种情况下,贵云层账户的备份安全可能受到威胁.",
   "coreSwapsChainCompletedRefunded": "转账已退还.",
@@ -1392,7 +1386,6 @@
   "visitRecoverBullMessage": "访问后收集更多信息.",
   "payMyFiatRecipients": "我的信托接受者",
   "exchangeLandingFeature1": "直接采购",
-  "bitboxCubitPermissionDenied": "拒绝美国允许。 请准许使用您的Box装置.",
   "swapTransferTo": "转入",
   "testBackupPinMessage": "努力确保你记住你的支持{pinOrPassword}",
   "@testBackupPinMessage": {
@@ -2292,7 +2285,6 @@
   "recoverbullRecoveryContinueButton": "继续",
   "payTimeoutError": "支付时间。 请检查情况",
   "kruxStep4": "Click Load",
-  "bitboxErrorInvalidMagicBytes": "检测到了无效的PSBT格式.",
   "sellErrorRecalculateFees": "未收回费用:{error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2519,7 +2511,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "购买装置",
   "sellMinimumAmount": "最低销售额:{amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2720,7 +2711,6 @@
   },
   "transactionStatusPending": "待决",
   "settingsSuperuserModeDisabledMessage": "超级用户模式残疾.",
-  "bitboxCubitConnectionFailed": "未能与BitBox装置连接。 请检查您的联系.",
   "settingsTermsOfServiceTitle": "任期",
   "importQrDeviceScanning": "扫描......",
   "importWalletKeystone": "Keystone",
@@ -2768,7 +2758,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "装置不配对。 请首先完成配对过程.",
   "sellCrcBalance": "CRC 结余",
   "paySelectCoinsManually": "手工选编",
   "replaceByFeeActivatedLabel": "替换",
@@ -2784,7 +2773,6 @@
     }
   },
   "payPriceRefreshIn": "价格上涨 ",
-  "bitboxCubitOperationCancelled": "该行动被取消。 请再次审判.",
   "passportStep3": "扫描 Bull 钱包中显示的二维码",
   "jadeStep5": "如果你遇到麻烦,就会:",
   "electrumProtocolError": "不包括议定书.",
@@ -3001,14 +2989,6 @@
   "transactionLabelRecipientAddress": "客户地址",
   "backupWalletVaultProviderGoogleDrive": "谷歌运动",
   "bitboxCubitDeviceNotFound": "没有发现任何BitBox装置。 请把你的装置连接起来,再次尝试.",
-  "autoswapSaveError": "未能挽救环境:{error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "标准退出",
   "swapContinue": "继续",
   "arkSettleButton": "定居者",
@@ -3258,7 +3238,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "未能挽救环境",
   "exchangeAccountInfoVerificationLightVerification": "轻型核查",
   "exchangeFeatureBankTransfers": "•  • 银行转账和付款账单",
   "sellSendPaymentInstantPayments": "经常付款",
@@ -3432,14 +3411,6 @@
   "recoverbullSelectFetchDriveFilesError": "未能抓住所有的动力",
   "psbtFlowLoadFromCamera": "Click Load",
   "exchangeAccountInfoVerificationLimitedVerification": "有限的核查",
-  "addressViewErrorLoadingMoreAddresses": "{error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "页: 1",
   "sendBuildingTransaction": "房舍管理.",
   "fundExchangeMethodEmailETransfer": "Email E-transfer",
@@ -3479,14 +3450,6 @@
   "settingsSuperuserModeUnlockedMessage": "不受约束的超级用户模式!",
   "pickPinInsteadButton": "Pick PIN>",
   "backupWalletVaultProviderCustomLocation": "习俗地点",
-  "addressViewErrorLoadingAddresses": "负载地址: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "连接类型没有初步确定.",
   "transactionListOngoingTransfersDescription": "这些转移目前正在进行之中。 你们的资金是安全的,在转让完成后将可动用.",
   "ledgerErrorUnknown": "不详的错误",
@@ -3566,7 +3529,6 @@
   "importQrDeviceSeedsignerStep7": "在你的移动装置上,利用开放式照相机",
   "addressViewChangeAddressesDescription": "显示钱包找零地址",
   "sellReceiveAmount": "页: 1",
-  "bitboxCubitInvalidResponse": "BiBox装置的无效反应。 请再次审判.",
   "settingsScreenTitle": "背景",
   "transactionDetailLabelTransferFee": "汇款",
   "importQrDeviceKruxStep5": "你在你的装置上看到QR编码.",
@@ -3968,14 +3930,6 @@
   "torSettingsTitle": "三、背景",
   "backupSettingsRevealing": "修订......",
   "payTotal": "共计",
-  "autoswapSaveErrorMessage": "未能挽救环境:{error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "照明地址",
   "addressViewTitle": "地址细节",
   "payCompleted": "支付!",
@@ -5282,5 +5236,7 @@
   "receiveMessageForSender": "给付款方的留言",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
-  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。"
+  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。",
+  "addressViewErrorWalletNotFound": "找不到此钱包。",
+  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。"
 }

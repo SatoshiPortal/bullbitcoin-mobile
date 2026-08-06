@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
   const SenderBroadcastPayjoinOriginalTxButton({super.key});

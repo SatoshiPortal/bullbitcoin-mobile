@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// Compact icon+label action used inside detail dialogs (Copy, Open in
 /// explorer, …) — duplicated from `core/widgets/viewer_action_button.dart`

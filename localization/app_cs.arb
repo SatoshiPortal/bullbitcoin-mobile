@@ -742,10 +742,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Detekována chyba zařízení.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC adresa",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -761,10 +757,6 @@
   "recoverbullGoBackEdit": "<< Přejděte zpět a upravte",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "Průvodce peněženkami",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Potvrzení ... ({count}/{required})",
   "@receiveConfirming": {
@@ -2277,10 +2269,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "Žádné aktivní připojení k zařízení BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "Fond vašeho účtu",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2296,10 +2284,6 @@
   "transactionDetailLabelAmountReceived": "Množství přijaté",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "Provozní doba. Prosím, zkuste to znovu.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Platba obdržela!",
   "@receivePaymentReceived": {
@@ -3143,10 +3127,6 @@
   "fundExchangeETransferLabelSecretQuestion": "Tajná otázka",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "importColdcardButtonPurchase": "Nákup zařízení",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
   "@jadeStep15": {
@@ -3999,10 +3979,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "Vypnuto k vytvoření zabezpečeného připojení. Prosím, zkuste to znovu.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Výše uvedené limity pro výměnu",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4283,10 +4259,6 @@
   "exchangeLandingFeature1": "Koupit Bitcoin přímo na self-custody",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "Odmítnuto USB povolení. Prosím, uveďte povolení k přístupu k zařízení BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Převod na",
   "@swapTransferTo": {
@@ -6950,10 +6922,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Neplatný formát PSBT detekován.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "Přepočtení poplatků: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -7625,10 +7593,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Koupit zařízení",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "Minimální cena prodeje: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -8133,10 +8097,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "bitboxCubitConnectionFailed": "Připojil se k zařízení BitBox. Prosím zkontrolujte, zda je vaše připojení.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "importQrDeviceScanning": "Skenování...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
@@ -8252,10 +8212,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Zařízení není spárováno. Nejdříve vyplňte proces párování.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "Čeština Čeština",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8292,10 +8248,6 @@
   "payPriceRefreshIn": "Cena bude obnovena v ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Provoz byl zrušen. Prosím, zkuste to znovu.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Skenovat QR kód zobrazený v peněžence Bull",
   "@passportStep3": {
@@ -8961,15 +8913,6 @@
   "bitboxCubitDeviceNotFound": "Nalezeno žádné zařízení BitBox. Připojte zařízení a zkuste to znovu.",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "Přeskočit nastavení: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyStandardWithdrawal": "Standardní výběr",
   "@buyStandardWithdrawal": {
@@ -9647,10 +9590,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Přeskočit nastavení",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "Světelná ověření",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -10113,15 +10052,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Chyba načítání více adres: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Čeština",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -10239,15 +10169,6 @@
   "backupWalletVaultProviderCustomLocation": "Vlastní umístění",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "addressViewErrorLoadingAddresses": "Adresy chyb: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "Typ připojení není iniciován.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -10461,10 +10382,6 @@
   "sellReceiveAmount": "Dostanete se",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "Neplatný od BitBox zařízení. Prosím, zkuste to znovu.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "transactionDetailLabelTransferFee": "Transfer poplatek",
   "@transactionDetailLabelTransferFee": {
@@ -11559,15 +11476,6 @@
   "payTotal": "Celkem",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "Přeskočit nastavení: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "Blesková adresa",
   "@exchangeDcaAddressLabelLightning": {
@@ -13282,5 +13190,7 @@
   "receiveMessageForSender": "Zpráva pro odesílatele",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
-  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin."
+  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
+  "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
+  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu."
 }

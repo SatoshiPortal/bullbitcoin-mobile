@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.d
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings (product decision 2026-07-25/26): deliberately minimal —

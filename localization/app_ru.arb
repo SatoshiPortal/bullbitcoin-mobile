@@ -158,12 +158,10 @@
   "recoverbullSelectVaultImportSuccess": "Ваше хранилище было успешно импортировано",
   "mempoolServerNotUsed": "Не используется (активный сервер)",
   "recoverbullSelectErrorPrefix": "Ошибка:",
-  "bitboxErrorDeviceMismatch": "Устройства обнаружена ошибка.",
   "arkReceiveBtcAddress": "Адрес BTC",
   "exchangeLandingRecommendedExchange": "Bitcoin Exchange",
   "backupWalletHowToDecideVaultMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
   "recoverbullGoBackEdit": "<< Назад и редакцию",
-  "importWatchOnlyWalletGuides": "Настенные гиды",
   "receiveConfirming": "{count}/{required}",
   "@receiveConfirming": {
     "placeholders": {
@@ -699,12 +697,10 @@
   "importQrDeviceJadeName": "Жадный блок",
   "importWalletImportMnemonic": "Импорт Mnemonic",
   "bip85NextMnemonic": "Следующий Mnemonic",
-  "bitboxErrorNoActiveConnection": "Нет активного подключения к устройству BitBox.",
   "dcaFundAccountButton": "Фонд вашего счета",
   "transactionFilterAll": "Все",
   "arkSendTitle": "Отправить",
   "transactionDetailLabelAmountReceived": "Полученная сумма",
-  "bitboxCubitOperationTimeout": "Операция была отложена. Попробуй еще раз.",
   "receivePaymentReceived": "Получена оплата!",
   "backupWalletHowToDecideVaultCloudSecurity": "Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Они могут получить доступ к вашему биткойну только в маловероятном случае, если они столкнутся с ключевым сервером (интернет-сервис, который хранит ваш пароль шифрования). Если ключевой сервер когда-либо взломан, ваш биткойн может быть под угрозой с облаком Google или Apple.",
   "howToDecideBackupText1": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
@@ -1005,7 +1001,6 @@
   },
   "kruxStep15": "Сделка будет импортирована в кошельке Bull Bitcoin.",
   "fundExchangeETransferLabelSecretQuestion": "Секретный вопрос",
-  "importColdcardButtonPurchase": "Устройство покупки",
   "jadeStep15": "Теперь он готов к трансляции! Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin и средства будут отправлены.",
   "confirmButton": "Подтверждение",
   "transactionSwapInfoClaimableTransfer": "Перенос будет завершен автоматически в течение нескольких секунд. Если нет, вы можете попробовать ручное утверждение, нажав на кнопку \"Заявка на перенос\".",
@@ -1297,7 +1292,6 @@
   "recoverbullSelectQuickAndEasy": "Quick & easy",
   "exchangeFileUploadTitle": "Загрузка файла",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Вы уверены в своих собственных возможностях операционной безопасности, чтобы скрыть и сохранить ваши семенные слова Bitcoin.",
-  "bitboxCubitHandshakeFailed": "Не удалось установить безопасное соединение. Попробуй еще раз.",
   "sendErrorAmountAboveSwapLimits": "Сумма выше лимитов на свопы",
   "backupWalletHowToDecideBackupEncryptedVault": "Зашифрованное хранилище предотвращает вас от воров, стремящихся украсть вашу резервную копию. Это также мешает вам случайно потерять резервную копию, поскольку она будет храниться в вашем облаке. Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Существует небольшая вероятность того, что веб-сервер, который хранит ключ шифрования вашего резервного копирования, может быть скомпрометирован. В этом случае безопасность резервного копирования в вашем облачном аккаунте может быть под угрозой.",
   "coreSwapsChainCompletedRefunded": "Перевод был возвращен.",
@@ -1389,7 +1383,6 @@
   "visitRecoverBullMessage": "Посетите Recoverybull.com для получения дополнительной информации.",
   "payMyFiatRecipients": "Мои получатели фиат",
   "exchangeLandingFeature1": "Купить биткойн прямо к самообладанию",
-  "bitboxCubitPermissionDenied": "Разрешение USB отрицается. Пожалуйста, дайте разрешение на доступ к вашему устройству BitBox.",
   "swapTransferTo": "Перевод на",
   "testBackupPinMessage": "Тест, чтобы убедиться, что вы помните свою резервную копию {pinOrPassword}",
   "@testBackupPinMessage": {
@@ -2289,7 +2282,6 @@
   "recoverbullRecoveryContinueButton": "Продолжить",
   "payTimeoutError": "Время оплаты. Пожалуйста, проверьте статус",
   "kruxStep4": "Нажмите кнопку Загрузка с камеры",
-  "bitboxErrorInvalidMagicBytes": "Выявлен неверный формат PSBT.",
   "sellErrorRecalculateFees": "Не удалось пересчитать сборы: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2516,7 +2508,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Купить устройство",
   "sellMinimumAmount": "Минимальная сумма продажи: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2717,7 +2708,6 @@
   },
   "transactionStatusPending": "Завершение",
   "settingsSuperuserModeDisabledMessage": "Режим Superuser отключен.",
-  "bitboxCubitConnectionFailed": "Не удалось подключиться к устройству BitBox. Пожалуйста, проверьте ваше соединение.",
   "settingsTermsOfServiceTitle": "Условия службы",
   "importQrDeviceScanning": "Сканирование...",
   "importWalletKeystone": "Keystone",
@@ -2766,7 +2756,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Устройство не в паре. Пожалуйста, сначала завершите процесс спаривания.",
   "sellCrcBalance": "CRC Баланс",
   "paySelectCoinsManually": "Выбрать монеты вручную",
   "replaceByFeeActivatedLabel": "Замена по фе активирована",
@@ -2782,7 +2771,6 @@
     }
   },
   "payPriceRefreshIn": "Цена освежится ",
-  "bitboxCubitOperationCancelled": "Операция была отменена. Попробуй еще раз.",
   "passportStep3": "Сканировать код QR, показанный в кошельке Bull",
   "jadeStep5": "Если у вас есть проблемы с сканированием:",
   "electrumProtocolError": "Не включайте протокол (ssl: или tcp://).",
@@ -2998,14 +2986,6 @@
   "transactionLabelRecipientAddress": "Адрес получателя",
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "bitboxCubitDeviceNotFound": "Устройство BitBox не найдено. Пожалуйста, подключите ваше устройство и попробуйте снова.",
-  "autoswapSaveError": "Невозможно сохранить настройки: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Стандартный вывод",
   "swapContinue": "Продолжить",
   "arkSettleButton": "Настройка",
@@ -3255,7 +3235,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Не удалось сохранить настройки",
   "exchangeAccountInfoVerificationLightVerification": "Легкая проверка",
   "exchangeFeatureBankTransfers": "• Отправить банковские переводы и оплатить счета",
   "sellSendPaymentInstantPayments": "Мгновенные платежи",
@@ -3431,14 +3410,6 @@
   "recoverbullSelectFetchDriveFilesError": "Не удалось получить все накопители",
   "psbtFlowLoadFromCamera": "Нажмите кнопку Загрузка с камеры",
   "exchangeAccountInfoVerificationLimitedVerification": "Ограниченная проверка",
-  "addressViewErrorLoadingMoreAddresses": "Ошибка загрузки больше адресов: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Копировать",
   "sendBuildingTransaction": "Строительная сделка...",
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
@@ -3478,14 +3449,6 @@
   "settingsSuperuserModeUnlockedMessage": "Режим Superuser разблокирован!",
   "pickPinInsteadButton": "Выберите PIN вместо >>",
   "backupWalletVaultProviderCustomLocation": "Пользовательское местоположение",
-  "addressViewErrorLoadingAddresses": "Адреса загрузки ошибки: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Тип подключения не инициализируется.",
   "transactionListOngoingTransfersDescription": "Эти переводы в настоящее время осуществляются. Ваши средства безопасны и будут доступны, когда передача завершится.",
   "ledgerErrorUnknown": "Неизвестная ошибка",
@@ -3565,7 +3528,6 @@
   "importQrDeviceSeedsignerStep7": "На вашем мобильном устройстве нажмите Open Camera",
   "addressViewChangeAddressesDescription": "Показать кошелёк Изменение адресов",
   "sellReceiveAmount": "Вы получите",
-  "bitboxCubitInvalidResponse": "Неверный ответ от устройства BitBox. Попробуй еще раз.",
   "settingsScreenTitle": "Настройка",
   "transactionDetailLabelTransferFee": "Перенос",
   "importQrDeviceKruxStep5": "Сканируйте QR-код, который вы видите на своем устройстве.",
@@ -3968,14 +3930,6 @@
   "torSettingsTitle": "Параметры Tor",
   "backupSettingsRevealing": "Откровение...",
   "payTotal": "Итого",
-  "autoswapSaveErrorMessage": "Невозможно сохранить настройки: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Адрес освещения",
   "addressViewTitle": "Подробности адресов",
   "payCompleted": "Выплата завершена!",
@@ -5288,5 +5242,7 @@
   "receiveMessageForSender": "Сообщение для отправителя",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin включён, но в этом кошельке пока нет средств для участия. Он активируется, как только вы получите средства.",
-  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin."
+  "announcementAutoswapDescription": "Ваш Liquid автоматически обменивается на Bitcoin.",
+  "addressViewErrorWalletNotFound": "Не удалось найти этот кошелёк.",
+  "addressViewErrorLoadFailed": "Не удалось загрузить ваши адреса. Пожалуйста, попробуйте снова."
 }

@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart'
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {

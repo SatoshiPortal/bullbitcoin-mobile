@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 

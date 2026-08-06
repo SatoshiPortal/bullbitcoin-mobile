@@ -1447,18 +1447,9 @@
   "autoswapAlwaysBlockInfoEnabled": "Kun tämä on käytössä, automaattiset swapit, joiden kulut ylittävät asetetun rajan, estetään aina",
   "autoswapAlwaysBlockInfoDisabled": "Kun tämä on pois käytöstä, sinulle tarjotaan mahdollisuus sallia automaattiset swapit, jotka on estetty korkeiden kulujen vuoksi",
   "autoswapSaveButton": "Tallenna",
-  "autoswapSaveErrorMessage": "Asetusten tallennus epäonnistui: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapLoadSettingsError": "Automaattisen swapin asetusten lataus epäonnistui",
   "autoswapUpdateSettingsError": "Automaattisen swapin asetusten päivitys epäonnistui",
   "autoswapSelectWalletError": "Valitse vastaanottajan Bitcoin-lompakko",
-  "autoswapAutoSaveError": "Asetusten tallennus epäonnistui",
   "autoswapMinimumThresholdErrorBtc": "Minimisaldon raja on {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -1633,9 +1624,6 @@
   "bitboxErrorMultipleDevicesFound": "Useita BitBox-laitteita löydetty. Varmista, että vain yksi laite on kytketty.",
   "bitboxErrorDeviceNotFound": "BitBox-laitetta ei löydy.",
   "bitboxErrorConnectionTypeNotInitialized": "Yhteystyyppiä ei ole alustettu.",
-  "bitboxErrorNoActiveConnection": "Ei aktiivista yhteyttä BitBox-laitteeseen.",
-  "bitboxErrorDeviceMismatch": "Laitteiden vastaavuusvirhe havaittu.",
-  "bitboxErrorInvalidMagicBytes": "Virheellinen PSBT-muoto havaittu.",
   "bitboxErrorDeviceNotPaired": "Laite ei ole paritettu. Suorita paritusprosessi ensin.",
   "bitboxErrorHandshakeFailed": "Turvallisen yhteyden muodostaminen epäonnistui. Yritä uudelleen.",
   "bitboxErrorOperationTimeout": "Toiminto aikakatkaistiin. Yritä uudelleen.",
@@ -1711,14 +1699,6 @@
   "bitboxScreenManagePermissionsButton": "Hallitse sovelluksen oikeuksia",
   "bitboxScreenNeedHelpButton": "Tarvitsetko apua?",
   "bitboxScreenDefaultWalletLabel": "BitBox-lompakko",
-  "bitboxCubitPermissionDenied": "USB-oikeudet evätty. Myönnä oikeus käyttää BitBox-laitettasi.",
-  "bitboxCubitDeviceNotFound": "BitBox-laitetta ei löytynyt. Liitä laitteesi ja yritä uudelleen.",
-  "bitboxCubitDeviceNotPaired": "Laite ei ole paritettu. Suorita paritusprosessi ensin.",
-  "bitboxCubitHandshakeFailed": "Turvallisen yhteyden muodostaminen epäonnistui. Yritä uudelleen.",
-  "bitboxCubitOperationTimeout": "Toiminto aikakatkaistiin. Yritä uudelleen.",
-  "bitboxCubitConnectionFailed": "Yhteyden muodostaminen BitBox-laitteeseen epäonnistui. Tarkista yhteytesi.",
-  "bitboxCubitInvalidResponse": "Virheellinen vastaus BitBox-laitteelta. Yritä uudelleen.",
-  "bitboxCubitOperationCancelled": "Toiminto peruutettiin. Yritä uudelleen.",
   "advancedOptionsTitle": "Lisäasetukset",
   "replaceByFeeActivatedLabel": "Replace-by-fee aktivoitu",
   "replaceByFeeBroadcastButton": "Lähetä",
@@ -3058,8 +3038,6 @@
   "importWatchOnlyDerivationPath": "Derivointipolku",
   "importWatchOnlyImportButton": "Tuo watch-only -lompakko",
   "importWatchOnlyCancel": "Peruuta",
-  "importWatchOnlyBuyDevice": "Osta laite",
-  "importWatchOnlyWalletGuides": "Oppaat",
   "importWatchOnlyCopiedToClipboard": "Kopioitu leikepöydälle",
   "importWatchOnlySelectDerivation": "Valitse derivointitapa",
   "importWatchOnlyType": "Tyyppi",
@@ -3249,7 +3227,6 @@
   "importColdcardDescription": "Tuo Coldcard Q -laitteesi lompakon kuvaus (descriptor) -QR-koodi",
   "importColdcardButtonOpenCamera": "Avaa kamera",
   "importColdcardButtonInstructions": "Ohjeet",
-  "importColdcardButtonPurchase": "Osta laite",
   "importColdcardInstructionsTitle": "Coldcard Q -ohjeet",
   "importColdcardInstructionsStep1": "Kirjaudu Coldcard Q -laitteeseesi",
   "importColdcardInstructionsStep2": "Syötä salasana, jos käytät sellaista",
@@ -3460,14 +3437,6 @@
   "autoswapRecipientWalletInfo": "Valitse, mihin Bitcoin-lompakkoon siirretyt varat vastaanotetaan (pakollinen)",
   "autoswapDefaultWalletLabel": "Bitcoin-lompakko",
   "autoswapSave": "Tallenna",
-  "autoswapSaveError": "Asetusten tallennus epäonnistui: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum-palvelinasetukset",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -3727,23 +3696,7 @@
   "arkAboutShow": "Näytä",
   "arkAboutHide": "Piilota",
   "arkContinueButton": "Jatka",
-  "addressViewErrorLoadingAddresses": "Osoitteiden lataus epäonnistui: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Osoitteita ei löytynyt",
-  "addressViewErrorLoadingMoreAddresses": "Lisää osoitteita ladattaessa tapahtui virhe: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "appStartupErrorTitle": "Käynnistysvirhe",
@@ -5274,5 +5227,7 @@
   "receiveMessageForSender": "Viesti lähettäjälle",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin on käytössä, mutta tässä lompakossa ei vielä ole osallistumiseen tarvittavaa saldoa. Se aktivoituu, kun vastaanotat varoja.",
-  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin."
+  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin.",
+  "addressViewErrorWalletNotFound": "Tätä lompakkoa ei löytynyt.",
+  "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen."
 }

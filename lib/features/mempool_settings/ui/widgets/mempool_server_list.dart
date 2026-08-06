@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_it
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class MempoolServerList extends StatelessWidget {
   const MempoolServerList({super.key});

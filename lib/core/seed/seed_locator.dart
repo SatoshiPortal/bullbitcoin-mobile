@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/data/repository/word_list_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -26,10 +24,6 @@ class SeedLocator {
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepository(source: locator<SeedDatasource>()),
     );
-
-    locator.registerLazySingleton<WordListRepository>(
-      () => WordListRepository(),
-    );
   }
 
   static void registerServices(GetIt locator) {
@@ -39,12 +33,6 @@ class SeedLocator {
   }
 
   static void registerUsecases(GetIt locator) {
-    locator.registerFactory<FindMnemonicWordsUsecase>(
-      () => FindMnemonicWordsUsecase(
-        wordListRepository: locator<WordListRepository>(),
-      ),
-    );
-
     locator.registerFactory<GetDefaultSeedUsecase>(
       () => GetDefaultSeedUsecase(
         walletRepository: locator<WalletRepository>(),

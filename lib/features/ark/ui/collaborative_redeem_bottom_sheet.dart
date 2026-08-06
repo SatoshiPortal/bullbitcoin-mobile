@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class CollaborativeRedeemBottomSheet extends StatelessWidget {
   const CollaborativeRedeemBottomSheet({

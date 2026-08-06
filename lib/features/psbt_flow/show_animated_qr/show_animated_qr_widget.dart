@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_c
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ShowAnimatedQrWidget extends StatelessWidget {
   final String psbt;

@@ -91,8 +91,8 @@ class AppRouter {
               child: LegacyStorageWarningOverlay(
                 child: BackupWarningOverlay(
                   child: Scaffold(
-                    // The app bar of the exchange tab is done with a sliver app bar
-                    // on the ExchangeHomeScreen itself.
+                    // The app bar of the exchange tab is rendered by the
+                    // ExchangeHomeScreen itself, as an overlay.
                     appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                     extendBodyBehindAppBar: true,
                     body: child,

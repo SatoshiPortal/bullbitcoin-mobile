@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});

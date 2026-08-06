@@ -9,8 +9,8 @@ sealed class AddressViewState with _$AddressViewState {
     @Default(false) bool isLoading,
     @Default(false) bool hasReachedEndOfReceiveAddresses,
     @Default(false) bool hasReachedEndOfChangeAddresses,
-    WalletError? receiveAddressesError,
-    WalletError? changeAddressesError,
+    AddressViewFailure? receiveAddressesFailure,
+    AddressViewFailure? changeAddressesFailure,
   }) = _AddressViewState;
   const AddressViewState._();
 

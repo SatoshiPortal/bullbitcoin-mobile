@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {

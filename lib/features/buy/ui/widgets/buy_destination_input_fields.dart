@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class BuyDestinationInputFields extends StatefulWidget {
   const BuyDestinationInputFields({super.key});

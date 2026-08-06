@@ -421,10 +421,6 @@
   "@receiveServerNetworkFees": {
     "description": "Label for network fees charged by the swap server"
   },
-  "bitboxErrorDeviceMismatch": "Desvio de dispositivo detectado.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "rbfFastest": "Mais rápido",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
@@ -1855,10 +1851,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "bitboxErrorNoActiveConnection": "Nenhuma conexão ativa com o dispositivo BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "transactionLabelReceiveAmount": "Receber valor",
   "@transactionLabelReceiveAmount": {
     "description": "Label for receive amount in swap details"
@@ -1945,10 +1937,6 @@
   "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
-  },
-  "bitboxCubitOperationTimeout": "A operação acabou. Por favor, tente novamente.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "fundExchangeMethodBankTransferWire": "Transferência bancária (Wire ou EFT)",
   "@fundExchangeMethodBankTransferWire": {
@@ -2932,10 +2920,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "importColdcardButtonPurchase": "Dispositivo de compra",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "payRecipientType": "Tipo de destinatário",
   "@payRecipientType": {
     "description": "Label for recipient type"
@@ -3530,10 +3514,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "bitboxCubitHandshakeFailed": "Falhou para estabelecer uma ligação segura. Por favor, tente novamente.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "broadcastSignedTxPushTxButton": "PushTx",
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
@@ -3770,10 +3750,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "compartilhado com Bull Bitcoin.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "bitboxCubitPermissionDenied": "Autorização USB negada. Por favor, dê permissão para acessar seu dispositivo BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "backupIdLabel": "ID de backup:",
   "@backupIdLabel": {
@@ -6275,10 +6251,6 @@
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
-  "bitboxErrorInvalidMagicBytes": "Formato PSBT inválido detectado.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
@@ -7474,10 +7446,6 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "bitboxCubitConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "transactionSwapDescChainDefault": "Sua transferência está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
@@ -8235,17 +8203,9 @@
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
   },
-  "bitboxCubitOperationCancelled": "A operação foi cancelada. Por favor, tente novamente.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
-  },
   "buyKycPendingDescription": "Você deve concluir a verificação de identificação primeiro",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "bitboxCubitDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
   },
   "exchangeFileUploadPartialSuccess": "{uploaded} de arquivos {total} enviados",
   "@exchangeFileUploadPartialSuccess": {
@@ -8821,15 +8781,6 @@
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
   },
-  "autoswapSaveError": "Falhado para salvar configurações: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "pinButtonConfirm": "Confirmação",
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
@@ -9004,10 +8955,6 @@
   "sellOrderNumber": "Número de ordem",
   "@sellOrderNumber": {
     "description": "Label for order number"
-  },
-  "bitboxCubitDeviceNotFound": "Nenhum dispositivo BitBox encontrado. Por favor, conecte seu dispositivo e tente novamente.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
   },
   "payBatchPayment": "Pagamento de lote",
   "@payBatchPayment": {
@@ -9907,10 +9854,6 @@
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
   },
-  "autoswapAutoSaveError": "Falhado para salvar configurações",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
@@ -9980,15 +9923,6 @@
   "payReplaceByFeeActivated": "Substitui-a-taxa activada",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
-  },
-  "autoswapSaveErrorMessage": "Falhado para salvar configurações: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenManagePermissionsButton": "Gerenciar Permissões de Aplicativos",
   "@bitboxScreenManagePermissionsButton": {
@@ -10561,15 +10495,6 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "addressViewErrorLoadingMoreAddresses": "Erro ao carregar mais endereços: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapAlwaysBlockInfoDisabled": "Quando desativado, você terá a opção de permitir uma transferência automática bloqueada devido a altas taxas",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
@@ -10683,15 +10608,6 @@
   "testBackupGoogleDrivePrivacyPart5": "compartilhado com Bull Bitcoin.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "addressViewErrorLoadingAddresses": "Endereços de carregamento de erros: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeLabelBeneficiaryName": "Nome Beneficiário",
   "@fundExchangeLabelBeneficiaryName": {
@@ -10838,10 +10754,6 @@
   "importQrDeviceKruxStep5": "Analise o código QR que você vê no seu dispositivo.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "bitboxCubitInvalidResponse": "Resposta inválida do dispositivo BitBox. Por favor, tente novamente.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
   "@sellAboveMaxAmountError": {
@@ -11441,10 +11353,6 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlyWalletGuides": "Guias de carteira",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
-  },
   "importWatchOnlyImportButton": "Importar apenas carteira de relógio",
   "@importWatchOnlyImportButton": {
     "description": "Button to confirm watch-only import"
@@ -11968,10 +11876,6 @@
   "dcaScheduleDescription": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
   "@dcaScheduleDescription": {
     "description": "Explanation text at the top of DCA setup form"
-  },
-  "importWatchOnlyBuyDevice": "Compre um dispositivo",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "transactionHistoryTitle": "Histórico de transações",
   "transactionHistoryHeading": "Histórico de transações",
@@ -13279,5 +13183,7 @@
   "receiveMessageForSender": "Mensagem para o remetente",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Ele será ativado assim que você receber fundos.",
-  "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin."
+  "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin.",
+  "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
+  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente."
 }

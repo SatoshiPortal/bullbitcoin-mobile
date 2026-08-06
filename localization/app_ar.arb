@@ -431,10 +431,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "تم اكتشاف خطأ في جهاز التحكم.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "عنوان BTC",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -442,10 +438,6 @@
   "recoverbullGoBackEdit": "■ العودة والتحرير",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "أدلة الجدارة",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Confirming... ({count}/{required})",
   "@receiveConfirming": {
@@ -1951,10 +1943,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "لا علاقة نشطة بجهاز (بيتبوكس).",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "صندوق حسابك",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -1970,10 +1958,6 @@
   "transactionDetailLabelAmountReceived": "المبلغ المستلم",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "العملية انتهت أرجوك حاول مرة أخرى.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "تم استلام الدفع!",
   "@receivePaymentReceived": {
@@ -2807,10 +2791,6 @@
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "importColdcardButtonPurchase": "جهاز الشراء",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "jadeStep15": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
   "@jadeStep15": {
@@ -3677,10 +3657,6 @@
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
   },
-  "bitboxCubitHandshakeFailed": "فشل في إقامة اتصال آمن. أرجوك حاول مرة أخرى.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "المبلغ فوق حدود التبديل",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3961,10 +3937,6 @@
   "exchangeLandingFeature1": "اشتري بيتكين مباشرةً للإستدعاء الذاتي",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "إذن من وكالة USB رفض. من فضلك امنح الإذن للدخول إلى جهاز (بيتبوكس) الخاص بك.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "التحويل إلى",
   "@swapTransferTo": {
@@ -6580,10 +6552,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "sellErrorRecalculateFees": "عدم إعادة حساب الرسوم: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
@@ -7233,10 +7201,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "اشتري جهاز",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "الحد الأدنى للبيع: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -7737,10 +7701,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "فشل في التواصل مع جهاز (بيتبوكس) من فضلك تحقق من اتصالك.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "مدة الخدمة",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -7860,10 +7820,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "النّساء لَيسَ أزواجَ. من فضلك أكمل عملية الأزواج أولاً.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC الرصيد",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -7900,10 +7856,6 @@
   "payPriceRefreshIn": "ستنعش الأسعار ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "وألغيت العملية. أرجوك حاول مرة أخرى.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
   "@passportStep3": {
@@ -8553,15 +8505,6 @@
   "bitboxCubitDeviceNotFound": "لم يعثر على جهاز (بيتبوكس) يرجى ربط جهازك ومحاولة مرة أخرى.",
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
-  },
-  "autoswapSaveError": "فشل في توفير الأماكن: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "buyStandardWithdrawal": "المسح المعياري",
   "@buyStandardWithdrawal": {
@@ -9684,15 +9627,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "نسخ",
   "@arkCopy": {
     "description": "Button label to copy field value to clipboard"
@@ -9818,15 +9752,6 @@
   "pickPinInsteadButton": "اختر (بين) بدلاً من ذلك",
   "@pickPinInsteadButton": {
     "description": "Button label to switch to PIN input"
-  },
-  "addressViewErrorLoadingAddresses": "عناوين تحميل الأخطاء: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "bitboxErrorConnectionTypeNotInitialized": "نوع الإتصال غير مبدئي.",
   "@bitboxErrorConnectionTypeNotInitialized": {
@@ -10036,10 +9961,6 @@
   "sellReceiveAmount": "سوف تستقبل",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "رد غير سليم من جهاز (بيتبوكس) أرجوك حاول مرة أخرى.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "الترتيبات",
   "@settingsScreenTitle": {
@@ -12248,10 +12169,6 @@
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "autoswapAutoSaveError": "فشل في إنقاذ البيئات",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
   "@exchangeFeatureBankTransfers": {
     "description": "Feature bullet point describing bank transfer and bill payment features"
@@ -12351,15 +12268,6 @@
     "description": "Validation error shown when amount threshold is below minimum (BTC display)",
     "placeholders": {
       "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "autoswapSaveErrorMessage": "فشل في توفير الأماكن: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
         "type": "String"
       }
     }
@@ -13285,5 +13193,7 @@
   "receiveMessageForSender": "رسالة إلى المرسل",
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
-  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin."
+  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
+  "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
+  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى."
 }

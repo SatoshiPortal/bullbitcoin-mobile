@@ -58,6 +58,7 @@ class ServerStatusAdapter implements ServerStatusPort {
   Future<ElectrumServerStatus> checkElectrum({
     required String url,
     required ElectrumServerNetwork network,
+    required bool validateDomain,
     int? timeout,
   }) async {
     try {
@@ -79,6 +80,7 @@ class ServerStatusAdapter implements ServerStatusPort {
         uri: uri,
         request: request,
         timeoutSeconds: effectiveTimeout,
+        validateDomain: validateDomain,
       );
 
       if (response.isEmpty) return ElectrumServerStatus.offline;
@@ -135,13 +137,17 @@ class ServerStatusAdapter implements ServerStatusPort {
     required Uri uri,
     required String request,
     required int timeoutSeconds,
+    required bool validateDomain,
   }) async {
+    // A null onBadCertificate callback enforces strict CA validation. The
+    // flag comes from the user's electrum settings, so the probe accepts
+    // exactly the certificates the BDK/LWK sync would accept.
     final Socket socket = uri.scheme == 'ssl'
         ? await SecureSocket.connect(
             uri.host,
             uri.port,
             timeout: Duration(seconds: timeoutSeconds),
-            onBadCertificate: (_) => true, // accept self-signed certs
+            onBadCertificate: validateDomain ? null : (_) => true,
           )
         : await Socket.connect(
             uri.host,

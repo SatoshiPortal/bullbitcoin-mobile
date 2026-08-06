@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ShowMnemonicScreen extends StatefulWidget {
   const ShowMnemonicScreen({super.key});
