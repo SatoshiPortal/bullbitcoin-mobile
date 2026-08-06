@@ -2013,6 +2013,590 @@
           "announcement_id"
         ]
       }
+    },
+    {
+      "id": 17,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "order_swaps",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "local_id",
+            "getter_name": "localId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "request_id",
+            "getter_name": "requestId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "order_id",
+            "getter_name": "orderId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "purpose",
+            "getter_name": "purpose",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "environment",
+            "getter_name": "environment",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "in_network",
+            "getter_name": "inNetwork",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "out_network",
+            "getter_name": "outNetwork",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_in_amount_fixed",
+            "getter_name": "isInAmountFixed",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_in_amount_fixed\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_in_amount_fixed\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "requested_amount_sat",
+            "getter_name": "requestedAmountSat",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_wallet_id",
+            "getter_name": "sourceWalletId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "destination_wallet_id",
+            "getter_name": "destinationWalletId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "destination",
+            "getter_name": "destination",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fallback",
+            "getter_name": "fallback",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bitcoin_address",
+            "getter_name": "bitcoinAddress",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "liquid_address",
+            "getter_name": "liquidAddress",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lightning_invoice",
+            "getter_name": "lightningInvoice",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payin_amount_sat",
+            "getter_name": "payinAmountSat",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payout_amount_sat",
+            "getter_name": "payoutAmountSat",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payin_currency",
+            "getter_name": "payinCurrency",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payout_currency",
+            "getter_name": "payoutCurrency",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payin_method",
+            "getter_name": "payinMethod",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payout_method",
+            "getter_name": "payoutMethod",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "order_type",
+            "getter_name": "orderType",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "order_status",
+            "getter_name": "orderStatus",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payin_status",
+            "getter_name": "payinStatus",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payout_status",
+            "getter_name": "payoutStatus",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "message_code",
+            "getter_name": "messageCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bitcoin_transaction_id",
+            "getter_name": "bitcoinTransactionId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "liquid_transaction_id",
+            "getter_name": "liquidTransactionId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "local_payin_transaction_id",
+            "getter_name": "localPayinTransactionId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "signed_payin_transaction",
+            "getter_name": "signedPayinTransaction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payin_is_psbt",
+            "getter_name": "payinIsPsbt",
+            "moor_type": "bool",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"payin_is_psbt\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"payin_is_psbt\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "order_number",
+            "getter_name": "orderNumber",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_created_at",
+            "getter_name": "serverCreatedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "confirmation_deadline",
+            "getter_name": "confirmationDeadline",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sent_at",
+            "getter_name": "sentAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "local_status",
+            "getter_name": "localStatus",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_polled_at",
+            "getter_name": "lastPolledAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "note",
+            "getter_name": "note",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_completed_at",
+            "getter_name": "serverCompletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "labels_applied_at",
+            "getter_name": "labelsAppliedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "local_id"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_request_id",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "request_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_local_status",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "local_status",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_source_wallet",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "source_wallet_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_destination_wallet",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "destination_wallet_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_bitcoin_txid",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "bitcoin_transaction_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_liquid_txid",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "liquid_transaction_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "order_swaps_local_payin_txid",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "local_payin_transaction_id",
+            "order_by": null
+          }
+        ]
+      }
     }
   ],
   "fixed_sql": [
@@ -2166,6 +2750,78 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"dismissed_announcements\" (\"announcement_id\" TEXT NOT NULL, \"dismissed_at\" TEXT NOT NULL, PRIMARY KEY (\"announcement_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"order_swaps\" (\"local_id\" TEXT NOT NULL, \"request_id\" TEXT NULL, \"order_id\" TEXT NULL UNIQUE, \"purpose\" TEXT NOT NULL, \"environment\" TEXT NOT NULL, \"in_network\" TEXT NOT NULL, \"out_network\" TEXT NOT NULL, \"is_in_amount_fixed\" INTEGER NOT NULL CHECK (\"is_in_amount_fixed\" IN (0, 1)), \"requested_amount_sat\" INTEGER NOT NULL, \"source_wallet_id\" TEXT NULL, \"destination_wallet_id\" TEXT NULL, \"destination\" TEXT NOT NULL, \"fallback\" TEXT NOT NULL, \"bitcoin_address\" TEXT NULL, \"liquid_address\" TEXT NULL, \"lightning_invoice\" TEXT NULL, \"payin_amount_sat\" INTEGER NULL, \"payout_amount_sat\" INTEGER NULL, \"payin_currency\" TEXT NULL, \"payout_currency\" TEXT NULL, \"payin_method\" TEXT NULL, \"payout_method\" TEXT NULL, \"order_type\" TEXT NULL, \"order_status\" TEXT NULL, \"payin_status\" TEXT NULL, \"payout_status\" TEXT NULL, \"message_code\" TEXT NULL, \"bitcoin_transaction_id\" TEXT NULL, \"liquid_transaction_id\" TEXT NULL, \"local_payin_transaction_id\" TEXT NULL, \"signed_payin_transaction\" TEXT NULL, \"payin_is_psbt\" INTEGER NULL CHECK (\"payin_is_psbt\" IN (0, 1)), \"order_number\" INTEGER NULL, \"created_at\" TEXT NOT NULL, \"server_created_at\" TEXT NULL, \"confirmation_deadline\" TEXT NULL, \"sent_at\" TEXT NULL, \"local_status\" TEXT NOT NULL, \"last_polled_at\" TEXT NULL, \"note\" TEXT NULL, \"server_completed_at\" TEXT NULL, \"labels_applied_at\" TEXT NULL, PRIMARY KEY (\"local_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_request_id",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_local_status",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX order_swaps_local_status ON order_swaps (local_status)"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_source_wallet",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX order_swaps_source_wallet ON order_swaps (source_wallet_id)"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_destination_wallet",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX order_swaps_destination_wallet ON order_swaps (destination_wallet_id)"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_bitcoin_txid",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX order_swaps_bitcoin_txid ON order_swaps (bitcoin_transaction_id)"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_liquid_txid",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX order_swaps_liquid_txid ON order_swaps (liquid_transaction_id)"
+        }
+      ]
+    },
+    {
+      "name": "order_swaps_local_payin_txid",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)"
         }
       ]
     }

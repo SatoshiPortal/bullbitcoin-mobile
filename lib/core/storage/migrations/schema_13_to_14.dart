@@ -13,6 +13,8 @@ import 'package:drift/drift.dart';
 /// database (payjoin.sqlite, see the bull_payjoin package), and 14 was never
 /// released — every tag up to v6.12.5 ships schema 13 — so those columns were
 /// folded out of this step rather than added and then migrated away.
+///
+/// Adds the order_swaps table and indexes for crash-safe Exchange transfers.
 class Schema13To14 {
   static Future<void> migrate(Migrator m, Schema14 schema14) async {
     // New dismissed_announcements table: one row per home announcement the
@@ -30,5 +32,14 @@ class Schema13To14 {
         error: e,
       );
     }
+
+    await m.createTable(schema14.orderSwaps);
+    await m.createIndex(schema14.orderSwapsRequestId);
+    await m.createIndex(schema14.orderSwapsLocalStatus);
+    await m.createIndex(schema14.orderSwapsSourceWallet);
+    await m.createIndex(schema14.orderSwapsDestinationWallet);
+    await m.createIndex(schema14.orderSwapsBitcoinTxid);
+    await m.createIndex(schema14.orderSwapsLiquidTxid);
+    await m.createIndex(schema14.orderSwapsLocalPayinTxid);
   }
 }
