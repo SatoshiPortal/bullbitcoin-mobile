@@ -686,18 +686,12 @@ class SwapWatcherService {
         network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
       );
       final live = networkFee.toAbsolute(txSize).fastest.value.toInt();
-      final withFloor = _absoluteWithFloor(
+      return _cappedFees(
         live,
         txSize: txSize,
         isLiquid: isLiquid,
+        amountSat: amountSat,
       );
-      // Never burn more than half the swap on fees, but never drop below the
-      // relay floor or the claim tx becomes unbroadcastable.
-      if (amountSat != null && amountSat > 0) {
-        final floor = _relayFloor(txSize: txSize, isLiquid: isLiquid);
-        return max(floor, min(withFloor, max(1, amountSat ~/ 2)));
-      }
-      return withFloor;
     }
 
     try {
@@ -732,6 +726,28 @@ class SwapWatcherService {
     required bool isLiquid,
   }) {
     return max(absolute, _relayFloor(txSize: txSize, isLiquid: isLiquid));
+  }
+
+  /// Floors an absolute fee at the relay minimum, then never burns more than
+  /// half the amount at stake on fees. The floor wins over the cap: below it
+  /// the transaction is unbroadcastable, so paying it is still better than
+  /// producing a tx that can never confirm. A null or non-positive amount
+  /// (restored swaps can carry an empty invoice) means the stake is unknown,
+  /// so only the floor applies.
+  int _cappedFees(
+    int absolute, {
+    required int txSize,
+    required bool isLiquid,
+    required int? amountSat,
+  }) {
+    final withFloor = _absoluteWithFloor(
+      absolute,
+      txSize: txSize,
+      isLiquid: isLiquid,
+    );
+    if (amountSat == null || amountSat <= 0) return withFloor;
+    final floor = _relayFloor(txSize: txSize, isLiquid: isLiquid);
+    return max(floor, min(withFloor, max(1, amountSat ~/ 2)));
   }
 
   Future<String?> _resolveLnReceiveClaimAddress(LnReceiveSwap swap) async {
