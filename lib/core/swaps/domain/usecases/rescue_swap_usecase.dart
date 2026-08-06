@@ -76,7 +76,7 @@ class RescueSwapUsecase {
           }
       }
 
-      log.info(
+      log.fine(
         'SWAP_RESTORE: rescuing ${restored.id} (${restored.kind.name}) '
         'send=$sendWalletId receive=$receiveWalletId',
       );

@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
@@ -16,6 +17,7 @@ import 'package:bull_sdk/boltz.dart' as boltz;
 class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
+  final WalletTransactionRepository _walletTransactionRepository;
   final FeesRepository _feesRepository;
 
   StreamSubscription<Swap>? _swapStreamSubscription;
@@ -39,6 +41,7 @@ class SwapWatcherService {
   SwapWatcherService({
     required this._boltzRepo,
     required this._walletAddressRepository,
+    required this._walletTransactionRepository,
     required this._feesRepository,
     bool autoStart = true,
   }) {
@@ -85,7 +88,12 @@ class SwapWatcherService {
     _reconciling = true;
     try {
       final swaps = await _boltzRepo.getOngoingSwaps();
-      if (swaps.isEmpty) return;
+      if (swaps.isEmpty) {
+        // Not noise: "no ongoing swaps" on a device with a stuck swap proves
+        // the local row's state excludes it from the watch set.
+        log.fine('[SwapWatcher] heartbeat reconcile: no ongoing swaps');
+        return;
+      }
       final ids = swaps.map((s) => s.id).toSet().toList();
       log.fine('[SwapWatcher] heartbeat reconcile of ${ids.length} swaps');
       _boltzRepo.subscribeToSwaps(ids);
@@ -103,6 +111,10 @@ class SwapWatcherService {
     }
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toSet().toList();
+    log.fine(
+      '[SwapWatcher] restart with ongoing swaps: '
+      '${swapIdsToWatch.isEmpty ? 'none' : swapIdsToWatch.join(',')}',
+    );
 
     for (final swapId in swapIdsToWatch) {
       _clearRetries(swapId);
@@ -181,7 +193,7 @@ class SwapWatcherService {
       final elapsed = DateTime.now().difference(actionStartedAt);
       final wasSuspended = elapsed > _actionTimeout * 2;
       if (wasSuspended) {
-        log.info(
+        log.fine(
           '[SwapWatcher] action for swap ${swap.id} interrupted by app '
           'suspension (${elapsed.inMinutes}m elapsed); it may still '
           'complete now that the app resumed',
@@ -429,6 +441,10 @@ class SwapWatcherService {
 
   Future<void> _refundLnSend(LnSendSwap swap) async {
     if (swap.refundTxid != null) {
+      log.fine(
+        '[SwapWatcher] skip ln refund for ${swap.id}: refundTxid already '
+        'recorded (${swap.refundTxid}) — verify it exists on-chain',
+      );
       return;
     }
     final isLiquid = swap.type == SwapType.liquidToLightning;
@@ -516,6 +532,10 @@ class SwapWatcherService {
 
   Future<void> _refundChain(ChainSwap swap) async {
     if (swap.refundTxid != null) {
+      log.fine(
+        '[SwapWatcher] skip chain refund for ${swap.id}: refundTxid already '
+        'recorded (${swap.refundTxid}) — verify it exists on-chain',
+      );
       return;
     }
     // Refund happens on the sending chain.
@@ -627,7 +647,7 @@ class SwapWatcherService {
       }
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _clearRetries(swap.id);
-      log.info('[SwapWatcher] coop close succeeded for ${swap.id}');
+      log.fine('[SwapWatcher] coop close succeeded for ${swap.id}');
     } catch (e, st) {
       log.severe(
         message:
@@ -809,7 +829,7 @@ class SwapWatcherService {
       completionTime: DateTime.now(),
     );
     _clearRetries(swap.id);
-    log.info(
+    log.fine(
       '[SwapWatcher] ${isClaim ? 'claim' : 'refund'} succeeded for '
       '${swap.id} txid=$txid fees=$actualFees',
     );
@@ -835,7 +855,7 @@ class SwapWatcherService {
     // its funds are not at risk. It can never make progress, so delete it
     // instead of leaving it stuck as an ongoing transfer in the list.
     if (swap.recovered && _isAlreadySpentError(error)) {
-      log.info(
+      log.fine(
         '[SwapWatcher] recovered swap ${swap.id} already resolved on-chain '
         '(lockup spent) — deleting stale entry',
       );
@@ -844,16 +864,27 @@ class SwapWatcherService {
       return;
     }
 
-    final recovered = await _checkAndRecoverFromOutspend(
-      swap: swap,
-      isClaim: isClaim,
-    );
-    if (recovered) return;
+    // On-chain outspend recovery is a LAST RESORT: it can only prove that
+    // *something* spent the lockup, and a swap must never settle on that
+    // alone (Boltz refunding its own expired lockup, or spending unrelated
+    // change on the same tx, looks identical to a generic outspend check —
+    // that mistake wedged a refundable swap as "completed"). For a swap
+    // created on this device, local state + Boltz status reconciliation
+    // drive the lifecycle; only consult the chain when local history cannot
+    // know the answer: a fresh-install recovered swap, or our broadcast
+    // being rejected because the lockup is already spent.
+    if (swap.recovered || _isAlreadySpentError(error)) {
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        isClaim: isClaim,
+      );
+      if (recovered) return;
+    }
 
     if (!isClaim && _isNonFinalError(error)) {
       // Script-path refunds are only valid after the swap's timelock; stay
       // refundable and retry later.
-      log.info(
+      log.fine(
         '[SwapWatcher] refund for ${swap.id} not yet final (timelock); '
         'will retry',
       );
@@ -901,7 +932,7 @@ class SwapWatcherService {
           );
       }
 
-      final outspendStatus = await _boltzRepo.checkSwapLockupOutspend(
+      final outspends = await _boltzRepo.checkLockupOutspends(
         swapId: swap.id,
         swapType: swap.type,
         network: network,
@@ -909,10 +940,36 @@ class SwapWatcherService {
         isClaim: isClaim,
       );
 
-      final txid = outspendStatus.txid;
-      if (txid == null) return false;
+      // "A lockup output is spent" is not "we were paid": the covenant can
+      // sit at any vout, and the spender could be Boltz refunding its own
+      // expired lockup or moving its change on the same tx. Only settle on
+      // the candidate whose spending tx is ours — present in the wallet the
+      // funds must have landed in. Fail closed: no verifiable candidate
+      // leaves the swap watchable so reconcile / refund can still resolve
+      // it.
+      SwapTxOutspend? ours;
+      for (final candidate in outspends) {
+        final txid = candidate.txid;
+        if (txid == null) continue;
+        if (await _isOurWalletTx(swap: swap, isClaim: isClaim, txid: txid)) {
+          ours = candidate;
+          break;
+        }
+      }
+      if (ours == null) {
+        if (outspends.isNotEmpty) {
+          log.warning(
+            '[SwapWatcher] outspend recovery for ${swap.id}: lockup outputs '
+            'spent by ${outspends.map((o) => o.txid).whereType<String>().join(',')} '
+            'but none is in our wallet — not settling (spender is likely '
+            'Boltz, not our ${isClaim ? 'claim' : 'refund'})',
+          );
+        }
+        return false;
+      }
+      final txid = ours.txid!;
 
-      log.info(
+      log.fine(
         '[SwapWatcher] outspend recovery for ${swap.id}: '
         '${isClaim ? 'claim' : 'refund'} already on-chain as $txid',
       );
@@ -921,7 +978,7 @@ class SwapWatcherService {
         status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
         receiveTxid: isClaim ? txid : null,
         refundTxid: isClaim ? null : txid,
-        completionTime: outspendStatus.timestamp ?? DateTime.now(),
+        completionTime: ours.timestamp ?? DateTime.now(),
       );
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _clearRetries(swap.id);
@@ -934,6 +991,32 @@ class SwapWatcherService {
       );
       return false;
     }
+  }
+
+  /// Whether [txid] is a transaction of the wallet that a successful
+  /// claim/refund of [swap] would have paid into. Claims to an external
+  /// address have no local wallet to check against and stay unverifiable
+  /// (false) until the outspend API can report the spender's outputs.
+  ///
+  /// Reads the wallet's persisted tx cache without forcing a sync: a false
+  /// negative only postpones settling until the next regular wallet sync,
+  /// whereas a false positive would wrongly finalize the swap.
+  Future<bool> _isOurWalletTx({
+    required Swap swap,
+    required bool isClaim,
+    required String txid,
+  }) async {
+    final walletId = switch (swap) {
+      ChainSwap() => isClaim ? swap.receiveWalletId : swap.sendWalletId,
+      LnReceiveSwap() => swap.receiveWalletId,
+      LnSendSwap() => swap.sendWalletId,
+    };
+    if (walletId == null) return false;
+    final tx = await _walletTransactionRepository.getWalletTransaction(
+      txid,
+      walletId: walletId,
+    );
+    return tx != null;
   }
 
   // RETRY BACKOFF
@@ -951,7 +1034,7 @@ class SwapWatcherService {
       attempts: attempts,
       nextAttemptAt: DateTime.now().add(clamped),
     );
-    log.info(
+    log.fine(
       '[SwapWatcher] swap $swapId attempt $attempts failed; next attempt '
       'after $clamped',
     );

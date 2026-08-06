@@ -6,7 +6,13 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
-_Nothing yet._
+### Bug Fixes
+
+- **Chain swaps can no longer be falsely marked completed by someone else's transaction**: the on-chain outspend recovery assumed the swap covenant was always the lockup transaction's first output and treated *any* spend of it as our claim. When Boltz's lockup carried its change at vout 0 (or Boltz refunded its own expired lockup), the swap was stamped `completed` with a stranger's txid, silently excluding it from the watcher forever while the user's own locked funds sat unrefunded. Recovery is now (1) a last resort — consulted only for restored swaps or when a broadcast is rejected because the lockup is already spent, (2) destination-verified — a candidate spender only settles the swap if that transaction actually exists in the receiving wallet, and (3) covenant-agnostic — every lockup output's spend is considered via the new `check_lockup_outspends` API (boltz-dart 0.5.2). A startup verification pass additionally retracts already mis-settled completions (recorded claim txid not found in the receiving wallet) so those swaps re-enter the watch set, pick up their real Boltz status, and drive the pending refund home. Diagnosed from a real user's stuck liquidToBitcoin swap whose ~0.0108 BTC refund never ran; their log census + on-chain forensics confirmed the vout-0 assumption as the root cause.
+
+### Diagnostics
+
+- **Swap census in exported logs**: every app start now logs one `[SwapCensus]` line enumerating all locally stored swaps (status, key index, recorded txids, completion time) plus the app version at FINE level, so a single user log export shows exactly which local state keeps a swap out of the watch set. The census runs from app startup after migrations — the previous watcher-constructor attempt raced SQLite init and silently logged nothing.
 
 ---
 

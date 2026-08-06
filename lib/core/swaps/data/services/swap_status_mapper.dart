@@ -94,14 +94,25 @@ class SwapStatusMapper {
     if (from == to) return true;
 
     if (from == swap_entity.SwapStatus.completed) {
-      if (to != swap_entity.SwapStatus.claimable) return false;
-      return switch (swap) {
+      // "Completed" without a recorded settlement tx is unproven — the row
+      // may be a mis-settled recovery (e.g. an outspend check that mistook
+      // Boltz's own spend for our claim). Such a swap may move wherever the
+      // server's status points: back to claimable, or — when our lockup is
+      // still out there unrefunded — to refundable, so the funds can come
+      // home instead of staying stranded behind a bogus terminal state.
+      final unproven = switch (swap) {
         LnReceiveSwapModel(:final receiveTxid, :final wasDirectPayment) =>
           receiveTxid == null && !wasDirectPayment,
         ChainSwapModel(:final receiveTxid, :final refundTxid) =>
           receiveTxid == null && refundTxid == null,
         LnSendSwapModel() => false,
       };
+      if (!unproven) return false;
+      if (to == swap_entity.SwapStatus.claimable) return true;
+      if (to == swap_entity.SwapStatus.refundable) {
+        return _sendTxid(swap) != null && _refundTxid(swap) == null;
+      }
+      return false;
     }
     if (from == swap_entity.SwapStatus.refunded) return false;
 

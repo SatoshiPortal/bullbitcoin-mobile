@@ -517,9 +517,7 @@ class BoltzSwapRepository {
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: _isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
     // The index counter is keyed by the swap master key's OWN fingerprint —
     // NOT the default wallet's fingerprint (which keys the master key blob).
     // Both are 1:1 with the seed, so they stay consistent.
@@ -541,7 +539,7 @@ class BoltzSwapRepository {
       swapMasterKey.fingerprint,
       current + count,
     );
-    log.info(
+    log.fine(
       'SWAP_KEY: reserved index $current (count=$count) '
       'fp=${swapMasterKey.fingerprint}',
     );
@@ -557,6 +555,8 @@ class BoltzSwapRepository {
   }
 
   Future<void> updateSwap({required Swap swap}) {
+    // Debug: full-model writes must be as visible as updateSwapFields ones.
+    log.fine('[SwapStore] ${swap.id} full-write status=${swap.status.name}');
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 
@@ -574,6 +574,9 @@ class BoltzSwapRepository {
     int? claimFee,
     int? refundFee,
     DateTime? completionTime,
+    // Null means "keep" for every field above, so retracting a recorded
+    // claim tx (un-wedging a mis-settled swap) needs an explicit flag.
+    bool clearReceiveTxid = false,
   }) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
@@ -588,7 +591,7 @@ class BoltzSwapRepository {
     final updated = switch (swap) {
       LnReceiveSwap() => swap.copyWith(
         status: status ?? swap.status,
-        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveTxid: clearReceiveTxid ? null : receiveTxid ?? swap.receiveTxid,
         receiveAddress: receiveAddress ?? swap.receiveAddress,
         completionTime: completionTime ?? swap.completionTime,
         fees: fees,
@@ -603,7 +606,7 @@ class BoltzSwapRepository {
       ),
       ChainSwap() => swap.copyWith(
         status: status ?? swap.status,
-        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveTxid: clearReceiveTxid ? null : receiveTxid ?? swap.receiveTxid,
         refundTxid: refundTxid ?? swap.refundTxid,
         receiveAddress: receiveAddress ?? swap.receiveAddress,
         refundAddress: refundAddress ?? swap.refundAddress,
@@ -612,6 +615,16 @@ class BoltzSwapRepository {
       ),
     };
 
+    // Debug: every field mutation in one greppable line — the audit trail
+    // for how a swap reached a state the watcher no longer acts on.
+    log.fine(
+      '[SwapStore] $swapId'
+      '${status != null ? ' status=${swap.status.name}->${status.name}' : ''}'
+      '${receiveTxid != null ? ' receiveTxid=$receiveTxid' : ''}'
+      '${clearReceiveTxid ? ' receiveTxid=CLEARED(was ${swap is ChainSwap ? swap.receiveTxid : swap is LnReceiveSwap ? swap.receiveTxid : null})' : ''}'
+      '${refundTxid != null ? ' refundTxid=$refundTxid' : ''}'
+      '${completionTime != null ? ' completed' : ''}',
+    );
     await _boltz.storage.store(SwapModel.fromEntity(updated));
     return updated;
   }
@@ -761,17 +774,15 @@ class BoltzSwapRepository {
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: isTestnet,
-    );
-    log.info(
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
+    log.fine(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
     );
     final summaries = await _boltz.restoreSwapSummaries(
       swapMasterKey: swapMasterKey,
     );
-    log.info('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
+    log.fine('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
     return [
       for (final s in summaries)
         RestoredSwap(
@@ -846,9 +857,7 @@ class BoltzSwapRepository {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
   }) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: _isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
     final creationTime = restored.createdAt.millisecondsSinceEpoch;
     // A refund-action swap with funds still locked on-chain is stored as
     // refundable (not the terminal failed/expired/refunded the restore status
@@ -1020,7 +1029,7 @@ class BoltzSwapRepository {
     await _boltz.storage.store(model);
     subscribeToSwaps([id]);
     await reconcileSwaps([id]);
-    log.info('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
+    log.fine('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
     return model.toEntity();
   }
 
@@ -1081,8 +1090,9 @@ class BoltzSwapRepository {
   }
 
   Future<Invoice> decodeInvoice({required String invoice}) async {
-    final (sats, expired, bip21, description) =
-        await _boltz.decodeInvoice(invoice);
+    final (sats, expired, bip21, description) = await _boltz.decodeInvoice(
+      invoice,
+    );
     return Invoice(
       sats: sats,
       isExpired: expired,
@@ -1250,21 +1260,24 @@ class BoltzSwapRepository {
     }
   }
 
-  /// Checks the outspend status of a swap's lockup transaction
-  Future<SwapTxOutspend> checkSwapLockupOutspend({
+  /// Lists the spends of the swap's lockup tx outputs, one per spent vout.
+  /// An entry proves only that an output was spent — never that we were
+  /// paid; callers must verify a spender against their own wallet before
+  /// settling the swap on it.
+  Future<List<SwapTxOutspend>> checkLockupOutspends({
     required String swapId,
     required SwapType swapType,
     required Network network,
     outspend.SwapDirection? swapDirection,
     bool isClaim = true,
   }) async {
-    final model = await _boltz.checkSwapLockupOutspend(
+    final models = await _boltz.checkLockupOutspends(
       swapId: swapId,
       swapType: swapType,
       network: network,
       swapDirection: swapDirection,
       isClaim: isClaim,
     );
-    return model.toEntity();
+    return models.map((model) => model.toEntity()).toList();
   }
 }

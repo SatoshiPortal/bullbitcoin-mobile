@@ -1269,7 +1269,7 @@ class BoltzDatasource {
 
       switch (mapping) {
         case SwapStale():
-          log.info(
+          log.fine(
             '[Boltz] deleting stale pending swap $swapId '
             '(no funds at risk, expired upstream)',
           );
@@ -1289,7 +1289,7 @@ class BoltzDatasource {
 
         case SwapUpdated(:final swap):
           await _boltzStore.store(swap);
-          log.info(
+          log.fine(
             '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
             '(event ${boltzStatus.name})',
           );
@@ -1599,8 +1599,12 @@ class BoltzDatasource {
     }
   }
 
-  /// Checks the outspend status of a swap's lockup transaction
-  Future<SwapTxOutspendModel> checkSwapLockupOutspend({
+  /// Lists the spends of the swap's lockup transaction outputs (server
+  /// lockup for claims, our own lockup for refunds): one entry per already
+  /// spent vout. No entry is proof of OUR claim/refund — the covenant can
+  /// sit at any vout and Boltz spends its own change/refunds through the
+  /// same tx — so callers must verify a spender actually paid them.
+  Future<List<SwapTxOutspendModel>> checkLockupOutspends({
     required String swapId,
     required swap_entity.SwapType swapType,
     required Network network,
@@ -1630,7 +1634,7 @@ class BoltzDatasource {
           }
         : null;
 
-    final outspendStatus = await checkVout0Outspend(
+    final outspends = await boltz.checkLockupOutspends(
       swapId: swapId,
       swapType: boltzSwapType,
       txKind: isClaim ? SwapTxKind.claim : SwapTxKind.refund,
@@ -1639,13 +1643,17 @@ class BoltzDatasource {
       chainSwapDirection: chainSwapDirection,
     );
 
-    return SwapTxOutspendModel(
-      txid: outspendStatus.txid,
-      timestamp: outspendStatus.timestamp != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              outspendStatus.timestamp!.toInt() * 1000,
-            )
-          : null,
-    );
+    return [
+      for (final outspend in outspends)
+        if (outspend.spenderTxid != null)
+          SwapTxOutspendModel(
+            txid: outspend.spenderTxid,
+            timestamp: outspend.timestamp != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                    outspend.timestamp!.toInt() * 1000,
+                  )
+                : null,
+          ),
+    ];
   }
 }
