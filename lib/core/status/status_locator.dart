@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
@@ -43,7 +42,6 @@ class StatusLocator {
         recoverBullRepository: locator<RecoverBullRepository>(),
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        fetchArkSecretUsecase: locator<FetchArkSecretUsecase>(),
         torStatusUsecase: locator<TorStatusUsecase>(),
       ),
     );

@@ -333,15 +333,6 @@
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "arkAboutDurationSeconds": "{seconds} 초",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "클립보드에 복사",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -394,10 +385,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "arkReceiveBoardingAddress": "BTC 탑승 주소",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "sellSendPaymentTitle": "결제방법",
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
@@ -446,10 +433,6 @@
   "recoverbullSelectErrorPrefix": "오류:",
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
-  },
-  "arkReceiveBtcAddress": "BTC 주소",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
   },
   "exchangeLandingRecommendedExchange": "Bitcoin 교환",
   "@exchangeLandingRecommendedExchange": {
@@ -530,10 +513,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "arkContinueButton": "계속하기",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
-  },
   "ledgerImportButton": "시작하기",
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
@@ -582,10 +561,6 @@
   "globalDefaultBitcoinWalletLabel": "안전한 Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
-  },
-  "arkAboutServerUrl": "서버 URL",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
   },
   "fundExchangeLabelRecipientAddress": "자주 묻는 질문",
   "@fundExchangeLabelRecipientAddress": {
@@ -677,10 +652,6 @@
   "importQrDeviceJadeStep5": "옵션 목록에서 \"Wallet\"을 선택하십시오",
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
-  },
-  "arkSettled": "옵션 정보",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "transactionFilterBuy": "구매하기",
   "@transactionFilterBuy": {
@@ -826,10 +797,6 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "arkReceiveSegmentBoarding": "회사연혁",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "exchangeLandingLoginToUseSupport": "교환 관련 문제에 대한 지원 채팅을 사용하려면 로그인 또는 가입하십시오.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -846,10 +813,6 @@
   "transactionLabelTransferStatus": "전송 상태",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
-  },
-  "arkSessionDuration": "세션 기간",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
   },
   "buyAboveMaxAmountError": "최대 금액 이상 구매하려고합니다.",
   "@buyAboveMaxAmountError": {
@@ -954,10 +917,6 @@
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
-  "arkSettleTransactions": "결제 옵션",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "transactionLabelConfirmationTime": "확인 시간",
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
@@ -981,10 +940,6 @@
   "receiveShareAddress": "회사연혁",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "관련 기사",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "이 지갑으로 지불 할 수있는 최대 금액 위에 지불하려고합니다.",
   "@payAboveMaxAmountError": {
@@ -1122,10 +1077,6 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "arkAvailable": "지원하다",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "transactionSwapDescChainFailed": "전송에 문제가 있었다. 자금이 24 시간 이내에 반환되지 않은 경우 지원에 문의하십시오.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -1133,10 +1084,6 @@
   "testBackupWarningMessage": "백업없이, 당신은 결국 돈에 액세스 잃게됩니다. 백업을 수행하는 것이 중요합니다.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "회사연혁",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "한국어",
   "@importWatchOnlyYpub": {
@@ -1364,10 +1311,6 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "arkSettleCancel": "이름 *",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "testBackupTapWordsInOrder": "복구 단어를 탭\n견적 요청",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1485,10 +1428,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "옵션 정보",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "최소 0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1590,10 +1529,6 @@
   "@sendErrorInsufficientFundsForPayment": {
     "description": "Error when insufficient funds available"
   },
-  "arkAboutShow": "제품정보",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
   "fundExchangeETransferTitle": "E-Transfer 세부사항",
   "@fundExchangeETransferTitle": {
     "description": "Screen title for E-Transfer payment details"
@@ -1625,19 +1560,6 @@
   "receiveNote": "* 이름",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
-  },
-  "arkCopiedToClipboard": "{label} 클립보드에 복사",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "자주 묻는 질문",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
   },
   "payLightningNetwork": "Lightning 네트워크",
   "@payLightningNetwork": {
@@ -1695,15 +1617,6 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "arkDurationMinutes": "{minutes} 분",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "충분한 균형",
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
@@ -1731,10 +1644,6 @@
   "sellKYCApproved": "KYC 승인",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "계좌정보",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "1 개월",
   "@dcaFrequencyMonthly": {
@@ -1915,10 +1824,6 @@
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
-  "arkAboutNetwork": "회사연혁",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
   "payLastName": "이름 *",
   "@payLastName": {
     "description": "Label for last name field"
@@ -2017,10 +1922,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "회사연혁",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "exchangeAmountInputValidationInsufficient": "충분한 균형",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
@@ -2033,10 +1934,6 @@
         "type": "String"
       }
     }
-  },
-  "arkTransactions": "계정 관리",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "broadcastSignedTxCameraButton": "관련 기사",
   "@broadcastSignedTxCameraButton": {
@@ -2061,10 +1958,6 @@
   "transactionFilterAll": "모든 것",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "arkSendTitle": "지원하다",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "지불 방법",
   "@transactionDetailLabelAmountReceived": {
@@ -2188,10 +2081,6 @@
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
   },
-  "arkDust": "제품정보",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "dcaConfirmPaymentMethod": "지불 방법",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -2223,10 +2112,6 @@
   "testBackupPassphrase": "패스phrase",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "arkSetupEnable": "사용 방법",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "기본 지갑을 삭제할 수 없습니다.",
   "@walletDeletionErrorDefaultWallet": {
@@ -2287,15 +2172,6 @@
   "paySinpeMonto": "계정 정보",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
-  },
-  "arkDurationSeconds": "{seconds} 초",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "receiveCopyOrScanAddressOnly": "복사 또는 스캔 주소 만",
   "@receiveCopyOrScanAddressOnly": {
@@ -2378,10 +2254,6 @@
   "buyConfirmBitcoinPrice": "Bitcoin 가격",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
-  },
-  "arkUnifiedAddressCopied": "법적 고지",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "transactionSwapDescLnSendCompleted": "번개 결제가 성공적으로 전송되었습니다! 지금 스왑이 완료됩니다.",
   "@transactionSwapDescLnSendCompleted": {
@@ -2780,10 +2652,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "Ark 즉시 결제",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "비밀번호",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -2835,10 +2703,6 @@
   "payAddressRequired": "자주 묻는 질문",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "거래내역",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "총 금액",
   "@payTotalAmount": {
@@ -2982,26 +2846,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "견적 요청",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "선택되지 않음",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} 일",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "지원하다",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "buyInputContinue": "계속하기",
   "@buyInputContinue": {
@@ -3034,15 +2881,6 @@
   "paySelectActiveWallet": "지갑을 선택하십시오",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} 시간",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "로그아웃",
   "@logoutConfirmationTitle": {
@@ -3177,10 +3015,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "계정 정보",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "그들은이 경고에 대해 걱정하지 말",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -3313,10 +3147,6 @@
   "backupCompletedTitle": "백업 완료!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
-  },
-  "arkDate": "(주)",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "psbtFlowInstructions": "관련 기사",
   "@psbtFlowInstructions": {
@@ -3513,10 +3343,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "회사 소개",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "importQrDeviceKeystoneStep5": "지갑 목록에서 \"BULL\"을 선택하십시오",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
@@ -3570,22 +3396,9 @@
       }
     }
   },
-  "arkDurationMinute": "{minutes} 분",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "문제가 있는 경우:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
-  },
-  "arkReceiveUnifiedCopied": "법적 고지",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
   },
   "importQrDeviceJadeStep9": "기기에서 QR 코드를 스캔합니다.",
   "@importQrDeviceJadeStep9": {
@@ -3630,10 +3443,6 @@
   "backupInstruction3": "당신의 12 단어 백업에 액세스 할 수있는 사람은 Bitcoins을 훔칠 수 있습니다. 그것을 잘 숨깁니다.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "이름 *",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "혜택",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -3951,10 +3760,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "Forfeit 주소",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "송금",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -3995,10 +3800,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "BTC 주소",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "이름 *",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -4010,10 +3811,6 @@
   "payBumpFee": "Bump 수수료",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "이름 *",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "시계 전용 지갑을 설정 ...",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -4034,10 +3831,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "SINPE를 사용하여 Colones 전송",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "Ark 즉시 지불",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "예상 배송 ~ ",
   "@sendEstimatedDelivery": {
@@ -4258,10 +4051,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "arkSendRecipientTitle": "자주 묻는 질문",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "제품정보",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
@@ -4269,10 +4058,6 @@
   "recoverbullPasswordTooShort": "비밀번호는 최소 6자 이상이어야 합니다",
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
-  },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
   },
   "payNetwork": "회사연혁",
   "@payNetwork": {
@@ -4290,10 +4075,6 @@
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
-  "arkBoardingConfirmed": "확인되는 널링",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
   "exchangeFileUploadInstructionsWithParams": "{maxFiles} 파일 업로드. 허용 형식 : PDF, JPG, PNG, GIF, HEIC. 최대 파일 크기: 파일 당 10MB.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4310,10 +4091,6 @@
   "backupWalletVaultProviderTakeYourTime": "자주 묻는 질문",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
-  },
-  "arkSettleIncludeRecoverable": "복구 가능한 vtxos 포함",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
   },
   "ledgerWalletTypeSegwitDescription": "Native SegWit - 추천",
   "@ledgerWalletTypeSegwitDescription": {
@@ -4374,10 +4151,6 @@
   "fiatCurrencySettingsLabel": "Fiat 통화",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
-  },
-  "arkStatusConfirmed": "이름 *",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
   },
   "withdrawConfirmAmount": "계정 정보",
   "@withdrawConfirmAmount": {
@@ -4443,10 +4216,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkServerPubkey": "서버 pubkey",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
   "testBackupPhysicalBackupDescription": "종이 조각에 12 단어를 쓰기. 그들을 안전하게 유지하고 그들을 잃지 않도록하십시오.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4478,10 +4247,6 @@
   "receiveWaitForSenderToFinish": "Payjoin 거래를 완료하는 sender를 기다립니다",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "Ark 설정",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
   "@seedsignerStep3": {
@@ -4643,10 +4408,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "으로",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "importQrDeviceJadeStep2": "메인 메뉴에서 \"QR 모드\"를 선택하십시오",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
@@ -4700,10 +4461,6 @@
   "sendErrorHardwareWalletCannotSwap": "하드웨어 지갑은 스왑에 사용할 수 없습니다.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "유효한 균형 자료 없음",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "autoswapWarningCardTitle": "Autoswap 사용 가능",
   "@autoswapWarningCardTitle": {
@@ -4916,10 +4673,6 @@
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
-  "arkReceiveCopyAddress": "본문 바로가기",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
   "testBackupErrorWriteFailed": "저장 실패에 쓰기: {error}",
   "@testBackupErrorWriteFailed": {
     "description": "Error when writing verification status to storage fails",
@@ -4949,10 +4702,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "arkSendAmountTitle": "자주 묻는 질문",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "translationWarningTitle": "AI-Generated 번역",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -4964,10 +4713,6 @@
   "payOnChainFee": "On-Chain 수수료",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
-  },
-  "arkReceiveUnifiedAddress": "통합 주소 (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
   },
   "sellHowToPayInvoice": "이 청구서를 지불하려면 어떻게해야합니까?",
   "@sellHowToPayInvoice": {
@@ -5041,17 +4786,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "거래 종료 및 필요한 경우 복구 가능한 vtxos 포함",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "공급 능력: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "Ark 거래가 성공했습니다!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "뚱 베어",
   "@sendSats": {
@@ -5188,14 +4925,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "Unilateral 출구 지연",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkStatusPending": "관련 기사",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "xpub 파일",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5203,10 +4932,6 @@
   "dcaInsufficientBalanceTitle": "충분한 균형",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
-  },
-  "arkType": "제품정보",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "백업없이, 당신은 결국 돈에 액세스 잃게됩니다. 백업을 수행하는 것이 중요합니다.",
   "@backupImportanceMessage": {
@@ -5243,10 +4968,6 @@
   "pinCodeConfirmTitle": "새로운 핀을 확인",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "arkSetupExperimentalWarning": "Ark는 여전히 실험입니다.\n\nArk 지갑은 주요 지갑의 씨앗 구문에서 파생됩니다. 추가 백업이 필요하지 않습니다. 기존 지갑 백업은 Ark 자금을 너무 복원합니다.\n\n계속, 당신은 Ark의 실험적 성격을 인정하고 잃는 자금의 위험.\n\n개발자 참고 : Ark secret는 arbitrary BIP-85 derivation (index 11811)를 사용하여 주요 지갑 씨앗에서 파생됩니다.",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "키 서버 ",
   "@keyServerLabel": {
@@ -5719,15 +5440,6 @@
   "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "arkAboutDustValue": "{dust} 토스",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - 장치의 화면 밝기 증가",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -5747,10 +5459,6 @@
   "recoverbullErrorServiceUnavailable": "서비스 제공 자주 묻는 질문.",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
-  },
-  "arkSettleTitle": "결제 옵션",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
   },
   "sendErrorInsufficientBalanceForSwap": "Liquid를 통해 이 스왑을 지불하고 Bitcoin을 통해 지불 할 수 없습니다.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5815,10 +5523,6 @@
   "sendReceiveNetworkFee": "네트워크 수수료",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "arkTxPayment": "제품 정보",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
   },
   "importQrDeviceSeedsignerStep6": "수출 옵션으로 \"Sparrow\"를 선택하십시오",
   "@importQrDeviceSeedsignerStep6": {
@@ -5907,10 +5611,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "복구 가능한 vtxos 포함",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "결제가 완료되고 수령자는 자금을 받았습니다.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -5955,10 +5655,6 @@
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
-  "arkReceiveTitle": "Ark 수신",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
   "payDebitCardNumberHint": "직불 카드 번호 입력",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -6002,10 +5698,6 @@
   "exchangeFeatureSelfCustody": "• Bitcoin을 Self-custody로 구매하십시오",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "arkBoardingUnconfirmed": "납땜 Unconfirmed",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "지불 묘사",
   "@fundExchangeLabelPaymentDescription": {
@@ -6132,10 +5824,6 @@
   "coldcardStep9": "거래가 Coldcard에 수입되면 목적지 주소와 금액을 검토하십시오.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "ARK 결제 요청은 실험적인 Ark 기능에서만 가능합니다.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "지원하다 사이트맵",
   "@exchangeKycComplete": {
@@ -6422,15 +6110,6 @@
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
   },
-  "arkAboutDurationDays": "{days} 일",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "지불 세부사항",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -6524,10 +6203,6 @@
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
   },
-  "arkAboutForfeitAddress": "Forfeit 주소",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "kruxStep13": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
@@ -6581,10 +6256,6 @@
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
   },
-  "arkAboutDust": "제품정보",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
   "ledgerSuccessVerifyDescription": "주소는 Ledger 장치에 확인되었습니다.",
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
@@ -6617,10 +6288,6 @@
   "@buySelfie": {
     "description": "Type of document required"
   },
-  "arkAboutSecretKey": "비밀 키",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "sellMxnBalance": "비트 코인 (주)",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
@@ -6637,10 +6304,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "이름 *",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "Ledger에 주소 확인",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -6656,10 +6319,6 @@
   "backupSettingsKeyWarningBold": "경고: 백업 키를 저장하는 것을 조심하십시오.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "한국어",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "exchangeLandingConnectAccount": "Bull Bitcoin 교환 계정 연결",
   "@exchangeLandingConnectAccount": {
@@ -6765,10 +6424,6 @@
   "mempoolCustomServerLabel": "제품정보",
   "@mempoolCustomServerLabel": {
     "description": "Label badge for custom server"
-  },
-  "arkAboutSessionDuration": "세션 기간",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
   },
   "transferFeeLabel": "송금 수수료",
   "@transferFeeLabel": {
@@ -6882,10 +6537,6 @@
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
-  "arkSendConfirm": "제품정보",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "rbfErrorFeeTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
@@ -6901,15 +6552,6 @@
   "jadeStep10": "버튼을 클릭해서 거래에 로그인하세요.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "arkAboutDurationHour": "{hours} 시간",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenUnknownError": "Unknown 오류가 발생했습니다",
   "@bitboxScreenUnknownError": {
@@ -6935,21 +6577,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkAboutTitle": "제품정보",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "교육 ...",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "복구 Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "psbtFlowTransactionImported": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
   "@psbtFlowTransactionImported": {
@@ -7139,10 +6769,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "Boarding 출구 지연",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "exchangeDcaFrequencyHour": "1시간",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7166,10 +6792,6 @@
   "importQrDeviceSuccess": "지갑은 성공적으로 수입했습니다",
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
-  },
-  "arkTxSettlement": "옵션 정보",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "autoswapEnable": "Enable 자동 이동",
   "@autoswapEnable": {
@@ -7325,10 +6947,6 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "arkConfirmed": "이름 *",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
   "importQrDevicePassportStep6": "\"Single-sig\" 선택",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
@@ -7411,10 +7029,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "arkAboutEsploraUrl": "에스플러라 URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
   "backupKeyExampleWarning": "예를 들어, 백업 파일에 Google Drive를 사용한다면, 백업 키에 Google Drive를 사용하지 마십시오.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -7487,10 +7101,6 @@
   "backupSettingsBackupKey": "백업 키",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "거래 ID",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "클립보드에 복사",
   "@payInvoiceCopied": {
@@ -7814,10 +7424,6 @@
       }
     }
   },
-  "arkSendConfirmedBalance": "확인된 균형",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
   "sellFastest": "빠른 속도",
   "@sellFastest": {
     "description": "Display text for fastest fee option"
@@ -7926,10 +7532,6 @@
   "backupSettingsSecurityWarning": "보안 경고",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
-  },
-  "arkCopyAddress": "본문 바로가기",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
   },
   "sendScheduleFor": "{date}에 대한 일정",
   "@sendScheduleFor": {
@@ -8127,24 +7729,6 @@
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
   },
-  "arkAboutDurationDay": "{days} 일",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} 시간",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "이 요금은 전송된 금액에서 공제됩니다",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -8172,10 +7756,6 @@
   "recoverbullTorNotStarted": "시작되지 않음",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
-  },
-  "arkPending": "관련 기사",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
   },
   "transactionOrderLabelOrderStatus": "주문 상태",
   "@transactionOrderLabelOrderStatus": {
@@ -8266,10 +7846,6 @@
   "recoverbullGoogleDriveDeleteButton": "기타 제품",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "균형 고장",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "exchangeDcaDeactivateTitle": "Recurring 구매",
   "@exchangeDcaDeactivateTitle": {
@@ -8381,10 +7957,6 @@
   "receivePayjoinFailQuestion": "기다리거나 payjoin이 보낸 사람의 측에 실패 했습니까?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
-  },
-  "arkSendConfirmTitle": "견적 요청",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
   },
   "importQrDeviceSeedsignerStep1": "당신의 SeedSigner 장치에 힘",
   "@importQrDeviceSeedsignerStep1": {
@@ -8838,10 +8410,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "균형 고장",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "거래가 SeedSigner에서 수입되면 서명하려는 씨앗을 선택해야합니다.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -8849,10 +8417,6 @@
   "sellSendPaymentPriceRefresh": "가격은 상쾌합니다 ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "arkAboutCopy": "관련 기사",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
   },
   "recoverbullPasswordRequired": "비밀번호필수",
   "@recoverbullPasswordRequired": {
@@ -8865,10 +8429,6 @@
   "payFirstName": "이름 *",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "아직 거래 없음.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "recoverViaCloudDescription": "PIN을 사용하여 클라우드를 통해 백업을 복구합니다.",
   "@recoverViaCloudDescription": {
@@ -8975,10 +8535,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "뚱 베어",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "최소: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -9068,10 +8624,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "arkSettleButton": "옵션 정보",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
   "electrumAddFailedError": "사용자 정의 서버 추가 실패",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
@@ -9080,22 +8632,9 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "arkAboutDurationHours": "{hours} 시간",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "일반 지갑",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "에스플러라 URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "시험되지 않음",
   "@backupSettingsNotTested": {
@@ -9182,10 +8721,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "arkAboutHide": "이름 *",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
   "ledgerProcessingVerify": "Ledger에 주소 표시 ...",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
@@ -9193,10 +8728,6 @@
   "coreScreensFeePriorityLabel": "요금 우선",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "arkSendPendingBalance": "대출 균형    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coreScreensLogsTitle": "제품정보",
   "@coreScreensLogsTitle": {
@@ -9241,10 +8772,6 @@
   "payBelowMinAmountError": "이 지갑으로 지불 할 수있는 최소 금액을 지불하려고합니다.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "한국어",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
   },
   "autoswapRecipientWalletInfo": "Bitcoin 지갑이 전송 된 자금을받을 수 있음을 선택하십시오 (필수)",
   "@autoswapRecipientWalletInfo": {
@@ -9345,10 +8872,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "감사합니다",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "importQrDevicePassportStep3": "선택 \"관리 계정\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
@@ -9376,10 +8899,6 @@
   "walletNetworkLiquid": "액체 네트워크",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "한국어",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "최대",
   "@swapMaxButton": {
@@ -9469,10 +8988,6 @@
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
   },
-  "arkUnifiedAddressBip21": "통합 주소 (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "pickPasswordOrPinButton": "{pinOrPassword} 대신 >>",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -9546,10 +9061,6 @@
   "testBackupGoogleDrivePrivacyPart4": "없음 ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "제품정보",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "sendCoinControl": "동전 통제",
   "@sendCoinControl": {
@@ -9808,10 +9319,6 @@
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
   },
-  "arkCollaborativeRedeem": "협력 Redeem",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
   "pinCodeCheckingStatus": "PIN 상태 확인",
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
@@ -9954,10 +9461,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "arkSendConfirmMessage": "전송하기 전에 거래의 세부 사항을 확인하시기 바랍니다.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
   "bitcoinSettingsLegacySeedsTitle": "레거시 씨앗",
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
@@ -10098,14 +9601,6 @@
   "exchangeAppSettingsDefaultCurrencyLabel": "기본 통화",
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
-  },
-  "arkSendRecipientError": "자주 묻는 질문",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkArkAddress": "Ark 주소",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
   },
   "payRecipientName": "이름 *",
   "@payRecipientName": {
@@ -10282,10 +9777,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "arkCopy": "관련 기사",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "건물 거래 ...",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -10350,10 +9841,6 @@
   "recoverbullConfirm": "제품정보",
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
-  },
-  "arkPendingBalance": "대출 균형",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "우리의 은행 국가는 영국입니다.",
   "@fundExchangeInfoBankCountryUk": {
@@ -10510,10 +9997,6 @@
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
-  "arkSendRecipientLabel": "Recipient의 주소",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
   "defaultWalletsLabel": "기본 지갑",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
@@ -10558,10 +10041,6 @@
   "testBackupGoogleDrivePrivacyPart5": "bull Bitcoin과 공유하십시오.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "·",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "bitboxActionSignTransactionSuccessSubtext": "거래가 성공적으로 체결되었습니다.",
   "@bitboxActionSignTransactionSuccessSubtext": {
@@ -10644,10 +10123,6 @@
   "importQrDeviceKruxStep5": "기기에서 QR 코드를 스캔합니다.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "주요연혁",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "전송에 대한 이유로 이것을 추가",
   "@fundExchangeHelpTransferCode": {
@@ -10745,15 +10220,6 @@
   "psbtFlowMoveCloserFurther": "장치를 더 가까이 이동하거나 더 멀리",
   "@psbtFlowMoveCloserFurther": {
     "description": "Troubleshooting tip to adjust distance"
-  },
-  "arkAboutDurationMinutes": "{minutes} 분",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "swapProgressTitle": "내부 전송",
   "@swapProgressTitle": {
@@ -10940,15 +10406,6 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "arkAboutDurationMinute": "{minutes} 분",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "주문 및 계정 업데이트에 대한 이메일 알림 수신",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
@@ -10996,18 +10453,6 @@
   "electrumSaveFailedError": "고급 옵션을 저장할 실패",
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
-  },
-  "arkSettleTransactionCount": "정착 {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenWalletTypeLabel": "지갑 유형:",
   "@bitboxScreenWalletTypeLabel": {
@@ -11241,10 +10686,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "이름 *",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "Retry Count는 부정적인 수 없습니다",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -11309,10 +10750,6 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "arkSettleMessage": "거래 종료 및 필요한 경우 복구 가능한 vtxos 포함",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "receiveCopyInvoice": "복사 송장",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -11336,10 +10773,6 @@
   "recoverbullGoogleDriveDeleteConfirmation": "이 vault 백업을 삭제하시겠습니까? 이 동작은 undone일 수 없습니다.",
   "@recoverbullGoogleDriveDeleteConfirmation": {
     "description": "Confirmation message for deleting a vault backup"
-  },
-  "arkReceiveArkAddress": "Ark 주소",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
   },
   "googleDriveSignInMessage": "Google Drive에 로그인해야 합니다",
   "@googleDriveSignInMessage": {
@@ -11370,10 +10803,6 @@
       }
     }
   },
-  "arkServerUrl": "서버 URL",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -11385,15 +10814,6 @@
   "importQrDeviceKeystoneStep1": "당신의 Keystone에 힘",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} 일",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 신생 동물",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -11622,10 +11042,6 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "arkAboutBoardingExitDelay": "Boarding 출구 지연",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
   "receiveConfirmedInFewSeconds": "몇 초 안에 확인됩니다",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
@@ -11695,10 +11111,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "확인된 균형",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "주요메뉴",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -11748,10 +11160,6 @@
   "backupWalletPhysicalBackupTitle": "물리적 백업",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "arkTxBoarding": "회사연혁",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "bitboxActionVerifyAddressSuccess": "성공 사례",
   "@bitboxActionVerifyAddressSuccess": {
@@ -11850,10 +11258,6 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "arkAboutUnilateralExitDelay": "Unilateral 출구 지연",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
   "payUnsupportedInvoiceType": "지원된 송장 유형",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
@@ -11945,15 +11349,6 @@
   "encryptedVaultDescription": "클라우드를 사용하여 강력한 암호화를 가진 익명 백업.",
   "@encryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "arkAboutCopiedMessage": "{label} 클립보드에 복사",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "swapAmountLabel": "계정 정보",
   "@swapAmountLabel": {
@@ -12104,10 +11499,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "arkAboutServerPubkey": "서버 pubkey",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "receiveReceiveAmount": "결제하기",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -12192,10 +11583,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "관련 상품",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "본문 바로가기",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -12235,10 +11622,6 @@
   "bitboxScreenConnectDevice": "BitBox 장치 연결",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "1 년 전",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "요청 수량 : {amount}",
   "@amountRequestedLabel": {

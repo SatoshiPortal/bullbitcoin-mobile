@@ -45,16 +45,12 @@ sealed class PaymentRequest with _$PaymentRequest {
     @Default('') String pjos,
   }) = Bip21PaymentRequest;
 
-  const factory PaymentRequest.ark({required String address}) =
-      ArkPaymentRequest;
-
   const factory PaymentRequest.psbt({required String psbt}) =
       PsbtPaymentRequest;
 
   const PaymentRequest._();
 
   int? get amountSat => switch (this) {
-    ArkPaymentRequest() => null,
     BitcoinPaymentRequest() => null,
     LiquidPaymentRequest() => null,
     LnAddressPaymentRequest() => null,
@@ -66,10 +62,6 @@ sealed class PaymentRequest with _$PaymentRequest {
   static Future<PaymentRequest> parse(String data) async {
     try {
       final String trimmed = data.trim();
-
-      if (trimmed.toLowerCase().startsWith('ark:')) {
-        return PaymentRequest.ark(address: trimmed);
-      }
 
       if (trimmed.toLowerCase().startsWith('bitcoin:') ||
           trimmed.toLowerCase().startsWith('liquidnetwork:') ||
@@ -340,7 +332,6 @@ sealed class PaymentRequest with _$PaymentRequest {
   bool get isPsbt => this is PsbtPaymentRequest;
 
   bool get isTestnet => switch (this) {
-    ArkPaymentRequest() => false,
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
@@ -350,7 +341,6 @@ sealed class PaymentRequest with _$PaymentRequest {
   };
 
   String get name => switch (this) {
-    ArkPaymentRequest() => 'ARK',
     BitcoinPaymentRequest() => 'Bitcoin Onchain',
     LiquidPaymentRequest() => 'Liquid Onchain',
     LnAddressPaymentRequest() => 'Lightning Address',

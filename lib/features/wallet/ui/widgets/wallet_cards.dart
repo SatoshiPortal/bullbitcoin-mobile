@@ -1,13 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
-import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:go_router/go_router.dart';
 
 class WalletCards extends StatelessWidget {
   const WalletCards({
@@ -50,17 +47,6 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
 
-    final arkBalanceSat = context.select(
-      (WalletBloc bloc) => bloc.state.arkBalanceSat,
-    );
-    final isArkWalletSetup = context.select(
-      (WalletBloc bloc) => bloc.state.isArkWalletSetup,
-    );
-    final isArkWalletLoading = context.select(
-      (WalletBloc bloc) => bloc.state.isArkWalletLoading,
-    );
-    final arkWallet = context.select((WalletBloc bloc) => bloc.state.arkWallet);
-
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),
       child: Column(
@@ -75,20 +61,6 @@ class WalletCards extends StatelessWidget {
               isSyncing: syncStatus[w.id] ?? false,
               fiatCurrency: fiatCurrency,
               onTap: () => onTap?.call(w),
-            ),
-            const Gap(8),
-          ],
-          if (isArkWalletSetup) ...[
-            WalletCard(
-              tagColor: context.appColors.tertiary,
-              title: context.loc.walletArkInstantPayments,
-              description: context.loc.walletArkExperimental,
-              balanceSat: arkBalanceSat,
-              isSyncing: isArkWalletLoading,
-              onTap: () {
-                if (arkWallet == null) return;
-                context.pushNamed(ArkRoute.arkWalletDetail.name);
-              },
             ),
             const Gap(8),
           ],

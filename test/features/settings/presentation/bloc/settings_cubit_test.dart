@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
@@ -48,8 +47,6 @@ class _MockSetThemeModeUsecase extends Mock implements SetThemeModeUsecase {}
 
 class _MockGetOldSeedsUsecase extends Mock implements GetOldSeedsUsecase {}
 
-class _MockRevokeArkUsecase extends Mock implements RevokeArkUsecase {}
-
 class _MockSetErrorReportingUsecase extends Mock
     implements SetErrorReportingUsecase {}
 
@@ -80,7 +77,6 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setIsDevModeUsecase,
     required super.setThemeModeUsecase,
     required super.getOldSeedsUsecase,
-    required super.revokeArkUsecase,
     required super.setErrorReportingUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
@@ -115,7 +111,6 @@ void main() {
       setIsDevModeUsecase: _MockSetIsDevModeUsecase(),
       setThemeModeUsecase: _MockSetThemeModeUsecase(),
       getOldSeedsUsecase: _MockGetOldSeedsUsecase(),
-      revokeArkUsecase: _MockRevokeArkUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),

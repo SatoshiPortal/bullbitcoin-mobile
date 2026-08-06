@@ -333,15 +333,6 @@
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "arkAboutDurationSeconds": "{seconds} saniyeler",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "Fatura klip için kopyalandı",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -394,10 +385,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "arkReceiveBoardingAddress": "BTC Yönetim Adresi",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "sellSendPaymentTitle": "Doğru ödeme",
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
@@ -446,10 +433,6 @@
   "recoverbullSelectErrorPrefix": "Hata:",
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
-  },
-  "arkReceiveBtcAddress": "BTC adresi",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
   },
   "exchangeLandingRecommendedExchange": "Önerilen Bitcoin Exchange",
   "@exchangeLandingRecommendedExchange": {
@@ -530,10 +513,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "arkContinueButton": "Devam etmeye devam et",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
-  },
   "ledgerImportButton": "Başlayın",
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
@@ -582,10 +561,6 @@
   "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
-  },
-  "arkAboutServerUrl": "Server URL",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
   },
   "fundExchangeLabelRecipientAddress": "Resepsiyon",
   "@fundExchangeLabelRecipientAddress": {
@@ -677,10 +652,6 @@
   "importQrDeviceJadeStep5": "Seçenek listesinden \"Wallet\" seçin",
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
-  },
-  "arkSettled": "Settled",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "transactionFilterBuy": "Satın Al Satın Al",
   "@transactionFilterBuy": {
@@ -822,10 +793,6 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "arkReceiveSegmentBoarding": "Yönetim Kurulu",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "exchangeLandingLoginToUseSupport": "Değişimle ilgili sorunlar için destek sohbetini kullanmak üzere lütfen giriş yapın veya kaydolun.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -842,10 +809,6 @@
   "transactionLabelTransferStatus": "Transfer durumu",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
-  },
-  "arkSessionDuration": "Oturum süresi",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
   },
   "buyAboveMaxAmountError": "Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.",
   "@buyAboveMaxAmountError": {
@@ -950,10 +913,6 @@
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
-  "arkSettleTransactions": "Settle Transactions",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "transactionLabelConfirmationTime": "Onay zamanı",
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
@@ -977,10 +936,6 @@
   "receiveShareAddress": "Share Address",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "Pending",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "Bu cüzdanla ödenebilecek maksimum miktarın üzerinde ödemeye çalışıyorsunuz.",
   "@payAboveMaxAmountError": {
@@ -1118,10 +1073,6 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "arkAvailable": "Mevcut kullanılabilir",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "transactionSwapDescChainFailed": "Transferinizle ilgili bir sorun vardı. Lütfen fonlar 24 saat içinde iade edilmediyse iletişim desteği.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -1129,10 +1080,6 @@
   "testBackupWarningMessage": "Bir yedekleme olmadan, sonunda paranıza erişimi kaybedersiniz. Bir yedekleme yapmak eleştireldir.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "Ağ Ağı Ağı",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
@@ -1360,10 +1307,6 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "arkSettleCancel": "Cancel",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "testBackupTapWordsInOrder": "Kurtarma kelimelerini içeri girin\nDoğru düzen",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1481,10 +1424,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "Settled",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1586,10 +1525,6 @@
   "@sendErrorInsufficientFundsForPayment": {
     "description": "Error when insufficient funds available"
   },
-  "arkAboutShow": "Show",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
   "fundExchangeETransferTitle": "E-Transfer ayrıntıları",
   "@fundExchangeETransferTitle": {
     "description": "Screen title for E-Transfer payment details"
@@ -1621,19 +1556,6 @@
   "receiveNote": "Not",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
-  },
-  "arkCopiedToClipboard": "{label} klipler için kopyalandı",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Resepsiyon",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
   },
   "payLightningNetwork": "Lightning Network",
   "@payLightningNetwork": {
@@ -1691,15 +1613,6 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "arkDurationMinutes": "{minutes} dakika",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "Yetersiz Denge",
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
@@ -1727,10 +1640,6 @@
   "sellKYCApproved": "APC onaylandı",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "i̇şlem",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "ay",
   "@dcaFrequencyMonthly": {
@@ -1907,10 +1816,6 @@
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
-  "arkAboutNetwork": "Ağ Ağı Ağı",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
   "payLastName": "Son Ad",
   "@payLastName": {
     "description": "Label for last name field"
@@ -2009,10 +1914,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "Yönetim Kurulu",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "exchangeAmountInputValidationInsufficient": "Yeterli bakiye",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
@@ -2025,10 +1926,6 @@
         "type": "String"
       }
     }
-  },
-  "arkTransactions": "i̇şlem işlemleri işlemleri",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "broadcastSignedTxCameraButton": "Kamera",
   "@broadcastSignedTxCameraButton": {
@@ -2053,10 +1950,6 @@
   "transactionFilterAll": "Bütün Bütün Hepsi",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "arkSendTitle": "Send Send Send Gönder",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "$ aldı",
   "@transactionDetailLabelAmountReceived": {
@@ -2180,10 +2073,6 @@
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
   },
-  "arkDust": "Toz",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "dcaConfirmPaymentMethod": "Ödeme yöntemi",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -2215,10 +2104,6 @@
   "testBackupPassphrase": "Passphrase",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "arkSetupEnable": "Enable Ark",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "Varsayılan bir cüzdanı silemezsiniz.",
   "@walletDeletionErrorDefaultWallet": {
@@ -2279,15 +2164,6 @@
   "paySinpeMonto": "$",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
-  },
-  "arkDurationSeconds": "{seconds} saniyeler",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "receiveCopyOrScanAddressOnly": "Kopya veya tarama adresi sadece",
   "@receiveCopyOrScanAddressOnly": {
@@ -2370,10 +2246,6 @@
   "buyConfirmBitcoinPrice": "Bitcoin Fiyatı",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
-  },
-  "arkUnifiedAddressCopied": "Özgün metin",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "transactionSwapDescLnSendCompleted": "Lightning ödeme başarıyla gönderildi! Sizin takasınız şimdi tamamlandı.",
   "@transactionSwapDescLnSendCompleted": {
@@ -2772,10 +2644,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "Ark Instant ödemeleri",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "Şifre",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -2827,10 +2695,6 @@
   "payAddressRequired": "Adres gereklidir",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "İşlem detayları",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "Toplam Toplam Toplam Toplam",
   "@payTotalAmount": {
@@ -2974,26 +2838,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "Preconfirmed",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "Dosyayı seçmedi",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} gün",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "Send Send Send Gönder",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "buyInputContinue": "Devam etmeye devam et",
   "@buyInputContinue": {
@@ -3026,15 +2873,6 @@
   "paySelectActiveWallet": "Lütfen bir cüzdan seçin",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} saatler",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "Onay Logout",
   "@logoutConfirmationTitle": {
@@ -3169,10 +3007,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "$",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "Bu uyarı hakkında endişelenmediğinizi söylüyorlar",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -3305,10 +3139,6 @@
   "backupCompletedTitle": "Backup tamamlandı!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
-  },
-  "arkDate": "Tarih Tarihi",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "psbtFlowInstructions": "Talimatlar",
   "@psbtFlowInstructions": {
@@ -3501,10 +3331,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "Deneysel",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "importQrDeviceKeystoneStep5": "Cüzdanların listesinden \"BULL\" seçin",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
@@ -3558,22 +3384,9 @@
       }
     }
   },
-  "arkDurationMinute": "{minutes} dakika",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Bir sorun taramanız varsa:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
-  },
-  "arkReceiveUnifiedCopied": "Özgün metin",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
   },
   "importQrDeviceJadeStep9": "Cihazınızda gördüğünüz QR kodunu tara.",
   "@importQrDeviceJadeStep9": {
@@ -3618,10 +3431,6 @@
   "backupInstruction3": "12 kelime yedeklemenize erişimli herhangi biri bitcoinlerinizi çalabilir. İyi bir şekilde Gizlen.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "Redeem",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "Beneficiary address",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -3939,10 +3748,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "Forfeit address",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "Transfer Yeniden finanse edildi",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -3983,10 +3788,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "BTC adresi",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "Kabul Kabul Al",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -3998,10 +3799,6 @@
   "payBumpFee": "Bump Fee",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "Cancel",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "Saat-sadece cüzdanınızı kurmak...",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -4022,10 +3819,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "SINPE kullanarak Transfer Kolonleri",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "Ark Instant Payments",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "Tahmin edilen teslimat - ",
   "@sendEstimatedDelivery": {
@@ -4238,10 +4031,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "arkSendRecipientTitle": "Recipient",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "İthalat",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
@@ -4249,10 +4038,6 @@
   "recoverbullPasswordTooShort": "Şifre en az 6 karakter uzunluğunda olmalıdır",
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
-  },
-  "arkAddressPlaceholder": "san1qp9wsjfpsj5v5ex022v6..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
   },
   "payNetwork": "Ağ Ağı Ağı",
   "@payNetwork": {
@@ -4270,10 +4055,6 @@
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
-  "arkBoardingConfirmed": "Onaylandı",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
   "exchangeFileUploadInstructionsWithParams": "{maxFiles} dosyalarına yük. İzinli formatlar: PDF, JPG, GIF, HEIC. Maksimum dosya büyüklüğü: dosya başına 10MB.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4290,10 +4071,6 @@
   "backupWalletVaultProviderTakeYourTime": "Zamanınızı alın",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
-  },
-  "arkSettleIncludeRecoverable": "Yeniden kullanılabilir vtxos",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
   },
   "ledgerWalletTypeSegwitDescription": "Yerli SegWit - Önerilen",
   "@ledgerWalletTypeSegwitDescription": {
@@ -4354,10 +4131,6 @@
   "fiatCurrencySettingsLabel": "Fiat para birimi",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
-  },
-  "arkStatusConfirmed": "Onaylandı",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
   },
   "withdrawConfirmAmount": "$",
   "@withdrawConfirmAmount": {
@@ -4423,10 +4196,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkServerPubkey": "Server",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
   "testBackupPhysicalBackupDescription": "Kağıt parçası üzerine 12 kelime yazın. Onları güvende tut ve onları kaybetmemek için emin olun.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4458,10 +4227,6 @@
   "receiveWaitForSenderToFinish": "Gönderimi bitirmek için bekleyin",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "Ark Build",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "Bull cüzdanında gösterilen QR kodu",
   "@seedsignerStep3": {
@@ -4623,10 +4388,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "Bugün",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "importQrDeviceJadeStep2": "Ana menüden \"QR Mode\" seçin",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
@@ -4680,10 +4441,6 @@
   "sendErrorHardwareWalletCannotSwap": "Donanım cüzdanları takaslar için kullanılamaz.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "Mevcut herhangi bir denge veri mevcut",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "autoswapWarningCardTitle": "Autoswap etkinleştirilir",
   "@autoswapWarningCardTitle": {
@@ -4896,10 +4653,6 @@
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
-  "arkReceiveCopyAddress": "Kopya adresi",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
   "testBackupErrorWriteFailed": "Depolama başarısız oldu: {error}",
   "@testBackupErrorWriteFailed": {
     "description": "Error when writing verification status to storage fails",
@@ -4929,10 +4682,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "arkSendAmountTitle": "Girin",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "translationWarningTitle": "AI-Generated Translations",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -4944,10 +4693,6 @@
   "payOnChainFee": "On-Chain Fee",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
-  },
-  "arkReceiveUnifiedAddress": "Birleşik adres (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
   },
   "sellHowToPayInvoice": "Bu faturayı nasıl ödemek istiyorsunuz?",
   "@sellHowToPayInvoice": {
@@ -5021,17 +4766,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "Beklemek işlemleri sonlandırır ve gerekirse iyi vtxos içerir",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "Özel yer: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "Ark işleminiz başarılı oldu!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "satrançlar",
   "@sendSats": {
@@ -5168,14 +4905,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "Unilateral çıkış gecikme gecikme gecikme gecikme gecikmesi",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkStatusPending": "Pending",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5183,10 +4912,6 @@
   "dcaInsufficientBalanceTitle": "Yetersiz Denge",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
-  },
-  "arkType": "Tipi",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "Bir yedekleme olmadan, sonunda paranıza erişimi kaybedersiniz. Bir yedekleme yapmak eleştireldir.",
   "@backupImportanceMessage": {
@@ -5223,10 +4948,6 @@
   "pinCodeConfirmTitle": "Yeni pin onaylayın",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "arkSetupExperimentalWarning": "Ark hala deneysel.\n\nArk cüzdanınız ana cüzdanınızın tohum cümlesinden elde edilir. Ek bir yedekleme gerekli değildir, mevcut cüzdan yedeklemeniz Ark fonlarınızı da geri yükler.\n\nDevam ederek, Ark'ın deneysel doğasını ve fonları kaybetme riskini kabul edersiniz.\n\nGeliştirici notu: Ark sırrı, büyük bir BIP-85 Türleme (index 11811) kullanarak ana cüzdan tohumlarından elde edilir.",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
@@ -5695,15 +5416,6 @@
   "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - Cihazınızda ekran parlaklığı artırmak",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -5723,10 +5435,6 @@
   "recoverbullErrorServiceUnavailable": "Hizmet mevcut değildir. Lütfen bağlantınızı kontrol edin.",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
-  },
-  "arkSettleTitle": "Settle Transactions",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
   },
   "sendErrorInsufficientBalanceForSwap": "Bu değişimi sıvı ile ödemek için yeterli bir denge değil ve Bitcoin üzerinden ödemek için takas sınırları içinde değil.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5787,10 +5495,6 @@
   "sendReceiveNetworkFee": "Ağ Ücreti Al",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "arkTxPayment": "Ödeme",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
   },
   "importQrDeviceSeedsignerStep6": "\"Sparrow\"u ihracat seçeneği olarak seçin",
   "@importQrDeviceSeedsignerStep6": {
@@ -5879,10 +5583,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "Yeniden kullanılabilir vtxos",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "Ödemeniz tamamlandı ve alıcı parayı aldı.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -5927,10 +5627,6 @@
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
-  "arkReceiveTitle": "Ark Kabul Edildi",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
   "payDebitCardNumberHint": "Gir debit kart numarası",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -5974,10 +5670,6 @@
   "exchangeFeatureSelfCustody": "• Bitcoin'i doğrudan kendi kendine özgü olarak satın alın",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "arkBoardingUnconfirmed": "Unconfirmed",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "Ödeme Açıklama",
   "@fundExchangeLabelPaymentDescription": {
@@ -6104,10 +5796,6 @@
   "coldcardStep9": "İşlem Soğuk Kartınızda ithal edildikten sonra, varış adresini ve miktarı gözden geçirin.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "ARK ödeme talepleri sadece deneysel Ark özelliklerinden temin edilebilir.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "Tamam your Complete your K",
   "@exchangeKycComplete": {
@@ -6394,15 +6082,6 @@
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
   },
-  "arkAboutDurationDays": "{days} günler",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "Ödeme Detayları",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -6496,10 +6175,6 @@
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
   },
-  "arkAboutForfeitAddress": "Forfeit address",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "kruxStep13": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
@@ -6553,10 +6228,6 @@
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
   },
-  "arkAboutDust": "Toz",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
   "ledgerSuccessVerifyDescription": "Adres Ledger cihazınızda doğrulandı.",
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
@@ -6589,10 +6260,6 @@
   "@buySelfie": {
     "description": "Type of document required"
   },
-  "arkAboutSecretKey": "Gizli Anahtar",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "sellMxnBalance": "MXN Denge dengesi",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
@@ -6609,10 +6276,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "Redeem",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "Adresi Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -6628,10 +6291,6 @@
   "backupSettingsKeyWarningBold": "Uyarı: Yedek anahtarını nereden kurtardığınızı dikkatli olun.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "Ark",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "exchangeLandingConnectAccount": "Your Bull Bitcoin exchange account",
   "@exchangeLandingConnectAccount": {
@@ -6737,10 +6396,6 @@
   "mempoolCustomServerLabel": "CUSTOM",
   "@mempoolCustomServerLabel": {
     "description": "Label badge for custom server"
-  },
-  "arkAboutSessionDuration": "Oturum süresi",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
   },
   "transferFeeLabel": "Transfer Ücreti",
   "@transferFeeLabel": {
@@ -6854,10 +6509,6 @@
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
-  "arkSendConfirm": "Onay Onay Onay Onaylandı",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "rbfErrorFeeTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
@@ -6873,15 +6524,6 @@
   "jadeStep10": "Jade üzerinde işlemi imzalamak için düğmeleri tıklayın.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "arkAboutDurationHour": "{hours} saat",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenUnknownError": "Bilinmeyen hata meydana geldi",
   "@bitboxScreenUnknownError": {
@@ -6907,17 +6549,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkSendRecipientHint": "san1qp9wsjfpsj5v5ex022v6..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "Hesaplama...",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "Recoverable Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "psbtFlowTransactionImported": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
   "@psbtFlowTransactionImported": {
@@ -7098,10 +6732,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "Çıkış gecikme gecikmesi",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "exchangeDcaFrequencyHour": "saat",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7125,10 +6755,6 @@
   "importQrDeviceSuccess": "Cüzdan başarıyla ithal etti başarıyla",
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
-  },
-  "arkTxSettlement": "Çözüm",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "autoswapEnable": "Enable Auto Transfer",
   "@autoswapEnable": {
@@ -7284,10 +6910,6 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "arkConfirmed": "Onaylandı",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
   "importQrDevicePassportStep6": "\"Single-sig\" seçin",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
@@ -7370,10 +6992,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "arkAboutEsploraUrl": "Esplora URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
   "backupKeyExampleWarning": "Örneğin, Google Drive'ı yedekleme dosyasınız için kullandıysanız, Google Drive'ı yedekleme anahtarınız için kullanmayın.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -7442,10 +7060,6 @@
   "backupSettingsBackupKey": "Backup Keyif",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "İşlem ID",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "Fatura klip için kopyalandı",
   "@payInvoiceCopied": {
@@ -7756,10 +7370,6 @@
       }
     }
   },
-  "arkSendConfirmedBalance": "Onaylandım",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
   "sellFastest": "En hızlı",
   "@sellFastest": {
     "description": "Display text for fastest fee option"
@@ -7868,10 +7478,6 @@
   "backupSettingsSecurityWarning": "Güvenlik Uyarısı",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
-  },
-  "arkCopyAddress": "Kopya adresi",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
   },
   "sendScheduleFor": "{date}",
   "@sendScheduleFor": {
@@ -8069,24 +7675,6 @@
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
   },
-  "arkAboutDurationDay": "{days} gün",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} saat",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "Bu ücretler gönderilen miktartan silinecektir",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -8114,10 +7702,6 @@
   "recoverbullTorNotStarted": "Tor başlamadı",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
-  },
-  "arkPending": "Pending",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
   },
   "transactionOrderLabelOrderStatus": "Sipariş Durumu",
   "@transactionOrderLabelOrderStatus": {
@@ -8208,10 +7792,6 @@
   "recoverbullGoogleDriveDeleteButton": "Delete",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "Denge bozulması",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Buy",
   "@exchangeDcaDeactivateTitle": {
@@ -8310,10 +7890,6 @@
   "receivePayjoinFailQuestion": "Kiracının tarafında beklemek veya parajoin başarısız oldu mu?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
-  },
-  "arkSendConfirmTitle": "Onay Gönder",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
   },
   "importQrDeviceSeedsignerStep1": "SeedSigner cihazınızda güç",
   "@importQrDeviceSeedsignerStep1": {
@@ -8763,10 +8339,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "Balance Breakdown",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "İşlem SeedSigner'inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -8774,10 +8346,6 @@
   "sellSendPaymentPriceRefresh": "Fiyat yenilenecek ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "arkAboutCopy": "Kopya kopya",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
   },
   "recoverbullPasswordRequired": "Şifre gereklidir",
   "@recoverbullPasswordRequired": {
@@ -8790,10 +8358,6 @@
   "payFirstName": "İlk Adı",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "Henüz işlem yok.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "recoverViaCloudDescription": "Yedeklerinizi PIN'inizi kullanarak bulut aracılığıyla yeniden keşfedin.",
   "@recoverViaCloudDescription": {
@@ -8900,10 +8464,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "satrançlar",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "Asgari: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -8989,10 +8549,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "arkSettleButton": "Settle",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
   "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu ",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
@@ -9001,22 +8557,9 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "arkAboutDurationHours": "{hours} saatler",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "Genric cüzdanlar",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "Test edilmedi",
   "@backupSettingsNotTested": {
@@ -9103,10 +8646,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "arkAboutHide": "Hide Hide Gizle",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
   "ledgerProcessingVerify": "Ledger'e hitap etmek...",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
@@ -9114,10 +8653,6 @@
   "coreScreensFeePriorityLabel": "Ücret Önceliği",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "arkSendPendingBalance": "Pending Balance    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coreScreensLogsTitle": "Logs",
   "@coreScreensLogsTitle": {
@@ -9162,10 +8697,6 @@
   "payBelowMinAmountError": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "Ark",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
   },
   "autoswapRecipientWalletInfo": "Bitcoin cüzdanının transfer edilen fonları alacağını seçin (required)",
   "@autoswapRecipientWalletInfo": {
@@ -9266,10 +8797,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "Başarılı Gönder",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "importQrDevicePassportStep3": "\"Manage Hesabı\" seçin",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
@@ -9297,10 +8824,6 @@
   "walletNetworkLiquid": "Sıvı Ağ Ağı",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "Ark",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
@@ -9390,10 +8913,6 @@
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
   },
-  "arkUnifiedAddressBip21": "Birleşik adres (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "pickPasswordOrPinButton": "Bunun yerine bir {pinOrPassword} seç >>",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -9467,10 +8986,6 @@
   "testBackupGoogleDrivePrivacyPart4": "asla ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "Onay Onay Onay Onaylandı",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "sendCoinControl": "Coin Control",
   "@sendCoinControl": {
@@ -9729,10 +9244,6 @@
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
   },
-  "arkCollaborativeRedeem": "Collaborative Redeem",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
   "pinCodeCheckingStatus": "PIN statüsünü kontrol edin",
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
@@ -9875,10 +9386,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "arkSendConfirmMessage": "Lütfen göndermeden önce işlemin ayrıntılarını onaylayın.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
   "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
@@ -10019,14 +9526,6 @@
   "exchangeAppSettingsDefaultCurrencyLabel": "Para iade parametresi",
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
-  },
-  "arkSendRecipientError": "Lütfen bir alıcıya girin",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkArkAddress": "Ark adresi",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
   },
   "payRecipientName": "Recipient name",
   "@payRecipientName": {
@@ -10203,10 +9702,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "arkCopy": "Kopya kopya",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "Yapı işlemi...",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -10271,10 +9766,6 @@
   "recoverbullConfirm": "Onay Onay Onay Onaylandı",
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
-  },
-  "arkPendingBalance": "Pending Balance",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "Banka ülkemiz Birleşik Krallık'tır.",
   "@fundExchangeInfoBankCountryUk": {
@@ -10431,10 +9922,6 @@
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
-  "arkSendRecipientLabel": "Recipient's address",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
   "defaultWalletsLabel": "Varsayılan Cüzdanlar",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
@@ -10479,10 +9966,6 @@
   "testBackupGoogleDrivePrivacyPart5": "bull Bitcoin ile paylaşılan.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "Toplam",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "bitboxActionSignTransactionSuccessSubtext": "İşleminiz başarıyla imzalanmıştır.",
   "@bitboxActionSignTransactionSuccessSubtext": {
@@ -10565,10 +10048,6 @@
   "importQrDeviceKruxStep5": "Cihazınızda gördüğünüz QR kodunu tara.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "Durum durumu",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "Bunu transfer sebebi olarak ekleyin",
   "@fundExchangeHelpTransferCode": {
@@ -10662,15 +10141,6 @@
   "psbtFlowMoveCloserFurther": "Cihazınızı daha yakın veya daha fazla hareket etmeye çalışın",
   "@psbtFlowMoveCloserFurther": {
     "description": "Troubleshooting tip to adjust distance"
-  },
-  "arkAboutDurationMinutes": "{minutes} dakika",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "swapProgressTitle": "İç Transfer",
   "@swapProgressTitle": {
@@ -10857,15 +10327,6 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "arkAboutDurationMinute": "{minutes} dakika",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "Siparişler ve hesap güncelleştirmeleri için e-posta bildirimleri alın",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
@@ -10913,18 +10374,6 @@
   "electrumSaveFailedError": "Gelişmiş seçenekleri kurtarmak için başarısız oldu",
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
-  },
-  "arkSettleTransactionCount": "{count} {transaction} sonuçlandır",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenWalletTypeLabel": "Cüzdan Türü:",
   "@bitboxScreenWalletTypeLabel": {
@@ -11149,10 +10598,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "Kabul Kabul Al",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "Retry Count olumsuz olamaz",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -11217,10 +10662,6 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "arkSettleMessage": "Beklemek işlemleri sonlandırır ve gerekirse iyi vtxos içerir",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "receiveCopyInvoice": "Kopyalama",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -11244,10 +10685,6 @@
   "recoverbullGoogleDriveDeleteConfirmation": "Bu küçük yedeklemeyi silmek istediğinizden emin misiniz? Bu eylem geri alınamaz.",
   "@recoverbullGoogleDriveDeleteConfirmation": {
     "description": "Confirmation message for deleting a vault backup"
-  },
-  "arkReceiveArkAddress": "Ark adresi",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
   },
   "googleDriveSignInMessage": "Google Drive'a imzalamanız gerekecek",
   "@googleDriveSignInMessage": {
@@ -11278,10 +10715,6 @@
       }
     }
   },
-  "arkServerUrl": "Server URL",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "Import etmek için bir cüzdan türü seçin",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -11293,15 +10726,6 @@
   "importQrDeviceKeystoneStep1": "Keystone üzerinde güç",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} günler",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministik Entropiler",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -11517,10 +10941,6 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "arkAboutBoardingExitDelay": "Çıkış gecikme gecikmesi",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
   "receiveConfirmedInFewSeconds": "Birkaç saniye içinde doğrulanacaktır",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
@@ -11586,10 +11006,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "Onaylandım",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "Yerli Segwit",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -11639,10 +11055,6 @@
   "backupWalletPhysicalBackupTitle": "Fiziksel yedekleme",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "arkTxBoarding": "Yönetim Kurulu",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "bitboxActionVerifyAddressSuccess": "Adres TYT başarıyla başarılı bir şekilde",
   "@bitboxActionVerifyAddressSuccess": {
@@ -11741,10 +11153,6 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "arkAboutUnilateralExitDelay": "Unilateral çıkış gecikme gecikme gecikme gecikme gecikmesi",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
   "payUnsupportedInvoiceType": "Desteksiz fatura türü",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
@@ -11836,15 +11244,6 @@
   "encryptedVaultDescription": "Bulutunuzu kullanarak güçlü şifreleme ile anonim yedekleme.",
   "@encryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "arkAboutCopiedMessage": "{label} klipler için kopyalandı",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "swapAmountLabel": "$",
   "@swapAmountLabel": {
@@ -11991,10 +11390,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "arkAboutServerPubkey": "Server",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "receiveReceiveAmount": "Kabul Miktarı",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -12079,10 +11474,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "Komünizm",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "Göreve Katılın",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -12122,10 +11513,6 @@
   "bitboxScreenConnectDevice": "BitBox Cihazınızı Bağlayın",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "Dün",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "Para talep etti: {amount}",
   "@amountRequestedLabel": {
@@ -12284,10 +11671,6 @@
   "buyProofOfAddress": "Adresin Kanıtı",
   "@buyProofOfAddress": {
     "description": "Type of document required"
-  },
-  "arkAboutTitle": "Hakkında",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
   },
   "exchangeSettingsSecuritySettingsTitle": "Güvenlik Düzeyi Ayarı",
   "@exchangeSettingsSecuritySettingsTitle": {
