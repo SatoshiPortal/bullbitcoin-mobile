@@ -1,5 +1,16 @@
 part of 'transfer_bloc.dart';
 
+SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.completed => SwapStatus.completed,
+      OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+      OrderSwapLocalStatus.expired => SwapStatus.expired,
+      OrderSwapLocalStatus.failed => SwapStatus.failed,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+      _ => SwapStatus.pending,
+    };
+
 @freezed
 sealed class TransferState with _$TransferState {
   const factory TransferState({
@@ -20,7 +31,9 @@ sealed class TransferState with _$TransferState {
     // Set when the Liquid swap-funding build fails because the wallet has too
     // many UTXOs to spend in a single transaction and needs consolidating.
     @Default(false) bool consolidationRequired,
+    SwapFailure? swapFailure,
     ChainSwap? swap,
+    OrderSwapRecord? orderSwap,
     @Default('') String signedPsbt,
     int? bitcoinAbsoluteFeesSat,
     int? liquidAbsoluteFeesSat,
