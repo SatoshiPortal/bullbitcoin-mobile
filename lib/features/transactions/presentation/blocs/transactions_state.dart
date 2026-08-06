@@ -47,15 +47,7 @@ abstract class TransactionsState with _$TransactionsState {
 
     final ongoingList = <Transaction>[];
     for (final tx in txList) {
-      // Show swaps where funds are truly in transit/locked up - not yet reached final outcome
-      if (tx.isSwap &&
-          tx.swap != null &&
-          [
-            SwapStatus.paid,
-            SwapStatus.claimable,
-            SwapStatus.refundable,
-            SwapStatus.canCoop,
-          ].contains(tx.swap?.status)) {
+      if (tx.isOngoingSwap) {
         ongoingList.add(tx);
       }
     }
@@ -131,7 +123,14 @@ abstract class TransactionsState with _$TransactionsState {
 
         final isExpiredOrFailedSwap =
             tx.isSwap &&
-            [SwapStatus.expired, SwapStatus.failed].contains(tx.swap?.status);
+            ([
+                  SwapStatus.expired,
+                  SwapStatus.failed,
+                ].contains(tx.swap?.status) ||
+                [
+                  OrderSwapLocalStatus.expired,
+                  OrderSwapLocalStatus.failed,
+                ].contains(tx.orderSwap?.localStatus));
 
         // isExpired() covers both expiry statuses the server sends, so an
         // 'Expired' order isn't shown while its 'Payment deadline expired' twin
@@ -157,7 +156,9 @@ abstract class TransactionsState with _$TransactionsState {
         // or Receive. An external chain swap (receiveWalletId == null) leaves the
         // wallet, so it counts as a Send.
         final isInternalChainSwap =
-            tx.isChainSwap && tx.swap!.isChainSwapInternal;
+            tx.isChainSwap &&
+            (tx.swap?.isChainSwapInternal == true ||
+                tx.orderSwap?.destinationWalletId != null);
 
         return switch (filter) {
           TransactionsFilter.all => exchangeOnly ? tx.isOrder : true,

@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +27,9 @@ class _MockExchangeOrderRepository extends Mock
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
 
+class _MockGetTransactionOrderSwapsUsecase extends Mock
+    implements GetTransactionOrderSwapsUsecase {}
+
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
@@ -35,6 +39,7 @@ void main() {
   late _MockExchangeOrderRepository testnetOrderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late List<Order> orders;
+  late _MockGetTransactionOrderSwapsUsecase getOrderSwaps;
   late GetTransactionsUsecase usecase;
 
   PayjoinReceiverSession receiver(PayjoinStatus status) =>
@@ -62,6 +67,7 @@ void main() {
     testnetOrderRepository = _MockExchangeOrderRepository();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
     orders = [];
+    getOrderSwaps = _MockGetTransactionOrderSwapsUsecase();
 
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
@@ -86,6 +92,9 @@ void main() {
     when(
       () => labelExchangeOrdersUsecase.execute(orders: orders),
     ).thenAnswer((_) async {});
+    when(
+      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => []);
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -95,6 +104,7 @@ void main() {
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
+      getTransactionOrderSwapsUsecase: getOrderSwaps,
     );
   });
 
