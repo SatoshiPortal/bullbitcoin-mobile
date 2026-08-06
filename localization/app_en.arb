@@ -14668,5 +14668,9 @@
   "swapErrorRouteUnavailableGeneric": "This swap is not available.",
   "@swapErrorRouteUnavailableGeneric": {
     "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
+  },
+  "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
+  "@mnemonicShuffleKeyboardHint": {
+    "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
   }
 }

@@ -55,21 +55,18 @@ class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
         builder: (context, state) {
           return Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      MnemonicWidget(
-                        initialLength: bip39.MnemonicLength.words12,
-                        onSubmit: context
-                            .read<ImportMnemonicCubit>()
-                            .updateMnemonic,
-                        submitLabel: context.loc.importMnemonicContinue,
-                        externalError: state.failure?.toTranslated(context),
-                      ),
-                    ],
+              // MnemonicWidget owns its own scroll and docks the in-app
+              // keyboard at the bottom, so it must fill the available height.
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: MnemonicWidget(
+                    initialLength: bip39.MnemonicLength.words12,
+                    onSubmit: context
+                        .read<ImportMnemonicCubit>()
+                        .updateMnemonic,
+                    submitLabel: context.loc.importMnemonicContinue,
+                    externalError: state.failure?.toTranslated(context),
                   ),
                 ),
               ),
