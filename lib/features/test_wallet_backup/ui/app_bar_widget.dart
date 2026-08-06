@@ -48,7 +48,7 @@ class AppBarWidget extends StatelessWidget {
               );
 
               if (selectedWalletId != null) {
-                bloc.add(LoadMnemonicForWallet(wallet: selectedWallet!));
+                bloc.add(WalletSelected(wallet: selectedWallet!));
               }
             },
           ),
@@ -119,7 +119,7 @@ Future<String?> _showWalletPicker({
               onPressed: () {
                 final wallet = wallets[controller.selectedItem];
                 context.read<TestWalletBackupBloc>().add(
-                  LoadMnemonicForWallet(wallet: wallet),
+                  WalletSelected(wallet: wallet),
                 );
                 Navigator.of(context).pop();
               },
