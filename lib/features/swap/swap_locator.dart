@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
@@ -32,6 +31,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
 class SwapLocator {
@@ -43,7 +43,7 @@ class SwapLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<PrepareBitcoinSendUsecase>(
       () => PrepareBitcoinSendUsecase(
-        payjoinRepository: locator<PayjoinRepository>(),
+        payjoinSessions: locator<PayjoinSessions>(),
         walletUtxoRepository: locator<WalletUtxoRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
       ),

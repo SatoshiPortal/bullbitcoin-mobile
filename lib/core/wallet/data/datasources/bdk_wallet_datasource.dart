@@ -15,9 +15,11 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -150,6 +152,26 @@ class BdkWalletDatasource {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     return (Uint8List scriptBytes) =>
         bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
+  }
+
+  /// Returns a synchronous outpoint-ownership check bound to a pre-loaded bdk
+  /// wallet.
+  ///
+  /// Built from `listOutput()`, not `listUnspent()` or `getUtxo()`: those only
+  /// know the wallet's *unspent* outputs, so an output we owned and already
+  /// spent would answer "not mine". Answering over the full set leaves the
+  /// caller no gap to reason about. The set is a snapshot of the local index at
+  /// creation time — cheap, no network — so bind it per operation rather than
+  /// caching it across syncs.
+  Future<bool Function(Outpoint)> createOutpointIsMineChecker({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final owned = <Outpoint>{
+      for (final output in bdkWallet.listOutput())
+        (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
+    };
+    return owned.contains;
   }
 
   /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
@@ -824,10 +846,6 @@ class FailedToSignPsbtException extends BullException {
 
 class UnsupportedBdkNetworkException extends BullException {
   UnsupportedBdkNetworkException(super.message);
-}
-
-class NoSpendableUtxoException extends BullException {
-  NoSpendableUtxoException(super.message);
 }
 
 /// Confirmation count for an output confirmed at [height], given the current

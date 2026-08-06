@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -28,13 +27,7 @@ class TransactionDetailsAmount extends StatelessWidget {
         ? recoveredReceivedSat
         : tx?.swapDisplayAmountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
-    final showOrderInFiat =
-        isOrder &&
-        tx?.order != null &&
-        (tx!.order is FiatPaymentOrder ||
-            tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder ||
-            tx.order is FundingOrder);
+    final showOrderInFiat = isOrder && tx?.order?.displaysFiatAmount == true;
 
     return Row(
       mainAxisAlignment: .center,

@@ -24,6 +24,8 @@ sealed class BuyState with _$BuyState {
     @Default(false) bool isConfirmingOrder,
     ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
+    @Default(false) bool payjoinGloballyEnabled,
+    @Default(true) bool isPayjoinEnabled,
     FeeOptions? accelerationNetworkFees,
     GetNetworkFeesException? getNetworkFeesException,
     ConvertSatsToCurrencyAmountException? convertSatsToCurrencyAmountException,
@@ -103,6 +105,14 @@ sealed class BuyState with _$BuyState {
   bool get hasDestination {
     return selectedWallet != null || bitcoinAddressInput.isNotEmpty;
   }
+
+  bool get canOfferPayjoin =>
+      payjoinGloballyEnabled &&
+      userSummary?.payjoinReceiveEnabled == true &&
+      selectedWallet?.network.isBitcoin == true;
+
+  bool get shouldUsePayjoin =>
+      canOfferPayjoin && isPayjoinEnabled && amountSat != null;
 
   bool get canCreateOrder {
     return isPositiveAmount && hasDestination;

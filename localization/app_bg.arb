@@ -1,5 +1,9 @@
 {
   "settingsBtcMapTitle": "Карта",
+  "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
+  "buyConfirmPayoutWallet": "Портфейл за изплащане",
+  "buyPayoutMethodLiquid": "L-BTC в Liquid",
+  "buyPayoutMethodBitcoin": "BTC в блокчейна на Bitcoin",
   "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
   "backupWarningLoseReasonLostPhone": "Загубите телефона си",
   "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
@@ -231,49 +235,6 @@
   "@walletBalanceUnconfirmedIncoming": {
     "description": "Label for unconfirmed incoming balance"
   },
-  "arkStatusPending": "В очакване",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
-  "arkPending": "В очакване",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
-  },
-  "arkAboutTitle": "Относно",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkDurationSeconds": "{seconds} секунди",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} минута",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} минути",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTxPending": "В очакване",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
-  },
   "closeDialogButton": "Затвори",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
@@ -301,33 +262,6 @@
   "electrumCloseTooltip": "Затвори",
   "@electrumCloseTooltip": {
     "description": "Close button tooltip"
-  },
-  "arkAboutDurationSeconds": "{seconds} секунди",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} минута",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} минути",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "ledgerHelpTitle": "Отстраняване на неизправности",
   "@ledgerHelpTitle": {
@@ -790,10 +724,6 @@
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
   },
-  "arkSettled": "Урегулирано",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
-  },
   "transactionFilterBuy": "Купи",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
@@ -917,10 +847,6 @@
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "arkSessionDuration": "Продължителност на сесията",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
-  },
   "sendShowPsbt": "Покажи PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -977,10 +903,6 @@
   "payBroadcastFailed": "Неуспешно изпращане на транзакцията",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "arkSettleTransactions": "Урегулиране на транзакциите",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
   },
   "transactionLabelConfirmationTime": "Време за потвърждаване",
   "@transactionLabelConfirmationTime": {
@@ -1094,10 +1016,6 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "arkAvailable": "Наличен",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "transactionSwapDescChainFailed": "Възникна проблем с вашия превод. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -1105,10 +1023,6 @@
   "testBackupWarningMessage": "Без резервно копие в крайна сметка ще загубите достъп до парите си. Изключително важно е да направите резервно копие.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "Мрежа",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
@@ -1380,10 +1294,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "Урегулирано",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "Минимум 0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1485,19 +1395,6 @@
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
   },
-  "arkCopiedToClipboard": "{label} копирано в клипборда",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Адрес на получателя",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
-  },
   "payLightningNetwork": "Лайтнинг мрежа",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
@@ -1565,10 +1462,6 @@
   "sellKYCApproved": "KYC верификация одобрена.",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "транзакция",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "месец",
   "@dcaFrequencyMonthly": {
@@ -1799,10 +1692,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "Качване",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "psbtFlowReviewTransaction": "След като транзакцията бъде импортирана във вашия {device}, прегледайте адреса на получателя и сумата.",
   "@psbtFlowReviewTransaction": {
     "description": "Instruction to review transaction details on device",
@@ -1811,10 +1700,6 @@
         "type": "String"
       }
     }
-  },
-  "arkTransactions": "транзакции",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "importWalletImportMnemonic": "- Импортирай мнемоника",
   "@importWalletImportMnemonic": {
@@ -1827,10 +1712,6 @@
   "transactionFilterAll": "Всички",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "arkSendTitle": "Изпрати",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "Получена сума",
   "@transactionDetailLabelAmountReceived": {
@@ -1933,10 +1814,6 @@
   "sellSelectNetwork": "Изберете мрежа",
   "@sellSelectNetwork": {
     "description": "Screen title for network selection"
-  },
-  "arkDust": "Прах",
-  "@arkDust": {
-    "description": "Label for dust amount field"
   },
   "bitcoinSettingsImportWalletTitle": "Импортиране на портфейл",
   "@bitcoinSettingsImportWalletTitle": {
@@ -2053,10 +1930,6 @@
   "pinCodeManageTitle": "Управлявайте вашия PIN за сигурност",
   "@pinCodeManageTitle": {
     "description": "Header title for PIN management section"
-  },
-  "arkUnifiedAddressCopied": "Унифициран адрес копиран",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "transactionSwapDescLnSendCompleted": "Плащането по Lightning е успешно изпратено! Вашият обмен вече е завършен.",
   "@transactionSwapDescLnSendCompleted": {
@@ -2353,10 +2226,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "Ark мгновени плащания",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "Парола",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -2396,10 +2265,6 @@
   "payAddressRequired": "Адресът е задължителен",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "Детайли на транзакцията",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "Обща сума",
   "@payTotalAmount": {
@@ -2527,26 +2392,9 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "arkPreconfirmed": "Предпотвърдено",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "Файлът не е избран",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} ден",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "Изпрати",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "fundExchangeMethodSpeiTransferSubtitle": "Прехвърлете средства чрез вашата CLABE",
   "@fundExchangeMethodSpeiTransferSubtitle": {
@@ -2571,15 +2419,6 @@
   "paySelectActiveWallet": "Моля, изберете портфейл",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} часа",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "transcribeLabel": "Транскрирай",
   "@transcribeLabel": {
@@ -2694,10 +2533,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "Сума",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "Те ви казват да не се притеснявате за това предупреждение",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -2794,10 +2629,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "arkDate": "Дата",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
-  },
   "psbtFlowInstructions": "Инструкции",
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
@@ -2874,7 +2705,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Купихте {amount}",
+  "buyYouBought": "Купихте {amount} за {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -2914,10 +2745,6 @@
   "autoswapLoadSettingsError": "Неуспешно зареждане на настройките за автообмен",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
-  },
-  "walletArkExperimental": "Експериментално",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
   },
   "exchangeAppSettingsEmailNotificationsLabel": "Известия по имейл",
   "@exchangeAppSettingsEmailNotificationsLabel": {
@@ -2987,10 +2814,6 @@
   "backupInstruction3": "Всеки, който има достъп до вашето резервно копие от 12 думи, може да открадне вашите биткойни. Скрийте го добре.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "Изкупи",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "Адрес на получателя",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -3240,10 +3063,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "Адрес за конфискуване",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "Трансферът е възстановен.",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -3268,10 +3087,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "BTC адрес",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "Получаване",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -3279,10 +3094,6 @@
   "payBumpFee": "Увеличи таксата",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "Отказ",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "Настройване на вашия портфейл за наблюдение...",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -3299,10 +3110,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "Прехвърляне на колони чрез SINPE",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "Ark Instant Payments",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "Очаквано време за потвърждение ~ ",
   "@sendEstimatedDelivery": {
@@ -3460,10 +3267,6 @@
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
   },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
-  },
   "payNetwork": "Мрежа",
   "@payNetwork": {
     "description": "Label for network"
@@ -3479,10 +3282,6 @@
   "exchangeAccountSettingsTitle": "Настройки на сметката за обмен",
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
-  },
-  "arkBoardingConfirmed": "Качване потвърдено",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
   },
   "exchangeFileUploadInstructionsWithParams": "Качване до {maxFiles} файлове. Разрешени формати: PDF, JPG, PNG, GIF, HEIC. Максимален размер на файл: 10 MB.",
   "@exchangeFileUploadInstructionsWithParams": {
@@ -3541,10 +3340,6 @@
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
   },
-  "arkStatusConfirmed": "Потвърдено",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
-  },
   "transactionSwapDoNotUninstall": "Не деинсталирайте приложението, докато размяната не завърши.",
   "@transactionSwapDoNotUninstall": {
     "description": "Warning message to not uninstall app during swap"
@@ -3600,10 +3395,6 @@
   "fundExchangeLabelIbanCrcOnly": "IBAN номер на сметка (само за колони)",
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
-  },
-  "arkServerPubkey": "Публичен ключ на сървъра",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
   },
   "testBackupPhysicalBackupDescription": "Запишете 12 думи на лист хартия. Дръжте ги на сигурно място и се уверете, че няма да ги изгубите.",
   "@testBackupPhysicalBackupDescription": {
@@ -3717,10 +3508,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "Днес",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "rbfErrorAlreadyConfirmed": "Оригиналната транзакция е потвърдена.",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -3762,10 +3549,6 @@
   "sendErrorHardwareWalletCannotSwap": "Хардуерните портфейли не могат да се използват за суапове.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "Няма налични данни за баланса",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "autoswapWarningCardTitle": "Авторазмяна е включена",
   "@autoswapWarningCardTitle": {
@@ -3993,17 +3776,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "Завърши чакащите транзакции и включи възстановими vtxos, ако е необходимо",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "Персонализирано местоположение: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "Вашата Ark транзакция беше успешна!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "сатоши",
   "@sendSats": {
@@ -4093,17 +3868,9 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "Едностранно забавяне при излизане",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "arkType": "Тип",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "Без резервно копие в крайна сметка ще загубите достъп до парите си. Изключително важно е да направите резервно копие.",
   "@backupImportanceMessage": {
@@ -4560,10 +4327,6 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "arkTxPayment": "Плащане",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
-  },
   "swapValidationMaximumAmount": "Максимална сума е {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "description": "Validation error when amount exceeds maximum",
@@ -4612,10 +4375,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "Включи възстановими vtxos",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "Вашето плащане е завършено и получателят е получил средствата.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -4652,10 +4411,6 @@
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
-  "arkReceiveTitle": "Ark получаване",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
   "payDebitCardNumberHint": "Въведете номер на дебитна карта",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -4691,10 +4446,6 @@
   "sellFeePriority": "Приоритет на таксата",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
-  },
-  "arkBoardingUnconfirmed": "Качване непотвърдено",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "Описание на плащането",
   "@fundExchangeLabelPaymentDescription": {
@@ -4764,10 +4515,6 @@
   "coldcardStep9": "След като транзакцията бъде импортирана във вашия Coldcard, прегледайте адреса на получателя и сумата.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "ARK платежни заявки са налични само чрез експерименталната Ark функция",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "enterBackupKeyManuallyDescription": "Ако сте експортирали резервния ключ и сте го запазили на отделно място, можете да го въведете ръчно тук. В противен случай върнете се към предишния екран.\n==WEBLATE_PART==",
   "@enterBackupKeyManuallyDescription": {
@@ -5146,10 +4893,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "Изкупи",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "Потвърдете адреса на Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -5161,10 +4904,6 @@
   "backupSettingsKeyWarningBold": "Внимание: Бъдете внимателни къде съхранявате резервния ключ.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "Ark",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "recoverYourWalletTitle": "Възстановете портфейла си.",
   "@recoverYourWalletTitle": {
@@ -5366,10 +5105,6 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkRecoverableVtxos": "Възстановими Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
-  },
   "psbtFlowTransactionImported": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
   "@psbtFlowTransactionImported": {
     "description": "Confirmation that transaction was imported successfully"
@@ -5500,10 +5235,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "Забавяне при излизане от борда",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "transactionLabelPayjoinCreationTime": "Време на създаване на Payjoin",
   "@transactionLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation timestamp"
@@ -5511,10 +5242,6 @@
   "payRBFDisabled": "RBF е изключен",
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
-  },
-  "arkTxSettlement": "Урегулиране",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "transactionStatusTransferCompleted": "Прехвърлянето завършено",
   "@transactionStatusTransferCompleted": {
@@ -5629,10 +5356,6 @@
   "@exportVaultButton": {
     "description": "Button label to export vault"
   },
-  "arkConfirmed": "Потвърдено",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
   "sendSatsPerVB": "сатоши/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
@@ -5724,10 +5447,6 @@
   "backupSettingsBackupKey": "Ключ за архивиране",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "ID на транзакцията",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "Инвойсът е копиран в клипборда",
   "@payInvoiceCopied": {
@@ -6042,10 +5761,6 @@
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
   },
-  "arkCopyAddress": "Копирай адрес",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
-  },
   "sendScheduleFor": "График за {date}",
   "@sendScheduleFor": {
     "description": "Label for scheduled date",
@@ -6202,15 +5917,6 @@
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
   },
-  "arkDurationHour": "{hours} час",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "Тези такси ще бъдат удържани от изпратената сума.",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -6308,10 +6014,6 @@
   "recoverbullGoogleDriveDeleteButton": "Изтрий",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "Разбивка на баланса",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "fundExchangeMethodEmailETransferSubtitle": "Най-лесният и най-бърз метод (мгновено)",
   "@fundExchangeMethodEmailETransferSubtitle": {
@@ -6751,10 +6453,6 @@
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
   },
-  "arkBalanceBreakdown": "Разбивка на баланса",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "След като транзакцията бъде импортирана във вашия SeedSigner, трябва да изберете seed фразата, с която искате да подпишете.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -6770,10 +6468,6 @@
   "payFirstName": "Първо име",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "Все още няма транзакции.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "recoverViaCloudDescription": "Възстановете резервното копие чрез облака с вашия ПИН.",
   "@recoverViaCloudDescription": {
@@ -6852,10 +6546,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "сатоши",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "Минимум: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -6925,10 +6615,6 @@
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "arkSettleButton": "Урегулирай",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
   "transactionDetailLabelTransferFees": "Такси за прехвърляне",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6936,10 +6622,6 @@
   "importWalletSectionGeneric": "- Обикновени портфейли",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "Непроверено",
   "@backupSettingsNotTested": {
@@ -7113,10 +6795,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "Изпратено успешно",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "bitboxActionSignTransactionTitle": "Подпишете транзакция.",
   "@bitboxActionSignTransactionTitle": {
     "description": "Title for sign transaction action"
@@ -7136,10 +6814,6 @@
   "walletNetworkLiquid": "Liquid мрежа",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "Ark",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "МАКС",
   "@swapMaxButton": {
@@ -7188,10 +6862,6 @@
   "recoverbullTestSuccessDescription": "Можете да възстановите достъп до изгубен биткойн портфейл",
   "@recoverbullTestSuccessDescription": {
     "description": "Description shown after successful recovery test"
-  },
-  "arkUnifiedAddressBip21": "Унифициран адрес (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
   },
   "transactionDetailLabelOrderType": "Тип на поръчката",
   "@transactionDetailLabelOrderType": {
@@ -7248,10 +6918,6 @@
   "testBackupGoogleDrivePrivacyPart4": "никога ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "Потвърди",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "sendCoinControl": "Контрол на монетите",
   "@sendCoinControl": {
@@ -7436,10 +7102,6 @@
   "onboardingRecoverWalletButton": "Възстанови портфейла.",
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
-  },
-  "arkCollaborativeRedeem": "Съвместно изкупуване",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
   },
   "pinCodeCheckingStatus": "Проверка на състоянието на PIN",
   "@pinCodeCheckingStatus": {
@@ -7648,10 +7310,6 @@
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
   },
-  "arkArkAddress": "Ark адрес",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
-  },
   "payRecipientName": "Име на получателя",
   "@payRecipientName": {
     "description": "Label for recipient name"
@@ -7807,10 +7465,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "arkCopy": "Копирай",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "Изграждане на транзакцията...",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -7863,10 +7517,6 @@
   "recoverbullConfirm": "Потвърди",
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
-  },
-  "arkPendingBalance": "Баланс в очакване",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "Страната на банката ни е Обединеното кралство.",
   "@fundExchangeInfoBankCountryUk": {
@@ -8028,10 +7678,6 @@
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
   },
-  "arkTotal": "Общо",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
-  },
   "bitboxActionSignTransactionSuccessSubtext": "Вашата транзакция е успешно подписана",
   "@bitboxActionSignTransactionSuccessSubtext": {
     "description": "Success subtext for sign transaction"
@@ -8083,10 +7729,6 @@
   "transactionDetailLabelTransferFee": "Такса за прехвърляне",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
-  },
-  "arkStatus": "Статус",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "Добавете това като основание за превода",
   "@fundExchangeHelpTransferCode": {
@@ -8354,18 +7996,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "arkSettleTransactionCount": "Уреди {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenWalletTypeLabel": "Тип на портфейла:",
   "@bitboxScreenWalletTypeLabel": {
     "description": "Label for wallet type selector"
@@ -8541,10 +8171,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "Получаване",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавете това като номер на сметката",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
@@ -8625,10 +8251,6 @@
   "@walletTypeBitcoinNetwork": {
     "description": "Wallet type label for Bitcoin network"
   },
-  "arkServerUrl": "URL адрес на сървъра",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "Изберете тип портфейл за импортиране",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8636,15 +8258,6 @@
   "fundExchangeMethodArsBankTransfer": "Банков превод",
   "@fundExchangeMethodArsBankTransfer": {
     "description": "Payment method: Bank Transfer (Argentina)"
-  },
-  "arkDurationDays": "{days} дни",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Детерминирани ентропии",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -8898,10 +8511,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "Потвърден баланс",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "Нативен SegWit",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -8939,10 +8548,6 @@
   "backupWalletPhysicalBackupTitle": "Физическо резервно копие.",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "arkTxBoarding": "Качване",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "bitboxActionVerifyAddressSuccess": "Адресът е успешно проверен",
   "@bitboxActionVerifyAddressSuccess": {
@@ -9270,10 +8875,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "Ангажимент",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "Присъединете се към мисията",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -9313,10 +8914,6 @@
   "bitboxScreenConnectDevice": "Свържете вашето BitBox устройство.",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "Вчера",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "Заявена сума: {amount}",
   "@amountRequestedLabel": {
@@ -10427,9 +10024,6 @@
   "sellSendPaymentAboveMax": "Опитвате се да продадете над максималната сума, която може да бъде продадена с този портфейл.",
   "sellSendPaymentBelowMin": "Опитвате се да продадете под минималната сума, която може да бъде продадена с този портфейл.",
   "sellSendPaymentInsufficientBalance": "Недостатъчен баланс в избрания портфейл за завършване на тази поръчка за продажба.",
-  "arkSetupTitle": "Настройка на Ark",
-  "arkSetupExperimentalWarning": "Ark все още е експериментален.\n\nВашият Ark портфейл се извежда от seed фразата на основния ви портфейл. Не е необходимо допълнително резервно копие — съществуващото резервно копие на портфейла ви възстановява и вашите Ark средства.\n\nПродължавайки, вие потвърждавате експерименталния характер на Ark и риска от загуба на средства.\n\nБележка за разработчици: тайната на Ark се извежда от seed-а на основния портфейл чрез произволна BIP-85 деривация (индекс 11811).",
-  "arkSetupEnable": "Активирай Ark",
   "swapTitle": "Вътрешно прехвърляне",
   "swapInfoBanner": "Прехвърляйте Bitcoin безпроблемно между вашите портфейли. Дръжте средства в Портфейла за мигновени плащания само за ежедневни разходи.",
   "swapMax": "МАКС",
@@ -10520,48 +10114,6 @@
   "electrumServerNotUsed": "Не се използва",
   "electrumServerOnline": "Онлайн",
   "electrumServerOffline": "Офлайн",
-  "arkSendRecipientLabel": "Адрес на получателя",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkSendConfirmedBalance": "Потвърден баланс",
-  "arkSendPendingBalance": "Баланс в очакване    ",
-  "arkSendConfirm": "Потвърди",
-  "arkReceiveCopyAddress": "Копирай адреса",
-  "arkReceiveUnifiedAddress": "Унифициран адрес (BIP21)",
-  "arkReceiveBtcAddress": "BTC адрес",
-  "arkReceiveArkAddress": "Ark адрес",
-  "arkReceiveUnifiedCopied": "Унифициран адрес копиран",
-  "arkSettleTitle": "Урегулиране на транзакциите",
-  "arkSettleMessage": "Завърши чакащите транзакции и включи възстановими vtxos, ако е необходимо",
-  "arkSettleIncludeRecoverable": "Включи възстановими vtxos",
-  "arkSettleCancel": "Отказ",
-  "arkAboutServerUrl": "URL адрес на сървъра",
-  "arkAboutServerPubkey": "Публичен ключ на сървъра",
-  "arkAboutForfeitAddress": "Адрес за конфискуване",
-  "arkAboutNetwork": "Мрежа",
-  "arkAboutDust": "Прах",
-  "arkAboutDustValue": "{dust} САТОШИ",
-  "arkAboutSessionDuration": "Продължителност на сесията",
-  "arkAboutBoardingExitDelay": "Забавяне при излизане от борда",
-  "arkAboutUnilateralExitDelay": "Едностранно забавяне при излизане",
-  "arkAboutEsploraUrl": "Esplora URL",
-  "arkAboutCopy": "Копирай",
-  "arkAboutCopiedMessage": "{label} копирано в клипборда",
-  "arkAboutDurationHour": "{hours} час",
-  "arkAboutDurationHours": "{hours} часа",
-  "arkAboutDurationDay": "{days} ден",
-  "arkAboutDurationDays": "{days} дни",
-  "arkSendRecipientTitle": "Изпрати на получател",
-  "arkSendRecipientError": "Моля, въведете получател",
-  "arkSendAmountTitle": "Въведи сума",
-  "arkSendConfirmTitle": "Потвърди изпращането",
-  "arkSendConfirmMessage": "Моля, потвърдете детайлите на транзакцията си, преди да я изпратите.",
-  "arkReceiveSegmentArk": "Ark",
-  "arkReceiveSegmentBoarding": "Boarding",
-  "arkReceiveBoardingAddress": "BTC Boarding адрес",
-  "arkAboutSecretKey": "Таен ключ",
-  "arkAboutShow": "Покажи",
-  "arkAboutHide": "Скрий",
-  "arkContinueButton": "Продължи",
   "addressViewNoAddressesFound": "Не са намерени адреси",
   "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
   "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",

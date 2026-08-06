@@ -1,10 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -21,10 +18,12 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 part 'settings_cubit.freezed.dart';
 part 'settings_state.dart';
@@ -40,27 +39,19 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setIsSuperuserUsecase,
     required this._setIsDevModeUsecase,
     required this._setThemeModeUsecase,
-    required this._revokeArkUsecase,
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
-    required this._watchPayjoinEnabledChangesUsecase,
+    required this._watchPayjoinPolicyUsecase,
     required this._setPayjoinMinAmountUsecase,
     required this._setPayjoinExpireAfterSecUsecase,
   }) : super(const SettingsState()) {
-    _payjoinEnabledSubscription = _watchPayjoinEnabledChangesUsecase
-        .execute()
-        .listen((enabled) {
-          if (isClosed || state.storedSettings == null) return;
-          if (state.isPayjoinEnabled == enabled) return;
-          emit(
-            state.copyWith(
-              storedSettings: state.storedSettings!.copyWith(
-                isPayjoinEnabled: enabled,
-              ),
-            ),
-          );
-        });
+    _payjoinPolicySubscription = _watchPayjoinPolicyUsecase.execute().listen((
+      policy,
+    ) {
+      if (isClosed || state.payjoinPolicy == policy) return;
+      emit(state.copyWith(payjoinPolicy: policy));
+    });
   }
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -72,18 +63,17 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final SetThemeModeUsecase _setThemeModeUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
-  final RevokeArkUsecase _revokeArkUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
-  final WatchPayjoinEnabledChangesUsecase _watchPayjoinEnabledChangesUsecase;
+  final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
   final SetPayjoinMinAmountUsecase _setPayjoinMinAmountUsecase;
   final SetPayjoinExpireAfterSecUsecase _setPayjoinExpireAfterSecUsecase;
-  late final StreamSubscription<bool> _payjoinEnabledSubscription;
+  late final StreamSubscription<PayjoinPolicy> _payjoinPolicySubscription;
 
   @override
   Future<void> close() async {
-    await _payjoinEnabledSubscription.cancel();
+    await _payjoinPolicySubscription.cancel();
     return super.close();
   }
 
@@ -174,23 +164,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> toggleDevMode(bool isEnabled, {WalletBloc? walletBloc}) async {
+  Future<void> toggleDevMode(bool isEnabled) async {
     final settings = state.storedSettings;
-
-    // If disabling dev mode, revoke Ark first
-    if (!isEnabled && settings?.isDevModeEnabled == true) {
-      try {
-        await _revokeArkUsecase.execute();
-        // Only trigger refresh if walletBloc is provided
-        walletBloc?.add(const RefreshArkWalletBalance());
-      } catch (e) {
-        log.severe(
-          message: 'Failed to revoke Ark',
-          error: e,
-          trace: StackTrace.current,
-        );
-      }
-    }
 
     await _setIsDevModeUsecase.execute(isEnabled);
     emit(
@@ -248,31 +223,26 @@ class SettingsCubit extends Cubit<SettingsState> {
       requestConsent: requestConsent,
     );
     return result.fold((updated) {
-      final settings = state.storedSettings;
-      if (settings != null && settings.isPayjoinEnabled != updated) {
-        emit(
-          state.copyWith(
-            storedSettings: settings.copyWith(isPayjoinEnabled: updated),
-          ),
-        );
+      final policy = state.payjoinPolicy;
+      if (policy != null && policy.enabled != updated) {
+        emit(state.copyWith(payjoinPolicy: policy.copyWith(enabled: updated)));
       }
       return Ok(updated);
     }, (failure) => Err(failure));
   }
 
-  /// Throws [ArgumentError] via the usecase if [amountSat] is out of the
-  /// [PayjoinConstants] bounds — callers (the payjoin settings screen)
-  /// validate first, but the domain has the final say.
+  /// Throws [ArgumentError] via the usecase if [amountSat] is out of policy.
   Future<void> setPayjoinMinAmount(int amountSat) async {
     log.config(
       'Payjoin min amount set to: $amountSat was '
-      '${state.storedSettings?.payjoinMinAmountSat}',
+      '${state.payjoinMinAmountSat}',
     );
     await _setPayjoinMinAmountUsecase.execute(amountSat);
-    final settings = state.storedSettings;
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(payjoinMinAmountSat: amountSat),
+        payjoinPolicy: state.payjoinPolicy?.copyWith(
+          minimumAmount: Sats.fromInt(amountSat),
+        ),
       ),
     );
   }
@@ -281,14 +251,13 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
     log.config(
       'Payjoin expiry set to: $expireAfterSec was '
-      '${state.storedSettings?.payjoinExpireAfterSec}',
+      '${state.payjoinExpireAfterSec}',
     );
     await _setPayjoinExpireAfterSecUsecase.execute(expireAfterSec);
-    final settings = state.storedSettings;
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(
-          payjoinExpireAfterSec: expireAfterSec,
+        payjoinPolicy: state.payjoinPolicy?.copyWith(
+          sessionLifetime: Duration(seconds: expireAfterSec),
         ),
       ),
     );

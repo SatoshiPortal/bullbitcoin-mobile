@@ -140,7 +140,6 @@ class _BtcTotalAmt extends StatelessWidget {
     final showSkeleton =
         walletState.status == WalletStatus.initial ||
         walletState.status == WalletStatus.loading ||
-        walletState.isArkWalletLoading ||
         bitcoinUnit == null;
 
     if (showSkeleton) {
@@ -166,8 +165,7 @@ class _FiatAmt extends StatelessWidget {
     final walletState = context.select((WalletBloc bloc) => bloc.state);
     final showBalanceLoading =
         walletState.status == WalletStatus.initial ||
-        walletState.status == WalletStatus.loading ||
-        walletState.isArkWalletLoading;
+        walletState.status == WalletStatus.loading;
 
     return HomeFiatBalance(
       balanceSat: walletState.totalBalance(),

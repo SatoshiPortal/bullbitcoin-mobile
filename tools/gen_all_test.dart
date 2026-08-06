@@ -11,10 +11,11 @@
 // Run via: fvm dart run tools/gen_all_test.dart
 import 'dart:io';
 
-// Files matching *_test.dart that must NOT be aggregated: the generated file
-// itself, plus any test with no callable main(isInitialized:) (e.g. payjoin is
-// commented out and needs funded testnet wallets).
-const skip = {'all_test.dart', 'payjoin_test.dart'};
+// Files matching *_test.dart that must NOT be aggregated: only the generated
+// file itself. Every real test file is wired in; a test that needs fixtures
+// (e.g. payjoin's funded testnet wallets) skips itself gracefully when they
+// are absent rather than being excluded here.
+const skip = {'all_test.dart'};
 
 void main() {
   final files =

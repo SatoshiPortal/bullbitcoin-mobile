@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 part 'transaction.freezed.dart';
 
@@ -12,7 +12,7 @@ sealed class Transaction with _$Transaction {
   const factory Transaction({
     WalletTransaction? walletTransaction,
     Swap? swap,
-    Payjoin? payjoin,
+    PayjoinSession? payjoin,
     Order? order,
   }) = _Transaction;
   const Transaction._();
@@ -48,9 +48,9 @@ sealed class Transaction with _$Transaction {
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>
-      isOngoingPayjoin && payjoin is PayjoinReceiver;
+      isOngoingPayjoin && payjoin is PayjoinReceiverSession;
   bool get isOngoingPayjoinSender =>
-      isOngoingPayjoin && payjoin is PayjoinSender;
+      isOngoingPayjoin && payjoin is PayjoinSenderSession;
 
   /// The payjoin status to DISPLAY, derived from what actually happened
   /// on-chain rather than from the session row alone. The session's
@@ -101,7 +101,7 @@ sealed class Transaction with _$Transaction {
   int? get payjoinFeeContributionSat {
     final p = payjoin;
     final wt = walletTransaction;
-    if (p is! PayjoinReceiver || wt == null) return null;
+    if (p is! PayjoinReceiverSession || wt == null) return null;
     final isRealPayjoinBroadcast =
         p.isCompleted ||
         (p.status == PayjoinStatus.proposed &&
@@ -112,6 +112,20 @@ sealed class Transaction with _$Transaction {
     if (expectedAmountSat == null) return null;
     final gap = expectedAmountSat - wt.amountSat;
     return gap > 0 ? gap : null;
+  }
+
+  /// The sender's own fee share in a Payjoin transaction.
+  ///
+  /// BDK reports the whole transaction fee even though the receiver pays for
+  /// some of the inputs it contributes. Reconstruct the sender's wallet debit
+  /// and remove the negotiated payment amount so the UI never attributes the
+  /// receiver's fee contribution to the sender.
+  int? get payjoinSenderFeeSat {
+    final p = payjoin;
+    final wt = walletTransaction;
+    if (p is! PayjoinSenderSession || wt == null || !wt.isOutgoing) return null;
+    final senderFee = wt.amountSat + wt.feeSat - p.amountSat;
+    return senderFee >= 0 ? senderFee : null;
   }
 
   bool get isOrder => order != null;
@@ -127,12 +141,12 @@ sealed class Transaction with _$Transaction {
       ? walletTransaction!.isOutgoing
       : swap?.isLnSendSwap == true ||
             swap?.isChainSwap == true ||
-            payjoin is PayjoinSender;
+            payjoin is PayjoinSenderSession;
   bool get isIncoming =>
       walletTransaction?.isIncoming ??
       swap?.isLnReceiveSwap == true ||
           swap?.isChainSwap == true ||
-          payjoin is PayjoinReceiver ||
+          payjoin is PayjoinReceiverSession ||
           order?.isIncoming == true;
 
   bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
@@ -149,10 +163,11 @@ sealed class Transaction with _$Transaction {
       walletTransaction?.confirmationTime;
 
   int get amountSat =>
+      payjoin?.amountSat ??
       walletTransaction?.amountSat ??
       (swap != null
           ? swap!.amountSat - (swap!.fees?.totalFees(swap!.amountSat) ?? 0)
-          : payjoin?.amountSat ?? 0);
+          : 0);
 
   /// Headline amount for a swap on the transaction-details screen. A recovered
   /// swap shows the net on-chain [amountSat]; otherwise the directional figure

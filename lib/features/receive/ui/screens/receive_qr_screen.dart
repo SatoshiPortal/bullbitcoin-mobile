@@ -234,18 +234,6 @@ class ReceiveQRDetails extends StatelessWidget {
 class ReceiveInfoDetails extends StatelessWidget {
   const ReceiveInfoDetails({super.key});
 
-  /// Suffix showing the unit the user entered in, when it wasn't BTC:
-  /// sats → " (N sats)", fiat → " (~X CUR)". Entered-in-BTC shows nothing —
-  /// the BTC value on the row already IS what the user typed.
-  String _enteredUnitSuffix(BuildContext context, int amountSat) {
-    final state = context.read<ReceiveBloc>().state;
-    if (state.inputAmountCurrencyCode == BitcoinUnit.btc.code) return '';
-    if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return ' (${FormatAmount.sats(amountSat)})';
-    }
-    return ' (~${state.formattedConfirmedAmountFiat})';
-  }
-
   @override
   Widget build(BuildContext context) {
     final amountSat = context.select(
@@ -255,6 +243,18 @@ class ReceiveInfoDetails extends StatelessWidget {
     final type = context.select<ReceiveBloc, ReceiveType?>(
       (bloc) => bloc.state.type,
     );
+    final enteredUnitSuffix = context.select<ReceiveBloc, String>((bloc) {
+      final state = bloc.state;
+      final sats = state.confirmedAmountSat;
+      if (sats == null ||
+          state.inputAmountCurrencyCode == BitcoinUnit.btc.code) {
+        return '';
+      }
+      if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        return ' (${FormatAmount.sats(sats)})';
+      }
+      return ' (~${state.formattedConfirmedAmountFiat})';
+    });
 
     if (type == ReceiveType.lightning) return const ReceiveLnInfoDetails();
 
@@ -293,7 +293,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           '${context.loc.coreScreensAmountLabel}: '
                           '${FormatAmount.btc(ConvertAmount.satsToBtc(amountSat))}'
-                          '${_enteredUnitSuffix(context, amountSat)}',
+                          '$enteredUnitSuffix',
                           style: context.font.bodyMedium,
                           maxLines: 1,
                           overflow: .ellipsis,

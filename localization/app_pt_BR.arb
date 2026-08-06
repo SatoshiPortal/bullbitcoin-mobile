@@ -239,10 +239,6 @@
   "@jadeStep13": {
     "description": "Jade instruction for scanning signed PSBT"
   },
-  "arkReceiveBoardingAddress": "BTC Endereço de embarque",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {
     "description": "Name of Krux device"
@@ -278,15 +274,6 @@
   "transactionDetailLabelConfirmationTime": "Tempo de confirmação",
   "@transactionDetailLabelConfirmationTime": {
     "description": "Label for confirmation time"
-  },
-  "arkAboutDurationSeconds": "{seconds} segundos",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenTroubleshootingStep2": "Certifique-se de que seu telefone tem permissões USB habilitadas.",
   "@bitboxScreenTroubleshootingStep2": {
@@ -385,10 +372,6 @@
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
-  "arkReceiveBtcAddress": "Endereço de BTC",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
-  },
   "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
@@ -396,10 +379,6 @@
   "kruxStep7": "   - Aumente o brilho da tela em seu dispositivo",
   "@kruxStep7": {
     "description": "Krux troubleshooting tip 1"
-  },
-  "arkAboutServerUrl": "URL do servidor",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
   },
   "transactionStatusSwapExpired": "Swap Expirou",
   "@transactionStatusSwapExpired": {
@@ -424,10 +403,6 @@
   "rbfFastest": "Mais rápido",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "arkSettled": "Preparado",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "fundExchangeCrIbanCrcPaymentDescriptionHelp": "O teu código de transferência.",
   "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
@@ -547,10 +522,6 @@
   "fundExchangeLabelBankAccountCountry": "País de conta bancária",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
-  },
-  "arkContinueButton": "Continue",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
   },
   "swapReceiveExactAmountLabel": "Receber quantidade exata",
   "swapInsufficientFunds": "Fundos insuficientes",
@@ -739,10 +710,6 @@
   "@payCard": {
     "description": "Label for card details"
   },
-  "arkReceiveSegmentBoarding": "Quadro",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "broadcastSignedTxAmount": "Montante",
   "@broadcastSignedTxAmount": {
     "description": "Label for transaction amount"
@@ -763,10 +730,6 @@
   "@ledgerErrorUnknownOccurred": {
     "description": "Error message when an unknown error occurs during Ledger operation"
   },
-  "arkSessionDuration": "Duração da sessão",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
-  },
   "sellSendPaymentUsdBalance": "USD / USD Balanço",
   "@sellSendPaymentUsdBalance": {
     "description": "USD balance payout method"
@@ -786,10 +749,6 @@
   "coreSwapsLnSendExpired": "Swap Expirou",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
-  },
-  "arkTxPending": "Pendente",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "exchangeStatisticsCurrency": "Moeda: {currency}",
   "@exchangeStatisticsCurrency": {
@@ -885,14 +844,6 @@
   "@allSeedViewIUnderstandButton": {
     "description": "Button label to acknowledge security warning"
   },
-  "arkSettleTransactions": "Transações de Settle",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
-  "arkAvailable": "Disponível",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "fundExchangeSinpeWarningNoBitcoin": "Não ponha",
   "@fundExchangeSinpeWarningNoBitcoin": {
     "description": "Bold warning text at start of bitcoin warning message"
@@ -910,10 +861,6 @@
   "payBroadcastFailed": "Transmissão falhou",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "arkNetwork": "Rede",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "seedsignerStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no SeedSigner. Analisa-o.",
   "@seedsignerStep12": {
@@ -1080,6 +1027,9 @@
   "@transactionLabelStatus": {
     "description": "Label for transaction status"
   },
+  "buyConfirmPayoutWallet": "Carteira de pagamento",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na cadeia Bitcoin",
   "buyConfirmPayoutMethod": "Método de pagamento",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -1173,10 +1123,6 @@
   "@ledgerVerifyButton": {
     "description": "Button label to start address verification on Ledger"
   },
-  "arkSettleCancel": "Cancelar",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "payPayFromWallet": "Pagar da carteira",
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -1232,10 +1178,6 @@
   "payOrderAlreadyConfirmedError": "Esta ordem de pagamento já foi confirmada.",
   "@payOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed order"
-  },
-  "arkStatusSettled": "Preparado",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
   },
   "fundExchangeWarningTactic5": "Eles pedem para enviar Bitcoin em outra plataforma",
   "@fundExchangeWarningTactic5": {
@@ -1427,15 +1369,6 @@
   "@systemLabelSwaps": {
     "description": "System label for swap transactions"
   },
-  "arkDurationMinutes": "{minutes}",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapSelectWalletError": "Por favor, selecione uma carteira Bitcoin destinatário",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
@@ -1533,21 +1466,9 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "arkTransaction": "transação",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
-  },
-  "arkRecipientAddress": "Endereço de destinatário",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
-  },
   "bitboxScreenEnterPasswordSubtext": "Digite sua senha no dispositivo BitBox para continuar.",
   "@bitboxScreenEnterPasswordSubtext": {
     "description": "Subtext when waiting for password"
-  },
-  "arkAboutShow": "Mostrar",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
   },
   "swapTitle": "Transferência interna",
   "@swapTitle": {
@@ -1568,15 +1489,6 @@
   "logSettingsLogsTitle": "Logs",
   "@logSettingsLogsTitle": {
     "description": "Title for the logs section in settings"
-  },
-  "arkCopiedToClipboard": "{label} copiado para clipboard",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "payLightningNetwork": "Rede de relâmpago",
   "@payLightningNetwork": {
@@ -1719,10 +1631,6 @@
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
   },
-  "arkTxTypeBoarding": "Quadro",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "recoverbullGoogleDriveErrorFetchFailed": "Falhado para buscar cofres do Google Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
@@ -1750,10 +1658,6 @@
   "totalFeeLabel": "Taxa total",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "arkSendTitle": "Enviar",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "payExpired": "Expirou",
   "@payExpired": {
@@ -1786,10 +1690,6 @@
   "loginButton": "LOGIA",
   "@loginButton": {
     "description": "Button to navigate to login screen"
-  },
-  "arkAboutNetwork": "Rede",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
   },
   "transactionDetailLabelAmountReceived": "Montante recebido",
   "@transactionDetailLabelAmountReceived": {
@@ -1981,10 +1881,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "arkDust": "Pó",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "sellSelectNetwork": "Selecione Rede",
   "@sellSelectNetwork": {
     "description": "Screen title for network selection"
@@ -2008,10 +1904,6 @@
   "coldcardStep13": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Coldcard. Analisa-o.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
-  },
-  "arkTransactions": "transações",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "sendUnfreezeCoin": "Moeda de Congelação",
   "@sendUnfreezeCoin": {
@@ -2041,15 +1933,6 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "arkDurationSeconds": "{seconds} segundos",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullErrorInvalidCredentials": "Senha errada para este arquivo de backup",
   "@recoverbullErrorInvalidCredentials": {
     "description": "Error message when wrong password is entered for vault"
@@ -2070,17 +1953,9 @@
   "@payFeeBreakdown": {
     "description": "Section header for detailed fee information"
   },
-  "arkUnifiedAddressCopied": "Endereço unificado copiado",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
-  },
   "fundExchangeCrIbanUsdRecipientNameHelp": "Use nosso nome corporativo oficial. Não use \"Bull Bitcoin\".",
   "@fundExchangeCrIbanUsdRecipientNameHelp": {
     "description": "Help text for recipient name field explaining to use corporate name"
-  },
-  "arkSetupEnable": "Habilitar a arca",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionConfirmationCancelButton": "Cancelar",
   "@walletDeletionConfirmationCancelButton": {
@@ -2457,10 +2332,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "walletArkInstantPayments": "Ark Pagamentos imediatos",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "payAccount": "Conta",
   "@payAccount": {
     "description": "Label for account details"
@@ -2509,22 +2380,9 @@
   "@coreScreensFeeDeductionExplanation": {
     "description": "Explanation text for fee deduction"
   },
-  "arkTransactionDetails": "Detalhes da transação",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
-  },
   "vaultSuccessfullyImported": "Seu cofre foi importado com sucesso",
   "@vaultSuccessfullyImported": {
     "description": "Message shown when vault is imported successfully"
-  },
-  "arkDurationDay": "{days} dia",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "buyEnterAmount": "Insira quantidade",
   "@buyEnterAmount": {
@@ -2557,10 +2415,6 @@
   "walletTypeWatchSigner": "Sinalizador de relógio",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "arkSendButton": "Enviar",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "sellInsufficientBalance": "Balança de carteira insuficiente",
   "@sellInsufficientBalance": {
@@ -2666,10 +2520,6 @@
   "fundExchangeMethodSpeiTransferSubtitle": "Transferir fundos usando seu CLABE",
   "@fundExchangeMethodSpeiTransferSubtitle": {
     "description": "Subtitle for SPEI transfer payment method"
-  },
-  "arkPreconfirmed": "Confirmado",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
   },
   "logoutConfirmationTitle": "Confirme o logotipo",
   "@logoutConfirmationTitle": {
@@ -2823,15 +2673,6 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "arkDurationHours": "{hours} horas",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "coldcardStep6": "   - Aumente o brilho da tela em seu dispositivo",
   "@coldcardStep6": {
     "description": "Coldcard troubleshooting tip 1"
@@ -2893,10 +2734,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "arkAmount": "Montante",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "jadeStep15": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
@@ -2920,10 +2757,6 @@
   "payRecipientType": "Tipo de destinatário",
   "@payRecipientType": {
     "description": "Label for recipient type"
-  },
-  "arkDate": "Data",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "fundExchangeCrBankTransferDescription1": "Envie uma transferência bancária da sua conta bancária usando os detalhes abaixo ",
   "@fundExchangeCrBankTransferDescription1": {
@@ -3096,7 +2929,7 @@
   "@exchangeKycLight": {
     "description": "Light KYC level label"
   },
-  "buyYouBought": "Você comprou {amount}",
+  "buyYouBought": "Você comprou {amount} por {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -3125,10 +2958,6 @@
   "@walletButtonSend": {
     "description": "Button label to send funds"
   },
-  "arkRedeemButton": "Redeem",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
-  },
   "torSettingsPortNumber": "Número de porta",
   "@torSettingsPortNumber": {
     "description": "Label for port number input field"
@@ -3156,10 +2985,6 @@
   "importQrDeviceSeedsignerStep9": "Digite um rótulo para a sua carteira SeedSigner e toque em Importar",
   "@importQrDeviceSeedsignerStep9": {
     "description": "SeedSigner instruction step 9"
-  },
-  "walletArkExperimental": "Experimental",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
   },
   "recoverbullKeyServer": "Servidor chave ",
   "@recoverbullKeyServer": {
@@ -3382,10 +3207,6 @@
   "@dcaHideSettings": {
     "description": "Link to hide DCA settings"
   },
-  "arkReceiveUnifiedCopied": "Endereço unificado copiado",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
-  },
   "coreSwapsChainCompletedRefunded": "A transferência foi reembolsada.",
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
@@ -3453,15 +3274,6 @@
   "sellUpdatingRate": "Atualizando a taxa de câmbio...",
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
-  },
-  "arkDurationMinute": "{minutes} minuto",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
   },
   "settingsSecurityPinTitle": "Pin de segurança",
   "@settingsSecurityPinTitle": {
@@ -3562,10 +3374,6 @@
   "testYourWalletTitle": "Teste sua carteira",
   "@testYourWalletTitle": {
     "description": "Title for test your wallet screen"
-  },
-  "arkForfeitAddress": "Endereço falso",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
   },
   "buyKYCLevel1": "Nível 1 - Básico",
   "@buyKYCLevel1": {
@@ -3768,25 +3576,13 @@
   "@logoutConfirmationCancel": {
     "description": "Cancel button label for logout confirmation"
   },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
-  },
   "settingsDevModeUnderstandButton": "Eu compreendo",
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
-  "arkSendRecipientTitle": "Enviar para o Recipiente",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "Importação",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
-  },
-  "arkBtcAddress": "Endereço de BTC",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
   },
   "buyExpressWithdrawalDesc": "Receba Bitcoin instantaneamente após o pagamento",
   "@buyExpressWithdrawalDesc": {
@@ -3796,21 +3592,9 @@
   "@exchangeAccountInfoFirstNameLabel": {
     "description": "Label for first name field in account information"
   },
-  "arkBoardingConfirmed": "Encaminhamento confirmado",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
-  "arkSettleIncludeRecoverable": "Incluir vtxos recuperáveis",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
-  },
   "payPaymentFailed": "O pagamento falhou",
   "@payPaymentFailed": {
     "description": "Error message when payment fails"
-  },
-  "arkCancelButton": "Cancelar",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "sendBuildFailed": "Falhado em construir a transação",
   "@sendBuildFailed": {
@@ -3856,10 +3640,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkStatusConfirmed": "Confirmado",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
-  },
   "importColdcardInvalidQR": "Código QR inválido",
   "@importColdcardInvalidQR": {
     "description": "Error for invalid QR format"
@@ -3903,10 +3683,6 @@
   "bitboxActionImportWalletProcessingSubtext": "A montar a tua carteira só de relógio...",
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
-  },
-  "arkServerPubkey": "Servidor pubkey",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
   },
   "payTransitNumberHint": "Digite o número de trânsito",
   "@payTransitNumberHint": {
@@ -3990,10 +3766,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkInstantPayments": "Ark Pagamentos instantâneos",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
-  },
   "priceChartFetchingHistory": "Fetching Price History...",
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
@@ -4017,10 +3789,6 @@
   "withdrawUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
-  },
-  "arkToday": "Hoje",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
   },
   "sendInitiatingSwap": "Iniciando troca...",
   "@sendInitiatingSwap": {
@@ -4054,10 +3822,6 @@
   "exchangeCurrencyDropdownValidation": "Por favor, selecione uma moeda",
   "@exchangeCurrencyDropdownValidation": {
     "description": "Validation message when no currency is selected"
-  },
-  "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "fundExchangeWarningConfirmation": "Eu confirmo que não estou sendo solicitado a comprar Bitcoin por outra pessoa.",
   "@fundExchangeWarningConfirmation": {
@@ -4212,10 +3976,6 @@
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
   },
-  "arkSetupTitle": "Configuração de arca",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
-  },
   "buyInputKycPending": "Pendente de Verificação de ID KYC",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4356,10 +4116,6 @@
   "@sendSelectNetworkFee": {
     "description": "Label for selecting the network fee in the send flow"
   },
-  "arkSendSuccessMessage": "Sua transacção Ark foi bem sucedida!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
-  },
   "autoswapTriggerAtBalanceInfoText": "Autoswap irá desencadear quando o seu equilíbrio vai acima deste equilíbrio máximo.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
@@ -4428,10 +4184,6 @@
   "importQrDeviceJadeStep2": "Selecione \"Modo QR\" no menu principal",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
-  },
-  "arkReceiveCopyAddress": "Endereço de cópia",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
   },
   "transactionDetailRetrySwap": "Retira Swap {action}",
   "@transactionDetailRetrySwap": {
@@ -4658,10 +4410,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "arkStatusPending": "Pendente",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "bitboxErrorDeviceNotFound": "Dispositivo BitBox não encontrado.",
   "@bitboxErrorDeviceNotFound": {
     "description": "Error when BitBox device cannot be found"
@@ -4848,10 +4596,6 @@
       }
     }
   },
-  "arkSendAmountTitle": "Digite o valor",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "testBackupVaultSuccessMessage": "Seu cofre foi importado com sucesso",
   "@testBackupVaultSuccessMessage": {
     "description": "Success message after vault is imported"
@@ -4908,30 +4652,13 @@
   "@recoverbullVaultImportedSuccess": {
     "description": "Success message after vault import"
   },
-  "arkReceiveUnifiedAddress": "Endereço unificado (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
-  },
   "payOnChainFee": "Taxas On-Chain",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
   },
-  "arkType": "Tipo",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
-  },
   "coldcardStep8": "   - Tente mover seu dispositivo para trás um pouco",
   "@coldcardStep8": {
     "description": "Coldcard troubleshooting tip 3"
-  },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
   },
   "backupWalletGoogleDrivePrivacyMessage1": "Esta informação ",
   "@backupWalletGoogleDrivePrivacyMessage1": {
@@ -4946,10 +4673,6 @@
         "example": "PIN"
       }
     }
-  },
-  "arkUnilateralExitDelay": "Atraso de saída unilateral",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
   },
   "sellDailyLimitReached": "Limite de venda diário alcançado",
   "@sellDailyLimitReached": {
@@ -5100,10 +4823,6 @@
   "@testBackupGoogleDrivePrivacyPart1": {
     "description": "First part of privacy message"
   },
-  "arkSettleDescription": "Finalize transações pendentes e inclua vtxos recuperáveis se necessário",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "coreSwapsStatusInProgress": "Em progresso",
   "@coreSwapsStatusInProgress": {
     "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
@@ -5152,14 +4871,6 @@
         "type": "String"
       }
     }
-  },
-  "arkReceiveTitle": "Ark Receber",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
-  "arkTxPayment": "Pagamento",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
   },
   "payDebitCardNumberHint": "Digite número de cartão de débito",
   "@payDebitCardNumberHint": {
@@ -5236,10 +4947,6 @@
   "exchangeAppSettingsSaveSuccessMessage": "Configurações salvas com sucesso",
   "@exchangeAppSettingsSaveSuccessMessage": {
     "description": "Success message displayed when exchange app settings are saved"
-  },
-  "arkIncludeRecoverableVtxos": "Incluir vtxos recuperáveis",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
   },
   "importQrDeviceKeystoneStep8": "Na carteira BULL, escolha o seu tipo de derivação preferido. Se você não tem certeza, selecione \"Segwit (BIP84)\"",
   "@importQrDeviceKeystoneStep8": {
@@ -5329,10 +5036,6 @@
   "passportStep2": "Clique em assinar com o código QR",
   "@passportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "arkBoardingUnconfirmed": "Embarque sem confirmação",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "coreSwapsLnSendFailed": "Engole Falhado.",
   "@coreSwapsLnSendFailed": {
@@ -5472,10 +5175,6 @@
   "@dcaSelectFrequencyLabel": {
     "description": "Label above frequency selection radio buttons"
   },
-  "arkSettleTitle": "Transações de Settle",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
-  },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -5519,15 +5218,6 @@
   "sendRelativeFees": "Taxas relativas",
   "@sendRelativeFees": {
     "description": "Label for relative fee display mode (sats per vByte)"
-  },
-  "arkAboutDurationDays": "{days} dias",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
   },
   "coreScreensNetworkFeesLabel": "Taxas de rede",
   "@coreScreensNetworkFeesLabel": {
@@ -5605,10 +5295,6 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "arkAboutForfeitAddress": "Endereço falso",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "electrumBitcoinServerInfo": "Digite o endereço do servidor em formato: host:port (por exemplo, example.com:50001)",
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
@@ -5636,10 +5322,6 @@
   "receiveBitcoinConfirmationMessage": "Bitcoin transação levará um tempo para confirmar.",
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "arkAboutDust": "Pó",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
   },
   "recoverbullGoogleDriveDeleteVaultTitle": "Excluir Vault",
   "@recoverbullGoogleDriveDeleteVaultTitle": {
@@ -5737,10 +5419,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "arkAboutSecretKey": "Chave secreta",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "fundExchangeLabelPaymentDescription": "Descrição do pagamento",
   "@fundExchangeLabelPaymentDescription": {
     "description": "Label for payment description field"
@@ -5777,10 +5455,6 @@
   "@sendSwapTimeout": {
     "description": "Error when swap expires"
   },
-  "settingsArkTitle": "Arca",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
-  },
   "coreSwapsLnReceiveClaimable": "Swap está pronto para ser reivindicado.",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
@@ -5805,10 +5479,6 @@
   "transactionLabelBitcoinTransactionId": "ID de transação de Bitcoin",
   "@transactionLabelBitcoinTransactionId": {
     "description": "Label for Bitcoin network transaction ID"
-  },
-  "arkTxTypeRedeem": "Redeem",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
   },
   "dcaAddressLightning": "Endereço de iluminação",
   "@dcaAddressLightning": {
@@ -5901,10 +5571,6 @@
   "psbtFlowSignTransaction": "Transação de assinatura",
   "@psbtFlowSignTransaction": {
     "description": "Title for psbt flow signing screen"
-  },
-  "arkAboutSessionDuration": "Duração da sessão",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
   },
   "testBackupNext": "Próximo",
   "@testBackupNext": {
@@ -6001,10 +5667,6 @@
   "@torSettingsSaveButton": {
     "description": "Save button label for Tor port settings"
   },
-  "arkAboutTitle": "Sobre a",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
   "exchangeLandingConnectAccount": "Conecte sua conta de câmbio Bull Bitcoin",
   "@exchangeLandingConnectAccount": {
     "description": "Subtitle text on the exchange landing screen encouraging users to connect"
@@ -6043,10 +5705,6 @@
   "@exchangeStatisticsTradeCount": {
     "description": "Label for trade count statistic"
   },
-  "sendErrorArkExperimentalOnly": "Os pedidos de pagamento ARK estão disponíveis apenas a partir do recurso Ark experimental.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
-  },
   "broadcastSignedTxTo": "Para",
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
@@ -6054,10 +5712,6 @@
   "dcaConfirmOrderType": "Tipo de ordem",
   "@dcaConfirmOrderType": {
     "description": "Field label for order type"
-  },
-  "arkRecoverableVtxos": "Vtxos recuperáveis",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "buyExternalBitcoinWallet": "Carteira Bitcoin externa",
   "@buyExternalBitcoinWallet": {
@@ -6135,10 +5789,6 @@
   "dcaNetworkLiquid": "Rede líquida",
   "@dcaNetworkLiquid": {
     "description": "Liquid network label for DCA"
-  },
-  "arkSetupExperimentalWarning": "A arca ainda é experimental.\n\nSua carteira Ark é derivada da frase de semente da sua carteira principal. Nenhum backup adicional é necessário, seu backup de carteira existente restaura seus fundos Ark também.\n\nAo continuar, você reconhece a natureza experimental da Arca e o risco de perder fundos.\n\nNota do desenvolvedor : O segredo da arca é derivado da principal semente da carteira usando uma derivação arbitrária BIP-85 (index 11811).",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "pinCodeSettingsLabel": "Código PIN",
   "@pinCodeSettingsLabel": {
@@ -6333,17 +5983,9 @@
   "@importQrDevicePassportName": {
     "description": "Name of Foundation Passport device"
   },
-  "arkTxSettlement": "Fixação",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
-  },
   "payOwnerNameHint": "Digite o nome do proprietário",
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
-  },
-  "arkConfirmed": "Confirmado",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
   },
   "importColdcardError": "Falhado para importar Coldcard",
   "@importColdcardError": {
@@ -6526,10 +6168,6 @@
   "@sendSwapCancelled": {
     "description": "Message when user cancels swap"
   },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "transactionLabelTransferId": "ID de transferência",
   "@transactionLabelTransferId": {
     "description": "Label for transfer/swap ID"
@@ -6593,10 +6231,6 @@
   "@dcaConfirmButton": {
     "description": "Button label to confirm and activate DCA"
   },
-  "arkSendConfirm": "Confirmação",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "recoverbullRecoveryContinueButton": "Continue",
   "@recoverbullRecoveryContinueButton": {
     "description": "Button text to proceed with importing the wallet"
@@ -6613,10 +6247,6 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "arkTransactionId": "ID de transação",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
-  },
   "payDecodeFailed": "Falhado para decodificar fatura",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -6624,15 +6254,6 @@
   "withdrawOrderNotFoundError": "A ordem de retirada não foi encontrada. Por favor, tente novamente.",
   "@withdrawOrderNotFoundError": {
     "description": "Error message for order not found during withdraw"
-  },
-  "arkAboutDurationHour": "{hours} hora",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
   "@bitboxActionVerifyAddressProcessing": {
@@ -6859,10 +6480,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "arkCopyAddress": "Endereço de cópia",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
-  },
   "onboardingOwnYourMoney": "Possuir seu dinheiro",
   "@onboardingOwnYourMoney": {
     "description": "Tagline displayed in onboarding splash screen"
@@ -6962,10 +6579,6 @@
   "transactionOrderLabelReferenceNumber": "Número de referência",
   "@transactionOrderLabelReferenceNumber": {
     "description": "Label for reference number in order details"
-  },
-  "arkBoardingExitDelay": "Atraso de saída de embarque",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
   },
   "receiveLightning": "Luz",
   "@receiveLightning": {
@@ -7093,15 +6706,6 @@
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
-  "arkAboutDurationDay": "{days} dia",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "sellKycPendingDescription": "Você deve concluir a verificação ID primeiro",
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
@@ -7158,10 +6762,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "arkPending": "Pendente",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
-  },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
     "description": "Payment method title for IBAN USD in method list"
@@ -7210,10 +6810,6 @@
   "recoverbullGoogleDriveDeleteButton": "Excluir",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkAboutEsploraUrl": "URL de impressão",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
   },
   "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
   "@allSeedViewDeleteWarningMessage": {
@@ -7366,10 +6962,6 @@
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
   },
-  "arkBalanceBreakdownTooltip": "Repartição do saldo",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
-  },
   "payPriceRefreshIn": "Preço irá refrescar-se ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
@@ -7478,10 +7070,6 @@
   "recoverbullSelectDecryptVault": "Descriptografar cofre",
   "@recoverbullSelectDecryptVault": {
     "description": "Primary button text to proceed with vault decryption"
-  },
-  "arkSendConfirmedBalance": "Balanço confirmado",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
   },
   "addressViewCopyAddress": "Endereço de cópia",
   "@addressViewCopyAddress": {
@@ -7763,10 +7351,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "Interrupção de equilíbrio",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "dcaSuccessMessageWeekly": "Você vai comprar {amount} todas as semanas",
   "@dcaSuccessMessageWeekly": {
     "description": "Success message for weekly frequency",
@@ -7836,22 +7420,9 @@
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
   },
-  "arkNoTransactionsYet": "Ainda não há transações.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
-  },
   "mempoolCustomServerUrlEmpty": "Digite uma URL do servidor",
   "@mempoolCustomServerUrlEmpty": {
     "description": "Error message when server URL is empty"
-  },
-  "arkDurationHour": "{hours} hora",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeErrorLoadingDetails": "Os detalhes do pagamento não podem ser carregados neste momento. Por favor, volte e tente novamente, escolha outro método de pagamento ou volte mais tarde.",
   "fundExchangeErrorTitleOrdPo404": "Opção de Pagamento Indisponível",
@@ -7920,10 +7491,6 @@
   "ledgerButtonManagePermissions": "Gerenciar Permissões de Aplicativos",
   "@ledgerButtonManagePermissions": {
     "description": "Button label to open app permissions settings"
-  },
-  "arkSatsUnit": "sats",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
   },
   "transactionLabelAddress": "Endereço",
   "@transactionLabelAddress": {
@@ -8006,10 +7573,6 @@
   "walletButtonReceive": "Receber",
   "@walletButtonReceive": {
     "description": "Button label to receive funds"
-  },
-  "arkSettleButton": "Settle",
-  "@arkSettleButton": {
-    "description": "Settle button label"
   },
   "fundExchangeSpeiSubtitle": "Transferir fundos usando seu CLABE",
   "@fundExchangeSpeiSubtitle": {
@@ -8115,10 +7678,6 @@
   "@bitboxActionPairDeviceSuccess": {
     "description": "Success text for pair device"
   },
-  "arkSendConfirmTitle": "Enviar",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
-  },
   "coreSwapsActionClose": "Fechar",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
@@ -8176,10 +7735,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "arkReceiveSegmentArk": "Arca",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
-  },
   "googleDrivePrivacyMessage": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
   "@googleDrivePrivacyMessage": {
     "description": "Message about Google requesting personal information"
@@ -8211,10 +7766,6 @@
   "sendSignWithLedger": "Sinal com Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
-  },
-  "receiveArkNetwork": "Arca",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "walletNetworkLiquid": "Rede líquida",
   "@walletNetworkLiquid": {
@@ -8264,10 +7815,6 @@
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
   },
-  "arkUnifiedAddressBip21": "Endereço unificado (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "autoswapRecipientWalletInfo": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
@@ -8287,10 +7834,6 @@
   "dcaSetupFundAccount": "Fina sua conta",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
-  },
-  "arkConfirmButton": "Confirmação",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "exchangeAuthLoginFailedTitle": "Login Falhado",
   "@exchangeAuthLoginFailedTitle": {
@@ -8485,10 +8028,6 @@
   "payRecipientName": "Nome do destinatário",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "arkAboutCopy": "Entendido",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
   },
   "backupSettingsKeyWarningExample": "Por exemplo, se você usou o Google Drive para seu arquivo de backup, não use o Google Drive para sua chave de backup.",
   "@backupSettingsKeyWarningExample": {
@@ -8717,15 +8256,6 @@
   "@walletDeletionConfirmationMessage": {
     "description": "Message in the wallet deletion confirmation dialog"
   },
-  "arkAboutDurationHours": "{hours} horas",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "transactionNetworkLiquid": "Líquido",
   "@transactionNetworkLiquid": {
     "description": "Label for Liquid network transactions"
@@ -8737,10 +8267,6 @@
   "paySinpeNumeroOrden": "Número de ordem",
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
-  },
-  "arkEsploraUrl": "URL de impressão",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "buyNetworkFeeExplanation": "A taxa de rede Bitcoin será deduzida a partir do valor que você recebe e coletada pelos mineiros Bitcoin",
   "@buyNetworkFeeExplanation": {
@@ -8836,10 +8362,6 @@
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "arkTotal": "Total",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
-  },
   "dcaAddressLiquid": "Endereço líquido",
   "@dcaAddressLiquid": {
     "description": "Liquid address label"
@@ -8851,10 +8373,6 @@
   "electrumInvalidNumberError": "Insira um número válido",
   "@electrumInvalidNumberError": {
     "description": "Validation error for non-numeric input"
-  },
-  "arkAboutHide": "Esconde-te",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
   },
   "payRecipientDetails": "Detalhes do destinatário",
   "@payRecipientDetails": {
@@ -8928,10 +8446,6 @@
         "example": "PIN"
       }
     }
-  },
-  "arkSendPendingBalance": "Equilíbrio Pendente    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coldcardStep2": "Adicionar uma senha se você tiver um (opcional)",
   "@coldcardStep2": {
@@ -9091,15 +8605,6 @@
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
   },
-  "arkAboutDurationMinute": "{minutes} minuto",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "withdrawRecipientsPrompt": "Onde e como devemos enviar o dinheiro?",
   "@withdrawRecipientsPrompt": {
     "description": "Instructions on recipients screen"
@@ -9127,18 +8632,6 @@
   "sellSendPaymentPayoutRecipient": "Receptor de pagamento",
   "@sellSendPaymentPayoutRecipient": {
     "description": "Field label for payout recipient"
-  },
-  "arkSettleTransactionCount": "Liquidar {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "importColdcardImporting": "Importando a carteira Coldcard...",
   "@importColdcardImporting": {
@@ -9221,10 +8714,6 @@
   "backupWalletInstructionLosePhone": "Sem um backup, se você perder ou quebrar seu telefone, ou se você desinstalar o aplicativo Bull Bitcoin, seus bitcoins serão perdidos para sempre.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "arkSendSuccessTitle": "Enviar Sucesso",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
   },
   "swapTotalFees": "Taxas totais ",
   "@swapTotalFees": {
@@ -9376,10 +8865,6 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "arkReceiveButton": "Receber",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "pickPasswordOrPinButton": "Escolha um {pinOrPassword} em vez >>",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -9425,15 +8910,6 @@
   "fundExchangeMethodCrIbanCrcSubtitle": "Transferir fundos em Costa Rican Colón (CRC)",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
     "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
-  "arkDurationDays": "{days} dias",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "autoswapWarningSettingsLink": "Leve-me para configurações de auto-despertar",
   "@autoswapWarningSettingsLink": {
@@ -9482,10 +8958,6 @@
   "coreSwapsActionRefund": "Reembolso",
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
-  },
-  "arkServerUrl": "URL do servidor",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
   },
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
   "@coldcardStep10": {
@@ -9605,10 +9077,6 @@
   "@bitboxActionPairDeviceTitle": {
     "description": "Title for pair device action"
   },
-  "arkSettleMessage": "Finalize transações pendentes e inclua vtxos recuperáveis se necessário",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "bitboxScreenEnterPassword": "Digite a senha",
   "@bitboxScreenEnterPassword": {
     "description": "Main text when waiting for password"
@@ -9712,10 +9180,6 @@
   "sendSelectCoins": "Selecione moedas",
   "@sendSelectCoins": {
     "description": "Button to open UTXO selector"
-  },
-  "arkAboutBoardingExitDelay": "Atraso de saída de embarque",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
   },
   "paySelectWallet": "Selecione a carteira",
   "@paySelectWallet": {
@@ -9864,10 +9328,6 @@
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "arkCollaborativeRedeem": "Redenção Colaborativa",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
   "backupSettingsRevealing": "Revelando...",
   "@backupSettingsRevealing": {
     "description": "Button text while revealing vault key"
@@ -9928,10 +9388,6 @@
   "transactionLabelTransactionId": "ID de transação",
   "@transactionLabelTransactionId": {
     "description": "Label for transaction ID field"
-  },
-  "arkAboutUnilateralExitDelay": "Atraso de saída unilateral",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
   },
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
@@ -10250,10 +9706,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "arkSendConfirmMessage": "Por favor, confirme os detalhes da sua transação antes de enviar.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
   "exchangeReferralsApplyToJoinMessage": "Aplicar para se juntar ao programa aqui",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10265,10 +9717,6 @@
   "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
   "@bitboxScreenNestedSegwitBip49Subtitle": {
     "description": "Subtitle for BIP49 option"
-  },
-  "arkArkAddress": "Endereço da arca",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
   },
   "fundExchangeCanadaPostStep3": "3. Diga ao caixa o valor que deseja carregar",
   "@fundExchangeCanadaPostStep3": {
@@ -10297,10 +9745,6 @@
   "dcaSetupScheduleMessage": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
-  },
-  "arkSendRecipientError": "Digite um destinatário",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
   },
   "payRetryPayment": "Restrição de pagamento",
   "@payRetryPayment": {
@@ -10334,10 +9778,6 @@
   "@recoverbullRecoverBullServer": {
     "description": "Label for RecoverBull server connection status"
   },
-  "arkTxTypeCommitment": "Autorizações",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "bitboxScreenAddressToVerify": "Endereço para verificar:",
   "@bitboxScreenAddressToVerify": {
     "description": "Label for address verification"
@@ -10353,10 +9793,6 @@
   "transactionSwapInfoFailedExpired": "Se você tiver alguma dúvida ou preocupação, entre em contato com o suporte para assistência.",
   "@transactionSwapInfoFailedExpired": {
     "description": "Additional info for failed or expired swaps"
-  },
-  "arkYesterday": "Ontem",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "customLocationRecommendation": "Localização personalizada: ",
   "@customLocationRecommendation": {
@@ -10435,10 +9871,6 @@
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
   },
-  "arkCopy": "Entendido",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendSwapFeeEstimate": "Taxa de swap estimada: {amount}",
   "@sendSwapFeeEstimate": {
     "description": "Estimated cost of swap",
@@ -10500,10 +9932,6 @@
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
   },
-  "arkPendingBalance": "Equilíbrio Pendente",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
-  },
   "autoswapMaxFeeLabel": "Taxa de transferência máxima",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
@@ -10561,10 +9989,6 @@
   "ledgerErrorUnknown": "Erro desconhecido",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
-  },
-  "arkSendRecipientLabel": "Endereço do destinatário",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
   },
   "buyViewDetails": "Ver detalhes",
   "@buyViewDetails": {
@@ -10654,10 +10078,6 @@
   "@payNoRouteFound": {
     "description": "Error when Lightning routing cannot find a path"
   },
-  "arkStatus": "Estado",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
-  },
   "receiveInvoiceExpiry": "A fatura expira em {time}",
   "@receiveInvoiceExpiry": {
     "description": "Shows expiration countdown",
@@ -10718,15 +10138,6 @@
   "exchangeFileUploadStatusAccepted": "Aceito",
   "@exchangeFileUploadStatusAccepted": {
     "description": "Status badge when files have been accepted"
-  },
-  "arkAboutDurationMinutes": "{minutes}",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "sendSigningTransaction": "Assinar transação...",
   "@sendSigningTransaction": {
@@ -10868,10 +10279,6 @@
   "@bitboxActionSignTransactionButton": {
     "description": "Button text for sign transaction"
   },
-  "arkReceiveArkAddress": "Endereço da arca",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
-  },
   "payOrderNotFoundError": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
   "@payOrderNotFoundError": {
     "description": "Error message for order not found"
@@ -10951,10 +10358,6 @@
   "walletTypeBitcoinNetwork": "Rede de Bitcoin",
   "@walletTypeBitcoinNetwork": {
     "description": "Wallet type label for Bitcoin network"
-  },
-  "arkConfirmedBalance": "Balanço confirmado",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
   },
   "fundExchangeWarningTacticsTitle": "Táticas comuns do scammer",
   "@fundExchangeWarningTacticsTitle": {
@@ -11057,15 +10460,6 @@
   "@sendSuccessfullySent": {
     "description": "Title for successful send completion"
   },
-  "arkAboutCopiedMessage": "{label} copiado para clipboard",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sellKYCPending": "Verificação de KYC pendente",
   "@sellKYCPending": {
     "description": "Message when verification in progress"
@@ -11094,10 +10488,6 @@
   "@fundExchangeCanadaPostStep7": {
     "description": "Step 7 for Canada Post payment process - timeframe"
   },
-  "arkAboutServerPubkey": "Servidor pubkey",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "fundExchangeLabelInstitutionNumber": "Número de instituição",
   "@fundExchangeLabelInstitutionNumber": {
     "description": "Label for institution number field"
@@ -11125,10 +10515,6 @@
   "passportStep9": "Clique nos botões para assinar a transação no seu Passaporte.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "arkTxBoarding": "Quadro",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "payOpenInvoice": "Fatura aberta",
   "@payOpenInvoice": {
@@ -12264,6 +11650,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
+  "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
   "buyOrderAlreadyConfirmedError": "Esta ordem de compra já foi confirmada.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"

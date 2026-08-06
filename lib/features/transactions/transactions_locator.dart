@@ -1,10 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
@@ -25,13 +21,38 @@ import 'package:bb_mobile/features/transactions/application/ports/transaction_ex
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 class TransactionsLocator {
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<GetPayjoinByIdUsecase>(
+      () => GetPayjoinByIdUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<GetPayjoinByTxIdUsecase>(
+      () => GetPayjoinByTxIdUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<WatchPayjoinUsecase>(
+      () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<BroadcastOriginalTransactionUsecase>(
+      () => BroadcastOriginalTransactionUsecase(locator<PayjoinSender>()),
+    );
+    locator.registerFactory<LabelExchangeOrdersUsecase>(
+      () => LabelExchangeOrdersUsecase(
+        labelsFacade: locator<LabelsFacade>(),
+        listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
+      ),
+    );
+
     locator.registerFactory<GetTransactionsUsecase>(
       () => GetTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -40,7 +61,7 @@ class TransactionsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        payjoinRepository: locator<PayjoinRepository>(),
+        payjoinSessions: locator<PayjoinSessions>(),
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),
@@ -66,7 +87,7 @@ class TransactionsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        payjoinRepository: locator<PayjoinRepository>(),
+        payjoinSessions: locator<PayjoinSessions>(),
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),
@@ -115,6 +136,7 @@ class TransactionsLocator {
             locator<WatchWalletTransactionByTxIdUsecase>(),
         getSwapUsecase: locator<GetSwapUsecase>(),
         getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
+        getPayjoinByTxIdUsecase: locator<GetPayjoinByTxIdUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),

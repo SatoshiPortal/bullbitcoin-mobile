@@ -90,7 +90,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Kieli",
   "settingsThemeTitle": "Teema",
-  "settingsArkTitle": "Ark",
   "settingsDevModeWarningTitle": "Kehittäjätila",
   "settingsDevModeWarningMessage": "Tämä tila on riskialtis. Ottamalla sen käyttöön hyväksyt, että voit menettää rahaa",
   "settingsDevModeUnderstandButton": "Ymmärrän",
@@ -345,7 +344,7 @@
   "buyPayoutMethod": "Maksutapa",
   "buyAwaitingConfirmation": "Odotetaan vahvistusta ",
   "buyConfirmPurchase": "Vahvista osto",
-  "buyYouBought": "Ostit {amount}",
+  "buyYouBought": "Ostit {amount} hintaan {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -788,8 +787,6 @@
   "walletBalanceUnconfirmedIncoming": "Käynnissä",
   "walletButtonReceive": "Vastaanota",
   "walletButtonSend": "Lähetä",
-  "walletArkInstantPayments": "Välittömät Ark-maksut",
-  "walletArkExperimental": "Kokeellinen",
   "fundExchangeTitle": "Talleta varoja tilillesi",
   "fundExchangeAccountTitle": "Talletus",
   "fundExchangeAccountSubtitle": "Valitse maa ja talletustapa",
@@ -1469,150 +1466,6 @@
     }
   },
   "autoswapTriggerBalanceError": "Maksimi-saldo on oltava vähintään kaksi kertaa tavoitesaldo.",
-  "arkNoTransactionsYet": "Ei vielä transaktioita.",
-  "arkToday": "Tänään",
-  "arkYesterday": "Eilen",
-  "arkSettleTransactions": "Viimeistele transaktiot",
-  "arkSettleDescription": "Viimeistele vireillä olevat transaktiot ja sisällytä tarvittaessa palautettavat vtxot",
-  "arkIncludeRecoverableVtxos": "Sisällytä palautettavat vtxot",
-  "arkCancelButton": "Peruuta",
-  "arkSettleButton": "Vahvista",
-  "arkReceiveTitle": "Ark Vastaanotto",
-  "arkUnifiedAddressCopied": "Yhdistetty osoite kopioitu",
-  "arkCopyAddress": "Kopioi osoite",
-  "arkUnifiedAddressBip21": "Yhdistetty osoite (BIP21)",
-  "arkBtcAddress": "BTC-osoite",
-  "arkArkAddress": "Ark-osoite",
-  "arkSendTitle": "Lähetä",
-  "arkRecipientAddress": "Vastaanottajan osoite",
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkConfirmedBalance": "Vahvistettu saldo",
-  "arkPendingBalance": "Vireillä oleva saldo",
-  "arkConfirmButton": "Vahvista",
-  "arkCollaborativeRedeem": "Yhteistyölunastus",
-  "arkRecoverableVtxos": "Palautettavat vtxot",
-  "arkRedeemButton": "Lunasta",
-  "arkInstantPayments": "Välittömät Ark-maksut",
-  "arkSettleTransactionCount": "Vahvista {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTransaction": "transaktio",
-  "arkTransactions": "transaktiot",
-  "arkReceiveButton": "Vastaanota",
-  "arkSendButton": "Lähetä",
-  "arkTxTypeBoarding": "Boarding",
-  "arkTxTypeCommitment": "Commitment",
-  "arkTxTypeRedeem": "Lunastus",
-  "arkTransactionDetails": "Transaktion tiedot",
-  "arkStatusConfirmed": "Vahvistettu",
-  "arkStatusPending": "Vireillä",
-  "arkStatusSettled": "Hyvitetty",
-  "arkTransactionId": "Transaktio-ID",
-  "arkType": "Tyyppi",
-  "arkStatus": "Tila",
-  "arkAmount": "Määrä",
-  "arkDate": "Päivämäärä",
-  "arkBalanceBreakdown": "Saldon erittely",
-  "arkConfirmed": "Vahvistettu",
-  "arkPending": "Vireillä",
-  "arkTotal": "Yhteensä",
-  "arkBalanceBreakdownTooltip": "Saldon erittely",
-  "arkAboutTitle": "Tietoja",
-  "arkServerUrl": "Palvelimen URL",
-  "arkServerPubkey": "Palvelimen julkinen avain",
-  "arkForfeitAddress": "Forfeit-osoite",
-  "arkNetwork": "Verkko",
-  "arkDust": "Pieniä jäämiä",
-  "arkSessionDuration": "Istunnon kesto",
-  "arkBoardingExitDelay": "Boarding-poistumisviive",
-  "arkUnilateralExitDelay": "Yksipuolinen poistumisviive",
-  "arkEsploraUrl": "Esplora URL",
-  "arkDurationSeconds": "{seconds} sekuntia",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} minuutti",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} minuuttia",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} tunti",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHours": "{hours} tuntia",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDay": "{days} päivä",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDays": "{days} päivää",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Kopioi",
-  "arkCopiedToClipboard": "{label} kopioitu leikepöydälle",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendSuccessTitle": "Lähetys onnistui",
-  "arkSendSuccessMessage": "Ark-siirtosi onnistui!",
-  "arkBoardingUnconfirmed": "Boarding vahvistamatta",
-  "arkBoardingConfirmed": "Boarding vahvistettu",
-  "arkPreconfirmed": "Ennakkovahvistettu",
-  "arkSettled": "Hyvitetty",
-  "arkAvailable": "Käytettävissä",
-  "arkNoBalanceData": "Ei saldotietoja saatavilla",
-  "arkTxPending": "Vireillä",
-  "arkTxBoarding": "Boarding",
-  "arkTxSettlement": "Vahvistus",
-  "arkTxPayment": "Maksu",
-  "arkSatsUnit": "sat",
   "bitboxErrorPermissionDenied": "USB-oikeudet vaaditaan BitBox-laitteiden yhdistämiseen.",
   "bitboxErrorNoDevicesFound": "BitBox-laitteita ei löytynyt. Varmista, että laitteesi on päällä ja liitetty USB:llä.",
   "bitboxErrorMultipleDevicesFound": "Useita BitBox-laitteita löydetty. Varmista, että vain yksi laite on kytketty.",
@@ -2094,7 +1947,6 @@
   },
   "sendEnterAbsoluteFee": "Anna absoluuttinen kulu satoshissa",
   "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
-  "sendErrorArkExperimentalOnly": "ARK-maksupyyntöjä on saatavilla vain kokeellisesta Ark-ominaisuudesta.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
   "sendErrorHardwareWalletCannotSwap": "Laitelompakoita ei voi käyttää vaihtoihin.",
   "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
@@ -2284,7 +2136,6 @@
   "receiveBitcoinNetwork": "Bitcoin",
   "receiveLightningNetwork": "Lightning",
   "receiveLiquidNetwork": "Liquid",
-  "receiveArkNetwork": "Ark",
   "receiveInvoice": "Lightning-lasku",
   "receiveFixedAmount": "Määrä",
   "receiveDescription": "Kuvaus (valinnainen)",
@@ -3367,6 +3218,9 @@
   "buyConfirmYouPay": "Maksat",
   "buyConfirmYouReceive": "Saat",
   "buyConfirmBitcoinPrice": "Bitcoinin hinta",
+  "buyConfirmPayoutWallet": "Maksun lompakko",
+  "buyPayoutMethodLiquid": "L-BTC Liquid-verkossa",
+  "buyPayoutMethodBitcoin": "BTC Bitcoin-lohkoketjussa",
   "buyConfirmPayoutMethod": "Maksutapa",
   "buyConfirmExternalWallet": "Ulkoinen Bitcoin-lompakko",
   "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
@@ -3394,9 +3248,6 @@
   "sellSendPaymentAboveMax": "Yrität myydä yli enimmäismäärän, jonka tästä lompakosta voi myydä.",
   "sellSendPaymentBelowMin": "Yrität myydä alle vähimmäismäärän, jonka tästä lompakosta voi myydä.",
   "sellSendPaymentInsufficientBalance": "Valitussa lompakossa ei ole riittävää saldoa tämän myyntitilauksen suorittamiseen.",
-  "arkSetupTitle": "Ark-asetukset",
-  "arkSetupExperimentalWarning": "Ark on vielä kokeellinen teknologia.\n\nArk-lompakkosi johdetaan päälompakkosi siemenlauseesta. Erillistä varmuuskopiota ei tarvita, koska nykyisen lompakon varmuuskopio palauttaa myös Ark-varasi.\n\nJatkamalla hyväksyt Arkin kokeellisen luonteen ja riskin varojen menettämisestä.\n\nKehittäjähuomautus: Ark-salasana johdetaan päälompakon siemenestä mielivaltaisella BIP-85-derivaatiolla (indeksi 11811).",
-  "arkSetupEnable": "Ota Ark käyttöön",
   "swapTitle": "Sisäinen siirto",
   "swapInfoBanner": "Siirrä Bitcoinia saumattomasti lompakoidesi välillä. Pidä varoja Pikamaksulompakossa vain päivittäistä kulutusta varten.",
   "swapMax": "MAX",
@@ -3579,114 +3430,6 @@
   "electrumServerNotUsed": "Ei käytössä",
   "electrumServerOnline": "Käytössä",
   "electrumServerOffline": "Poissa käytöstä",
-  "arkSendRecipientLabel": "Vastaanottajan osoite",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkSendConfirmedBalance": "Vahvistettu saldo",
-  "arkSendPendingBalance": "Odottava saldo    ",
-  "arkSendConfirm": "Vahvista",
-  "arkReceiveCopyAddress": "Kopioi osoite",
-  "arkReceiveUnifiedAddress": "Yhdistetty osoite (BIP21)",
-  "arkReceiveBtcAddress": "BTC-osoite",
-  "arkReceiveArkAddress": "Ark-osoite",
-  "arkReceiveUnifiedCopied": "Yhdistetty osoite kopioitu",
-  "arkSettleTitle": "Sovita tapahtumat",
-  "arkSettleMessage": "Viimeistele odottavat transaktiot ja sisällytä tarvittaessa palautettavat vtxot",
-  "arkSettleIncludeRecoverable": "Sisällytä palautettavat vtxot",
-  "arkSettleCancel": "Peruuta",
-  "arkAboutServerUrl": "Palvelimen URL",
-  "arkAboutServerPubkey": "Palvelimen julkinen avain",
-  "arkAboutForfeitAddress": "Luovutusosoite",
-  "arkAboutNetwork": "Verkko",
-  "arkAboutDust": "Dust",
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "Istunnon kesto",
-  "arkAboutBoardingExitDelay": "Boarding-exit-viive",
-  "arkAboutUnilateralExitDelay": "Yksipuolinen exit-viive",
-  "arkAboutEsploraUrl": "Esplora-URL",
-  "arkAboutCopy": "Kopioi",
-  "arkAboutCopiedMessage": "{label} kopioitu leikepöydälle",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} sekuntia",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} minuutti",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} minuuttia",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} tunti",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} tuntia",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} päivä",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} päivää",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "Lähetä vastaanottajalle",
-  "arkSendRecipientError": "Anna vastaanottaja",
-  "arkSendAmountTitle": "Syötä määrä",
-  "arkSendConfirmTitle": "Vahvista lähetys",
-  "arkSendConfirmMessage": "Tarkista transaktion tiedot ennen lähettämistä.",
-  "arkReceiveSegmentArk": "Ark",
-  "arkReceiveSegmentBoarding": "Boarding",
-  "arkReceiveBoardingAddress": "BTC Boarding -osoite",
-  "arkAboutSecretKey": "Salainen avain",
-  "arkAboutShow": "Näytä",
-  "arkAboutHide": "Piilota",
-  "arkContinueButton": "Jatka",
   "addressViewNoAddressesFound": "Osoitteita ei löytynyt",
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
@@ -3989,6 +3732,7 @@
   "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
   "buyInsufficientFundsError": "Bull Bitcoin -tililläsi ei ole riittävästi varoja tämän oston suorittamiseen.",
   "buyOrderNotFoundError": "Ostopyyntöä ei löytynyt. Yritä uudelleen.",
+  "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "buyOrderAlreadyConfirmedError": "Tämä ostopyyntö on jo vahvistettu.",
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "withdrawBelowMinAmountError": "Yrität nostaa alle vähimmäismäärän.",

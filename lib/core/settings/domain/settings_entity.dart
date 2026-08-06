@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -146,12 +145,6 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(false) bool isErrorReportingEnabled,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
-    // Payjoin: disabled by default — exposing one of the receiver's UTXOs
-    // is a trade-off the user must opt into; see the payjoinEnabled column
-    // doc comment in settings_table.dart for the full rationale.
-    @Default(false) bool isPayjoinEnabled,
-    @Default(PayjoinConstants.defaultMinAmountSat) int payjoinMinAmountSat,
-    @Default(PayjoinConstants.defaultExpireAfterSec) int payjoinExpireAfterSec,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

@@ -1,24 +1,28 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Err;
 
 class SetPayjoinExpireAfterSecUsecase {
-  final SettingsRepository _settingsRepository;
+  final PayjoinPolicyAccess _policy;
 
-  SetPayjoinExpireAfterSecUsecase({required this._settingsRepository});
+  SetPayjoinExpireAfterSecUsecase({required PayjoinPolicyAccess payjoinPolicy})
+    : _policy = payjoinPolicy;
 
-  /// Enforces [PayjoinConstants.minExpireAfterSec]/[maxExpireAfterSec] here,
-  /// not just in the settings screen's input validator — see
-  /// SetPayjoinMinAmountUsecase's doc comment for why.
   Future<void> execute(int expireAfterSec) async {
-    if (expireAfterSec < PayjoinConstants.minExpireAfterSec ||
-        expireAfterSec > PayjoinConstants.maxExpireAfterSec) {
+    final lifetime = Duration(seconds: expireAfterSec);
+    if (lifetime < PayjoinPolicy.minimumSessionLifetime ||
+        lifetime > PayjoinPolicy.maximumSessionLifetime) {
       throw ArgumentError.value(
         expireAfterSec,
         'expireAfterSec',
-        'Must be between ${PayjoinConstants.minExpireAfterSec} and '
-            '${PayjoinConstants.maxExpireAfterSec} seconds',
+        'Must be between '
+            '${PayjoinPolicy.minimumSessionLifetime.inSeconds} and '
+            '${PayjoinPolicy.maximumSessionLifetime.inSeconds} seconds',
       );
     }
-    await _settingsRepository.setPayjoinExpireAfterSec(expireAfterSec);
+
+    final result = await _policy.setSessionLifetime(lifetime);
+    if (result case Err()) {
+      throw StateError('Failed to update Payjoin policy');
+    }
   }
 }
