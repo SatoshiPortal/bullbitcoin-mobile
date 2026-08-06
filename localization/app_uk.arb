@@ -784,7 +784,7 @@
   "buyPayoutMethod": "Спосіб виплати",
   "buyAwaitingConfirmation": "Підтвердження ",
   "buyConfirmPurchase": "Підтвердити покупку",
-  "buyYouBought": "Ви придбали {amount}",
+  "buyYouBought": "Ви придбали {amount} за {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -1103,6 +1103,9 @@
   "buyConfirmYouPay": "Ви платите",
   "buyConfirmYouReceive": "Ви отримуєте",
   "buyConfirmBitcoinPrice": "Ціна Bitcoin",
+  "buyConfirmPayoutWallet": "Гаманець для виплати",
+  "buyPayoutMethodLiquid": "L-BTC у мережі Liquid",
+  "buyPayoutMethodBitcoin": "BTC у мережі Bitcoin",
   "buyConfirmPayoutMethod": "Спосіб виплати",
   "buyConfirmExternalWallet": "Зовнішні біткоїни гаманець",
   "buyConfirmAwaitingConfirmation": "Підтвердження ",
@@ -1600,6 +1603,7 @@
     }
   },
   "mempoolCustomServerUrl": "Статус на сервери",
+  "buyUnexpectedError": "Не вдалося створити ваше замовлення. Спробуйте ще раз або зверніться до підтримки.",
   "buyOrderAlreadyConfirmedError": "Цей замовлення було підтверджено.",
   "sendServerNetworkFees": "Статус на сервери",
   "importWatchOnlyImport": "Імпорт",

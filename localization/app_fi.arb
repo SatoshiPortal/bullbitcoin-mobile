@@ -345,7 +345,7 @@
   "buyPayoutMethod": "Maksutapa",
   "buyAwaitingConfirmation": "Odotetaan vahvistusta ",
   "buyConfirmPurchase": "Vahvista osto",
-  "buyYouBought": "Ostit {amount}",
+  "buyYouBought": "Ostit {amount} hintaan {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -3224,6 +3224,9 @@
   "buyConfirmYouPay": "Maksat",
   "buyConfirmYouReceive": "Saat",
   "buyConfirmBitcoinPrice": "Bitcoinin hinta",
+  "buyConfirmPayoutWallet": "Maksun lompakko",
+  "buyPayoutMethodLiquid": "L-BTC Liquid-verkossa",
+  "buyPayoutMethodBitcoin": "BTC Bitcoin-lohkoketjussa",
   "buyConfirmPayoutMethod": "Maksutapa",
   "buyConfirmExternalWallet": "Ulkoinen Bitcoin-lompakko",
   "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
@@ -3735,6 +3738,7 @@
   "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
   "buyInsufficientFundsError": "Bull Bitcoin -tililläsi ei ole riittävästi varoja tämän oston suorittamiseen.",
   "buyOrderNotFoundError": "Ostopyyntöä ei löytynyt. Yritä uudelleen.",
+  "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "buyOrderAlreadyConfirmedError": "Tämä ostopyyntö on jo vahvistettu.",
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "withdrawBelowMinAmountError": "Yrität nostaa alle vähimmäismäärän.",

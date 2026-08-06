@@ -590,40 +590,6 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
-          },
-          {
-            "name": "payjoin_enabled",
-            "getter_name": "payjoinEnabled",
-            "moor_type": "bool",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "CHECK (\"payjoin_enabled\" IN (0, 1))",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"payjoin_enabled\" IN (0, 1))"
-            },
-            "default_dart": "const CustomExpression('0')",
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "payjoin_min_amount_sat",
-            "getter_name": "payjoinMinAmountSat",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": "const CustomExpression('10000')",
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "payjoin_expire_after_sec",
-            "getter_name": "payjoinExpireAfterSec",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": "const CustomExpression('86400')",
-            "default_client_dart": null,
-            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -778,20 +744,6 @@
               "sqlite": "CHECK (\"is_completed\" IN (0, 1))"
             },
             "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "is_aborted",
-            "getter_name": "isAborted",
-            "moor_type": "bool",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "CHECK (\"is_aborted\" IN (0, 1))",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"is_aborted\" IN (0, 1))"
-            },
-            "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
           }
@@ -981,20 +933,6 @@
               "sqlite": "CHECK (\"is_completed\" IN (0, 1))"
             },
             "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "is_aborted",
-            "getter_name": "isAborted",
-            "moor_type": "bool",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "CHECK (\"is_aborted\" IN (0, 1))",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"is_aborted\" IN (0, 1))"
-            },
-            "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
           }
@@ -2110,7 +2048,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL, \"payjoin_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_enabled\" IN (0, 1)), \"payjoin_min_amount_sat\" INTEGER NOT NULL DEFAULT 10000, \"payjoin_expire_after_sec\" INTEGER NOT NULL DEFAULT 86400);"
+          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL);"
         }
       ]
     },
@@ -2119,7 +2057,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"payjoin_senders\" (\"uri\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"sender\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"original_psbt\" TEXT NOT NULL, \"original_tx_id\" TEXT NOT NULL, \"amount_sat\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"expire_after_sec\" INTEGER NOT NULL, \"proposal_psbt\" TEXT NULL, \"tx_id\" TEXT NULL, \"is_expired\" INTEGER NOT NULL CHECK (\"is_expired\" IN (0, 1)), \"is_completed\" INTEGER NOT NULL CHECK (\"is_completed\" IN (0, 1)), \"is_aborted\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_aborted\" IN (0, 1)), PRIMARY KEY (\"uri\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"payjoin_senders\" (\"uri\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"sender\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"original_psbt\" TEXT NOT NULL, \"original_tx_id\" TEXT NOT NULL, \"amount_sat\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"expire_after_sec\" INTEGER NOT NULL, \"proposal_psbt\" TEXT NULL, \"tx_id\" TEXT NULL, \"is_expired\" INTEGER NOT NULL CHECK (\"is_expired\" IN (0, 1)), \"is_completed\" INTEGER NOT NULL CHECK (\"is_completed\" IN (0, 1)), PRIMARY KEY (\"uri\"));"
         }
       ]
     },
@@ -2128,7 +2066,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"payjoin_receivers\" (\"id\" TEXT NOT NULL, \"address\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"receiver\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"pj_uri\" TEXT NOT NULL, \"max_fee_rate_sat_per_vb\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"expire_after_sec\" INTEGER NOT NULL, \"original_tx_bytes\" BLOB NULL, \"original_tx_id\" TEXT NULL, \"amount_sat\" INTEGER NULL, \"proposal_psbt\" TEXT NULL, \"tx_id\" TEXT NULL, \"is_expired\" INTEGER NOT NULL CHECK (\"is_expired\" IN (0, 1)), \"is_completed\" INTEGER NOT NULL CHECK (\"is_completed\" IN (0, 1)), \"is_aborted\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_aborted\" IN (0, 1)), PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"payjoin_receivers\" (\"id\" TEXT NOT NULL, \"address\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"receiver\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"pj_uri\" TEXT NOT NULL, \"max_fee_rate_sat_per_vb\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"expire_after_sec\" INTEGER NOT NULL, \"original_tx_bytes\" BLOB NULL, \"original_tx_id\" TEXT NULL, \"amount_sat\" INTEGER NULL, \"proposal_psbt\" TEXT NULL, \"tx_id\" TEXT NULL, \"is_expired\" INTEGER NOT NULL CHECK (\"is_expired\" IN (0, 1)), \"is_completed\" INTEGER NOT NULL CHECK (\"is_completed\" IN (0, 1)), PRIMARY KEY (\"id\"));"
         }
       ]
     },

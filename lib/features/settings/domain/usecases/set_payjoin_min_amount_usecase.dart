@@ -1,24 +1,27 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Err, Sats;
 
 class SetPayjoinMinAmountUsecase {
-  final SettingsRepository _settingsRepository;
+  final PayjoinPolicyAccess _policy;
 
-  SetPayjoinMinAmountUsecase({required this._settingsRepository});
+  SetPayjoinMinAmountUsecase({required PayjoinPolicyAccess payjoinPolicy})
+    : _policy = payjoinPolicy;
 
-  /// Enforces [PayjoinConstants.minMinAmountSat]/[maxMinAmountSat] here, not
-  /// just in the settings screen's input validator — the UI can be bypassed
-  /// (a stale build, a future second entry point), the domain must not.
   Future<void> execute(int amountSat) async {
-    if (amountSat < PayjoinConstants.minMinAmountSat ||
-        amountSat > PayjoinConstants.maxMinAmountSat) {
+    final amount = Sats.fromInt(amountSat);
+    if (amount.compareTo(PayjoinPolicy.minimumAllowedAmount) < 0 ||
+        amount.compareTo(PayjoinPolicy.maximumAllowedAmount) > 0) {
       throw ArgumentError.value(
         amountSat,
         'amountSat',
-        'Must be between ${PayjoinConstants.minMinAmountSat} and '
-            '${PayjoinConstants.maxMinAmountSat} sats',
+        'Must be between ${PayjoinPolicy.minimumAllowedAmount} and '
+            '${PayjoinPolicy.maximumAllowedAmount} sats',
       );
     }
-    await _settingsRepository.setPayjoinMinAmountSat(amountSat);
+
+    final result = await _policy.setMinimumAmount(amount);
+    if (result case Err()) {
+      throw StateError('Failed to update Payjoin policy');
+    }
   }
 }

@@ -143,6 +143,15 @@ sealed class UserSummary with _$UserSummary {
     required UserDca dca,
     required UserAutoBuy autoBuy,
     @Default(true) bool emailNotificationsEnabled,
+    // Whether this account may payjoin with the exchange — the buy payout and
+    // the sell payin alike. Server-gated: the backend derives it from the
+    // account's pilot group, so we read the published flag rather than
+    // re-deriving it from [groups] (a backend-internal detail).
+    //
+    // Fail closed: an older backend, a partial response, or a stripped field
+    // must disable payjoin rather than offer the user a payjoin the exchange
+    // would then reject.
+    @Default(false) bool payjoinReceiveEnabled,
     UserKycDocumentStatus? kycDocumentStatus,
   }) = _UserSummary;
 

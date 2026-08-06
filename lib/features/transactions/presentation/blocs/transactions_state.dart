@@ -133,9 +133,12 @@ abstract class TransactionsState with _$TransactionsState {
             tx.isSwap &&
             [SwapStatus.expired, SwapStatus.failed].contains(tx.swap?.status);
 
+        // isExpired() covers both expiry statuses the server sends, so an
+        // 'Expired' order isn't shown while its 'Payment deadline expired' twin
+        // is hidden.
         final isExpiredAndNotStartedOrder =
             tx.isOrder &&
-            (tx.order?.orderStatus == OrderStatus.expired &&
+            (tx.order?.isExpired() == true &&
                 tx.order?.payinStatus == OrderPayinStatus.notStarted);
 
         if (isReceivePayjoinWithoutRequest ||

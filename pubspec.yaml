@@ -7,16 +7,20 @@ environment:
   sdk: "3.12.2"
   flutter: "3.44.2"
 workspace:
+  - packages/bull_payjoin
   - packages/bull_ui
   # Dev-only catalogue. Listed here only so the shared workspace
   # lockfile resolves it; the app NEVER lists bull_ui_catalogue as a
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
+  - packages/primitives
 
 dependencies:
   flutter:
     sdk: flutter
+  bull_payjoin:
   bull_ui:
+  primitives:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -34,15 +38,6 @@ dependencies:
       path: flutter_secure_storage
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
-  # Vendored copy of pub.dev payjoin 0.1.2 with the payjoin Rust crate
-  # exact-pinned to 1.0.0-rc.5: rc.6 (published 2026-07-23) broke the
-  # package's from-source FFI build (UriExt/PjUri API changes), failing every
-  # fresh CI/container build. Point back to pub.dev once upstream ships a
-  # release built against a newer payjoin-ffi.
-  payjoin:
-    git:
-      url: https://github.com/SatoshiPortal/payjoin-dart
-      ref: 26595d9821250bbd88f4e43b97acc85f17a93d71
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -78,7 +73,11 @@ dependencies:
     sdk: flutter
   intl: any
   bip85_entropy: ^1.0.2
-  bip21_uri: ^2.1.3
+  # 2.2.0 is a floor, not a convenience: below it the encoder emitted
+  # `amount=1e-8` for sub-100-sat amounts (invalid BIP21) and the decoder
+  # rewrote the payjoin fragment separator `-` into the legacy `+` while
+  # uppercasing the whole pj endpoint.
+  bip21_uri: ^2.2.0
   bip32_keys: ^3.1.1
   bip39_mnemonic: ^4.1.0
   bip329_labels: ^2.0.0
@@ -163,10 +162,9 @@ dev_dependencies:
   drift_dev: ^2.29.0
   melos: ^7.8.1
 
-# Melos monorepo workspace. Today the app is a single package living at the repo
-# root (useRootAsPackage), so this is a skeleton: no workspace members yet. As
-# core/feature code is extracted incrementally into packages/ and features/,
-# each becomes a `resolution: workspace` member listed under a `workspace:` key.
+# Melos monorepo workspace. The Flutter app remains at the root
+# (useRootAsPackage) while shared modules are extracted incrementally into the
+# `resolution: workspace` members listed above.
 # Invoke via `make bootstrap` (wraps `fvm dart run melos` so the pinned SDK in
 # .fvmrc is used); never run bare `melos`.
 melos:

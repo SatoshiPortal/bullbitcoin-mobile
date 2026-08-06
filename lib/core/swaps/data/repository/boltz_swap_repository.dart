@@ -12,11 +12,13 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
 import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-class BoltzSwapRepository implements AutoSwapSettingsRepository {
+class BoltzSwapRepository
+    implements AutoSwapSettingsRepository, SwapHistoryRepository {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
   final StreamController<AutoSwap> _autoSwapSettingsController =
@@ -747,6 +749,7 @@ class BoltzSwapRepository implements AutoSwapSettingsRepository {
         .toList();
   }
 
+  @override
   Future<List<Swap>> getAllSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(
       walletId: walletId,
@@ -1036,6 +1039,7 @@ class BoltzSwapRepository implements AutoSwapSettingsRepository {
     }
   }
 
+  @override
   Future<Swap?> getSwapByTxId(String txId) async {
     final swapModel = await _boltz.storage.fetchByTxId(txId);
     if (swapModel == null) {

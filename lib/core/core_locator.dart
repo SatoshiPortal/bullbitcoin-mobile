@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
-import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/settings_locator.dart';
@@ -30,7 +29,6 @@ class CoreLocator {
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
-    PayjoinLocator.registerDatasources(locator);
     await RecoverbullLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
     SeedLocator.registerDatasources(locator);
@@ -57,7 +55,6 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
-    PayjoinLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
     StorageLocator.registerRepositories(locator);
     await RecoverbullLocator.registerRepositories(locator);
@@ -82,7 +79,6 @@ class CoreLocator {
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);
-    PayjoinLocator.registerUsecases(locator);
     RecoverbullLocator.registerUsecases(locator);
     SeedLocator.registerUsecases(locator);
     StorageLocator.registerUsecases(locator);

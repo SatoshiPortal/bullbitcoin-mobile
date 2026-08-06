@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 /// Tests for the payjoin gating on [ReceiveState.isPayjoinLoading] and its
 /// downstream effect on [ReceiveState.paymentRequest]: with payjoin disabled
@@ -47,7 +46,7 @@ void main() {
   ReceiveState buildState({
     required bool? payjoinGloballyEnabled,
     BigInt? balanceSat,
-    PayjoinReceiver? payjoin,
+    PayjoinReceiverSession? payjoin,
   }) => ReceiveState(
     type: ReceiveType.bitcoin,
     wallet: localWallet(balanceSat: balanceSat),
@@ -104,23 +103,21 @@ void main() {
     });
   });
 
-  PayjoinReceiver payjoinWith({
+  PayjoinReceiverSession payjoinWith({
     required PayjoinStatus status,
     int? amountSat,
     bool hasRequest = false,
-  }) =>
-      Payjoin.receiver(
-            status: status,
-            id: 'pj1',
-            isTestnet: true,
-            walletId: 'w1',
-            pjUri: 'bitcoin:tb1qtest?pj=https://payjo.in',
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
-            amountSat: amountSat,
-            originalTxBytes: hasRequest ? Uint8List.fromList([1]) : null,
-          )
-          as PayjoinReceiver;
+  }) => PayjoinReceiverSession(
+    status: status,
+    id: 'pj1',
+    network: BitcoinNetwork.testnet,
+    walletId: 'w1',
+    payjoinUri: 'bitcoin:tb1qtest?pj=https://payjo.in',
+    createdAt: DateTime(2026),
+    expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+    amount: amountSat == null ? null : Sats.fromInt(amountSat),
+    hasOriginalTransaction: hasRequest,
+  );
 
   group('ReceiveState.paymentRequest BIP21 composition', () {
     // The QR/clipboard string is the user-facing contract of the whole

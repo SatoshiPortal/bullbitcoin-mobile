@@ -15,10 +15,6 @@ class PayjoinSenders extends Table {
   TextColumn get txId => text().nullable()();
   BoolColumn get isExpired => boolean()();
   BoolColumn get isCompleted => boolean()();
-  // See PayjoinReceivers.isAborted for the rationale — same distinction on
-  // the sender side (below-minimum receiver decline surfaces here too, via
-  // BroadcastOriginalTransactionUsecase; manual/expiry fallback likewise).
-  BoolColumn get isAborted => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {uri};

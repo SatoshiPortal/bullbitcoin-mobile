@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,6 +66,9 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
             child: Center(
               child: DropdownButtonFormField<String>(
                 alignment: Alignment.centerLeft,
+                // The default wallet labels carry a network suffix, which is
+                // wide enough to overflow the field on narrow screens.
+                isExpanded: true,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -76,11 +80,19 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                 initialValue: selectedWallet?.id,
                 items: [
                   ...wallets.map((w) {
-                    final label = w.displayLabel(context);
+                    // Default wallets carry a network suffix here so the user
+                    // can tell the two apart; externally added wallets keep
+                    // their custom name untouched.
+                    final label = w.isDefault
+                        ? '${w.displayLabel(context)} '
+                              '(${buyPayoutMethodLabel(context, isLiquid: w.network.isLiquid)})'
+                        : w.displayLabel(context);
                     return DropdownMenuItem(
                       value: w.id,
                       child: Text(
                         label,
+                        maxLines: 1,
+                        overflow: .ellipsis,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
                         ),
@@ -90,6 +102,8 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   DropdownMenuItem(
                     child: Text(
                       !isStarted ? '' : externalBitcoinWalletLabel,
+                      maxLines: 1,
+                      overflow: .ellipsis,
                       style: context.font.headlineSmall?.copyWith(
                         color: context.appColors.secondary,
                       ),

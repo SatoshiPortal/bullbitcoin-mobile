@@ -1,5 +1,9 @@
 {
   "settingsBtcMapTitle": "Bản đồ",
+  "buyUnexpectedError": "Không thể tạo đơn hàng của bạn ngay lúc này. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
+  "buyConfirmPayoutWallet": "Ví nhận tiền",
+  "buyPayoutMethodLiquid": "L-BTC trên Liquid",
+  "buyPayoutMethodBitcoin": "BTC trên chuỗi Bitcoin",
   "fundExchangeRestrictedTitle": "Nạp tiền không khả dụng",
   "fundExchangeRestrictedMessage": "Nạp tiền không khả dụng trên tài khoản của bạn. Vui lòng liên hệ bộ phận hỗ trợ để biết thêm thông tin.",
   "recipientsListLoadError": "Không thể tải danh sách người nhận. Kéo xuống để thử lại.",

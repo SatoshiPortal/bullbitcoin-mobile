@@ -1282,6 +1282,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "भुगतान वॉलेट",
+  "buyPayoutMethodLiquid": "Liquid पर L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin चेन पर BTC",
   "buyConfirmPayoutMethod": "भुगतान विधि",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -2020,6 +2023,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "आपका ऑर्डर अभी नहीं बनाया जा सका। कृपया दोबारा कोशिश करें या सहायता से संपर्क करें।",
   "buyOrderAlreadyConfirmedError": "यह खरीद आदेश पहले ही पुष्टि की गई है।।",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -3289,7 +3293,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "आपने {amount} खरीदा",
+  "buyYouBought": "आपने {fiatAmount} में {amount} खरीदा",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {

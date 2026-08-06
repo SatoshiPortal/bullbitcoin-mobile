@@ -440,6 +440,9 @@
   "backupWalletGoogleDrivePrivacyMessage3": "оставьте свой телефон и ",
   "backupCompletedDescription": "Теперь давайте проверим вашу резервную копию, чтобы убедиться, что все было сделано правильно.",
   "sendErrorInsufficientFundsForFees": "Недостаточно средств для покрытия суммы и сборов",
+  "buyConfirmPayoutWallet": "Кошелёк для выплаты",
+  "buyPayoutMethodLiquid": "L-BTC в сети Liquid",
+  "buyPayoutMethodBitcoin": "BTC в сети Bitcoin",
   "buyConfirmPayoutMethod": "Метод выплаты",
   "dcaCancelButton": "Отмена",
   "durationMinutes": "{minutes}",
@@ -674,6 +677,7 @@
     }
   },
   "mempoolCustomServerUrl": "Адрес сервера",
+  "buyUnexpectedError": "Не удалось создать ваш заказ. Попробуйте снова или обратитесь в поддержку.",
   "buyOrderAlreadyConfirmedError": "Этот заказ уже подтвержден.",
   "fundExchangeArsBankTransferTitle": "Банковский перевод",
   "transactionLabelReceiveAmount": "Получить сумму",
@@ -1077,7 +1081,7 @@
   "importWatchOnlyScanQR": "Scan QR",
   "walletBalanceUnconfirmedIncoming": "Прогресс",
   "selectAmountTitle": "Выберите сумму",
-  "buyYouBought": "Вы купили {amount}",
+  "buyYouBought": "Вы купили {amount} за {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {

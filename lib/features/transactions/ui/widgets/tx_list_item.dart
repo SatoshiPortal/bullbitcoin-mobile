@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -39,7 +38,7 @@ class TxListItem extends StatelessWidget {
         ? context.appColors.onTertiary
         : context.appColors.tertiary;
     final networkLabel = isOrderType
-        ? tx.order!.orderType.value
+        ? tx.order!.orderTypeLabel
         : isLnSwap
         ? context.loc.transactionNetworkLightning
         : isChainSwap
@@ -66,12 +65,7 @@ class TxListItem extends StatelessWidget {
         ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
         : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
-    final showOrderInFiat =
-        isOrderType &&
-        (tx.order is FiatPaymentOrder ||
-            tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder ||
-            tx.order is FundingOrder);
+    final showOrderInFiat = isOrderType && tx.order!.displaysFiatAmount;
     return InkWell(
       onTap: () {
         if (tx.walletTransaction != null) {

@@ -17,8 +17,9 @@ class ReceiveEvent with _$ReceiveEvent {
   const factory ReceiveEvent.receiveNoteSaved() = ReceiveNoteSaved;
   const factory ReceiveEvent.receiveNewAddressGenerated() =
       ReceiveNewAddressGenerated;
-  const factory ReceiveEvent.receivePayjoinUpdated(PayjoinReceiver payjoin) =
-      ReceivePayjoinUpdated;
+  const factory ReceiveEvent.receivePayjoinUpdated(
+    PayjoinReceiverSession payjoin,
+  ) = ReceivePayjoinUpdated;
   const factory ReceiveEvent.receivePayjoinOriginalTxBroadcasted() =
       ReceivePayjoinOriginalTxBroadcasted;
   const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =

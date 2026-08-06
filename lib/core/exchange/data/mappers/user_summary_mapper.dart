@@ -15,6 +15,7 @@ class UserSummaryMapper {
       dca: model.dca.toEntity(),
       autoBuy: _mapUserAutoBuy(model.autoBuy),
       emailNotificationsEnabled: model.emailNotificationsEnabled,
+      payjoinReceiveEnabled: model.payjoinReceiveEnabled,
       kycDocumentStatus: model.kycDocumentStatus != null
           ? _mapKycDocumentStatus(model.kycDocumentStatus!)
           : null,

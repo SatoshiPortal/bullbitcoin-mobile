@@ -14,6 +14,7 @@ enum TransactionsRoute {
   transactionDetails('/transaction/:txId'),
   swapTransactionDetails('/transaction/swap/:swapId'),
   payjoinTransactionDetails('/transaction/payjoin/:payjoinId'),
+  payjoinTransactionDetailsByTxId('/transaction/payjoin/tx/:txId'),
   orderTransactionDetails('/transaction/order/:orderId');
 
   const TransactionsRoute(this.path);
@@ -57,6 +58,18 @@ class TransactionsRouter {
           create: (context) =>
               locator<TransactionDetailsCubit>()
                 ..initByWalletTxId(txId, walletId: walletId),
+          child: const TransactionDetailsScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      name: TransactionsRoute.payjoinTransactionDetailsByTxId.name,
+      path: TransactionsRoute.payjoinTransactionDetailsByTxId.path,
+      builder: (context, state) {
+        final txId = state.pathParameters['txId']!;
+        return BlocProvider(
+          create: (context) =>
+              locator<TransactionDetailsCubit>()..initByPayjoinTxId(txId),
           child: const TransactionDetailsScreen(),
         );
       },

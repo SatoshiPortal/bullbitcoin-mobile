@@ -3,13 +3,8 @@ import 'dart:async';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -28,11 +23,17 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -56,8 +57,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._watchSwapUsecase,
     required this._labelsFacade,
     required this._getSwapLimitsUsecase,
-    required this._watchPayjoinEnabledChangesUsecase,
+    required this._watchReceivePayjoinEnabledUsecase,
     required this._watchReceivePayjoinMinAmountUsecase,
+    required this._getReceivePayjoinPolicyUsecase,
     required this._setReceivePayjoinEnabledUsecase,
     this._wallet,
   }) : super(const ReceiveState()) {
@@ -93,7 +95,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  open while the user flips the toggle in Settings never picks it up
     //  (observed live: enabling payjoin globally did nothing to an
     //  already-open receive screen).
-    _payjoinSettingChangeSubscription = _watchPayjoinEnabledChangesUsecase
+    _payjoinSettingChangeSubscription = _watchReceivePayjoinEnabledUsecase
         .execute()
         .listen((enabled) {
           // The repository's broadcast stream outlives this bloc; never add
@@ -126,12 +128,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final WatchSwapUsecase _watchSwapUsecase;
   final LabelsFacade _labelsFacade;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
-  final WatchPayjoinEnabledChangesUsecase _watchPayjoinEnabledChangesUsecase;
+  final WatchReceivePayjoinEnabledUsecase _watchReceivePayjoinEnabledUsecase;
   final WatchReceivePayjoinMinAmountUsecase
   _watchReceivePayjoinMinAmountUsecase;
+  final GetReceivePayjoinPolicyUsecase _getReceivePayjoinPolicyUsecase;
   final SetReceivePayjoinEnabledUsecase _setReceivePayjoinEnabledUsecase;
   final Wallet? _wallet;
-  StreamSubscription<Payjoin>? _payjoinSubscription;
+  StreamSubscription<PayjoinSession>? _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
   StreamSubscription<Swap>? _swapSubscription;
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
@@ -289,9 +292,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       bool payjoinEnabled;
       int? payjoinMinAmountSat;
       try {
-        final settings = await _getSettingsUsecase.execute();
-        payjoinEnabled = settings.isPayjoinEnabled;
-        payjoinMinAmountSat = settings.payjoinMinAmountSat;
+        final policy = await _getReceivePayjoinPolicyUsecase.execute();
+        payjoinEnabled = policy.enabled;
+        payjoinMinAmountSat = policy.minimumAmountSat;
       } catch (e) {
         log.warning(
           'Failed to read payjoin settings; treating as disabled: $e',
@@ -310,11 +313,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ),
       );
       if (state.payjoin == null && _isPayjoinEligible(wallet, payjoinEnabled)) {
-        PayjoinReceiver? payjoin;
+        PayjoinReceiverSession? payjoin;
         Object? error;
         try {
           final created = await _receiveWithPayjoinUsecase.execute(
             walletId: wallet.id,
+            isTestnet: wallet.network.isTestnet,
             address: bitcoinAddress.address,
           );
           // Same belt-and-suspenders re-check as _onPayjoinSettingChanged:
@@ -823,7 +827,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       WalletAddress address;
       switch (state.type) {
         case ReceiveType.bitcoin:
-          PayjoinReceiver? payjoin;
+          PayjoinReceiverSession? payjoin;
           Object? error;
           address = await _getReceiveAddressUsecase.execute(
             walletId: walletId,
@@ -838,9 +842,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           bool payjoinEnabled;
           int? payjoinMinAmountSat;
           try {
-            final settings = await _getSettingsUsecase.execute();
-            payjoinEnabled = settings.isPayjoinEnabled;
-            payjoinMinAmountSat = settings.payjoinMinAmountSat;
+            final policy = await _getReceivePayjoinPolicyUsecase.execute();
+            payjoinEnabled = policy.enabled;
+            payjoinMinAmountSat = policy.minimumAmountSat;
           } catch (e) {
             log.warning(
               'Failed to read payjoin settings; treating as disabled: $e',
@@ -858,6 +862,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             try {
               final created = await _receiveWithPayjoinUsecase.execute(
                 walletId: walletId,
+                isTestnet: state.wallet!.network.isTestnet,
                 address: address.address,
               );
               // Same belt-and-suspenders re-check as
@@ -922,7 +927,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     final updatedPayjoin = event.payjoin;
     if (updatedPayjoin.isExpired &&
-        updatedPayjoin.originalTxBytes == null &&
+        !updatedPayjoin.hasOriginalTransaction &&
         state.payjoin?.id == updatedPayjoin.id) {
       emit(state.copyWith(payjoin: null));
       if (state.payjoinGloballyEnabled == true) {
@@ -945,10 +950,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// bitcoin flow, or before a wallet/address is loaded — _onBitcoinStarted
   /// picks up the freshly-read setting on the next entry regardless.
   /// User tapped the payjoin toggle on the receive screen. Persists the new
-  /// value to the GLOBAL setting; the resulting payjoinEnabledChangeStream
-  /// event flows back in as [ReceivePayjoinSettingChanged], which does the
-  /// actual session create/clear — so this single write drives both the
-  /// receive screen and anything else listening to the setting.
+  /// value to the global policy; the resulting policy stream event flows back
+  /// in as [ReceivePayjoinSettingChanged], which creates or clears the session.
   Future<void> _onPayjoinToggled(
     ReceivePayjoinToggled event,
     Emitter<ReceiveState> emit,
@@ -988,11 +991,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.payjoin == null && _isPayjoinEligible(wallet, event.enabled)) {
-      PayjoinReceiver? payjoin;
+      PayjoinReceiverSession? payjoin;
       Object? error;
       try {
         payjoin = await _receiveWithPayjoinUsecase.execute(
           walletId: wallet.id,
+          isTestnet: wallet.network.isTestnet,
           address: bitcoinAddress.address,
         );
         // Belt-and-suspenders alongside restartable(): the setting could have
@@ -1045,13 +1049,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  so this can never disagree with what the UI showed.
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
-        payjoin.originalTxBytes != null &&
+        payjoin.hasOriginalTransaction &&
         payjoin.canManuallyBroadcastOriginal) {
       try {
         emit(state.copyWith(isBroadcastingOriginalTransaction: true));
         final updatedPayjoin =
-            await _broadcastOriginalTransactionUsecase.execute(payjoin)
-                as PayjoinReceiver;
+            await _broadcastOriginalTransactionUsecase.execute(payjoin.id)
+                as PayjoinReceiverSession;
 
         emit(state.copyWith(payjoin: updatedPayjoin));
       } catch (e) {
@@ -1124,8 +1128,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  (WatchPayjoinUsecase now emits senders too, for the send flow).
     _payjoinSubscription = _watchPayjoinUsecase
         .execute(ids: [payjoinId])
-        .where((payjoin) => payjoin is PayjoinReceiver)
-        .cast<PayjoinReceiver>()
+        .where((payjoin) => payjoin is PayjoinReceiverSession)
+        .cast<PayjoinReceiverSession>()
         .listen((updatedPayjoin) {
           // cancel() stops FUTURE events but not one already in flight on the
           //  microtask queue; the repository's poll/expiry timers outlive

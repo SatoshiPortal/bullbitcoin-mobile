@@ -1798,11 +1798,14 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "buyYouBought": "You bought {amount}",
+  "buyYouBought": "You bought {amount} with {fiatAmount}",
   "@buyYouBought": {
-    "description": "Success message with amount bought",
+    "description": "Success message with amount bought and the fiat amount debited",
     "placeholders": {
       "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
         "type": "String"
       }
     }
@@ -2070,6 +2073,18 @@
   "sellBalanceWillBeCredited": "Your account balance will be credited after your transaction receives 1 confirmation onchain.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
+  },
+  "sellYouSold": "You sold {amount} for {fiatAmount}",
+  "@sellYouSold": {
+    "description": "Success message with the amount sold and the fiat amount received",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
+        "type": "String"
+      }
+    }
   },
   "payTitle": "Pay",
   "@payTitle": {
@@ -2532,14 +2547,6 @@
   "@payInvalidState": {
     "description": "Error message for invalid state"
   },
-  "payInProgress": "Payment In Progress!",
-  "@payInProgress": {
-    "description": "Title for payment in progress screen"
-  },
-  "payInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
-  "@payInProgressDescription": {
-    "description": "Description for payment in progress"
-  },
   "payViewDetails": "View details",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -2556,9 +2563,17 @@
   "@payCompleted": {
     "description": "Title for payment completed screen"
   },
-  "payCompletedDescription": "Your payment has been completed and the recipient has received the funds.",
-  "@payCompletedDescription": {
-    "description": "Description for payment completed"
+  "payCompletedDescriptionDetails": "The payment of {fiatAmount} to {recipient} has been completed.",
+  "@payCompletedDescriptionDetails": {
+    "description": "Description for payment completed, with the fiat amount and the recipient",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -2620,9 +2635,29 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payPaymentInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
-  "@payPaymentInProgressDescription": {
-    "description": "Description for payment in progress"
+  "payPaymentInProgressDescriptionDetails": "The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescriptionDetails": {
+    "description": "Description for payment in progress, before the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPaymentPayinConfirmedDescriptionDetails": "Your transaction is confirmed. The payment of {fiatAmount} to {recipient} is being processed.",
+  "@payPaymentPayinConfirmedDescriptionDetails": {
+    "description": "Description for payment in progress, once the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
   },
   "payPriceRefreshIn": "Price will refresh in ",
   "@payPriceRefreshIn": {
@@ -3270,6 +3305,14 @@
   "transactionDetailAccelerate": "Accelerate",
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLoadError": "Could not load the transaction details.",
+  "@transactionDetailLoadError": {
+    "description": "Error message shown when the transaction details could not be loaded"
+  },
+  "transactionDetailLabelRecipient": "Recipient",
+  "@transactionDetailLabelRecipient": {
+    "description": "Label for the recipient of a fiat payment order"
   },
   "transactionDetailLabelTransactionId": "Transaction ID",
   "@transactionDetailLabelTransactionId": {
@@ -6132,6 +6175,10 @@
   "feePriorityLabel": "Fee Priority",
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
+  },
+  "feePrioritySlow": "Slow",
+  "@feePrioritySlow": {
+    "description": "Name of the slow (cheapest) network fee tier"
   },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
@@ -10928,9 +10975,21 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
+  "buyConfirmPayoutWallet": "Payout wallet",
+  "@buyConfirmPayoutWallet": {
+    "description": "Field label for the wallet a buy pays out to"
+  },
   "buyConfirmPayoutMethod": "Payout method",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
+  },
+  "buyPayoutMethodLiquid": "L-BTC on Liquid",
+  "@buyPayoutMethodLiquid": {
+    "description": "Payout method for buys paid out over the Liquid network"
+  },
+  "buyPayoutMethodBitcoin": "BTC on Bitcoin chain",
+  "@buyPayoutMethodBitcoin": {
+    "description": "Payout method for buys paid out over the Bitcoin network"
   },
   "buyConfirmExternalWallet": "External Bitcoin wallet",
   "@buyConfirmExternalWallet": {
@@ -11023,6 +11082,14 @@
   "sellSendPaymentContinue": "Continue",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
+  },
+  "sellSendingPayment": "Sending payment…",
+  "@sellSendingPayment": {
+    "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
+  },
+  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@sellPaymentSentRefreshingOrder": {
+    "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
   },
   "sellSendPaymentAboveMax": "You are trying to sell above the maximum amount that can be sold with this wallet.",
   "@sellSendPaymentAboveMax": {
@@ -12348,6 +12415,10 @@
   "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
+  },
+  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
+  "@buyUnexpectedError": {
+    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
   },
   "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@withdrawUnauthenticatedError": {
@@ -14313,6 +14384,30 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "payjoinInProgress": "Payjoin in progress",
+  "@payjoinInProgress": {
+    "description": "Shown while a payjoin negotiation is still running, before its outcome is known"
+  },
+  "payjoinSucceeded": "Payjoin succeeded",
+  "@payjoinSucceeded": {
+    "description": "Shown when the payjoin negotiation completed and the payjoin transaction was broadcast"
+  },
+  "payjoinBuyRegularSend": "Bitcoin sent to your wallet via regular send",
+  "@payjoinBuyRegularSend": {
+    "description": "Shown on a buy when the payout did not use payjoin and arrived as a plain transaction"
+  },
+  "payjoinViaPayjoin": "via Payjoin",
+  "@payjoinViaPayjoin": {
+    "description": "Suffix appended to a completed order summary when the payment used payjoin"
+  },
+  "payjoinViaRegularSend": "via regular send",
+  "@payjoinViaRegularSend": {
+    "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
+  },
+  "payjoinUseToggle": "Use payjoin",
+  "@payjoinUseToggle": {
+    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
   },
   "addressViewErrorWalletNotFound": "This wallet could not be found.",
   "@addressViewErrorWalletNotFound": {

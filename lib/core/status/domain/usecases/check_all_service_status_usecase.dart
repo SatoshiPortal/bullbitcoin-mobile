@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -14,27 +12,29 @@ import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 
 class CheckAllServiceStatusUsecase {
   final ElectrumConnectivityPort _electrumConnectivityPort;
   final BoltzSwapRepository _boltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
-  final PayjoinRepository _payjoinRepository;
+  final PayjoinPolicyAccess _payjoinPolicy;
+  final PayjoinDiagnostics _payjoinDiagnostics;
   final FeesRepository _feesRepository;
   final RecoverBullRepository _recoverBullRepository;
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
   final TorStatusUsecase _torStatusUsecase;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
     required this._boltzSwapRepository,
     required this._exchangeRateRepository,
-    required this._payjoinRepository,
+    required this._payjoinPolicy,
+    required this._payjoinDiagnostics,
     required this._feesRepository,
     required this._recoverBullRepository,
     required this._walletRepository,
-    required this._settingsRepository,
     required this._torStatusUsecase,
   });
 
@@ -144,8 +144,19 @@ class CheckAllServiceStatusUsecase {
       //  not in use, so report `disabled` (not `offline`/red) — probing a
       //  relay the user isn't relying on and painting the whole status page
       //  red for it is misleading.
-      final settings = await _settingsRepository.fetch();
-      if (!settings.isPayjoinEnabled) {
+      final policyResult = await _payjoinPolicy.load();
+      final policy = switch (policyResult) {
+        Ok(:final value) => value,
+        Err() => null,
+      };
+      if (policy == null) {
+        return ServiceStatusInfo(
+          status: ServiceStatus.offline,
+          name: 'Payjoin',
+          lastChecked: DateTime.now(),
+        );
+      }
+      if (!policy.enabled) {
         return ServiceStatusInfo(
           status: ServiceStatus.disabled,
           name: 'Payjoin',
@@ -153,7 +164,11 @@ class CheckAllServiceStatusUsecase {
         );
       }
 
-      final isHealthy = await _payjoinRepository.checkOhttpRelayHealth();
+      final healthResult = await _payjoinDiagnostics.relayHealth();
+      final isHealthy = switch (healthResult) {
+        Ok(:final value) => value == PayjoinRelayHealth.available,
+        Err() => false,
+      };
 
       return ServiceStatusInfo(
         status: isHealthy ? ServiceStatus.online : ServiceStatus.offline,

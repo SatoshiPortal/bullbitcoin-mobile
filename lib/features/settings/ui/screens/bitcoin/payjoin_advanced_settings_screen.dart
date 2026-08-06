@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -100,12 +100,12 @@ class _PayjoinAdvancedSettingsScreenState
     }
     final amountSat = int.tryParse(value);
     if (amountSat == null ||
-        amountSat < PayjoinConstants.minMinAmountSat ||
-        amountSat > PayjoinConstants.maxMinAmountSat) {
+        amountSat < PayjoinPolicy.minimumAllowedAmount.value.toInt() ||
+        amountSat > PayjoinPolicy.maximumAllowedAmount.value.toInt()) {
       setState(
         () => _minAmountError = context.loc.settingsPayjoinMinAmountRangeError(
-          PayjoinConstants.minMinAmountSat,
-          PayjoinConstants.maxMinAmountSat,
+          PayjoinPolicy.minimumAllowedAmount.value.toInt(),
+          PayjoinPolicy.maximumAllowedAmount.value.toInt(),
         ),
       );
       return;
@@ -127,12 +127,12 @@ class _PayjoinAdvancedSettingsScreenState
     }
     final expireAfterSec = int.tryParse(value);
     if (expireAfterSec == null ||
-        expireAfterSec < PayjoinConstants.minExpireAfterSec ||
-        expireAfterSec > PayjoinConstants.maxExpireAfterSec) {
+        expireAfterSec < PayjoinPolicy.minimumSessionLifetime.inSeconds ||
+        expireAfterSec > PayjoinPolicy.maximumSessionLifetime.inSeconds) {
       setState(
         () => _expireError = context.loc.settingsPayjoinExpireRangeError(
-          PayjoinConstants.minExpireAfterSec,
-          PayjoinConstants.maxExpireAfterSec,
+          PayjoinPolicy.minimumSessionLifetime.inSeconds,
+          PayjoinPolicy.maximumSessionLifetime.inSeconds,
         ),
       );
       return;

@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -30,7 +31,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
@@ -43,7 +43,6 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
@@ -360,18 +359,6 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerFactory<CreateBuyOrderUsecase>(
-      () => CreateBuyOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
     locator.registerFactory<ConfirmBuyOrderUsecase>(
       () => ConfirmBuyOrderUsecase(
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
@@ -466,6 +453,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
     );
 
@@ -507,13 +495,6 @@ class ExchangeLocator {
 
     locator.registerFactory<CreateLogAttachmentUsecase>(
       () => CreateLogAttachmentUsecase(),
-    );
-
-    locator.registerFactory<LabelExchangeOrdersUsecase>(
-      () => LabelExchangeOrdersUsecase(
-        labelsFacade: locator<LabelsFacade>(),
-        listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
-      ),
     );
   }
 
