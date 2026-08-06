@@ -5,6 +5,9 @@ import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 
+export 'package:recoverbull/recoverbull.dart'
+    show AttemptsResult, FetchBackupKeyResult, Info;
+
 class RecoverBullRemoteDatasource {
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
   final TorDatasource _torDatasource;
@@ -22,6 +25,112 @@ class RecoverBullRemoteDatasource {
       log.info('KeyServer canary: ${info.canary}');
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
+      rethrow;
+    }
+  }
+
+  /// Returns the server info (canary-checked), including the telemetry
+  /// metadata (`attempts_collection_started_at`, `max_attempt_identifiers`).
+  Future<Info> infos({
+    TorProxyConfig? externalProxy,
+    String? expectedCanary,
+  }) async {
+    try {
+      if (externalProxy == null) {
+        await _waitForInternalTor();
+      }
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
+      final url = await _recoverbullSettingsDatasource.fetch();
+      return await KeyServer(
+        address: url,
+        client: client,
+      ).infos(expectedCanary: expectedCanary);
+    } catch (e) {
+      log.severe(error: e, trace: StackTrace.current);
+      rethrow;
+    }
+  }
+
+  /// Conditional `GET /attempts`: the public brute-force telemetry snapshot.
+  /// Only the entries matching [backupIds] or [backupIdHashes] are returned;
+  /// the full snapshot never leaves the client's worker isolate.
+  Future<AttemptsResult> attempts({
+    String? etag,
+    List<List<int>> backupIds = const [],
+    List<String> backupIdHashes = const [],
+    TorProxyConfig? externalProxy,
+  }) async {
+    try {
+      if (externalProxy == null) {
+        await _waitForInternalTor();
+      }
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
+      final url = await _recoverbullSettingsDatasource.fetch();
+      return await KeyServer(address: url, client: client).attempts(
+        etag: etag,
+        backupIds: backupIds,
+        backupIdHashes: backupIdHashes,
+      );
+    } catch (e) {
+      log.severe(error: e, trace: StackTrace.current);
+      rethrow;
+    }
+  }
+
+  /// Fetch with the exact attempt counters of the identifier's current
+  /// rate-limit window — the freshest telemetry signal.
+  Future<FetchBackupKeyResult> fetchWithStatus(
+    List<int> backupId,
+    List<int> password,
+    List<int> salt, {
+    TorProxyConfig? externalProxy,
+  }) async {
+    try {
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
+      final url = await _recoverbullSettingsDatasource.fetch();
+      return await KeyServer(
+        address: url,
+        client: client,
+      ).fetchBackupKeyWithStatus(
+        backupId: backupId,
+        password: password,
+        salt: salt,
+      );
+    } catch (e) {
+      log.severe(
+        message: 'fetchBackupKeyWithStatus error',
+        error: e,
+        trace: StackTrace.current,
+      );
+      rethrow;
+    }
+  }
+
+  /// Trash with the exact attempt counters of the identifier's current
+  /// rate-limit window.
+  Future<FetchBackupKeyResult> trashWithStatus(
+    List<int> backupId,
+    List<int> password,
+    List<int> salt, {
+    TorProxyConfig? externalProxy,
+  }) async {
+    try {
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
+      final url = await _recoverbullSettingsDatasource.fetch();
+      return await KeyServer(
+        address: url,
+        client: client,
+      ).trashBackupKeyWithStatus(
+        backupId: backupId,
+        password: password,
+        salt: salt,
+      );
+    } catch (e) {
+      log.severe(
+        message: 'trashBackupKeyWithStatus error',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }

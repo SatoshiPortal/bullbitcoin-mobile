@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_telemetry_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/key_server_telemetry.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -18,11 +21,13 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 class RecoverBullRepository {
   final RecoverBullRemoteDatasource remoteDatasource;
   final RecoverbullSettingsDatasource recoverbullSettingsDatasource;
+  final RecoverbullTelemetryDatasource recoverbullTelemetryDatasource;
   final TorConfigPort torConfigPort;
 
   RecoverBullRepository({
     required this.remoteDatasource,
     required this.recoverbullSettingsDatasource,
+    required this.recoverbullTelemetryDatasource,
     required this.torConfigPort,
   });
 
@@ -130,6 +135,211 @@ class RecoverBullRepository {
     );
   }
 
+  /// Fetch with the identifier's exact attempt counters — the freshest
+  /// telemetry signal, available even when `/attempts` is overloaded.
+  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>>
+  fetchVaultKeyWithStatus(
+    String identifier,
+    String password,
+    String salt,
+  ) async {
+    try {
+      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
+      final result = await remoteDatasource.fetchWithStatus(
+        convert.hex.decode(_normalizeHex(identifier)),
+        utf8.encode(password),
+        convert.hex.decode(_normalizeHex(salt)),
+        externalProxy: externalProxy,
+      );
+      return Ok(
+        VaultKeyFetchResult(
+          vaultKey: convert.hex.encode(result.backupKey),
+          attemptStatus: _mapAttemptStatus(result.attemptStatus),
+        ),
+      );
+    } on recoverbull.KeyServerException catch (e, st) {
+      log.severe(
+        message: 'fetchVaultKeyWithStatus failed',
+        error: e,
+        trace: st,
+      );
+      return Err(_mapKeyServer(e));
+    } catch (e, st) {
+      log.severe(
+        message: 'fetchVaultKeyWithStatus failed',
+        error: e,
+        trace: st,
+      );
+      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+    }
+  }
+
+  /// Trash with the identifier's exact attempt counters.
+  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>>
+  trashVaultKeyWithStatus(
+    String identifier,
+    String password,
+    String salt,
+  ) async {
+    try {
+      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
+      final result = await remoteDatasource.trashWithStatus(
+        convert.hex.decode(_normalizeHex(identifier)),
+        utf8.encode(password),
+        convert.hex.decode(_normalizeHex(salt)),
+        externalProxy: externalProxy,
+      );
+      return Ok(
+        VaultKeyFetchResult(
+          vaultKey: convert.hex.encode(result.backupKey),
+          attemptStatus: _mapAttemptStatus(result.attemptStatus),
+        ),
+      );
+    } on recoverbull.KeyServerException catch (e, st) {
+      log.severe(
+        message: 'trashVaultKeyWithStatus failed',
+        error: e,
+        trace: st,
+      );
+      return Err(_mapKeyServer(e));
+    } catch (e, st) {
+      log.severe(
+        message: 'trashVaultKeyWithStatus failed',
+        error: e,
+        trace: st,
+      );
+      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+    }
+  }
+
+  /// The server info's telemetry metadata (wipe detection + map capacity).
+  Future<Result<KeyServerInfo, RecoverBullCoreFailure>> fetchServerInfo({
+    String? expectedCanary,
+  }) async {
+    try {
+      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
+      final info = await remoteDatasource.infos(
+        externalProxy: externalProxy,
+        expectedCanary: expectedCanary,
+      );
+      return Ok(
+        KeyServerInfo(
+          collectionStartedAt: info.attemptsCollectionStartedAt,
+          maxAttemptIdentifiers: info.maxAttemptIdentifiers,
+        ),
+      );
+    } on recoverbull.KeyServerException catch (e, st) {
+      log.severe(message: 'fetchServerInfo failed', error: e, trace: st);
+      return Err(_mapKeyServer(e));
+    } catch (e, st) {
+      log.severe(message: 'fetchServerInfo failed', error: e, trace: st);
+      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+    }
+  }
+
+  /// Conditional `GET /attempts`. Only the entries matching [backupIds] or
+  /// [backupIdHashes] are returned; the full snapshot never leaves the
+  /// client's worker isolate.
+  Future<Result<TelemetrySnapshotResult, RecoverBullCoreFailure>>
+  fetchTelemetrySnapshot({
+    String? etag,
+    List<List<int>> backupIds = const [],
+    List<String> backupIdHashes = const [],
+  }) async {
+    try {
+      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
+      final result = await remoteDatasource.attempts(
+        etag: etag,
+        backupIds: backupIds,
+        backupIdHashes: backupIdHashes,
+        externalProxy: externalProxy,
+      );
+      return Ok(_mapSnapshot(result));
+    } on recoverbull.KeyServerException catch (e, st) {
+      log.severe(message: 'fetchTelemetrySnapshot failed', error: e, trace: st);
+      return Err(_mapKeyServer(e));
+    } catch (e, st) {
+      log.severe(message: 'fetchTelemetrySnapshot failed', error: e, trace: st);
+      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+    }
+  }
+
+  // --- Telemetry baseline persistence (scoped per key-server URL) ---
+
+  Future<RecoverbullTelemetryServerRow?> fetchTelemetryServerState(
+    String serverUrl,
+  ) {
+    return recoverbullTelemetryDatasource.fetchServerState(serverUrl);
+  }
+
+  Future<void> upsertTelemetryServerState(RecoverbullTelemetryServerRow row) {
+    return recoverbullTelemetryDatasource.upsertServerState(row);
+  }
+
+  Future<List<RecoverbullTelemetryBackupRow>> fetchTelemetryBackups(
+    String serverUrl,
+  ) {
+    return recoverbullTelemetryDatasource.fetchBackups(serverUrl);
+  }
+
+  Future<RecoverbullTelemetryBackupRow?> fetchTelemetryBackup(
+    String serverUrl,
+    String backupIdHash,
+  ) {
+    return recoverbullTelemetryDatasource.fetchBackup(serverUrl, backupIdHash);
+  }
+
+  Future<void> upsertTelemetryBackup(RecoverbullTelemetryBackupRow row) {
+    return recoverbullTelemetryDatasource.upsertBackup(row);
+  }
+
+  /// The key-server URL changed: every telemetry row of the old server is
+  /// dropped — identifiers and snapshots from different servers are
+  /// unrelated.
+  Future<void> deleteTelemetryForServer(String serverUrl) {
+    return recoverbullTelemetryDatasource.deleteAllForServer(serverUrl);
+  }
+
+  /// App data reset: wipe every telemetry row.
+  Future<void> clearTelemetry() {
+    return recoverbullTelemetryDatasource.clearAll();
+  }
+
+  KeyServerAttemptStatus? _mapAttemptStatus(recoverbull.AttemptStatus? s) {
+    if (s == null) return null;
+    return KeyServerAttemptStatus(
+      totalAttempts: s.totalAttempts,
+      failedAttempts: s.failedAttempts,
+      remainingAttempts: s.remainingAttempts,
+      windowStartedAt: s.windowStartedAt,
+      previousAttemptAt: s.previousAttemptAt,
+      resetsAt: s.resetsAt,
+    );
+  }
+
+  TelemetrySnapshotResult _mapSnapshot(recoverbull.AttemptsResult result) {
+    return switch (result) {
+      recoverbull.AttemptsNotModified() => const TelemetrySnapshotNotModified(),
+      recoverbull.AttemptsModified() => TelemetrySnapshotModified(
+        etag: result.etag,
+        maxAgeSeconds: result.maxAgeSeconds,
+        collectionStartedAt: result.collectionStartedAt,
+        totalEntries: result.totalEntries,
+        matchingEntries: result.matchingEntries
+            .map(
+              (e) => KeyServerAttemptEntry(
+                idHash: e.idHash,
+                totalAttempts: e.totalAttempts,
+                failedAttempts: e.failedAttempts,
+                windowStartedAt: e.windowStartedAt,
+                lastAttemptAt: e.lastAttemptAt,
+              ),
+            )
+            .toList(),
+      ),
+    };
+  }
+
   /// Health probe: completes normally when the server is reachable, throws
   /// otherwise. Kept throwing (not Result) on purpose so the shared status
   /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
@@ -156,19 +366,27 @@ class RecoverBullRepository {
   }
 
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
+  // The client's dedicated 429/503 subtypes are matched first: they carry the
+  // targeted-vs-global and capacity-vs-busy distinctions the telemetry
+  // warnings need.
   RecoverBullCoreFailure _mapKeyServer(recoverbull.KeyServerException e) {
     final code = e.code;
+    if (e is recoverbull.KeyServerRateLimitedException) {
+      return KeyServerTargetedRateLimitedFailure(
+        retryIn: _retryIn(e),
+        logMessage: e.toString(),
+      );
+    }
+    if (e is recoverbull.KeyServerOverloadedException) {
+      return KeyServerOverloadedFailure(e.toString());
+    }
+    if (e is recoverbull.KeyServerCapacityException) {
+      return KeyServerCapacityFailure(e.toString());
+    }
     if (code == 401) return KeyServerInvalidCredentialsFailure(e.toString());
     if (code == 429) {
-      final requestedAt = e.requestedAt;
-      final cooldown = e.cooldownInMinutes;
-      final retryIn = (requestedAt != null && cooldown != null)
-          ? requestedAt
-                .add(Duration(minutes: cooldown))
-                .difference(DateTime.now())
-          : null;
       return KeyServerRateLimitedFailure(
-        retryIn: retryIn,
+        retryIn: _retryIn(e),
         logMessage: e.toString(),
       );
     }
@@ -176,6 +394,16 @@ class RecoverBullRepository {
       return KeyServerRejectedFailure(e.toString());
     }
     return KeyServerUnavailableFailure(e.toString());
+  }
+
+  Duration? _retryIn(recoverbull.KeyServerException e) {
+    final requestedAt = e.requestedAt;
+    final cooldown = e.cooldownInMinutes;
+    return (requestedAt != null && cooldown != null)
+        ? requestedAt
+              .add(Duration(minutes: cooldown))
+              .difference(DateTime.now())
+        : null;
   }
 
   /// Vault keys and server identifiers reach us as raw user input (typed or

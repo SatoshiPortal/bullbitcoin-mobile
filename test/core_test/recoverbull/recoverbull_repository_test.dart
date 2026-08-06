@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_telemetry_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
@@ -12,6 +13,8 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 class _MockRemote extends Mock implements RecoverBullRemoteDatasource {}
 
 class _MockSettings extends Mock implements RecoverbullSettingsDatasource {}
+
+class _MockTelemetry extends Mock implements RecoverbullTelemetryDatasource {}
 
 class _MockTorConfig extends Mock implements TorConfigPort {}
 
@@ -33,6 +36,7 @@ void main() {
     repository = RecoverBullRepository(
       remoteDatasource: remote,
       recoverbullSettingsDatasource: _MockSettings(),
+      recoverbullTelemetryDatasource: _MockTelemetry(),
       torConfigPort: torConfig,
     );
   });

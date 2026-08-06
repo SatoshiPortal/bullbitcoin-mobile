@@ -149,4 +149,17 @@ class SettingsRepository implements domain.SettingsRepository {
     // init can seed consent before the locator is available.
     await Report.updateConsent(enabled);
   }
+
+  /// The brute-force telemetry feature flag. Deliberately not part of
+  /// [SettingsEntity] (it would ripple into every settings constructor call
+  /// site): accessed through these targeted methods only.
+  @override
+  Future<bool> fetchIsRecoverbullTelemetryEnabled() {
+    return _settingsDatasource.fetchIsRecoverbullTelemetryEnabled();
+  }
+
+  @override
+  Future<void> setIsRecoverbullTelemetryEnabled(bool enabled) {
+    return _settingsDatasource.setIsRecoverbullTelemetryEnabled(enabled);
+  }
 }
