@@ -70,6 +70,12 @@ final class _TransactionPort implements PayjoinTransactionPort {
   Stream<void> watchWallet(String walletId) => const Stream.empty();
 }
 
+final class _FeesPort implements PayjoinFeesPort {
+  @override
+  Future<FeeRate> fastestFeeRate({required BitcoinNetwork network}) async =>
+      FeeRate(10);
+}
+
 final class _LabelsPort implements PayjoinLabelsPort {
   @override
   Future<void> labelTransaction({
@@ -111,6 +117,7 @@ void main() {
       databasePath: '${directory.path}/payjoin.sqlite',
       wallet: _WalletPort(),
       blockchain: _BlockchainPort(),
+      fees: _FeesPort(),
       transactions: _TransactionPort(),
       labels: _LabelsPort(),
       legacyData: const _LegacyData(),

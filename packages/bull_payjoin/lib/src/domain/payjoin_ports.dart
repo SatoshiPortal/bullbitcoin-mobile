@@ -52,6 +52,15 @@ abstract interface class PayjoinBlockchainPort {
   });
 }
 
+/// Live network fee estimation, used only to bound the receiver's exposure.
+///
+/// Kept apart from [PayjoinBlockchainPort]: broadcasting talks to the chain,
+/// estimation talks to a fee source (a user-configurable mempool server), so it
+/// is not fully trusted input — every value it returns is clamped before use.
+abstract interface class PayjoinFeesPort {
+  Future<FeeRate> fastestFeeRate({required BitcoinNetwork network});
+}
+
 abstract interface class PayjoinTransactionPort {
   Stream<void> watchWallet(String walletId);
 

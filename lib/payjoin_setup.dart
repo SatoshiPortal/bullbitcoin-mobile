@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -43,6 +44,7 @@ abstract final class PayjoinSetup {
           locator<BdkBitcoinBlockchainDatasource>(),
           locator<ElectrumServersPort>(),
         ),
+        fees: AppPayjoinFeesAdapter(locator<FeesRepository>()),
         transactions: AppPayjoinTransactionAdapter(
           locator<WalletRepository>(),
           locator<WalletTransactionRepository>(),

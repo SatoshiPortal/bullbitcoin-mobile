@@ -11,6 +11,7 @@ import 'package:bull_payjoin/src/domain/payjoin_requests.dart';
 import 'package:bull_payjoin/src/domain/payjoin_session.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as engine;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
+import 'package:bull_payjoin/src/engine/payjoin_fee_cap.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart' as logger;
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/public/payjoin.dart';
@@ -24,6 +25,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required String databasePath,
   required PayjoinWalletPort wallet,
   required PayjoinBlockchainPort blockchain,
+  required PayjoinFeesPort fees,
   required PayjoinTransactionPort transactions,
   required PayjoinLabelsPort labels,
   required PayjoinLegacyDataPort legacyData,
@@ -78,7 +80,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       policy: policy,
       labels: labels,
     );
-    final roles = _PayjoinRoles(engine, policy, wallet);
+    final roles = _PayjoinRoles(engine, policy, wallet, fees);
     return Ok(_PayjoinLifecycle(database, engine, roles.payjoin));
   } catch (error, trace) {
     // No quarantine-and-retry here: with the import's row-level quarantine,
@@ -221,6 +223,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   final PayjoinRepositoryImpl _engine;
   final PayjoinPolicyStore _policy;
   final PayjoinWalletPort _wallet;
+  final PayjoinFeesPort _fees;
   final Lock _policyMutationLock = Lock();
 
   late final Payjoin payjoin = Payjoin(
@@ -231,7 +234,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     diagnostics: _DiagnosticsRole(this),
   );
 
-  _PayjoinRoles(this._engine, this._policy, this._wallet);
+  _PayjoinRoles(this._engine, this._policy, this._wallet, this._fees);
 
   @override
   Future<Result<PayjoinSenderSession, PayjoinFailure>> startSender(
@@ -300,7 +303,9 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         walletId: request.walletId,
         address: request.address,
         isTestnet: !request.network.isMainnet,
-        maxFeeRateSatPerVb: BigInt.from(10000),
+        maxFeeRateSatPerVb: BigInt.from(
+          await receiverMaxFeeRateSatPerVb(_fees, request.network),
+        ),
         expireAfterSec: lifetime.inSeconds,
         amountSat: request.amount?.value.toInt(),
       );

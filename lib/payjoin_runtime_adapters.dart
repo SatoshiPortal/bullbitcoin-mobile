@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -41,6 +43,23 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     operation: (connection) =>
         _blockchain.broadcastPsbt(psbt, connection: connection),
   );
+}
+
+final class AppPayjoinFeesAdapter implements PayjoinFeesPort {
+  final FeesRepository _fees;
+
+  const AppPayjoinFeesAdapter(this._fees);
+
+  @override
+  Future<FeeRate> fastestFeeRate({required BitcoinNetwork network}) async {
+    final fees = await _fees.getNetworkFees(
+      network: Network.fromEnvironment(
+        isTestnet: !network.isMainnet,
+        isLiquid: false,
+      ),
+    );
+    return FeeRate(fees.fastest.value.toDouble());
+  }
 }
 
 final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
