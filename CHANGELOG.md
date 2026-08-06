@@ -6,7 +6,10 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
-_Nothing yet._
+### Bug Fixes
+
+#### Swaps
+- Suspended unavailable Boltz network processing while preserving legacy swap history, and migrated Lightning sends, receives, and cross-chain transfers to the public swap API with crash-safe transaction recovery, serialized polling, duplicate-order protection, and labels applied only after swap completion and on-chain confirmation.
 
 ---
 
