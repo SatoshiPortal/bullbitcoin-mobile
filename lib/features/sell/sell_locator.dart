@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
@@ -35,6 +36,9 @@ class SellLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<WatchPayjoinUsecase>(
       () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<GetPayjoinUsecase>(
+      () => GetPayjoinUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<SendWithPayjoinUsecase>(
       () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
@@ -86,6 +90,7 @@ class SellLocator {
             locator<BroadcastLiquidTransactionUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
+        getPayjoinUsecase: locator<GetPayjoinUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),

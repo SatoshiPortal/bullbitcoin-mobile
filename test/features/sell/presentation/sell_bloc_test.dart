@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
@@ -80,6 +81,8 @@ class _MockSendWithPayjoin extends Mock implements SendWithPayjoinUsecase {}
 
 class _MockWatchPayjoin extends Mock implements WatchPayjoinUsecase {}
 
+class _MockGetPayjoin extends Mock implements GetPayjoinUsecase {}
+
 class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
 class _MockPreviewBitcoinFeePresets extends Mock
@@ -112,6 +115,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.broadcastLiquidTransactionUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
+    required super.getPayjoinUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -163,6 +167,7 @@ void main() {
   late _MockGetOrder getOrder;
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
+  late _MockGetPayjoin getPayjoin;
   late _MockRefreshSellOrder refreshSellOrder;
   late _MockLabelsFacade labelsFacade;
   late _MockPreviewBitcoinFee previewBitcoinFee;
@@ -222,6 +227,8 @@ void main() {
     when(
       () => watchPayjoin.execute(any()),
     ).thenAnswer((_) => const Stream.empty());
+    getPayjoin = _MockGetPayjoin();
+    when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
     refreshSellOrder = _MockRefreshSellOrder();
     labelsFacade = _MockLabelsFacade();
     previewBitcoinFee = _MockPreviewBitcoinFee();
@@ -239,9 +246,7 @@ void main() {
     ).thenReturn('bc1q0000000000000000000000000000000000000');
     // The post-broadcast completion only succeeds once the exchange sees the
     // payin; default to seen, tests that need otherwise re-stub it.
-    when(
-      () => sellOrder.payinStatus,
-    ).thenReturn(OrderPayinStatus.inProgress);
+    when(() => sellOrder.payinStatus).thenReturn(OrderPayinStatus.inProgress);
     when(
       () => sellOrder.confirmationDeadline,
     ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
@@ -290,6 +295,7 @@ void main() {
       broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
+      getPayjoinUsecase: getPayjoin,
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
@@ -322,28 +328,25 @@ void main() {
   tearDown(() => bloc.close());
 
   group('SellBloc — broadcast latch', () {
-    test(
-      'audit reproducer (H6): a wallet selection during confirmation '
-      'is ignored',
-      () async {
-        bloc.seed(
-          (bloc.state as SellPaymentState).copyWith(isConfirmingPayment: true),
-        );
+    test('audit reproducer (H6): a wallet selection during confirmation '
+        'is ignored', () async {
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(isConfirmingPayment: true),
+      );
 
-        bloc.add(SellEvent.walletSelected(wallet: wallet));
-        await Future<void>.delayed(const Duration(milliseconds: 50));
+      bloc.add(SellEvent.walletSelected(wallet: wallet));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
-        expect(
-          bloc.state,
-          isA<SellPaymentState>(),
-          reason:
-              'tearing down the payment state mid-confirmation orphans the '
-              'in-flight payment and lets a later payjoin resolution latch '
-              'onto a different order',
-        );
-        expect((bloc.state as SellPaymentState).isConfirmingPayment, isTrue);
-      },
-    );
+      expect(
+        bloc.state,
+        isA<SellPaymentState>(),
+        reason:
+            'tearing down the payment state mid-confirmation orphans the '
+            'in-flight payment and lets a later payjoin resolution latch '
+            'onto a different order',
+      );
+      expect((bloc.state as SellPaymentState).isConfirmingPayment, isTrue);
+    });
 
     test('Payjoin toggle is ignored while confirmation is in flight', () async {
       bloc.seed(
@@ -402,6 +405,90 @@ void main() {
       },
       timeout: const Timeout(Duration(seconds: 15)),
     );
+
+    test('a failed Payjoin start whose session persisted is adopted, '
+        'not surfaced as a retryable error', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      // The engine persists the session (signed original included) before
+      // posting to the directory; a post failure throws AFTER that persist.
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenThrow(SendPayjoinException('Failed to start Payjoin sale'));
+      when(() => getPayjoin.execute(bip21)).thenAnswer(
+        (_) async => PayjoinSenderSession(
+          status: PayjoinStatus.started,
+          uri: bip21,
+          network: BitcoinNetwork.mainnet,
+          walletId: 'wallet-1',
+          originalTransactionId: expectedTxid,
+          amount: Sats.fromInt(100000),
+          createdAt: DateTime(2026),
+          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        ),
+      );
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // The persisted session WILL broadcast its original at the deadline.
+      // Re-arming Confirm here would let a plain retry pay the same order
+      // again on disjoint inputs (the session's inputs are reserved), so
+      // the payment must stay latched on the adopted session instead.
+      final state = bloc.state as SellPaymentState;
+      expect(state.error, isNull);
+      expect(
+        state.isConfirmingPayment,
+        isTrue,
+        reason:
+            'an adopted session keeps Confirm latched until the session '
+            'resolves — re-arming it opens the double-payment window',
+      );
+      verify(() => watchPayjoin.execute(bip21)).called(1);
+      verifyNever(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      );
+    });
+
+    test('a failed Payjoin start with nothing persisted still surfaces the '
+        'retryable error', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenThrow(SendPayjoinException('Failed to start Payjoin sale'));
+      // No session row: the failure happened before the write-ahead
+      // persist, so nothing can broadcast later and retrying is safe.
+      when(() => getPayjoin.execute(bip21)).thenAnswer((_) async => null);
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final state = bloc.state as SellPaymentState;
+      expect(state.error, isNotNull);
+      expect(state.isConfirmingPayment, isFalse);
+      verifyNever(() => watchPayjoin.execute(any()));
+    });
 
     test(
       'a completed Payjoin settles the sale with its txid',

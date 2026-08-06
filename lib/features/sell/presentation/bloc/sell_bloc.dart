@@ -25,6 +25,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -39,7 +40,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
-    show PayjoinSession, PayjoinSessionWindow;
+    show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -62,6 +63,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._broadcastLiquidTransactionUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
+    required this._getPayjoinUsecase,
     required this._getNetworkFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
@@ -109,6 +111,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final GetPayjoinUsecase _getPayjoinUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -623,17 +626,39 @@ class SellBloc extends Bloc<SellEvent, SellState>
             payjoinBip21 != null &&
             payjoinWindow != null) {
           log.info('Sell Payjoin sender creation started');
-          final payjoinSender = await _sendWithPayjoinUsecase.execute(
-            walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
-            bip21: payjoinBip21,
-            unsignedOriginalPsbt: preparedSend.unsignedPsbt,
-            amountSat: payinAmountSat,
-            networkFeesSatPerVb: networkFee.isRelative
-                ? networkFee.value as double
-                : absoluteFeesUpdated / preparedSend.txSize,
-            expireAfterSec: payjoinWindow.inSeconds,
-          );
+          PayjoinSenderSession payjoinSender;
+          try {
+            payjoinSender = await _sendWithPayjoinUsecase.execute(
+              walletId: wallet.id,
+              isTestnet: wallet.network.isTestnet,
+              bip21: payjoinBip21,
+              unsignedOriginalPsbt: preparedSend.unsignedPsbt,
+              amountSat: payinAmountSat,
+              networkFeesSatPerVb: networkFee.isRelative
+                  ? networkFee.value as double
+                  : absoluteFeesUpdated / preparedSend.txSize,
+              expireAfterSec: payjoinWindow.inSeconds,
+            );
+          } on SendPayjoinException {
+            // A failed start is not a failed payment: the engine persists
+            // the session — signed original included — BEFORE posting to the
+            // directory, and a post failure keeps the row so the expiry
+            // fallback still settles the payment. Surfacing an error here
+            // and re-arming Confirm would let a plain retry pay this order a
+            // second time on disjoint inputs (the persisted session's inputs
+            // are reserved out of coin selection, so the two transactions
+            // cannot conflict). When the row exists, adopt the session and
+            // proceed exactly as a successful start; only a start that left
+            // nothing behind may fall through to the error path.
+            final persisted = await _getPayjoinUsecase.execute(payjoinBip21);
+            if (persisted is! PayjoinSenderSession) rethrow;
+            log.warning(
+              'Sell Payjoin start failed but session ${persisted.logRef} is '
+              'persisted (status=${persisted.status.name}); adopting it '
+              'instead of re-arming Confirm',
+            );
+            payjoinSender = persisted;
+          }
           log.info(
             'Sell Payjoin sender active: ${payjoinSender.logRef}, '
             'status=${payjoinSender.status.name}',
