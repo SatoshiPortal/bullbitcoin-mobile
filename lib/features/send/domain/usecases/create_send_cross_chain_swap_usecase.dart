@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -6,69 +5,64 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
-class CreateSendSwapUsecase {
+class CreateSendCrossChainSwapUsecase {
   final SwapFacade _swapFacade;
   final GetWalletUsecase _getWallet;
   final GetReceiveAddressUsecase _getReceiveAddress;
-  final DateTime Function() _now;
 
-  CreateSendSwapUsecase(
+  const CreateSendCrossChainSwapUsecase(
     this._swapFacade, {
     required GetWalletUsecase getWalletUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    DateTime Function()? now,
   }) : _getWallet = getWalletUsecase,
-       _getReceiveAddress = getReceiveAddressUsecase,
-       _now = now ?? DateTime.now;
+       _getReceiveAddress = getReceiveAddressUsecase;
 
   Future<Result<OrderSwapRecord, SendFailure>> execute({
     required String walletId,
-    required Bolt11PaymentRequest invoice,
+    required String destinationAddress,
+    required bool destinationIsTestnet,
     required int amountSat,
+    required bool isInAmountFixed,
     String? note,
   }) async {
-    if (amountSat <= 0) {
-      return const Err(SendInvoiceAmountRequiredFailure());
-    }
-    if (invoice.amountSat > 0 && invoice.amountSat != amountSat) {
+    if (amountSat <= 0 || destinationAddress.isEmpty) {
       return const Err(
         SendInvalidPaymentRequestFailure(
-          logMessage: 'Invoice amount does not match requested amount',
+          logMessage: 'Cross-chain destination and amount are required',
         ),
       );
     }
-    if (invoice.expiresAt <= _now().millisecondsSinceEpoch ~/ 1000) {
-      return const Err(SendInvoiceExpiredFailure());
-    }
-
     try {
       final wallet = await _getWallet.execute(walletId);
       if (wallet == null) {
         return const Err(SendSwapCreationFailure('Wallet not found'));
       }
-      final inNetwork = wallet.network.isLiquid
-          ? OrderSwapNetwork.liquid
-          : OrderSwapNetwork.bitcoin;
-      if (invoice.isTestnet != wallet.network.isTestnet) {
+      if (destinationIsTestnet != wallet.network.isTestnet) {
         return const Err(
           SendInvalidPaymentRequestFailure(
-            logMessage: 'Invoice network does not match wallet network',
+            logMessage: 'Destination network does not match wallet network',
           ),
         );
       }
-      if (wallet.isBitcoinHardwareWallet) {
+      if (wallet.isHardwareWallet) {
         return const Err(SendHardwareWalletFailure());
       }
 
+      final inNetwork = wallet.network.isLiquid
+          ? OrderSwapNetwork.liquid
+          : OrderSwapNetwork.bitcoin;
+      final outNetwork = wallet.network.isLiquid
+          ? OrderSwapNetwork.bitcoin
+          : OrderSwapNetwork.liquid;
       final fallback = await _getReceiveAddress.execute(walletId: walletId);
       final result = await _swapFacade.createOrder(
         amountSat: BigInt.from(amountSat),
-        isInAmountFixed: false,
+        isInAmountFixed: isInAmountFixed,
         inNetwork: inNetwork,
-        outNetwork: OrderSwapNetwork.lightning,
-        destinationAddress: invoice.invoice,
+        outNetwork: outNetwork,
+        destinationAddress: destinationAddress,
         fallbackAddress: fallback.address,
-        purpose: OrderSwapPurpose.sendLightning,
+        purpose: OrderSwapPurpose.sendCrossChain,
         environment: wallet.network.isTestnet
             ? OrderSwapEnvironment.testnet
             : OrderSwapEnvironment.mainnet,

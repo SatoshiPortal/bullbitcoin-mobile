@@ -33,10 +33,13 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -229,73 +232,29 @@ class AddressErrorSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balanceError = context.select(
-      (SendCubit cubit) => cubit.state.insufficientBalanceException,
-    );
+    final failure = context.select((SendCubit cubit) => cubit.state.failure);
     final frozenBalanceSat = context.select(
       (SendCubit cubit) => cubit.state.frozenBalanceSat,
     );
     final formattedFrozenBalance = context.select(
       (SendCubit cubit) => cubit.state.formattedFrozenBalance,
     );
-    final swapLimitsError = context.select(
-      (SendCubit cubit) => cubit.state.swapLimitsException,
-    );
-    final swapError = context.select(
-      (SendCubit cubit) => cubit.state.swapCreationException,
-    );
-    final invalidAddress = context.select(
-      (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
-    );
-    if (balanceError != null) {
+    if (failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
           // #2337: when the shortfall is only because coins are frozen, point
           // the user at Manage coins instead of a dead-end "not enough balance".
-          frozenBalanceSat > 0
+          failure is SendInsufficientBalanceFailure && frozenBalanceSat > 0
               ? context.loc.sendErrorInsufficientBalanceFrozenHint(
                   formattedFrozenBalance,
                 )
-              : context.loc.sendErrorInsufficientBalanceForPayment,
+              : failure.toTranslated(context),
           style: context.font.bodyMedium,
           color: context.appColors.error,
           textAlign: .center,
           maxLines: 2,
         ),
-      );
-    }
-    if (swapLimitsError != null) {
-      return BBText(
-        _getSwapLimitsErrorMessage(context, swapLimitsError),
-        style: context.font.bodyMedium,
-        color: context.appColors.error,
-        textAlign: .center,
-        maxLines: 2,
-      );
-    }
-    if (swapError != null) {
-      return BBText(
-        swapError is AmountlessInvoiceException
-            ? context.loc.sendErrorInvoiceMustContainAmount
-            : swapError is ExpiredInvoiceException
-            ? context.loc.sendErrorInvoiceExpired
-            : swapError.message,
-        style: context.font.bodyMedium,
-        color: context.appColors.error,
-        textAlign: .center,
-        maxLines: 2,
-      );
-    }
-    if (invalidAddress != null) {
-      return BBText(
-        invalidAddress is UnsupportedQrFormatException
-            ? context.loc.sendErrorUnsupportedQrCodeFormat
-            : context.loc.sendErrorInvalidAddressOrInvoice,
-        style: context.font.bodyMedium,
-        color: context.appColors.error,
-        textAlign: .center,
-        maxLines: 2,
       );
     }
     return const SizedBox(height: 21);
@@ -392,16 +351,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                 },
                 child: BlocBuilder<SendCubit, SendState>(
                   builder: (context, state) {
-                    final balanceError = context.select(
-                      (SendCubit cubit) =>
-                          cubit.state.insufficientBalanceException,
+                    final failure = context.select(
+                      (SendCubit cubit) => cubit.state.failure,
                     );
-                    final swapLimitsError = context.select(
-                      (SendCubit cubit) => cubit.state.swapLimitsException,
-                    );
-                    final swapCreationError = context.select(
-                      (SendCubit cubit) => cubit.state.swapCreationException,
-                    );
+                    final balanceError =
+                        failure is SendInsufficientBalanceFailure;
+                    final swapLimitsError =
+                        failure is SendAmountOutOfBoundsFailure
+                        ? failure
+                        : null;
                     final walletHasBalance = context.select(
                       (SendCubit cubit) => cubit.state.walletHasBalance,
                     );
@@ -422,10 +380,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                         .select<SendCubit, List<String>>(
                           (bloc) => bloc.state.inputAmountCurrencyCodes,
                         );
-                    final buildError = context.select(
-                      (SendCubit cubit) =>
-                          cubit.state.buildTransactionException,
-                    );
+                    final buildError = failure is SendTransactionBuildFailure;
                     final selectedWallet = context.select(
                       (SendCubit cubit) => cubit.state.selectedWallet!,
                     );
@@ -496,7 +451,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           .read<SendCubit>()
                                           .onCurrencyChanged(currencyCode);
                                     },
-                                    error: balanceError != null
+                                    error: balanceError
                                         ? (state.frozenBalanceSat > 0
                                               ? context.loc
                                                     .sendErrorInsufficientBalanceFrozenHint(
@@ -514,12 +469,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             context,
                                             swapLimitsError,
                                           )
-                                        : swapCreationError != null
-                                        ? _swapCreationErrorMessage(
-                                            context,
-                                            swapCreationError,
-                                          )
-                                        : null,
+                                        : failure?.toTranslated(context),
                                     focusNode: _amountFocusNode,
                                     readOnly: _isMax,
                                     isMax: _isMax,
@@ -637,7 +587,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       ),
                                     ),
                                   ],
-                                  if (buildError != null) ...[
+                                  if (buildError) ...[
                                     const Gap(16),
                                     const _SendError(),
                                   ],
@@ -738,12 +688,16 @@ class SendConfirmScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap != null,
+    final orderSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
     );
-    final isChainSwap = context.select(
-      (SendCubit cubit) => cubit.state.chainSwap != null,
-    );
+    final isLnSwap =
+        orderSwap != null &&
+        (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
+            orderSwap.outNetwork == OrderSwapNetwork.lightning);
+    final isChainSwap =
+        context.select((SendCubit cubit) => cubit.state.chainSwap != null) ||
+        (orderSwap != null && !isLnSwap);
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid ?? false,
     );
@@ -805,15 +759,13 @@ class _SendError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buildError = context.select(
-      (SendCubit cubit) => cubit.state.buildTransactionException,
-    );
+    final failure = context.select((SendCubit cubit) => cubit.state.failure);
+    final buildError = failure is SendTransactionBuildFailure;
+    final confirmError = failure is SendTransactionConfirmationFailure
+        ? failure
+        : null;
 
-    final confirmError = context.select(
-      (SendCubit cubit) => cubit.state.confirmTransactionException,
-    );
-
-    if (buildError != null) {
+    if (buildError) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
@@ -1102,7 +1054,6 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     );
 
     final label = context.select((SendCubit cubit) => cubit.state.label);
-
     return CommonOnchainSendInfoSection(
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
@@ -1131,7 +1082,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
-    final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
+    final swap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
+    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1142,6 +1095,12 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isSlowPayment,
     );
     final label = context.select((SendCubit cubit) => cubit.state.label);
+    final networkFee = context.select(
+      (SendCubit cubit) => cubit.state.absoluteFees,
+    );
+    final swapFee = context.select(
+      (SendCubit cubit) => cubit.state.totalSwapFees,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -1164,7 +1123,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               children: [
                 Flexible(
                   child: BBText(
-                    swap!.id,
+                    swap!.orderId!,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
                     textAlign: .end,
@@ -1173,7 +1132,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 const Gap(4),
                 InkWell(
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: swap.id));
+                    Clipboard.setData(ClipboardData(text: swap.orderId!));
                   },
                   child: Icon(
                     Icons.copy,
@@ -1228,55 +1187,58 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
             _divider(context),
           ],
-          if (swap.sendAmount != null)
-            InfoRow(
-              title: context.loc.sendSendAmount,
-              details: Column(
-                crossAxisAlignment: .end,
-                children: [
-                  CurrencyText(
-                    swap.paymentAmount,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                  ),
-                ],
-              ),
+          InfoRow(
+            title: context.loc.sendSendAmount,
+            details: Column(
+              crossAxisAlignment: .end,
+              children: [
+                CurrencyText(
+                  swap.order!.payinAmountSat.toInt(),
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.secondary,
+                ),
+              ],
             ),
+          ),
           _divider(context),
-          if (swap.receieveAmount != null)
-            InfoRow(
-              title: context.loc.sendReceiveAmount,
-              details: Column(
-                crossAxisAlignment: .end,
-                children: [
-                  CurrencyText(
-                    swap.receieveAmount!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                  ),
-                ],
-              ),
+          InfoRow(
+            title: context.loc.sendReceiveAmount,
+            details: Column(
+              crossAxisAlignment: .end,
+              children: [
+                CurrencyText(
+                  swap.order!.payoutAmountSat.toInt(),
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.secondary,
+                ),
+              ],
             ),
-          if (swap.receieveAmount != null) _divider(context),
-          if (swap.fees?.lockupFee != null)
+          ),
+          _divider(context),
+          if (networkFee != null) ...[
             InfoRow(
               title: context.loc.sendNetworkFeesLabel,
-              details: Column(
-                crossAxisAlignment: .end,
-                children: [
-                  CurrencyText(
-                    swap.fees!.lockupFee!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                  ),
-                ],
+              details: CurrencyText(
+                networkFee,
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
               ),
             ),
-          if (swap.fees?.lockupFee != null) _divider(context),
-          _SwapFeeBreakdown(fees: swap.fees),
+            _divider(context),
+          ],
+          if (swapFee != null)
+            InfoRow(
+              title: context.loc.sendTransferFee,
+              details: CurrencyText(
+                swapFee,
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+              ),
+            ),
           if (showFeeWarning == true) ...[
             const Gap(16),
             _HighFeeWarning(feePercent),
@@ -1417,7 +1379,17 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
-    final swap = context.select((SendCubit cubit) => cubit.state.chainSwap);
+    final legacySwap = context.select(
+      (SendCubit cubit) => cubit.state.chainSwap,
+    );
+    final orderSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
+    );
+    final swapId = orderSwap?.orderId ?? legacySwap!.id;
+    final sendAmount =
+        orderSwap?.order?.payinAmountSat.toInt() ?? legacySwap!.sendAmount!;
+    final receiveAmount =
+        orderSwap?.order?.payoutAmountSat.toInt() ?? legacySwap?.receieveAmount;
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1449,7 +1421,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               children: [
                 Flexible(
                   child: BBText(
-                    swap!.id,
+                    swapId,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
                     textAlign: .end,
@@ -1458,7 +1430,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 const Gap(4),
                 InkWell(
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: swap.id));
+                    Clipboard.setData(ClipboardData(text: swapId));
                   },
                   child: Icon(
                     Icons.copy,
@@ -1507,7 +1479,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               crossAxisAlignment: .end,
               children: [
                 CurrencyText(
-                  swap.sendAmount!,
+                  sendAmount,
                   showFiat: false,
                   style: context.font.bodyLarge,
                   color: context.appColors.secondary,
@@ -1516,14 +1488,14 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          if (swap.receieveAmount != null)
+          if (receiveAmount != null)
             InfoRow(
               title: context.loc.sendReceiveAmount,
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
-                    swap.receieveAmount!,
+                    receiveAmount,
                     showFiat: false,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
@@ -1531,7 +1503,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 ],
               ),
             ),
-          if (swap.receieveAmount != null) _divider(context),
+          if (receiveAmount != null) _divider(context),
           if (absoluteFees != null)
             InfoRow(
               title: context.loc.sendSendNetworkFee,
@@ -1548,7 +1520,22 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               ),
             ),
           if (absoluteFees != null) _divider(context),
-          _SwapFeeBreakdown(fees: swap.fees),
+          if (legacySwap != null)
+            _SwapFeeBreakdown(fees: legacySwap.fees)
+          else if (orderSwap != null &&
+              orderSwap.order!.payinAmountSat >
+                  orderSwap.order!.payoutAmountSat)
+            InfoRow(
+              title: context.loc.sendTransferFee,
+              details: CurrencyText(
+                (orderSwap.order!.payinAmountSat -
+                        orderSwap.order!.payoutAmountSat)
+                    .toInt(),
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+              ),
+            ),
           const Gap(16),
 
           const _SlowPaymentWarning(),
@@ -1641,7 +1628,7 @@ class SendSendingScreen extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isLnInvoicePaid,
     );
     final isLnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap != null,
+      (SendCubit cubit) => cubit.state.lightningOrder != null,
     );
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
@@ -1802,14 +1789,17 @@ class SendSucessScreen extends StatelessWidget {
     final payjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender,
     );
-    final lnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap,
+    final orderSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
     );
     final chainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap,
     );
-    final isLnSwap = lnSwap != null;
-    final isChainSwap = chainSwap != null;
+    final isLnSwap =
+        orderSwap != null &&
+        (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
+            orderSwap.outNetwork == OrderSwapNetwork.lightning);
+    final isChainSwap = chainSwap != null || (orderSwap != null && !isLnSwap);
     final isSwap = isLnSwap || isChainSwap;
 
     return Scaffold(
@@ -1833,9 +1823,8 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  if (lnSwap?.status == SwapStatus.failed ||
-                      lnSwap?.status == SwapStatus.expired ||
-                      lnSwap?.status == SwapStatus.refundable ||
+                  if (orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
+                      orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
                       chainSwap?.status == SwapStatus.failed ||
                       chainSwap?.status == SwapStatus.expired ||
                       chainSwap?.status == SwapStatus.refundable) ...[
@@ -1849,10 +1838,10 @@ class SendSucessScreen extends StatelessWidget {
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                  ] else if ((isLnSwap &&
-                          lnSwap.status == SwapStatus.completed &&
-                          lnSwap.refundTxid != null) ||
-                      (isChainSwap &&
+                  ] else if ((orderSwap != null &&
+                          orderSwap.localStatus ==
+                              OrderSwapLocalStatus.refunded) ||
+                      (chainSwap != null &&
                           chainSwap.status == SwapStatus.completed &&
                           chainSwap.refundTxid != null)) ...[
                     BBText(
@@ -1866,8 +1855,8 @@ class SendSucessScreen extends StatelessWidget {
                       textAlign: .center,
                     ),
                   ] else if (isLnSwap &&
-                      (lnSwap.status == SwapStatus.canCoop ||
-                          lnSwap.status == SwapStatus.completed)) ...[
+                      orderSwap.localStatus ==
+                          OrderSwapLocalStatus.completed) ...[
                     Gif(
                       image: AssetImage(Assets.animations.successTick.path),
                       autostart: Autostart.once,
@@ -1881,8 +1870,7 @@ class SendSucessScreen extends StatelessWidget {
                     ),
                   ] else if (isLnSwap &&
                       !isBitcoin &&
-                      lnSwap.status != SwapStatus.canCoop &&
-                      lnSwap.status != SwapStatus.completed)
+                      orderSwap.localStatus != OrderSwapLocalStatus.completed)
                     BBText(
                       context.loc.sendPaymentProcessing,
                       style: context.font.headlineLarge,
@@ -1956,16 +1944,20 @@ class SendSucessScreen extends StatelessWidget {
                         'returnHome': 'true',
                       },
                     );
-                  } else if (isLnSwap) {
-                    context.pushNamed(
-                      TransactionsRoute.swapTransactionDetails.name,
-                      pathParameters: {'swapId': lnSwap.id},
-                      queryParameters: {
-                        'walletId': lnSwap.walletId,
-                        'returnHome': 'true',
-                      },
-                    );
-                  } else if (isChainSwap) {
+                  } else if (orderSwap != null) {
+                    final txId = orderSwap.localPayinTransactionId;
+                    final walletId = orderSwap.sourceWalletId;
+                    if (txId != null && walletId != null) {
+                      context.pushNamed(
+                        TransactionsRoute.transactionDetails.name,
+                        pathParameters: {'txId': txId},
+                        queryParameters: {
+                          'walletId': walletId,
+                          'returnHome': 'true',
+                        },
+                      );
+                    }
+                  } else if (chainSwap != null) {
                     context.pushNamed(
                       TransactionsRoute.swapTransactionDetails.name,
                       pathParameters: {'swapId': chainSwap.id},
@@ -2156,28 +2148,15 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
-String _swapCreationErrorMessage(
-  BuildContext context,
-  SwapCreationException error,
-) {
-  if (error is HardwareWalletSwapException) {
-    return context.loc.sendErrorHardwareWalletCannotSwap;
-  }
-  if (error is AmountlessInvoiceException) {
-    return context.loc.sendErrorInvoiceMustContainAmount;
-  }
-  return error.message;
-}
-
 String _getSwapLimitsErrorMessage(
   BuildContext context,
-  SwapLimitsException error,
+  SendAmountOutOfBoundsFailure error,
 ) {
-  if (error.isBelowMinimum) {
-    return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
+  if (error.minimumSat != null) {
+    return context.loc.sendErrorAmountBelowMinimum(error.minimumSat.toString());
   }
-  if (error.isAboveMaximum) {
-    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
+  if (error.maximumSat != null) {
+    return context.loc.sendErrorAmountAboveMaximum(error.maximumSat.toString());
   }
   return context.loc.sendErrorAmountBelowSwapLimits;
 }
