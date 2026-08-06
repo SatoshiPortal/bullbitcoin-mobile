@@ -1,15 +1,13 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:flutter/widgets.dart';
 
 class OrderSwapWatcher {
-  final RefreshOrderSwapsUsecase _refreshOrders;
+  final SyncCoordinator _syncCoordinator;
   final Duration _pollInterval;
-  final Duration _idleInterval;
 
   AppLifecycleListener? _lifecycleListener;
   Timer? _timer;
@@ -18,9 +16,8 @@ class OrderSwapWatcher {
   bool _isStarted = false;
 
   OrderSwapWatcher(
-    this._refreshOrders, {
-    this._pollInterval = const Duration(seconds: 15),
-    this._idleInterval = const Duration(minutes: 1),
+    this._syncCoordinator, {
+    this._pollInterval = const Duration(seconds: 30),
   });
 
   void start() {
@@ -49,36 +46,12 @@ class OrderSwapWatcher {
   }
 
   Future<void> _refreshOnce() async {
-    var nextDelay = _pollInterval;
     try {
-      switch (await _refreshOrders.execute()) {
-        case Ok(:final value):
-          if (value.pollableOrderCount == 0) nextDelay = _idleInterval;
-          final rateLimit = value.failures.whereType<SwapRateLimitedFailure>();
-          if (rateLimit.isNotEmpty) {
-            nextDelay = rateLimit.first.retryAfter ?? _pollInterval;
-          }
-          if (value.failures.isNotEmpty) {
-            final types = value.failures
-                .map((failure) => failure.runtimeType)
-                .toSet()
-                .join(', ');
-            log.warning(
-              '[OrderSwapWatcher] refresh failures: '
-              '${value.failures.length} ($types)',
-            );
-          }
-        case Err(:final failure):
-          log.warning(
-            '[OrderSwapWatcher] refresh failed: ${failure.runtimeType}',
-          );
-      }
+      await _syncCoordinator.sync(only: {SyncKind.swaps});
     } catch (error) {
-      log.warning(
-        '[OrderSwapWatcher] unexpected refresh failure: ${error.runtimeType}',
-      );
+      log.warning('[OrderSwapWatcher] refresh failed: ${error.runtimeType}');
     } finally {
-      _schedule(nextDelay);
+      _schedule(_pollInterval);
     }
   }
 

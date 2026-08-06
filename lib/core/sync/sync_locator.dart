@@ -7,11 +7,15 @@ class SyncLocator {
   /// Foreground-only. The background-task isolate uses its own GetIt and
   /// must not register the coordinator (its lifecycle listener has no
   /// widget binding to attach to in that isolate).
-  static void setup(GetIt locator) {
+  static void setup(
+    GetIt locator, {
+    required Future<void> Function() syncSwaps,
+  }) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         syncWalletUsecase: locator<SyncWalletUsecase>(),
+        syncSwaps: syncSwaps,
       ),
     );
   }

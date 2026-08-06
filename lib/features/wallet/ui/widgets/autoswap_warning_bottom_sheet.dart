@@ -3,12 +3,10 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:go_router/go_router.dart';
 
 class AutoSwapWarningBottomSheet extends StatelessWidget {
   const AutoSwapWarningBottomSheet({super.key});
@@ -111,8 +109,8 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
           Center(
             child: GestureDetector(
               onTap: () {
+                context.read<WalletBloc>().add(const DismissAutoSwapWarning());
                 Navigator.of(context).pop();
-                context.pushNamed(SettingsRoute.autoswapSettings.name);
               },
               child: BBText(
                 context.loc.autoswapInfoRemindLater,

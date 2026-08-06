@@ -36,6 +36,7 @@ class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,
     required SyncWalletUsecase syncWalletUsecase,
+    required this._syncSwaps,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
@@ -56,6 +57,7 @@ class SyncCoordinator {
 
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
+  final Future<void> Function() _syncSwaps;
 
   late final AppLifecycleListener _lifecycleListener;
   bool _isAppResumed = true;
@@ -226,6 +228,8 @@ class SyncCoordinator {
         for (final wallet in wallets) {
           await _syncWallet.execute(wallet);
         }
+      case SyncKind.swaps:
+        await _syncSwaps();
     }
   }
 

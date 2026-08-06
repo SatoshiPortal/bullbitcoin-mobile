@@ -6,12 +6,17 @@ import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
 class _MockSyncWallet extends Mock implements SyncWalletUsecase {}
+
+class _MockSyncSwaps extends Mock {
+  Future<void> call();
+}
 
 void main() {
   // SyncCoordinator's constructor reads WidgetsBinding.instance and attaches
@@ -20,14 +25,18 @@ void main() {
 
   late _MockGetWallets getWallets;
   late _MockSyncWallet syncWallet;
+  late _MockSyncSwaps syncSwaps;
   late SyncCoordinator coordinator;
 
   setUp(() {
     getWallets = _MockGetWallets();
     syncWallet = _MockSyncWallet();
+    syncSwaps = _MockSyncSwaps();
+    when(syncSwaps.call).thenAnswer((_) async {});
     coordinator = SyncCoordinator(
       getWalletsUsecase: getWallets,
       syncWalletUsecase: syncWallet,
+      syncSwaps: syncSwaps.call,
     );
   });
 
@@ -115,10 +124,68 @@ void main() {
 
     verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
     verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+    verify(syncSwaps.call).called(1);
     // A user gesture bypasses the throttle and re-runs every kind.
     await coordinator.sync(trigger: SyncTrigger.user);
 
     verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
     verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+    verify(syncSwaps.call).called(1);
+  });
+
+  test('runs bitcoin, liquid, then swaps', () async {
+    final order = <String>[];
+    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+      order.add('bitcoin');
+      return <Wallet>[];
+    });
+    when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
+      order.add('liquid');
+      return <Wallet>[];
+    });
+    when(syncSwaps.call).thenAnswer((_) async => order.add('swaps'));
+
+    await coordinator.sync(trigger: SyncTrigger.user);
+
+    expect(order, ['bitcoin', 'liquid', 'swaps']);
+  });
+
+  test('deduplicates concurrent swap syncs', () async {
+    final gate = Completer<void>();
+    when(syncSwaps.call).thenAnswer((_) => gate.future);
+
+    final first = coordinator.sync(
+      only: {SyncKind.swaps},
+      trigger: SyncTrigger.user,
+    );
+    final second = coordinator.sync(
+      only: {SyncKind.swaps},
+      trigger: SyncTrigger.user,
+    );
+    await pumpEventQueue();
+
+    verify(syncSwaps.call).called(1);
+    gate.complete();
+    await Future.wait([first, second]);
+  });
+
+  test('does not sync swaps while the app is paused', () async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => <Wallet>[]);
+    when(
+      () => getWallets.execute(onlyLiquid: true),
+    ).thenAnswer((_) async => <Wallet>[]);
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.paused,
+    );
+
+    await coordinator.sync(only: {SyncKind.swaps}, trigger: SyncTrigger.user);
+
+    verifyNever(syncSwaps.call);
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.resumed,
+    );
+    await pumpEventQueue();
   });
 }

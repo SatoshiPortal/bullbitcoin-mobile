@@ -124,6 +124,7 @@ graph TB
     WALLETS --> NETWORK
     WALLETS --> SECRETS
     WALLETS --> SETTINGS
+    WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
     %% Styling

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/payjoin_setup.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
@@ -37,6 +38,7 @@ import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -77,7 +79,17 @@ class AppLocator {
       startRecovery: startPayjoinRecovery,
     );
 
-    SyncLocator.setup(locator);
+    SyncLocator.setup(
+      locator,
+      syncSwaps: () async {
+        switch (await locator<SwapFacade>().refreshOrders()) {
+          case Ok():
+            return;
+          case Err(:final failure):
+            throw _SwapSyncException(failure.runtimeType);
+        }
+      },
+    );
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup(locator);
@@ -126,4 +138,10 @@ class AppLocator {
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
   }
+}
+
+final class _SwapSyncException implements Exception {
+  final Type failureType;
+
+  const _SwapSyncException(this.failureType);
 }
