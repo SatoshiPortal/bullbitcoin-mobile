@@ -158,7 +158,7 @@
   "wizardJourneyTip3": "Միացեք ձեր սեփական Bitcoin հանգույցին",
   "wizardJourneyTip4": "Միացեք ձեր սեփական Mempool հետազոտողին",
   "wizardJourneyTip5": "Փոխանցեք Bitcoin-ի և Liquid-ի միջև առանց KYC-ի",
-  "wizardJourneyTip6": "Անհատականացրեք ձեր autoswap կարգավորումները",
+  "wizardJourneyTip6": "Անհատականացրեք ձեր autotransfer կարգավորումները",
   "wizardJourneyTip7": "Անցեք Bitcoin (BTC) և Satoshis (sats) միջև",
   "wizardJourneyTip8": "Ստեղծեք air-gap գործարքներ ձեր ապարատային դրամապանակի համար",
   "@wizardPageIndicator": {

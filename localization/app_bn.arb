@@ -66,7 +66,7 @@
   },
   "transactionLabelSwapId": "বদল আইডি",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "dcaChooseWalletTitle": "বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@dcaChooseWalletTitle": {
@@ -106,7 +106,7 @@
   },
   "transactionSwapDescLnSendPending": "আপনার সোয়াপ শুরু হয়েছে। আপনার তহবিল লক করতে আমরা ব্লকচেইন ট্রান্স্যাকশন প্রচার করছি।",
   "@transactionSwapDescLnSendPending": {
-    "description": "Description for pending Lightning send swap"
+    "description": "Description for pending Lightning send transfer"
   },
   "payInstitutionNumber": "প্রতিষ্ঠান নম্বর",
   "@payInstitutionNumber": {
@@ -130,7 +130,7 @@
   },
   "sendSendNetworkFee": "পাঠানোর নেটওয়ার্ক ফি",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "exchangeDcaUnableToGetConfig": "DCA কনফিগারেশন পাওয়া যাচ্ছে না",
   "@exchangeDcaUnableToGetConfig": {
@@ -246,11 +246,11 @@
   },
   "transactionLabelPreimage": "পূর্বচিত্র",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "coreSwapsChainCanCoop": "ট্রান্সফার এখনই সম্পন্ন হবে।",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "importColdcardInstructionsStep2": "যদি প্রযোজ্য হয়, একটি পাসফ্রেজ দিন",
   "@importColdcardInstructionsStep2": {
@@ -270,7 +270,7 @@
   },
   "systemLabelAutoSwap": "স্বয়ংক্রিয় বিনিময়",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "fundExchangeSinpeTitle": "SINPE ট্রান্সফার",
   "@fundExchangeSinpeTitle": {
@@ -327,7 +327,7 @@
   },
   "transactionSwapDescChainPending": "আপনার স্থানান্তর তৈরি হয়েছে কিন্তু এখনও শুরু করা হয়নি।",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "coreScreensTransferFeeLabel": "হস্তান্তর ফি",
   "@coreScreensTransferFeeLabel": {
@@ -388,7 +388,7 @@
   },
   "receiveServerNetworkFees": "সার্ভার নেটওয়ার্ক ফি",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "importQrDeviceImporting": "ওয়ালেট আমদানি করা হচ্ছে..।",
   "@importQrDeviceImporting": {
@@ -441,7 +441,7 @@
   },
   "transactionFilterTransfer": "হস্তান্তর",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "recoverbullSelectVaultImportSuccess": "আপনার ভল্ট সফলভাবে ইমপোর্ট করা হয়েছে",
   "@recoverbullSelectVaultImportSuccess": {
@@ -571,7 +571,7 @@
   },
   "transactionDetailLabelSwapFees": "বদল ফি",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "broadcastSignedTxFee": "শুল্ক",
   "@broadcastSignedTxFee": {
@@ -630,7 +630,7 @@
   },
   "transactionStatusSwapExpired": "সোয়াপ মেয়াদ শেষ হয়েছে।",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "swapAmountPlaceholder": "0",
   "@swapAmountPlaceholder": {
@@ -936,9 +936,9 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "Swap মেয়াদোত্তীর্ণ",
+  "coreSwapsLnSendExpired": "Transfer মেয়াদোত্তীর্ণ",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
   "sellSendPaymentUsdBalance": "USD ব্যালেন্স",
   "@sellSendPaymentUsdBalance": {
@@ -1022,7 +1022,7 @@
   },
   "coreSwapsChainFailedRefunding": "ট্রান্সফার শীঘ্রই ফেরত দেওয়া হবে।",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "পরিমাণ নির্বাচন করুন",
   "@sendSelectAmount": {
@@ -1126,7 +1126,7 @@
   },
   "transactionSwapDescChainFailed": "আপনার স্থানান্তরে সমস্যা হয়েছে। ২৪ ঘণ্টার মধ্যে তহবিল যদি আপনার ওয়ালেটে ফিরে না আসে, তবে সাপোর্টে যোগাযোগ করুন।",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "testBackupWarningMessage": "ব্যাকআপ ছাড়া, আপনি শেষ পর্যন্ত আপনার টাকার অ্যাক্সেস হারাবেন। ব্যাকআপ নেওয়া অত্যন্ত গুরুত্বপূর্ণ।",
   "@testBackupWarningMessage": {
@@ -1154,7 +1154,7 @@
   },
   "autoswapWarningTitle": "নিম্নলিখিত সেটিংসসহ অটো সোয়াপ সক্রিয় রয়েছে:",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "seedsignerStep1": "আপনার SeedSigner ডিভাইস চালু করুন।",
   "@seedsignerStep1": {
@@ -1170,7 +1170,7 @@
   },
   "transactionSwapDescLnSendDefault": "আপনার সোয়াপ প্রক্রিয়াধীন। এই প্রক্রিয়াটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "recoverbullErrorMissingBytes": "Tor প্রতিক্রিয়ায় বাইট অনুপস্থিত। পুনরায় চেষ্টা করুন, তবে সমস্যা স্থায়ী হলে এটি Tor‑সহ কিছু ডিভাইসের জন্য একটি পরিচিত সমস্যা।",
   "@recoverbullErrorMissingBytes": {
@@ -1190,7 +1190,7 @@
   },
   "sendSendAmount": "পাঠানোর পরিমাণ",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "নির্বাচিত UTXO প্রয়োজনীয় পরিমাণ কভার করে না",
   "@sendSelectedUtxosInsufficient": {
@@ -1198,7 +1198,7 @@
   },
   "swapErrorBalanceTooLow": "সর্বনিম্ন সোয়াপ পরিমাণের জন্য ব্যালান্স যথেষ্ট নয়",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "তারা অন্য প্ল্যাটফর্মে বিটকয়েন পাঠাতে বলছে",
   "@fundExchangeWarningTactic5": {
@@ -1270,7 +1270,7 @@
   },
   "payRequiresSwap": "এই পেমেন্টের জন্য সোয়াপ প্রয়োজন",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "2FA এবং পাসওয়ার্ড পরিচালনা করুন",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -1282,7 +1282,7 @@
   },
   "transactionSwapDescLnSendFailed": "আপনার সোয়াপে সমস্যা হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে আসবে।",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "sendCoinAmount": "পরিমাণ: {amount}",
   "@sendCoinAmount": {
@@ -1315,7 +1315,7 @@
   },
   "sendErrorSwapFeesNotLoaded": "সুইপ ফি লোড করা হয়নি",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "কপি করুন",
   "@walletDetailsCopyButton": {
@@ -1371,7 +1371,7 @@
   },
   "transactionSwapDescLnSendExpired": "এই সোয়াপটির মেয়াদ শেষ হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "testBackupButton": "ব্যাকআপ পরীক্ষা",
   "@testBackupButton": {
@@ -1391,7 +1391,7 @@
   },
   "sendSwapWillTakeTime": "নিশ্চিত করতে কিছুটা সময় লাগবে।",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "autoswapSelectWalletError": "দয়া করে একটি প্রাপক বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@autoswapSelectWalletError": {
@@ -1500,7 +1500,7 @@
   },
   "systemLabelSwaps": "বিনিময়",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
   "sendOpenTheCamera": "ক্যামেরা খুলুন",
   "@sendOpenTheCamera": {
@@ -1512,7 +1512,7 @@
   },
   "sendSwapId": "বদল আইডি",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "electrumServerOnline": "সক্রিয়",
   "@electrumServerOnline": {
@@ -1536,7 +1536,7 @@
   },
   "receiveSendNetworkFee": "সেন্ড নেটওয়ার্ক ফি",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "autoswapRecipientWalletInfoText": "কোন বিটকয়েন ওয়ালেট স্থানান্তরিত তহবিল গ্রহণ করবে তা নির্বাচন করুন (আবশ্যক)",
   "@autoswapRecipientWalletInfoText": {
@@ -1605,11 +1605,11 @@
   },
   "autoswapWarningOkButton": "ঠিক আছে",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "swapTitle": "আভ্যন্তরীণ স্থানান্তর",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "sendOutputTooSmall": "ডাস্ট সীমার নিচে আউটপুট",
   "@sendOutputTooSmall": {
@@ -1694,7 +1694,7 @@
   },
   "sendErrorLiquidWalletRequired": "Liquid ওয়ালেট লিকুইড থেকে লাইটনিং স্যুইপের জন্য ব্যবহার করা আবশ্যক",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "arkDurationMinutes": "{minutes} মিনিট",
   "@arkDurationMinutes": {
@@ -1727,7 +1727,7 @@
   },
   "transactionSwapDescLnReceiveExpired": "এই সোয়াপটির মেয়াদ শেষ হয়েছে। প্রেরকের কাছে স্বয়ংক্রিয়ভাবে তহবিল ফিরে যাবে।",
   "@transactionSwapDescLnReceiveExpired": {
-    "description": "Description for expired Lightning receive swap"
+    "description": "Description for expired Lightning receive transfer"
   },
   "sellKYCApproved": "KYC যাচাই সম্পন্ন",
   "@sellKYCApproved": {
@@ -1763,11 +1763,11 @@
   },
   "swapTransferPendingMessage": "ট্রান্সফার প্রক্রিয়াধীন। বিটকয়েন লেনদেন নিশ্চিত হতে কিছু সময় লাগতে পারে। আপনি হোমে ফিরে অপেক্ষা করতে পারেন।",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "testBackupDecryptVault": "ভল্ট ডিক্রিপ্ট করুন",
   "@testBackupDecryptVault": {
@@ -1787,7 +1787,7 @@
   },
   "totalFeeLabel": "মোট ফি",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "আপনার কাস্টম Mempool সার্ভারের URL প্রবেশ করুন। সংরক্ষণের আগে সার্ভার যাচাই করা হবে।",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -1840,7 +1840,7 @@
   },
   "swapTransferTitle": "হস্তান্তর",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "testBackupSuccessTitle": "পরীক্ষা সফলভাবে সম্পন্ন হয়েছে!",
   "@testBackupSuccessTitle": {
@@ -1986,7 +1986,7 @@
   },
   "sendErrorAmountBelowMinimum": "ন্যূনতম স্যুইপ সীমারের নিচে পরিমাণ: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -2129,7 +2129,7 @@
   },
   "transactionLabelReceiveAmount": "প্রাপ্ত পরিমাণ",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "sendServerNetworkFees": "সার্ভার নেটওয়ার্ক ফি",
   "@sendServerNetworkFees": {
@@ -2230,7 +2230,7 @@
   },
   "coreSwapsLnSendPaid": "আপনার পেমেন্ট নিশ্চিত হওয়ার পরে ইনভয়েস পরিশোধ হবে।",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
   "fundExchangeCrBankTransferDescription2": "এই তহবিলগুলো আপনার অ্যাকাউন্টের ব্যালান্সে যোগ হবে।",
   "@fundExchangeCrBankTransferDescription2": {
@@ -2242,7 +2242,7 @@
   },
   "transactionLabelSwapStatus": "বিনিময় অবস্থা",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "বাতিল করুন",
   "@walletDeletionConfirmationCancelButton": {
@@ -2307,7 +2307,7 @@
   },
   "swapYouPay": "আপনি প্রদান করবেন",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "এনক্রিপ্টেড ভল্ট",
   "@encryptedVaultTitle": {
@@ -2349,7 +2349,7 @@
   },
   "sendErrorBitcoinWalletRequired": "Bitcoin ওয়ালেট বিটকয়েন থেকে লাইটনিং স্যুইপের জন্য ব্যবহার করা আবশ্যক",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "আপনার নিরাপত্তা PIN পরিচালনা করুন",
   "@pinCodeManageTitle": {
@@ -2365,7 +2365,7 @@
   },
   "transactionSwapDescLnSendCompleted": "লাইটনিং পেমেন্ট সফলভাবে পাঠানো হয়েছে! আপনার সোয়াপ এখন সম্পূর্ণ হয়েছে।",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "exchangeDcaCancelDialogCancelButton": "বাতিল",
   "@exchangeDcaCancelDialogCancelButton": {
@@ -2502,7 +2502,7 @@
   },
   "sendSwapRefundInProgress": "বিনিময় ফেরত প্রক্রিয়া চলছে",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "exchangeKycLimited": "সীমিত",
   "@exchangeKycLimited": {
@@ -2678,9 +2678,9 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "Swap এখনো শুরু হয়নি।",
+  "coreSwapsLnSendPending": "Transfer এখনো শুরু হয়নি।",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "recoverbullVaultCreatedSuccess": "ভল্ট সফলভাবে তৈরি হয়েছে",
   "@recoverbullVaultCreatedSuccess": {
@@ -2817,7 +2817,7 @@
   },
   "autoswapWarningDontShowAgain": "এই সতর্কীকরণটি আর দেখাবেন না।",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "sellInsufficientBalance": "ওয়ালেট ব্যালেন্স পর্যাপ্ত নয়",
   "@sellInsufficientBalance": {
@@ -2845,7 +2845,7 @@
   },
   "coreSwapsLnReceivePaid": "প্রেরক ইনভয়েস পরিশোধ করেছেন।",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
   "payInProgress": "পেমেন্ট চলছে!",
   "@payInProgress": {
@@ -2996,7 +2996,7 @@
   },
   "transferIdLabel": "হস্তান্তর নম্বর",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "একটি ওয়ালেট নির্বাচন করুন",
   "@paySelectActiveWallet": {
@@ -3037,7 +3037,7 @@
   },
   "sendSwapInitiated": "বদল শুরু হয়েছে",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "এটি খুবই গুরুত্বপূর্ণ যে আপনি ব্যাকআপ কীটি সেই একই জায়গায় সংরক্ষণ করবেন না যেখানে আপনি আপনার ব্যাকআপ ফাইল সংরক্ষণ করেন। এগুলো সর্বদা আলাদা ডিভাইস বা আলাদা ক্লাউড পরিষেবায় সংরক্ষণ করুন।",
   "@backupSettingsKeyWarningMessage": {
@@ -3188,9 +3188,9 @@
   "@coreScreensAmountLabel": {
     "description": "Label for amount field"
   },
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "transactionLabelCompletedAt": "সমাপ্তির সময়",
   "@transactionLabelCompletedAt": {
@@ -3206,11 +3206,11 @@
   },
   "swapTransferRefundInProgressTitle": "ট্রান্সফার রিফান্ড প্রক্রিয়াধীন",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "আপনি পাবেন",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "recoverbullSelectCustomLocationProvider": "নিজস্ব স্থান",
   "@recoverbullSelectCustomLocationProvider": {
@@ -3306,7 +3306,7 @@
   },
   "autoswapInfoSettingsButton": "সেটিংস কনফিগার করুন",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "withdrawRecipientsNewTab": "নতুন প্রাপক",
   "@withdrawRecipientsNewTab": {
@@ -3610,7 +3610,7 @@
   },
   "autoswapWarningCardSubtitle": "আপনার ইনস্ট্যান্ট পেমেন্ট ব্যালান্স ০.০২ BTC ছাড়িয়ে গেলে সোয়াপ ট্রিগার হবে।",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "transactionStatusConfirmed": "নিশ্চিত।",
   "@transactionStatusConfirmed": {
@@ -3622,7 +3622,7 @@
   },
   "transactionLabelSendAmount": "পাঠানোর পরিমাণ",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "testedStatus": "পরীক্ষিত",
   "@testedStatus": {
@@ -3650,7 +3650,7 @@
   },
   "transactionLabelReceiveNetworkFee": "প্রাপ্ত নেটওয়ার্ক ফি",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "bitboxScreenTroubleshootingTitle": "বিটবক্স02 সমস্যা সমাধান",
   "@bitboxScreenTroubleshootingTitle": {
@@ -3742,7 +3742,7 @@
   },
   "transactionSwapDescChainExpired": "এই স্থানান্তরের মেয়াদ শেষ হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
   "payValidating": "যাচাই করা হচ্ছে...",
   "@payValidating": {
@@ -3762,7 +3762,7 @@
   },
   "transactionLabelSwapStatusRefunded": "ফেরত দেওয়া হয়েছে",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "Lightning ইনভয়েস",
   "@receiveLightningInvoice": {
@@ -3830,7 +3830,7 @@
   },
   "sendErrorAmountAboveSwapLimits": "পরিমাণ স্যুইপ সীমার ওপর",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "এনক্রিপ্ট করা ভল্ট আপনার ব্যাকআপ চুরি করতে চাইলে চোরদের থেকে আপনাকে রক্ষা করে। এটি আপনাকে ভুলবশত আপনার ব্যাকআপ হারিয়ে ফেলতেও রক্ষা করে কারণ এটি আপনার ক্লাউড-এ সংরক্ষিত থাকবে। গুগল বা অ্যাপল-র মতো ক্লাউড স্টোরেজ প্রোভাইডাররা এনক্রিপশন পাসওয়ার্ড খুব শক্ত হওয়ায় আপনার বিটকয়েন অ্যাক্সেস করতে পারবে না। এই ঘটনাটির এক ছোট সম্ভাবনা রয়েছে যে আপনার ব্যাকআপ-এ এনক্রিপশন কী সংরক্ষণকারী ওয়েব সার্ভারটি compromised হতে পারে। এতে আপনার ক্লাউড অ্যাকাউন্টে থাকা ব্যাকআপের সুরক্ষা ঝুঁকিতে পড়তে পারে।",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -3838,7 +3838,7 @@
   },
   "coreSwapsChainCompletedRefunded": "ট্রান্সফার ফেরত দেওয়া হয়েছে।",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "payClabeHint": "CLABE নম্বর লিখুন",
   "@payClabeHint": {
@@ -3902,7 +3902,7 @@
   },
   "swapTransferRefundedTitle": "ট্রান্সফার ফেরত দেওয়া হয়েছে",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "BitBox ডিভাইসের সাথে সংযোগ স্থাপন করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার সংযোগটি পরীক্ষা করুন।",
   "@bitboxErrorConnectionFailed": {
@@ -4082,16 +4082,16 @@
   },
   "sendErrorAmountAboveMaximum": "সর্বোচ্চ স্যুইপ সীমারের ওপর পরিমাণ: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap সফলভাবে সম্পন্ন হয়েছে।",
+  "coreSwapsLnSendCompletedSuccess": "Transfer সফলভাবে সম্পন্ন হয়েছে।",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
   "importColdcardScanning": "স্ক্যান হচ্ছে..।",
   "@importColdcardScanning": {
@@ -4137,7 +4137,7 @@
   },
   "transactionSwapDescLnReceiveDefault": "আপনার সোয়াপ প্রক্রিয়াধীন। এই প্রক্রিয়াটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
   "@transactionSwapDescLnReceiveDefault": {
-    "description": "Default description for Lightning receive swap"
+    "description": "Default description for Lightning receive transfer"
   },
   "selectCoinsManuallyLabel": "কয়েনগুলো নিজে থেকে নির্বাচন করুন",
   "@selectCoinsManuallyLabel": {
@@ -4229,7 +4229,7 @@
   },
   "paySwapFee": "সোয়াপ ফি",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "এক্সচেঞ্জ অ্যাকাউন্ট সেটিংস",
   "@exchangeAccountSettingsTitle": {
@@ -4325,7 +4325,7 @@
   },
   "transactionSwapDoNotUninstall": "বদল সম্পূর্ণ না হওয়া পর্যন্ত অ্যাপটি আনইনস্টল করবেন না।",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "payDefaultCommentHint": "ডিফল্ট মন্তব্য লিখুন",
   "@payDefaultCommentHint": {
@@ -4377,7 +4377,7 @@
   },
   "sendTransferFee": "হস্তান্তর ফি",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "IBAN অ্যাকাউন্ট নম্বর (কলোনসের জন্য কেবল)",
   "@fundExchangeLabelIbanCrcOnly": {
@@ -4393,7 +4393,7 @@
   },
   "sendInitiatingSwap": "বদল শুরু হচ্ছে..।",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "Lightning Network",
   "@sellLightningNetwork": {
@@ -4476,7 +4476,7 @@
   },
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "ব্যাংক তথ্য",
   "@sellBankDetails": {
@@ -4504,7 +4504,7 @@
   },
   "coreSwapsStatusPending": "মুলতুবি",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "keystoneStep4": "স্ক্যান করতে সমস্যা হলে:",
   "@keystoneStep4": {
@@ -4512,7 +4512,7 @@
   },
   "autoswapTriggerAtBalanceInfoText": "আপনার ব্যালান্স এই সর্বোচ্চ ব্যালান্স ছাড়ালে অটো সোয়াপ ট্রিগার হবে।",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "exchangeLandingDisclaimerNotAvailable": "==WEBLATE_PART==\nBull Bitcoin মোবাইল অ্যাপে ক্রিপ্টোকারেন্সি এক্সচেঞ্জ সেবা উপলব্ধ নয়।",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -4524,11 +4524,11 @@
   },
   "swapErrorAmountExceedsMaximum": "পরিমাণ সর্বোচ্চ সোয়াপ পরিমাণ অতিক্রম করেছে",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
   "transactionLabelTotalSwapFees": "মোট বিনিময় ফি",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "ত্রুটি",
   "@errorLabel": {
@@ -4608,7 +4608,7 @@
   },
   "transactionDetailRetrySwap": "পুনরায় বদল করুন {action}",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
@@ -4618,11 +4618,11 @@
   "sendErrorSwapCreationFailed": "বদল তৈরি করতে ব্যর্থ হয়েছে।",
   "sendErrorInvoiceMustContainAmount": "চালানে একটি পরিমাণ থাকতে হবে",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorHardwareWalletCannotSwap": "হার্ডওয়্যার ওয়ালেট সোয়াপের জন্য ব্যবহার করা যাবে না।",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "ব্যালেন্স তথ্য উপলব্ধ নয়",
   "@arkNoBalanceData": {
@@ -4630,11 +4630,11 @@
   },
   "autoswapWarningCardTitle": "অটো সোয়াপ সক্রিয়",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "coreSwapsChainCompletedSuccess": "ট্রান্সফার সফলভাবে সম্পন্ন হয়েছে।",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "physicalBackupRecommendation": "শারীরিক ব্যাকআপ: ",
   "@physicalBackupRecommendation": {
@@ -4701,9 +4701,9 @@
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
   },
-  "coreSwapsLnReceiveFailed": "Swap ব্যর্থ হয়েছে।",
+  "coreSwapsLnReceiveFailed": "Transfer ব্যর্থ হয়েছে।",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "US ডলার (USD) এ অর্থ স্থানান্তর করুন",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -4885,7 +4885,7 @@
   },
   "autoswapWarningExplanation": "যখন আপনার ব্যালেন্স সর্বোচ্চ সীমা ছাড়িয়ে যাবে, তখন একটি সোয়াপ ট্রিগার হবে। লক্ষ্য ব্যালেন্সটি আপনার Instant Payments ওয়ালেটে রাখা হবে এবং বাকি পরিমাণটি আপনার Secure Bitcoin Wallet-এ সোয়াপ করা হবে।",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "recoverbullVaultRecoveryTitle": "Recoverbull ভল্ট পুনরুদ্ধার",
   "@recoverbullVaultRecoveryTitle": {
@@ -4901,11 +4901,11 @@
   },
   "transactionSwapDescChainClaimable": "লক-আপ ট্রান্স্যাকশনটি নিশ্চিত হয়েছে। আপনি এখন আপনার স্থানান্তর সম্পূর্ণ করতে তহবিল দাবি করছেন।",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
   "sendSwapDetails": "বদল বিবরণ",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "12টি শব্দের মাধ্যমে আপনার ওয়ালেট পুনরুদ্ধার করুন।",
   "@onboardingPhysicalBackupDescription": {
@@ -4981,7 +4981,7 @@
   },
   "transactionSwapDescChainRefundable": "স্থানান্তরটি ফেরত দেওয়া হবে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "sendPaymentWillTakeTime": "পেমেন্টে সময় লাগবে",
   "@sendPaymentWillTakeTime": {
@@ -5045,7 +5045,7 @@
   },
   "coreSwapsStatusInProgress": "চলমান",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "confirmAccessPinTitle": "অ্যাক্সেস নিশ্চিত করুন {pinOrPassword}",
   "@confirmAccessPinTitle": {
@@ -5248,7 +5248,7 @@
   },
   "swapConfirmTitle": "স্থানান্তর নিশ্চিত করুন",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "এই তথ্যটি ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -5452,11 +5452,11 @@
   },
   "transactionSwapDescChainCompleted": "আপনার স্থানান্তরটি সফলভাবে সম্পন্ন হয়েছে! এখন আপনার ওয়ালেটে তহবিলগুলো উপলব্ধ হওয়ার কথা।",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
-  "coreSwapsLnSendRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "coreSwapsLnSendRefundable": "Transfer ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "backupInstruction2": "ব্যাকআপ ছাড়া, যদি আপনি আপনার ফোন হারিয়ে ফেলেন বা ভেঙে ফেলেন, অথবা Bull Bitcoin অ্যাপটি আনইনস্টল করেন, আপনার বিটকয়েন চিরতরে হারিয়ে যাবে।",
   "@backupInstruction2": {
@@ -5631,7 +5631,7 @@
   },
   "sendErrorInsufficientBalanceForSwap": "Liquid-এর মাধ্যমে এই স্যুইপটি পরিশোধ করার জন্য পর্যাপ্ত ব্যালেন্স নেই এবং Bitcoin-এর মাধ্যমে পরিশোধ করার জন্য স্যুইপ সীমার মধ্যে নয়।",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "Blockstream Jade PSBT নির্দেশনা",
   "@psbtFlowJadeTitle": {
@@ -5721,9 +5721,9 @@
   "@backupWalletErrorFileSystemPath": {
     "description": "Error when file system path selection fails"
   },
-  "coreSwapsLnSendCanCoop": "Swap এখনই সম্পন্ন হবে।",
+  "coreSwapsLnSendCanCoop": "Transfer এখনই সম্পন্ন হবে।",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "electrumServerNotUsed": "ব্যবহৃত নয়",
   "@electrumServerNotUsed": {
@@ -5852,9 +5852,9 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
+  "coreSwapsLnReceiveClaimable": "Transfer দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "pinButtonCreate": "পিন তৈরি করুন",
   "@pinButtonCreate": {
@@ -5970,9 +5970,9 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Swap এখনই সম্পন্ন হবে।",
+  "coreSwapsLnReceiveCanCoop": "Transfer এখনই সম্পন্ন হবে।",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "addressViewAddressesTitle": "ঠিকানাসমূহ",
   "@addressViewAddressesTitle": {
@@ -5988,7 +5988,7 @@
   },
   "coreSwapsChainPending": "ট্রান্সফার এখনো শুরু হয়নি।",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "importWalletImportWatchOnly": "- শুধুমাত্র পর্যবেক্ষণ ওয়ালেট আমদানি করুন",
   "@importWalletImportWatchOnly": {
@@ -6036,7 +6036,7 @@
   },
   "autoswapInfoTitle": "অটো সোয়াপ সক্রিয়",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "transactionLabelPayjoinStatus": "Payjoin অবস্থা",
   "@transactionLabelPayjoinStatus": {
@@ -6078,9 +6078,9 @@
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "coreSwapsLnSendFailed": "Swap ব্যর্থ হয়েছে।",
+  "coreSwapsLnSendFailed": "Transfer ব্যর্থ হয়েছে।",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "recoverbullErrorDecryptFailed": "ভল্টটি ডিক্রিপ্ট করতে ব্যর্থ হয়েছে\n==WEBLATE_PART==",
   "@recoverbullErrorDecryptFailed": {
@@ -6092,7 +6092,7 @@
   },
   "totalFeesLabel": "মোট ফি",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "আপনার পেমেন্ট শুরু হয়েছে এবং আপনার লেনদেনটি চেইনভিত্তিক ১টি নিশ্চিতকরণ পেলে প্রাপক অর্থটি পাবে।",
   "@payInProgressDescription": {
@@ -6154,7 +6154,7 @@
   },
   "coreSwapsChainRefundable": "ট্রান্সফার ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "buyInputCompleteKyc": "KYC সম্পূর্ণ করুন",
   "@buyInputCompleteKyc": {
@@ -6162,7 +6162,7 @@
   },
   "transactionFeesTotalDeducted": "পাঠানো পরিমাণ থেকে মোট ফি কাটা হয়েছে।",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "autoswapMaxFee": "সর্বোচ্চ ট্রান্সফার ফি",
   "@autoswapMaxFee": {
@@ -6429,13 +6429,13 @@
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails"
   },
-  "receiveBoltzSwapFee": "Boltz Swap ফি",
+  "receiveBoltzSwapFee": "Boltz Transfer ফি",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "swapInfoBanner": "ওয়ালেটগুলোর মধ্যে বিটকয়েন মসৃণভাবে স্থানান্তর করুন। দৈনন্দিন খরচের জন্য কেবল Instant Payment Wallet-এ অর্থ রাখুন।",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "payRBFEnabled": "RBF চালু হয়েছে",
   "@payRBFEnabled": {
@@ -6455,7 +6455,7 @@
   },
   "sendSwapTimeout": "বদল সময় শেষ হয়েছে",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "নেটওয়ার্ক ফি",
   "@networkFeesLabel": {
@@ -6467,7 +6467,7 @@
   },
   "sendSwapInProgressBitcoin": "বিনিময় প্রক্রিয়াধীন। বিটকয়েন লেনদেন নিশ্চিত হতে কিছু সময় লাগতে পারে। আপনি বাড়ি ফিরে অপেক্ষা করতে পারেন।",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "buySelfie": "আইডির সাথে সেলফি",
   "@buySelfie": {
@@ -6606,13 +6606,13 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap ফেরত দেওয়া হয়েছে।",
+  "coreSwapsLnSendCompletedRefunded": "Transfer ফেরত দেওয়া হয়েছে।",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
   "transactionSwapInfoClaimableSwap": "বদলটি কয়েক সেকেন্ডের মধ্যে স্বয়ংক্রিয়ভাবে সম্পন্ন হবে। যদি না হয়, তবে 'বদল দাবি পুনরায় চেষ্টা করুন' বোতামে ক্লিক করে ম্যানুয়ালা দাবি করার চেষ্টা করতে পারেন।",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "mempoolCustomServerLabel": "কাস্টম",
   "@mempoolCustomServerLabel": {
@@ -6879,7 +6879,7 @@
   },
   "coreSwapsChainFailed": "ট্রান্সফার ব্যর্থ হয়েছে।",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "নোট যোগ করুন",
   "@transactionDetailAddNote": {
@@ -7063,9 +7063,9 @@
       }
     }
   },
-  "walletDeletionErrorOngoingSwaps": "চলমান swap-সহ একটি ওয়ালেট মুছতে পারবেন না।",
+  "walletDeletionErrorOngoingSwaps": "চলমান transfer-সহ একটি ওয়ালেট মুছতে পারবেন না।",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "BitBox-এ সংযোগ করা হচ্ছে",
   "@bitboxScreenConnecting": {
@@ -7077,7 +7077,7 @@
   },
   "transactionLabelServerNetworkFees": "সার্ভার নেটওয়ার্ক ফি",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "importQrDeviceSeedsignerStep10": "সেটআপ সম্পন্ন",
   "@importQrDeviceSeedsignerStep10": {
@@ -7174,7 +7174,7 @@
   },
   "coreSwapsChainPaid": "ট্রান্সফার প্রদানকারীর পেমেন্ট নিশ্চিতের জন্য অপেক্ষা করা হচ্ছে। এটি সম্পন্ন হতে কিছু সময় লাগতে পারে।",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "arkConfirmed": "নিশ্চিত।",
   "@arkConfirmed": {
@@ -7236,7 +7236,7 @@
   },
   "transactionSwapDescLnSendPaid": "আপনার অন-চেইন ট্রান্স্যাকশন প্রচারিত হয়েছে। একটি নিশ্চিতকরণের পরে লাইটনিং পেমেন্ট পাঠানো হবে।",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "exchangeFileUploadAddMoreFiles": "আরো ফাইল যোগ করুন",
   "@exchangeFileUploadAddMoreFiles": {
@@ -7244,7 +7244,7 @@
   },
   "transactionSwapDescChainDefault": "আপনার স্থানান্তর প্রক্রিয়াধীন। এটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "onboardingBullBitcoin": "Bull Bitcoin",
   "@onboardingBullBitcoin": {
@@ -7252,7 +7252,7 @@
   },
   "coreSwapsChainClaimable": "ট্রান্সফার দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "dcaNetworkLightning": "লাইটনিং নেটওয়ার্ক",
   "@dcaNetworkLightning": {
@@ -7288,7 +7288,7 @@
   },
   "transactionLabelTransferId": "হস্তান্তর নম্বর",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "পাঠান",
   "@sendTitle": {
@@ -7371,7 +7371,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swap নিশ্চিত হতে সময় লাগবে।",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfer নিশ্চিত হতে সময় লাগবে।",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7417,7 +7417,7 @@
   },
   "sendSwapCancelled": "বদল বাতিল হয়েছে",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "কখনও নয় ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -7434,7 +7434,7 @@
   },
   "swapTransferCompletedTitle": "ট্রান্সফার সম্পন্ন",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "torSettingsStatusDisconnected": "সংযোগ বিচ্ছিন্ন",
   "@torSettingsStatusDisconnected": {
@@ -7502,11 +7502,11 @@
   },
   "sendTypeSwap": "সুইপ",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sendErrorAmountExceedsMaximum": "পরিমাণ সর্বোচ্চ সোয়াপ পরিমাণ অতিক্রম করেছে",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "লেনদেন সফলভাবে সই করা হয়েছে",
   "@bitboxActionSignTransactionSuccess": {
@@ -7600,7 +7600,7 @@
   },
   "sendNetworkFeesLabel": "নেটওয়ার্ক ফি পাঠান",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "payWhichWallet": "আপনি কোন ওয়ালেট থেকে পেমেন্ট করতে চান?",
   "@payWhichWallet": {
@@ -7608,7 +7608,7 @@
   },
   "autoswapBaseBalanceInfoText": "আপনার ইনস্ট্যান্ট পেমেন্ট ওয়ালেটের ব্যালান্স অটো সোয়াপের পরে এই লক্ষ্য ব্যালান্সে ফিরে যাবে।",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "recoverbullSelectDecryptVault": "ভল্ট ডিক্রিপ্ট করুন",
   "@recoverbullSelectDecryptVault": {
@@ -7654,7 +7654,7 @@
   },
   "transactionSwapInfoRefundableSwap": "এই বদলটি কয়েক সেকেন্ডের মধ্যে স্বয়ংক্রিয়ভাবে ফেরত দেওয়া হবে। যদি না হয়, তবে 'বদল ফেরত দাবি পুনরায় চেষ্টা করুন' বোতামে ক্লিক করে ম্যানুয়াল ফেরতের চেষ্টা করতে পারেন।",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "payCancelPayment": "পেমেন্ট বাতিল করুন",
   "@payCancelPayment": {
@@ -7969,7 +7969,7 @@
   },
   "transactionFeesDeductedFrom": "পাঠানো পরিমাণ থেকে এই ফি কাটা হবে।",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "buyConfirmYouPay": "আপনি পরিশোধ করবেন",
   "@buyConfirmYouPay": {
@@ -8050,7 +8050,7 @@
   },
   "transactionLabelSendNetworkFees": "পাঠানোর জন্য নেটওয়ার্ক ফি",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "transactionLabelAddress": "ঠিকানা",
   "@transactionLabelAddress": {
@@ -8124,7 +8124,7 @@
   },
   "coreSwapsChainExpired": "ট্রান্সফার মেয়াদোত্তীর্ণ",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "ডিফল্ট মন্তব্য (ঐচ্ছিক)",
   "@payDefaultCommentOptional": {
@@ -8305,7 +8305,7 @@
   },
   "coreSwapsStatusFailed": "ব্যর্থ",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "transactionFilterSell": "বিক্রি",
   "@transactionFilterSell": {
@@ -8465,7 +8465,7 @@
   },
   "autoswapWarningDescription": "অটো সোয়াপ নিশ্চিত করে আপনি ভুল করে ইনস্ট্যান্ট পেমেন্ট ওয়ালেটে বেশি টাকা রাখবেন না, যা দীর্ঘমেয়াদি সংরক্ষণের জন্য নিরাপদ নয়।",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "fundExchangeSinpeAddedToBalance": "==WEBLATE_PART==\nপেমেন্ট পাঠালে এটি আপনার অ্যাকাউন্টে ব্যালান্সে যোগ হবে।",
   "@fundExchangeSinpeAddedToBalance": {
@@ -8501,7 +8501,7 @@
   },
   "transactionDetailLabelSwapStatus": "বিনিময় অবস্থা",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "পাসপোর্ট এরপর আপনাকে এর নিজস্ব QR কোড দেখাবে।",
   "@passportStep10": {
@@ -8727,9 +8727,9 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "coreSwapsLnReceiveRefundable": "Transfer ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "bitcoinSettingsElectrumServerTitle": "Electrum সার্ভার সেটিংস",
   "@bitcoinSettingsElectrumServerTitle": {
@@ -8818,7 +8818,7 @@
   },
   "sendConfirmSwap": "বদল নিশ্চিত করুন",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "লগ আউট - শীঘ্রই আসছে",
   "@exchangeLogoutComingSoon": {
@@ -8895,7 +8895,7 @@
   },
   "swapContinue": "চালিয়ে যান",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "arkSettleButton": "নিষ্পত্তি",
   "@arkSettleButton": {
@@ -8950,9 +8950,9 @@
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
   },
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Bitcoin সেটিংস",
   "@settingsBitcoinSettingsTitle": {
@@ -8980,7 +8980,7 @@
   },
   "coreSwapsActionClose": "বন্ধ করুন",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "kruxStep6": "স্ক্যান করতে সমস্যা হলে:",
   "@kruxStep6": {
@@ -9260,7 +9260,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "পরিমাণ স্যুইপ সীমার নিচে",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "ব্যক্তিগত পেমেন্ট",
   "@payPrivatePayment": {
@@ -9306,7 +9306,7 @@
   },
   "autoswapWarningSettingsLink": "অটো সোয়াপ সেটিংসে যান",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "payLiquidNetwork": "লিকুইড নেটওয়ার্ক",
   "@payLiquidNetwork": {
@@ -9639,9 +9639,9 @@
       }
     }
   },
-  "coreSwapsLnSendFailedRefunding": "Swap শীঘ্রই ফেরত দেওয়া হবে।",
+  "coreSwapsLnSendFailedRefunding": "Transfer শীঘ্রই ফেরত দেওয়া হবে।",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
   "dcaWalletTypeLightning": "লাইটনিং নেটওয়ার্ক (LN)",
   "@dcaWalletTypeLightning": {
@@ -9759,9 +9759,9 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "Swap এখনো শুরু হয়নি।",
+  "coreSwapsLnReceivePending": "Transfer এখনো শুরু হয়নি।",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "arkSendConfirmMessage": "পাঠানোর আগে আপনার লেনদেনের বিবরণ নিশ্চিত করুন।",
   "@arkSendConfirmMessage": {
@@ -9781,7 +9781,7 @@
   },
   "transactionSwapInfoFailedExpired": "আপনার যদি কোনো প্রশ্ন বা উদ্বেগ থাকে, সহায়তার জন্য দয়া করে সাপোর্টে যোগাযোগ করুন।",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "memorizePasswordWarning": "আপনি আপনার ওয়ালেটের অ্যাক্সেস পুনরুদ্ধার করতে এই {pinOrPassword}টি স্মরণ রাখতে হবে। এটি কমপক্ষে ৬ অঙ্কের হতে হবে। আপনি যদি এই {pinOrPassword}টি হারিয়ে ফেলেন তবে আপনি আপনার ব্যাকআপ পুনরুদ্ধার করতে পারবেন না।",
   "@memorizePasswordWarning": {
@@ -9866,7 +9866,7 @@
   },
   "coreSwapsStatusExpired": "মেয়াদোত্তীর্ণ",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "fundExchangeCanadaPostStep3": "৩. ক্যাশিয়ারকে আপনি লোড করতে চান সেই পরিমাণটি বলুন",
   "@fundExchangeCanadaPostStep3": {
@@ -10042,9 +10042,9 @@
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "Liquid লেনদেন নম্বর",
   "@transactionLabelLiquidTransactionId": {
@@ -10064,16 +10064,16 @@
   },
   "sendSwapFeeEstimate": "আনুমানিক বদল ফি: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnReceiveExpired": "Swap মেয়াদোত্তীর্ণ।",
+  "coreSwapsLnReceiveExpired": "Transfer মেয়াদোত্তীর্ণ।",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
   "fundExchangeOnlineBillPaymentLabelBillerName": "এই নামে আপনার ব্যাংকের বিলার তালিকা থেকে খুঁজুন",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
@@ -10274,7 +10274,7 @@
   },
   "paySwapFailed": "বদল ব্যর্থ",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "autoswapMaxFeeLabel": "সর্বোচ্চ ট্রান্সফার ফি",
   "@autoswapMaxFeeLabel": {
@@ -10406,9 +10406,9 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "Swap সম্পন্ন হয়েছে।",
+  "coreSwapsLnReceiveCompleted": "Transfer সম্পন্ন হয়েছে।",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "backupWalletErrorGoogleDriveSave": "গুগল ড্রাইভে সংরক্ষণ করতে ব্যর্থ হয়েছে",
   "@backupWalletErrorGoogleDriveSave": {
@@ -10551,7 +10551,7 @@
   },
   "transactionSwapDescChainPaid": "আপনার লেনদেন প্রচারিত হয়েছে। আমরা এখন লক-আপ ট্রান্স্যাকশনটি নিশ্চিত হওয়ার অপেক্ষায় রয়েছি।",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "mempoolSettingsUseForFeeEstimation": "ফি অনুমানের জন্য ব্যবহার করুন",
   "@mempoolSettingsUseForFeeEstimation": {
@@ -10563,7 +10563,7 @@
   },
   "coreSwapsStatusCompleted": "সম্পন্ন",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "fundExchangeCrIbanUsdDescriptionEnd": "ফান্ডগুলি আপনার অ্যাকাউন্ট ব্যালান্সে যোগ হবে।",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
@@ -10584,7 +10584,7 @@
   },
   "swapProgressTitle": "আভ্যন্তরীণ স্থানান্তর",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "pinButtonConfirm": "নিশ্চিত করুন",
   "@pinButtonConfirm": {
@@ -10617,7 +10617,7 @@
   },
   "autoswapInfoDismissButton": "বুঝেছি, আর দেখাবো না",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "importQrDevicePassportStep12": "সেটআপ সম্পন্ন।",
   "@importQrDevicePassportStep12": {
@@ -10716,7 +10716,7 @@
   },
   "transactionStatusSwapFailed": "আদল-বদল ব্যর্থ",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "আইনি সনদ নম্বর",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -10732,11 +10732,11 @@
   },
   "transactionLabelBoltzSwapFee": "Boltz বদল ফি",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
   "transactionSwapDescLnReceiveFailed": "আপনার সোয়াপ নিয়ে সমস্যা হয়েছে। ২৪ ঘণ্টার মধ্যে তহবিল যদি ফিরেফেরা না আসে, তবে দয়া করে সাপোর্টে যোগাযোগ করুন।",
   "@transactionSwapDescLnReceiveFailed": {
-    "description": "Description for failed Lightning receive swap"
+    "description": "Description for failed Lightning receive transfer"
   },
   "sellOrderNumber": "অর্ডার নম্বর",
   "@sellOrderNumber": {
@@ -10757,7 +10757,7 @@
   },
   "transactionDetailSwapProgress": "বদলের অগ্রগতি",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "arkAboutDurationMinute": "{minutes} মিনিট",
   "@arkAboutDurationMinute": {
@@ -10790,7 +10790,7 @@
   },
   "swapTransferPendingTitle": "ট্রান্সফার প্রক্রিয়াধীন",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "কাস্টম সার্ভার সফলভাবে সংরক্ষিত হয়েছে",
   "@mempoolCustomServerSaveSuccess": {
@@ -10798,7 +10798,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "সর্বনিম্ন সোয়াপ পরিমাণের জন্য ব্যালান্স যথেষ্ট নয়",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "testBackupSuccessMessage": "আপনি হারিয়ে যাওয়া বিটকয়েন ওয়ালেটের অ্যাক্সেস পুনরুদ্ধার করতে সক্ষম",
   "@testBackupSuccessMessage": {
@@ -11046,7 +11046,7 @@
   },
   "sendSwapInProgressInvoice": "বিনিময় প্রক্রিয়াধীন। চালানটি কয়েক সেকেন্ডের মধ্যে পরिशোধ হবে।",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "গ্রহণ করুন",
   "@arkReceiveButton": {
@@ -11074,15 +11074,15 @@
   },
   "paySwapInProgress": "সোয়াপ চলছে..।",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "সব তিনটি ওয়ালেট টাইপ সিঙ্ক হচ্ছে এবং তাদের ব্যালান্স ও লেনদেনগুলো শীঘ্রই দেখা যাবে। আপনি সিঙ্ক সম্পূর্ণ হওয়া পর্যন্ত অপেক্ষা করতে পারেন অথবা কোন ওয়ালেট টাইপটি আপনি ইমপোর্ট করতে চান তা নিশ্চিত থাকলে ইমপোর্ট করতে পারেন।",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
+  "coreSwapsLnSendClaimable": "Transfer দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "fundExchangeMethodCrIbanCrcSubtitle": "CRC-এ কোস্টা রিকার কলোনে তহবিল স্থানান্তর\n==WEBLATE_PART==",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
@@ -11126,7 +11126,7 @@
   },
   "walletAutoTransferBlockedTitle": "স্বয়ংক্রিয় স্থানান্তর ব্লক করা হয়েছে",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade নির্দেশাবলী",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -11211,7 +11211,7 @@
   },
   "coreSwapsActionRefund": "ফেরত",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "payInsufficientBalance": "নির্বাচিত ওয়ালেটে এই পেমেন্ট অর্ডারটি সম্পূর্ণ করতে পর্যাপ্ত টাকা নেই।",
   "@payInsufficientBalance": {
@@ -11223,7 +11223,7 @@
   },
   "sendSwapTimeEstimate": "আনুমানিক সময়: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -11256,7 +11256,7 @@
   },
   "coreSwapsActionClaim": "দাবি করুন",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "আপনার BitBox ডিভাইসটি এখন আনলক হয়েছে এবং ব্যবহার করতে প্রস্তুত।",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -11365,7 +11365,7 @@
   },
   "sendSwapAmount": "বদল পরিমাণ",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "autoswapTitle": "স্বয়ংক্রিয় স্থানান্তর সেটিংস",
   "@autoswapTitle": {
@@ -11402,7 +11402,7 @@
   },
   "autoswapSettingsTitle": "স্বয়ংক্রিয় স্থানান্তর সেটিংস",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "প্রথম নাম লিখুন",
   "@payFirstNameHint": {
@@ -11430,11 +11430,11 @@
   },
   "transactionDetailLabelSwapId": "বদল আইডি",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "sendSwapFailed": "বিনিময় ব্যর্থ হয়েছে। আপনার ফেরতটি শীঘ্রই প্রক্রিয়াকৃত হবে।",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন",
   "@sellNetworkError": {
@@ -11881,7 +11881,7 @@
   },
   "sendReceiveAmount": "প্রাপ্ত পরিমাণ",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "পুনরুদ্ধার পরীক্ষা",
   "@recoverbullTestRecovery": {
@@ -12013,7 +12013,7 @@
   },
   "paySwapCompleted": "বদল সম্পন্ন",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "বিবরণ (ঐচ্ছিক)",
   "@receiveDescription": {
@@ -12217,7 +12217,7 @@
   "wizardJourneyTip3": "আপনার নিজস্ব Bitcoin নোডের সাথে সংযোগ করুন",
   "wizardJourneyTip4": "আপনার নিজস্ব Mempool এক্সপ্লোরারের সাথে সংযোগ করুন",
   "wizardJourneyTip5": "KYC ছাড়াই Bitcoin এবং Liquid এর মধ্যে স্থানান্তর করুন",
-  "wizardJourneyTip6": "আপনার autoswap সেটিংস কাস্টমাইজ করুন",
+  "wizardJourneyTip6": "আপনার autotransfer সেটিংস কাস্টমাইজ করুন",
   "wizardJourneyTip7": "Bitcoin (BTC) এবং Satoshis (sats) এর মধ্যে পরিবর্তন করুন",
   "wizardJourneyTip8": "আপনার হার্ডওয়্যার ওয়ালেটের জন্য air-gap লেনদেন তৈরি করুন",
   "@wizardPageIndicator": {
@@ -12399,39 +12399,39 @@
   },
   "transactionSwapProgressInitiated": "শুরু হয়েছে",
   "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
+    "description": "Transfer progress step: initiated"
   },
   "transactionSwapProgressPaymentMade": "পেমেন্ট\nসম্পন্ন",
   "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
+    "description": "Transfer progress step: payment made"
   },
   "transactionSwapProgressFundsClaimed": "তহবিল\nদাবি করা হয়েছে",
   "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
+    "description": "Transfer progress step: funds claimed"
   },
   "transactionSwapProgressBroadcasted": "প্রচারিত",
   "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
+    "description": "Transfer progress step: transaction broadcasted"
   },
   "transactionSwapProgressInvoicePaid": "চালান\nপরিশোধিত",
   "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
+    "description": "Transfer progress step: Lightning invoice paid"
   },
   "transactionSwapProgressConfirmed": "নিশ্চিত হয়েছে",
   "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
+    "description": "Transfer progress step: confirmed"
   },
   "transactionSwapProgressClaim": "দাবি",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "transactionSwapProgressCompleted": "সম্পন্ন",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "transactionSwapProgressInProgress": "চলমান",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "transactionSwapStatusTransferStatus": "ট্রান্সফার স্ট্যাটাস",
   "@transactionSwapStatusTransferStatus": {
@@ -12439,23 +12439,23 @@
   },
   "transactionSwapStatusSwapStatus": "সোয়াপ স্ট্যাটাস",
   "@transactionSwapStatusSwapStatus": {
-    "description": "Header for swap status section"
+    "description": "Header for transfer status section"
   },
   "transactionSwapDescLnReceivePending": "আপনার সোয়াপ শুরু হয়েছে। আমরা লাইটনিং নেটওয়ার্কে পেমেন্ট পাওয়ার অপেক্ষায় আছি।",
   "@transactionSwapDescLnReceivePending": {
-    "description": "Description for pending Lightning receive swap"
+    "description": "Description for pending Lightning receive transfer"
   },
   "transactionSwapDescLnReceivePaid": "পেমেন্ট পাওয়া গেছে! আমরা এখন আপনার ওয়ালেটে অন-চেইন ট্রানজেকশন প্রচার করছি।",
   "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
+    "description": "Description for paid Lightning receive transfer"
   },
   "transactionSwapDescLnReceiveClaimable": "অন-চেইন ট্রানজেকশন নিশ্চিত হয়েছে। আমরা এখন আপনার সোয়াপ সম্পন্ন করতে তহবিল দাবি করছি।",
   "@transactionSwapDescLnReceiveClaimable": {
-    "description": "Description for claimable Lightning receive swap"
+    "description": "Description for claimable Lightning receive transfer"
   },
   "transactionSwapDescLnReceiveCompleted": "আপনার সোয়াপ সফলভাবে সম্পন্ন হয়েছে! তহবিল এখন আপনার ওয়ালেটে পাওয়া উচিত।",
   "@transactionSwapDescLnReceiveCompleted": {
-    "description": "Description for completed Lightning receive swap"
+    "description": "Description for completed Lightning receive transfer"
   },
   "fundExchangeScamConsentError": "আপনার সম্মতি নিবন্ধন করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
   "@fundExchangeScamConsentError": {
@@ -12463,7 +12463,7 @@
   },
   "autoswapActiveCardTitle": "অটোসোয়াপ সক্রিয় আছে",
   "@autoswapActiveCardTitle": {
-    "description": "Title text shown when autoswap is enabled and active"
+    "description": "Title text shown when autotransfer is enabled and active"
   },
   "autoswapWarningExplanationBold": "স্বয়ংক্রিয়ভাবে",
   "@autoswapWarningExplanationBold": {
@@ -12471,7 +12471,7 @@
   },
   "autoswapInfoConsentMessage": "অটোসোয়াপ বর্তমানে সক্রিয় কিন্তু আপনার সম্মতি না পাওয়া পর্যন্ত চালু হবে না। এটি চালু রাখতে চান?",
   "@autoswapInfoConsentMessage": {
-    "description": "Consent message explaining autoswap status"
+    "description": "Consent message explaining autotransfer status"
   },
   "deleteLogsTitle": "লগ মুছুন",
   "@deleteLogsTitle": {

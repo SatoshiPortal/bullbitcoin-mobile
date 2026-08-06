@@ -60,111 +60,111 @@
   },
   "coreSwapsStatusPending": "В очакване",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "coreSwapsStatusInProgress": "В процес",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "coreSwapsStatusCompleted": "Завършено",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "coreSwapsStatusExpired": "Изтекъл",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "coreSwapsStatusFailed": "Неуспешно",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "coreSwapsActionClaim": "Вземи",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "coreSwapsActionClose": "Затвори",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "coreSwapsActionRefund": "Възстановяване",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "coreSwapsLnReceivePending": "Обмена все още не е инициализиран.",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "coreSwapsLnReceivePaid": "Изпращачът е платил фактурата.",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
   "coreSwapsLnReceiveClaimable": "Обменът е готов за получаване.",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "coreSwapsLnReceiveRefundable": "Обмена е готов за възстановяване.",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "coreSwapsLnReceiveCanCoop": "Обмена ще завърши всеки момент.",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "coreSwapsLnReceiveFailed": "Обмена се провали.",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "coreSwapsLnSendPending": "Обмена все още не е инициализиран.",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "coreSwapsLnSendPaid": "Фактурата ще бъде платена, след като вашето плащане получи потвърждение.",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
   "coreSwapsLnSendClaimable": "Обменът е готов за получаване.",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "coreSwapsLnSendRefundable": "Обмена е готов за възстановяване.",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "coreSwapsLnSendCanCoop": "Обмена ще завърши всеки момент.",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "coreSwapsLnSendCompletedRefunded": "Обмена е възстановен.",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
   "coreSwapsLnSendFailed": "Обмена се провали.",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "coreSwapsChainPending": "Трансферът все още не е инициализиран.",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "coreSwapsChainPaid": "Изчакване на плащането от доставчика на трансфера за получаване на потвърждение. Това може да отнеме известно време.",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "coreSwapsChainClaimable": "Прехвърлянето е готово за получаване.",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "coreSwapsChainRefundable": "Прехвърлянето е готово за възстановяване.",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "coreSwapsChainCanCoop": "Транзакцията ще завърши всеки момент.",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "coreSwapsChainCompletedRefunded": "Преводът е възстановен.",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "coreWalletTransactionStatusPending": "В очакване",
   "@coreWalletTransactionStatusPending": {
@@ -188,7 +188,7 @@
   },
   "transactionStatusSwapFailed": "Обмена се провали.",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "transactionLabelCompletedAt": "Завършено",
   "@transactionLabelCompletedAt": {
@@ -204,15 +204,15 @@
   },
   "transactionSwapProgressClaim": "Вземи",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "transactionSwapProgressCompleted": "Завършено",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "transactionSwapProgressInProgress": "В процес",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "transactionDetailLabelCompletedAt": "Завършено",
   "@transactionDetailLabelCompletedAt": {
@@ -283,7 +283,7 @@
   },
   "paySwapFailed": "Обмена се провали.",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "payFailedPayments": "Неуспешно",
   "@payFailedPayments": {
@@ -358,7 +358,7 @@
   },
   "transactionLabelSwapId": "ID за размяна",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "dcaChooseWalletTitle": "Изберете портфейл за Биткойн",
   "@dcaChooseWalletTitle": {
@@ -402,7 +402,7 @@
   },
   "sendSendNetworkFee": "Такса за мрежата при изпращане",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "psbtFlowClickScan": "Сканирайте",
   "@psbtFlowClickScan": {
@@ -479,7 +479,7 @@
   },
   "transactionLabelPreimage": "Предобраз",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "satsSuffix": " сатове",
   "@satsSuffix": {
@@ -536,7 +536,7 @@
   },
   "transactionSwapDescChainPending": "Вашият превод е създаден, но все още не е иницииран.",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "onboardingEncryptedVaultDescription": "Възстановете резервното копие чрез облака с вашия ПИН.",
   "@onboardingEncryptedVaultDescription": {
@@ -576,7 +576,7 @@
   },
   "receiveServerNetworkFees": "Сървърни такси за мрежата",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "rbfFastest": "Най-бързият",
   "@rbfFastest": {
@@ -613,7 +613,7 @@
   },
   "transactionFilterTransfer": "Прехвърляне",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "recoverbullSelectVaultImportSuccess": "Вашият сейф беше успешно импортиран",
   "@recoverbullSelectVaultImportSuccess": {
@@ -712,7 +712,7 @@
   },
   "transactionDetailLabelSwapFees": "Такси за размяна",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "recoverbullRecoveryBalanceLabel": "Баланс: {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -759,7 +759,7 @@
   },
   "transactionStatusSwapExpired": "Обмяната е изтекла.",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "swapAmountPlaceholder": "0",
   "@swapAmountPlaceholder": {
@@ -975,7 +975,7 @@
   },
   "coreSwapsLnSendExpired": "Обмяната е изтекла.",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
   "backupWalletEncryptedVaultTag": "Лесно и просто (1 минута)",
   "@backupWalletEncryptedVaultTag": {
@@ -1035,7 +1035,7 @@
   },
   "coreSwapsChainFailedRefunding": "Преводът ще бъде върнат скоро.",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "Изберете сума",
   "@sendSelectAmount": {
@@ -1107,7 +1107,7 @@
   },
   "transactionSwapDescChainFailed": "Възникна проблем с вашия превод. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "testBackupWarningMessage": "Без резервно копие в крайна сметка ще загубите достъп до парите си. Изключително важно е да направите резервно копие.",
   "@testBackupWarningMessage": {
@@ -1127,7 +1127,7 @@
   },
   "autoswapWarningTitle": "Автообменът е активиран с следните настройки:",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "seedsignerStep1": "Включете устройството SeedSigner.\n==WEBLATE_PART==",
   "@seedsignerStep1": {
@@ -1143,7 +1143,7 @@
   },
   "transactionSwapDescLnSendDefault": "Вашият обмен е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време.",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "recoverbullErrorMissingBytes": "Липсват байтове от отговора на Tor. Опитайте отново, но ако проблемът продължи, това е известен проблем за някои устройства с Tor.",
   "@recoverbullErrorMissingBytes": {
@@ -1155,7 +1155,7 @@
   },
   "sendSendAmount": "Сума за изпращане",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "Избраните UTXO не покриват необходимата сума",
   "@sendSelectedUtxosInsufficient": {
@@ -1163,7 +1163,7 @@
   },
   "swapErrorBalanceTooLow": "Балансът е твърде нисък за минималната сума на обмен",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "Те искат да изпратите Bitcoin на друга платформа",
   "@fundExchangeWarningTactic5": {
@@ -1223,7 +1223,7 @@
   },
   "payRequiresSwap": "Това плащане изисква размяна",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "Управление на двуфакторната автентикация и паролата",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -1235,7 +1235,7 @@
   },
   "transactionSwapDescLnSendFailed": "Възникна проблем с вашия обмен. Вашите средства ще бъдат върнати автоматично във вашия портфейл.",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "sendCoinAmount": "Сума: {amount}",
   "@sendCoinAmount": {
@@ -1264,7 +1264,7 @@
   },
   "sendErrorSwapFeesNotLoaded": "Таксите за обмен не са заредени",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "Копирай",
   "@walletDetailsCopyButton": {
@@ -1296,7 +1296,7 @@
   },
   "transactionSwapDescLnSendExpired": "Този обмен е изтекъл. Вашите средства ще бъдат автоматично върнати във вашия портфейл.",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "testBackupButton": "Провери резервното копие",
   "@testBackupButton": {
@@ -1312,7 +1312,7 @@
   },
   "sendSwapWillTakeTime": "Ще отнеме известно време за потвърждение",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "autoswapSelectWalletError": "Моля, изберете портфейл за получател на Bitcoin",
   "@autoswapSelectWalletError": {
@@ -1413,7 +1413,7 @@
   },
   "sendSwapId": "ID за размяна",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "fundExchangeAccountTitle": "Заредете акаунта си",
   "@fundExchangeAccountTitle": {
@@ -1433,7 +1433,7 @@
   },
   "receiveSendNetworkFee": "Такса за мрежата при изпращане",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "autoswapRecipientWalletInfoText": "Изберете кой Bitcoin портфейл ще получи прехвърлените средства (задължително)",
   "@autoswapRecipientWalletInfoText": {
@@ -1482,7 +1482,7 @@
   },
   "autoswapWarningOkButton": "ОК",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "sendOutputTooSmall": "Изходът е под прага за прах",
   "@sendOutputTooSmall": {
@@ -1555,7 +1555,7 @@
   },
   "sendErrorLiquidWalletRequired": "За обмен от Liquid към Lightning трябва да се използва Liquid портфейл",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "swapTransferRefundedMessage": "Трансферът е успешно възстановен.",
   "@swapTransferRefundedMessage": {
@@ -1603,11 +1603,11 @@
   },
   "swapTransferPendingMessage": "Преводът е в процес. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете вкъщи и да изчакате.",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "testBackupDecryptVault": "Дешифрирайте сейфа",
   "@testBackupDecryptVault": {
@@ -1627,7 +1627,7 @@
   },
   "totalFeeLabel": "Обща такса",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "Въведете URL адреса на вашия персонализиран мемпул сървър. Сървърът ще бъде валидиран преди запазване.",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -1668,7 +1668,7 @@
   },
   "swapTransferTitle": "Прехвърляне",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "testBackupSuccessTitle": "Тестът завърши успешно!",
   "@testBackupSuccessTitle": {
@@ -1795,7 +1795,7 @@
   },
   "sendErrorAmountBelowMinimum": "Сумата под минималния лимит за обмен: {minLimit} сатоши",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -1910,7 +1910,7 @@
   },
   "transactionLabelReceiveAmount": "Сума за получаване",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "sendServerNetworkFees": "Сървърни такси за мрежата",
   "@sendServerNetworkFees": {
@@ -1999,7 +1999,7 @@
   },
   "transactionLabelSwapStatus": "Статус на размяната",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "Отказ",
   "@walletDeletionConfirmationCancelButton": {
@@ -2039,7 +2039,7 @@
   },
   "swapYouPay": "Вие плащате",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "Шифиран сейф",
   "@encryptedVaultTitle": {
@@ -2067,7 +2067,7 @@
   },
   "sendErrorBitcoinWalletRequired": "За обмен от Биткойн към Lightning трябва да се използва Биткойн портфейл",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "Управлявайте вашия PIN за сигурност",
   "@pinCodeManageTitle": {
@@ -2079,7 +2079,7 @@
   },
   "transactionSwapDescLnSendCompleted": "Плащането по Lightning е успешно изпратено! Вашият обмен вече е завършен.",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "sellOrderAlreadyConfirmedError": "Тази поръчка за продажба вече е потвърдена.",
   "@sellOrderAlreadyConfirmedError": {
@@ -2162,7 +2162,7 @@
   },
   "sendSwapRefundInProgress": "Възстановяването на сумата от размяната е в ход.",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "Уверени сте, че няма да загубите vault файла и че той ще остане достъпен, ако загубите телефона си.",
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
@@ -2430,7 +2430,7 @@
   },
   "autoswapWarningDontShowAgain": "Не показвай повече това предупреждение.",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "sellInsufficientBalance": "Недостатъчен баланс в портфейла",
   "@sellInsufficientBalance": {
@@ -2585,7 +2585,7 @@
   },
   "transferIdLabel": "ID на прехвърлянето",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "Моля, изберете портфейл",
   "@paySelectActiveWallet": {
@@ -2622,7 +2622,7 @@
   },
   "sendSwapInitiated": "Размяната е стартирана",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "Изключително важно е да не съхранявате резервния ключ на едно и също място, на което съхранявате резервния файл. Винаги ги съхранявайте на отделни устройства или на различни облачни доставчици.",
   "@backupSettingsKeyWarningMessage": {
@@ -2751,7 +2751,7 @@
   },
   "receiveSwapId": "ID за размяна",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "pinCodeCreateTitle": "Създайте нов PIN",
   "@pinCodeCreateTitle": {
@@ -2763,11 +2763,11 @@
   },
   "swapTransferRefundInProgressTitle": "Възстановяването на трансфера е в процес",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "Вие получавате",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "recoverbullSelectCustomLocationProvider": "Персонализирано местоположение.",
   "@recoverbullSelectCustomLocationProvider": {
@@ -2847,7 +2847,7 @@
   },
   "autoswapInfoSettingsButton": "Конфигурирайте настройките",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "settingsServicesStatusTitle": "Статус на услугите",
   "@settingsServicesStatusTitle": {
@@ -3037,7 +3037,7 @@
   },
   "autoswapWarningCardSubtitle": "Ще се задейства размяна, ако балансът ви в Instant Payments надвиши 0.02 BTC.",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "transactionStatusConfirmed": "Потвърдено",
   "@transactionStatusConfirmed": {
@@ -3049,7 +3049,7 @@
   },
   "transactionLabelSendAmount": "Сума за изпращане",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "testedStatus": "Проверено",
   "@testedStatus": {
@@ -3077,7 +3077,7 @@
   },
   "transactionLabelReceiveNetworkFee": "Такса за мрежата при получаване.",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "bitboxScreenTroubleshootingTitle": "Отстраняване на проблеми с BitBox02",
   "@bitboxScreenTroubleshootingTitle": {
@@ -3141,7 +3141,7 @@
   },
   "transactionSwapDescChainExpired": "Този превод е изтекъл. Вашите средства ще бъдат автоматично върнати във вашия портфейл.",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
   "payValidating": "Валидиране...",
   "@payValidating": {
@@ -3157,7 +3157,7 @@
   },
   "transactionLabelSwapStatusRefunded": "Възстановено",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "Lightning фактура",
   "@receiveLightningInvoice": {
@@ -3213,7 +3213,7 @@
   },
   "sendErrorAmountAboveSwapLimits": "Сумата е над лимитите за обмен",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "Шифрован сейф ви предпазва от крадци, които се опитват да откраднат вашето резервно копие. Освен това той предотвратява случайното загубване на вашето резервно копие, тъй като ще бъде съхранено в облака. Доставчиците на облачно съхранение като Google или Apple нямат достъп до вашите биткойни, защото паролата за криптиране е прекалено силна. Те могат да получат достъп до вашите биткойни само в малко вероятния случай, че си сътрудничат със сървъра за ключове (онлайн услугата, която съхранява вашата парола за криптиране). Ако ключовият сървър някога бъде хакнат, вашият биткойн може да бъде изложен на риск във облака на Google или Apple.",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -3273,7 +3273,7 @@
   },
   "swapTransferRefundedTitle": "Трансферът е възстановен.",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "Неуспешно свързване към BitBox устройство. Моля, проверете връзката си.",
   "@bitboxErrorConnectionFailed": {
@@ -3382,7 +3382,7 @@
   },
   "sendErrorAmountAboveMaximum": "Сумата над максималния лимит за обмен: {maxLimit} сатоши",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
@@ -3391,7 +3391,7 @@
   },
   "coreSwapsLnSendCompletedSuccess": "Обмяната е успешно завършена.",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
   "transactionLabelTransferFee": "Такса за прехвърляне",
   "@transactionLabelTransferFee": {
@@ -3505,7 +3505,7 @@
   },
   "paySwapFee": "Такса за размяна",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "Настройки на сметката за обмен",
   "@exchangeAccountSettingsTitle": {
@@ -3578,7 +3578,7 @@
   },
   "transactionSwapDoNotUninstall": "Не деинсталирайте приложението, докато размяната не завърши.",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "payDefaultCommentHint": "Въведете коментар по подразбиране",
   "@payDefaultCommentHint": {
@@ -3626,7 +3626,7 @@
   },
   "sendTransferFee": "Такса за прехвърляне",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "IBAN номер на сметка (само за колони)",
   "@fundExchangeLabelIbanCrcOnly": {
@@ -3642,7 +3642,7 @@
   },
   "sendInitiatingSwap": "Започване на размяната...",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "Лайтнинг мрежа",
   "@sellLightningNetwork": {
@@ -3690,7 +3690,7 @@
   },
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "Банкови данни",
   "@sellBankDetails": {
@@ -3710,7 +3710,7 @@
   },
   "autoswapTriggerAtBalanceInfoText": "Авторазмяна ще се задейства, когато балансът ви надвиши този максимален баланс.",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "sendCustomFeeRate": "Персонализирана ставка на таксата",
   "@sendCustomFeeRate": {
@@ -3718,11 +3718,11 @@
   },
   "swapErrorAmountExceedsMaximum": "Сумата надвишава максималната сума за обмен",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
   "transactionLabelTotalSwapFees": "Общо такси за размяна",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "Грешка",
   "@errorLabel": {
@@ -3778,7 +3778,7 @@
   },
   "transactionDetailRetrySwap": "Повтори обмяната {action}",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
@@ -3788,11 +3788,11 @@
   "sendErrorSwapCreationFailed": "Не успях да създам размяна",
   "sendErrorInvoiceMustContainAmount": "Фактурата трябва да съдържа сума",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorHardwareWalletCannotSwap": "Хардуерните портфейли не могат да се използват за суапове.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "Няма налични данни за баланса",
   "@arkNoBalanceData": {
@@ -3800,11 +3800,11 @@
   },
   "autoswapWarningCardTitle": "Авторазмяна е включена",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "coreSwapsChainCompletedSuccess": "Прехвърлянето е успешно завършено.",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "physicalBackupRecommendation": "Физическо резервно копие: ",
   "@physicalBackupRecommendation": {
@@ -3978,7 +3978,7 @@
   },
   "autoswapWarningExplanation": "Когато балансът ви надвиши максималния баланс, ще се извърши размяна. Целевият баланс ще се запази във вашия портфейл за незабавни плащания, а останалата част ще бъде разменена във вашия Сигурен Bitcoin портфейл.",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "passportStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
   "@passportStep14": {
@@ -3990,11 +3990,11 @@
   },
   "transactionSwapDescChainClaimable": "Транзакцията за заключване е потвърдена. Сега заявявате средствата, за да довършите превода си.",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
   "sendSwapDetails": "Подробности за размяната",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "Възстановете портфейла си чрез 12 думи.",
   "@onboardingPhysicalBackupDescription": {
@@ -4050,7 +4050,7 @@
   },
   "transactionSwapDescChainRefundable": "Преводът ще бъде върнат. Вашите средства ще бъдат върнати автоматично във вашия портфейл.",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "sendPaymentWillTakeTime": "Плащането ще отнеме време",
   "@sendPaymentWillTakeTime": {
@@ -4419,7 +4419,7 @@
   },
   "transactionSwapDescChainCompleted": "Вашият превод е успешно завършен! Средствата вече трябва да са налични във вашия портфейл.",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
   "backupInstruction2": "Без резервно копие, ако изгубите или счупите телефона си, или ако деинсталирате приложението Bull Bitcoin, вашите биткойни ще бъдат загубени завинаги.",
   "@backupInstruction2": {
@@ -4545,7 +4545,7 @@
   },
   "sendErrorInsufficientBalanceForSwap": "Нямате достатъчно средства за плащане на този обмен чрез Liquid и той не попада в лимитите за обмен за плащане чрез Bitcoin",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Инструкции",
   "@psbtFlowJadeTitle": {
@@ -4831,7 +4831,7 @@
   },
   "autoswapInfoTitle": "Автообменът е активен",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "transactionLabelPayjoinStatus": "Статус Payjoin",
   "@transactionLabelPayjoinStatus": {
@@ -4879,7 +4879,7 @@
   },
   "totalFeesLabel": "Общи такси",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "Вашето плащане е инициирано и получателят ще получи средствата след като вашата транзакция получи едно потвърждение в блокчейн.",
   "@payInProgressDescription": {
@@ -4933,7 +4933,7 @@
   },
   "transactionFeesTotalDeducted": "Това е общата такса, удържана от изпратената сума.",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "sellReviewOrder": "Преглед на поръчката за продажба",
   "@sellReviewOrder": {
@@ -5131,7 +5131,7 @@
   },
   "receiveBoltzSwapFee": "Такса за размяна Boltz",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "payRBFEnabled": "RBF е включен",
   "@payRBFEnabled": {
@@ -5147,7 +5147,7 @@
   },
   "sendSwapTimeout": "Размената изтече",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "Такси за мрежата",
   "@networkFeesLabel": {
@@ -5159,7 +5159,7 @@
   },
   "sendSwapInProgressBitcoin": "Обменът е в ход. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете у дома и да изчакате.",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "buySelfie": "Селфи с документ за самоличност",
   "@buySelfie": {
@@ -5276,7 +5276,7 @@
   },
   "transactionSwapInfoClaimableSwap": "Размяната ще бъде завършена автоматично за няколко секунди. Ако не стане, можете да опитате ръчно искане на претенция за размяна, като щракнете върху бутона „Повторно искане за претенция за размяна“.",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "mempoolCustomServerLabel": "Потребителски",
   "@mempoolCustomServerLabel": {
@@ -5455,7 +5455,7 @@
   },
   "coreSwapsChainFailed": "Преводът не успя.",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "Добави бележка",
   "@transactionDetailAddNote": {
@@ -5590,7 +5590,7 @@
   },
   "walletDeletionErrorOngoingSwaps": "==WEBLATE_PART==\nНе можете да изтриете портфейл с активни размени.",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "Свързване към BitBox",
   "@bitboxScreenConnecting": {
@@ -5602,7 +5602,7 @@
   },
   "transactionLabelServerNetworkFees": "Сървърни такси за мрежата",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "sendReceive": "Получаване",
   "@sendReceive": {
@@ -5706,7 +5706,7 @@
   },
   "transactionSwapDescLnSendPaid": "Вашата транзакция в блокчейна е излъчена. След едно потвърждение плащането по Lightning ще бъде изпратено.",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "exchangeFileUploadAddMoreFiles": "Добавете още файлове",
   "@exchangeFileUploadAddMoreFiles": {
@@ -5714,7 +5714,7 @@
   },
   "transactionSwapDescChainDefault": "Вашият превод е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време за завършване.",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "onboardingBullBitcoin": "Bull Bitcoin",
   "@onboardingBullBitcoin": {
@@ -5742,7 +5742,7 @@
   },
   "transactionLabelTransferId": "ID на прехвърлянето",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "Изпрати",
   "@sendTitle": {
@@ -5834,7 +5834,7 @@
   },
   "sendSwapCancelled": "Размената е отменена",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "никога ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -5851,7 +5851,7 @@
   },
   "swapTransferCompletedTitle": "Преводът завърши",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "fundExchangeSinpeLabelRecipientName": "Име на получателя",
   "@fundExchangeSinpeLabelRecipientName": {
@@ -5891,11 +5891,11 @@
   },
   "sendTypeSwap": "Обмени",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sendErrorAmountExceedsMaximum": "Сумата надвишава максималната сума за обмен",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "Транзакцията е успешно подписана",
   "@bitboxActionSignTransactionSuccess": {
@@ -5974,7 +5974,7 @@
   },
   "sendNetworkFeesLabel": "Изпрати мрежовите такси",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "payWhichWallet": "От кой портфейл искате да платите?",
   "@payWhichWallet": {
@@ -5982,7 +5982,7 @@
   },
   "autoswapBaseBalanceInfoText": "Балансът на вашия портфейл за мигновени плащания ще се върне към това целево ниво след авторазмяна.",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "recoverbullSelectDecryptVault": "Дешифрирайте сейфа",
   "@recoverbullSelectDecryptVault": {
@@ -6014,7 +6014,7 @@
   },
   "transactionSwapInfoRefundableSwap": "Размяната ще бъде автоматично възстановена за няколко секунди. Ако не стане, можете да опитате ръчно възстановяване, като щракнете върху бутона „Повторно искане за възстановяване на размяната“.",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "payCancelPayment": "Отмени плащането",
   "@payCancelPayment": {
@@ -6260,7 +6260,7 @@
   },
   "transactionFeesDeductedFrom": "Тези такси ще бъдат удържани от изпратената сума.",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "importWatchOnlyTitle": "- Импортирай само за наблюдение",
   "@importWatchOnlyTitle": {
@@ -6317,7 +6317,7 @@
   },
   "transactionLabelSendNetworkFees": "Такси за мрежата при изпращане.",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "transactionLabelAddress": "Адрес",
   "@transactionLabelAddress": {
@@ -6387,7 +6387,7 @@
   },
   "coreSwapsChainExpired": "Изтекъл превод",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "Коментар по подразбиране (по избор)",
   "@payDefaultCommentOptional": {
@@ -6681,7 +6681,7 @@
   },
   "autoswapWarningDescription": "Авторазмяна гарантира, че случайно няма да държите прекалено много пари в портфейла за мигновени плащания, което не е сигурно за дългосрочно съхранение.",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "fundExchangeSinpeAddedToBalance": "След като плащането бъде изпратено, то ще бъде добавено към баланса ви в акаунта.",
   "@fundExchangeSinpeAddedToBalance": {
@@ -6705,7 +6705,7 @@
   },
   "transactionDetailLabelSwapStatus": "Статус на размяната",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "Passport ще ви покаже своя собствен QR код.",
   "@passportStep10": {
@@ -6934,7 +6934,7 @@
   },
   "sendConfirmSwap": "Потвърди размяната",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "Изход - Очаква се скоро",
   "@exchangeLogoutComingSoon": {
@@ -7030,7 +7030,7 @@
   },
   "receiveSwapID": "ID за размяна",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Настройки на Биткойн",
   "@settingsBitcoinSettingsTitle": {
@@ -7246,7 +7246,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "Сумата е под лимитите за обмен",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "Частно плащане",
   "@payPrivatePayment": {
@@ -7266,7 +7266,7 @@
   },
   "autoswapWarningSettingsLink": "Отиди на настройките за автообмен",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "payLiquidNetwork": "Liquid мрежа",
   "@payLiquidNetwork": {
@@ -7518,7 +7518,7 @@
   },
   "coreSwapsLnSendFailedRefunding": "Обмяната ще бъде възстановена скоро.",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
   "dcaWalletTypeLightning": "Лайтнинг мрежа (LN)",
   "@dcaWalletTypeLightning": {
@@ -7638,7 +7638,7 @@
   },
   "transactionSwapInfoFailedExpired": "Ако имате въпроси или притеснения, моля свържете се с поддръжката за помощ.\n==WEBLATE_PART==",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "googleAppleCloudRecommendation": "Google или Apple облак: ",
   "@googleAppleCloudRecommendation": {
@@ -7839,7 +7839,7 @@
   },
   "sendSubmarineSwap": "Подводна размяна",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "ID на Liquid транзакцията",
   "@transactionLabelLiquidTransactionId": {
@@ -7855,7 +7855,7 @@
   },
   "sendSwapFeeEstimate": "Прогнозна такса за размяната: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -7864,7 +7864,7 @@
   },
   "coreSwapsLnReceiveExpired": "Обмяната е изтекла.",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
   "fundExchangeOnlineBillPaymentLabelBillerName": "Търсете това име в списъка на издателите на плащания за сметки във вашата банка",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
@@ -8129,7 +8129,7 @@
   },
   "coreSwapsLnReceiveCompleted": "Обмяната е завършена.",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "backupWalletErrorGoogleDriveSave": "Неуспешно запазване в Google Drive",
   "@backupWalletErrorGoogleDriveSave": {
@@ -8234,7 +8234,7 @@
   },
   "transactionSwapDescChainPaid": "Вашата транзакция е излъчена. Сега очакваме потвърждението на транзакцията за заключване.",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "mempoolSettingsUseForFeeEstimation": "Използвай за оценка на таксите",
   "@mempoolSettingsUseForFeeEstimation": {
@@ -8279,7 +8279,7 @@
   },
   "autoswapInfoDismissButton": "Разбрах, повече няма да се показва.",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "fundExchangeLabelIbanUsdOnly": "IBAN номер на сметка (само за щатски долари)",
   "@fundExchangeLabelIbanUsdOnly": {
@@ -8378,7 +8378,7 @@
   },
   "transactionLabelBoltzSwapFee": "Такса за размяна Boltz",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
   "sellOrderNumber": "Номер на поръчка",
   "@sellOrderNumber": {
@@ -8399,7 +8399,7 @@
   },
   "transactionDetailSwapProgress": "Напредък на обмяната",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "exchangeAppSettingsEmailNotificationsDescription": "Получавайте известия по имейл за поръчки и актуализации на акаунта",
   "@exchangeAppSettingsEmailNotificationsDescription": {
@@ -8419,7 +8419,7 @@
   },
   "swapTransferPendingTitle": "Превод в процес",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "Персонализираният сървър е успешно запазен",
   "@mempoolCustomServerSaveSuccess": {
@@ -8427,7 +8427,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "Балансът е твърде нисък за минималната сума на обмен",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "testBackupSuccessMessage": "Можете да възстановите достъп до изгубен биткойн портфейл",
   "@testBackupSuccessMessage": {
@@ -8622,7 +8622,7 @@
   },
   "sendSwapInProgressInvoice": "Обменът е в ход. Инвойсът ще бъде платен след няколко секунди.",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "Получаване",
   "@arkReceiveButton": {
@@ -8646,7 +8646,7 @@
   },
   "paySwapInProgress": "Размяната е в ход...",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "Всички три типа портфейли се синхронизират и балансът им и транзакциите ще се появят скоро. Можете да изчакате синхронизирането да завърши или да продължите с импортирането, ако сте сигурни кой тип портфейл искате да импортирате.",
   "@importMnemonicSyncMessage": {
@@ -8755,7 +8755,7 @@
   },
   "sendSwapTimeEstimate": "Очаквано време: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -8877,7 +8877,7 @@
   },
   "sendSwapAmount": "Сума на размяната",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "sellInteracTransfer": "Interac e-Transfer",
   "@sellInteracTransfer": {
@@ -8910,7 +8910,7 @@
   },
   "autoswapSettingsTitle": "Настройки за автоматично прехвърляне",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "Въведете първо име",
   "@payFirstNameHint": {
@@ -8934,11 +8934,11 @@
   },
   "transactionDetailLabelSwapId": "ID за размяна",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "sendSwapFailed": "Размяната не успя. Вашето възстановяване ще бъде обработено скоро.",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "Грешка в мрежата. Моля, опитайте отново.",
   "@sellNetworkError": {
@@ -9284,7 +9284,7 @@
   },
   "sendReceiveAmount": "Сума за получаване",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "Тест за възстановяване",
   "@recoverbullTestRecovery": {
@@ -9396,7 +9396,7 @@
   },
   "paySwapCompleted": "Размяната завършена",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "Описание (по избор)",
   "@receiveDescription": {
@@ -9577,7 +9577,7 @@
   "wizardJourneyTip3": "Свържете се със собствен Bitcoin възел",
   "wizardJourneyTip4": "Свържете се със собствен Mempool изследовател",
   "wizardJourneyTip5": "Прехвърляйте между Bitcoin и Liquid без KYC",
-  "wizardJourneyTip6": "Персонализирайте настройките на autoswap",
+  "wizardJourneyTip6": "Персонализирайте настройките на autotransfer",
   "wizardJourneyTip7": "Превключвайте между Bitcoin (BTC) и Satoshis (sats)",
   "wizardJourneyTip8": "Създавайте air-gap транзакции за хардуерния си портфейл",
   "@wizardPageIndicator": {

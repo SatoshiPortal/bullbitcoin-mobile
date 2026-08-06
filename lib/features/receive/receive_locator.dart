@@ -4,33 +4,28 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
   static void setup(GetIt locator) {
-    locator.registerFactory<CreateReceiveSwapUsecase>(
-      () => CreateReceiveSwapUsecase(
-        walletRepository: locator<WalletRepository>(),
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
-        labelsFacade: locator<LabelsFacade>(),
+    locator.registerFactory<CreateReceiveOrderSwapUsecase>(
+      () => CreateReceiveOrderSwapUsecase(
+        locator<SwapFacade>(),
+        locator<GetReceiveAddressUsecase>(),
       ),
+    );
+    locator.registerFactory<WatchReceiveOrderSwapUsecase>(
+      () => WatchReceiveOrderSwapUsecase(locator<SwapFacade>()),
     );
 
     // Bloc
@@ -43,16 +38,15 @@ class ReceiveLocator {
             locator<ConvertSatsToCurrencyAmountUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
-        createReceiveSwapUsecase: locator<CreateReceiveSwapUsecase>(),
+        createReceiveOrderSwapUsecase: locator<CreateReceiveOrderSwapUsecase>(),
         receiveWithPayjoinUsecase: locator<ReceiveWithPayjoinUsecase>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         watchWalletTransactionByAddressUsecase:
             locator<WatchWalletTransactionByAddressUsecase>(),
-        watchSwapUsecase: locator<WatchSwapUsecase>(),
+        watchReceiveOrderSwapUsecase: locator<WatchReceiveOrderSwapUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
-        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         wallet: wallet,
       ),
     );

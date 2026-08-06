@@ -799,14 +799,14 @@
   "transactionDetailLabelCreatedAt": "Creado el",
   "transactionDetailLabelCompletedAt": "Completado el",
   "transactionDetailLabelTransferId": "ID de transferencia",
-  "transactionDetailLabelSwapId": "ID de swap",
+  "transactionDetailLabelSwapId": "ID de transfer",
   "transactionDetailLabelTransferStatus": "Estado de transferencia",
-  "transactionDetailLabelSwapStatus": "Estado de swap",
+  "transactionDetailLabelSwapStatus": "Estado de transfer",
   "transactionDetailLabelRefunded": "Reembolsado",
   "transactionDetailLabelLiquidTxId": "ID de transacción Liquid",
   "transactionDetailLabelBitcoinTxId": "ID de transacción Bitcoin",
   "transactionDetailLabelTransferFees": "Comisiones de transferencia",
-  "transactionDetailLabelSwapFees": "Comisiones de swap",
+  "transactionDetailLabelSwapFees": "Comisiones de transfer",
   "transactionDetailLabelSendNetworkFee": "Comisión de red de envío",
   "transactionDetailLabelTransferFee": "Comisión de transferencia",
   "transactionDetailLabelPayjoinStatus": "Estado de Payjoin",
@@ -1478,7 +1478,7 @@
   "autoswapMaxBalanceLabel": "Saldo Máximo de Billetera Instantánea",
   "autoswapMaxBalanceInfoText": "Cuando el saldo de la billetera supere el doble de esta cantidad, se activará la transferencia automática para reducir el saldo a este nivel",
   "autoswapBaseBalanceInfoText": "El saldo de tu billetera de pagos instantáneos volverá a este saldo destino tras un auto-intercambio.",
-  "autoswapTriggerAtBalanceInfoText": "Autoswap se activará cuando tu saldo supere este saldo máximo.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer se activará cuando tu saldo supere este saldo máximo.",
   "autoswapMaxFeeLabel": "Comisión Máxima de Transferencia",
   "autoswapMaxFeeInfoText": "Si la comisión total de transferencia supera el porcentaje establecido, la transferencia automática será bloqueada",
   "autoswapRecipientWalletLabel": "Billetera Bitcoin Receptora",
@@ -1499,9 +1499,9 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap está activado",
+  "autoswapWarningCardTitle": "Autotransfer está activado",
   "autoswapWarningCardSubtitle": "Se disparará un intercambio si el saldo de su billetera de pagos instantáneos supera 0'02 BTC.",
-  "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
+  "autoswapWarningDescription": "Autotransfer garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
   "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración:",
   "autoswapWarningExplanation": "Cuando tu saldo supere el saldo máximo, se activará un intercambio. El saldo destino se mantendrá en tu billetera de pagos instantáneos y el monto restante se intercambiará en tu billetera de Bitcoin segura.",
   "autoswapWarningDontShowAgain": "No volver a mostrar esta advertencia.",
@@ -1930,7 +1930,7 @@
   "payLightningFee": "Comisión Lightning",
   "payOnChainFee": "Comisión On-Chain",
   "payLiquidFee": "Comisión Liquid",
-  "paySwapFee": "Comisión de Swap",
+  "paySwapFee": "Comisión de Transfer",
   "payServiceFee": "Comisión de Servicio",
   "payTotalFees": "Comisiones Totales",
   "payFeeBreakdown": "Desglose de Comisiones",
@@ -1958,10 +1958,10 @@
       }
     }
   },
-  "payRequiresSwap": "Este pago requiere un swap",
-  "paySwapInProgress": "Swap en progreso...",
-  "paySwapCompleted": "Swap completado",
-  "paySwapFailed": "Swap fallido",
+  "payRequiresSwap": "Este pago requiere un transfer",
+  "paySwapInProgress": "Transfer en progreso...",
+  "paySwapCompleted": "Transfer completado",
+  "paySwapFailed": "Transfer fallido",
   "payBroadcastingTransaction": "Transmitiendo transacción...",
   "payTransactionBroadcast": "Transacción transmitida",
   "payBroadcastFailed": "Transmisión fallida",
@@ -2073,11 +2073,11 @@
   "sendFrozenCoin": "Congelada",
   "sendFreezeCoin": "Congelar Moneda",
   "sendUnfreezeCoin": "Descongelar Moneda",
-  "sendSubmarineSwap": "Submarine Swap",
-  "sendInitiatingSwap": "Iniciando swap...",
-  "sendSwapDetails": "Detalles del Swap",
-  "sendSwapAmount": "Cantidad del Swap",
-  "sendSwapFeeEstimate": "Comisión estimada del swap: {amount}",
+  "sendSubmarineSwap": "Submarine Transfer",
+  "sendInitiatingSwap": "Iniciando transfer...",
+  "sendSwapDetails": "Detalles del Transfer",
+  "sendSwapAmount": "Cantidad del Transfer",
+  "sendSwapFeeEstimate": "Comisión estimada del transfer: {amount}",
   "@sendSwapFeeEstimate": {
     "placeholders": {
       "amount": {
@@ -2093,9 +2093,9 @@
       }
     }
   },
-  "sendConfirmSwap": "Confirmar Swap",
-  "sendSwapCancelled": "Swap cancelado",
-  "sendSwapTimeout": "Tiempo de espera del swap agotado",
+  "sendConfirmSwap": "Confirmar Transfer",
+  "sendSwapCancelled": "Transfer cancelado",
+  "sendSwapTimeout": "Tiempo de espera del transfer agotado",
   "sendCustomFeeRate": "Tarifa de Comisión Personalizada",
   "sendFeeRateTooLow": "Tarifa de comisión demasiado baja",
   "sendFeeRateTooHigh": "La tarifa de comisión parece muy alta",
@@ -3139,7 +3139,7 @@
   },
   "transactionHistoryTitle": "Historial de transacciones",
   "transactionHistoryHeading": "Historial de transacciones",
-  "exportTransactionsDescription": "Exporta todas las transacciones de tu billetera (Bitcoin, Liquid, Lightning y swaps) como archivo CSV. Filtra por rango de fechas opcionalmente.",
+  "exportTransactionsDescription": "Exporta todas las transacciones de tu billetera (Bitcoin, Liquid, Lightning y transfers) como archivo CSV. Filtra por rango de fechas opcionalmente.",
   "exportTransactionsStartDate": "Fecha de inicio",
   "exportTransactionsEndDate": "Fecha final",
   "exportTransactionsAnyDate": "Cualquiera",
@@ -4140,7 +4140,7 @@
   "recoverbullErrorServiceUnavailable": "Servicio no disponible. Por favor, verifica tu conexión.",
   "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido.",
   "systemLabelSwaps": "Intercambios",
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "systemLabelPayjoin": "Payjoin",
   "systemLabelSelfSpend": "Auto Gasto",
   "systemLabelExchangeBuy": "Comprar",
@@ -4165,19 +4165,19 @@
   },
   "autoswapInfoSettingsButton": "Configurar ajustes",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "autoswapInfoRemindLater": "Recuérdame más tarde",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
-  "autoswapInfoTitle": "Autoswap está activo",
+  "autoswapInfoTitle": "Autotransfer está activo",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapInfoDismissButton": "Entendido, no volver a mostrar",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "exchangeSettingsRecipientsTitle": "Destinatarios",
   "@exchangeSettingsRecipientsTitle": {
@@ -4385,7 +4385,7 @@
   "mempoolErrorSaveServerFailed": "Error al guardar el servidor",
   "mempoolErrorLoadFailed": "Error al cargar los datos del servidor mempool",
   "mempoolErrorDeleteFailed": "Error al eliminar el servidor personalizado",
-  "autoswapActiveCardTitle": "Autoswap está activo",
+  "autoswapActiveCardTitle": "Autotransfer está activo",
   "autoswapWarningExplanationBold": "automáticamente",
   "deleteLogsTitle": "Eliminar registros",
   "logsDeletedMessage": "Registros eliminados",
@@ -4394,7 +4394,7 @@
   "priceFailedToLoad": "Error al cargar el precio",
   "statusScreenTryAgain": "Intentar de nuevo",
   "statusScreenContinue": "Continuar",
-  "autoswapInfoConsentMessage": "Autoswap está actualmente habilitado pero no se activará hasta que usted dé su consentimiento. ¿Le gustaría mantenerlo activado?",
+  "autoswapInfoConsentMessage": "Autotransfer está actualmente habilitado pero no se activará hasta que usted dé su consentimiento. ¿Le gustaría mantenerlo activado?",
   "settingsErrorReportingTitle": "Informe de errores",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4572,7 +4572,7 @@
   "wizardJourneyTip3": "Conéctate a tu propio nodo Bitcoin",
   "wizardJourneyTip4": "Conéctate a tu propio explorador Mempool",
   "wizardJourneyTip5": "Transfiere entre Bitcoin y Liquid sin KYC",
-  "wizardJourneyTip6": "Personaliza tus ajustes de autoswap",
+  "wizardJourneyTip6": "Personaliza tus ajustes de autotransfer",
   "wizardJourneyTip7": "Cambia entre Bitcoin (BTC) y Satoshis (sats)",
   "wizardJourneyTip8": "Crea transacciones air-gap para tu billetera hardware",
   "@wizardPageIndicator": {
@@ -4592,7 +4592,7 @@
   "legacyStorageIntroDescription": "Tu billetera está corriendo sobre un software que pronto dejará de mantenerse. No se puede actualizar sin desinstalar y reinstalar la app.",
   "legacyStorageStepBackupWallet": "Respalda tu billetera",
   "legacyStorageStepExportLabels": "Exporta tus etiquetas (si tienes)",
-  "legacyStorageStepEnsureSwapsCompleted": "Asegúrate de que todos los swaps estén completados",
+  "legacyStorageStepEnsureSwapsCompleted": "Asegúrate de que todos los transfers estén completados",
   "legacyStorageStepUninstall": "Desinstala la aplicación de tu dispositivo",
   "legacyStorageStepReinstall": "Descarga la última versión e instálala de nuevo",
   "legacyStorageStepRestoreBackup": "Restaura tu respaldo",

@@ -552,7 +552,7 @@
   },
   "transactionDetailTitle": "Деталі транзакції",
   "transactionDetailTransferProgress": "Прогрес трансферу",
-  "transactionDetailSwapProgress": "Swap Прогрес",
+  "transactionDetailSwapProgress": "Transfer Прогрес",
   "transactionDetailRetryTransfer": "Трансфер з картки {action}",
   "@transactionDetailRetryTransfer": {
     "placeholders": {
@@ -655,7 +655,7 @@
   "transactionSwapInfoFailedExpired": "Будь ласка, зв'яжіться з нами.",
   "transactionSwapInfoChainDelay": "За час виконання через час підтвердження блокчейну може бути здійснено передачу часу.",
   "transactionSwapInfoClaimableTransfer": "Передача буде завершено автоматично протягом декількох секунд. Якщо ви не можете спробувати ручну заяву, натиснувши кнопку \"Retry Transfer Claim\".",
-  "transactionSwapInfoClaimableSwap": "Запуск буде завершено автоматично протягом декількох секунд. Якщо ні, ви можете спробувати ручну претензію, натиснувши кнопку \"Retry Swap Claim\".",
+  "transactionSwapInfoClaimableSwap": "Запуск буде завершено автоматично протягом декількох секунд. Якщо ні, ви можете спробувати ручну претензію, натиснувши кнопку \"Retry Transfer Claim\".",
   "transactionSwapInfoRefundableTransfer": "Цей переказ буде повернено автоматично протягом декількох секунд. Якщо ні, ви можете спробувати ручне повернення, натиснувши кнопку \"Retry Transfer Refund\".",
   "transactionListToday": "Сьогодні",
   "transactionListYesterday": "Погода",
@@ -1464,7 +1464,7 @@
   "ledgerVerifyTitle": "Перевірити адресу на Ledger",
   "recoverbullSwitchToPassword": "Підберіть пароль замість",
   "exchangeDcaNetworkBitcoin": "Bitcoin мережа",
-  "autoswapWarningTitle": "Autoswap включений до наступних налаштувань:",
+  "autoswapWarningTitle": "Autotransfer включений до наступних налаштувань:",
   "seedsignerStep1": "Увімкніть пристрій для насінництва",
   "backupWalletHowToDecideBackupLosePhysical": "Один з найбільш поширених способів втратити Біткойн, тому що вони втрачають фізичну резервну копію. Будь-ласка, що знаходить вашу фізичну резервну копію, зможе прийняти всі ваші біткойни. Якщо ви дуже впевнені, що ви можете приховати його добре і ніколи не втратите його, це хороший варіант.",
   "recoverbullErrorMissingBytes": "Пропускання байтів від реагування тор. Ретри, але якщо питання зберігається, це відомий питання для деяких пристроїв з Tor.",
@@ -4146,19 +4146,19 @@
   "logoutConfirmationLogout": "Вийти",
   "autoswapInfoSettingsButton": "Налаштування параметрів",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "autoswapInfoRemindLater": "Змінити мене пізніше",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
-  "autoswapInfoTitle": "Autoswap активний",
+  "autoswapInfoTitle": "Autotransfer активний",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapInfoDismissButton": "Не покажуть",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "recipientsSearchHint": "Пошук одержувачів за ім’ям або міткою",
   "@recipientsSearchHint": {
@@ -4348,7 +4348,7 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "autoswapActiveCardTitle": "Autoswap активний",
+  "autoswapActiveCardTitle": "Autotransfer активний",
   "deleteLogsTitle": "Видалити журнали",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -4363,7 +4363,7 @@
   "statusScreenContinue": "Продовжити",
   "autoswapWarningExplanationBold": "автоматично",
   "sendSelfTransfer": "Переказ собі",
-  "autoswapInfoConsentMessage": "Autoswap наразі увімкнено, але він не спрацює, поки ви не дасте згоду. Бажаєте залишити його увімкненим?",
+  "autoswapInfoConsentMessage": "Autotransfer наразі увімкнено, але він не спрацює, поки ви не дасте згоду. Бажаєте залишити його увімкненим?",
   "mempoolServerStatusOnline": "В мережі",
   "mempoolServerStatusOffline": "Не в мережі",
   "mempoolServerStatusChecking": "Перевірка...",
@@ -4583,7 +4583,7 @@
   "legacyStorageIntroDescription": "Ваш гаманець працює на програмному забезпеченні, підтримку якого незабаром буде припинено. Його неможливо оновити без видалення та повторного встановлення застосунку.",
   "legacyStorageStepBackupWallet": "Створіть резервну копію гаманця",
   "legacyStorageStepExportLabels": "Експортуйте свої мітки (якщо є)",
-  "legacyStorageStepEnsureSwapsCompleted": "Переконайтеся, що всі swap-операції завершено",
+  "legacyStorageStepEnsureSwapsCompleted": "Переконайтеся, що всі transfer-операції завершено",
   "legacyStorageStepUninstall": "Видаліть програму зі свого пристрою",
   "legacyStorageStepReinstall": "Завантажте найновішу версію та встановіть знову",
   "legacyStorageStepRestoreBackup": "Відновіть резервну копію",

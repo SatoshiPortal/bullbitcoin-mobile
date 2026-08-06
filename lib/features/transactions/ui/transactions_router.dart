@@ -14,6 +14,7 @@ enum TransactionsRoute {
   transactionDetails('/transaction/:txId'),
   swapTransactionDetails('/transaction/swap/:swapId'),
   payjoinTransactionDetails('/transaction/payjoin/:payjoinId'),
+  orderSwapTransactionDetails('/transaction/order-swap/:localId'),
   orderTransactionDetails('/transaction/order/:orderId');
 
   const TransactionsRoute(this.path);
@@ -54,10 +55,9 @@ class TransactionsRouter {
         final txId = state.pathParameters['txId']!;
         final walletId = state.uri.queryParameters['walletId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initByWalletTxId(txId, walletId: walletId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()
+                ..initByWalletTxId(txId, walletId: walletId),
           child: const TransactionDetailsScreen(),
         );
       },
@@ -69,10 +69,9 @@ class TransactionsRouter {
         final swapId = state.pathParameters['swapId']!;
         final walletId = state.uri.queryParameters['walletId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initBySwapId(swapId, walletId: walletId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()
+                ..initBySwapId(swapId, walletId: walletId),
           child: const TransactionDetailsScreen(),
         );
       },
@@ -83,10 +82,21 @@ class TransactionsRouter {
       builder: (context, state) {
         final payjoinId = state.pathParameters['payjoinId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initByPayjoinId(payjoinId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()..initByPayjoinId(payjoinId),
+          child: const TransactionDetailsScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      name: TransactionsRoute.orderSwapTransactionDetails.name,
+      path: TransactionsRoute.orderSwapTransactionDetails.path,
+      builder: (context, state) {
+        final localId = state.pathParameters['localId']!;
+        return BlocProvider(
+          create: (context) =>
+              locator<TransactionDetailsCubit>()
+                ..initByOrderSwapLocalId(localId),
           child: const TransactionDetailsScreen(),
         );
       },
@@ -97,9 +107,8 @@ class TransactionsRouter {
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()..initByOrderId(orderId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()..initByOrderId(orderId),
           child: const TransactionDetailsScreen(),
         );
       },

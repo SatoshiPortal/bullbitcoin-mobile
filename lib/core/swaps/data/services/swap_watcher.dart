@@ -40,12 +40,7 @@ class SwapWatcherService {
     required this._boltzRepo,
     required this._walletAddressRepository,
     required this._feesRepository,
-    bool autoStart = true,
-  }) {
-    if (autoStart) {
-      unawaited(startWatching());
-    }
-  }
+  });
 
   Future<void> startWatching() async {
     await _swapStreamSubscription?.cancel();

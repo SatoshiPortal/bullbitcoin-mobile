@@ -35,59 +35,59 @@
   },
   "coreSwapsStatusInProgress": "Zpracovávám",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "coreSwapsStatusCompleted": "Hotovo",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "coreSwapsStatusExpired": "Vypršelo",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "coreSwapsStatusFailed": "Selhalo",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "coreSwapsActionClose": "Zavřít",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "coreSwapsActionRefund": "Refundovat",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "coreSwapsLnReceivePaid": "Odesílatel zaplatil fakturu.",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
-  "coreSwapsLnReceiveExpired": "Swap vypršel.",
+  "coreSwapsLnReceiveExpired": "Transfer vypršel.",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
-  "coreSwapsLnReceiveFailed": "Swap selhal.",
+  "coreSwapsLnReceiveFailed": "Transfer selhal.",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "coreSwapsLnSendPaid": "Faktura bude zaplacena po potvrzení Tvé platby.",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
-  "coreSwapsLnSendExpired": "Swap vypršel",
+  "coreSwapsLnSendExpired": "Transfer vypršel",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap proběhnul úspěšně.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer proběhnul úspěšně.",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
-  "coreSwapsLnSendFailedRefunding": "Swap bude brzy refundován.",
+  "coreSwapsLnSendFailedRefunding": "Transfer bude brzy refundován.",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
-  "coreSwapsLnSendFailed": "Swap selhal.",
+  "coreSwapsLnSendFailed": "Transfer selhal.",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "coreWalletTransactionStatusConfirmed": "Potvrzení",
   "@coreWalletTransactionStatusConfirmed": {
@@ -353,7 +353,7 @@
   },
   "transactionLabelSwapId": "Změna ID",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "dcaChooseWalletTitle": "Vyberte Bitcoin Peněženka",
   "@dcaChooseWalletTitle": {
@@ -393,7 +393,7 @@
   },
   "transactionSwapDescLnSendPending": "Vaše výměna byla zahájena. Vysíláme transakci on-chain, aby zamknout vaše prostředky.",
   "@transactionSwapDescLnSendPending": {
-    "description": "Description for pending Lightning send swap"
+    "description": "Description for pending Lightning send transfer"
   },
   "payInstitutionNumber": "Číslo instituce",
   "@payInstitutionNumber": {
@@ -417,7 +417,7 @@
   },
   "sendSendNetworkFee": "Odeslat Síťový poplatek",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "exchangeDcaUnableToGetConfig": "Nelze získat konfiguraci DCA",
   "@exchangeDcaUnableToGetConfig": {
@@ -537,11 +537,11 @@
   },
   "transactionLabelPreimage": "Čeština",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "coreSwapsChainCanCoop": "Transfer dokončuje momentálně.",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "importColdcardInstructionsStep2": "Zadejte pasphrase, pokud je to použitelné",
   "@importColdcardInstructionsStep2": {
@@ -559,9 +559,9 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "fundExchangeSinpeTitle": "SINPE přenos",
   "@fundExchangeSinpeTitle": {
@@ -618,7 +618,7 @@
   },
   "transactionSwapDescChainPending": "Váš převod byl vytvořen, ale nestartoval.",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "coreScreensTransferFeeLabel": "Transfer poplatek",
   "@coreScreensTransferFeeLabel": {
@@ -632,9 +632,9 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionSwapStatusSwapStatus": "Stav Swapu",
+  "transactionSwapStatusSwapStatus": "Stav Transferu",
   "@transactionSwapStatusSwapStatus": {
-    "description": "Header for swap status section"
+    "description": "Header for transfer status section"
   },
   "receiveInvoiceCopied": "Faktury zkopírované do schránky",
   "@receiveInvoiceCopied": {
@@ -648,7 +648,7 @@
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
   },
-  "autoswapUpdateSettingsError": "Vypnuto aktualizovat nastavení automatického swapu",
+  "autoswapUpdateSettingsError": "Vypnuto aktualizovat nastavení automatického transferu",
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
@@ -674,7 +674,7 @@
   },
   "receiveServerNetworkFees": "Server Síťové poplatky",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "importQrDeviceImporting": "Importovat peněženku ...",
   "@importQrDeviceImporting": {
@@ -727,7 +727,7 @@
   },
   "transactionFilterTransfer": "Čeština",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "recoverbullSelectVaultImportSuccess": "Vaše klenba byla úspěšně dovážena",
   "@recoverbullSelectVaultImportSuccess": {
@@ -845,7 +845,7 @@
   },
   "transactionDetailLabelSwapFees": "Výměnné poplatky",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "broadcastSignedTxFee": "Čeština",
   "@broadcastSignedTxFee": {
@@ -1293,7 +1293,7 @@
   },
   "coreSwapsChainFailedRefunding": "Transfer bude vráceno krátce.",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "Vyberte částku",
   "@sendSelectAmount": {
@@ -1397,7 +1397,7 @@
   },
   "transactionSwapDescChainFailed": "Byl problém s vaším převodem. Máte-li finanční prostředky vráceny do 24 hodin.",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "testBackupWarningMessage": "Bez zálohování, nakonec ztratíte přístup k vašim penězům. Je velmi důležité provést zálohu.",
   "@testBackupWarningMessage": {
@@ -1423,9 +1423,9 @@
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
   },
-  "autoswapWarningTitle": "Autoswap je povolen s následujícími nastaveními:",
+  "autoswapWarningTitle": "Autotransfer je povolen s následujícími nastaveními:",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "seedsignerStep1": "Zapněte zařízení SeedSigner",
   "@seedsignerStep1": {
@@ -1439,9 +1439,9 @@
   "@transactionLabelStatus": {
     "description": "Label for transaction status"
   },
-  "transactionSwapDescLnSendDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
+  "transactionSwapDescLnSendDefault": "Váš transfer je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "recoverbullErrorMissingBytes": "Chybí bajtů z Tor odpovědi. Retry, ale pokud problém přetrvává, je známý problém pro některé zařízení s Torem.",
   "@recoverbullErrorMissingBytes": {
@@ -1457,7 +1457,7 @@
   },
   "sendSendAmount": "Odeslat částku",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "Vybrané utxos nepokrývá požadovaná částka",
   "@sendSelectedUtxosInsufficient": {
@@ -1465,7 +1465,7 @@
   },
   "swapErrorBalanceTooLow": "Zůstatek příliš nízký pro minimální výměnu množství",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "Zeptají se, aby poslal Bitcoin na jinou platformu",
   "@fundExchangeWarningTactic5": {
@@ -1529,7 +1529,7 @@
   },
   "payRequiresSwap": "Tato platba vyžaduje výměnu",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "Správa 2FA a hesla",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -1539,9 +1539,9 @@
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
   },
-  "transactionSwapDescLnSendFailed": "Byl problém s vaším swapem. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
+  "transactionSwapDescLnSendFailed": "Byl problém s vaším transferem. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "sendCoinAmount": "Množství: {amount}",
   "@sendCoinAmount": {
@@ -1574,7 +1574,7 @@
   },
   "sendErrorSwapFeesNotLoaded": "Výměnné poplatky nejsou načteny",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "Čeština",
   "@walletDetailsCopyButton": {
@@ -1620,9 +1620,9 @@
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
   },
-  "transactionSwapDescLnSendExpired": "Tento swap skončil. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
+  "transactionSwapDescLnSendExpired": "Tento transfer skončil. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "testBackupButton": "Test zálohování",
   "@testBackupButton": {
@@ -1642,7 +1642,7 @@
   },
   "sendSwapWillTakeTime": "Při potvrzení",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "autoswapSelectWalletError": "Vyberte příjemce Bitcoin peněženku",
   "@autoswapSelectWalletError": {
@@ -1747,7 +1747,7 @@
   },
   "systemLabelSwaps": "Čeština",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
   "sendOpenTheCamera": "Otevřete kameru",
   "@sendOpenTheCamera": {
@@ -1759,7 +1759,7 @@
   },
   "sendSwapId": "Změna ID",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "electrumServerOnline": "Přihlášení",
   "@electrumServerOnline": {
@@ -1783,7 +1783,7 @@
   },
   "receiveSendNetworkFee": "Odeslat Síťový poplatek",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "autoswapRecipientWalletInfoText": "Vyberte, která Bitcoin peněženka obdrží převedené prostředky (vyžadováno)",
   "@autoswapRecipientWalletInfoText": {
@@ -1844,11 +1844,11 @@
   },
   "autoswapWarningOkButton": "ČEŠTINA",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "swapTitle": "Interní přenos",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "sendOutputTooSmall": "Výstup pod limitem prachu",
   "@sendOutputTooSmall": {
@@ -1933,7 +1933,7 @@
   },
   "sendErrorLiquidWalletRequired": "Tekutá peněženka musí být použita pro kapalinu na výměnu blesku",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "dcaSetupInsufficientBalance": "Nedostatečná rovnováha",
   "@dcaSetupInsufficientBalance": {
@@ -1955,9 +1955,9 @@
   "@seedsignerStep5": {
     "description": "SeedSigner troubleshooting tip 1"
   },
-  "transactionSwapDescLnReceiveExpired": "Tento swap skončil. Jakékoliv finanční prostředky budou automaticky vráceny odesílateli.",
+  "transactionSwapDescLnReceiveExpired": "Tento transfer skončil. Jakékoliv finanční prostředky budou automaticky vráceny odesílateli.",
   "@transactionSwapDescLnReceiveExpired": {
-    "description": "Description for expired Lightning receive swap"
+    "description": "Description for expired Lightning receive transfer"
   },
   "sellKYCApproved": "KYC schváleno",
   "@sellKYCApproved": {
@@ -1993,11 +1993,11 @@
   },
   "swapTransferPendingMessage": "Přenos je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "testBackupDecryptVault": "Decrypt klenba",
   "@testBackupDecryptVault": {
@@ -2017,7 +2017,7 @@
   },
   "totalFeeLabel": "Celkový poplatek",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "Zadejte adresu URL vašeho vlastního serveru mempool. Server bude validován před uložením.",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -2066,7 +2066,7 @@
   },
   "swapTransferTitle": "Čeština",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "testBackupSuccessTitle": "Test úspěšně dokončil!",
   "@testBackupSuccessTitle": {
@@ -2090,7 +2090,7 @@
   },
   "transactionSwapProgressClaim": "Čeština",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "exchangeHomeDeposit": "Vklad",
   "@exchangeHomeDeposit": {
@@ -2221,7 +2221,7 @@
   },
   "sendErrorAmountBelowMinimum": "Množství pod minimálním limitem výměny: {minLimit} seděly",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -2368,7 +2368,7 @@
   },
   "transactionLabelReceiveAmount": "Přijmout částku",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "sendServerNetworkFees": "Server Síťové poplatky",
   "@sendServerNetworkFees": {
@@ -2479,9 +2479,9 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "transactionLabelSwapStatus": "Stav Swapu",
+  "transactionLabelSwapStatus": "Stav Transferu",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "Hledat",
   "@walletDeletionConfirmationCancelButton": {
@@ -2537,7 +2537,7 @@
   },
   "swapYouPay": "Zaplatit",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "Šifrovaná klenba",
   "@encryptedVaultTitle": {
@@ -2577,9 +2577,9 @@
   "@payBillerName": {
     "description": "Label for biller name field"
   },
-  "sendErrorBitcoinWalletRequired": "Bitcoin peněženka musí být použita pro Bitcoin na blesk swapu",
+  "sendErrorBitcoinWalletRequired": "Bitcoin peněženka musí být použita pro Bitcoin na blesk transferu",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "Správa zabezpečení PIN",
   "@pinCodeManageTitle": {
@@ -2595,7 +2595,7 @@
   },
   "transactionSwapDescLnSendCompleted": "Splatek blesku byla úspěšně odeslána! Vaše výměna je nyní kompletní.",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "exchangeDcaCancelDialogCancelButton": "Hledat",
   "@exchangeDcaCancelDialogCancelButton": {
@@ -2732,7 +2732,7 @@
   },
   "sendSwapRefundInProgress": "Výměna vracení peněz v průběhu",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "exchangeKycLimited": "Čeština",
   "@exchangeKycLimited": {
@@ -2742,7 +2742,7 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "swapErrorAmountBelowMinimum": "Množství je pod minimálním množstvím swapu: {min} seděly",
+  "swapErrorAmountBelowMinimum": "Množství je pod minimálním množstvím transferu: {min} seděly",
   "@swapErrorAmountBelowMinimum": {
     "description": "Error shown when amount is below minimum",
     "placeholders": {
@@ -2887,9 +2887,9 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "Swap není dosud iniciován.",
+  "coreSwapsLnSendPending": "Transfer není dosud iniciován.",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "recoverbullVaultCreatedSuccess": "Vault vytvořil úspěšně",
   "@recoverbullVaultCreatedSuccess": {
@@ -2930,7 +2930,7 @@
   },
   "transactionSwapProgressInitiated": "Hledat",
   "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
+    "description": "Transfer progress step: initiated"
   },
   "fundExchangeTitle": "Financování",
   "@fundExchangeTitle": {
@@ -3039,7 +3039,7 @@
   },
   "autoswapWarningDontShowAgain": "Nevykazujte tuto varování znovu.",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "sellInsufficientBalance": "Nedostatečná vyváženost peněženky",
   "@sellInsufficientBalance": {
@@ -3210,7 +3210,7 @@
   },
   "transferIdLabel": "Přenos ID",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "Vyberte peněženku",
   "@paySelectActiveWallet": {
@@ -3245,9 +3245,9 @@
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "sendSwapInitiated": "Swap Initiated",
+  "sendSwapInitiated": "Transfer Initiated",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "Je kriticky důležité, abyste neuložili záložní klíč na stejném místě, kde uložíte záložní soubor. Vždy je uložíte na samostatných zařízeních nebo samostatných poskytovatelů cloudu.",
   "@backupSettingsKeyWarningMessage": {
@@ -3404,7 +3404,7 @@
   },
   "receiveSwapId": "Změna ID",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "transactionLabelCompletedAt": "Kompletní",
   "@transactionLabelCompletedAt": {
@@ -3416,11 +3416,11 @@
   },
   "swapTransferRefundInProgressTitle": "Přeneste vracení peněz na Postup",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "Přijmout",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "recoverbullSelectCustomLocationProvider": "Vlastní umístění",
   "@recoverbullSelectCustomLocationProvider": {
@@ -3529,7 +3529,7 @@
   },
   "autoswapInfoSettingsButton": "Konfigurace nastavení",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "withdrawRecipientsNewTab": "Nový příjemce",
   "@withdrawRecipientsNewTab": {
@@ -3665,7 +3665,7 @@
   "@fundExchangeSepaTitle": {
     "description": "Screen title for SEPA transfer payment details"
   },
-  "autoswapLoadSettingsError": "Přetížené nastavení automatického swapu",
+  "autoswapLoadSettingsError": "Přetížené nastavení automatického transferu",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
   },
@@ -3802,9 +3802,9 @@
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
   },
-  "autoswapWarningCardSubtitle": "Swap bude spuštěn, pokud vaše Instant Payments zůstatek přesahuje 0,02 BTC.",
+  "autoswapWarningCardSubtitle": "Transfer bude spuštěn, pokud vaše Instant Payments zůstatek přesahuje 0,02 BTC.",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "dcaFrequencyDaily": "den",
   "@dcaFrequencyDaily": {
@@ -3812,7 +3812,7 @@
   },
   "transactionLabelSendAmount": "Odeslat částku",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "testedStatus": "Testováno",
   "@testedStatus": {
@@ -3844,7 +3844,7 @@
   },
   "transactionLabelReceiveNetworkFee": "Obdržet Síťový poplatek",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "bitboxScreenTroubleshootingTitle": "BitBox02 Odstraňování problémů",
   "@bitboxScreenTroubleshootingTitle": {
@@ -3928,7 +3928,7 @@
   },
   "transactionSwapDescChainExpired": "Tento převod vyprší. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
   "payValidating": "Platnost...",
   "@payValidating": {
@@ -3948,7 +3948,7 @@
   },
   "transactionLabelSwapStatusRefunded": "Vracení peněz",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "Blesková faktura",
   "@receiveLightningInvoice": {
@@ -4004,7 +4004,7 @@
   },
   "sendErrorAmountAboveSwapLimits": "Výše uvedené limity pro výměnu",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "Šifrovaný klenba vás brání od zlodějů, kteří chtějí ukrást zálohu. Také vás brání z omylu, že ztratíte zálohu, protože bude uložen ve vašem cloudu. Poskytovatelé cloudových úložišť jako Google nebo Apple nebude mít přístup k vaší Bitcoin, protože šifrovací heslo je příliš silná. Existuje malá možnost, že webový server, který ukládá šifrovací klíč vaší zálohy, může být ohrožen. V tomto případě může být bezpečnost zálohy ve vašem cloudovém účtu ohrožena.",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -4012,7 +4012,7 @@
   },
   "coreSwapsChainCompletedRefunded": "Převod byl vrácen.",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "payClabeHint": "Zadejte číslo CLABE",
   "@payClabeHint": {
@@ -4080,7 +4080,7 @@
   },
   "swapTransferRefundedTitle": "Převod vracení poplatků",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "Připojil se k zařízení BitBox. Prosím zkontrolujte, zda je vaše připojení.",
   "@bitboxErrorConnectionFailed": {
@@ -4256,7 +4256,7 @@
   },
   "sendErrorAmountAboveMaximum": "Výše nad maximálním limitem výměny: {maxLimit} seděly",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
@@ -4305,9 +4305,9 @@
   "@bitcoinSettingsMempoolServerTitle": {
     "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
-  "transactionSwapDescLnReceiveDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
+  "transactionSwapDescLnReceiveDefault": "Váš transfer je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnReceiveDefault": {
-    "description": "Default description for Lightning receive swap"
+    "description": "Default description for Lightning receive transfer"
   },
   "selectCoinsManuallyLabel": "Vyberte mince ručně",
   "@selectCoinsManuallyLabel": {
@@ -4393,9 +4393,9 @@
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
   },
-  "paySwapFee": "Swap poplatek",
+  "paySwapFee": "Transfer poplatek",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "Nastavení směnného účtu",
   "@exchangeAccountSettingsTitle": {
@@ -4488,7 +4488,7 @@
   },
   "transactionSwapDoNotUninstall": "Odinstalujte aplikaci, dokud se nevymění.",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "payDefaultCommentHint": "Zadejte výchozí komentář",
   "@payDefaultCommentHint": {
@@ -4540,7 +4540,7 @@
   },
   "sendTransferFee": "Transfer poplatek",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "Číslo účtu IBAN (pouze kolo)",
   "@fundExchangeLabelIbanCrcOnly": {
@@ -4554,9 +4554,9 @@
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
   },
-  "sendInitiatingSwap": "Zahájení swapu...",
+  "sendInitiatingSwap": "Zahájení transferu...",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "Bleskové sítě",
   "@sellLightningNetwork": {
@@ -4648,7 +4648,7 @@
   },
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "Detaily banky",
   "@sellBankDetails": {
@@ -4664,7 +4664,7 @@
   },
   "coreSwapsStatusPending": "Čeká na zpracování",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "electrumDragToReorder": "(Dlouhý stisk přetažení a změny priority)",
   "@electrumDragToReorder": {
@@ -4674,9 +4674,9 @@
   "@keystoneStep4": {
     "description": "Keystone troubleshooting header"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap spustí, když vaše zůstatek přesahuje tuto maximální rovnováhu.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer spustí, když vaše zůstatek přesahuje tuto maximální rovnováhu.",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "exchangeLandingDisclaimerNotAvailable": "Služby výměny kryptoměn nejsou k dispozici v mobilní aplikaci Bull Bitcoin.",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -4690,13 +4690,13 @@
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
   },
-  "swapErrorAmountExceedsMaximum": "Množství překračuje maximální částku swapu",
+  "swapErrorAmountExceedsMaximum": "Množství překračuje maximální částku transferu",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
-  "transactionLabelTotalSwapFees": "Celkové poplatky za Swap",
+  "transactionLabelTotalSwapFees": "Celkové poplatky za Transfer",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "Čeština",
   "@errorLabel": {
@@ -4770,35 +4770,35 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit transfer.",
   "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
-  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro swapy.",
+  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro transfery.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "Nejsou k dispozici žádné údaje o rovnováze",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
   },
-  "autoswapWarningCardTitle": "Autoswap je povoleno",
+  "autoswapWarningCardTitle": "Autotransfer je povoleno",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "coreSwapsChainCompletedSuccess": "Transfer je úspěšně dokončena.",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "physicalBackupRecommendation": "Fyzická záloha: ",
   "@physicalBackupRecommendation": {
@@ -5050,7 +5050,7 @@
   },
   "autoswapWarningExplanation": "Když váš zůstatek překračuje maximální rovnováhu, bude spuštěna výměna. Cílová rovnováha bude udržována v peněžence Instant Payments a zbývající částka bude vyměněna do vaší Secure Bitcoin Peněženka.",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "recoverbullVaultRecoveryTitle": "Obnovení obnovit obnovení klenby",
   "@recoverbullVaultRecoveryTitle": {
@@ -5062,11 +5062,11 @@
   },
   "transactionSwapDescChainClaimable": "Potvrzovací transakce byla potvrzena. Nyní prohlašujete, že finanční prostředky k dokončení vašeho převodu.",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
-  "sendSwapDetails": "Detaily Swapu",
+  "sendSwapDetails": "Detaily Transferu",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "Obnovit peněženku přes 12 slov.",
   "@onboardingPhysicalBackupDescription": {
@@ -5147,7 +5147,7 @@
   },
   "transactionSwapDescChainRefundable": "Přenos bude vrácen. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "sendPaymentWillTakeTime": "Platba bude trvat čas",
   "@sendPaymentWillTakeTime": {
@@ -5390,7 +5390,7 @@
   },
   "transactionSwapDescLnReceivePending": "Vaše výměna byla zahájena. Na bleskové síti čekáme platby.",
   "@transactionSwapDescLnReceivePending": {
-    "description": "Description for pending Lightning receive swap"
+    "description": "Description for pending Lightning receive transfer"
   },
   "tryAgainButton": "Vyzkoušejte znovu",
   "@tryAgainButton": {
@@ -5402,7 +5402,7 @@
   },
   "swapConfirmTitle": "Potvrzení převodu",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "Informace ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -5606,11 +5606,11 @@
   },
   "transactionSwapDescChainCompleted": "Váš převod byl úspěšně dokončen! Finanční prostředky by měly být k dispozici ve vaší peněžence.",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
-  "coreSwapsLnSendRefundable": "Swap je připraven na vrácení peněz.",
+  "coreSwapsLnSendRefundable": "Transfer je připraven na vrácení peněz.",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "backupInstruction2": "Bez zálohování, pokud ztratíte nebo rozbijete telefon, nebo pokud odinstalovat aplikaci Bull Bitcoin, vaše bitcoiny budou navždy ztraceny.",
   "@backupInstruction2": {
@@ -5783,9 +5783,9 @@
   "@arkSettleTitle": {
     "description": "Settle bottom sheet title"
   },
-  "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento swap pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
+  "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento transfer pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "Blokstream Jade PSBT Čeština",
   "@psbtFlowJadeTitle": {
@@ -5871,9 +5871,9 @@
   "@backupWalletErrorFileSystemPath": {
     "description": "Error when file system path selection fails"
   },
-  "coreSwapsLnSendCanCoop": "Swap bude dokončit momentálně.",
+  "coreSwapsLnSendCanCoop": "Transfer bude dokončit momentálně.",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "electrumServerNotUsed": "Není používáno",
   "@electrumServerNotUsed": {
@@ -6006,9 +6006,9 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap je připraven k uplatnění.",
+  "coreSwapsLnReceiveClaimable": "Transfer je připraven k uplatnění.",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "fundExchangeJurisdictionEurope": "🇪🇺 Evropa (SEPA)",
   "@fundExchangeJurisdictionEurope": {
@@ -6101,7 +6101,7 @@
   },
   "transactionSwapProgressFundsClaimed": "Fondy\nReklamace",
   "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
+    "description": "Transfer progress step: funds claimed"
   },
   "recoverbullSelectAppleIcloud": "Apple iCloud",
   "@recoverbullSelectAppleIcloud": {
@@ -6124,9 +6124,9 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Swap bude dokončit momentálně.",
+  "coreSwapsLnReceiveCanCoop": "Transfer bude dokončit momentálně.",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "withdrawRecipientsNoRecipients": "Žádné příjemce, které nejsou k dispozici.",
   "@withdrawRecipientsNoRecipients": {
@@ -6134,7 +6134,7 @@
   },
   "transactionSwapProgressPaymentMade": "Platba\nČeština",
   "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
+    "description": "Transfer progress step: payment made"
   },
   "importQrDeviceSpecterStep4": "Postupujte podle pokynů podle zvolené metody",
   "@importQrDeviceSpecterStep4": {
@@ -6142,7 +6142,7 @@
   },
   "coreSwapsChainPending": "Převod není dosud iniciován.",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "importWalletImportWatchOnly": "Importovat hodinky pouze",
   "@importWalletImportWatchOnly": {
@@ -6189,9 +6189,9 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap je aktivní",
+  "autoswapInfoTitle": "Autotransfer je aktivní",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "transactionLabelPayjoinStatus": "Stav Payjoin",
   "@transactionLabelPayjoinStatus": {
@@ -6239,7 +6239,7 @@
   },
   "totalFeesLabel": "Celkové poplatky",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "Vaše platba byla zahájena a příjemci obdrží prostředky po provedení platby 1 potvrzení o řetězci.",
   "@payInProgressDescription": {
@@ -6301,7 +6301,7 @@
   },
   "coreSwapsChainRefundable": "Transfer je připraven k vrácení peněz.",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "buyInputCompleteKyc": "Kompletní KYC",
   "@buyInputCompleteKyc": {
@@ -6309,7 +6309,7 @@
   },
   "transactionFeesTotalDeducted": "To je celkový poplatek odečtený z výše uvedené částky",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "autoswapMaxFee": "Max Transfer poplatek",
   "@autoswapMaxFee": {
@@ -6564,13 +6564,13 @@
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails"
   },
-  "receiveBoltzSwapFee": "Boltz Swap poplatek",
+  "receiveBoltzSwapFee": "Boltz Transfer poplatek",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "swapInfoBanner": "Přenos Bitcoin hladce mezi peněženky. Pouze udržet prostředky v Instant Payment Peněženka na jednodenní výdaje.",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "payRBFEnabled": "RBF povoleno",
   "@payRBFEnabled": {
@@ -6594,7 +6594,7 @@
   },
   "sendSwapTimeout": "Vyměňte čas ven",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "Síťové poplatky",
   "@networkFeesLabel": {
@@ -6604,9 +6604,9 @@
   "@backupWalletPhysicalBackupDescription": {
     "description": "Description of physical backup method"
   },
-  "sendSwapInProgressBitcoin": "Swap je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
+  "sendSwapInProgressBitcoin": "Transfer je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "electrumDeleteServerTitle": "Odstranit vlastní server",
   "@electrumDeleteServerTitle": {
@@ -6711,7 +6711,7 @@
   },
   "transactionSwapDescLnReceiveCompleted": "Vaše výměna byla úspěšně dokončena! Finanční prostředky by měly být k dispozici ve vaší peněžence.",
   "@transactionSwapDescLnReceiveCompleted": {
-    "description": "Description for completed Lightning receive swap"
+    "description": "Description for completed Lightning receive transfer"
   },
   "psbtFlowSignTransaction": "Přihlášení",
   "@psbtFlowSignTransaction": {
@@ -6745,13 +6745,13 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap byl vrácen.",
+  "coreSwapsLnSendCompletedRefunded": "Transfer byl vrácen.",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
-  "transactionSwapInfoClaimableSwap": "Výměna bude automaticky dokončena během několika sekund. Pokud ne, můžete zkusit ruční reklamaci kliknutím na tlačítko \"Retry Swap Claim\".",
+  "transactionSwapInfoClaimableSwap": "Výměna bude automaticky dokončena během několika sekund. Pokud ne, můžete zkusit ruční reklamaci kliknutím na tlačítko \"Retry Transfer Claim\".",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "mempoolCustomServerLabel": "ČEŠTINA",
   "@mempoolCustomServerLabel": {
@@ -6997,7 +6997,7 @@
   },
   "coreSwapsChainFailed": "Převod Failed.",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "Přidat poznámku",
   "@transactionDetailAddNote": {
@@ -7178,9 +7178,9 @@
       }
     }
   },
-  "walletDeletionErrorOngoingSwaps": "Nemůžete smazat peněženku s probíhajícími swapy.",
+  "walletDeletionErrorOngoingSwaps": "Nemůžete smazat peněženku s probíhajícími transfery.",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "Připojení k BitBoxu",
   "@bitboxScreenConnecting": {
@@ -7192,7 +7192,7 @@
   },
   "transactionLabelServerNetworkFees": "Server Síťové poplatky",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "importQrDeviceSeedsignerStep10": "Nastavení kompletní",
   "@importQrDeviceSeedsignerStep10": {
@@ -7285,7 +7285,7 @@
   },
   "coreSwapsChainPaid": "Počkejte na platbu poskytovatele transferu, abyste obdrželi potvrzení. To může trvat až do úplného dokončení.",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "importQrDevicePassportStep6": "Zvolte \"Single-sig\"",
   "@importQrDevicePassportStep6": {
@@ -7339,7 +7339,7 @@
   },
   "transactionSwapDescLnSendPaid": "Vaše on-chain transakce byla vysílána. Po 1 potvrzení bude platba blesku odeslána.",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "exchangeFileUploadAddMoreFiles": "Přidat více souborů",
   "@exchangeFileUploadAddMoreFiles": {
@@ -7347,7 +7347,7 @@
   },
   "transactionSwapDescChainDefault": "Váš přenos je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "onboardingBullBitcoin": "Čeština",
   "@onboardingBullBitcoin": {
@@ -7355,7 +7355,7 @@
   },
   "coreSwapsChainClaimable": "Transfer je připraven na reklamaci.",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "dcaNetworkLightning": "Bleskové sítě",
   "@dcaNetworkLightning": {
@@ -7391,7 +7391,7 @@
   },
   "transactionLabelTransferId": "Přenos ID",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "Odeslat",
   "@sendTitle": {
@@ -7474,7 +7474,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swapy budou mít čas potvrdit.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfery budou mít čas potvrdit.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7514,9 +7514,9 @@
   "@rbfEstimatedDelivery": {
     "description": "Estimated confirmation time for fastest fee"
   },
-  "sendSwapCancelled": "Swap zrušen",
+  "sendSwapCancelled": "Transfer zrušen",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "nikdy ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -7533,7 +7533,7 @@
   },
   "swapTransferCompletedTitle": "Transfer dokončeno",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "torSettingsStatusDisconnected": "Odpojení",
   "@torSettingsStatusDisconnected": {
@@ -7597,11 +7597,11 @@
   },
   "sendTypeSwap": "Čeština",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
-  "sendErrorAmountExceedsMaximum": "Množství překračuje maximální částku swapu",
+  "sendErrorAmountExceedsMaximum": "Množství překračuje maximální částku transferu",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "Transakce zaregistrovaná úspěšně",
   "@bitboxActionSignTransactionSuccess": {
@@ -7667,7 +7667,7 @@
   },
   "transactionHistoryTitle": "Historie transakcí",
   "transactionHistoryHeading": "Historie transakcí",
-  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a transfery) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
   "exportTransactionsStartDate": "Datum od",
   "exportTransactionsEndDate": "Datum do",
   "exportTransactionsAnyDate": "Jakékoli",
@@ -7712,7 +7712,7 @@
   },
   "sendNetworkFeesLabel": "Odeslat poplatky",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "electrumUnknownError": "Došlo k chybě",
   "@electrumUnknownError": {
@@ -7722,9 +7722,9 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "autoswapBaseBalanceInfoText": "Po autoswapu se vrátí vaše okamžitý zůstatek platební peněženky.",
+  "autoswapBaseBalanceInfoText": "Po autotransferu se vrátí vaše okamžitý zůstatek platební peněženky.",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "recoverbullSelectDecryptVault": "Decrypt klenba",
   "@recoverbullSelectDecryptVault": {
@@ -7768,9 +7768,9 @@
   "@receiveTitle": {
     "description": "Main screen title for receive feature"
   },
-  "transactionSwapInfoRefundableSwap": "Tento swap se automaticky vrátí během několika sekund. Pokud ne, můžete zkusit manuální vrácení kliknutím na tlačítko \"Retry Swap vracení peněz\".",
+  "transactionSwapInfoRefundableSwap": "Tento transfer se automaticky vrátí během několika sekund. Pokud ne, můžete zkusit manuální vrácení kliknutím na tlačítko \"Retry Transfer vracení peněz\".",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "payCancelPayment": "Platba",
   "@payCancelPayment": {
@@ -8077,7 +8077,7 @@
   },
   "transactionFeesDeductedFrom": "Tyto poplatky budou odečteny z výše uvedené částky",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "buyConfirmYouPay": "Platit",
   "@buyConfirmYouPay": {
@@ -8150,7 +8150,7 @@
   },
   "transactionLabelSendNetworkFees": "Odeslat poplatky",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "transactionLabelAddress": "Čeština",
   "@transactionLabelAddress": {
@@ -8224,7 +8224,7 @@
   },
   "coreSwapsChainExpired": "Převod Expiredice",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "Výchozí komentář (volitelně)",
   "@payDefaultCommentOptional": {
@@ -8556,9 +8556,9 @@
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
   },
-  "autoswapWarningDescription": "Autoswap zajišťuje, že nemusíte náhodou držet příliš mnoho peněz v Instant Payment Peněženka, která není bezpečná pro dlouhodobé skladování.",
+  "autoswapWarningDescription": "Autotransfer zajišťuje, že nemusíte náhodou držet příliš mnoho peněz v Instant Payment Peněženka, která není bezpečná pro dlouhodobé skladování.",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "fundExchangeSinpeAddedToBalance": "Jakmile je platba odeslána, bude přidána do zůstatku na účtu.",
   "@fundExchangeSinpeAddedToBalance": {
@@ -8580,9 +8580,9 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "transactionDetailLabelSwapStatus": "Stav Swapu",
+  "transactionDetailLabelSwapStatus": "Stav Transferu",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "Cestovní pas vám ukáže vlastní QR kód.",
   "@passportStep10": {
@@ -8808,9 +8808,9 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap je připraven na vrácení peněz.",
+  "coreSwapsLnReceiveRefundable": "Transfer je připraven na vrácení peněz.",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "bitcoinSettingsElectrumServerTitle": "Nastavení serveru Electrum",
   "@bitcoinSettingsElectrumServerTitle": {
@@ -8897,9 +8897,9 @@
   "@torSettingsStatusUnknown": {
     "description": "Status title when Tor status is unknown"
   },
-  "sendConfirmSwap": "Potvrzení Swapu",
+  "sendConfirmSwap": "Potvrzení Transferu",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "Přihlásit se - Brzy",
   "@exchangeLogoutComingSoon": {
@@ -9029,7 +9029,7 @@
   },
   "receiveSwapID": "Změna ID",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Nastavení Bitcoinu",
   "@settingsBitcoinSettingsTitle": {
@@ -9321,7 +9321,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "Výše uvedené limity pro výměnu",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "Privátní platba",
   "@payPrivatePayment": {
@@ -9365,9 +9365,9 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "autoswapWarningSettingsLink": "Vezměte mi na nastavení autoswap",
+  "autoswapWarningSettingsLink": "Vezměte mi na nastavení autotransfer",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "payLiquidNetwork": "Tekutý síť",
   "@payLiquidNetwork": {
@@ -9690,7 +9690,7 @@
   },
   "transactionSwapProgressBroadcasted": "Vysílání",
   "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
+    "description": "Transfer progress step: transaction broadcasted"
   },
   "exchangeBitcoinWalletsSaveSuccess": "Peněženka adresa úspěšně zachránila",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -9800,9 +9800,9 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "Swap zatím nebyl iniciován.",
+  "coreSwapsLnReceivePending": "Transfer zatím nebyl iniciován.",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "arkSendConfirmMessage": "Před odesláním prosím potvrďte podrobnosti o vaší transakci.",
   "@arkSendConfirmMessage": {
@@ -9822,7 +9822,7 @@
   },
   "transactionSwapInfoFailedExpired": "Máte-li jakékoli dotazy nebo připomínky, kontaktujte prosím zákaznický servis.",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "memorizePasswordWarning": "Musíte zapamatovat tento {pinOrPassword} obnovit přístup k vaší peněžence. Musí být nejméně 6 číslic. Pokud ztratíte tuto {pinOrPassword} nemůžete obnovit zálohu.",
   "@memorizePasswordWarning": {
@@ -10067,9 +10067,9 @@
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
   },
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "ID Tekuté transakce",
   "@transactionLabelLiquidTransactionId": {
@@ -10087,9 +10087,9 @@
   "@allSeedViewSecurityWarningTitle": {
     "description": "Title for security warning dialog"
   },
-  "sendSwapFeeEstimate": "Odhadované swapové poplatky: {amount}",
+  "sendSwapFeeEstimate": "Odhadované transferové poplatky: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -10285,9 +10285,9 @@
   "@buyViewDetails": {
     "description": "Button to view order details"
   },
-  "paySwapFailed": "Swap selhal",
+  "paySwapFailed": "Transfer selhal",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "autoswapMaxFeeLabel": "Max Transfer poplatek",
   "@autoswapMaxFeeLabel": {
@@ -10415,9 +10415,9 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "Swap je dokončen.",
+  "coreSwapsLnReceiveCompleted": "Transfer je dokončen.",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "backupWalletErrorGoogleDriveSave": "Neúspěšné uložit disk Google",
   "@backupWalletErrorGoogleDriveSave": {
@@ -10552,7 +10552,7 @@
   },
   "transactionSwapDescChainPaid": "Vaše transakce byla vysílána. Nyní čekáme na uzavření transakce.",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "mempoolSettingsUseForFeeEstimation": "Použití pro stanovení cen",
   "@mempoolSettingsUseForFeeEstimation": {
@@ -10572,7 +10572,7 @@
   },
   "swapProgressTitle": "Interní přenos",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "coldcardStep2": "Přidejte pasfrase, pokud máte jeden (volitelně)",
   "@coldcardStep2": {
@@ -10597,7 +10597,7 @@
   },
   "autoswapInfoDismissButton": "Já to, ne ukázat znovu",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "importQrDevicePassportStep12": "Nastavení kompletní.",
   "@importQrDevicePassportStep12": {
@@ -10710,13 +10710,13 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap poplatek",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer poplatek",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
-  "transactionSwapDescLnReceiveFailed": "Byl problém s vaším swapem. Máte-li finanční prostředky vráceny do 24 hodin.",
+  "transactionSwapDescLnReceiveFailed": "Byl problém s vaším transferem. Máte-li finanční prostředky vráceny do 24 hodin.",
   "@transactionSwapDescLnReceiveFailed": {
-    "description": "Description for failed Lightning receive swap"
+    "description": "Description for failed Lightning receive transfer"
   },
   "sellOrderNumber": "Číslo objednávky",
   "@sellOrderNumber": {
@@ -10737,7 +10737,7 @@
   },
   "transactionDetailSwapProgress": "Výměny",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "exchangeAppSettingsEmailNotificationsDescription": "Získejte upozornění na e-mail pro objednávky a aktualizace účtů",
   "@exchangeAppSettingsEmailNotificationsDescription": {
@@ -10761,7 +10761,7 @@
   },
   "swapTransferPendingTitle": "Převod Pending",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "Vlastní server úspěšně zachránil",
   "@mempoolCustomServerSaveSuccess": {
@@ -10769,7 +10769,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "Zůstatek příliš nízký pro minimální výměnu množství",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "testBackupSuccessMessage": "Jste schopni obnovit přístup k ztracené Bitcoin peněženku",
   "@testBackupSuccessMessage": {
@@ -11027,9 +11027,9 @@
   "@recoverbullErrorFetchKeyFailed": {
     "description": "Error message when server key fetch fails"
   },
-  "sendSwapInProgressInvoice": "Swap je v průběhu. Faktura bude vyplacena během několika sekund.",
+  "sendSwapInProgressInvoice": "Transfer je v průběhu. Faktura bude vyplacena během několika sekund.",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "Čeština",
   "@arkReceiveButton": {
@@ -11059,17 +11059,17 @@
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
   },
-  "paySwapInProgress": "Swap v průběhu...",
+  "paySwapInProgress": "Transfer v průběhu...",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "Všechny tři typy peněženek jsou synchronizovány a jejich zůstatek a transakce se objeví brzy. Počkejte, až se synchronizujte dokončuje nebo pokračujte v importu, pokud si nejste jisti, jaký typ peněženky chcete importovat.",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap je připraven k uplatnění.",
+  "coreSwapsLnSendClaimable": "Transfer je připraven k uplatnění.",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "fundExchangeMethodCrIbanCrcSubtitle": "Převod prostředků v Kostarické Colón (CRC)",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
@@ -11113,7 +11113,7 @@
   },
   "walletAutoTransferBlockedTitle": "Auto Transfer blokované",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "Blokstream Jade instrukce",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -11215,7 +11215,7 @@
   },
   "sendSwapTimeEstimate": "Odhadovaná doba: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -11248,7 +11248,7 @@
   },
   "coreSwapsActionClaim": "Čeština",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "Zařízení BitBox je nyní odemčeno a připraven k použití.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -11349,7 +11349,7 @@
   },
   "transactionSwapProgressInvoicePaid": "Čeština\nZaplaceno",
   "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
+    "description": "Transfer progress step: Lightning invoice paid"
   },
   "sendInsufficientFunds": "Nedostatečné prostředky",
   "@sendInsufficientFunds": {
@@ -11359,9 +11359,9 @@
   "@sendSuccessfullySent": {
     "description": "Title for successful send completion"
   },
-  "sendSwapAmount": "Swap částka",
+  "sendSwapAmount": "Transfer částka",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "autoswapTitle": "Nastavení automatického přenosu",
   "@autoswapTitle": {
@@ -11394,7 +11394,7 @@
   },
   "autoswapSettingsTitle": "Nastavení automatického přenosu",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "Zadejte jméno",
   "@payFirstNameHint": {
@@ -11422,11 +11422,11 @@
   },
   "transactionDetailLabelSwapId": "Změna ID",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
-  "sendSwapFailed": "Swap selhal. Vaše náhrada bude zpracována krátce.",
+  "sendSwapFailed": "Transfer selhal. Vaše náhrada bude zpracována krátce.",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "Chyba sítě. Prosím, zkuste to znovu",
   "@sellNetworkError": {
@@ -11508,7 +11508,7 @@
   },
   "transactionSwapDescLnReceivePaid": "Platba byla přijata! Nyní vysíláme transakci on-chain na peněženku.",
   "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
+    "description": "Description for paid Lightning receive transfer"
   },
   "transactionNoteUpdateButton": "Aktualizovat",
   "@transactionNoteUpdateButton": {
@@ -11657,9 +11657,9 @@
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
   },
-  "transactionSwapDescLnReceiveClaimable": "Byla potvrzena transakce na řetězci. Nyní prohlašujeme, že finanční prostředky dokončí váš swap.",
+  "transactionSwapDescLnReceiveClaimable": "Byla potvrzena transakce na řetězci. Nyní prohlašujeme, že finanční prostředky dokončí váš transfer.",
   "@transactionSwapDescLnReceiveClaimable": {
-    "description": "Description for claimable Lightning receive swap"
+    "description": "Description for claimable Lightning receive transfer"
   },
   "dcaPaymentMethodLabel": "Způsob platby",
   "@dcaPaymentMethodLabel": {
@@ -11877,7 +11877,7 @@
   },
   "sendReceiveAmount": "Přijmout částku",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "Test zotavení",
   "@recoverbullTestRecovery": {
@@ -12003,9 +12003,9 @@
   "@exchangeStatisticsTotalAmount": {
     "description": "Label for total amount statistic"
   },
-  "paySwapCompleted": "Swap dokončený",
+  "paySwapCompleted": "Transfer dokončený",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "Popis (volitelně)",
   "@receiveDescription": {
@@ -12093,9 +12093,9 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "transactionStatusSwapExpired": "Swap vypršel",
+  "transactionStatusSwapExpired": "Transfer vypršel",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "transactionPayjoinStatusCompleted": "Hotovo",
   "@transactionPayjoinStatusCompleted": {
@@ -12145,7 +12145,7 @@
   },
   "transactionSwapProgressCompleted": "Hotovo",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "receiveConfirmed": "Potvrzeno",
   "@receiveConfirmed": {
@@ -12198,7 +12198,7 @@
   },
   "transactionSwapProgressInProgress": "Zpracovávám",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "arkStatusConfirmed": "Potvrzeno",
   "@arkStatusConfirmed": {
@@ -12230,7 +12230,7 @@
   },
   "transactionSwapProgressConfirmed": "Potvrzeno",
   "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
+    "description": "Transfer progress step: confirmed"
   },
   "electrumCloseTooltip": "Zavřít",
   "@electrumCloseTooltip": {
@@ -12315,7 +12315,7 @@
   },
   "swapContinue": "Pokračovat",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "arkReceiveSegmentArk": "Ark",
   "@arkReceiveSegmentArk": {
@@ -12370,9 +12370,9 @@
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
   },
-  "transactionStatusSwapFailed": "Swap selhal.",
+  "transactionStatusSwapFailed": "Transfer selhal.",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "continueButton": "Pokračovat",
   "@continueButton": {
@@ -12524,7 +12524,7 @@
   "wizardJourneyTip3": "Připojte se k vlastnímu Bitcoin uzlu",
   "wizardJourneyTip4": "Připojte se k vlastnímu Mempool průzkumníku",
   "wizardJourneyTip5": "Převádějte mezi Bitcoinem a Liquid bez KYC",
-  "wizardJourneyTip6": "Přizpůsobte si nastavení autoswapu",
+  "wizardJourneyTip6": "Přizpůsobte si nastavení autotransferu",
   "wizardJourneyTip7": "Přepínejte mezi Bitcoinem (BTC) a Satoshis (sats)",
   "wizardJourneyTip8": "Vytvářejte air-gap transakce pro hardwarovou peněženku",
   "@wizardPageIndicator": {
@@ -12544,7 +12544,7 @@
   "legacyStorageIntroDescription": "Vaše peněženka běží na softwaru, který bude brzy ukončen. Nelze jej aktualizovat bez odinstalování a opětovné instalace aplikace.",
   "legacyStorageStepBackupWallet": "Zazálohujte si peněženku",
   "legacyStorageStepExportLabels": "Exportujte své štítky (pokud je máte)",
-  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny swapy jsou dokončené",
+  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny transfery jsou dokončené",
   "legacyStorageStepUninstall": "Odinstalujte aplikaci ze svého zařízení",
   "legacyStorageStepReinstall": "Stáhněte nejnovější verzi a znovu nainstalujte",
   "legacyStorageStepRestoreBackup": "Obnovte zálohu",
@@ -12559,7 +12559,7 @@
   "legacyStorageAreYouSureParagraphTwo": "Šifrovaná záloha (Encrypted Vault) trvá asi 1 minutu a nepotřebujete žádné speciální nástroje. Pro fyzickou zálohu vám stačí pero a papír.",
   "legacyStorageContinueWithoutBackupButton": "Pokračovat bez zálohy",
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
-  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
+  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení transferu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",

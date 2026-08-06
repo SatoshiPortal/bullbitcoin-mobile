@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.d
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
-import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -21,13 +20,7 @@ import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
@@ -81,10 +74,7 @@ enum SettingsRoute {
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings'),
-  theme('theme'),
-  autoswapSettings('autoswap-settings'),
-  swapRestore('swap-restore'),
-  swapRescue('swap-rescue');
+  theme('theme');
 
   final String path;
 
@@ -184,28 +174,6 @@ class SettingsRouter {
         builder: (context, state) => const BitcoinSettingsScreen(),
       ),
       GoRoute(
-        name: SettingsRoute.swapRestore.name,
-        path: SettingsRoute.swapRestore.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<SwapRestoreCubit>()..restore(),
-          child: const SwapRestoreScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.swapRescue.name,
-        path: SettingsRoute.swapRescue.path,
-        builder: (context, state) {
-          final restorable = state.extra! as RestorableSwap;
-          return BlocProvider(
-            create: (_) => SwapRescueCubit(
-              rescueSwapUsecase: locator<RescueSwapUsecase>(),
-              restored: restorable.swap,
-            ),
-            child: SwapRescueDetailsScreen(restorable: restorable),
-          );
-        },
-      ),
-      GoRoute(
         name: SettingsRoute.appSettings.name,
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
@@ -230,11 +198,6 @@ class SettingsRouter {
           BackupSettingsSettingsRouter.route,
           TestWalletBackupRouter.route,
         ],
-      ),
-      GoRoute(
-        name: SettingsRoute.autoswapSettings.name,
-        path: SettingsRoute.autoswapSettings.path,
-        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         path: SettingsRoute.walletDetailsWalletList.path,
@@ -273,8 +236,7 @@ class SettingsRouter {
                     listener: (context, state) {
                       BlurredDialog.show(
                         context: context,
-                        builder: (_) =>
-                            const FailedWalletDeletionAlertDialog(),
+                        builder: (_) => const FailedWalletDeletionAlertDialog(),
                       );
                     },
                   ),

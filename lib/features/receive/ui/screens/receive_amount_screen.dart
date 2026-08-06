@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,6 +57,7 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
             crossAxisAlignment: .stretch,
             children: [
               ReceiveAmountInput(focusNode: _amountNode),
+              const _ReceiveFailureMessage(),
               const _NoteTile(),
               ReceiveAmountContinueButton(
                 onContinueNavigation: widget.onContinueNavigation,
@@ -62,6 +65,28 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ReceiveFailureMessage extends StatelessWidget {
+  const _ReceiveFailureMessage();
+
+  @override
+  Widget build(BuildContext context) {
+    final failure = context.select<ReceiveBloc, ReceiveFailure?>(
+      (bloc) => bloc.state.failure,
+    );
+    if (failure == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BBText(
+        failure.toTranslated(context),
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: TextAlign.center,
       ),
     );
   }

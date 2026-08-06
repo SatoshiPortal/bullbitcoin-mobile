@@ -48,9 +48,9 @@
   "@translationWarningContributeButton": {
     "description": "Button to open Weblate translation platform"
   },
-  "transactionLabelSwapId": "Swap ID",
+  "transactionLabelSwapId": "Transfer ID",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "dcaChooseWalletTitle": "बिटकॉइन वॉलेट चुनें",
   "@dcaChooseWalletTitle": {
@@ -88,9 +88,9 @@
   "@jadeStep13": {
     "description": "Jade instruction for scanning signed PSBT"
   },
-  "transactionSwapDescLnSendPending": "आपका swap शुरू हो गया है। हम आपकी राशि लॉक करने के लिए ऑन-चेन लेनदेन प्रसारित कर रहे हैं।",
+  "transactionSwapDescLnSendPending": "आपका transfer शुरू हो गया है। हम आपकी राशि लॉक करने के लिए ऑन-चेन लेनदेन प्रसारित कर रहे हैं।",
   "@transactionSwapDescLnSendPending": {
-    "description": "Description for pending Lightning send swap"
+    "description": "Description for pending Lightning send transfer"
   },
   "payInstitutionNumber": "संस्था संख्या",
   "@payInstitutionNumber": {
@@ -114,7 +114,7 @@
   },
   "sendSendNetworkFee": "नेटवर्क शुल्क",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "exchangeDcaUnableToGetConfig": "डीसीए विन्यास प्राप्त करने में असमर्थ",
   "@exchangeDcaUnableToGetConfig": {
@@ -234,11 +234,11 @@
   },
   "transactionLabelPreimage": "Preimage",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "coreSwapsChainCanCoop": "स्थानांतरण अभी पूर्ण होगा।",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "importColdcardInstructionsStep2": "यदि लागू हो तो पासफ्राज दर्ज करें",
   "@importColdcardInstructionsStep2": {
@@ -258,7 +258,7 @@
   },
   "systemLabelAutoSwap": "ऑटो स्वैप",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "fundExchangeSinpeTitle": "SINPE स्थानांतरण",
   "@fundExchangeSinpeTitle": {
@@ -315,7 +315,7 @@
   },
   "transactionSwapDescChainPending": "आपका ट्रांसफर बनाया गया है लेकिन अभी शुरू नहीं हुआ है।",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "coreScreensTransferFeeLabel": "स्थानांतरण शुल्क",
   "@coreScreensTransferFeeLabel": {
@@ -329,9 +329,9 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionSwapStatusSwapStatus": "Swap स्थिति",
+  "transactionSwapStatusSwapStatus": "Transfer स्थिति",
   "@transactionSwapStatusSwapStatus": {
-    "description": "Header for swap status section"
+    "description": "Header for transfer status section"
   },
   "arkAboutDurationSeconds": "{seconds} सेकंड",
   "@arkAboutDurationSeconds": {
@@ -380,7 +380,7 @@
   },
   "receiveServerNetworkFees": "सर्वर नेटवर्क शुल्क",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "importQrDeviceImporting": "आयात वॉलेट..।",
   "@importQrDeviceImporting": {
@@ -433,7 +433,7 @@
   },
   "transactionFilterTransfer": "स्थानांतरण",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "recoverbullSelectVaultImportSuccess": "आपका वॉल्ट सफलतापूर्वक आयात किया गया था",
   "@recoverbullSelectVaultImportSuccess": {
@@ -561,9 +561,9 @@
   "@importQrDeviceSpecterName": {
     "description": "Name of Specter device"
   },
-  "transactionDetailLabelSwapFees": "Swap शुल्क",
+  "transactionDetailLabelSwapFees": "Transfer शुल्क",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "broadcastSignedTxFee": "शुल्क",
   "@broadcastSignedTxFee": {
@@ -620,9 +620,9 @@
   "@payServiceFee": {
     "description": "Label for service provider fee"
   },
-  "transactionStatusSwapExpired": "Swap समयसीमा समाप्त",
+  "transactionStatusSwapExpired": "Transfer समयसीमा समाप्त",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "swapAmountPlaceholder": "0",
   "@swapAmountPlaceholder": {
@@ -941,9 +941,9 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "Swap समयसीमा समाप्त",
+  "coreSwapsLnSendExpired": "Transfer समयसीमा समाप्त",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
   "sellSendPaymentUsdBalance": "USD शेष",
   "@sellSendPaymentUsdBalance": {
@@ -1027,7 +1027,7 @@
   },
   "coreSwapsChainFailedRefunding": "स्थानांतरण शीघ्र ही वापस किया जाएगा।",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "राशि चुनें",
   "@sendSelectAmount": {
@@ -1135,7 +1135,7 @@
   },
   "transactionSwapDescChainFailed": "आपके ट्रांसफर में कोई समस्या आई। यदि 24 घंटों के भीतर फंड वापस नहीं मिले तो कृपया सहायता से संपर्क करें।",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "testBackupWarningMessage": "बैकअप के बिना, आप अंततः अपने पैसे तक पहुंच सकते हैं। बैकअप करना महत्वपूर्ण है।।",
   "@testBackupWarningMessage": {
@@ -1161,9 +1161,9 @@
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
   },
-  "autoswapWarningTitle": "Autoswap निम्नलिखित सेटिंग्स के साथ सक्षम है:",
+  "autoswapWarningTitle": "Autotransfer निम्नलिखित सेटिंग्स के साथ सक्षम है:",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "seedsignerStep1": "अपने बीजगणित डिवाइस को चालू करें",
   "@seedsignerStep1": {
@@ -1177,9 +1177,9 @@
   "@transactionLabelStatus": {
     "description": "Label for transaction status"
   },
-  "transactionSwapDescLnSendDefault": "आपका swap प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
+  "transactionSwapDescLnSendDefault": "आपका transfer प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "recoverbullErrorMissingBytes": "Tor प्रतिक्रिया से bytes लापता। लेकिन अगर मुद्दा जारी रहता है, तो यह टोर के साथ कुछ उपकरणों के लिए एक ज्ञात मुद्दा है।।",
   "@recoverbullErrorMissingBytes": {
@@ -1199,7 +1199,7 @@
   },
   "sendSendAmount": "राशि भेजना",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "चुने गए UTXO आवश्यक राशि को कवर नहीं करते",
   "@sendSelectedUtxosInsufficient": {
@@ -1207,7 +1207,7 @@
   },
   "swapErrorBalanceTooLow": "न्यूनतम स्वैप राशि के लिए शेष बहुत कम",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "वे किसी अन्य प्लेटफॉर्म पर Bitcoin भेजने के लिए कह रहे हैं",
   "@fundExchangeWarningTactic5": {
@@ -1279,7 +1279,7 @@
   },
   "payRequiresSwap": "इस भुगतान की आवश्यकता है एक स्वैप",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "2FA और पासवर्ड प्रबंधित करें",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -1289,9 +1289,9 @@
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
   },
-  "transactionSwapDescLnSendFailed": "आपके swap में कोई समस्या हुई। आपकी राशि स्वचालित रूप से आपके वॉलेट में वापस की जाएगी।",
+  "transactionSwapDescLnSendFailed": "आपके transfer में कोई समस्या हुई। आपकी राशि स्वचालित रूप से आपके वॉलेट में वापस की जाएगी।",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "sendCoinAmount": "राशि: {amount}",
   "@sendCoinAmount": {
@@ -1324,7 +1324,7 @@
   },
   "sendErrorSwapFeesNotLoaded": "स्वैप फीस लोड नहीं है",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "कॉपी करें",
   "@walletDetailsCopyButton": {
@@ -1379,9 +1379,9 @@
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
   },
-  "transactionSwapDescLnSendExpired": "यह swap समाप्त हो गया है। आपके फंड स्वचालित रूप से आपके wallet में वापस कर दिए जाएंगे।",
+  "transactionSwapDescLnSendExpired": "यह transfer समाप्त हो गया है। आपके फंड स्वचालित रूप से आपके wallet में वापस कर दिए जाएंगे।",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "testBackupButton": "टेस्ट बैकअप",
   "@testBackupButton": {
@@ -1401,7 +1401,7 @@
   },
   "sendSwapWillTakeTime": "यह पुष्टि करने में कुछ समय लगेगा",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "autoswapSelectWalletError": "कृपया एक प्राप्तकर्ता बिटकॉइन वॉलेट का चयन करें",
   "@autoswapSelectWalletError": {
@@ -1510,7 +1510,7 @@
   },
   "systemLabelSwaps": "स्वैप",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
   "sendOpenTheCamera": "कैमरा खोलें",
   "@sendOpenTheCamera": {
@@ -1520,9 +1520,9 @@
   "@passportStep11": {
     "description": "Passport instruction to return to app"
   },
-  "sendSwapId": "Swap ID",
+  "sendSwapId": "Transfer ID",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "electrumServerOnline": "ऑनलाइन",
   "@electrumServerOnline": {
@@ -1546,7 +1546,7 @@
   },
   "receiveSendNetworkFee": "नेटवर्क भेजने का शुल्क",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "autoswapRecipientWalletInfoText": "चुनें कि कौन से बिटकॉइन वॉलेट को हस्तांतरित फंड (आवश्यक) प्राप्त होंगे।",
   "@autoswapRecipientWalletInfoText": {
@@ -1615,11 +1615,11 @@
   },
   "autoswapWarningOkButton": "ठीक",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "swapTitle": "आंतरिक स्थानांतरण",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "sendOutputTooSmall": "धूल सीमा के नीचे उत्पादन",
   "@sendOutputTooSmall": {
@@ -1704,7 +1704,7 @@
   },
   "sendErrorLiquidWalletRequired": "लिक्विड वॉलेट का उपयोग लिक्विड टू लाइटनिंग स्वैप के लिए किया जाना चाहिए",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "arkDurationMinutes": "{minutes} मिनट",
   "@arkDurationMinutes": {
@@ -1735,9 +1735,9 @@
   "@seedsignerStep5": {
     "description": "SeedSigner troubleshooting tip 1"
   },
-  "transactionSwapDescLnReceiveExpired": "यह swap समयसीमा समाप्त हो गई है। भेजी गई कोई भी राशि स्वचालित रूप से प्रेषक को वापस की जाएगी।",
+  "transactionSwapDescLnReceiveExpired": "यह transfer समयसीमा समाप्त हो गई है। भेजी गई कोई भी राशि स्वचालित रूप से प्रेषक को वापस की जाएगी।",
   "@transactionSwapDescLnReceiveExpired": {
-    "description": "Description for expired Lightning receive swap"
+    "description": "Description for expired Lightning receive transfer"
   },
   "sellKYCApproved": "KYC ने मंजूरी दे दी",
   "@sellKYCApproved": {
@@ -1773,11 +1773,11 @@
   },
   "swapTransferPendingMessage": "स्थानांतरण प्रगति पर है। बिटकॉइन लेनदेन की पुष्टि करने में कुछ समय लग सकता है। आप घर लौट सकते हैं और इंतजार कर सकते हैं।।",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "testBackupDecryptVault": "डिक्रिप्ट वॉल्ट",
   "@testBackupDecryptVault": {
@@ -1797,7 +1797,7 @@
   },
   "totalFeeLabel": "कुल शुल्क",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "अपने कस्टम mempool सर्वर का URL दर्ज करें। सर्वर को सहेजने से पहले सत्यापित किया जाएगा।",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -1850,7 +1850,7 @@
   },
   "swapTransferTitle": "स्थानांतरण",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "testBackupSuccessTitle": "परीक्षण सफलतापूर्वक पूरा किया!",
   "@testBackupSuccessTitle": {
@@ -1874,7 +1874,7 @@
   },
   "transactionSwapProgressClaim": "दावा",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "exchangeHomeDeposit": "जमा",
   "@exchangeHomeDeposit": {
@@ -2009,7 +2009,7 @@
   },
   "sendErrorAmountBelowMinimum": "न्यूनतम स्वैप सीमा से नीचे की राशि: {minLimit}",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -2156,7 +2156,7 @@
   },
   "transactionLabelReceiveAmount": "प्राप्त करने की राशि",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "sendServerNetworkFees": "सर्वर नेटवर्क शुल्क",
   "@sendServerNetworkFees": {
@@ -2261,7 +2261,7 @@
   },
   "coreSwapsLnSendPaid": "आपके भुगतान की पुष्टि प्राप्त होने के बाद invoice का भुगतान किया जाएगा।",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
   "fundExchangeCrBankTransferDescription2": "। धन आपके खाते में शेष राशि में जोड़ा जाएगा।।",
   "@fundExchangeCrBankTransferDescription2": {
@@ -2271,9 +2271,9 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "transactionLabelSwapStatus": "Swap स्थिति",
+  "transactionLabelSwapStatus": "Transfer स्थिति",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "रद्द करें",
   "@walletDeletionConfirmationCancelButton": {
@@ -2338,7 +2338,7 @@
   },
   "swapYouPay": "आप भुगतान",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "एन्क्रिप्टेड वॉल्ट",
   "@encryptedVaultTitle": {
@@ -2384,11 +2384,11 @@
   },
   "transactionSwapProgressCompleted": "पूर्ण",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "sendErrorBitcoinWalletRequired": "बिटकॉइन वॉलेट का उपयोग बिटकॉइन के लिए बिजली स्वैप के लिए किया जाना चाहिए",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "अपना सुरक्षा PIN प्रबंधित करें",
   "@pinCodeManageTitle": {
@@ -2402,9 +2402,9 @@
   "@arkUnifiedAddressCopied": {
     "description": "SnackBar message when unified address is copied to clipboard"
   },
-  "transactionSwapDescLnSendCompleted": "Lightning भुगतान सफलतापूर्वक भेज दिया गया! आपका swap अब पूर्ण है।",
+  "transactionSwapDescLnSendCompleted": "Lightning भुगतान सफलतापूर्वक भेज दिया गया! आपका transfer अब पूर्ण है।",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "exchangeDcaCancelDialogCancelButton": "रद्द करना",
   "@exchangeDcaCancelDialogCancelButton": {
@@ -2541,7 +2541,7 @@
   },
   "sendSwapRefundInProgress": "अग्रिम में स्वैप रिफंड",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "exchangeKycLimited": "लिमिटेड",
   "@exchangeKycLimited": {
@@ -2717,9 +2717,9 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "Swap अभी आरंभ नहीं हुआ है।",
+  "coreSwapsLnSendPending": "Transfer अभी आरंभ नहीं हुआ है।",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "recoverbullVaultCreatedSuccess": "वॉल्ट ने सफलतापूर्वक बनाया",
   "@recoverbullVaultCreatedSuccess": {
@@ -2760,7 +2760,7 @@
   },
   "transactionSwapProgressInitiated": "शुरू किया गया",
   "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
+    "description": "Transfer progress step: initiated"
   },
   "fundExchangeTitle": "फंडिंग",
   "@fundExchangeTitle": {
@@ -2869,7 +2869,7 @@
   },
   "autoswapWarningDontShowAgain": "इस चेतावनी को फिर से दिखाना नहीं है।।",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "sellInsufficientBalance": "अपर्याप्त वॉलेट शेष",
   "@sellInsufficientBalance": {
@@ -2897,7 +2897,7 @@
   },
   "coreSwapsLnReceivePaid": "प्रेषक ने invoice का भुगतान कर दिया है।",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
   "payInProgress": "भुगतान प्रगति में है!",
   "@payInProgress": {
@@ -3052,7 +3052,7 @@
   },
   "transferIdLabel": "स्थानांतरण ID",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "कृपया एक वॉलेट चुनें",
   "@paySelectActiveWallet": {
@@ -3091,9 +3091,9 @@
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "sendSwapInitiated": "Swap Initiated",
+  "sendSwapInitiated": "Transfer Initiated",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "यह गंभीर रूप से महत्वपूर्ण है कि आप बैकअप कुंजी को उसी स्थान पर नहीं बचाते हैं जहां आप अपनी बैकअप फ़ाइल को बचाते हैं। हमेशा उन्हें अलग-अलग उपकरणों या अलग क्लाउड प्रदाताओं पर स्टोर करें।।",
   "@backupSettingsKeyWarningMessage": {
@@ -3248,9 +3248,9 @@
   "@coreScreensAmountLabel": {
     "description": "Label for amount field"
   },
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "transactionLabelCompletedAt": "पूर्ण हुआ",
   "@transactionLabelCompletedAt": {
@@ -3266,11 +3266,11 @@
   },
   "swapTransferRefundInProgressTitle": "प्रगति में रिफंड ट्रांसफर करें",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "आप प्राप्त",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "recoverbullSelectCustomLocationProvider": "कस्टम स्थान",
   "@recoverbullSelectCustomLocationProvider": {
@@ -3379,7 +3379,7 @@
   },
   "autoswapInfoSettingsButton": "सेटिंग्स को कॉन्फ़िगर करें",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "withdrawRecipientsNewTab": "नया प्राप्तकर्ता",
   "@withdrawRecipientsNewTab": {
@@ -3684,7 +3684,7 @@
   },
   "autoswapWarningCardSubtitle": "यदि आपका तत्काल भुगतान शेष 0.02 BTC से अधिक है तो एक स्वैप ट्रिगर हो जाएगा।।",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "transactionStatusConfirmed": "पुष्टि हो गई",
   "@transactionStatusConfirmed": {
@@ -3696,7 +3696,7 @@
   },
   "transactionLabelSendAmount": "भेजने की राशि",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "testedStatus": "परीक्षण",
   "@testedStatus": {
@@ -3728,7 +3728,7 @@
   },
   "transactionLabelReceiveNetworkFee": "नेटवर्क प्राप्त करने का शुल्क",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "bitboxScreenTroubleshootingTitle": "Bitbox02 समस्या निवारण",
   "@bitboxScreenTroubleshootingTitle": {
@@ -3820,7 +3820,7 @@
   },
   "transactionSwapDescChainExpired": "यह ट्रांसफर समाप्त हो गया है। आपके फंड स्वचालित रूप से आपके wallet में वापस कर दिए जाएंगे।",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
   "payValidating": "सत्यापित हो रहा है...",
   "@payValidating": {
@@ -3840,7 +3840,7 @@
   },
   "transactionLabelSwapStatusRefunded": "वापस किया गया",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "Lightning invoice",
   "@receiveLightningInvoice": {
@@ -3908,7 +3908,7 @@
   },
   "sendErrorAmountAboveSwapLimits": "राशि स्वैप सीमा से अधिक है",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "एन्क्रिप्टेड वॉल्ट आपको अपने बैकअप को चोरी करने की तलाश में चोरों से रोकता है। यह आपको गलती से आपके बैकअप को खोने से रोकता है क्योंकि यह आपके क्लाउड में संग्रहीत किया जाएगा। Google या Apple जैसे क्लाउड स्टोरेज प्रदाताओं को आपके Bitcoin तक पहुंच नहीं होगी क्योंकि एन्क्रिप्शन पासवर्ड बहुत मजबूत है। वहाँ एक छोटी संभावना है कि वेब सर्वर है कि अपने बैकअप एन्क्रिप्शन कुंजी स्टोर समझौता किया जा सकता है। इस घटना में, आपके क्लाउड खाते में बैकअप की सुरक्षा जोखिम पर हो सकती है।।",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -3916,7 +3916,7 @@
   },
   "coreSwapsChainCompletedRefunded": "स्थानांतरण वापस कर दिया गया है।",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "payClabeHint": "CLABE नंबर दर्ज करें",
   "@payClabeHint": {
@@ -3984,7 +3984,7 @@
   },
   "swapTransferRefundedTitle": "स्थानांतरण Refunded",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "बिटबॉक्स डिवाइस से कनेक्ट करने में विफल रहा। कृपया अपने कनेक्शन की जांच करें।।",
   "@bitboxErrorConnectionFailed": {
@@ -4144,7 +4144,7 @@
   },
   "transactionSwapProgressInProgress": "प्रगति में",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "fundExchangeWarningConfirmation": "मैं पुष्टि करता/करती हूं कि मुझे किसी और द्वारा Bitcoin खरीदने के लिए नहीं कहा जा रहा है।",
   "@fundExchangeWarningConfirmation": {
@@ -4168,16 +4168,16 @@
   },
   "sendErrorAmountAboveMaximum": "अधिकतम स्वैप सीमा से ऊपर की राशि: {maxLimit}",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap सफलतापूर्वक पूर्ण हो गया है।",
+  "coreSwapsLnSendCompletedSuccess": "Transfer सफलतापूर्वक पूर्ण हो गया है।",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
   "importColdcardScanning": "स्कैनिंग..।",
   "@importColdcardScanning": {
@@ -4221,9 +4221,9 @@
   "@bitcoinSettingsMempoolServerTitle": {
     "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
-  "transactionSwapDescLnReceiveDefault": "आपका swap प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
+  "transactionSwapDescLnReceiveDefault": "आपका transfer प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapDescLnReceiveDefault": {
-    "description": "Default description for Lightning receive swap"
+    "description": "Default description for Lightning receive transfer"
   },
   "selectCoinsManuallyLabel": "मैन्युअल रूप से सिक्के चुनें",
   "@selectCoinsManuallyLabel": {
@@ -4315,7 +4315,7 @@
   },
   "paySwapFee": "स्वैप शुल्क",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "एक्सचेंज खाता सेटिंग्स",
   "@exchangeAccountSettingsTitle": {
@@ -4414,9 +4414,9 @@
   "@withdrawConfirmAmount": {
     "description": "Field label for withdrawal amount"
   },
-  "transactionSwapDoNotUninstall": "Swap पूरा होने तक ऐप अनइंस्टॉल न करें।",
+  "transactionSwapDoNotUninstall": "Transfer पूरा होने तक ऐप अनइंस्टॉल न करें।",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "payDefaultCommentHint": "डिफ़ॉल्ट टिप्पणी दर्ज करें",
   "@payDefaultCommentHint": {
@@ -4468,7 +4468,7 @@
   },
   "sendTransferFee": "स्थानांतरण शुल्क",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "IBAN खाता संख्या (केवल Colones के लिए)",
   "@fundExchangeLabelIbanCrcOnly": {
@@ -4482,9 +4482,9 @@
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
   },
-  "sendInitiatingSwap": "Initiating swap..।",
+  "sendInitiatingSwap": "Initiating transfer..।",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "Lightning Network",
   "@sellLightningNetwork": {
@@ -4576,7 +4576,7 @@
   },
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "बैंक विवरण",
   "@sellBankDetails": {
@@ -4604,7 +4604,7 @@
   },
   "coreSwapsStatusPending": "लंबित",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "electrumDragToReorder": "(प्राथमिकता को खींचने और बदलने के लिए लंबे प्रेस)",
   "@electrumDragToReorder": {
@@ -4616,7 +4616,7 @@
   },
   "autoswapTriggerAtBalanceInfoText": "जब आपका शेष राशि इस अधिकतम शेष राशि से ऊपर हो जाता है तो ऑटोस्वैप ट्रिगर होगा।।",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "exchangeLandingDisclaimerNotAvailable": "बिटकॉइन मोबाइल एप्लिकेशन में क्रिप्टोक्यूरेंसी एक्सचेंज सेवाएं उपलब्ध नहीं हैं।।",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -4632,11 +4632,11 @@
   },
   "swapErrorAmountExceedsMaximum": "राशि अधिकतम स्वैप राशि से अधिक है",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
-  "transactionLabelTotalSwapFees": "कुल Swap शुल्क",
+  "transactionLabelTotalSwapFees": "कुल Transfer शुल्क",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "त्रुटि",
   "@errorLabel": {
@@ -4714,9 +4714,9 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Swap {action} पुनः प्रयास करें",
+  "transactionDetailRetrySwap": "Transfer {action} पुनः प्रयास करें",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
@@ -4726,23 +4726,23 @@
   "sendErrorSwapCreationFailed": "स्वैप बनाने में विफल रहा।।",
   "sendErrorInvoiceMustContainAmount": "इनवॉइस में एक राशि होनी चाहिए",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorHardwareWalletCannotSwap": "हार्डवेयर वॉलेट का उपयोग स्वैप के लिए नहीं किया जा सकता।",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "उपलब्ध बैलेंस डेटा",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
   },
-  "autoswapWarningCardTitle": "Autoswap सक्षम है",
+  "autoswapWarningCardTitle": "Autotransfer सक्षम है",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "coreSwapsChainCompletedSuccess": "स्थानांतरण सफलतापूर्वक पूर्ण हो गया है।",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "physicalBackupRecommendation": "भौतिक बैकअप: ",
   "@physicalBackupRecommendation": {
@@ -4813,9 +4813,9 @@
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
   },
-  "coreSwapsLnReceiveFailed": "Swap विफल।",
+  "coreSwapsLnReceiveFailed": "Transfer विफल।",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "अमेरिकी डॉलर (USD) में फंड ट्रांसफर करें",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -5010,7 +5010,7 @@
   },
   "autoswapWarningExplanation": "जब आपका शेष अधिकतम शेष से अधिक हो जाता है, तो एक स्वैप शुरू हो जाएगा। लक्ष्य संतुलन आपके तत्काल भुगतान वॉलेट में रखा जाएगा और शेष राशि को आपके सुरक्षित बिटकॉइन वॉलेट में स्वैप किया जाएगा।।",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "recoverbullVaultRecoveryTitle": "Recoverbull vault वसूली",
   "@recoverbullVaultRecoveryTitle": {
@@ -5026,11 +5026,11 @@
   },
   "transactionSwapDescChainClaimable": "Lockup लेनदेन की पुष्टि हो गई है। आप अब अपने ट्रांसफर को पूरा करने के लिए फंड claim कर रहे हैं।",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
-  "sendSwapDetails": "Swap Details",
+  "sendSwapDetails": "Transfer Details",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "12 शब्दों के माध्यम से अपना वॉलेट पुनर्प्राप्त करें।",
   "@onboardingPhysicalBackupDescription": {
@@ -5115,7 +5115,7 @@
   },
   "transactionSwapDescChainRefundable": "ट्रांसफर वापस कर दिया जाएगा। आपके फंड स्वचालित रूप से आपके wallet में वापस कर दिए जाएंगे।",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "sendPaymentWillTakeTime": "भुगतान समय ले जाएगा",
   "@sendPaymentWillTakeTime": {
@@ -5183,7 +5183,7 @@
   },
   "coreSwapsStatusInProgress": "प्रगति में",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "confirmAccessPinTitle": "पहुँच की पुष्टि करें {pinOrPassword}",
   "@confirmAccessPinTitle": {
@@ -5205,7 +5205,7 @@
   },
   "transactionSwapProgressConfirmed": "पुष्टि हो गई",
   "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
+    "description": "Transfer progress step: confirmed"
   },
   "sellRoutingNumber": "रूटिंग नंबर",
   "@sellRoutingNumber": {
@@ -5380,9 +5380,9 @@
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
-  "transactionSwapDescLnReceivePending": "आपका swap शुरू हो गया है। हम Lightning Network पर भुगतान प्राप्त होने की प्रतीक्षा कर रहे हैं।",
+  "transactionSwapDescLnReceivePending": "आपका transfer शुरू हो गया है। हम Lightning Network पर भुगतान प्राप्त होने की प्रतीक्षा कर रहे हैं।",
   "@transactionSwapDescLnReceivePending": {
-    "description": "Description for pending Lightning receive swap"
+    "description": "Description for pending Lightning receive transfer"
   },
   "tryAgainButton": "फिर से प्रयास करें",
   "@tryAgainButton": {
@@ -5394,7 +5394,7 @@
   },
   "swapConfirmTitle": "स्थानांतरण की पुष्टि करें",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "सूचना ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -5602,11 +5602,11 @@
   },
   "transactionSwapDescChainCompleted": "आपका ट्रांसफर सफलतापूर्वक पूरा हो गया है! फंड अब आपके wallet में उपलब्ध होने चाहिए।",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
-  "coreSwapsLnSendRefundable": "Swap वापसी के लिए तैयार है।",
+  "coreSwapsLnSendRefundable": "Transfer वापसी के लिए तैयार है।",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "backupInstruction2": "बैकअप के बिना, यदि आप अपने फोन को खो देते हैं या तोड़ते हैं, या यदि आप बुल बिटकॉइन ऐप को अनइंस्टॉल करते हैं, तो आपके बिटकॉइन हमेशा के लिए खो जाएंगे।।",
   "@backupInstruction2": {
@@ -5785,7 +5785,7 @@
   },
   "sendErrorInsufficientBalanceForSwap": "लिक्विड के माध्यम से इस स्वैप का भुगतान करने के लिए पर्याप्त संतुलन नहीं है और बिटकॉइन के माध्यम से भुगतान करने के लिए स्वैप सीमा के भीतर नहीं है।।",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "ब्लॉकस्ट्रीम जेड पीएसबीटी निर्देश",
   "@psbtFlowJadeTitle": {
@@ -5875,9 +5875,9 @@
   "@backupWalletErrorFileSystemPath": {
     "description": "Error when file system path selection fails"
   },
-  "coreSwapsLnSendCanCoop": "Swap अभी पूर्ण होगा।",
+  "coreSwapsLnSendCanCoop": "Transfer अभी पूर्ण होगा।",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "electrumServerNotUsed": "प्रयुक्त नहीं",
   "@electrumServerNotUsed": {
@@ -6010,9 +6010,9 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "Swap दावा करने के लिए तैयार है।",
+  "coreSwapsLnReceiveClaimable": "Transfer दावा करने के लिए तैयार है।",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "pinButtonCreate": "पिन बनाएं",
   "@pinButtonCreate": {
@@ -6109,7 +6109,7 @@
   },
   "transactionSwapProgressFundsClaimed": "राशि\nदावा की गई",
   "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
+    "description": "Transfer progress step: funds claimed"
   },
   "recoverbullSelectAppleIcloud": "सेब iCloud",
   "@recoverbullSelectAppleIcloud": {
@@ -6132,9 +6132,9 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Swap अभी पूर्ण होगा।",
+  "coreSwapsLnReceiveCanCoop": "Transfer अभी पूर्ण होगा।",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "addressViewAddressesTitle": "पते",
   "@addressViewAddressesTitle": {
@@ -6146,7 +6146,7 @@
   },
   "transactionSwapProgressPaymentMade": "भुगतान\nकिया गया",
   "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
+    "description": "Transfer progress step: payment made"
   },
   "importQrDeviceSpecterStep4": "अपनी चुनी हुई विधि के अनुसार प्रॉम्प्ट का पालन करें",
   "@importQrDeviceSpecterStep4": {
@@ -6154,7 +6154,7 @@
   },
   "coreSwapsChainPending": "स्थानांतरण अभी आरंभ नहीं हुआ है।",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "importWalletImportWatchOnly": "केवल घड़ी आयात करें",
   "@importWalletImportWatchOnly": {
@@ -6201,9 +6201,9 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap सक्रिय है",
+  "autoswapInfoTitle": "Autotransfer सक्रिय है",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "transactionLabelPayjoinStatus": "Payjoin स्थिति",
   "@transactionLabelPayjoinStatus": {
@@ -6245,9 +6245,9 @@
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "coreSwapsLnSendFailed": "Swap विफल।",
+  "coreSwapsLnSendFailed": "Transfer विफल।",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "recoverbullErrorDecryptFailed": "वॉल्ट को डिक्रिप्ट करने में विफल",
   "@recoverbullErrorDecryptFailed": {
@@ -6259,7 +6259,7 @@
   },
   "totalFeesLabel": "कुल शुल्क",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "आपका भुगतान शुरू हो गया है और आपके लेन-देन को ऑनचेन 1 पुष्टि मिलने के बाद प्राप्तकर्ता को राशि मिल जाएगी।",
   "@payInProgressDescription": {
@@ -6321,7 +6321,7 @@
   },
   "coreSwapsChainRefundable": "स्थानांतरण वापसी के लिए तैयार है।",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "buyInputCompleteKyc": "पूरा KYC",
   "@buyInputCompleteKyc": {
@@ -6329,7 +6329,7 @@
   },
   "transactionFeesTotalDeducted": "यह भेजी गई राशि से काटा गया कुल शुल्क है",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "autoswapMaxFee": "मैक्स ट्रांसफर शुल्क",
   "@autoswapMaxFee": {
@@ -6596,13 +6596,13 @@
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails"
   },
-  "receiveBoltzSwapFee": "Boltz Swap शुल्क",
+  "receiveBoltzSwapFee": "Boltz Transfer शुल्क",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "swapInfoBanner": "अपने बटुए के बीच आसानी से बिटकॉइन ट्रांसफर करें। केवल दिन-प्रतिदिन खर्च के लिए तत्काल भुगतान वॉलेट में धन रखने के लिए।।",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "payRBFEnabled": "RBF सक्षम",
   "@payRBFEnabled": {
@@ -6626,7 +6626,7 @@
   },
   "sendSwapTimeout": "स्वैप टाइम आउट",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "नेटवर्क शुल्क",
   "@networkFeesLabel": {
@@ -6638,7 +6638,7 @@
   },
   "sendSwapInProgressBitcoin": "स्वैप प्रगति पर है। बिटकॉइन लेनदेन की पुष्टि करने में कुछ समय लग सकता है। आप घर लौट सकते हैं और इंतजार कर सकते हैं।।",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "electrumDeleteServerTitle": "कस्टम सर्वर हटाएं",
   "@electrumDeleteServerTitle": {
@@ -6749,9 +6749,9 @@
       }
     }
   },
-  "transactionSwapDescLnReceiveCompleted": "आपका swap सफलतापूर्वक पूर्ण हो गया! राशि अब आपके वॉलेट में उपलब्ध होनी चाहिए।",
+  "transactionSwapDescLnReceiveCompleted": "आपका transfer सफलतापूर्वक पूर्ण हो गया! राशि अब आपके वॉलेट में उपलब्ध होनी चाहिए।",
   "@transactionSwapDescLnReceiveCompleted": {
-    "description": "Description for completed Lightning receive swap"
+    "description": "Description for completed Lightning receive transfer"
   },
   "psbtFlowSignTransaction": "हस्ताक्षर लेनदेन",
   "@psbtFlowSignTransaction": {
@@ -6785,13 +6785,13 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "Swap वापस कर दिया गया है।",
+  "coreSwapsLnSendCompletedRefunded": "Transfer वापस कर दिया गया है।",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
-  "transactionSwapInfoClaimableSwap": "Swap कुछ ही सेकंड में स्वचालित रूप से पूरा हो जाएगा। यदि नहीं, तो आप \"Retry Swap Claim\" बटन पर क्लिक करके मैन्युअल claim का प्रयास कर सकते हैं।",
+  "transactionSwapInfoClaimableSwap": "Transfer कुछ ही सेकंड में स्वचालित रूप से पूरा हो जाएगा। यदि नहीं, तो आप \"Retry Transfer Claim\" बटन पर क्लिक करके मैन्युअल claim का प्रयास कर सकते हैं।",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "mempoolCustomServerLabel": "कस्टम",
   "@mempoolCustomServerLabel": {
@@ -7062,7 +7062,7 @@
   },
   "coreSwapsChainFailed": "स्थानांतरण विफल।",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "नोट जोड़ें",
   "@transactionDetailAddNote": {
@@ -7247,9 +7247,9 @@
       }
     }
   },
-  "walletDeletionErrorOngoingSwaps": "आप चल रहे swap के साथ वॉलेट नहीं हटा सकते।",
+  "walletDeletionErrorOngoingSwaps": "आप चल रहे transfer के साथ वॉलेट नहीं हटा सकते।",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "बिटबॉक्स से कनेक्ट",
   "@bitboxScreenConnecting": {
@@ -7261,7 +7261,7 @@
   },
   "transactionLabelServerNetworkFees": "सर्वर नेटवर्क शुल्क",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "importQrDeviceSeedsignerStep10": "सेटअप पूरा",
   "@importQrDeviceSeedsignerStep10": {
@@ -7358,7 +7358,7 @@
   },
   "coreSwapsChainPaid": "स्थानांतरण प्रदाता के भुगतान की पुष्टि की प्रतीक्षा है। इसे पूर्ण होने में कुछ समय लग सकता है।",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "arkConfirmed": "पुष्टि",
   "@arkConfirmed": {
@@ -7420,7 +7420,7 @@
   },
   "transactionSwapDescLnSendPaid": "आपका ऑन-चेन लेनदेन प्रसारित हो गया है। 1 पुष्टि के बाद Lightning भुगतान भेजा जाएगा।",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "exchangeFileUploadAddMoreFiles": "अधिक फ़ाइलें जोड़ें",
   "@exchangeFileUploadAddMoreFiles": {
@@ -7428,7 +7428,7 @@
   },
   "transactionSwapDescChainDefault": "आपका ट्रांसफर प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "onboardingBullBitcoin": "Bull Bitcoin",
   "@onboardingBullBitcoin": {
@@ -7436,7 +7436,7 @@
   },
   "coreSwapsChainClaimable": "स्थानांतरण दावा करने के लिए तैयार है।",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "dcaNetworkLightning": "लाइटनिंग नेटवर्क",
   "@dcaNetworkLightning": {
@@ -7472,7 +7472,7 @@
   },
   "transactionLabelTransferId": "स्थानांतरण ID",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "भेजें",
   "@sendTitle": {
@@ -7555,7 +7555,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin swap की पुष्टि में समय लगेगा।",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfer की पुष्टि में समय लगेगा।",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7605,7 +7605,7 @@
   },
   "sendSwapCancelled": "स्वैप रद्द",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "कभी नहीं ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -7622,7 +7622,7 @@
   },
   "swapTransferCompletedTitle": "पूरा स्थानांतरण",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "torSettingsStatusDisconnected": "डिस्कनेक्ट",
   "@torSettingsStatusDisconnected": {
@@ -7690,11 +7690,11 @@
   },
   "sendTypeSwap": "स्वैप",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sendErrorAmountExceedsMaximum": "राशि अधिकतम स्वैप राशि से अधिक है",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "लेन-देन ने सफलतापूर्वक हस्ताक्षर किया",
   "@bitboxActionSignTransactionSuccess": {
@@ -7809,7 +7809,7 @@
   },
   "sendNetworkFeesLabel": "नेटवर्क शुल्क भेजें",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "electrumUnknownError": "त्रुटि हुई",
   "@electrumUnknownError": {
@@ -7821,7 +7821,7 @@
   },
   "autoswapBaseBalanceInfoText": "आपका तत्काल भुगतान वॉलेट बैलेंस ऑटोस्वैप के बाद इस लक्ष्य संतुलन में वापस आ जाएगा।।",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "recoverbullSelectDecryptVault": "डिक्रिप्ट वॉल्ट",
   "@recoverbullSelectDecryptVault": {
@@ -7865,9 +7865,9 @@
   "@receiveTitle": {
     "description": "Main screen title for receive feature"
   },
-  "transactionSwapInfoRefundableSwap": "यह swap कुछ ही सेकंड में स्वचालित रूप से वापस हो जाएगा। यदि नहीं, तो आप \"Retry Swap Refund\" बटन पर क्लिक करके मैन्युअल refund का प्रयास कर सकते हैं।",
+  "transactionSwapInfoRefundableSwap": "यह transfer कुछ ही सेकंड में स्वचालित रूप से वापस हो जाएगा। यदि नहीं, तो आप \"Retry Transfer Refund\" बटन पर क्लिक करके मैन्युअल refund का प्रयास कर सकते हैं।",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "payCancelPayment": "भुगतान रद्द करना",
   "@payCancelPayment": {
@@ -8186,7 +8186,7 @@
   },
   "transactionFeesDeductedFrom": "यह शुल्क भेजी गई राशि से काटा जाएगा",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "buyConfirmYouPay": "भुगतान",
   "@buyConfirmYouPay": {
@@ -8267,7 +8267,7 @@
   },
   "transactionLabelSendNetworkFees": "नेटवर्क भेजने का शुल्क",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "transactionLabelAddress": "पता",
   "@transactionLabelAddress": {
@@ -8345,7 +8345,7 @@
   },
   "coreSwapsChainExpired": "स्थानांतरण समयसीमा समाप्त",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "डिफ़ॉल्ट टिप्पणी (वैकल्पिक)",
   "@payDefaultCommentOptional": {
@@ -8530,7 +8530,7 @@
   },
   "coreSwapsStatusFailed": "विफल",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "transactionFilterSell": "बेचें",
   "@transactionFilterSell": {
@@ -8693,9 +8693,9 @@
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
   },
-  "autoswapWarningDescription": "Autoswap सुनिश्चित करता है कि आप गलती से तत्काल भुगतान वॉलेट में ज्यादा पैसा नहीं रखते हैं, जो दीर्घकालिक भंडारण के लिए सुरक्षित नहीं है।।",
+  "autoswapWarningDescription": "Autotransfer सुनिश्चित करता है कि आप गलती से तत्काल भुगतान वॉलेट में ज्यादा पैसा नहीं रखते हैं, जो दीर्घकालिक भंडारण के लिए सुरक्षित नहीं है।।",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "fundExchangeSinpeAddedToBalance": "जब भुगतान भेजा जाता है, तो इसे आपके खाते में शेष राशि में जोड़ा जाएगा।।",
   "@fundExchangeSinpeAddedToBalance": {
@@ -8730,9 +8730,9 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "transactionDetailLabelSwapStatus": "Swap स्थिति",
+  "transactionDetailLabelSwapStatus": "Transfer स्थिति",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "इसके बाद पासपोर्ट आपको अपना खुद का क्यूआर कोड दिखाएगा।।",
   "@passportStep10": {
@@ -8958,9 +8958,9 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "Swap वापसी के लिए तैयार है।",
+  "coreSwapsLnReceiveRefundable": "Transfer वापसी के लिए तैयार है।",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "bitcoinSettingsElectrumServerTitle": "Electrum सर्वर सेटिंग्स",
   "@bitcoinSettingsElectrumServerTitle": {
@@ -9049,7 +9049,7 @@
   },
   "sendConfirmSwap": "की पुष्टि करें स्वैप",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "लॉग आउट - जल्द आ रहा है",
   "@exchangeLogoutComingSoon": {
@@ -9126,7 +9126,7 @@
   },
   "swapContinue": "जारी",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "arkSettleButton": "सेटल",
   "@arkSettleButton": {
@@ -9181,9 +9181,9 @@
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
   },
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Bitcoin सेटिंग्स",
   "@settingsBitcoinSettingsTitle": {
@@ -9211,7 +9211,7 @@
   },
   "coreSwapsActionClose": "बंद करें",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "kruxStep6": "यदि आपको कोई परेशानी स्कैनिंग है:",
   "@kruxStep6": {
@@ -9503,7 +9503,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "राशि स्वैप सीमा से नीचे है",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "निजी भुगतान",
   "@payPrivatePayment": {
@@ -9547,9 +9547,9 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "autoswapWarningSettingsLink": "मुझे Autoswap सेटिंग्स में ले लो",
+  "autoswapWarningSettingsLink": "मुझे Autotransfer सेटिंग्स में ले लो",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "payLiquidNetwork": "Liquid Network",
   "@payLiquidNetwork": {
@@ -9890,9 +9890,9 @@
       }
     }
   },
-  "coreSwapsLnSendFailedRefunding": "Swap शीघ्र ही वापस किया जाएगा।",
+  "coreSwapsLnSendFailedRefunding": "Transfer शीघ्र ही वापस किया जाएगा।",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
   "dcaWalletTypeLightning": "बिजली नेटवर्क (LN)",
   "@dcaWalletTypeLightning": {
@@ -9900,7 +9900,7 @@
   },
   "transactionSwapProgressBroadcasted": "प्रसारित किया गया",
   "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
+    "description": "Transfer progress step: transaction broadcasted"
   },
   "exchangeBitcoinWalletsSaveSuccess": "वॉलेट पता सफलतापूर्वक सहेजा गया",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -10014,9 +10014,9 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "Swap अभी आरंभ नहीं हुआ है।",
+  "coreSwapsLnReceivePending": "Transfer अभी आरंभ नहीं हुआ है।",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "arkSendConfirmMessage": "भेजने से पहले कृपया अपने लेनदेन के विवरण की पुष्टि करें।।",
   "@arkSendConfirmMessage": {
@@ -10036,7 +10036,7 @@
   },
   "transactionSwapInfoFailedExpired": "यदि आपके कोई प्रश्न या चिंताएं हैं, तो कृपया सहायता के लिए support से संपर्क करें।",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "memorizePasswordWarning": "आपको अपने वॉलेट तक पहुंच प्राप्त करने के लिए इस {pinOrPassword} को याद करना होगा। यह कम से कम 6 अंक होना चाहिए। यदि आप इसे खो देते हैं {pinOrPassword} तो आप अपने बैकअप को ठीक नहीं कर सकते।।",
   "@memorizePasswordWarning": {
@@ -10121,7 +10121,7 @@
   },
   "coreSwapsStatusExpired": "समयसीमा समाप्त",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "fundExchangeCanadaPostStep3": "3. उस राशि को बताएं जिसे आप लोड करना चाहते हैं",
   "@fundExchangeCanadaPostStep3": {
@@ -10299,7 +10299,7 @@
   },
   "sendSubmarineSwap": "सबमरीन स्वैप",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "Liquid लेनदेन ID",
   "@transactionLabelLiquidTransactionId": {
@@ -10319,16 +10319,16 @@
   },
   "sendSwapFeeEstimate": "अनुमानित स्वैप शुल्क: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
       }
     }
   },
-  "coreSwapsLnReceiveExpired": "Swap समयसीमा समाप्त।",
+  "coreSwapsLnReceiveExpired": "Transfer समयसीमा समाप्त।",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
   "fundExchangeOnlineBillPaymentLabelBillerName": "इस नाम के लिए अपने बैंक की बिलर्स की सूची खोजें",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
@@ -10533,7 +10533,7 @@
   },
   "paySwapFailed": "स्वैप विफल",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "autoswapMaxFeeLabel": "मैक्स ट्रांसफर शुल्क",
   "@autoswapMaxFeeLabel": {
@@ -10665,9 +10665,9 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "Swap पूर्ण हो गया है।",
+  "coreSwapsLnReceiveCompleted": "Transfer पूर्ण हो गया है।",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "backupWalletErrorGoogleDriveSave": "Google ड्राइव को बचाने में विफल",
   "@backupWalletErrorGoogleDriveSave": {
@@ -10810,7 +10810,7 @@
   },
   "transactionSwapDescChainPaid": "आपका लेनदेन प्रसारित कर दिया गया है। हम अब lockup लेनदेन की पुष्टि की प्रतीक्षा कर रहे हैं।",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "mempoolSettingsUseForFeeEstimation": "शुल्क अनुमान के लिए उपयोग करें",
   "@mempoolSettingsUseForFeeEstimation": {
@@ -10822,7 +10822,7 @@
   },
   "coreSwapsStatusCompleted": "पूर्ण",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "fundExchangeCrIbanUsdDescriptionEnd": "। आपके खाते की शेष राशि में फंड जोड़े जाएंगे।।",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
@@ -10843,7 +10843,7 @@
   },
   "swapProgressTitle": "आंतरिक स्थानांतरण",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "pinButtonConfirm": "पुष्टि",
   "@pinButtonConfirm": {
@@ -10876,7 +10876,7 @@
   },
   "autoswapInfoDismissButton": "इसे फिर से न दिखाएं",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "importQrDevicePassportStep12": "पूरा सेटअप करें।।",
   "@importQrDevicePassportStep12": {
@@ -10981,9 +10981,9 @@
   "@electrumCustomServers": {
     "description": "Section header for custom servers list"
   },
-  "transactionStatusSwapFailed": "Swap विफल",
+  "transactionStatusSwapFailed": "Transfer विफल",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -10997,13 +10997,13 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap शुल्क",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer शुल्क",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
-  "transactionSwapDescLnReceiveFailed": "आपके swap में कोई समस्या हुई। यदि 24 घंटों के भीतर राशि वापस नहीं आती तो कृपया सहायता से संपर्क करें।",
+  "transactionSwapDescLnReceiveFailed": "आपके transfer में कोई समस्या हुई। यदि 24 घंटों के भीतर राशि वापस नहीं आती तो कृपया सहायता से संपर्क करें।",
   "@transactionSwapDescLnReceiveFailed": {
-    "description": "Description for failed Lightning receive swap"
+    "description": "Description for failed Lightning receive transfer"
   },
   "sellOrderNumber": "ऑर्डर नंबर",
   "@sellOrderNumber": {
@@ -11022,9 +11022,9 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "transactionDetailSwapProgress": "Swap प्रगति",
+  "transactionDetailSwapProgress": "Transfer प्रगति",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "arkAboutDurationMinute": "{minutes} मिनट",
   "@arkAboutDurationMinute": {
@@ -11057,7 +11057,7 @@
   },
   "swapTransferPendingTitle": "स्थानांतरण",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "कस्टम सर्वर सफलतापूर्वक सहेजा गया",
   "@mempoolCustomServerSaveSuccess": {
@@ -11065,7 +11065,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "न्यूनतम स्वैप राशि के लिए शेष बहुत कम",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "testBackupSuccessMessage": "आप एक खोए हुए बिटकॉइन वॉलेट तक पहुंच प्राप्त करने में सक्षम हैं",
   "@testBackupSuccessMessage": {
@@ -11325,7 +11325,7 @@
   },
   "sendSwapInProgressInvoice": "स्वैप प्रगति पर है। चालान कुछ सेकंड में भुगतान किया जाएगा।।",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "प्राप्त करना",
   "@arkReceiveButton": {
@@ -11357,15 +11357,15 @@
   },
   "paySwapInProgress": "प्रगति में स्वैप..।",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "सभी तीन प्रकार के वॉलेट सिंक होते हैं और उनके शेष और लेनदेन जल्द ही दिखाई देते हैं। यदि आप यह सुनिश्चित करते हैं कि आप किस वॉलेट प्रकार का आयात करना चाहते हैं, तो आप सिंक पूरा होने तक इंतजार कर सकते हैं या आयात करने के लिए आगे बढ़ सकते हैं।।",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "Swap दावा करने के लिए तैयार है।",
+  "coreSwapsLnSendClaimable": "Transfer दावा करने के लिए तैयार है।",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "fundExchangeMethodCrIbanCrcSubtitle": "कोस्टा रिकन कोलोन (CRC) में फंड ट्रांसफर करें",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
@@ -11409,7 +11409,7 @@
   },
   "walletAutoTransferBlockedTitle": "ऑटो ट्रांसफर ब्लॉक",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "ब्लॉकस्ट्रीम जेड निर्देश",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -11503,7 +11503,7 @@
   },
   "coreSwapsActionRefund": "वापसी",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "payInsufficientBalance": "इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष नहीं है।",
   "@payInsufficientBalance": {
@@ -11515,7 +11515,7 @@
   },
   "sendSwapTimeEstimate": "अनुमानित समय: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -11548,7 +11548,7 @@
   },
   "coreSwapsActionClaim": "दावा करें",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "आपका बिटबॉक्स डिवाइस अब अनलॉक और उपयोग करने के लिए तैयार है।।",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -11649,7 +11649,7 @@
   },
   "transactionSwapProgressInvoicePaid": "चालान\nभुगतान किया",
   "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
+    "description": "Transfer progress step: Lightning invoice paid"
   },
   "sendInsufficientFunds": "अपर्याप्त निधि",
   "@sendInsufficientFunds": {
@@ -11661,7 +11661,7 @@
   },
   "sendSwapAmount": "विनिमय राशि",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "autoswapTitle": "ऑटो ट्रांसफर सेटिंग",
   "@autoswapTitle": {
@@ -11698,7 +11698,7 @@
   },
   "autoswapSettingsTitle": "ऑटो ट्रांसफर सेटिंग",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "पहला नाम दर्ज करें",
   "@payFirstNameHint": {
@@ -11724,13 +11724,13 @@
   "@backupWalletInstructionNoPassphrase": {
     "description": "Information about passphrase protection option"
   },
-  "transactionDetailLabelSwapId": "Swap ID",
+  "transactionDetailLabelSwapId": "Transfer ID",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "sendSwapFailed": "स्वैप विफल रहा। आपकी वापसी शीघ्र ही संसाधित की जाएगी।।",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "नेटवर्क त्रुटि। फिर से प्रयास करें",
   "@sellNetworkError": {
@@ -11812,7 +11812,7 @@
   },
   "transactionSwapDescLnReceivePaid": "भुगतान प्राप्त हो गया! अब हम आपके वॉलेट में ऑन-चेन लेनदेन प्रसारित कर रहे हैं।",
   "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
+    "description": "Description for paid Lightning receive transfer"
   },
   "transactionNoteUpdateButton": "अपडेट करें",
   "@transactionNoteUpdateButton": {
@@ -11965,9 +11965,9 @@
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
   },
-  "transactionSwapDescLnReceiveClaimable": "ऑन-चेन लेनदेन की पुष्टि हो गई है। अब हम आपका swap पूर्ण करने के लिए राशि का दावा कर रहे हैं।",
+  "transactionSwapDescLnReceiveClaimable": "ऑन-चेन लेनदेन की पुष्टि हो गई है। अब हम आपका transfer पूर्ण करने के लिए राशि का दावा कर रहे हैं।",
   "@transactionSwapDescLnReceiveClaimable": {
-    "description": "Description for claimable Lightning receive swap"
+    "description": "Description for claimable Lightning receive transfer"
   },
   "dcaPaymentMethodLabel": "भुगतान विधि",
   "@dcaPaymentMethodLabel": {
@@ -12189,7 +12189,7 @@
   },
   "sendReceiveAmount": "राशि प्राप्त करना",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "टेस्ट रिकवरी",
   "@recoverbullTestRecovery": {
@@ -12321,7 +12321,7 @@
   },
   "paySwapCompleted": "स्वैप पूरा",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "विवरण (वैकल्पिक)",
   "@receiveDescription": {
@@ -12525,7 +12525,7 @@
   "wizardJourneyTip3": "अपने स्वयं के Bitcoin नोड से कनेक्ट करें",
   "wizardJourneyTip4": "अपने स्वयं के Mempool एक्सप्लोरर से कनेक्ट करें",
   "wizardJourneyTip5": "बिना KYC के Bitcoin और Liquid के बीच स्थानांतरण करें",
-  "wizardJourneyTip6": "अपनी autoswap सेटिंग्स कस्टमाइज़ करें",
+  "wizardJourneyTip6": "अपनी autotransfer सेटिंग्स कस्टमाइज़ करें",
   "wizardJourneyTip7": "Bitcoin (BTC) और Satoshis (sats) के बीच स्विच करें",
   "wizardJourneyTip8": "अपने हार्डवेयर वॉलेट के लिए air-gap लेनदेन बनाएं",
   "@wizardPageIndicator": {
@@ -12659,17 +12659,17 @@
   "@fundExchangeScamConsentError": {
     "description": "Error message shown when the scam warning consent API call fails"
   },
-  "autoswapActiveCardTitle": "Autoswap सक्रिय है",
+  "autoswapActiveCardTitle": "Autotransfer सक्रिय है",
   "@autoswapActiveCardTitle": {
-    "description": "Title text shown when autoswap is enabled and active"
+    "description": "Title text shown when autotransfer is enabled and active"
   },
   "autoswapWarningExplanationBold": "स्वचालित रूप से",
   "@autoswapWarningExplanationBold": {
     "description": "The word 'automatically' to be displayed in bold"
   },
-  "autoswapInfoConsentMessage": "Autoswap वर्तमान में सक्षम है लेकिन आपकी सहमति मिलने तक यह शुरू नहीं होगा। क्या आप इसे चालू रखना चाहते हैं?",
+  "autoswapInfoConsentMessage": "Autotransfer वर्तमान में सक्षम है लेकिन आपकी सहमति मिलने तक यह शुरू नहीं होगा। क्या आप इसे चालू रखना चाहते हैं?",
   "@autoswapInfoConsentMessage": {
-    "description": "Consent message explaining autoswap status"
+    "description": "Consent message explaining autotransfer status"
   },
   "deleteLogsTitle": "लॉग्स हटाएं",
   "@deleteLogsTitle": {

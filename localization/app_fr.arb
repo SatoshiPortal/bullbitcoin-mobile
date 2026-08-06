@@ -1927,7 +1927,7 @@
   "payLightningFee": "Frais Lightning",
   "payOnChainFee": "Frais On-Chain",
   "payLiquidFee": "Frais Liquid",
-  "paySwapFee": "Frais de Swap",
+  "paySwapFee": "Frais de Transfer",
   "payServiceFee": "Frais de Service",
   "payTotalFees": "Frais Totaux",
   "payFeeBreakdown": "Détail des Frais",
@@ -1955,10 +1955,10 @@
       }
     }
   },
-  "payRequiresSwap": "Ce paiement nécessite un swap",
-  "paySwapInProgress": "Swap en cours...",
-  "paySwapCompleted": "Swap terminé",
-  "paySwapFailed": "Échec du swap",
+  "payRequiresSwap": "Ce paiement nécessite un transfer",
+  "paySwapInProgress": "Transfer en cours...",
+  "paySwapCompleted": "Transfer terminé",
+  "paySwapFailed": "Échec du transfer",
   "payBroadcastingTransaction": "Diffusion de la transaction...",
   "payTransactionBroadcast": "Transaction diffusée",
   "payBroadcastFailed": "Échec de la diffusion",
@@ -2070,11 +2070,11 @@
   "sendFrozenCoin": "Gelé",
   "sendFreezeCoin": "Geler la pièce",
   "sendUnfreezeCoin": "Dégeler la pièce",
-  "sendSubmarineSwap": "Submarine Swap",
-  "sendInitiatingSwap": "Initialisation du swap...",
-  "sendSwapDetails": "Détails du swap",
-  "sendSwapAmount": "Montant du swap",
-  "sendSwapFeeEstimate": "Frais du swap estimés : {amount}",
+  "sendSubmarineSwap": "Submarine Transfer",
+  "sendInitiatingSwap": "Initialisation du transfer...",
+  "sendSwapDetails": "Détails du transfer",
+  "sendSwapAmount": "Montant du transfer",
+  "sendSwapFeeEstimate": "Frais du transfer estimés : {amount}",
   "@sendSwapFeeEstimate": {
     "placeholders": {
       "amount": {
@@ -2090,9 +2090,9 @@
       }
     }
   },
-  "sendConfirmSwap": "Confirmer le swap",
-  "sendSwapCancelled": "Swap annulé",
-  "sendSwapTimeout": "Délai du swap expiré",
+  "sendConfirmSwap": "Confirmer le transfer",
+  "sendSwapCancelled": "Transfer annulé",
+  "sendSwapTimeout": "Délai du transfer expiré",
   "sendCustomFeeRate": "Taux de frais personnalisé",
   "sendFeeRateTooLow": "Taux de frais trop bas",
   "sendFeeRateTooHigh": "Le taux de frais semble très élevé",
@@ -3140,7 +3140,7 @@
   },
   "transactionHistoryTitle": "Historique des transactions",
   "transactionHistoryHeading": "Historique des transactions",
-  "exportTransactionsDescription": "Exportez toutes les transactions de votre portefeuille (Bitcoin, Liquid, Lightning et swaps) sous forme de fichier CSV. Filtrez éventuellement par plage de dates.",
+  "exportTransactionsDescription": "Exportez toutes les transactions de votre portefeuille (Bitcoin, Liquid, Lightning et transfers) sous forme de fichier CSV. Filtrez éventuellement par plage de dates.",
   "exportTransactionsStartDate": "Date de début",
   "exportTransactionsEndDate": "Date de fin",
   "exportTransactionsAnyDate": "Toutes",
@@ -4125,8 +4125,8 @@
   "recoverbullErrorRejected": "Rejeté par le serveur de clés",
   "recoverbullErrorServiceUnavailable": "Service indisponible. Veuillez vérifier votre connexion.",
   "recoverbullErrorInvalidVaultFile": "Fichier de coffre invalide.",
-  "systemLabelSwaps": "Swaps",
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelSwaps": "Transfers",
+  "systemLabelAutoSwap": "Auto Transfer",
   "systemLabelPayjoin": "Payjoin",
   "systemLabelSelfSpend": "Auto transfert",
   "systemLabelExchangeBuy": "Achat",
@@ -4148,7 +4148,7 @@
   "logoutConfirmationLogout": "Déconnexion",
   "autoswapInfoSettingsButton": "Configurer les paramètres",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "autoswapInfoRemindLater": "Rappelez-moi plus tard",
   "@autoswapInfoRemindLater": {
@@ -4156,11 +4156,11 @@
   },
   "autoswapInfoTitle": "L'échange automatique est actif.",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapInfoDismissButton": "Compris, ne plus afficher.",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "exchangeSettingsRecipientsTitle": "Destinataires",
   "@exchangeSettingsRecipientsTitle": {
@@ -4368,7 +4368,7 @@
   "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur",
   "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool",
   "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé",
-  "autoswapActiveCardTitle": "Autoswap est actif",
+  "autoswapActiveCardTitle": "Autotransfer est actif",
   "autoswapWarningExplanationBold": "automatiquement",
   "deleteLogsTitle": "Supprimer les journaux",
   "logsDeletedMessage": "Journaux supprimés",
@@ -4377,7 +4377,7 @@
   "priceFailedToLoad": "Échec du chargement du prix",
   "statusScreenTryAgain": "Réessayer",
   "statusScreenContinue": "Continuer",
-  "autoswapInfoConsentMessage": "Autoswap est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?",
+  "autoswapInfoConsentMessage": "Autotransfer est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?",
   "settingsErrorReportingTitle": "Signalement d'erreurs",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4555,7 +4555,7 @@
   "wizardJourneyTip3": "Connectez-vous à votre propre nœud Bitcoin",
   "wizardJourneyTip4": "Connectez-vous à votre propre explorateur Mempool",
   "wizardJourneyTip5": "Transférez entre Bitcoin et Liquid sans KYC",
-  "wizardJourneyTip6": "Personnalisez vos paramètres d'autoswap",
+  "wizardJourneyTip6": "Personnalisez vos paramètres d'autotransfer",
   "wizardJourneyTip7": "Basculez entre Bitcoin (BTC) et Satoshis (sats)",
   "wizardJourneyTip8": "Créez des transactions air-gap pour votre portefeuille matériel",
   "@wizardPageIndicator": {
@@ -4575,7 +4575,7 @@
   "legacyStorageIntroDescription": "Votre portefeuille fonctionne avec un logiciel qui sera bientôt obsolète. Il ne peut pas être mis à jour sans désinstaller et réinstaller l'application.",
   "legacyStorageStepBackupWallet": "Sauvegardez votre portefeuille",
   "legacyStorageStepExportLabels": "Exportez vos étiquettes (si vous en avez)",
-  "legacyStorageStepEnsureSwapsCompleted": "Assurez-vous que tous les swaps sont terminés",
+  "legacyStorageStepEnsureSwapsCompleted": "Assurez-vous que tous les transfers sont terminés",
   "legacyStorageStepUninstall": "Désinstallez l'application de votre appareil",
   "legacyStorageStepReinstall": "Téléchargez la dernière version et réinstallez",
   "legacyStorageStepRestoreBackup": "Restaurez votre sauvegarde",
@@ -4590,7 +4590,7 @@
   "legacyStorageAreYouSureParagraphTwo": "L'option Encrypted Vault prend environ 1 minute et ne nécessite aucun outil spécial. Pour la sauvegarde physique, il vous suffit d'un stylo et de papier.",
   "legacyStorageContinueWithoutBackupButton": "Continuer sans sauvegarde",
   "legacyStorageAcceptRisksCheckbox": "J'accepte les risques de ne pas faire de sauvegarde",
-  "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
+  "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un transfer se termine.",
   "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",

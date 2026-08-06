@@ -93,7 +93,7 @@
   "satsSuffix": " sats",
   "recoverbullErrorPasswordNotSet": "A senha não está definida",
   "sellSendPaymentExchangeRate": "Taxa de câmbio",
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "fundExchangeSinpeTitle": "Transferência de SINPE",
   "payExpiresIn": "Expira em {time}",
   "@payExpiresIn": {
@@ -205,7 +205,7 @@
   "labelInputLabel": "Etiqueta",
   "bitboxActionPairDeviceButton": "Iniciar emparelhamento",
   "importQrDeviceSpecterName": "Espectro",
-  "transactionDetailLabelSwapFees": "Taxas de swap",
+  "transactionDetailLabelSwapFees": "Taxas de transfer",
   "broadcastSignedTxFee": "Taxas",
   "recoverbullRecoveryBalanceLabel": "Equilíbrio: {amount}",
   "@recoverbullRecoveryBalanceLabel": {
@@ -227,7 +227,7 @@
   "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
   "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
   "payServiceFee": "Taxa de serviço",
-  "transactionStatusSwapExpired": "Swap Expirou",
+  "transactionStatusSwapExpired": "Transfer Expirou",
   "swapAmountPlaceholder": "0",
   "fundExchangeMethodInstantSepaSubtitle": "Mais rápido - Apenas para transações abaixo de €30,000",
   "dcaConfirmError": "Algo correu mal",
@@ -346,7 +346,7 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "Swap Expirou",
+  "coreSwapsLnSendExpired": "Transfer Expirou",
   "sellSendPaymentUsdBalance": "USD / USD Balanço",
   "backupWalletEncryptedVaultTag": "Fácil e simples (1 minuto)",
   "payBroadcastFailed": "Transmissão falhou",
@@ -408,7 +408,7 @@
   "ledgerVerifyTitle": "Verificar endereço no Ledger",
   "recoverbullSwitchToPassword": "Escolha uma senha em vez",
   "exchangeDcaNetworkBitcoin": "Rede de Bitcoin",
-  "autoswapWarningTitle": "O Autoswap está habilitado com as seguintes configurações:",
+  "autoswapWarningTitle": "O Autotransfer está habilitado com as seguintes configurações:",
   "seedsignerStep1": "Ligue o dispositivo SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
   "transactionLabelStatus": "Estado",
@@ -419,7 +419,7 @@
   "payEstimatedFee": "Taxa estimada",
   "sendSendAmount": "Enviar valor",
   "sendSelectedUtxosInsufficient": "Utxos selecionados não cobre a quantidade necessária",
-  "swapErrorBalanceTooLow": "Equilíbrio demasiado baixo para uma quantidade mínima de swap",
+  "swapErrorBalanceTooLow": "Equilíbrio demasiado baixo para uma quantidade mínima de transfer",
   "fundExchangeWarningTactic5": "Eles pedem para enviar Bitcoin em outra plataforma",
   "rbfCustomFee": "Taxas personalizadas",
   "importQrDeviceFingerprint": "Impressão digital",
@@ -454,7 +454,7 @@
   "fundExchangeOnlineBillPaymentHelpBillerName": "Adicionar esta empresa como um payee - é processador de pagamento Bull Bitcoin",
   "payPayoutMethod": "Método de pagamento",
   "ledgerVerifyButton": "Verificar endereço",
-  "sendErrorSwapFeesNotLoaded": "Taxas de swap não carregadas",
+  "sendErrorSwapFeesNotLoaded": "Taxas de transfer não carregadas",
   "walletDetailsCopyButton": "Entendido",
   "backupWalletGoogleDrivePrivacyMessage3": "deixar seu telefone e é ",
   "backupCompletedDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
@@ -512,7 +512,7 @@
   "arkStatusSettled": "Preparado",
   "dcaWalletBitcoinSubtitle": "Mínimo 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Digite sua senha no dispositivo BitBox para continuar.",
-  "systemLabelSwaps": "Swaps",
+  "systemLabelSwaps": "Transfers",
   "sendOpenTheCamera": "Abra a câmera",
   "passportStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "sendSwapId": "ID do balanço",
@@ -669,7 +669,7 @@
   "scanNfcButton": "Digitalização NFC",
   "testBackupChooseVaultLocation": "Escolha a localização do vault",
   "dcaAddressBitcoin": "Endereço de Bitcoin",
-  "sendErrorAmountBelowMinimum": "Montante abaixo do limite mínimo de swap: {minLimit} sats",
+  "sendErrorAmountBelowMinimum": "Montante abaixo do limite mínimo de transfer: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "placeholders": {
       "minLimit": {
@@ -847,10 +847,10 @@
   "buyEstimatedFeeValue": "Valor estimado da taxa",
   "payName": "Nome",
   "sendSignWithBitBox": "Sinal com BitBox",
-  "sendSwapRefundInProgress": "Reembolso de swap em progresso",
+  "sendSwapRefundInProgress": "Reembolso de transfer em progresso",
   "exchangeKycLimited": "Limitação",
   "backupWalletHowToDecideVaultCustomRecommendationText": "você está confiante de que você não vai perder o arquivo do vault e ainda será acessível se você perder seu telefone.",
-  "swapErrorAmountBelowMinimum": "O valor está abaixo do valor mínimo de swap: {min} sats",
+  "swapErrorAmountBelowMinimum": "O valor está abaixo do valor mínimo de transfer: {min} sats",
   "@swapErrorAmountBelowMinimum": {
     "placeholders": {
       "min": {
@@ -915,7 +915,7 @@
     }
   },
   "electrumPrivacyNoticeCancel": "Cancelar",
-  "coreSwapsLnSendPending": "Swap ainda não é inicializado.",
+  "coreSwapsLnSendPending": "Transfer ainda não é inicializado.",
   "recoverbullVaultCreatedSuccess": "Vault criado com sucesso",
   "payAmount": "Montante",
   "sellMaximumAmount": "Quantidade máxima de venda: {amount}",
@@ -1039,7 +1039,7 @@
   "transactionDetailLabelRefunded": "Reembolsos",
   "dcaFrequencyHourly": "hora da hora",
   "swapValidationSelectFromWallet": "Por favor, selecione uma carteira para transferir de",
-  "sendSwapInitiated": "Swap Iniciado",
+  "sendSwapInitiated": "Transfer Iniciado",
   "backupSettingsKeyWarningMessage": "É importante que você não salve a chave de backup no mesmo lugar onde você salva seu arquivo de backup. Sempre armazená-los em dispositivos separados ou provedores de nuvem separados.",
   "recoverbullEnterToTest": "Digite seu {inputType} para testar seu cofre.",
   "@recoverbullEnterToTest": {
@@ -1293,7 +1293,7 @@
   "exchangeFileUploadTitle": "Upload de arquivo seguro",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
   "bitboxCubitHandshakeFailed": "Falhou para estabelecer uma ligação segura. Por favor, tente novamente.",
-  "sendErrorAmountAboveSwapLimits": "O montante está acima dos limites de swap",
+  "sendErrorAmountAboveSwapLimits": "O montante está acima dos limites de transfer",
   "backupWalletHowToDecideBackupEncryptedVault": "O cofre encriptado impede-te de ladrões que procuram roubar o teu apoio. Ele também impede que você perca acidentalmente seu backup, uma vez que ele será armazenado em sua nuvem. Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Há uma pequena possibilidade de que o servidor web que armazena a chave de criptografia do seu backup possa ser comprometida. Neste caso, a segurança do backup em sua conta na nuvem pode estar em risco.",
   "coreSwapsChainCompletedRefunded": "A transferência foi reembolsada.",
   "payClabeHint": "Digite o número CLABE",
@@ -1370,7 +1370,7 @@
   "mempoolCustomServerDeleteTitle": "Excluir Servidor Personalizado?",
   "confirmSendTitle": "Enviar",
   "buyKYCLevel1": "Nível 1 - Básico",
-  "sendErrorAmountAboveMaximum": "Montante acima do limite máximo de swap: {maxLimit} sats",
+  "sendErrorAmountAboveMaximum": "Montante acima do limite máximo de transfer: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
     "placeholders": {
       "maxLimit": {
@@ -1378,7 +1378,7 @@
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "Swap é concluído com sucesso.",
+  "coreSwapsLnSendCompletedSuccess": "Transfer é concluído com sucesso.",
   "importColdcardScanning": "A procurar...",
   "transactionLabelTransferFee": "Taxa de transferência",
   "visitRecoverBullMessage": "Visite o Recoverbull.com para obter mais informações.",
@@ -1441,7 +1441,7 @@
   "fiatCurrencySettingsLabel": "Moeda de Fiat",
   "arkStatusConfirmed": "Confirmado",
   "withdrawConfirmAmount": "Montante",
-  "transactionSwapDoNotUninstall": "Não desinstale o aplicativo até que o swap seja concluído.",
+  "transactionSwapDoNotUninstall": "Não desinstale o aplicativo até que o transfer seja concluído.",
   "payDefaultCommentHint": "Insira o comentário padrão",
   "copyDialogButton": "Entendido",
   "bitboxActionImportWalletProcessing": "Carteira de importação",
@@ -1513,8 +1513,8 @@
   "exchangeLandingDisclaimerNotAvailable": "Os serviços de câmbio de criptomoeda não estão disponíveis na aplicação móvel Bull Bitcoin.",
   "sendCustomFeeRate": "Taxa de taxa personalizada",
   "ledgerHelpTitle": "Resolução de problemas do Ledger",
-  "swapErrorAmountExceedsMaximum": "O montante excede o montante máximo de swap",
-  "transactionLabelTotalSwapFees": "Total taxas de swap",
+  "swapErrorAmountExceedsMaximum": "O montante excede o montante máximo de transfer",
+  "transactionLabelTotalSwapFees": "Total taxas de transfer",
   "errorLabel": "Erro",
   "receiveInsufficientInboundLiquidity": "Capacidade de recepção de relâmpago insuficiente",
   "withdrawRecipientsMyTab": "Os meus destinatários fiat",
@@ -1534,7 +1534,7 @@
   "swapProgressCompleted": "Transferência concluída",
   "keystoneStep2": "Clique em Digitalizar",
   "sendContinue": "Continue",
-  "transactionDetailRetrySwap": "Retira Swap {action}",
+  "transactionDetailRetrySwap": "Retira Transfer {action}",
   "@transactionDetailRetrySwap": {
     "placeholders": {
       "action": {
@@ -1542,11 +1542,11 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorSwapCreationFailed": "Falhado para criar transfer.",
   "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
   "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
-  "autoswapWarningCardTitle": "O Autoswap está ativado.",
+  "autoswapWarningCardTitle": "O Autotransfer está ativado.",
   "coreSwapsChainCompletedSuccess": "A transferência é concluída com sucesso.",
   "physicalBackupRecommendation": "Backup físico: ",
   "autoswapMaxBalance": "Max equilíbrio de carteira instantânea",
@@ -1640,7 +1640,7 @@
   "passportStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "settingsCurrencyTitle": "Moeda",
   "transactionSwapDescChainClaimable": "A transação foi confirmada. Está a reivindicar os fundos para completar a sua transferência.",
-  "sendSwapDetails": "Detalhes de Swap",
+  "sendSwapDetails": "Detalhes de Transfer",
   "onboardingPhysicalBackupDescription": "Recupere sua carteira através de 12 palavras.",
   "psbtFlowSelectSeed": "Uma vez que a transação é importada em seu {device}, você deve selecionar a semente que deseja assinar com.",
   "@psbtFlowSelectSeed": {
@@ -1830,7 +1830,7 @@
   "customLocationProvider": "Localização personalizada",
   "dcaSelectFrequencyLabel": "Selecione a frequência",
   "transactionSwapDescChainCompleted": "Sua transferência foi concluída com sucesso! Os fundos devem agora estar disponíveis na sua carteira.",
-  "coreSwapsLnSendRefundable": "Swap está pronto para ser reembolsado.",
+  "coreSwapsLnSendRefundable": "Transfer está pronto para ser reembolsado.",
   "backupInstruction2": "Sem um backup, se você perder ou quebrar seu telefone, ou se você desinstalar o aplicativo Bull Bitcoin, seus bitcoins serão perdidos para sempre.",
   "autoswapSave": "Salvar",
   "swapGoHomeButton": "Vai para casa",
@@ -1892,7 +1892,7 @@
   "electrumBitcoinServerInfo": "Digite o endereço do servidor em formato: host:port (por exemplo, example.com:50001)",
   "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
   "arkSettleTitle": "Transações de Settle",
-  "sendErrorInsufficientBalanceForSwap": "Não saldo suficiente para pagar esta troca via Liquid e não dentro de limites de swap para pagar via Bitcoin.",
+  "sendErrorInsufficientBalanceForSwap": "Não saldo suficiente para pagar esta troca via Liquid e não dentro de limites de transfer para pagar via Bitcoin.",
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Instruções",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "Na carteira BULL, escolha seu tipo de derivação preferido. Se não tiver certeza, selecione \"Segwit (BIP84)\"",
@@ -1922,7 +1922,7 @@
   },
   "fundExchangeETransferLabelBeneficiaryName": "Use isso como o nome do beneficiário E-transfer",
   "backupWalletErrorFileSystemPath": "Falhado para selecionar o caminho do sistema de arquivos",
-  "coreSwapsLnSendCanCoop": "Swap vai completar momentaneamente.",
+  "coreSwapsLnSendCanCoop": "Transfer vai completar momentaneamente.",
   "electrumServerNotUsed": "Não usado",
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Backup físico: ",
   "payDebitCardNumber": "Número de cartão de débito",
@@ -1950,7 +1950,7 @@
   "seedsignerStep9": "Revise o endereço de destino e o valor, e confirme a assinatura no SeedSigner.",
   "logoutButton": "Logotipo",
   "payReplaceByFee": "Substituir-By-Fee (RBF)",
-  "coreSwapsLnReceiveClaimable": "Swap está pronto para ser reivindicado.",
+  "coreSwapsLnReceiveClaimable": "Transfer está pronto para ser reivindicado.",
   "pinButtonCreate": "Criar PIN",
   "fundExchangeJurisdictionEurope": "🇪 Europa (SEPA)",
   "settingsExchangeSettingsTitle": "Configurações de troca",
@@ -1992,7 +1992,7 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "Swap vai completar momentaneamente.",
+  "coreSwapsLnReceiveCanCoop": "Transfer vai completar momentaneamente.",
   "addressViewAddressesTitle": "Endereços",
   "withdrawRecipientsNoRecipients": "Nenhum destinatário encontrado para se retirar.",
   "transactionSwapProgressPaymentMade": "Pagamento\nFeito",
@@ -2140,14 +2140,14 @@
       }
     }
   },
-  "receiveBoltzSwapFee": "Boltz Swap Fee",
+  "receiveBoltzSwapFee": "Boltz Transfer Fee",
   "swapInfoBanner": "Transferir Bitcoin perfeitamente entre suas carteiras. Apenas mantenha fundos na Carteira de Pagamento Instantânea para gastos diários.",
   "payRBFEnabled": "RBF habilitado",
   "takeYourTimeTag": "Leve o seu tempo",
   "arkAboutDust": "Pó",
   "ledgerSuccessVerifyDescription": "O endereço foi verificado no seu dispositivo Ledger.",
   "bip85Title": "BIP85 Entropias Deterministas",
-  "sendSwapTimeout": "Swap timed out",
+  "sendSwapTimeout": "Transfer timed out",
   "networkFeesLabel": "Taxas de rede",
   "backupWalletPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
   "sendSwapInProgressBitcoin": "A troca está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
@@ -2192,8 +2192,8 @@
   "importWatchOnlyZpub": "- sim",
   "testBackupNext": "Próximo",
   "payBillerSearchHint": "Digite as primeiras 3 letras do nome do contador",
-  "coreSwapsLnSendCompletedRefunded": "O Swap foi reembolsado.",
-  "transactionSwapInfoClaimableSwap": "A troca será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Retentar Swap Claim\".",
+  "coreSwapsLnSendCompletedRefunded": "O Transfer foi reembolsado.",
+  "transactionSwapInfoClaimableSwap": "A troca será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Retentar Transfer Claim\".",
   "mempoolCustomServerLabel": "CUSTOM",
   "arkAboutSessionDuration": "Duração da sessão",
   "transferFeeLabel": "Taxa de transferência",
@@ -2343,7 +2343,7 @@
   "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
   "transactionDetailLabelLiquidTxId": "ID de transação líquida",
   "testBackupBackupId": "ID de backup:",
-  "walletDeletionErrorOngoingSwaps": "Você não pode excluir uma carteira com swaps em curso.",
+  "walletDeletionErrorOngoingSwaps": "Você não pode excluir uma carteira com transfers em curso.",
   "bitboxScreenConnecting": "Ligação ao BitBox",
   "psbtFlowScanAnyQr": "Selecione \"Scan any QR code\" opção",
   "transactionLabelServerNetworkFees": "Taxas de rede do servidor",
@@ -2437,7 +2437,7 @@
   "testBackupErrorInvalidFile": "Conteúdo de arquivo inválido",
   "payHowToPayInvoice": "Como você quer pagar esta fatura?",
   "transactionDetailLabelSendNetworkFee": "Enviar Taxa de rede",
-  "sendSlowPaymentWarningDescription": "Bitcoin swaps levará tempo para confirmar.",
+  "sendSlowPaymentWarningDescription": "Bitcoin transfers levará tempo para confirmar.",
   "bitboxActionVerifyAddressProcessingSubtext": "Por favor, confirme o endereço do seu dispositivo BitBox.",
   "pinConfirmHeadline": "Confirme o novo pino",
   "fundExchangeCanadaPostQrCodeLabel": "Código QR Loadhub",
@@ -2449,7 +2449,7 @@
   "transactionStatusInProgress": "Em progresso",
   "recoverWalletScreenTitle": "Recuperar Carteira",
   "rbfEstimatedDelivery": "Entrega estimada ~ 10 minutos",
-  "sendSwapCancelled": "Cancelamento do Swap",
+  "sendSwapCancelled": "Cancelamento do Transfer",
   "backupWalletGoogleDrivePrivacyMessage4": "nunca ",
   "dcaPaymentMethodValue": "{currency} equilíbrio",
   "@dcaPaymentMethodValue": {
@@ -2483,8 +2483,8 @@
   },
   "globalDefaultLiquidWalletLabel": "Pagamentos imediatos",
   "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
-  "sendTypeSwap": "Swap",
-  "sendErrorAmountExceedsMaximum": "O montante excede o montante máximo de swap",
+  "sendTypeSwap": "Transfer",
+  "sendErrorAmountExceedsMaximum": "O montante excede o montante máximo de transfer",
   "bitboxActionSignTransactionSuccess": "Transação assinada com sucesso",
   "fundExchangeMethodInstantSepa": "SEPA instantâneo e regular",
   "buyVerificationFailed": "Verificação falhada: {reason}",
@@ -2514,7 +2514,7 @@
   "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
   "transactionHistoryTitle": "Histórico de transações",
   "transactionHistoryHeading": "Histórico de transações",
-  "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e swaps) como ficheiro CSV. Filtre opcionalmente por intervalo de datas.",
+  "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e transfers) como ficheiro CSV. Filtre opcionalmente por intervalo de datas.",
   "exportTransactionsStartDate": "Data de início",
   "exportTransactionsEndDate": "Data de fim",
   "exportTransactionsAnyDate": "Qualquer",
@@ -2538,7 +2538,7 @@
   "sendNetworkFeesLabel": "Enviar taxas de rede",
   "electrumUnknownError": "Um erro ocorreu",
   "payWhichWallet": "De que carteira queres pagar?",
-  "autoswapBaseBalanceInfoText": "Seu saldo imediato da carteira de pagamento retornará a este equilíbrio após um autoswap.",
+  "autoswapBaseBalanceInfoText": "Seu saldo imediato da carteira de pagamento retornará a este equilíbrio após um autotransfer.",
   "recoverbullSelectDecryptVault": "Descriptografar cofre",
   "buyUpgradeKYC": "Atualizar KYC Nível",
   "transactionOrderLabelOrderType": "Tipo de ordem",
@@ -2556,7 +2556,7 @@
   "arkSendConfirmedBalance": "Balanço confirmado",
   "sellFastest": "Mais rápido",
   "receiveTitle": "Receber",
-  "transactionSwapInfoRefundableSwap": "Esta troca será reembolsada automaticamente dentro de alguns segundos. Se não, você pode tentar um reembolso manual clicando no botão \"Restaurar Swap Refund\".",
+  "transactionSwapInfoRefundableSwap": "Esta troca será reembolsada automaticamente dentro de alguns segundos. Se não, você pode tentar um reembolso manual clicando no botão \"Restaurar Transfer Refund\".",
   "payCancelPayment": "Cancelar pagamento",
   "ledgerInstructionsAndroidUsb": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e conectá-lo via USB.",
   "onboardingOwnYourMoney": "Possuir seu dinheiro",
@@ -2844,7 +2844,7 @@
   "keystoneStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Keystone. Analisa-o.",
   "ledgerErrorRejectedByUser": "A transação foi rejeitada pelo usuário no dispositivo Ledger.",
   "payFeeRate": "Taxa de taxa",
-  "autoswapWarningDescription": "Autoswap garante que um bom equilíbrio é mantido entre seus pagamentos instantâneos e carteira de Bitcoin seguro.",
+  "autoswapWarningDescription": "Autotransfer garante que um bom equilíbrio é mantido entre seus pagamentos instantâneos e carteira de Bitcoin seguro.",
   "fundExchangeSinpeAddedToBalance": "Uma vez que o pagamento é enviado, ele será adicionado ao seu saldo de conta.",
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
@@ -2933,7 +2933,7 @@
   "buyKycPendingTitle": "Pendente de Verificação de ID KYC",
   "transactionOrderLabelPayinStatus": "Estado de Payin",
   "sellSendPaymentSecureWallet": "Carteira Bitcoin segura",
-  "coreSwapsLnReceiveRefundable": "Swap está pronto para ser reembolsado.",
+  "coreSwapsLnReceiveRefundable": "Transfer está pronto para ser reembolsado.",
   "bitcoinSettingsElectrumServerTitle": "Configurações do servidor Electrum",
   "payRemoveRecipient": "Remover Recipiente",
   "pasteInputDefaultHint": "Cole um endereço de pagamento ou fatura",
@@ -2959,8 +2959,8 @@
       }
     }
   },
-  "sendSwapRefundCompleted": "Reembolso de Swap Completado",
-  "sendConfirmSwap": "Confirme Swap",
+  "sendSwapRefundCompleted": "Reembolso de Transfer Completado",
+  "sendConfirmSwap": "Confirme Transfer",
   "exchangeLogoutComingSoon": "Log Out - Chegando em breve",
   "sendSending": "Enviar",
   "withdrawConfirmAccount": "Conta",
@@ -3120,7 +3120,7 @@
   "dcaSetupFundAccount": "Fina sua conta",
   "payEmail": "Email",
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
-  "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de swap",
+  "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de transfer",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar Pagamentos Instantâneos para fazer pagamentos menores.",
   "payPrivatePayment": "Pagamento Privado",
   "autoswapDefaultWalletLabel": "Carteira Bitcoin",
@@ -3247,7 +3247,7 @@
       }
     }
   },
-  "coreSwapsLnSendFailedRefunding": "Swap será reembolsado em breve.",
+  "coreSwapsLnSendFailedRefunding": "Transfer será reembolsado em breve.",
   "dcaWalletTypeLightning": "Rede de relâmpago (LN)",
   "transactionSwapProgressBroadcasted": "Transmitido",
   "backupWalletVaultProviderAppleICloud": "Apple iCloud",
@@ -3284,7 +3284,7 @@
   "paySendAll": "Enviar tudo",
   "pinCodeAuthentication": "Autenticação",
   "payLowPriority": "Baixa",
-  "coreSwapsLnReceivePending": "Swap ainda não é inicializado.",
+  "coreSwapsLnReceivePending": "Transfer ainda não é inicializado.",
   "arkSendConfirmMessage": "Por favor, confirme os detalhes da sua transação antes de enviar.",
   "bitcoinSettingsLegacySeedsTitle": "Sementes Legacy",
   "transactionDetailLabelPayjoinCreationTime": "Tempo de criação Payjoin",
@@ -3386,12 +3386,12 @@
   },
   "sendViewDetails": "Ver detalhes",
   "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
-  "sendSubmarineSwap": "Swap Submarino",
+  "sendSubmarineSwap": "Transfer Submarino",
   "transactionLabelLiquidTransactionId": "ID de transação líquida",
   "payNotAvailable": "N/A",
   "payFastest": "Mais rápido",
   "allSeedViewSecurityWarningTitle": "Aviso de Segurança",
-  "sendSwapFeeEstimate": "Taxa de swap estimada: {amount}",
+  "sendSwapFeeEstimate": "Taxa de transfer estimada: {amount}",
   "@sendSwapFeeEstimate": {
     "placeholders": {
       "amount": {
@@ -3474,7 +3474,7 @@
     }
   },
   "buyViewDetails": "Ver detalhes",
-  "paySwapFailed": "Swap falhou",
+  "paySwapFailed": "Transfer falhou",
   "autoswapMaxFeeLabel": "Taxa de transferência máxima",
   "importMnemonicBalance": "Equilíbrio: {amount}",
   "@importMnemonicBalance": {
@@ -3627,11 +3627,11 @@
   "dcaConfirmFrequencyMonthly": "Todos os meses",
   "importWatchOnlyScriptType": "Tipo de script",
   "electrumCustomServers": "Servidores personalizados",
-  "transactionStatusSwapFailed": "Swap Failed",
+  "transactionStatusSwapFailed": "Transfer Failed",
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "continueButton": "Continue",
   "payBatchPayment": "Pagamento de lote",
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer Fee",
   "transactionSwapDescLnReceiveFailed": "Houve um problema com a tua troca. Por favor, contacte o suporte se os fundos não tiverem sido devolvidos dentro de 24 horas.",
   "sellOrderNumber": "Número de ordem",
   "payRecipientCount": "{count} destinatários",
@@ -3658,7 +3658,7 @@
   "fundExchangeCrIbanCrcLabelRecipientName": "Nome do destinatário",
   "swapTransferPendingTitle": "Pendente de Transferência",
   "mempoolCustomServerSaveSuccess": "Servidor personalizado salvo com sucesso",
-  "sendErrorBalanceTooLowForMinimum": "Equilíbrio demasiado baixo para uma quantidade mínima de swap",
+  "sendErrorBalanceTooLowForMinimum": "Equilíbrio demasiado baixo para uma quantidade mínima de transfer",
   "testBackupSuccessMessage": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
   "electrumTimeout": "Timeout (segundos)",
   "transactionDetailLabelOrderStatus": "Status da ordem",
@@ -3727,7 +3727,7 @@
   },
   "electrumLiquidSslInfo": "Nenhum protocolo deve ser especificado, SSL será usado automaticamente.",
   "sendDeviceConnected": "Dispositivo conectado",
-  "swapErrorAmountAboveMaximum": "Montante excede o valor máximo de swap: {max} sats",
+  "swapErrorAmountAboveMaximum": "Montante excede o valor máximo de transfer: {max} sats",
   "@swapErrorAmountAboveMaximum": {
     "placeholders": {
       "max": {
@@ -3769,7 +3769,7 @@
   "transactionFilterSend": "Enviar",
   "paySwapInProgress": "Trocar em progresso...",
   "importMnemonicSyncMessage": "Todos os três tipos de carteira estão sincronizando e seus saldos e transações aparecerão em breve. Você pode esperar até que a sincronização complete ou prossiga para importar se você tiver certeza de qual tipo de carteira você deseja importar.",
-  "coreSwapsLnSendClaimable": "Swap está pronto para ser reivindicado.",
+  "coreSwapsLnSendClaimable": "Transfer está pronto para ser reivindicado.",
   "fundExchangeMethodCrIbanCrcSubtitle": "Transferir fundos em Costa Rican Colón (CRC)",
   "transactionDetailTitle": "Detalhes da transação",
   "autoswapRecipientWalletLabel": "Carteira de Bitcoin",
@@ -4082,7 +4082,7 @@
   "customLocationRecommendation": "Localização personalizada: ",
   "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
   "recoverbullErrorSelectVault": "Falhado para selecionar o cofre",
-  "paySwapCompleted": "Swap concluída",
+  "paySwapCompleted": "Transfer concluída",
   "receiveDescription": "Descrição (opcional)",
   "bitboxScreenVerifyAddress": "Verificar endereço",
   "bitboxScreenConnectDevice": "Conecte seu dispositivo BitBox",
@@ -4169,7 +4169,7 @@
   },
   "autoswapInfoSettingsButton": "Configurar configurações.",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "autoswapInfoRemindLater": "Lembre-me mais tarde.",
   "@autoswapInfoRemindLater": {
@@ -4190,9 +4190,9 @@
       }
     }
   },
-  "autoswapInfoTitle": "Autoswap está ativo.",
+  "autoswapInfoTitle": "Autotransfer está ativo.",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "walletAutoTransferAllowButton": "Permitir",
   "@walletAutoTransferAllowButton": {
@@ -4208,7 +4208,7 @@
   },
   "autoswapInfoDismissButton": "Entendi, não mostrar novamente.",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "buyUnauthenticatedError": "Você não está autenticado. Por favor, faça login para continuar.",
   "@buyUnauthenticatedError": {
@@ -4216,7 +4216,7 @@
   },
   "walletAutoTransferBlockedTitle": "Transferência automática bloqueada.",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "walletAutoTransferBlockButton": "Bloquear",
   "@walletAutoTransferBlockButton": {
@@ -4406,7 +4406,7 @@
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
-  "autoswapActiveCardTitle": "Autoswap está ativo",
+  "autoswapActiveCardTitle": "Autotransfer está ativo",
   "deleteLogsTitle": "Excluir registros",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -4421,7 +4421,7 @@
   "statusScreenContinue": "Continuar",
   "autoswapWarningExplanationBold": "automaticamente",
   "sendSelfTransfer": "Autotransferência",
-  "autoswapInfoConsentMessage": "O Autoswap está atualmente ativado, mas não será acionado até que você consinta. Gostaria de mantê-lo ativado?",
+  "autoswapInfoConsentMessage": "O Autotransfer está atualmente ativado, mas não será acionado até que você consinta. Gostaria de mantê-lo ativado?",
   "mempoolServerStatusOnline": "Online",
   "mempoolServerStatusOffline": "Offline",
   "mempoolServerStatusChecking": "Verificando...",
@@ -4621,7 +4621,7 @@
   "wizardJourneyTip3": "Liga-te ao teu próprio nó Bitcoin",
   "wizardJourneyTip4": "Liga-te ao teu próprio explorador Mempool",
   "wizardJourneyTip5": "Transfere entre Bitcoin e Liquid sem KYC",
-  "wizardJourneyTip6": "Personaliza as tuas definições de autoswap",
+  "wizardJourneyTip6": "Personaliza as tuas definições de autotransfer",
   "wizardJourneyTip7": "Alterna entre Bitcoin (BTC) e Satoshis (sats)",
   "wizardJourneyTip8": "Cria transações air-gap para a tua carteira de hardware",
   "@wizardPageIndicator": {
@@ -4641,7 +4641,7 @@
   "legacyStorageIntroDescription": "A sua carteira está a correr num software que vai deixar de ser suportado em breve. Não pode ser atualizado sem desinstalar e reinstalar a aplicação.",
   "legacyStorageStepBackupWallet": "Faça backup da sua carteira",
   "legacyStorageStepExportLabels": "Exporte as suas etiquetas (se as tiver)",
-  "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os swaps estão concluídos",
+  "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os transfers estão concluídos",
   "legacyStorageStepUninstall": "Desinstale a aplicação do seu dispositivo",
   "legacyStorageStepReinstall": "Descarregue a versão mais recente e reinstale",
   "legacyStorageStepRestoreBackup": "Restaure o seu backup",

@@ -20,7 +20,7 @@
   "importColdcardInstructionsStep10": "完成",
   "buyPayoutWillBeSentIn": "您的付款将在 ",
   "fundExchangeInstantSepaInfo": "仅适用于 20,000 欧元以下的交易。对于更大金额的交易，请使用常规 SEPA 选项。",
-  "transactionLabelSwapId": "Swap ID",
+  "transactionLabelSwapId": "Transfer ID",
   "dcaChooseWalletTitle": "选择比特币钱包",
   "torSettingsPortHint": "9050",
   "electrumTimeoutPositiveError": "超时时间必须是正值",
@@ -96,7 +96,7 @@
   "satsSuffix": " ats",
   "recoverbullErrorPasswordNotSet": "密码未设置",
   "sellSendPaymentExchangeRate": "汇率",
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Auto Transfer",
   "fundExchangeSinpeTitle": "SINPE 转让",
   "payExpiresIn": "{time}年到期",
   "@payExpiresIn": {
@@ -518,7 +518,7 @@
   "systemLabelSwaps": "蒸汽",
   "sendOpenTheCamera": "开放照相机",
   "passportStep11": "在 Bull Bitcoin 钱包中点击“我完成了”",
-  "sendSwapId": "Swap ID",
+  "sendSwapId": "Transfer ID",
   "electrumServerOnline": "在线",
   "fundExchangeAccountTitle": "基金",
   "exchangeAppSettingsSaveButton": "Save",
@@ -1088,7 +1088,7 @@
   "fundExchangeMethodCanadaPost": "加拿大个人现金或借项",
   "payInvoiceDecoded": "成功编码",
   "coreScreensAmountLabel": "数额",
-  "receiveSwapId": "Swap ID",
+  "receiveSwapId": "Transfer ID",
   "transactionLabelCompletedAt": "页: 1",
   "pinCodeCreateTitle": "创建新的支柱",
   "swapTransferRefundInProgressTitle": "转款",
@@ -1423,7 +1423,7 @@
   "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6",
   "payNetwork": "网络",
   "sendBuildFailed": "未能建立交易",
-  "paySwapFee": "Swap Fee",
+  "paySwapFee": "Transfer Fee",
   "exchangeAccountSettingsTitle": "账户设置",
   "arkBoardingConfirmed": "董事会确认",
   "broadcastSignedTxTitle": "广播交易",
@@ -1538,7 +1538,7 @@
   "swapProgressCompleted": "已完成的移交",
   "keystoneStep2": "浮雕",
   "sendContinue": "继续",
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
     "placeholders": {
       "action": {
@@ -1574,7 +1574,7 @@
   "importMnemonicNestedSegwit": "Nest",
   "sendReplaceByFeeActivated": "替换",
   "psbtFlowScanQrOption": "选择“Scan QR”办法",
-  "coreSwapsLnReceiveFailed": "Swap Failed.",
+  "coreSwapsLnReceiveFailed": "Transfer Failed.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "美元转账资金",
   "transactionDetailLabelPayinStatus": "Payin Status",
   "importQrDeviceSpecterStep9": "页: 1",
@@ -2037,7 +2037,7 @@
   "replaceByFeeOriginalTransactionTitle": "原始交易",
   "testBackupPhysicalBackupTag": "无信托能力(时间)",
   "testBackupTitle": "检验您的墙壁",
-  "coreSwapsLnSendFailed": "Swap Failed.",
+  "coreSwapsLnSendFailed": "Transfer Failed.",
   "recoverbullErrorDecryptFailed": "未能加密",
   "keystoneStep9": "Click the buttons to sign the trade on You Keystone.",
   "totalFeesLabel": "总费用",
@@ -2161,7 +2161,7 @@
       }
     }
   },
-  "receiveBoltzSwapFee": "Boltz Swap Fee",
+  "receiveBoltzSwapFee": "Boltz Transfer Fee",
   "swapInfoBanner": "顺便提一下。 只有将资金留在停薪区,用于日常开支.",
   "payRBFEnabled": "RBF",
   "takeYourTimeTag": "发言时间",
@@ -2214,7 +2214,7 @@
   "testBackupNext": "下一步",
   "payBillerSearchHint": "第3封账单",
   "coreSwapsLnSendCompletedRefunded": "退款.",
-  "transactionSwapInfoClaimableSwap": "冲积将在几秒内自动完成。 否则,你就可以通过点击“Retry Swap claim”纽州而尝试人工索赔.",
+  "transactionSwapInfoClaimableSwap": "冲积将在几秒内自动完成。 否则,你就可以通过点击“Retry Transfer claim”纽州而尝试人工索赔.",
   "mempoolCustomServerLabel": "马达加斯加",
   "arkAboutSessionDuration": "会期",
   "transferFeeLabel": "汇款",
@@ -2577,7 +2577,7 @@
   "arkSendConfirmedBalance": "确认的平衡",
   "sellFastest": "快速",
   "receiveTitle": "收 款",
-  "transactionSwapInfoRefundableSwap": "将在几秒内自动退款。 如果没有,你可以点击“Retry Swap Refund”纽芬兰,尝试人工退款.",
+  "transactionSwapInfoRefundableSwap": "将在几秒内自动退款。 如果没有,你可以点击“Retry Transfer Refund”纽芬兰,尝试人工退款.",
   "payCancelPayment": "Cancel",
   "ledgerInstructionsAndroidUsb": "保证你能 Ledger与Stect公司开张,通过USB连接.",
   "onboardingOwnYourMoney": "贵 会",
@@ -2982,7 +2982,7 @@
   },
   "sendSwapRefundCompleted": "周转基金",
   "torSettingsStatusUnknown": "身份不明",
-  "sendConfirmSwap": "Confirm Swap",
+  "sendConfirmSwap": "Confirm Transfer",
   "exchangeLogoutComingSoon": "Log Out - Comon So",
   "sendSending": "贷款",
   "withdrawConfirmAccount": "账户",
@@ -3033,7 +3033,7 @@
   "bitboxActionPairDeviceSuccess": "有偿成功使用的设备",
   "bitboxErrorNoDevicesFound": "没有发现任何BitBox装置。 保证你的装置通过USB电能和连接.",
   "torSettingsStatusConnecting": "连接......",
-  "receiveSwapID": "Swap ID",
+  "receiveSwapID": "Transfer ID",
   "settingsBitcoinSettingsTitle": "地点",
   "backupWalletHowToDecideBackupModalTitle": "如何决定",
   "backupSettingsLabel": "钱包备份",
@@ -3498,7 +3498,7 @@
     }
   },
   "buyViewDetails": "观点细节",
-  "paySwapFailed": "Swap失败",
+  "paySwapFailed": "Transfer失败",
   "autoswapMaxFeeLabel": "Max Transfer Fee",
   "importMnemonicBalance": "余额:{amount}",
   "@importMnemonicBalance": {
@@ -3651,11 +3651,11 @@
   "dcaConfirmFrequencyMonthly": "每个月",
   "importWatchOnlyScriptType": "文字类型",
   "electrumCustomServers": "海关服务器",
-  "transactionStatusSwapFailed": "Swap Failed",
+  "transactionStatusSwapFailed": "Transfer Failed",
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "continueButton": "继续",
   "payBatchPayment": "Batch",
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
+  "transactionLabelBoltzSwapFee": "Boltz Transfer Fee",
   "transactionSwapDescLnReceiveFailed": "有一个问题涉及你。 如果资金没有在24小时内返还,请联系支助.",
   "sellOrderNumber": "命令号数",
   "payRecipientCount": "{count} 收款人",
@@ -3912,7 +3912,7 @@
   "arkAboutBoardingExitDelay": "离职延误",
   "receiveConfirmedInFewSeconds": "几秒将予以确认",
   "backupWalletInstructionNoPassphrase": "您的备份未受到密码短语的保护。稍后可以通过创建新钱包的方式为您的备份添加一个密码短语",
-  "transactionDetailLabelSwapId": "Swap ID",
+  "transactionDetailLabelSwapId": "Transfer ID",
   "sendSwapFailed": "s湖失败。 你的退款将很快处理.",
   "sellNetworkError": "网络错误。 请再次审判",
   "sendHardwareWallet": "软墙",
@@ -4154,7 +4154,7 @@
   },
   "autoswapInfoSettingsButton": "配置设置",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "autoswapInfoRemindLater": "稍后提醒我",
   "@autoswapInfoRemindLater": {
@@ -4162,11 +4162,11 @@
   },
   "autoswapInfoTitle": "自动换币处于启用状态",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapInfoDismissButton": "知道了，以后不再显示",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "exchangeSettingsRecipientsTitle": "收件者",
   "@exchangeSettingsRecipientsTitle": {
@@ -4567,7 +4567,7 @@
   "wizardJourneyTip3": "连接到您自己的 Bitcoin 节点",
   "wizardJourneyTip4": "连接到您自己的 Mempool 浏览器",
   "wizardJourneyTip5": "在 Bitcoin 和 Liquid 之间转账,无需 KYC",
-  "wizardJourneyTip6": "自定义您的 autoswap 设置",
+  "wizardJourneyTip6": "自定义您的 autotransfer 设置",
   "wizardJourneyTip7": "在 Bitcoin (BTC) 和 Satoshis (sats) 之间切换",
   "wizardJourneyTip8": "为您的硬件钱包创建 air-gap 交易",
   "@wizardPageIndicator": {
@@ -4587,7 +4587,7 @@
   "legacyStorageIntroDescription": "您的钱包正在使用即将停止支持的软件。除非卸载并重新安装应用,否则无法更新。",
   "legacyStorageStepBackupWallet": "备份您的钱包",
   "legacyStorageStepExportLabels": "导出您的标签(如果有)",
-  "legacyStorageStepEnsureSwapsCompleted": "确认所有 swap 已完成",
+  "legacyStorageStepEnsureSwapsCompleted": "确认所有 transfer 已完成",
   "legacyStorageStepUninstall": "从您的设备中卸载该应用",
   "legacyStorageStepReinstall": "下载最新版本并重新安装",
   "legacyStorageStepRestoreBackup": "恢复您的备份",

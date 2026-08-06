@@ -111,7 +111,6 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       internetConnection.isOnline &&
       bitcoinElectrum.isOnline &&
       liquidElectrum.isOnline &&
-      boltz.isOnline &&
       payjoin.isOnline &&
       pricer.isOnline &&
       mempool.isOnline &&

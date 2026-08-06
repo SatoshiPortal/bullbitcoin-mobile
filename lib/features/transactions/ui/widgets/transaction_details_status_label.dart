@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,14 +17,26 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
     final swap = transaction?.swap;
+    final orderSwap = transaction?.orderSwap;
     final order = transaction?.order;
     final isOrder = transaction?.isOrder;
     final payjoinStatus = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.payjoin?.status,
     );
 
-    return BBText(
-      (swap != null && swap.swapCompleted && swap.isChainSwap)
+    final label = orderSwap != null
+        ? switch (orderSwap.localStatus) {
+            OrderSwapLocalStatus.completed =>
+              context.loc.coreSwapsStatusCompleted,
+            OrderSwapLocalStatus.refunded =>
+              context.loc.transactionStatusPaymentRefunded,
+            OrderSwapLocalStatus.failed =>
+              context.loc.transactionStatusSwapFailed,
+            OrderSwapLocalStatus.expired =>
+              context.loc.transactionStatusSwapExpired,
+            _ => context.loc.transactionStatusPaymentInProgress,
+          }
+        : (swap != null && swap.swapCompleted && swap.isChainSwap)
           ? context.loc.transactionStatusTransferCompleted
           : (swap != null && swap.swapInProgress && swap.isChainSwap)
           ? context.loc.transactionStatusTransferInProgress
@@ -51,15 +64,22 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
           ? context.loc.transactionStatusPayjoinRequested
           : transaction?.isIncoming == true
           ? context.loc.transactionFilterReceive
-          : context.loc.transactionFilterSend,
+          : context.loc.transactionFilterSend;
+    final failedOrExpired =
+        orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
+        orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
+        (swap != null &&
+            (swap.status == SwapStatus.failed ||
+                swap.status == SwapStatus.expired));
+
+    return BBText(
+      label,
       style: context.font.headlineLarge?.copyWith(
-        color:
-            swap != null &&
-                (swap.status == SwapStatus.failed ||
-                    swap.status == SwapStatus.expired)
-            ? swap.status == SwapStatus.failed
+        color: failedOrExpired
+            ? (orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
+                      swap?.status == SwapStatus.failed
                   ? context.appColors.error
-                  : context.appColors.error.withValues(alpha: 0.7)
+                  : context.appColors.error.withValues(alpha: 0.7))
             : null,
       ),
     );

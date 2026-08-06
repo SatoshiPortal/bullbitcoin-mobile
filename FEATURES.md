@@ -86,6 +86,9 @@ graph TB
     SEND --> WALLETS
     SETTINGS --> CORE
     SWAPS --> UTXO_MGMT
+    SWAPS --> LABELS
+    WALLETS --> SWAPS
+    TRANSACTIONS --> SWAPS
     TOR --> CORE
     TRANSFER --> SEND
     TRANSFER --> RECEIVE

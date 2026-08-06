@@ -10,13 +10,12 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dar
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -26,7 +25,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -43,14 +45,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._convertSatsToCurrencyAmountUsecase,
     required this._getReceiveAddressUsecase,
     required this._getAddressAtIndexUsecase,
-    required this._createReceiveSwapUsecase,
+    required this._createReceiveOrderSwapUsecase,
     required this._receiveWithPayjoinUsecase,
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
     required this._watchWalletTransactionByAddressUsecase,
-    required this._watchSwapUsecase,
+    required this._watchReceiveOrderSwapUsecase,
     required this._labelsFacade,
-    required this._getSwapLimitsUsecase,
     this._wallet,
   }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
@@ -66,7 +67,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
     on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
-    on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
+    on<ReceiveOrderSwapUpdated>(_onOrderSwapUpdated);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -78,24 +79,23 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
-  final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
+  final CreateReceiveOrderSwapUsecase _createReceiveOrderSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchWalletTransactionByAddressUsecase
   _watchWalletTransactionByAddressUsecase;
-  final WatchSwapUsecase _watchSwapUsecase;
+  final WatchReceiveOrderSwapUsecase _watchReceiveOrderSwapUsecase;
   final LabelsFacade _labelsFacade;
-  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final Wallet? _wallet;
   StreamSubscription<Payjoin>? _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
-  StreamSubscription<Swap>? _swapSubscription;
+  StreamSubscription<OrderSwapRecord>? _orderSwapSubscription;
 
   @override
   Future<void> close() async {
     await Future.wait([
       _payjoinSubscription?.cancel() ?? Future.value(),
       _walletTransactionSubscription?.cancel() ?? Future.value(),
-      _swapSubscription?.cancel() ?? Future.value(),
+      _orderSwapSubscription?.cancel() ?? Future.value(),
     ]);
     return super.close();
   }
@@ -258,10 +258,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         state.copyWith(
           type: ReceiveType.lightning,
           lightningSwap: null,
+          orderSwap: null,
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
           amountException: null,
+          failure: null,
+          error: null,
         ),
       );
 
@@ -297,7 +300,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If no wallet is passed through the constructor, get the default liquid wallet,
       //  which is the default wallet to receive lightning payments since fees are lower
       //  than on the bitcoin network.
-      Wallet? wallet = _wallet;
+      Wallet? wallet = _wallet?.isLiquid == true ? _wallet : null;
       if (wallet == null) {
         final wallets = await _getWalletsUsecase.execute(
           onlyLiquid: true,
@@ -306,16 +309,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
       emit(state.copyWith(wallet: wallet));
-
-      if (state.swapLimits == null) {
-        // If the swap limits are not set yet, fetch them.
-        final (swapLimits, fees) = await _getSwapLimitsUsecase.execute(
-          type: wallet.isLiquid
-              ? SwapType.lightningToLiquid
-              : SwapType.lightningToBitcoin,
-        );
-        emit(state.copyWith(swapLimits: swapLimits));
-      }
 
       if (state.exchangeRate == 0) {
         // If the exchange rate is not set yet, we need to get it from the settings
@@ -490,7 +483,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // }
 
       emit(
-        state.copyWith(inputAmount: amount, amountException: amountException),
+        state.copyWith(
+          inputAmount: amount,
+          amountException: amountException,
+          failure: null,
+        ),
       );
     } catch (e) {
       emit(state.copyWith(error: e));
@@ -533,6 +530,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         exchangeRate: exchangeRate,
         inputAmount: '',
         amountException: null,
+        failure: null,
       ),
     );
   }
@@ -549,63 +547,38 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(state.copyWith(confirmedAmountSat: confirmedAmountSat));
       return;
     }
-    // For lightning, we need to check if the amount is within the limits
-    //  and create a swap if it is.
-    emit(state.copyWith(creatingSwap: true));
-    if (state.isInputAmountBelowLimit || state.isInputAmountAboveLimit) {
-      emit(
-        state.copyWith(
-          amountException: state.isInputAmountBelowLimit
-              ? BelowSwapLimitAmountException(state.swapLimits!.min)
-              : AboveSwapLimitAmountException(state.swapLimits!.max),
-          creatingSwap: false,
-        ),
-      );
-      return;
-    } else {
-      // If the amount is within the limits, we can confirm it and clear the exception.
-      // We also clear the swap since we can creaet a new one now.
-      emit(
-        state.copyWith(
-          confirmedAmountSat: confirmedAmountSat,
-          amountException: null,
-          lightningSwap: null,
-        ),
-      );
-    }
-
-    // Now that we know the amount is valid, we can create the swap
-    LnReceiveSwap? swap;
-    Object? error;
-    try {
-      final wallet = state.wallet!;
-      swap = await _createReceiveSwapUsecase.execute(
-        walletId: wallet.id,
-        type: wallet.isLiquid
-            ? SwapType.lightningToLiquid
-            : SwapType.lightningToBitcoin,
-        amountSat: confirmedAmountSat,
-        description: state.note,
-      );
-      // The swap is created, now we can watch it for updates
-      _watchLnReceiveSwap(swap.id);
-      _watchWalletTransactionToAddress(
-        walletId: state.wallet!.id,
-        address: swap.receiveAddress!,
-      );
-    } catch (e) {
-      log.severe(
-        message: 'Swap creation failed',
-        error: e,
-        trace: StackTrace.current,
-      );
-      error = e;
-      emit(state.copyWith(error: error, creatingSwap: false));
-    }
-
     emit(
-      state.copyWith(lightningSwap: swap, creatingSwap: false, error: error),
+      state.copyWith(
+        creatingSwap: true,
+        amountException: null,
+        lightningSwap: null,
+        orderSwap: null,
+        failure: null,
+        error: null,
+      ),
     );
+    final result = await _createReceiveOrderSwapUsecase.execute(
+      wallet: state.wallet!,
+      amountSat: confirmedAmountSat,
+      note: state.note,
+    );
+    switch (result) {
+      case Ok(:final value):
+        _watchOrderSwap(value.localId);
+        _watchWalletTransactionToAddress(
+          walletId: state.wallet!.id,
+          address: value.destination,
+        );
+        emit(
+          state.copyWith(
+            confirmedAmountSat: confirmedAmountSat,
+            orderSwap: value,
+            creatingSwap: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(creatingSwap: false, failure: failure));
+    }
   }
 
   Future<void> _onNoteChanged(
@@ -789,21 +762,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(state.copyWith(tx: tx));
   }
 
-  Future<void> _onLightningSwapUpdated(
-    ReceiveLightningSwapUpdated event,
+  Future<void> _onOrderSwapUpdated(
+    ReceiveOrderSwapUpdated event,
     Emitter<ReceiveState> emit,
   ) async {
-    final updatedSwap = event.swap;
-    // Make sure the state is a Lightning state and the correct swap is updated
-    if (state.type == ReceiveType.lightning &&
-        state.lightningSwap?.id != null &&
-        updatedSwap.id == state.lightningSwap!.id) {
-      emit(state.copyWith(lightningSwap: updatedSwap));
-
-      if (updatedSwap.status == SwapStatus.completed) {
-        // Sync the wallets now that the swap is completed
-        await _getWalletsUsecase.execute(sync: true);
-      }
+    if (state.type != ReceiveType.lightning ||
+        event.orderSwap.localId != state.orderSwap?.localId) {
+      return;
+    }
+    emit(state.copyWith(orderSwap: event.orderSwap));
+    if (event.orderSwap.localStatus == OrderSwapLocalStatus.completed) {
+      await _getWalletsUsecase.execute(sync: true);
     }
   }
 
@@ -861,16 +830,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         });
   }
 
-  void _watchLnReceiveSwap(String swapId) {
-    // Cancel the previous subscription if it exists
-    _swapSubscription?.cancel();
-    _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
-      log.info(
-        '[ReceiveBloc] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
-      );
-      if (updatedSwap is LnReceiveSwap) {
-        add(ReceiveLightningSwapUpdated(updatedSwap));
-      }
-    });
+  void _watchOrderSwap(String localId) {
+    _orderSwapSubscription?.cancel();
+    _orderSwapSubscription = _watchReceiveOrderSwapUsecase
+        .execute(localId)
+        .listen((orderSwap) => add(ReceiveOrderSwapUpdated(orderSwap)));
   }
 }

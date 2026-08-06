@@ -992,7 +992,7 @@
   },
   "walletAutoTransferBlockedTitle": "انتقال خودکار",
   "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
+    "description": "Title for auto-transfer fee warning when fees exceed threshold"
   },
   "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
@@ -1243,11 +1243,11 @@
   },
   "systemLabelSwaps": "تعویض",
   "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
+    "description": "System label for transfer transactions"
   },
   "systemLabelAutoSwap": "تغییر خودکار",
   "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
+    "description": "System label for automatic transfer transactions"
   },
   "systemLabelPayjoin": "Payjoin",
   "@systemLabelPayjoin": {
@@ -1328,7 +1328,7 @@
   },
   "transactionLabelSwapId": "تغییر شناسه ID",
   "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "dcaChooseWalletTitle": "Bitcoin Wallet را انتخاب کنید",
   "@dcaChooseWalletTitle": {
@@ -1372,7 +1372,7 @@
   },
   "sendSendNetworkFee": "ارسال هزینه شبکه",
   "@sendSendNetworkFee": {
-    "description": "Label for network fee on send side of swap"
+    "description": "Label for network fee on send side of transfer"
   },
   "psbtFlowClickScan": "Click Scan",
   "@psbtFlowClickScan": {
@@ -1470,7 +1470,7 @@
   },
   "coreSwapsChainCanCoop": "انتقال به صورت لحظه ای کامل خواهد شد.",
   "@coreSwapsChainCanCoop": {
-    "description": "Status message for chain swap that can complete cooperatively"
+    "description": "Status message for chain transfer that can complete cooperatively"
   },
   "importColdcardInstructionsStep2": "در صورتی که قابل اجرا باشد",
   "@importColdcardInstructionsStep2": {
@@ -1543,7 +1543,7 @@
   },
   "transactionSwapStatusSwapStatus": "تغییر وضعیت",
   "@transactionSwapStatusSwapStatus": {
-    "description": "Header for swap status section"
+    "description": "Header for transfer status section"
   },
   "receiveInvoiceCopied": "کپی شده در Clipboard",
   "@receiveInvoiceCopied": {
@@ -1575,7 +1575,7 @@
   },
   "receiveServerNetworkFees": "هزینه های شبکه سرور",
   "@receiveServerNetworkFees": {
-    "description": "Label for network fees charged by the swap server"
+    "description": "Label for network fees charged by the transfer server"
   },
   "importQrDeviceImporting": "کیف پول وارداتی ...",
   "@importQrDeviceImporting": {
@@ -1620,7 +1620,7 @@
   },
   "transactionFilterTransfer": "انتقال",
   "@transactionFilterTransfer": {
-    "description": "Filter option to show only transfer/swap transactions"
+    "description": "Filter option to show only transfer/transfer transactions"
   },
   "recoverbullSelectVaultImportSuccess": "صندلی شما با موفقیت وارد شد",
   "@recoverbullSelectVaultImportSuccess": {
@@ -1731,7 +1731,7 @@
   },
   "transactionDetailLabelSwapFees": "هزینه های تعویض",
   "@transactionDetailLabelSwapFees": {
-    "description": "Label for swap fees"
+    "description": "Label for transfer fees"
   },
   "broadcastSignedTxFee": "هزینه",
   "@broadcastSignedTxFee": {
@@ -1782,7 +1782,7 @@
   },
   "transactionStatusSwapExpired": "تغییر",
   "@transactionStatusSwapExpired": {
-    "description": "Status label for expired swaps"
+    "description": "Status label for expired transfers"
   },
   "swapAmountPlaceholder": "0",
   "@swapAmountPlaceholder": {
@@ -2064,7 +2064,7 @@
   },
   "coreSwapsLnSendExpired": "تغییر",
   "@coreSwapsLnSendExpired": {
-    "description": "Status message for expired Lightning send swap"
+    "description": "Status message for expired Lightning send transfer"
   },
   "sellSendPaymentUsdBalance": "دلار آمریکا تعادل تعادل تعادل",
   "@sellSendPaymentUsdBalance": {
@@ -2132,7 +2132,7 @@
   },
   "coreSwapsChainFailedRefunding": "انتقال به زودی بازپرداخت خواهد شد.",
   "@coreSwapsChainFailedRefunding": {
-    "description": "Status message for failed chain swap that will be refunded"
+    "description": "Status message for failed chain transfer that will be refunded"
   },
   "sendSelectAmount": "انتخاب مقدار",
   "@sendSelectAmount": {
@@ -2264,7 +2264,7 @@
   },
   "sendSendAmount": "ارسال مبلغ",
   "@sendSendAmount": {
-    "description": "Label for amount being sent in swap"
+    "description": "Label for amount being sent in transfer"
   },
   "sendSelectedUtxosInsufficient": "نسخه های انتخاب شده حاوی مقدار مورد نیاز نیستند",
   "@sendSelectedUtxosInsufficient": {
@@ -2272,7 +2272,7 @@
   },
   "swapErrorBalanceTooLow": "تعادل بیش از حد برای حداقل مقدار مبادله",
   "@swapErrorBalanceTooLow": {
-    "description": "Error when balance is below minimum swap limit"
+    "description": "Error when balance is below minimum transfer limit"
   },
   "fundExchangeWarningTactic5": "آنها می خواهند بیت کوین را در پلتفرم دیگری ارسال کنند",
   "@fundExchangeWarningTactic5": {
@@ -2332,7 +2332,7 @@
   },
   "payRequiresSwap": "این پرداخت نیاز به مبادله دارد",
   "@payRequiresSwap": {
-    "description": "Info message when payment needs submarine swap"
+    "description": "Info message when payment needs submarine transfer"
   },
   "exchangeSecurityManage2FAPasswordLabel": "مدیریت 2FA و رمز عبور",
   "@exchangeSecurityManage2FAPasswordLabel": {
@@ -2365,7 +2365,7 @@
   },
   "sendErrorSwapFeesNotLoaded": "هزینه های بارگذاری نشده",
   "@sendErrorSwapFeesNotLoaded": {
-    "description": "Error when swap fee information is unavailable"
+    "description": "Error when transfer fee information is unavailable"
   },
   "walletDetailsCopyButton": "کپی رایت",
   "@walletDetailsCopyButton": {
@@ -2430,7 +2430,7 @@
   },
   "sendSwapWillTakeTime": "مدتی طول می کشد تا تایید شود",
   "@sendSwapWillTakeTime": {
-    "description": "Message warning swap confirmation takes time"
+    "description": "Message warning transfer confirmation takes time"
   },
   "sellServiceFee": "هزینه خدمات",
   "@sellServiceFee": {
@@ -2539,7 +2539,7 @@
   },
   "sendSwapId": "تغییر شناسه ID",
   "@sendSwapId": {
-    "description": "Label for swap identifier in transaction details"
+    "description": "Label for transfer identifier in transaction details"
   },
   "electrumServerOnline": "آنلاین",
   "@electrumServerOnline": {
@@ -2563,7 +2563,7 @@
   },
   "receiveSendNetworkFee": "ارسال هزینه شبکه",
   "@receiveSendNetworkFee": {
-    "description": "Label for the network fee on the sending network in a swap transaction"
+    "description": "Label for the network fee on the sending network in a transfer transaction"
   },
   "okButton": "OK",
   "@okButton": {
@@ -2595,7 +2595,7 @@
   },
   "swapTitle": "انتقال داخلی",
   "@swapTitle": {
-    "description": "AppBar title for swap/internal transfer screen"
+    "description": "AppBar title for transfer/internal transfer screen"
   },
   "sendOutputTooSmall": "خروجی زیر حد گرد و غبار",
   "@sendOutputTooSmall": {
@@ -2656,7 +2656,7 @@
   },
   "sendErrorLiquidWalletRequired": "کیف پول مایع باید برای یک مایع برای مبادله رعد و برق استفاده شود",
   "@sendErrorLiquidWalletRequired": {
-    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+    "description": "Error when wrong wallet type used for Liquid to Lightning transfer"
   },
   "arkDurationMinutes": "{minutes} minutes",
   "@arkDurationMinutes": {
@@ -2717,11 +2717,11 @@
   },
   "swapTransferPendingMessage": "انتقال در حال پیشرفت است. معاملات بیت کوین می تواند مدتی طول بکشد تا تایید شود. می توانید به خانه برگردید و صبر کنید.",
   "@swapTransferPendingMessage": {
-    "description": "Message shown during pending swap"
+    "description": "Message shown during pending transfer"
   },
   "transactionSwapLiquidToBitcoin": "L-BTC",
   "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
+    "description": "Label for Liquid to Bitcoin transfer"
   },
   "testBackupDecryptVault": "آرشیوهای برچسب: Decrypt",
   "@testBackupDecryptVault": {
@@ -2741,7 +2741,7 @@
   },
   "totalFeeLabel": "مجموع هزینه",
   "@totalFeeLabel": {
-    "description": "Label for expandable total fee breakdown in swap"
+    "description": "Label for expandable total fee breakdown in transfer"
   },
   "mempoolCustomServerBottomSheetDescription": "URL سرور سفارشی mempool را وارد کنید. سرور قبل از پس انداز معتبر خواهد بود.",
   "@mempoolCustomServerBottomSheetDescription": {
@@ -2794,7 +2794,7 @@
   },
   "swapTransferTitle": "انتقال",
   "@swapTransferTitle": {
-    "description": "AppBar title on the main swap page"
+    "description": "AppBar title on the main transfer page"
   },
   "testBackupSuccessTitle": "آزمون با موفقیت تمام شد!",
   "@testBackupSuccessTitle": {
@@ -2814,7 +2814,7 @@
   },
   "transactionSwapProgressClaim": "مطالبات",
   "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
+    "description": "Transfer progress step: claim"
   },
   "exchangeHomeDeposit": "سپرده گذاری سپرده گذاری",
   "@exchangeHomeDeposit": {
@@ -2941,7 +2941,7 @@
   },
   "sendErrorAmountBelowMinimum": "مقدار کمتر از حد مبادله: {minLimit}",
   "@sendErrorAmountBelowMinimum": {
-    "description": "Error with specific minimum swap amount",
+    "description": "Error with specific minimum transfer amount",
     "placeholders": {
       "minLimit": {
         "type": "String"
@@ -3156,7 +3156,7 @@
   },
   "coreSwapsLnSendPaid": "پس از پرداخت شما پرداخت خواهد شد.",
   "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
+    "description": "Status message for paid Lightning send transfer"
   },
   "fundExchangeCrBankTransferDescription2": "... وجوه به حساب شما اضافه خواهد شد.",
   "@fundExchangeCrBankTransferDescription2": {
@@ -3168,7 +3168,7 @@
   },
   "transactionLabelSwapStatus": "تغییر وضعیت",
   "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "walletDeletionConfirmationCancelButton": "لغو",
   "@walletDeletionConfirmationCancelButton": {
@@ -3217,7 +3217,7 @@
   },
   "swapYouPay": "پرداخت می کنید",
   "@swapYouPay": {
-    "description": "Label in swap card for payment amount"
+    "description": "Label in transfer card for payment amount"
   },
   "encryptedVaultTitle": "بایگانی برچسب ها",
   "@encryptedVaultTitle": {
@@ -3253,11 +3253,11 @@
   },
   "transactionSwapProgressCompleted": "تکمیل شده",
   "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
+    "description": "Transfer progress step: completed"
   },
   "sendErrorBitcoinWalletRequired": "کیف پول Bitcoin باید برای Bitcoin برای مبادله رعد و برق استفاده شود",
   "@sendErrorBitcoinWalletRequired": {
-    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning transfer"
   },
   "pinCodeManageTitle": "مدیریت PIN امنیتی",
   "@pinCodeManageTitle": {
@@ -3350,7 +3350,7 @@
   },
   "sendSwapRefundInProgress": "بازگشت سرمایه در پیشرفت",
   "@sendSwapRefundInProgress": {
-    "description": "Title when swap failed and refund is processing"
+    "description": "Title when transfer failed and refund is processing"
   },
   "exchangeKycLimited": "محدود",
   "@exchangeKycLimited": {
@@ -3512,7 +3512,7 @@
   },
   "coreSwapsLnSendPending": "هنوز در حال تغییر نیست.",
   "@coreSwapsLnSendPending": {
-    "description": "Status message for pending Lightning send swap"
+    "description": "Status message for pending Lightning send transfer"
   },
   "recoverbullVaultCreatedSuccess": "Vault موفق شد",
   "@recoverbullVaultCreatedSuccess": {
@@ -3545,7 +3545,7 @@
   },
   "transactionSwapProgressInitiated": "مقدماتی",
   "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
+    "description": "Transfer progress step: initiated"
   },
   "fundExchangeTitle": "بودجه",
   "@fundExchangeTitle": {
@@ -3670,7 +3670,7 @@
   },
   "coreSwapsLnReceivePaid": "Sender این فاکتور را پرداخت کرده است.",
   "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
+    "description": "Status message for paid Lightning receive transfer"
   },
   "payInProgress": "پرداخت در پیشرفت!",
   "@payInProgress": {
@@ -3817,7 +3817,7 @@
   },
   "transferIdLabel": "انتقال ID",
   "@transferIdLabel": {
-    "description": "Label for swap transfer ID"
+    "description": "Label for transfer transfer ID"
   },
   "paySelectActiveWallet": "کیف پول را انتخاب کنید",
   "@paySelectActiveWallet": {
@@ -3854,7 +3854,7 @@
   },
   "sendSwapInitiated": "تغییر مقدماتی",
   "@sendSwapInitiated": {
-    "description": "Title when chain swap begins"
+    "description": "Title when chain transfer begins"
   },
   "backupSettingsKeyWarningMessage": "بسیار مهم است که شما کلید پشتیبان را در همان جایی که فایل پشتیبان خود را ذخیره می کنید ذخیره نکنید. همیشه آنها را در دستگاه های جداگانه یا ارائه دهندگان ابر جداگانه ذخیره کنید.",
   "@backupSettingsKeyWarningMessage": {
@@ -3987,7 +3987,7 @@
   },
   "receiveSwapId": "تغییر شناسه ID",
   "@receiveSwapId": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "transactionLabelCompletedAt": "تکمیل شده در",
   "@transactionLabelCompletedAt": {
@@ -4003,11 +4003,11 @@
   },
   "swapTransferRefundInProgressTitle": "انتقال سرمایه در پیشرفت",
   "@swapTransferRefundInProgressTitle": {
-    "description": "Title when swap is being refunded"
+    "description": "Title when transfer is being refunded"
   },
   "swapYouReceive": "شما دریافت می کنید",
   "@swapYouReceive": {
-    "description": "Label in swap card for receiving amount"
+    "description": "Label in transfer card for receiving amount"
   },
   "recoverbullSelectCustomLocationProvider": "مکان سفارشی",
   "@recoverbullSelectCustomLocationProvider": {
@@ -4480,7 +4480,7 @@
   },
   "transactionLabelSwapStatusRefunded": "بودجه مجدد",
   "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
+    "description": "Status label for refunded transfers"
   },
   "receiveLightningInvoice": "کاهش فاکتور",
   "@receiveLightningInvoice": {
@@ -4536,7 +4536,7 @@
   },
   "sendErrorAmountAboveSwapLimits": "مقدار بالاتر از حد مبادله",
   "@sendErrorAmountAboveSwapLimits": {
-    "description": "Error when amount exceeds maximum swap limit"
+    "description": "Error when amount exceeds maximum transfer limit"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "کابینت رمزگذاری شده مانع از شما دزدان می شود که به دنبال سرقت پشتیبان خود هستید. همچنین از از دست دادن نسخه پشتیبان خود به طور تصادفی جلوگیری می کند زیرا در ابر شما ذخیره می شود. ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. احتمال کمی وجود دارد که سرور وب که کلید رمزگذاری پشتیبان شما را ذخیره می کند، به خطر بیفتد. در این رویداد، امنیت پشتیبان گیری در حساب ابری شما می تواند در معرض خطر باشد.",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -4544,7 +4544,7 @@
   },
   "coreSwapsChainCompletedRefunded": "انتقال بازپرداخت شده است.",
   "@coreSwapsChainCompletedRefunded": {
-    "description": "Status message for chain swap completed via refund"
+    "description": "Status message for chain transfer completed via refund"
   },
   "payClabeHint": "وارد شماره CLABE",
   "@payClabeHint": {
@@ -4604,7 +4604,7 @@
   },
   "swapTransferRefundedTitle": "انتقال مجدد",
   "@swapTransferRefundedTitle": {
-    "description": "Title when swap has been refunded"
+    "description": "Title when transfer has been refunded"
   },
   "bitboxErrorConnectionFailed": "عدم اتصال به دستگاه BitBox لطفا ارتباط خود را بررسی کنید.",
   "@bitboxErrorConnectionFailed": {
@@ -4720,7 +4720,7 @@
   },
   "transactionSwapProgressInProgress": "پیشرفت در پیشرفت",
   "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
+    "description": "Generic transfer progress step: in progress"
   },
   "fundExchangeWarningConfirmation": "من تایید می کنم که از من خواسته نمی شود که بیت کوین را توسط شخص دیگری خریداری کنم.",
   "@fundExchangeWarningConfirmation": {
@@ -4744,7 +4744,7 @@
   },
   "sendErrorAmountAboveMaximum": "مقدار بالاتر از حد مبادله: {maxLimit}",
   "@sendErrorAmountAboveMaximum": {
-    "description": "Error with specific maximum swap amount",
+    "description": "Error with specific maximum transfer amount",
     "placeholders": {
       "maxLimit": {
         "type": "String"
@@ -4753,7 +4753,7 @@
   },
   "coreSwapsLnSendCompletedSuccess": "با موفقیت در حال تغییر است.",
   "@coreSwapsLnSendCompletedSuccess": {
-    "description": "Status message for successfully completed Lightning send swap"
+    "description": "Status message for successfully completed Lightning send transfer"
   },
   "importColdcardScanning": "اسکن ...",
   "@importColdcardScanning": {
@@ -4875,7 +4875,7 @@
   },
   "paySwapFee": "کاهش هزینه",
   "@paySwapFee": {
-    "description": "Label for submarine swap fee"
+    "description": "Label for submarine transfer fee"
   },
   "exchangeAccountSettingsTitle": "تنظیمات حساب Exchange Account Settings",
   "@exchangeAccountSettingsTitle": {
@@ -5012,7 +5012,7 @@
   },
   "sendTransferFee": "انتقال هزینه",
   "@sendTransferFee": {
-    "description": "Label for total swap transfer fee"
+    "description": "Label for total transfer transfer fee"
   },
   "fundExchangeLabelIbanCrcOnly": "شماره حساب IBAN (فقط برای مستعمره ها)",
   "@fundExchangeLabelIbanCrcOnly": {
@@ -5028,7 +5028,7 @@
   },
   "sendInitiatingSwap": "شروع به مبادله ...",
   "@sendInitiatingSwap": {
-    "description": "Loading message during swap setup"
+    "description": "Loading message during transfer setup"
   },
   "sellLightningNetwork": "شبکه Lightning Network",
   "@sellLightningNetwork": {
@@ -5106,7 +5106,7 @@
   },
   "transactionSwapBitcoinToLiquid": "بیت کوین L-BTC",
   "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
+    "description": "Label for Bitcoin to Liquid transfer"
   },
   "sellBankDetails": "جزئیات بانک",
   "@sellBankDetails": {
@@ -5130,7 +5130,7 @@
   },
   "coreSwapsStatusPending": "امتناع",
   "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
+    "description": "Display name for pending transfer status"
   },
   "electrumDragToReorder": "(فشار طولانی برای کشیدن و تغییر اولویت)",
   "@electrumDragToReorder": {
@@ -5146,11 +5146,11 @@
   },
   "swapErrorAmountExceedsMaximum": "مقدار بیش از حداکثر مقدار مبادله",
   "@swapErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum swap limit"
+    "description": "Error when amount is above maximum transfer limit"
   },
   "transactionLabelTotalSwapFees": "مجموع هزینه های تعویض",
   "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
+    "description": "Label for total transfer fees"
   },
   "errorLabel": "خطای خطا",
   "@errorLabel": {
@@ -5224,9 +5224,9 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
+    "description": "Button label to retry a failed transfer action",
     "placeholders": {
       "action": {
         "type": "String"
@@ -5236,11 +5236,11 @@
   "sendErrorSwapCreationFailed": "شکست برای ایجاد مبادله.",
   "sendErrorInvoiceMustContainAmount": "فاکتور باید حاوی مبلغ باشد",
   "@sendErrorSwapCreationFailed": {
-    "description": "Error when swap creation fails"
+    "description": "Error when transfer creation fails"
   },
   "sendErrorHardwareWalletCannotSwap": "کیف پول‌های سخت‌افزاری را نمی‌توان برای مبادله استفاده کرد.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when user tries to continue a transfer send with a Bitcoin hardware wallet"
   },
   "arkNoBalanceData": "هیچ اطلاعات تعادلی در دسترس نیست",
   "@arkNoBalanceData": {
@@ -5248,7 +5248,7 @@
   },
   "coreSwapsChainCompletedSuccess": "انتقال با موفقیت تکمیل می شود.",
   "@coreSwapsChainCompletedSuccess": {
-    "description": "Status message for successfully completed chain swap"
+    "description": "Status message for successfully completed chain transfer"
   },
   "autoswapMaxBalance": "Max Instant Wallet Balance",
   "@autoswapMaxBalance": {
@@ -5309,7 +5309,7 @@
   },
   "coreSwapsLnReceiveFailed": "شکست خورده.",
   "@coreSwapsLnReceiveFailed": {
-    "description": "Status message for failed Lightning receive swap"
+    "description": "Status message for failed Lightning receive transfer"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "انتقال وجوه در دلار آمریکا (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -5472,7 +5472,7 @@
   },
   "sendSwapDetails": "جزئیات تبادل",
   "@sendSwapDetails": {
-    "description": "Section header for swap information"
+    "description": "Section header for transfer information"
   },
   "onboardingPhysicalBackupDescription": "کیف پول خود را از طریق 12 کلمه بازیابی کنید.",
   "@onboardingPhysicalBackupDescription": {
@@ -5596,7 +5596,7 @@
   },
   "coreSwapsStatusInProgress": "پیشرفت در پیشرفت",
   "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    "description": "Display name for in-progress transfer status (paid, claimable, refundable, canCoop)"
   },
   "pinCreateHeadline": "ایجاد پین جدید",
   "@pinCreateHeadline": {
@@ -5604,7 +5604,7 @@
   },
   "transactionSwapProgressConfirmed": "تایید",
   "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
+    "description": "Transfer progress step: confirmed"
   },
   "sellRoutingNumber": "Routing Number",
   "@sellRoutingNumber": {
@@ -5753,7 +5753,7 @@
   },
   "transactionSwapDescLnReceivePending": "مبادله شما آغاز شده است. ما منتظر پرداخت در شبکه لایتنینگ هستیم.",
   "@transactionSwapDescLnReceivePending": {
-    "description": "Description for pending Lightning receive swap"
+    "description": "Description for pending Lightning receive transfer"
   },
   "tryAgainButton": "دوباره امتحان کنید",
   "@tryAgainButton": {
@@ -5761,7 +5761,7 @@
   },
   "swapConfirmTitle": "تایید انتقال",
   "@swapConfirmTitle": {
-    "description": "AppBar title for swap confirmation screen"
+    "description": "AppBar title for transfer confirmation screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "این اطلاعات ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -5953,7 +5953,7 @@
   },
   "coreSwapsLnSendRefundable": "آماده است تا بازپرداخت شود.",
   "@coreSwapsLnSendRefundable": {
-    "description": "Status message for refundable Lightning send swap"
+    "description": "Status message for refundable Lightning send transfer"
   },
   "backupInstruction2": "بدون نسخه پشتیبان، اگر تلفن خود را از دست بدهید یا شکست دهید، یا اگر برنامه Bitcoin Bull را نصب نکنید، بیت کوین شما برای همیشه از بین خواهد رفت.",
   "@backupInstruction2": {
@@ -6095,7 +6095,7 @@
   },
   "sendErrorInsufficientBalanceForSwap": "تعادل کافی برای پرداخت این مبادله از طریق نقدینگی و نه در محدوده مبادله برای پرداخت از طریق Bitcoin نیست.",
   "@sendErrorInsufficientBalanceForSwap": {
-    "description": "Error when balance insufficient for swap through either network"
+    "description": "Error when balance insufficient for transfer through either network"
   },
   "psbtFlowJadeTitle": "بازی Blockstream Jade PSBT دستورالعمل ها",
   "@psbtFlowJadeTitle": {
@@ -6167,7 +6167,7 @@
   },
   "coreSwapsLnSendCanCoop": "به طور کامل در حال تغییر است.",
   "@coreSwapsLnSendCanCoop": {
-    "description": "Status message for Lightning send swap that can complete cooperatively"
+    "description": "Status message for Lightning send transfer that can complete cooperatively"
   },
   "electrumServerNotUsed": "استفاده نکردن",
   "@electrumServerNotUsed": {
@@ -6267,7 +6267,7 @@
   },
   "coreSwapsLnReceiveClaimable": "آماده تغییر است تا ادعا شود.",
   "@coreSwapsLnReceiveClaimable": {
-    "description": "Status message for claimable Lightning receive swap"
+    "description": "Status message for claimable Lightning receive transfer"
   },
   "pinButtonCreate": "ایجاد PIN",
   "@pinButtonCreate": {
@@ -6348,7 +6348,7 @@
   },
   "transactionSwapProgressFundsClaimed": "صندوق ها\nمطالبات",
   "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
+    "description": "Transfer progress step: funds claimed"
   },
   "recoverbullSelectAppleIcloud": "Apple iCloud",
   "@recoverbullSelectAppleIcloud": {
@@ -6373,7 +6373,7 @@
   },
   "coreSwapsLnReceiveCanCoop": "به طور کامل در حال تغییر است.",
   "@coreSwapsLnReceiveCanCoop": {
-    "description": "Status message for Lightning receive swap that can complete cooperatively"
+    "description": "Status message for Lightning receive transfer that can complete cooperatively"
   },
   "addressViewAddressesTitle": "آدرس ها",
   "@addressViewAddressesTitle": {
@@ -6385,11 +6385,11 @@
   },
   "transactionSwapProgressPaymentMade": "پرداخت پرداخت پرداخت\nساخته شده Made",
   "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
+    "description": "Transfer progress step: payment made"
   },
   "coreSwapsChainPending": "انتقال هنوز آغاز نشده است.",
   "@coreSwapsChainPending": {
-    "description": "Status message for pending chain swap"
+    "description": "Status message for pending chain transfer"
   },
   "importWalletImportWatchOnly": "واردات تنها",
   "@importWalletImportWatchOnly": {
@@ -6470,7 +6470,7 @@
   },
   "coreSwapsLnSendFailed": "شکست خورده.",
   "@coreSwapsLnSendFailed": {
-    "description": "Status message for failed Lightning send swap"
+    "description": "Status message for failed Lightning send transfer"
   },
   "recoverbullErrorDecryptFailed": "شکست در رمزگشایی",
   "@recoverbullErrorDecryptFailed": {
@@ -6482,7 +6482,7 @@
   },
   "totalFeesLabel": "مجموع هزینه ها",
   "@totalFeesLabel": {
-    "description": "Label for total fees in lightning swap"
+    "description": "Label for total fees in lightning transfer"
   },
   "payInProgressDescription": "پرداخت شما آغاز شده است و دریافت کننده پس از معامله شما 1 تایید در زنجیره دریافت خواهد کرد.",
   "@payInProgressDescription": {
@@ -6540,7 +6540,7 @@
   },
   "coreSwapsChainRefundable": "انتقال آماده بازپرداخت است.",
   "@coreSwapsChainRefundable": {
-    "description": "Status message for refundable chain swap"
+    "description": "Status message for refundable chain transfer"
   },
   "buyInputCompleteKyc": "کامل KYC",
   "@buyInputCompleteKyc": {
@@ -6766,11 +6766,11 @@
   },
   "receiveBoltzSwapFee": "هزینه تعویض",
   "@receiveBoltzSwapFee": {
-    "description": "Label for the Boltz swap service fee in a receive transaction"
+    "description": "Label for the Boltz transfer service fee in a receive transaction"
   },
   "swapInfoBanner": "انتقال Bitcoin به صورت یکپارچه بین کیف پول های شما فقط پول را در کیف پول پرداخت فوری برای هزینه های روزانه نگه دارید.",
   "@swapInfoBanner": {
-    "description": "Info banner on swap amount screen"
+    "description": "Info banner on transfer amount screen"
   },
   "payRBFEnabled": "RBF فعال",
   "@payRBFEnabled": {
@@ -6782,7 +6782,7 @@
   },
   "sendSwapTimeout": "تغییر زمان",
   "@sendSwapTimeout": {
-    "description": "Error when swap expires"
+    "description": "Error when transfer expires"
   },
   "networkFeesLabel": "هزینه های شبکه",
   "@networkFeesLabel": {
@@ -6794,7 +6794,7 @@
   },
   "sendSwapInProgressBitcoin": "مبادله در حال پیشرفت است. معاملات بیت کوین می تواند مدتی طول بکشد تا تایید شود. می توانید به خانه برگردید و صبر کنید.",
   "@sendSwapInProgressBitcoin": {
-    "description": "Message for Bitcoin swap in progress"
+    "description": "Message for Bitcoin transfer in progress"
   },
   "electrumDeleteServerTitle": "حذف Custom Server",
   "@electrumDeleteServerTitle": {
@@ -6927,7 +6927,7 @@
   },
   "coreSwapsLnSendCompletedRefunded": "بازپرداخت شده است.",
   "@coreSwapsLnSendCompletedRefunded": {
-    "description": "Status message for Lightning send swap completed via refund"
+    "description": "Status message for Lightning send transfer completed via refund"
   },
   "mempoolCustomServerLabel": "CUSTOM",
   "@mempoolCustomServerLabel": {
@@ -7122,7 +7122,7 @@
   },
   "coreSwapsChainFailed": "انتقال شکست خورده.",
   "@coreSwapsChainFailed": {
-    "description": "Status message for failed chain swap"
+    "description": "Status message for failed chain transfer"
   },
   "transactionDetailAddNote": "Add Note",
   "@transactionDetailAddNote": {
@@ -7285,7 +7285,7 @@
   },
   "walletDeletionErrorOngoingSwaps": "شما نمی توانید یک کیف پول را با مبادله های مداوم حذف کنید.",
   "@walletDeletionErrorOngoingSwaps": {
-    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+    "description": "Error message when attempting to delete a wallet with ongoing transfers"
   },
   "bitboxScreenConnecting": "اتصال به BitBox",
   "@bitboxScreenConnecting": {
@@ -7361,7 +7361,7 @@
   },
   "coreSwapsChainPaid": "انتظار برای پرداخت ارائه دهنده انتقال برای دریافت تایید این ممکن است مدتی طول بکشد تا تکمیل شود.",
   "@coreSwapsChainPaid": {
-    "description": "Status message for paid chain swap"
+    "description": "Status message for paid chain transfer"
   },
   "arkConfirmed": "تایید",
   "@arkConfirmed": {
@@ -7413,7 +7413,7 @@
   },
   "coreSwapsChainClaimable": "انتقال آماده است تا ادعا شود.",
   "@coreSwapsChainClaimable": {
-    "description": "Status message for claimable chain swap"
+    "description": "Status message for claimable chain transfer"
   },
   "dcaNetworkLightning": "شبکه Lightning Network",
   "@dcaNetworkLightning": {
@@ -7441,7 +7441,7 @@
   },
   "transactionLabelTransferId": "انتقال ID",
   "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
+    "description": "Label for transfer/transfer ID"
   },
   "sendTitle": "ارسال",
   "@sendTitle": {
@@ -7537,7 +7537,7 @@
   },
   "sendSwapCancelled": "لغو تغییر",
   "@sendSwapCancelled": {
-    "description": "Message when user cancels swap"
+    "description": "Message when user cancels transfer"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "هرگز ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -7554,7 +7554,7 @@
   },
   "swapTransferCompletedTitle": "انتقال تکمیل شده",
   "@swapTransferCompletedTitle": {
-    "description": "Title when swap completes successfully"
+    "description": "Title when transfer completes successfully"
   },
   "sellSendPaymentMxnBalance": "MXN تعادل تعادل تعادل",
   "@sellSendPaymentMxnBalance": {
@@ -7614,11 +7614,11 @@
   },
   "sendTypeSwap": "تغییر در تعویض",
   "@sendTypeSwap": {
-    "description": "Send type name for Lightning swap transactions"
+    "description": "Send type name for Lightning transfer transactions"
   },
   "sendErrorAmountExceedsMaximum": "مقدار بیش از حداکثر مقدار مبادله",
   "@sendErrorAmountExceedsMaximum": {
-    "description": "Error when amount is above maximum allowed for swap"
+    "description": "Error when amount is above maximum allowed for transfer"
   },
   "bitboxActionSignTransactionSuccess": "امضای موفق",
   "@bitboxActionSignTransactionSuccess": {
@@ -7717,7 +7717,7 @@
   },
   "sendNetworkFeesLabel": "ارسال هزینه های شبکه",
   "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
+    "description": "Label for sending network fees in chain transfer"
   },
   "electrumUnknownError": "خطایی رخ داد",
   "@electrumUnknownError": {
@@ -8153,7 +8153,7 @@
   },
   "coreSwapsChainExpired": "انتقال",
   "@coreSwapsChainExpired": {
-    "description": "Status message for expired chain swap"
+    "description": "Status message for expired chain transfer"
   },
   "payDefaultCommentOptional": "پیش فرض (اختیاری)",
   "@payDefaultCommentOptional": {
@@ -8322,7 +8322,7 @@
   },
   "coreSwapsStatusFailed": "شکست",
   "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
+    "description": "Display name for failed transfer status"
   },
   "transactionFilterSell": "فروش",
   "@transactionFilterSell": {
@@ -8488,7 +8488,7 @@
   },
   "transactionDetailLabelSwapStatus": "تغییر وضعیت",
   "@transactionDetailLabelSwapStatus": {
-    "description": "Label for swap status"
+    "description": "Label for transfer status"
   },
   "passportStep10": "سپس پاسپورت کد QR خود را به شما نشان می دهد.",
   "@passportStep10": {
@@ -8683,7 +8683,7 @@
   },
   "coreSwapsLnReceiveRefundable": "آماده است تا بازپرداخت شود.",
   "@coreSwapsLnReceiveRefundable": {
-    "description": "Status message for refundable Lightning receive swap"
+    "description": "Status message for refundable Lightning receive transfer"
   },
   "bitcoinSettingsElectrumServerTitle": "تنظیمات Electrum Server Settings",
   "@bitcoinSettingsElectrumServerTitle": {
@@ -8752,7 +8752,7 @@
   },
   "sendConfirmSwap": "تایید تغییرات",
   "@sendConfirmSwap": {
-    "description": "Button to proceed with swap"
+    "description": "Button to proceed with transfer"
   },
   "exchangeLogoutComingSoon": "دانلود زیرنویس فارسی فیلم Get Soon",
   "@exchangeLogoutComingSoon": {
@@ -8829,7 +8829,7 @@
   },
   "swapContinue": "ادامه",
   "@swapContinue": {
-    "description": "Continue button on swap amount screen"
+    "description": "Continue button on transfer amount screen"
   },
   "arkSettleButton": "پناهگاه",
   "@arkSettleButton": {
@@ -8869,7 +8869,7 @@
   },
   "receiveSwapID": "تغییر شناسه ID",
   "@receiveSwapID": {
-    "description": "Label for the swap identifier in a receive transaction"
+    "description": "Label for the transfer identifier in a receive transaction"
   },
   "settingsBitcoinSettingsTitle": "Bitcoin Settings",
   "@settingsBitcoinSettingsTitle": {
@@ -8893,7 +8893,7 @@
   },
   "coreSwapsActionClose": "نزدیک",
   "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
+    "description": "Action label for closing a transfer cooperatively"
   },
   "kruxStep6": "اگر در اسکن مشکل دارید:",
   "@kruxStep6": {
@@ -9108,7 +9108,7 @@
   },
   "sendErrorAmountBelowSwapLimits": "مقدار زیر حد مبادله",
   "@sendErrorAmountBelowSwapLimits": {
-    "description": "Error when amount is below minimum swap limit"
+    "description": "Error when amount is below minimum transfer limit"
   },
   "payPrivatePayment": "پرداخت خصوصی",
   "@payPrivatePayment": {
@@ -9423,7 +9423,7 @@
   },
   "coreSwapsLnSendFailedRefunding": "به زودی جبران خواهد شد.",
   "@coreSwapsLnSendFailedRefunding": {
-    "description": "Status message for failed Lightning send swap that will be refunded"
+    "description": "Status message for failed Lightning send transfer that will be refunded"
   },
   "dcaWalletTypeLightning": "شبکه لایتنینگ (LN)",
   "@dcaWalletTypeLightning": {
@@ -9431,7 +9431,7 @@
   },
   "transactionSwapProgressBroadcasted": "پخش شده",
   "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
+    "description": "Transfer progress step: transaction broadcasted"
   },
   "exchangeBitcoinWalletsSaveSuccess": "آدرس کیف پول با موفقیت نجات یافت",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -9535,7 +9535,7 @@
   },
   "coreSwapsLnReceivePending": "هنوز در حال تغییر نیست.",
   "@coreSwapsLnReceivePending": {
-    "description": "Status message for pending Lightning receive swap"
+    "description": "Status message for pending Lightning receive transfer"
   },
   "bitcoinSettingsLegacySeedsTitle": "میراث دانه ها",
   "@bitcoinSettingsLegacySeedsTitle": {
@@ -9610,7 +9610,7 @@
   },
   "coreSwapsStatusExpired": "تایید شده",
   "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
+    "description": "Display name for expired transfer status"
   },
   "payFee": "هزینه",
   "@payFee": {
@@ -9764,7 +9764,7 @@
   },
   "sendSubmarineSwap": "زیردریایی زیردریایی تبادل",
   "@sendSubmarineSwap": {
-    "description": "Feature to swap on-chain to Lightning"
+    "description": "Feature to transfer on-chain to Lightning"
   },
   "transactionLabelLiquidTransactionId": "تراکنش نقدینگی ID",
   "@transactionLabelLiquidTransactionId": {
@@ -9780,7 +9780,7 @@
   },
   "sendSwapFeeEstimate": "هزینه مبادله: {amount}",
   "@sendSwapFeeEstimate": {
-    "description": "Estimated cost of swap",
+    "description": "Estimated cost of transfer",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -9789,7 +9789,7 @@
   },
   "coreSwapsLnReceiveExpired": "تخلیه شده.",
   "@coreSwapsLnReceiveExpired": {
-    "description": "Status message for expired Lightning receive swap"
+    "description": "Status message for expired Lightning receive transfer"
   },
   "recoverbullSelectFetchDriveFilesError": "شکست برای گرفتن تمام پشتیبان های درایو",
   "@recoverbullSelectFetchDriveFilesError": {
@@ -9948,7 +9948,7 @@
   },
   "paySwapFailed": "عدم موفقیت در تعویض",
   "@paySwapFailed": {
-    "description": "Error message when swap fails"
+    "description": "Error message when transfer fails"
   },
   "importMnemonicBalance": "تعادل: {amount}",
   "@importMnemonicBalance": {
@@ -10062,7 +10062,7 @@
   },
   "coreSwapsLnReceiveCompleted": "به پایان رسید.",
   "@coreSwapsLnReceiveCompleted": {
-    "description": "Status message for completed Lightning receive swap"
+    "description": "Status message for completed Lightning receive transfer"
   },
   "backupWalletErrorGoogleDriveSave": "شکست برای نجات Google Drive",
   "@backupWalletErrorGoogleDriveSave": {
@@ -10187,7 +10187,7 @@
   },
   "coreSwapsStatusCompleted": "تکمیل شده",
   "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
+    "description": "Display name for completed transfer status"
   },
   "fundExchangeCrIbanUsdDescriptionEnd": "... وجوه به حساب شما اضافه خواهد شد.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
@@ -10195,7 +10195,7 @@
   },
   "swapProgressTitle": "انتقال داخلی",
   "@swapProgressTitle": {
-    "description": "AppBar title for swap progress screen"
+    "description": "AppBar title for transfer progress screen"
   },
   "pinButtonConfirm": "تایید",
   "@pinButtonConfirm": {
@@ -10319,7 +10319,7 @@
   },
   "transactionStatusSwapFailed": "عدم تغییر",
   "@transactionStatusSwapFailed": {
-    "description": "Status label for failed swaps"
+    "description": "Status label for failed transfers"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédulaídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -10335,7 +10335,7 @@
   },
   "transactionLabelBoltzSwapFee": "هزینه تعویض",
   "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
+    "description": "Label for Boltz transfer fee component"
   },
   "sellOrderNumber": "شماره سفارش",
   "@sellOrderNumber": {
@@ -10356,7 +10356,7 @@
   },
   "transactionDetailSwapProgress": "تغییر در پیشرفت",
   "@transactionDetailSwapProgress": {
-    "description": "Title for ongoing swap details"
+    "description": "Title for ongoing transfer details"
   },
   "exchangeAppSettingsEmailNotificationsDescription": "دریافت اعلان ایمیل برای سفارشات و به روز رسانی حساب",
   "@exchangeAppSettingsEmailNotificationsDescription": {
@@ -10380,7 +10380,7 @@
   },
   "swapTransferPendingTitle": "انتقال Pending",
   "@swapTransferPendingTitle": {
-    "description": "Title during pending swap status"
+    "description": "Title during pending transfer status"
   },
   "mempoolCustomServerSaveSuccess": "سرور سفارشی با موفقیت نجات یافت",
   "@mempoolCustomServerSaveSuccess": {
@@ -10388,7 +10388,7 @@
   },
   "sendErrorBalanceTooLowForMinimum": "تعادل بیش از حد برای حداقل مقدار مبادله",
   "@sendErrorBalanceTooLowForMinimum": {
-    "description": "Error when balance is below minimum required for swap"
+    "description": "Error when balance is below minimum required for transfer"
   },
   "testBackupSuccessMessage": "شما می توانید دسترسی به کیف پول از دست رفته بیت کوین را بازیابی کنید",
   "@testBackupSuccessMessage": {
@@ -10540,7 +10540,7 @@
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
   },
-  "swapErrorAmountAboveMaximum": "Amount exceeds maximum swap amount: {max} sats",
+  "swapErrorAmountAboveMaximum": "Amount exceeds maximum transfer amount: {max} sats",
   "@swapErrorAmountAboveMaximum": {
     "description": "Error shown when amount is above maximum",
     "placeholders": {
@@ -10628,7 +10628,7 @@
   },
   "sendSwapInProgressInvoice": "مبادله در حال پیشرفت است. این فاکتور در چند ثانیه پرداخت خواهد شد.",
   "@sendSwapInProgressInvoice": {
-    "description": "Message for Liquid swap in progress"
+    "description": "Message for Liquid transfer in progress"
   },
   "arkReceiveButton": "دریافت کننده",
   "@arkReceiveButton": {
@@ -10656,7 +10656,7 @@
   },
   "paySwapInProgress": "تغییر در پیشرفت ...",
   "@paySwapInProgress": {
-    "description": "Status message during submarine swap"
+    "description": "Status message during submarine transfer"
   },
   "importMnemonicSyncMessage": "هر سه نوع کیف پول همگام سازی می شوند و تعادل و معاملات آنها به زودی ظاهر می شود. شما می توانید صبر کنید تا همگام سازی کامل شود یا اگر مطمئن هستید که کدام نوع کیف پول را می خواهید وارد کنید.",
   "@importMnemonicSyncMessage": {
@@ -10664,7 +10664,7 @@
   },
   "coreSwapsLnSendClaimable": "آماده تغییر است تا ادعا شود.",
   "@coreSwapsLnSendClaimable": {
-    "description": "Status message for claimable Lightning send swap"
+    "description": "Status message for claimable Lightning send transfer"
   },
   "fundExchangeMethodCrIbanCrcSubtitle": "انتقال وجوه در کاستاریکا کولون (CRC)",
   "@fundExchangeMethodCrIbanCrcSubtitle": {
@@ -10774,7 +10774,7 @@
   },
   "coreSwapsActionRefund": "Refund",
   "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
+    "description": "Action label for refunding a transfer"
   },
   "payInsufficientBalance": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.",
   "@payInsufficientBalance": {
@@ -10786,7 +10786,7 @@
   },
   "sendSwapTimeEstimate": "زمان برآورد شده: {time}",
   "@sendSwapTimeEstimate": {
-    "description": "Expected swap duration",
+    "description": "Expected transfer duration",
     "placeholders": {
       "time": {
         "type": "String"
@@ -10815,7 +10815,7 @@
   },
   "coreSwapsActionClaim": "مطالبات",
   "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
+    "description": "Action label for claiming a transfer"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "دستگاه BitBox شما در حال حاضر باز شده و آماده استفاده است.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -10912,7 +10912,7 @@
   },
   "transactionSwapProgressInvoicePaid": "در صدا\nپرداخت هزینه پرداخت",
   "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
+    "description": "Transfer progress step: Lightning invoice paid"
   },
   "sendInsufficientFunds": "بودجه های ناکافی",
   "@sendInsufficientFunds": {
@@ -10924,7 +10924,7 @@
   },
   "sendSwapAmount": "مقدار تعویض",
   "@sendSwapAmount": {
-    "description": "Label for amount being swapped"
+    "description": "Label for amount being transferped"
   },
   "autoswapTitle": "تنظیمات انتقال خودکار",
   "@autoswapTitle": {
@@ -10952,7 +10952,7 @@
   },
   "autoswapSettingsTitle": "تنظیمات انتقال خودکار",
   "@autoswapSettingsTitle": {
-    "description": "Main header/title of the auto swap settings bottom sheet"
+    "description": "Main header/title of the auto transfer settings bottom sheet"
   },
   "payFirstNameHint": "نام اول را وارد کنید",
   "@payFirstNameHint": {
@@ -10976,11 +10976,11 @@
   },
   "transactionDetailLabelSwapId": "تغییر شناسه ID",
   "@transactionDetailLabelSwapId": {
-    "description": "Label for swap ID"
+    "description": "Label for transfer ID"
   },
   "sendSwapFailed": "مبادله شکست خورد. بازپرداخت شما به زودی پردازش خواهد شد.",
   "@sendSwapFailed": {
-    "description": "Message explaining swap failure and refund"
+    "description": "Message explaining transfer failure and refund"
   },
   "sellNetworkError": "خطای شبکه لطفا دوباره امتحان کنید",
   "@sellNetworkError": {
@@ -11054,7 +11054,7 @@
   },
   "transactionSwapDescLnReceivePaid": "پرداخت دریافت شده است! ما در حال حاضر در حال پخش معاملات زنجیره ای به کیف پول شما هستیم.",
   "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
+    "description": "Description for paid Lightning receive transfer"
   },
   "transactionNoteUpdateButton": "Update",
   "@transactionNoteUpdateButton": {
@@ -11356,7 +11356,7 @@
   },
   "sendReceiveAmount": "دریافت مبلغ",
   "@sendReceiveAmount": {
-    "description": "Label for amount being received in swap"
+    "description": "Label for amount being received in transfer"
   },
   "recoverbullTestRecovery": "تست بازیابی",
   "@recoverbullTestRecovery": {
@@ -11456,7 +11456,7 @@
   },
   "paySwapCompleted": "تغییر کامل",
   "@paySwapCompleted": {
-    "description": "Status message after successful swap"
+    "description": "Status message after successful transfer"
   },
   "receiveDescription": "توضیحات (اختیاری)",
   "@receiveDescription": {
@@ -11521,7 +11521,7 @@
   },
   "transactionLabelPreimage": "تصویر",
   "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
+    "description": "Label for preimage in Lightning transfer details"
   },
   "fundExchangeCanadaPostStep5": "5. پرداخت با پول نقد یا کارت اعتباری",
   "@fundExchangeCanadaPostStep5": {
@@ -11541,7 +11541,7 @@
   },
   "transactionSwapDescChainPending": "انتقال شما ایجاد شده اما هنوز آغاز نشده است.",
   "@transactionSwapDescChainPending": {
-    "description": "Description for pending chain swap"
+    "description": "Description for pending chain transfer"
   },
   "customLocationTitle": "مکان های سفارشی",
   "@customLocationTitle": {
@@ -11549,7 +11549,7 @@
   },
   "transactionSwapDescLnSendPending": "مبادله شما آغاز شده است. ما در حال پخش معامله زنجیره ای برای قفل کردن وجوه شما هستیم.",
   "@transactionSwapDescLnSendPending": {
-    "description": "Description for pending Lightning send swap"
+    "description": "Description for pending Lightning send transfer"
   },
   "sharedWithBullBitcoin": "مشترک با Bitcoin Bull.",
   "@sharedWithBullBitcoin": {
@@ -11573,9 +11573,9 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "autoswapWarningTitle": "Autoswap با تنظیمات زیر فعال می شود:",
+  "autoswapWarningTitle": "Autotransfer با تنظیمات زیر فعال می شود:",
   "@autoswapWarningTitle": {
-    "description": "Title text in the autoswap warning bottom sheet"
+    "description": "Title text in the autotransfer warning bottom sheet"
   },
   "importQrDeviceKeystoneStep3": "۳) در گوشه سمت راست بالا",
   "@importQrDeviceKeystoneStep3": {
@@ -11583,11 +11583,11 @@
   },
   "autoswapWarningOkButton": "OK",
   "@autoswapWarningOkButton": {
-    "description": "OK button label in the autoswap warning bottom sheet"
+    "description": "OK button label in the autotransfer warning bottom sheet"
   },
   "transactionSwapDescLnSendDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
   "@transactionSwapDescLnSendDefault": {
-    "description": "Default description for Lightning send swap"
+    "description": "Default description for Lightning send transfer"
   },
   "fundExchangeETransferTitle": "جزئیات E-Transfer",
   "@fundExchangeETransferTitle": {
@@ -11595,11 +11595,11 @@
   },
   "transactionSwapDescLnSendFailed": "یک مسئله با مبادله شما وجود دارد. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
   "@transactionSwapDescLnSendFailed": {
-    "description": "Description for failed Lightning send swap"
+    "description": "Description for failed Lightning send transfer"
   },
   "transactionSwapDescLnSendExpired": "این مبادله منقضی شده است. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
   "@transactionSwapDescLnSendExpired": {
-    "description": "Description for expired Lightning send swap"
+    "description": "Description for expired Lightning send transfer"
   },
   "psbtFlowScanDeviceQr": "کیف پول بیتکوین بول از شما می خواهد کد QR را در X64X اسکن کنید. آن را اسکن کنید.",
   "@psbtFlowScanDeviceQr": {
@@ -11628,7 +11628,7 @@
   },
   "transactionLabelReceiveAmount": "دریافت مبلغ",
   "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
+    "description": "Label for receive amount in transfer details"
   },
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "این شماره حساب منحصر به فرد فقط برای شما ایجاد شده است",
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
@@ -11654,7 +11654,7 @@
   },
   "transactionSwapDescChainFailed": "مسئله ای با انتقال شما وجود داشت. لطفا پشتیبانی تماس بگیرید اگر وجوه در عرض 24 ساعت بازگردانده نشده باشد.",
   "@transactionSwapDescChainFailed": {
-    "description": "Description for failed chain swap"
+    "description": "Description for failed chain transfer"
   },
   "transactionListNoTransactions": "هنوز معاملات نیست.",
   "@transactionListNoTransactions": {
@@ -11697,11 +11697,11 @@
   },
   "autoswapWarningDontShowAgain": "این هشدار را دوباره نشان ندهید.",
   "@autoswapWarningDontShowAgain": {
-    "description": "Checkbox label for dismissing the autoswap warning"
+    "description": "Checkbox label for dismissing the autotransfer warning"
   },
   "transactionSwapDescLnSendCompleted": "پرداخت رعد و برق با موفقیت ارسال شده است! مبادله شما در حال حاضر کامل است.",
   "@transactionSwapDescLnSendCompleted": {
-    "description": "Description for completed Lightning send swap"
+    "description": "Description for completed Lightning send transfer"
   },
   "informationWillNotLeave": "این اطلاعات ",
   "@informationWillNotLeave": {
@@ -11721,11 +11721,11 @@
   },
   "transactionLabelSendAmount": "ارسال مبلغ",
   "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
+    "description": "Label for send amount in transfer details"
   },
   "transactionLabelReceiveNetworkFee": "دریافت هزینه شبکه",
   "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
+    "description": "Label for receive network fee in transfer details"
   },
   "importQrDeviceSpecterStep1": "قدرت در دستگاه Specter",
   "@importQrDeviceSpecterStep1": {
@@ -11741,7 +11741,7 @@
   },
   "autoswapInfoSettingsButton": "تنظیمات Configure",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "psbtFlowTroubleScanningTitle": "اگر در اسکن مشکل دارید:",
   "@psbtFlowTroubleScanningTitle": {
@@ -11761,7 +11761,7 @@
   },
   "autoswapWarningCardSubtitle": "یک مبادله ایجاد خواهد شد اگر تعادل پرداخت فوری شما بیش از 0.02 بیت کوین باشد.",
   "@autoswapWarningCardSubtitle": {
-    "description": "Subtitle text shown on the autoswap warning card on home screen"
+    "description": "Subtitle text shown on the autotransfer warning card on home screen"
   },
   "howToDecideBackupText1": "یکی از رایج ترین راه هایی که مردم بیت کوین خود را از دست می دهند این است که آنها پشتیبان فیزیکی خود را از دست می دهند. هر کسی که پشتیبان فیزیکی شما را پیدا کند می تواند تمام Bitcoin شما را بگیرد. اگر بسیار مطمئن هستید که می توانید آن را به خوبی پنهان کنید و هرگز آن را از دست ندهید، گزینه خوبی است.",
   "@howToDecideBackupText1": {
@@ -11793,11 +11793,11 @@
   },
   "transactionSwapDescChainExpired": "این انتقال منقضی شده است. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
   "@transactionSwapDescChainExpired": {
-    "description": "Description for expired chain swap"
+    "description": "Description for expired chain transfer"
   },
-  "autoswapWarningCardTitle": "Autoswap فعال می شود",
+  "autoswapWarningCardTitle": "Autotransfer فعال می شود",
   "@autoswapWarningCardTitle": {
-    "description": "Title text shown on the autoswap warning card on home screen"
+    "description": "Title text shown on the autotransfer warning card on home screen"
   },
   "visitRecoverBullMessage": "برای کسب اطلاعات بیشتر به Recoverybull.com مراجعه کنید.",
   "@visitRecoverBullMessage": {
@@ -11809,7 +11809,7 @@
   },
   "transactionSwapDescLnReceiveDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
   "@transactionSwapDescLnReceiveDefault": {
-    "description": "Default description for Lightning receive swap"
+    "description": "Default description for Lightning receive transfer"
   },
   "psbtFlowMoveBack": "سعی کنید دستگاه خود را کمی به عقب برگردانید",
   "@psbtFlowMoveBack": {
@@ -11829,7 +11829,7 @@
   },
   "transactionSwapDoNotUninstall": "برنامه را تا زمانی که مبادله کامل شود، نصب نکنید.",
   "@transactionSwapDoNotUninstall": {
-    "description": "Warning message to not uninstall app during swap"
+    "description": "Warning message to not uninstall app during transfer"
   },
   "importQrDevicePassportStep4": "گزینه “Connect Wallet” را انتخاب کنید",
   "@importQrDevicePassportStep4": {
@@ -11849,17 +11849,17 @@
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap زمانی ایجاد می شود که تعادل شما بالاتر از این حداکثر تعادل باشد.",
+  "autoswapTriggerAtBalanceInfoText": "Autotransfer زمانی ایجاد می شود که تعادل شما بالاتر از این حداکثر تعادل باشد.",
   "@autoswapTriggerAtBalanceInfoText": {
-    "description": "Info text explaining when autoswap will trigger"
+    "description": "Info text explaining when autotransfer will trigger"
   },
   "transactionSwapDescChainClaimable": "معامله قفل سازی تایید شده است. شما در حال حاضر ادعا می کنید که وجوه برای تکمیل انتقال شما.",
   "@transactionSwapDescChainClaimable": {
-    "description": "Description for claimable chain swap"
+    "description": "Description for claimable chain transfer"
   },
   "transactionSwapDescChainRefundable": "این انتقال بازپرداخت خواهد شد. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
   "@transactionSwapDescChainRefundable": {
-    "description": "Description for refundable chain swap"
+    "description": "Description for refundable chain transfer"
   },
   "autoswapInfoRemindLater": "بعدا به من یادآوری کنید",
   "@autoswapInfoRemindLater": {
@@ -11892,7 +11892,7 @@
   },
   "autoswapWarningExplanation": "هنگامی که تعادل شما بالاتر از حداکثر تعادل باشد، یک مبادله ایجاد خواهد شد. تعادل هدف در کیف پول پرداخت فوری شما حفظ خواهد شد و مقدار باقی مانده به کیف پول Bitcoin امن شما مبادله خواهد شد.",
   "@autoswapWarningExplanation": {
-    "description": "Explanation text in the autoswap warning bottom sheet"
+    "description": "Explanation text in the autotransfer warning bottom sheet"
   },
   "importQrDeviceSeedsignerStep6": "گزینه “Sparrow” را به عنوان گزینه صادرات انتخاب کنید",
   "@importQrDeviceSeedsignerStep6": {
@@ -11908,11 +11908,11 @@
   },
   "transactionSwapDescChainCompleted": "انتقال شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
   "@transactionSwapDescChainCompleted": {
-    "description": "Description for completed chain swap"
+    "description": "Description for completed chain transfer"
   },
-  "autoswapInfoTitle": "Autoswap فعال است",
+  "autoswapInfoTitle": "Autotransfer فعال است",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapAlwaysBlockInfoEnabled": "هنگامی که فعال، انتقال خودکار با هزینه های بالاتر از حد تنظیم همیشه مسدود خواهد شد",
   "@autoswapAlwaysBlockInfoEnabled": {
@@ -11944,7 +11944,7 @@
   },
   "transactionFeesTotalDeducted": "این کل هزینه ای است که از مبلغ ارسال شده کسر می شود",
   "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
+    "description": "Fee deduction explanation for sending transfers"
   },
   "takeYourTimeTag": "زمان خود را در نظر بگیرید",
   "@takeYourTimeTag": {
@@ -11990,7 +11990,7 @@
   },
   "transactionLabelServerNetworkFees": "هزینه های شبکه سرور",
   "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
+    "description": "Label for server network fees in transfer details"
   },
   "psbtFlowScanAnyQr": "گزینه “Scan Any QR code” را انتخاب کنید",
   "@psbtFlowScanAnyQr": {
@@ -11998,7 +11998,7 @@
   },
   "transactionSwapDescLnReceiveCompleted": "معامله شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
   "@transactionSwapDescLnReceiveCompleted": {
-    "description": "Description for completed Lightning receive swap"
+    "description": "Description for completed Lightning receive transfer"
   },
   "importQrDevicePassportStep9": "کد QR نمایش داده شده در پاسپورت خود را اسکن کنید",
   "@importQrDevicePassportStep9": {
@@ -12036,7 +12036,7 @@
   },
   "transactionSwapInfoClaimableSwap": "این مبادله به طور خودکار در عرض چند ثانیه تکمیل خواهد شد. اگر نه، شما می توانید یک ادعا دستی را با کلیک بر روی دکمه “Retry Request” امتحان کنید.",
   "@transactionSwapInfoClaimableSwap": {
-    "description": "Additional info for claimable swaps"
+    "description": "Additional info for claimable transfers"
   },
   "importQrDeviceSeedsignerStep4": "گزینه “Export Xpub” را انتخاب کنید",
   "@importQrDeviceSeedsignerStep4": {
@@ -12076,11 +12076,11 @@
   },
   "transactionSwapDescChainDefault": "انتقال شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
   "@transactionSwapDescChainDefault": {
-    "description": "Default description for chain swap"
+    "description": "Default description for chain transfer"
   },
   "transactionLabelSendNetworkFees": "ارسال هزینه های شبکه",
   "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
+    "description": "Label for send network fees in transfer details"
   },
   "transactionListYesterday": "دیروز",
   "@transactionListYesterday": {
@@ -12088,7 +12088,7 @@
   },
   "transactionFeesDeductedFrom": "این هزینه ها از مبلغ ارسال شده کسر خواهد شد",
   "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
+    "description": "Fee deduction explanation for receiving transfers"
   },
   "fundExchangeETransferLabelSecretAnswer": "پاسخ مخفی",
   "@fundExchangeETransferLabelSecretAnswer": {
@@ -12096,7 +12096,7 @@
   },
   "transactionSwapDescLnSendPaid": "معامله در زنجیره شما پخش شده است. پس از 1 تایید، پرداخت رعد و برق ارسال خواهد شد.",
   "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
+    "description": "Description for paid Lightning send transfer"
   },
   "importQrDeviceSeedsignerStep2": "منوی “Seeds” را باز کنید",
   "@importQrDeviceSeedsignerStep2": {
@@ -12104,7 +12104,7 @@
   },
   "autoswapBaseBalanceInfoText": "تعادل کیف پول پرداخت فوری شما پس از یک خودکار به این تعادل هدف باز می گردد.",
   "@autoswapBaseBalanceInfoText": {
-    "description": "Info text explaining what happens to the balance after an autoswap"
+    "description": "Info text explaining what happens to the balance after an autotransfer"
   },
   "importQrDeviceSeedsignerStep1": "قدرت در دستگاه SeedSigner",
   "@importQrDeviceSeedsignerStep1": {
@@ -12183,19 +12183,19 @@
   },
   "transactionSwapDescLnReceiveExpired": "این مبادله منقضی شده است. هرگونه پول ارسال شده به صورت خودکار به فرستنده بازگردانده می شود.",
   "@transactionSwapDescLnReceiveExpired": {
-    "description": "Description for expired Lightning receive swap"
+    "description": "Description for expired Lightning receive transfer"
   },
   "transactionSwapInfoRefundableSwap": "این مبادله به طور خودکار در عرض چند ثانیه بازپرداخت خواهد شد. اگر نه، می توانید با کلیک بر روی دکمه “Retry Refund”، بازپرداخت دستی را امتحان کنید.",
   "@transactionSwapInfoRefundableSwap": {
-    "description": "Additional info for refundable swaps"
+    "description": "Additional info for refundable transfers"
   },
   "encryptedVaultRecommendationText": "شما مطمئن نیستید و نیاز به زمان بیشتری برای یادگیری در مورد شیوه های امنیتی پشتیبان دارید.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
   },
-  "autoswapWarningSettingsLink": "مرا به تنظیمات Autoswap ببرید",
+  "autoswapWarningSettingsLink": "مرا به تنظیمات Autotransfer ببرید",
   "@autoswapWarningSettingsLink": {
-    "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    "description": "Link text to navigate to autotransfer settings from the warning bottom sheet"
   },
   "importQrDeviceSeedsignerStep8": "کد QR نمایش داده شده در SeedSigner",
   "@importQrDeviceSeedsignerStep8": {
@@ -12243,9 +12243,9 @@
   "@psbtFlowLoadFromCamera": {
     "description": "Instruction to select camera load option on device"
   },
-  "autoswapWarningDescription": "Autoswap تضمین می کند که شما به طور تصادفی پول زیادی را در کیف پول پرداخت فوری نگه ندارید، که برای ذخیره سازی طولانی مدت امن نیست.",
+  "autoswapWarningDescription": "Autotransfer تضمین می کند که شما به طور تصادفی پول زیادی را در کیف پول پرداخت فوری نگه ندارید، که برای ذخیره سازی طولانی مدت امن نیست.",
   "@autoswapWarningDescription": {
-    "description": "Description text at the top of the autoswap warning bottom sheet"
+    "description": "Description text at the top of the autotransfer warning bottom sheet"
   },
   "autoswapMaxFeeLabel": "هزینه انتقال Max",
   "@autoswapMaxFeeLabel": {
@@ -12281,7 +12281,7 @@
   },
   "transactionSwapInfoFailedExpired": "اگر سوالی یا نگرانی دارید، لطفا با حمایت از کمک تماس بگیرید.",
   "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
+    "description": "Additional info for failed or expired transfers"
   },
   "autoswapSaveButton": "Save",
   "@autoswapSaveButton": {
@@ -12301,7 +12301,7 @@
   },
   "autoswapInfoDismissButton": "آن را، دوباره نشان ندهید",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "memorizePasswordWarning": "شما باید این {pinOrPassword} را برای بازیابی دسترسی به کیف پول خود حفظ کنید. باید حداقل 6 رقم باشد. اگر این را از دست بدهید، نمی توانید نسخه پشتیبان خود را بازیابی کنید.",
   "@memorizePasswordWarning": {
@@ -12324,7 +12324,7 @@
   },
   "transactionSwapDescChainPaid": "معامله شما پخش شده است. ما در حال حاضر منتظر معامله قفل هستیم تا تایید شود.",
   "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
+    "description": "Description for paid chain transfer"
   },
   "autoswapRecipientWalletLabel": "راهنمای Bitcoin Wallet",
   "@autoswapRecipientWalletLabel": {
@@ -12390,7 +12390,7 @@
   },
   "transactionSwapDescLnReceiveFailed": "یک مسئله با مبادله شما وجود دارد. لطفا پشتیبانی تماس بگیرید اگر وجوه در عرض 24 ساعت بازگردانده نشده باشد.",
   "@transactionSwapDescLnReceiveFailed": {
-    "description": "Description for failed Lightning receive swap"
+    "description": "Description for failed Lightning receive transfer"
   },
   "autoswapAlwaysBlockInfoDisabled": "هنگامی که معلول هستید، گزینه ای برای اجازه دادن به یک انتقال خودکار که به دلیل هزینه های بالا مسدود می شود، به شما داده می شود",
   "@autoswapAlwaysBlockInfoDisabled": {
@@ -12398,7 +12398,7 @@
   },
   "transactionSwapDescLnReceiveClaimable": "معامله در زنجیره تایید شده است. ما در حال حاضر ادعا می کنیم که وجوه برای تکمیل مبادله شما.",
   "@transactionSwapDescLnReceiveClaimable": {
-    "description": "Description for claimable Lightning receive swap"
+    "description": "Description for claimable Lightning receive transfer"
   },
   "appInitErrorTitle": "برنامه راه‌اندازی نشد",
   "@appInitErrorTitle": {
@@ -12525,7 +12525,7 @@
   "wizardJourneyTip3": "به نود Bitcoin خود متصل شوید",
   "wizardJourneyTip4": "به مرورگر Mempool خود متصل شوید",
   "wizardJourneyTip5": "بدون KYC بین Bitcoin و Liquid انتقال دهید",
-  "wizardJourneyTip6": "تنظیمات autoswap خود را شخصی‌سازی کنید",
+  "wizardJourneyTip6": "تنظیمات autotransfer خود را شخصی‌سازی کنید",
   "wizardJourneyTip7": "بین Bitcoin (BTC) و Satoshis (sats) جابجا شوید",
   "wizardJourneyTip8": "تراکنش‌های air-gap برای کیف پول سخت‌افزاری خود ایجاد کنید",
   "@wizardPageIndicator": {
@@ -12545,7 +12545,7 @@
   "legacyStorageIntroDescription": "کیف پول شما روی نرم‌افزاری اجرا می‌شود که به‌زودی منسوخ می‌شود. بدون حذف و نصب مجدد برنامه نمی‌توان آن را به‌روزرسانی کرد.",
   "legacyStorageStepBackupWallet": "از کیف پول خود نسخه پشتیبان بگیرید",
   "legacyStorageStepExportLabels": "برچسب‌های خود را خروجی بگیرید (اگر دارید)",
-  "legacyStorageStepEnsureSwapsCompleted": "مطمئن شوید همه swap ها تکمیل شده‌اند",
+  "legacyStorageStepEnsureSwapsCompleted": "مطمئن شوید همه transfer ها تکمیل شده‌اند",
   "legacyStorageStepUninstall": "برنامه را از دستگاه خود حذف کنید",
   "legacyStorageStepReinstall": "آخرین نسخه را دانلود کرده و دوباره نصب کنید",
   "legacyStorageStepRestoreBackup": "نسخه پشتیبان خود را بازیابی کنید",

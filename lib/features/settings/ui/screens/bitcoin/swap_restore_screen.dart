@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -201,15 +200,6 @@ class _SwapRow extends StatelessWidget {
       ),
     );
 
-    if (!canRescue) return row;
-    return GestureDetector(
-      // Make the whole row tappable, not just its painted children.
-      behavior: HitTestBehavior.opaque,
-      onTap: () => context.pushNamed(
-        SettingsRoute.swapRescue.name,
-        extra: restorable,
-      ),
-      child: row,
-    );
+    return row;
   }
 }

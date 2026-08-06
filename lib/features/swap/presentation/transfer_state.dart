@@ -1,5 +1,16 @@
 part of 'transfer_bloc.dart';
 
+SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.completed => SwapStatus.completed,
+      OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+      OrderSwapLocalStatus.expired => SwapStatus.expired,
+      OrderSwapLocalStatus.failed => SwapStatus.failed,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+      _ => SwapStatus.pending,
+    };
+
 @freezed
 sealed class TransferState with _$TransferState {
   const factory TransferState({
@@ -17,7 +28,9 @@ sealed class TransferState with _$TransferState {
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
+    SwapFailure? swapFailure,
     ChainSwap? swap,
+    OrderSwapRecord? orderSwap,
     @Default('') String signedPsbt,
     int? bitcoinAbsoluteFeesSat,
     int? liquidAbsoluteFeesSat,

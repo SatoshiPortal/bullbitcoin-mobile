@@ -409,7 +409,7 @@
   "ledgerVerifyTitle": "Проверка Адреса на Ledger",
   "recoverbullSwitchToPassword": "Вместо этого выберите пароль",
   "exchangeDcaNetworkBitcoin": "Bitcoin Network",
-  "autoswapWarningTitle": "Autoswap включен со следующими настройками:",
+  "autoswapWarningTitle": "Autotransfer включен со следующими настройками:",
   "seedsignerStep1": "Включите устройство SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
   "transactionLabelStatus": "Статус",
@@ -1534,7 +1534,7 @@
   "swapProgressCompleted": "Завершение перевода",
   "keystoneStep2": "Нажмите кнопку Сканировать",
   "sendContinue": "Продолжить",
-  "transactionDetailRetrySwap": "Retry Swap {action}",
+  "transactionDetailRetrySwap": "Retry Transfer {action}",
   "@transactionDetailRetrySwap": {
     "placeholders": {
       "action": {
@@ -2210,7 +2210,7 @@
   "testBackupNext": "Следующий",
   "payBillerSearchHint": "Введите первые 3 буквы имени биллера",
   "coreSwapsLnSendCompletedRefunded": "Свап был возвращен.",
-  "transactionSwapInfoClaimableSwap": "Свопа будет завершена автоматически в течение нескольких секунд. Если нет, вы можете попробовать ручное утверждение, нажав на кнопку \"Retry Swap Claim\".",
+  "transactionSwapInfoClaimableSwap": "Свопа будет завершена автоматически в течение нескольких секунд. Если нет, вы можете попробовать ручное утверждение, нажав на кнопку \"Retry Transfer Claim\".",
   "mempoolCustomServerLabel": "CUSTOM",
   "arkAboutSessionDuration": "Продолжительность сессии",
   "transferFeeLabel": "Перенос",
@@ -2573,7 +2573,7 @@
   "arkSendConfirmedBalance": "Подтвержденный баланс",
   "sellFastest": "Самый быстрый",
   "receiveTitle": "Получить",
-  "transactionSwapInfoRefundableSwap": "Этот обмен будет возвращен автоматически в течение нескольких секунд. Если нет, вы можете попробовать ручной возврат, нажав на кнопку \"Retry Swap Refund\".",
+  "transactionSwapInfoRefundableSwap": "Этот обмен будет возвращен автоматически в течение нескольких секунд. Если нет, вы можете попробовать ручной возврат, нажав на кнопку \"Retry Transfer Refund\".",
   "payCancelPayment": "Отменить платеж",
   "ledgerInstructionsAndroidUsb": "Убедитесь, что вы Ledger открывается с помощью приложения Bitcoin и подключает его через USB.",
   "onboardingOwnYourMoney": "Иметь свои деньги",
@@ -3408,7 +3408,7 @@
   },
   "sendViewDetails": "Просмотр деталей",
   "recoverbullErrorUnexpected": "Неожиданная ошибка, см. журналы",
-  "sendSubmarineSwap": "Submarine Swap",
+  "sendSubmarineSwap": "Submarine Transfer",
   "transactionLabelLiquidTransactionId": "ID транзакции",
   "payNotAvailable": "N/A",
   "payFastest": "Самый быстрый",
@@ -4146,19 +4146,19 @@
   },
   "autoswapInfoSettingsButton": "Настройка",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to navigate to autotransfer settings"
   },
   "autoswapInfoRemindLater": "Напомни мне позже",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
-  "autoswapInfoTitle": "Autoswap активен",
+  "autoswapInfoTitle": "Autotransfer активен",
   "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
+    "description": "Title for autotransfer information bottom sheet"
   },
   "autoswapInfoDismissButton": "Понял, не показывай",
   "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
+    "description": "Primary button to dismiss autotransfer info permanently"
   },
   "transactionNoteHint": "Заметка",
   "@transactionNoteHint": {
@@ -4360,7 +4360,7 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "autoswapActiveCardTitle": "Autoswap активен",
+  "autoswapActiveCardTitle": "Autotransfer активен",
   "deleteLogsTitle": "Удалить журналы",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -4375,7 +4375,7 @@
   "statusScreenContinue": "Продолжить",
   "autoswapWarningExplanationBold": "автоматически",
   "sendSelfTransfer": "Перевод себе",
-  "autoswapInfoConsentMessage": "Autoswap в настоящее время включен, но не сработает, пока вы не дадите согласие. Хотите оставить его включенным?",
+  "autoswapInfoConsentMessage": "Autotransfer в настоящее время включен, но не сработает, пока вы не дадите согласие. Хотите оставить его включенным?",
   "mempoolServerStatusOnline": "В сети",
   "mempoolServerStatusOffline": "Не в сети",
   "mempoolServerStatusChecking": "Проверка...",
@@ -4595,7 +4595,7 @@
   "legacyStorageIntroDescription": "Ваш кошелёк работает на программном обеспечении, поддержка которого скоро прекратится. Его нельзя обновить, не удалив и не установив приложение заново.",
   "legacyStorageStepBackupWallet": "Сделайте резервную копию кошелька",
   "legacyStorageStepExportLabels": "Экспортируйте свои метки (если они есть)",
-  "legacyStorageStepEnsureSwapsCompleted": "Убедитесь, что все обмены (swap) завершены",
+  "legacyStorageStepEnsureSwapsCompleted": "Убедитесь, что все обмены (transfer) завершены",
   "legacyStorageStepUninstall": "Удалите приложение с вашего устройства",
   "legacyStorageStepReinstall": "Скачайте последнюю версию и установите её заново",
   "legacyStorageStepRestoreBackup": "Восстановите резервную копию",

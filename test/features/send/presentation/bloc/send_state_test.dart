@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../coins/wallet_utxo_fixture.dart';
@@ -58,6 +59,41 @@ void main() {
     signerDevice: null,
     balanceSat: BigInt.from(100000),
   );
+
+  group('sendStepForOrderSwapStatus', () {
+    test('keeps orders requiring user action on confirmation', () {
+      for (final status in [
+        OrderSwapLocalStatus.awaitingUserConfirmation,
+        OrderSwapLocalStatus.preparingPayin,
+        OrderSwapLocalStatus.readyToBroadcast,
+        OrderSwapLocalStatus.broadcastUnknown,
+      ]) {
+        expect(sendStepForOrderSwapStatus(status), SendStep.confirm);
+      }
+    });
+
+    test('shows the result once the payin was broadcast', () {
+      for (final status in [
+        OrderSwapLocalStatus.payinBroadcast,
+        OrderSwapLocalStatus.payoutInProgress,
+        OrderSwapLocalStatus.completed,
+        OrderSwapLocalStatus.refunded,
+        OrderSwapLocalStatus.expired,
+        OrderSwapLocalStatus.failed,
+      ]) {
+        expect(sendStepForOrderSwapStatus(status), SendStep.success);
+      }
+    });
+
+    test('keeps unresolved creations on the address step', () {
+      for (final status in [
+        OrderSwapLocalStatus.creating,
+        OrderSwapLocalStatus.creationUnknown,
+      ]) {
+        expect(sendStepForOrderSwapStatus(status), SendStep.address);
+      }
+    });
+  });
 
   group('SendState.absoluteFees — no wallet', () {
     test('returns null when no wallet is selected', () {

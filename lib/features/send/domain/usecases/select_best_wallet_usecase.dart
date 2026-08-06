@@ -44,14 +44,14 @@ class SelectBestWalletUsecase {
           // Use liquid
           return _selectBestWallet(
             request.amountSat,
-            Network.liquidMainnet,
+            request.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
             wallets,
           );
         } catch (_) {
-          // unless liquid doesn’t have balance, use bitcoin
+          // unless liquid doesn't have balance, use bitcoin
           return _selectBestWallet(
             request.amountSat,
-            Network.bitcoinMainnet,
+            request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
             wallets,
           );
         }
@@ -60,14 +60,13 @@ class SelectBestWalletUsecase {
       if (request is LnAddressPaymentRequest) {
         try {
           // Use liquid
-          final wallet = _selectBestWallet(
+          return _selectBestWallet(
             amountSat ?? 0,
             Network.liquidMainnet,
             wallets,
           );
-          return wallet;
         } catch (_) {
-          // unless liquid doesn’t have balance, use bitcoin
+          // unless liquid doesn't have balance, use bitcoin
           return _selectBestWallet(
             amountSat ?? 0,
             Network.bitcoinMainnet,
@@ -111,8 +110,8 @@ class SelectBestWalletUsecase {
         return w;
       }
     }
-    // Any wallet
-    // Any wallet with enough funds from the same network
+
+    // Any wallet with enough funds
     for (final w in wallets) {
       if (w.balanceSat.toInt() >= satoshis && w.signer == SignerEntity.local) {
         return w;

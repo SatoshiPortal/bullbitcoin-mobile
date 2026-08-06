@@ -32,10 +32,6 @@ import workmanager_apple
       frequency: NSNumber(value: 20 * 60)
     )
     WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.swaps-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
       withIdentifier: "com.bullbitcoin.mobile.logs-prune-id",
       frequency: NSNumber(value: 20 * 60)
     )
