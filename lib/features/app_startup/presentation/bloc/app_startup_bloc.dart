@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_requir
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart'
@@ -30,6 +31,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkLegacyInstallUsecase,
     required this._checkBackupUsecase,
     required this._initializeRequiredTorUsecase,
+    required this._recoverbullTelemetryCubit,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -42,6 +44,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
+  final RecoverbullTelemetryCubit _recoverbullTelemetryCubit;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -116,6 +119,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       // Warm the embedded client without delaying the startup screen. The
       // coordinator makes this single-flight with any concurrent consumer.
       unawaited(_initializeTorInBackground());
+
+      // Brute-force telemetry check: cold launch only, unawaited, never
+      // blocking startup. The cubit is a no-op when the feature flag is
+      // off, when Tor is not ready, or when the last check is still fresh.
+      unawaited(_recoverbullTelemetryCubit.checkOnColdLaunch());
 
       emit(
         AppStartupState.success(
