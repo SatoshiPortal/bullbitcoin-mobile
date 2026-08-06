@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
@@ -16,6 +17,7 @@ import 'package:bull_sdk/boltz.dart' as boltz;
 class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
+  final WalletTransactionRepository _walletTransactionRepository;
   final FeesRepository _feesRepository;
 
   StreamSubscription<Swap>? _swapStreamSubscription;
@@ -39,6 +41,7 @@ class SwapWatcherService {
   SwapWatcherService({
     required this._boltzRepo,
     required this._walletAddressRepository,
+    required this._walletTransactionRepository,
     required this._feesRepository,
     bool autoStart = true,
   }) {
@@ -861,11 +864,22 @@ class SwapWatcherService {
       return;
     }
 
-    final recovered = await _checkAndRecoverFromOutspend(
-      swap: swap,
-      isClaim: isClaim,
-    );
-    if (recovered) return;
+    // On-chain outspend recovery is a LAST RESORT: it can only prove that
+    // *something* spent the lockup, and a swap must never settle on that
+    // alone (Boltz refunding its own expired lockup, or spending unrelated
+    // change on the same tx, looks identical to a generic outspend check —
+    // that mistake wedged a refundable swap as "completed"). For a swap
+    // created on this device, local state + Boltz status reconciliation
+    // drive the lifecycle; only consult the chain when local history cannot
+    // know the answer: a fresh-install recovered swap, or our broadcast
+    // being rejected because the lockup is already spent.
+    if (swap.recovered || _isAlreadySpentError(error)) {
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        isClaim: isClaim,
+      );
+      if (recovered) return;
+    }
 
     if (!isClaim && _isNonFinalError(error)) {
       // Script-path refunds are only valid after the swap's timelock; stay
@@ -918,7 +932,7 @@ class SwapWatcherService {
           );
       }
 
-      final outspendStatus = await _boltzRepo.checkSwapLockupOutspend(
+      final outspends = await _boltzRepo.checkLockupOutspends(
         swapId: swap.id,
         swapType: swap.type,
         network: network,
@@ -926,8 +940,34 @@ class SwapWatcherService {
         isClaim: isClaim,
       );
 
-      final txid = outspendStatus.txid;
-      if (txid == null) return false;
+      // "A lockup output is spent" is not "we were paid": the covenant can
+      // sit at any vout, and the spender could be Boltz refunding its own
+      // expired lockup or moving its change on the same tx. Only settle on
+      // the candidate whose spending tx is ours — present in the wallet the
+      // funds must have landed in. Fail closed: no verifiable candidate
+      // leaves the swap watchable so reconcile / refund can still resolve
+      // it.
+      SwapTxOutspend? ours;
+      for (final candidate in outspends) {
+        final txid = candidate.txid;
+        if (txid == null) continue;
+        if (await _isOurWalletTx(swap: swap, isClaim: isClaim, txid: txid)) {
+          ours = candidate;
+          break;
+        }
+      }
+      if (ours == null) {
+        if (outspends.isNotEmpty) {
+          log.warning(
+            '[SwapWatcher] outspend recovery for ${swap.id}: lockup outputs '
+            'spent by ${outspends.map((o) => o.txid).whereType<String>().join(',')} '
+            'but none is in our wallet — not settling (spender is likely '
+            'Boltz, not our ${isClaim ? 'claim' : 'refund'})',
+          );
+        }
+        return false;
+      }
+      final txid = ours.txid!;
 
       log.fine(
         '[SwapWatcher] outspend recovery for ${swap.id}: '
@@ -938,7 +978,7 @@ class SwapWatcherService {
         status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
         receiveTxid: isClaim ? txid : null,
         refundTxid: isClaim ? null : txid,
-        completionTime: outspendStatus.timestamp ?? DateTime.now(),
+        completionTime: ours.timestamp ?? DateTime.now(),
       );
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _clearRetries(swap.id);
@@ -951,6 +991,32 @@ class SwapWatcherService {
       );
       return false;
     }
+  }
+
+  /// Whether [txid] is a transaction of the wallet that a successful
+  /// claim/refund of [swap] would have paid into. Claims to an external
+  /// address have no local wallet to check against and stay unverifiable
+  /// (false) until the outspend API can report the spender's outputs.
+  ///
+  /// Reads the wallet's persisted tx cache without forcing a sync: a false
+  /// negative only postpones settling until the next regular wallet sync,
+  /// whereas a false positive would wrongly finalize the swap.
+  Future<bool> _isOurWalletTx({
+    required Swap swap,
+    required bool isClaim,
+    required String txid,
+  }) async {
+    final walletId = switch (swap) {
+      ChainSwap() => isClaim ? swap.receiveWalletId : swap.sendWalletId,
+      LnReceiveSwap() => swap.receiveWalletId,
+      LnSendSwap() => swap.sendWalletId,
+    };
+    if (walletId == null) return false;
+    final tx = await _walletTransactionRepository.getWalletTransaction(
+      txid,
+      walletId: walletId,
+    );
+    return tx != null;
   }
 
   // RETRY BACKOFF

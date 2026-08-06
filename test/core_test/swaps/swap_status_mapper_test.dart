@@ -313,6 +313,35 @@ void main() {
       );
       expect(statusOf(result), 'refundable');
     });
+
+    // A chain swap wedged as "completed" by a bogus outspend recovery has its
+    // receiveTxid retracted at startup; from there Boltz's own refund event
+    // must be able to route the still-locked user funds to the refund path.
+    test(
+        'unproven completed chain swap with locked funds becomes refundable '
+        'on boltz refund', () {
+      final result = map(
+        chain(status: 'completed', sendTxid: 'tx'),
+        boltz.SwapStatus.txnRefunded,
+      );
+      expect(statusOf(result), 'refundable');
+    });
+
+    test('completed chain swap with a recorded claim stays completed', () {
+      final result = map(
+        chain(status: 'completed', sendTxid: 'tx', receiveTxid: 'claim'),
+        boltz.SwapStatus.txnRefunded,
+      );
+      expect(result, isA<SwapUnchanged>());
+    });
+
+    test('unproven completed chain swap without lockup cannot refund', () {
+      final result = map(
+        chain(status: 'completed'),
+        boltz.SwapStatus.txnRefunded,
+      );
+      expect(result, isA<SwapUnchanged>());
+    });
   });
 
   group('monotonicity', () {

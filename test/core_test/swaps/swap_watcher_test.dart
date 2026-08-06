@@ -10,6 +10,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class FakeBoltzSwapRepository implements BoltzSwapRepository {
@@ -82,6 +84,7 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
     int? claimFee,
     int? refundFee,
     DateTime? completionTime,
+    bool clearReceiveTxid = false,
   }) async {
     final current = swap;
     final fees = (current.fees ?? const SwapFees()).copyWith(
@@ -106,7 +109,9 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
       ),
       ChainSwap() => current.copyWith(
         status: status ?? current.status,
-        receiveTxid: receiveTxid ?? current.receiveTxid,
+        receiveTxid: clearReceiveTxid
+            ? null
+            : receiveTxid ?? current.receiveTxid,
         refundTxid: refundTxid ?? current.refundTxid,
         completionTime: completionTime ?? current.completionTime,
         fees: fees,
@@ -122,13 +127,15 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
   void subscribeToSwaps(List<String> swapIds) {}
 
   @override
-  Future<SwapTxOutspend> checkSwapLockupOutspend({
+  Future<List<SwapTxOutspend>> checkLockupOutspends({
     required String swapId,
     required SwapType swapType,
     required Network network,
     dynamic swapDirection,
     bool isClaim = true,
-  }) async => SwapTxOutspend(txid: outspendTxid, timestamp: null);
+  }) async => [
+    if (outspendTxid != null) SwapTxOutspend(txid: outspendTxid),
+  ];
 
   @override
   Stream<Swap> get swapUpdatesStream => const Stream.empty();
@@ -157,6 +164,39 @@ class FakeFeesRepository implements FeesRepository {
 }
 
 class FakeWalletAddressRepository implements WalletAddressRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('${invocation.memberName}');
+}
+
+/// Wallet tx membership per wallet id, e.g. {'w1': {'txid-a', 'txid-b'}}.
+class FakeWalletTransactionRepository implements WalletTransactionRepository {
+  final Map<String, Set<String>> txidsByWallet;
+
+  FakeWalletTransactionRepository([this.txidsByWallet = const {}]);
+
+  @override
+  Future<WalletTransaction?> getWalletTransaction(
+    String txId, {
+    required String walletId,
+    bool sync = false,
+  }) async {
+    if (!(txidsByWallet[walletId]?.contains(txId) ?? false)) return null;
+    return WalletTransaction(
+      walletId: walletId,
+      network: Network.liquidMainnet,
+      direction: WalletTransactionDirection.incoming,
+      status: WalletTransactionStatus.confirmed,
+      txId: txId,
+      amountSat: 1000,
+      feeSat: 100,
+      vsize: 100,
+      inputs: const [],
+      outputs: const [],
+      isRbf: false,
+    );
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName}');
@@ -193,13 +233,16 @@ void main() {
         refundAddress: 'lq1qqrefund',
       ) as LnSendSwap;
 
-  SwapWatcherService watcher(FakeBoltzSwapRepository repo) =>
-      SwapWatcherService(
-        boltzRepo: repo,
-        walletAddressRepository: FakeWalletAddressRepository(),
-        feesRepository: FakeFeesRepository(),
-        autoStart: false,
-      );
+  SwapWatcherService watcher(
+    FakeBoltzSwapRepository repo, {
+    Map<String, Set<String>> walletTxids = const {},
+  }) => SwapWatcherService(
+    boltzRepo: repo,
+    walletAddressRepository: FakeWalletAddressRepository(),
+    walletTransactionRepository: FakeWalletTransactionRepository(walletTxids),
+    feesRepository: FakeFeesRepository(),
+    autoStart: false,
+  );
 
   group('claim execution', () {
     test('claims once, persists completed status and the actual fee used',
@@ -268,17 +311,60 @@ void main() {
       expect(repo.swap.status, SwapStatus.claimable);
     });
 
-    test('recovers via outspend check when broadcast fails but tx exists',
-        () async {
+    test(
+        'recovers via outspend check when broadcast fails already-spent '
+        'and the spender is our own wallet tx', () async {
       final repo = FakeBoltzSwapRepository(claimableSwap())
         ..claimError = Exception('bad-txns-inputs-missingorspent')
         ..outspendTxid = 'already-claimed-txid';
-      final service = watcher(repo);
+      final service = watcher(
+        repo,
+        walletTxids: {
+          'w1': {'already-claimed-txid'},
+        },
+      );
 
       await service.processSwap(repo.swap);
 
       expect(repo.swap.status, SwapStatus.completed);
       expect((repo.swap as LnReceiveSwap).receiveTxid, 'already-claimed-txid');
+    });
+
+    test(
+        'does NOT settle from an outspend whose spender is not our wallet tx '
+        '(e.g. Boltz spending its own change or refunding its own lockup)',
+        () async {
+      final repo = FakeBoltzSwapRepository(claimableSwap())
+        ..claimError = Exception('bad-txns-inputs-missingorspent')
+        ..outspendTxid = 'boltz-own-spend-txid';
+      final service = watcher(repo); // wallet has no such tx
+
+      await service.processSwap(repo.swap);
+
+      expect(repo.swap.status, SwapStatus.claimable);
+      expect((repo.swap as LnReceiveSwap).receiveTxid, isNull);
+    });
+
+    test(
+        'generic broadcast failure never consults the outspend check for a '
+        'locally created swap', () async {
+      final repo = FakeBoltzSwapRepository(claimableSwap())
+        ..claimError = Exception('connection refused')
+        ..outspendTxid = 'some-unrelated-spender';
+      final service = watcher(
+        repo,
+        walletTxids: {
+          'w1': {'some-unrelated-spender'},
+        },
+      );
+
+      await service.processSwap(repo.swap);
+
+      // Even though the (stubbed) outspend check would have found a spender,
+      // a non-already-spent failure on a local swap must back off and retry
+      // instead of settling from chain data.
+      expect(repo.swap.status, SwapStatus.claimable);
+      expect((repo.swap as LnReceiveSwap).receiveTxid, isNull);
     });
 
     test('direct (MRH) payments are never claimed', () async {

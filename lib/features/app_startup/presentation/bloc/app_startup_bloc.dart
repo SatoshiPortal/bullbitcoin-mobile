@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_u
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -37,6 +38,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._isTorRequiredUsecase,
     required this._initTorUsecase,
     required this._logSwapCensusUsecase,
+    required this._verifyChainSwapCompletionsUsecase,
   }) : _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
        super(const AppStartupState.initial()) {
@@ -55,6 +57,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
   final LogSwapCensusUsecase _logSwapCensusUsecase;
+  final VerifyChainSwapCompletionsUsecase _verifyChainSwapCompletionsUsecase;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -160,6 +163,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         log.fine('[Startup] running swap census');
         await _logSwapCensusUsecase.execute();
         log.fine('[Startup] swap census done');
+
+        // Retract mis-settled chain swap completions (a bogus receiveTxid
+        // recorded by the old vout-0 outspend recovery) so the watcher can
+        // pick them up again and drive the pending claim/refund home.
+        await _verifyChainSwapCompletionsUsecase.execute();
       } else {
         // This is a fresh install, so reset the app data that might still be
         //  there from a previous install.

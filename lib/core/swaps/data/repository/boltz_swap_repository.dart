@@ -574,6 +574,9 @@ class BoltzSwapRepository {
     int? claimFee,
     int? refundFee,
     DateTime? completionTime,
+    // Null means "keep" for every field above, so retracting a recorded
+    // claim tx (un-wedging a mis-settled swap) needs an explicit flag.
+    bool clearReceiveTxid = false,
   }) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
@@ -588,7 +591,7 @@ class BoltzSwapRepository {
     final updated = switch (swap) {
       LnReceiveSwap() => swap.copyWith(
         status: status ?? swap.status,
-        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveTxid: clearReceiveTxid ? null : receiveTxid ?? swap.receiveTxid,
         receiveAddress: receiveAddress ?? swap.receiveAddress,
         completionTime: completionTime ?? swap.completionTime,
         fees: fees,
@@ -603,7 +606,7 @@ class BoltzSwapRepository {
       ),
       ChainSwap() => swap.copyWith(
         status: status ?? swap.status,
-        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveTxid: clearReceiveTxid ? null : receiveTxid ?? swap.receiveTxid,
         refundTxid: refundTxid ?? swap.refundTxid,
         receiveAddress: receiveAddress ?? swap.receiveAddress,
         refundAddress: refundAddress ?? swap.refundAddress,
@@ -618,6 +621,7 @@ class BoltzSwapRepository {
       '[SwapStore] $swapId'
       '${status != null ? ' status=${swap.status.name}->${status.name}' : ''}'
       '${receiveTxid != null ? ' receiveTxid=$receiveTxid' : ''}'
+      '${clearReceiveTxid ? ' receiveTxid=CLEARED(was ${swap is ChainSwap ? swap.receiveTxid : swap is LnReceiveSwap ? swap.receiveTxid : null})' : ''}'
       '${refundTxid != null ? ' refundTxid=$refundTxid' : ''}'
       '${completionTime != null ? ' completed' : ''}',
     );
@@ -1256,21 +1260,24 @@ class BoltzSwapRepository {
     }
   }
 
-  /// Checks the outspend status of a swap's lockup transaction
-  Future<SwapTxOutspend> checkSwapLockupOutspend({
+  /// Lists the spends of the swap's lockup tx outputs, one per spent vout.
+  /// An entry proves only that an output was spent — never that we were
+  /// paid; callers must verify a spender against their own wallet before
+  /// settling the swap on it.
+  Future<List<SwapTxOutspend>> checkLockupOutspends({
     required String swapId,
     required SwapType swapType,
     required Network network,
     outspend.SwapDirection? swapDirection,
     bool isClaim = true,
   }) async {
-    final model = await _boltz.checkSwapLockupOutspend(
+    final models = await _boltz.checkLockupOutspends(
       swapId: swapId,
       swapType: swapType,
       network: network,
       swapDirection: swapDirection,
       isClaim: isClaim,
     );
-    return model.toEntity();
+    return models.map((model) => model.toEntity()).toList();
   }
 }
