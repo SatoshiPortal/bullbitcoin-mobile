@@ -44,6 +44,69 @@ void main() {
     // Screen-capture protection is added in this step and defaults to enabled
     // (1) so existing installs keep protection until the user opts out.
     expect(settings.single.screenCaptureProtectionEnabled, 1);
+    // Brute-force telemetry is added in the same step and defaults to
+    // disabled (0): the feature rolls out only once the server contract and
+    // the pinned client are confirmed in production.
+    expect(settings.single.isRecoverbullTelemetryEnabled, 0);
+    await migratedDb.close();
+  });
+
+  test('v14 to v15 creates the recoverbull telemetry tables, empty and '
+      'writable', () async {
+    final schema = await verifier.schemaAt(14);
+
+    final db = SqliteDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 15);
+    await db.close();
+
+    final migratedDb = v15.DatabaseAtV15(schema.newConnection());
+
+    // Newly created tables start empty: existing installs simply have no
+    // telemetry baseline yet.
+    expect(
+      await migratedDb.select(migratedDb.recoverbullTelemetryServer).get(),
+      isEmpty,
+    );
+    expect(
+      await migratedDb.select(migratedDb.recoverbullTelemetryBackup).get(),
+      isEmpty,
+    );
+
+    await migratedDb
+        .into(migratedDb.recoverbullTelemetryServer)
+        .insert(
+          v15.RecoverbullTelemetryServerCompanion.insert(
+            serverUrl: 'http://example.onion',
+            lastEtag: const Value('etag-1'),
+            lastSuccessfulCheckAt: const Value(1750000000),
+            collectionStartedAt: const Value(1749990000),
+          ),
+        );
+    await migratedDb
+        .into(migratedDb.recoverbullTelemetryBackup)
+        .insert(
+          v15.RecoverbullTelemetryBackupCompanion.insert(
+            serverUrl: 'http://example.onion',
+            backupIdHash: 'a' * 64,
+            expectedTotalAttempts: const Value(2),
+            currentWindowStartedAt: const Value(1750000000),
+          ),
+        );
+
+    final serverRows = await migratedDb
+        .select(migratedDb.recoverbullTelemetryServer)
+        .get();
+    expect(serverRows, hasLength(1));
+    expect(serverRows.single.lastEtag, 'etag-1');
+    expect(serverRows.single.consecutiveFailures, 0);
+
+    final backupRows = await migratedDb
+        .select(migratedDb.recoverbullTelemetryBackup)
+        .get();
+    expect(backupRows, hasLength(1));
+    expect(backupRows.single.expectedTotalAttempts, 2);
+    expect(backupRows.single.currentWindowStartedAt, 1750000000);
+
     await migratedDb.close();
   });
 }

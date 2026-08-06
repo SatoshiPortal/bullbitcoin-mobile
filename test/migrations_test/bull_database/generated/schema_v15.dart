@@ -1857,6 +1857,17 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         requiredDuringInsert: false,
         $customConstraints: 'NULL',
       );
+  late final GeneratedColumn<int>
+  isRecoverbullTelemetryEnabled = GeneratedColumn<int>(
+    'is_recoverbull_telemetry_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (is_recoverbull_telemetry_enabled IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1876,6 +1887,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     screenCaptureProtectionEnabled,
     exchangeTestnetBasicAuthUsername,
     exchangeTestnetBasicAuthPassword,
+    isRecoverbullTelemetryEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1956,6 +1968,10 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.string,
         data['${effectivePrefix}exchange_testnet_basic_auth_password'],
       ),
+      isRecoverbullTelemetryEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_recoverbull_telemetry_enabled'],
+      )!,
     );
   }
 
@@ -1986,6 +2002,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int screenCaptureProtectionEnabled;
   final String? exchangeTestnetBasicAuthUsername;
   final String? exchangeTestnetBasicAuthPassword;
+  final int isRecoverbullTelemetryEnabled;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -2004,6 +2021,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.screenCaptureProtectionEnabled,
     this.exchangeTestnetBasicAuthUsername,
     this.exchangeTestnetBasicAuthPassword,
+    required this.isRecoverbullTelemetryEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2039,6 +2057,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
         exchangeTestnetBasicAuthPassword,
       );
     }
+    map['is_recoverbull_telemetry_enabled'] = Variable<int>(
+      isRecoverbullTelemetryEnabled,
+    );
     return map;
   }
 
@@ -2070,6 +2091,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           exchangeTestnetBasicAuthPassword == null && nullToAbsent
           ? const Value.absent()
           : Value(exchangeTestnetBasicAuthPassword),
+      isRecoverbullTelemetryEnabled: Value(isRecoverbullTelemetryEnabled),
     );
   }
 
@@ -2106,6 +2128,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       exchangeTestnetBasicAuthPassword: serializer.fromJson<String?>(
         json['exchangeTestnetBasicAuthPassword'],
       ),
+      isRecoverbullTelemetryEnabled: serializer.fromJson<int>(
+        json['isRecoverbullTelemetryEnabled'],
+      ),
     );
   }
   @override
@@ -2139,6 +2164,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'exchangeTestnetBasicAuthPassword': serializer.toJson<String?>(
         exchangeTestnetBasicAuthPassword,
       ),
+      'isRecoverbullTelemetryEnabled': serializer.toJson<int>(
+        isRecoverbullTelemetryEnabled,
+      ),
     };
   }
 
@@ -2160,6 +2188,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? screenCaptureProtectionEnabled,
     Value<String?> exchangeTestnetBasicAuthUsername = const Value.absent(),
     Value<String?> exchangeTestnetBasicAuthPassword = const Value.absent(),
+    int? isRecoverbullTelemetryEnabled,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -2186,6 +2215,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword.present
         ? exchangeTestnetBasicAuthPassword.value
         : this.exchangeTestnetBasicAuthPassword,
+    isRecoverbullTelemetryEnabled:
+        isRecoverbullTelemetryEnabled ?? this.isRecoverbullTelemetryEnabled,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2235,6 +2266,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           data.exchangeTestnetBasicAuthPassword.present
           ? data.exchangeTestnetBasicAuthPassword.value
           : this.exchangeTestnetBasicAuthPassword,
+      isRecoverbullTelemetryEnabled: data.isRecoverbullTelemetryEnabled.present
+          ? data.isRecoverbullTelemetryEnabled.value
+          : this.isRecoverbullTelemetryEnabled,
     );
   }
 
@@ -2262,7 +2296,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
             'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
           )
           ..write(
-            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword',
+            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword, ',
+          )
+          ..write(
+            'isRecoverbullTelemetryEnabled: $isRecoverbullTelemetryEnabled',
           )
           ..write(')'))
         .toString();
@@ -2287,6 +2324,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     screenCaptureProtectionEnabled,
     exchangeTestnetBasicAuthUsername,
     exchangeTestnetBasicAuthPassword,
+    isRecoverbullTelemetryEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -2311,7 +2349,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.exchangeTestnetBasicAuthUsername ==
               this.exchangeTestnetBasicAuthUsername &&
           other.exchangeTestnetBasicAuthPassword ==
-              this.exchangeTestnetBasicAuthPassword);
+              this.exchangeTestnetBasicAuthPassword &&
+          other.isRecoverbullTelemetryEnabled ==
+              this.isRecoverbullTelemetryEnabled);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2332,6 +2372,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> screenCaptureProtectionEnabled;
   final Value<String?> exchangeTestnetBasicAuthUsername;
   final Value<String?> exchangeTestnetBasicAuthPassword;
+  final Value<int> isRecoverbullTelemetryEnabled;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2350,6 +2391,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.screenCaptureProtectionEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
     this.exchangeTestnetBasicAuthPassword = const Value.absent(),
+    this.isRecoverbullTelemetryEnabled = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2369,6 +2411,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.screenCaptureProtectionEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
     this.exchangeTestnetBasicAuthPassword = const Value.absent(),
+    this.isRecoverbullTelemetryEnabled = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2393,6 +2436,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? screenCaptureProtectionEnabled,
     Expression<String>? exchangeTestnetBasicAuthUsername,
     Expression<String>? exchangeTestnetBasicAuthPassword,
+    Expression<int>? isRecoverbullTelemetryEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2419,6 +2463,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (exchangeTestnetBasicAuthPassword != null)
         'exchange_testnet_basic_auth_password':
             exchangeTestnetBasicAuthPassword,
+      if (isRecoverbullTelemetryEnabled != null)
+        'is_recoverbull_telemetry_enabled': isRecoverbullTelemetryEnabled,
     });
   }
 
@@ -2440,6 +2486,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? screenCaptureProtectionEnabled,
     Value<String?>? exchangeTestnetBasicAuthUsername,
     Value<String?>? exchangeTestnetBasicAuthPassword,
+    Value<int>? isRecoverbullTelemetryEnabled,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2466,6 +2513,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       exchangeTestnetBasicAuthPassword:
           exchangeTestnetBasicAuthPassword ??
           this.exchangeTestnetBasicAuthPassword,
+      isRecoverbullTelemetryEnabled:
+          isRecoverbullTelemetryEnabled ?? this.isRecoverbullTelemetryEnabled,
     );
   }
 
@@ -2533,6 +2582,11 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
         exchangeTestnetBasicAuthPassword.value,
       );
     }
+    if (isRecoverbullTelemetryEnabled.present) {
+      map['is_recoverbull_telemetry_enabled'] = Variable<int>(
+        isRecoverbullTelemetryEnabled.value,
+      );
+    }
     return map;
   }
 
@@ -2560,7 +2614,10 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
             'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
           )
           ..write(
-            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword',
+            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword, ',
+          )
+          ..write(
+            'isRecoverbullTelemetryEnabled: $isRecoverbullTelemetryEnabled',
           )
           ..write(')'))
         .toString();
@@ -10280,6 +10337,815 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
   }
 }
 
+class RecoverbullTelemetryServer extends Table
+    with TableInfo<RecoverbullTelemetryServer, RecoverbullTelemetryServerData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RecoverbullTelemetryServer(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> serverUrl = GeneratedColumn<String>(
+    'server_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> lastEtag = GeneratedColumn<String>(
+    'last_etag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> lastSuccessfulCheckAt = GeneratedColumn<int>(
+    'last_successful_check_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> collectionStartedAt = GeneratedColumn<int>(
+    'collection_started_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> consecutiveFailures = GeneratedColumn<int>(
+    'consecutive_failures',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> unavailabilityWarnedAt = GeneratedColumn<int>(
+    'unavailability_warned_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    serverUrl,
+    lastEtag,
+    lastSuccessfulCheckAt,
+    collectionStartedAt,
+    consecutiveFailures,
+    unavailabilityWarnedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recoverbull_telemetry_server';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {serverUrl};
+  @override
+  RecoverbullTelemetryServerData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecoverbullTelemetryServerData(
+      serverUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_url'],
+      )!,
+      lastEtag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_etag'],
+      ),
+      lastSuccessfulCheckAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_successful_check_at'],
+      ),
+      collectionStartedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}collection_started_at'],
+      ),
+      consecutiveFailures: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}consecutive_failures'],
+      )!,
+      unavailabilityWarnedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}unavailability_warned_at'],
+      ),
+    );
+  }
+
+  @override
+  RecoverbullTelemetryServer createAlias(String alias) {
+    return RecoverbullTelemetryServer(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(server_url)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class RecoverbullTelemetryServerData extends DataClass
+    implements Insertable<RecoverbullTelemetryServerData> {
+  final String serverUrl;
+  final String? lastEtag;
+  final int? lastSuccessfulCheckAt;
+  final int? collectionStartedAt;
+  final int consecutiveFailures;
+  final int? unavailabilityWarnedAt;
+  const RecoverbullTelemetryServerData({
+    required this.serverUrl,
+    this.lastEtag,
+    this.lastSuccessfulCheckAt,
+    this.collectionStartedAt,
+    required this.consecutiveFailures,
+    this.unavailabilityWarnedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['server_url'] = Variable<String>(serverUrl);
+    if (!nullToAbsent || lastEtag != null) {
+      map['last_etag'] = Variable<String>(lastEtag);
+    }
+    if (!nullToAbsent || lastSuccessfulCheckAt != null) {
+      map['last_successful_check_at'] = Variable<int>(lastSuccessfulCheckAt);
+    }
+    if (!nullToAbsent || collectionStartedAt != null) {
+      map['collection_started_at'] = Variable<int>(collectionStartedAt);
+    }
+    map['consecutive_failures'] = Variable<int>(consecutiveFailures);
+    if (!nullToAbsent || unavailabilityWarnedAt != null) {
+      map['unavailability_warned_at'] = Variable<int>(unavailabilityWarnedAt);
+    }
+    return map;
+  }
+
+  RecoverbullTelemetryServerCompanion toCompanion(bool nullToAbsent) {
+    return RecoverbullTelemetryServerCompanion(
+      serverUrl: Value(serverUrl),
+      lastEtag: lastEtag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastEtag),
+      lastSuccessfulCheckAt: lastSuccessfulCheckAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSuccessfulCheckAt),
+      collectionStartedAt: collectionStartedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(collectionStartedAt),
+      consecutiveFailures: Value(consecutiveFailures),
+      unavailabilityWarnedAt: unavailabilityWarnedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(unavailabilityWarnedAt),
+    );
+  }
+
+  factory RecoverbullTelemetryServerData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecoverbullTelemetryServerData(
+      serverUrl: serializer.fromJson<String>(json['serverUrl']),
+      lastEtag: serializer.fromJson<String?>(json['lastEtag']),
+      lastSuccessfulCheckAt: serializer.fromJson<int?>(
+        json['lastSuccessfulCheckAt'],
+      ),
+      collectionStartedAt: serializer.fromJson<int?>(
+        json['collectionStartedAt'],
+      ),
+      consecutiveFailures: serializer.fromJson<int>(
+        json['consecutiveFailures'],
+      ),
+      unavailabilityWarnedAt: serializer.fromJson<int?>(
+        json['unavailabilityWarnedAt'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'serverUrl': serializer.toJson<String>(serverUrl),
+      'lastEtag': serializer.toJson<String?>(lastEtag),
+      'lastSuccessfulCheckAt': serializer.toJson<int?>(lastSuccessfulCheckAt),
+      'collectionStartedAt': serializer.toJson<int?>(collectionStartedAt),
+      'consecutiveFailures': serializer.toJson<int>(consecutiveFailures),
+      'unavailabilityWarnedAt': serializer.toJson<int?>(unavailabilityWarnedAt),
+    };
+  }
+
+  RecoverbullTelemetryServerData copyWith({
+    String? serverUrl,
+    Value<String?> lastEtag = const Value.absent(),
+    Value<int?> lastSuccessfulCheckAt = const Value.absent(),
+    Value<int?> collectionStartedAt = const Value.absent(),
+    int? consecutiveFailures,
+    Value<int?> unavailabilityWarnedAt = const Value.absent(),
+  }) => RecoverbullTelemetryServerData(
+    serverUrl: serverUrl ?? this.serverUrl,
+    lastEtag: lastEtag.present ? lastEtag.value : this.lastEtag,
+    lastSuccessfulCheckAt: lastSuccessfulCheckAt.present
+        ? lastSuccessfulCheckAt.value
+        : this.lastSuccessfulCheckAt,
+    collectionStartedAt: collectionStartedAt.present
+        ? collectionStartedAt.value
+        : this.collectionStartedAt,
+    consecutiveFailures: consecutiveFailures ?? this.consecutiveFailures,
+    unavailabilityWarnedAt: unavailabilityWarnedAt.present
+        ? unavailabilityWarnedAt.value
+        : this.unavailabilityWarnedAt,
+  );
+  RecoverbullTelemetryServerData copyWithCompanion(
+    RecoverbullTelemetryServerCompanion data,
+  ) {
+    return RecoverbullTelemetryServerData(
+      serverUrl: data.serverUrl.present ? data.serverUrl.value : this.serverUrl,
+      lastEtag: data.lastEtag.present ? data.lastEtag.value : this.lastEtag,
+      lastSuccessfulCheckAt: data.lastSuccessfulCheckAt.present
+          ? data.lastSuccessfulCheckAt.value
+          : this.lastSuccessfulCheckAt,
+      collectionStartedAt: data.collectionStartedAt.present
+          ? data.collectionStartedAt.value
+          : this.collectionStartedAt,
+      consecutiveFailures: data.consecutiveFailures.present
+          ? data.consecutiveFailures.value
+          : this.consecutiveFailures,
+      unavailabilityWarnedAt: data.unavailabilityWarnedAt.present
+          ? data.unavailabilityWarnedAt.value
+          : this.unavailabilityWarnedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoverbullTelemetryServerData(')
+          ..write('serverUrl: $serverUrl, ')
+          ..write('lastEtag: $lastEtag, ')
+          ..write('lastSuccessfulCheckAt: $lastSuccessfulCheckAt, ')
+          ..write('collectionStartedAt: $collectionStartedAt, ')
+          ..write('consecutiveFailures: $consecutiveFailures, ')
+          ..write('unavailabilityWarnedAt: $unavailabilityWarnedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    serverUrl,
+    lastEtag,
+    lastSuccessfulCheckAt,
+    collectionStartedAt,
+    consecutiveFailures,
+    unavailabilityWarnedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecoverbullTelemetryServerData &&
+          other.serverUrl == this.serverUrl &&
+          other.lastEtag == this.lastEtag &&
+          other.lastSuccessfulCheckAt == this.lastSuccessfulCheckAt &&
+          other.collectionStartedAt == this.collectionStartedAt &&
+          other.consecutiveFailures == this.consecutiveFailures &&
+          other.unavailabilityWarnedAt == this.unavailabilityWarnedAt);
+}
+
+class RecoverbullTelemetryServerCompanion
+    extends UpdateCompanion<RecoverbullTelemetryServerData> {
+  final Value<String> serverUrl;
+  final Value<String?> lastEtag;
+  final Value<int?> lastSuccessfulCheckAt;
+  final Value<int?> collectionStartedAt;
+  final Value<int> consecutiveFailures;
+  final Value<int?> unavailabilityWarnedAt;
+  final Value<int> rowid;
+  const RecoverbullTelemetryServerCompanion({
+    this.serverUrl = const Value.absent(),
+    this.lastEtag = const Value.absent(),
+    this.lastSuccessfulCheckAt = const Value.absent(),
+    this.collectionStartedAt = const Value.absent(),
+    this.consecutiveFailures = const Value.absent(),
+    this.unavailabilityWarnedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecoverbullTelemetryServerCompanion.insert({
+    required String serverUrl,
+    this.lastEtag = const Value.absent(),
+    this.lastSuccessfulCheckAt = const Value.absent(),
+    this.collectionStartedAt = const Value.absent(),
+    this.consecutiveFailures = const Value.absent(),
+    this.unavailabilityWarnedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : serverUrl = Value(serverUrl);
+  static Insertable<RecoverbullTelemetryServerData> custom({
+    Expression<String>? serverUrl,
+    Expression<String>? lastEtag,
+    Expression<int>? lastSuccessfulCheckAt,
+    Expression<int>? collectionStartedAt,
+    Expression<int>? consecutiveFailures,
+    Expression<int>? unavailabilityWarnedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (serverUrl != null) 'server_url': serverUrl,
+      if (lastEtag != null) 'last_etag': lastEtag,
+      if (lastSuccessfulCheckAt != null)
+        'last_successful_check_at': lastSuccessfulCheckAt,
+      if (collectionStartedAt != null)
+        'collection_started_at': collectionStartedAt,
+      if (consecutiveFailures != null)
+        'consecutive_failures': consecutiveFailures,
+      if (unavailabilityWarnedAt != null)
+        'unavailability_warned_at': unavailabilityWarnedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecoverbullTelemetryServerCompanion copyWith({
+    Value<String>? serverUrl,
+    Value<String?>? lastEtag,
+    Value<int?>? lastSuccessfulCheckAt,
+    Value<int?>? collectionStartedAt,
+    Value<int>? consecutiveFailures,
+    Value<int?>? unavailabilityWarnedAt,
+    Value<int>? rowid,
+  }) {
+    return RecoverbullTelemetryServerCompanion(
+      serverUrl: serverUrl ?? this.serverUrl,
+      lastEtag: lastEtag ?? this.lastEtag,
+      lastSuccessfulCheckAt:
+          lastSuccessfulCheckAt ?? this.lastSuccessfulCheckAt,
+      collectionStartedAt: collectionStartedAt ?? this.collectionStartedAt,
+      consecutiveFailures: consecutiveFailures ?? this.consecutiveFailures,
+      unavailabilityWarnedAt:
+          unavailabilityWarnedAt ?? this.unavailabilityWarnedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (serverUrl.present) {
+      map['server_url'] = Variable<String>(serverUrl.value);
+    }
+    if (lastEtag.present) {
+      map['last_etag'] = Variable<String>(lastEtag.value);
+    }
+    if (lastSuccessfulCheckAt.present) {
+      map['last_successful_check_at'] = Variable<int>(
+        lastSuccessfulCheckAt.value,
+      );
+    }
+    if (collectionStartedAt.present) {
+      map['collection_started_at'] = Variable<int>(collectionStartedAt.value);
+    }
+    if (consecutiveFailures.present) {
+      map['consecutive_failures'] = Variable<int>(consecutiveFailures.value);
+    }
+    if (unavailabilityWarnedAt.present) {
+      map['unavailability_warned_at'] = Variable<int>(
+        unavailabilityWarnedAt.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoverbullTelemetryServerCompanion(')
+          ..write('serverUrl: $serverUrl, ')
+          ..write('lastEtag: $lastEtag, ')
+          ..write('lastSuccessfulCheckAt: $lastSuccessfulCheckAt, ')
+          ..write('collectionStartedAt: $collectionStartedAt, ')
+          ..write('consecutiveFailures: $consecutiveFailures, ')
+          ..write('unavailabilityWarnedAt: $unavailabilityWarnedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class RecoverbullTelemetryBackup extends Table
+    with TableInfo<RecoverbullTelemetryBackup, RecoverbullTelemetryBackupData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RecoverbullTelemetryBackup(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> serverUrl = GeneratedColumn<String>(
+    'server_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> backupIdHash = GeneratedColumn<String>(
+    'backup_id_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> expectedTotalAttempts = GeneratedColumn<int>(
+    'expected_total_attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> currentWindowStartedAt = GeneratedColumn<int>(
+    'current_window_started_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> lastWarningWindowStartedAt =
+      GeneratedColumn<int>(
+        'last_warning_window_started_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<int> acknowledgedAt = GeneratedColumn<int>(
+    'acknowledged_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    serverUrl,
+    backupIdHash,
+    expectedTotalAttempts,
+    currentWindowStartedAt,
+    lastWarningWindowStartedAt,
+    acknowledgedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recoverbull_telemetry_backup';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {serverUrl, backupIdHash};
+  @override
+  RecoverbullTelemetryBackupData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecoverbullTelemetryBackupData(
+      serverUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_url'],
+      )!,
+      backupIdHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}backup_id_hash'],
+      )!,
+      expectedTotalAttempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expected_total_attempts'],
+      )!,
+      currentWindowStartedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_window_started_at'],
+      ),
+      lastWarningWindowStartedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_warning_window_started_at'],
+      ),
+      acknowledgedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}acknowledged_at'],
+      ),
+    );
+  }
+
+  @override
+  RecoverbullTelemetryBackup createAlias(String alias) {
+    return RecoverbullTelemetryBackup(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(server_url, backup_id_hash)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class RecoverbullTelemetryBackupData extends DataClass
+    implements Insertable<RecoverbullTelemetryBackupData> {
+  final String serverUrl;
+  final String backupIdHash;
+  final int expectedTotalAttempts;
+  final int? currentWindowStartedAt;
+  final int? lastWarningWindowStartedAt;
+  final int? acknowledgedAt;
+  const RecoverbullTelemetryBackupData({
+    required this.serverUrl,
+    required this.backupIdHash,
+    required this.expectedTotalAttempts,
+    this.currentWindowStartedAt,
+    this.lastWarningWindowStartedAt,
+    this.acknowledgedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['server_url'] = Variable<String>(serverUrl);
+    map['backup_id_hash'] = Variable<String>(backupIdHash);
+    map['expected_total_attempts'] = Variable<int>(expectedTotalAttempts);
+    if (!nullToAbsent || currentWindowStartedAt != null) {
+      map['current_window_started_at'] = Variable<int>(currentWindowStartedAt);
+    }
+    if (!nullToAbsent || lastWarningWindowStartedAt != null) {
+      map['last_warning_window_started_at'] = Variable<int>(
+        lastWarningWindowStartedAt,
+      );
+    }
+    if (!nullToAbsent || acknowledgedAt != null) {
+      map['acknowledged_at'] = Variable<int>(acknowledgedAt);
+    }
+    return map;
+  }
+
+  RecoverbullTelemetryBackupCompanion toCompanion(bool nullToAbsent) {
+    return RecoverbullTelemetryBackupCompanion(
+      serverUrl: Value(serverUrl),
+      backupIdHash: Value(backupIdHash),
+      expectedTotalAttempts: Value(expectedTotalAttempts),
+      currentWindowStartedAt: currentWindowStartedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentWindowStartedAt),
+      lastWarningWindowStartedAt:
+          lastWarningWindowStartedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastWarningWindowStartedAt),
+      acknowledgedAt: acknowledgedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(acknowledgedAt),
+    );
+  }
+
+  factory RecoverbullTelemetryBackupData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecoverbullTelemetryBackupData(
+      serverUrl: serializer.fromJson<String>(json['serverUrl']),
+      backupIdHash: serializer.fromJson<String>(json['backupIdHash']),
+      expectedTotalAttempts: serializer.fromJson<int>(
+        json['expectedTotalAttempts'],
+      ),
+      currentWindowStartedAt: serializer.fromJson<int?>(
+        json['currentWindowStartedAt'],
+      ),
+      lastWarningWindowStartedAt: serializer.fromJson<int?>(
+        json['lastWarningWindowStartedAt'],
+      ),
+      acknowledgedAt: serializer.fromJson<int?>(json['acknowledgedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'serverUrl': serializer.toJson<String>(serverUrl),
+      'backupIdHash': serializer.toJson<String>(backupIdHash),
+      'expectedTotalAttempts': serializer.toJson<int>(expectedTotalAttempts),
+      'currentWindowStartedAt': serializer.toJson<int?>(currentWindowStartedAt),
+      'lastWarningWindowStartedAt': serializer.toJson<int?>(
+        lastWarningWindowStartedAt,
+      ),
+      'acknowledgedAt': serializer.toJson<int?>(acknowledgedAt),
+    };
+  }
+
+  RecoverbullTelemetryBackupData copyWith({
+    String? serverUrl,
+    String? backupIdHash,
+    int? expectedTotalAttempts,
+    Value<int?> currentWindowStartedAt = const Value.absent(),
+    Value<int?> lastWarningWindowStartedAt = const Value.absent(),
+    Value<int?> acknowledgedAt = const Value.absent(),
+  }) => RecoverbullTelemetryBackupData(
+    serverUrl: serverUrl ?? this.serverUrl,
+    backupIdHash: backupIdHash ?? this.backupIdHash,
+    expectedTotalAttempts: expectedTotalAttempts ?? this.expectedTotalAttempts,
+    currentWindowStartedAt: currentWindowStartedAt.present
+        ? currentWindowStartedAt.value
+        : this.currentWindowStartedAt,
+    lastWarningWindowStartedAt: lastWarningWindowStartedAt.present
+        ? lastWarningWindowStartedAt.value
+        : this.lastWarningWindowStartedAt,
+    acknowledgedAt: acknowledgedAt.present
+        ? acknowledgedAt.value
+        : this.acknowledgedAt,
+  );
+  RecoverbullTelemetryBackupData copyWithCompanion(
+    RecoverbullTelemetryBackupCompanion data,
+  ) {
+    return RecoverbullTelemetryBackupData(
+      serverUrl: data.serverUrl.present ? data.serverUrl.value : this.serverUrl,
+      backupIdHash: data.backupIdHash.present
+          ? data.backupIdHash.value
+          : this.backupIdHash,
+      expectedTotalAttempts: data.expectedTotalAttempts.present
+          ? data.expectedTotalAttempts.value
+          : this.expectedTotalAttempts,
+      currentWindowStartedAt: data.currentWindowStartedAt.present
+          ? data.currentWindowStartedAt.value
+          : this.currentWindowStartedAt,
+      lastWarningWindowStartedAt: data.lastWarningWindowStartedAt.present
+          ? data.lastWarningWindowStartedAt.value
+          : this.lastWarningWindowStartedAt,
+      acknowledgedAt: data.acknowledgedAt.present
+          ? data.acknowledgedAt.value
+          : this.acknowledgedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoverbullTelemetryBackupData(')
+          ..write('serverUrl: $serverUrl, ')
+          ..write('backupIdHash: $backupIdHash, ')
+          ..write('expectedTotalAttempts: $expectedTotalAttempts, ')
+          ..write('currentWindowStartedAt: $currentWindowStartedAt, ')
+          ..write('lastWarningWindowStartedAt: $lastWarningWindowStartedAt, ')
+          ..write('acknowledgedAt: $acknowledgedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    serverUrl,
+    backupIdHash,
+    expectedTotalAttempts,
+    currentWindowStartedAt,
+    lastWarningWindowStartedAt,
+    acknowledgedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecoverbullTelemetryBackupData &&
+          other.serverUrl == this.serverUrl &&
+          other.backupIdHash == this.backupIdHash &&
+          other.expectedTotalAttempts == this.expectedTotalAttempts &&
+          other.currentWindowStartedAt == this.currentWindowStartedAt &&
+          other.lastWarningWindowStartedAt == this.lastWarningWindowStartedAt &&
+          other.acknowledgedAt == this.acknowledgedAt);
+}
+
+class RecoverbullTelemetryBackupCompanion
+    extends UpdateCompanion<RecoverbullTelemetryBackupData> {
+  final Value<String> serverUrl;
+  final Value<String> backupIdHash;
+  final Value<int> expectedTotalAttempts;
+  final Value<int?> currentWindowStartedAt;
+  final Value<int?> lastWarningWindowStartedAt;
+  final Value<int?> acknowledgedAt;
+  final Value<int> rowid;
+  const RecoverbullTelemetryBackupCompanion({
+    this.serverUrl = const Value.absent(),
+    this.backupIdHash = const Value.absent(),
+    this.expectedTotalAttempts = const Value.absent(),
+    this.currentWindowStartedAt = const Value.absent(),
+    this.lastWarningWindowStartedAt = const Value.absent(),
+    this.acknowledgedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecoverbullTelemetryBackupCompanion.insert({
+    required String serverUrl,
+    required String backupIdHash,
+    this.expectedTotalAttempts = const Value.absent(),
+    this.currentWindowStartedAt = const Value.absent(),
+    this.lastWarningWindowStartedAt = const Value.absent(),
+    this.acknowledgedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : serverUrl = Value(serverUrl),
+       backupIdHash = Value(backupIdHash);
+  static Insertable<RecoverbullTelemetryBackupData> custom({
+    Expression<String>? serverUrl,
+    Expression<String>? backupIdHash,
+    Expression<int>? expectedTotalAttempts,
+    Expression<int>? currentWindowStartedAt,
+    Expression<int>? lastWarningWindowStartedAt,
+    Expression<int>? acknowledgedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (serverUrl != null) 'server_url': serverUrl,
+      if (backupIdHash != null) 'backup_id_hash': backupIdHash,
+      if (expectedTotalAttempts != null)
+        'expected_total_attempts': expectedTotalAttempts,
+      if (currentWindowStartedAt != null)
+        'current_window_started_at': currentWindowStartedAt,
+      if (lastWarningWindowStartedAt != null)
+        'last_warning_window_started_at': lastWarningWindowStartedAt,
+      if (acknowledgedAt != null) 'acknowledged_at': acknowledgedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecoverbullTelemetryBackupCompanion copyWith({
+    Value<String>? serverUrl,
+    Value<String>? backupIdHash,
+    Value<int>? expectedTotalAttempts,
+    Value<int?>? currentWindowStartedAt,
+    Value<int?>? lastWarningWindowStartedAt,
+    Value<int?>? acknowledgedAt,
+    Value<int>? rowid,
+  }) {
+    return RecoverbullTelemetryBackupCompanion(
+      serverUrl: serverUrl ?? this.serverUrl,
+      backupIdHash: backupIdHash ?? this.backupIdHash,
+      expectedTotalAttempts:
+          expectedTotalAttempts ?? this.expectedTotalAttempts,
+      currentWindowStartedAt:
+          currentWindowStartedAt ?? this.currentWindowStartedAt,
+      lastWarningWindowStartedAt:
+          lastWarningWindowStartedAt ?? this.lastWarningWindowStartedAt,
+      acknowledgedAt: acknowledgedAt ?? this.acknowledgedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (serverUrl.present) {
+      map['server_url'] = Variable<String>(serverUrl.value);
+    }
+    if (backupIdHash.present) {
+      map['backup_id_hash'] = Variable<String>(backupIdHash.value);
+    }
+    if (expectedTotalAttempts.present) {
+      map['expected_total_attempts'] = Variable<int>(
+        expectedTotalAttempts.value,
+      );
+    }
+    if (currentWindowStartedAt.present) {
+      map['current_window_started_at'] = Variable<int>(
+        currentWindowStartedAt.value,
+      );
+    }
+    if (lastWarningWindowStartedAt.present) {
+      map['last_warning_window_started_at'] = Variable<int>(
+        lastWarningWindowStartedAt.value,
+      );
+    }
+    if (acknowledgedAt.present) {
+      map['acknowledged_at'] = Variable<int>(acknowledgedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoverbullTelemetryBackupCompanion(')
+          ..write('serverUrl: $serverUrl, ')
+          ..write('backupIdHash: $backupIdHash, ')
+          ..write('expectedTotalAttempts: $expectedTotalAttempts, ')
+          ..write('currentWindowStartedAt: $currentWindowStartedAt, ')
+          ..write('lastWarningWindowStartedAt: $lastWarningWindowStartedAt, ')
+          ..write('acknowledgedAt: $acknowledgedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV15 extends GeneratedDatabase {
   DatabaseAtV15(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -10301,6 +11167,10 @@ class DatabaseAtV15 extends GeneratedDatabase {
   late final DismissedAnnouncements dismissedAnnouncements =
       DismissedAnnouncements(this);
   late final OrderSwaps orderSwaps = OrderSwaps(this);
+  late final RecoverbullTelemetryServer recoverbullTelemetryServer =
+      RecoverbullTelemetryServer(this);
+  late final RecoverbullTelemetryBackup recoverbullTelemetryBackup =
+      RecoverbullTelemetryBackup(this);
   late final Index orderSwapsRequestId = Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -10352,6 +11222,8 @@ class DatabaseAtV15 extends GeneratedDatabase {
     frozenUtxos,
     dismissedAnnouncements,
     orderSwaps,
+    recoverbullTelemetryServer,
+    recoverbullTelemetryBackup,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,

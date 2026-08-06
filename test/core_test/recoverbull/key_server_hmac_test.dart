@@ -25,7 +25,7 @@ void main() {
     'fetchBackupKey rejects an encrypted_secret with an invalid HMAC',
     () async {
       final keyServer = KeyServer(
-        address: Uri.parse('http://keyserver.test/'),
+        address: Uri.parse('http://keyserver.onion/'),
         client: _FakeHttpClient(tamperedEncryptedSecret),
       );
 

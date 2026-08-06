@@ -25,6 +25,7 @@ class DatabaseSeeds {
             themeMode: 'system',
             isErrorReportingEnabled: false,
             screenCaptureProtectionEnabled: true,
+            isRecoverbullTelemetryEnabled: false,
           ),
         );
   }

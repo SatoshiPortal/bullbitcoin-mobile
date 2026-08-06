@@ -19,6 +19,8 @@ import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/storage/tables/prices_table.dart';
 import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
+import 'package:bb_mobile/core/storage/tables/recoverbull_telemetry_backup_table.dart';
+import 'package:bb_mobile/core/storage/tables/recoverbull_telemetry_server_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
@@ -53,6 +55,8 @@ part 'sqlite_database.g.dart';
     FrozenUtxos,
     DismissedAnnouncements,
     OrderSwaps,
+    RecoverbullTelemetryServer,
+    RecoverbullTelemetryBackup,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {

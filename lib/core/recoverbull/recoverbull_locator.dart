@@ -2,17 +2,22 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasou
 import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_telemetry_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/acknowledge_telemetry_alert_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_backup_telemetry_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/is_recoverbull_telemetry_enabled_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_with_status_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/export_drive_file_usecase.dart';
@@ -21,12 +26,16 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_la
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/record_local_attempt_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/register_monitored_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/set_recoverbull_telemetry_enabled_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -43,6 +52,10 @@ class RecoverbullLocator {
 
     locator.registerLazySingleton<RecoverbullSettingsDatasource>(
       () => RecoverbullSettingsDatasource(sqlite: locator<SqliteDatabase>()),
+    );
+
+    locator.registerLazySingleton<RecoverbullTelemetryDatasource>(
+      () => RecoverbullTelemetryDatasource(sqlite: locator<SqliteDatabase>()),
     );
 
     locator.registerLazySingleton<RecoverBullRemoteDatasource>(
@@ -72,6 +85,8 @@ class RecoverbullLocator {
       () => RecoverBullRepositoryImpl(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
+        recoverbullTelemetryDatasource:
+            locator<RecoverbullTelemetryDatasource>(),
       ),
     );
   }
@@ -153,8 +168,65 @@ class RecoverbullLocator {
       ),
     );
 
+    locator.registerFactory<CheckBackupTelemetryUsecase>(
+      () => CheckBackupTelemetryUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+        ensureRecoverBullTorSessionUsecase:
+            locator<EnsureRecoverBullTorSessionUsecase>(),
+      ),
+    );
+
+    locator.registerFactory<RecordLocalAttemptUsecase>(
+      () => RecordLocalAttemptUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RegisterMonitoredBackupUsecase>(
+      () => RegisterMonitoredBackupUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+
+    locator.registerFactory<AcknowledgeTelemetryAlertUsecase>(
+      () => AcknowledgeTelemetryAlertUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+
+    locator.registerFactory<IsRecoverbullTelemetryEnabledUsecase>(
+      () => IsRecoverbullTelemetryEnabledUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<SetRecoverbullTelemetryEnabledUsecase>(
+      () => SetRecoverbullTelemetryEnabledUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    // App-scoped: the telemetry alerts survive across screens.
+    locator.registerLazySingleton<RecoverbullTelemetryCubit>(
+      () => RecoverbullTelemetryCubit(
+        checkBackupTelemetryUsecase: locator<CheckBackupTelemetryUsecase>(),
+        recordLocalAttemptUsecase: locator<RecordLocalAttemptUsecase>(),
+        registerMonitoredBackupUsecase:
+            locator<RegisterMonitoredBackupUsecase>(),
+        acknowledgeTelemetryAlertUsecase:
+            locator<AcknowledgeTelemetryAlertUsecase>(),
+        isEnabledUsecase: locator<IsRecoverbullTelemetryEnabledUsecase>(),
+      ),
+    );
+
     locator.registerFactory<FetchVaultKeyFromServerUsecase>(
       () => FetchVaultKeyFromServerUsecase(
+        locator<RecoverBullRepository>(),
+        locator<EnsureRecoverBullTorSessionUsecase>(),
+      ),
+    );
+    locator.registerFactory<FetchVaultKeyWithStatusFromServerUsecase>(
+      () => FetchVaultKeyWithStatusFromServerUsecase(
         locator<RecoverBullRepository>(),
         locator<EnsureRecoverBullTorSessionUsecase>(),
       ),

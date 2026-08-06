@@ -624,6 +624,20 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "is_recoverbull_telemetry_enabled",
+            "getter_name": "isRecoverbullTelemetryEnabled",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_recoverbull_telemetry_enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_recoverbull_telemetry_enabled\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -2511,6 +2525,161 @@
     },
     {
       "id": 18,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_telemetry_server",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "server_url",
+            "getter_name": "serverUrl",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_etag",
+            "getter_name": "lastEtag",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_successful_check_at",
+            "getter_name": "lastSuccessfulCheckAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "collection_started_at",
+            "getter_name": "collectionStartedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "consecutive_failures",
+            "getter_name": "consecutiveFailures",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "unavailability_warned_at",
+            "getter_name": "unavailabilityWarnedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "server_url"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_telemetry_backup",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "server_url",
+            "getter_name": "serverUrl",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "backup_id_hash",
+            "getter_name": "backupIdHash",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "expected_total_attempts",
+            "getter_name": "expectedTotalAttempts",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "current_window_started_at",
+            "getter_name": "currentWindowStartedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_warning_window_started_at",
+            "getter_name": "lastWarningWindowStartedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "acknowledged_at",
+            "getter_name": "acknowledgedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "server_url",
+          "backup_id_hash"
+        ]
+      }
+    },
+    {
+      "id": 20,
       "references": [
         17
       ],
@@ -2529,7 +2698,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 21,
       "references": [
         17
       ],
@@ -2548,7 +2717,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 22,
       "references": [
         17
       ],
@@ -2567,7 +2736,7 @@
       }
     },
     {
-      "id": 21,
+      "id": 23,
       "references": [
         17
       ],
@@ -2586,7 +2755,7 @@
       }
     },
     {
-      "id": 22,
+      "id": 24,
       "references": [
         17
       ],
@@ -2605,7 +2774,7 @@
       }
     },
     {
-      "id": 23,
+      "id": 25,
       "references": [
         17
       ],
@@ -2624,7 +2793,7 @@
       }
     },
     {
-      "id": 24,
+      "id": 26,
       "references": [
         17
       ],
@@ -2676,7 +2845,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"tor_transport_mode\" TEXT NOT NULL DEFAULT 'automatic', \"last_successful_tor_transport\" TEXT NULL, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"screen_capture_protection_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"screen_capture_protection_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL);"
+          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"tor_transport_mode\" TEXT NOT NULL DEFAULT 'automatic', \"last_successful_tor_transport\" TEXT NULL, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"screen_capture_protection_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"screen_capture_protection_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL, \"is_recoverbull_telemetry_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_recoverbull_telemetry_enabled\" IN (0, 1)));"
         }
       ]
     },
@@ -2803,6 +2972,24 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"order_swaps\" (\"local_id\" TEXT NOT NULL, \"request_id\" TEXT NULL, \"order_id\" TEXT NULL UNIQUE, \"purpose\" TEXT NOT NULL, \"environment\" TEXT NOT NULL, \"in_network\" TEXT NOT NULL, \"out_network\" TEXT NOT NULL, \"is_in_amount_fixed\" INTEGER NOT NULL CHECK (\"is_in_amount_fixed\" IN (0, 1)), \"requested_amount_sat\" INTEGER NOT NULL, \"quoted_amount_sat\" INTEGER NULL, \"source_wallet_id\" TEXT NULL, \"destination_wallet_id\" TEXT NULL, \"destination\" TEXT NOT NULL, \"fallback\" TEXT NOT NULL, \"bitcoin_address\" TEXT NULL, \"liquid_address\" TEXT NULL, \"lightning_invoice\" TEXT NULL, \"payin_amount_sat\" INTEGER NULL, \"payout_amount_sat\" INTEGER NULL, \"payin_currency\" TEXT NULL, \"payout_currency\" TEXT NULL, \"payin_method\" TEXT NULL, \"payout_method\" TEXT NULL, \"order_type\" TEXT NULL, \"order_status\" TEXT NULL, \"payin_status\" TEXT NULL, \"payout_status\" TEXT NULL, \"message_code\" TEXT NULL, \"bitcoin_transaction_id\" TEXT NULL, \"liquid_transaction_id\" TEXT NULL, \"local_payin_transaction_id\" TEXT NULL, \"signed_payin_transaction\" TEXT NULL, \"payin_is_psbt\" INTEGER NULL CHECK (\"payin_is_psbt\" IN (0, 1)), \"order_number\" INTEGER NULL, \"created_at\" TEXT NOT NULL, \"server_created_at\" TEXT NULL, \"confirmation_deadline\" TEXT NULL, \"sent_at\" TEXT NULL, \"local_status\" TEXT NOT NULL, \"last_polled_at\" TEXT NULL, \"note\" TEXT NULL, \"server_completed_at\" TEXT NULL, \"labels_applied_at\" TEXT NULL, PRIMARY KEY (\"local_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_telemetry_server",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_telemetry_server\" (\"server_url\" TEXT NOT NULL, \"last_etag\" TEXT NULL, \"last_successful_check_at\" INTEGER NULL, \"collection_started_at\" INTEGER NULL, \"consecutive_failures\" INTEGER NOT NULL DEFAULT 0, \"unavailability_warned_at\" INTEGER NULL, PRIMARY KEY (\"server_url\"));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_telemetry_backup",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_telemetry_backup\" (\"server_url\" TEXT NOT NULL, \"backup_id_hash\" TEXT NOT NULL, \"expected_total_attempts\" INTEGER NOT NULL DEFAULT 0, \"current_window_started_at\" INTEGER NULL, \"last_warning_window_started_at\" INTEGER NULL, \"acknowledged_at\" INTEGER NULL, PRIMARY KEY (\"server_url\", \"backup_id_hash\"));"
         }
       ]
     },

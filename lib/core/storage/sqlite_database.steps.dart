@@ -7177,6 +7177,8 @@ final class Schema15 extends i0.VersionedSchema {
     frozenUtxos,
     dismissedAnnouncements,
     orderSwaps,
+    recoverbullTelemetryServer,
+    recoverbullTelemetryBackup,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,
@@ -7278,6 +7280,7 @@ final class Schema15 extends i0.VersionedSchema {
         _column_287,
         _column_235,
         _column_236,
+        _column_288,
       ],
       attachedDatabase: database,
     ),
@@ -7588,6 +7591,42 @@ final class Schema15 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape43 recoverbullTelemetryServer = Shape43(
+    source: i0.VersionedTable(
+      entityName: 'recoverbull_telemetry_server',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(server_url)'],
+      columns: [
+        _column_289,
+        _column_290,
+        _column_291,
+        _column_292,
+        _column_293,
+        _column_294,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape44 recoverbullTelemetryBackup = Shape44(
+    source: i0.VersionedTable(
+      entityName: 'recoverbull_telemetry_backup',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(server_url, backup_id_hash)'],
+      columns: [
+        _column_289,
+        _column_295,
+        _column_296,
+        _column_297,
+        _column_298,
+        _column_299,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
   final i1.Index orderSwapsRequestId = i1.Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -7658,6 +7697,9 @@ class Shape42 extends i0.VersionedTable {
   i1.GeneratedColumn<String> get exchangeTestnetBasicAuthPassword =>
       columnsByName['exchange_testnet_basic_auth_password']!
           as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isRecoverbullTelemetryEnabled =>
+      columnsByName['is_recoverbull_telemetry_enabled']!
+          as i1.GeneratedColumn<int>;
 }
 
 i1.GeneratedColumn<String> _column_285(String aliasedName) =>
@@ -7688,6 +7730,142 @@ i1.GeneratedColumn<int> _column_287(
       'NOT NULL DEFAULT 1 CHECK (screen_capture_protection_enabled IN (0, 1))',
   defaultValue: const i1.CustomExpression('1'),
 );
+i1.GeneratedColumn<int> _column_288(
+  String aliasedName,
+) => i1.GeneratedColumn<int>(
+  'is_recoverbull_telemetry_enabled',
+  aliasedName,
+  false,
+  type: i1.DriftSqlType.int,
+  $customConstraints:
+      'NOT NULL DEFAULT 0 CHECK (is_recoverbull_telemetry_enabled IN (0, 1))',
+  defaultValue: const i1.CustomExpression('0'),
+);
+
+class Shape43 extends i0.VersionedTable {
+  Shape43({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get serverUrl =>
+      columnsByName['server_url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get lastEtag =>
+      columnsByName['last_etag']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get lastSuccessfulCheckAt =>
+      columnsByName['last_successful_check_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get collectionStartedAt =>
+      columnsByName['collection_started_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get consecutiveFailures =>
+      columnsByName['consecutive_failures']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get unavailabilityWarnedAt =>
+      columnsByName['unavailability_warned_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_289(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'server_url',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_290(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'last_etag',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_291(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'last_successful_check_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_292(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'collection_started_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_293(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'consecutive_failures',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_294(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'unavailability_warned_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+
+class Shape44 extends i0.VersionedTable {
+  Shape44({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get serverUrl =>
+      columnsByName['server_url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get backupIdHash =>
+      columnsByName['backup_id_hash']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get expectedTotalAttempts =>
+      columnsByName['expected_total_attempts']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get currentWindowStartedAt =>
+      columnsByName['current_window_started_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get lastWarningWindowStartedAt =>
+      columnsByName['last_warning_window_started_at']!
+          as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get acknowledgedAt =>
+      columnsByName['acknowledged_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_295(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'backup_id_hash',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_296(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'expected_total_attempts',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_297(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'current_window_started_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_298(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'last_warning_window_started_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_299(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'acknowledged_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,

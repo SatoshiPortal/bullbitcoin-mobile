@@ -22,8 +22,15 @@ final class KeyServerInvalidCredentialsFailure extends RecoverBullCoreFailure {
   const KeyServerInvalidCredentialsFailure([super.logMessage]);
 }
 
-/// Key server rate-limited the request (HTTP 429). [retryIn] is the remaining
+/// The targeted per-identifier lockout (HTTP 429). [retryIn] is the remaining
 /// cooldown when the server provided it, else null.
+///
+/// The key server emits 429 from exactly one place: the per-identifier
+/// rate-limit bucket. Every service-wide bucket (lookup, store, `/attempts`)
+/// answers 503 instead, and the reverse proxy converts its own edge 429 into
+/// 503 too, so a 429 always means "this identifier is locked out" and never
+/// "the server is busy". On the user's own fetch it is therefore an alarm
+/// signal: someone may be probing or griefing this backup.
 final class KeyServerRateLimitedFailure extends RecoverBullCoreFailure {
   final Duration? retryIn;
   const KeyServerRateLimitedFailure({this.retryIn, String? logMessage})
@@ -35,7 +42,18 @@ final class KeyServerRejectedFailure extends RecoverBullCoreFailure {
   const KeyServerRejectedFailure([super.logMessage]);
 }
 
-/// Key server unreachable or erroring (HTTP 5xx, no code, transport/Tor).
+/// The key server explicitly reports service-wide pressure (HTTP 503): an
+/// exhausted global bucket, a full rate-limit map, or the reverse proxy's own
+/// edge limit, which the deployment rewrites to 503.
+///
+/// Never an attack signal — and distinct from [KeyServerUnavailableFailure]
+/// because only this one lets the UI truthfully say "the server is busy". A
+/// server we simply could not reach must not be described as overloaded.
+final class KeyServerBusyFailure extends RecoverBullCoreFailure {
+  const KeyServerBusyFailure([super.logMessage]);
+}
+
+/// Key server unreachable or erroring (other 5xx, no code, transport/Tor).
 final class KeyServerUnavailableFailure extends RecoverBullCoreFailure {
   const KeyServerUnavailableFailure([super.logMessage]);
 }
