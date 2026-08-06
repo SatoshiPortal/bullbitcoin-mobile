@@ -14474,5 +14474,41 @@
   "sendUnconfidentialLiquidWarningDescription": "This Liquid address does not support Confidential Transactions. The amount you send will be publicly visible on the blockchain.",
   "@sendUnconfidentialLiquidWarningDescription": {
     "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
+  },
+  "swapUnderReviewTitle": "Transfer under review",
+  "@swapUnderReviewTitle": {
+    "description": "Title shown when a swap payin requires manual review"
+  },
+  "swapUnderReviewDescription": "This transfer requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
+  "@swapUnderReviewDescription": {
+    "description": "Explanation and no-KYC guidance for a swap under review"
+  },
+  "swapUnderReviewContactSupport": "Contact support",
+  "@swapUnderReviewContactSupport": {
+    "description": "Button opening support for a swap under review"
+  },
+  "swapUnderReviewSupportMessage": "Transfer under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "@swapUnderReviewSupportMessage": {
+    "description": "Prefilled support message containing swap identifiers",
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      },
+      "requestId": {
+        "type": "String"
+      },
+      "orderNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "swapErrorRateLimited": "Too many requests. Please wait {seconds} seconds and try again.",
+  "@swapErrorRateLimited": {
+    "description": "Error shown when the swap provider rate limits a request",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   }
 }

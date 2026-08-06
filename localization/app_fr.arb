@@ -5006,5 +5006,10 @@
   "payDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
   "appUnlockTryAgainIn": "Trop de tentatives échouées. Réessayez dans {seconds} s.",
   "sendUnconfidentialLiquidWarning": "Montant public",
-  "sendUnconfidentialLiquidWarningDescription": "Cette adresse Liquid ne prend pas en charge les transactions confidentielles. Le montant envoyé sera publiquement visible sur la blockchain."
+  "sendUnconfidentialLiquidWarningDescription": "Cette adresse Liquid ne prend pas en charge les transactions confidentielles. Le montant envoyé sera publiquement visible sur la blockchain.",
+  "swapUnderReviewTitle": "Transfert en cours d’examen",
+  "swapUnderReviewDescription": "Ce transfert nécessite un examen manuel. Contactez le support pour obtenir de l’aide. Si vous n’avez pas de compte de support, il vous suffit d’en créer un; aucune vérification KYC n’est requise.",
+  "swapUnderReviewContactSupport": "Contacter le support",
+  "swapUnderReviewSupportMessage": "Transfert en cours d’examen\nID de commande : {orderId}\nID de requête : {requestId}\nNuméro de commande : {orderNumber}",
+  "swapErrorRateLimited": "Trop de requêtes. Veuillez patienter {seconds} secondes avant de réessayer."
 }
