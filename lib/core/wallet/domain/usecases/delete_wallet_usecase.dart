@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
@@ -46,11 +47,16 @@ class DeleteWalletUsecase {
           (w) => w.masterFingerprint == wallet.masterFingerprint,
         );
         if (!stillUsed) {
-          try {
-            await _seedRepository.delete(wallet.masterFingerprint);
-          } catch (e) {
+          // Best-effort cleanup: delete() reports failures via Result (it
+          // never throws), and an orphaned seed must not fail the wallet
+          // deletion that already happened.
+          final deleted = await _seedRepository.delete(
+            wallet.masterFingerprint,
+          );
+          if (deleted case Err(:final failure)) {
             log.warning(
-              'DeleteWalletUsecase: failed to clean up seed for $walletId: $e',
+              'DeleteWalletUsecase: failed to clean up seed for $walletId: '
+              '$failure',
             );
           }
         }
