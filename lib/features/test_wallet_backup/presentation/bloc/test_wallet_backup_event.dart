@@ -4,27 +4,18 @@ sealed class TestWalletBackupEvent {
   const TestWalletBackupEvent();
 }
 
-class OnWordsSelected extends TestWalletBackupEvent {
-  const OnWordsSelected({required this.word, required this.index});
-  final String word;
-  final int index;
-}
-
-class StartPhysicalBackupVerification extends TestWalletBackupEvent {
-  const StartPhysicalBackupVerification();
-}
-
-class VerifyPhysicalBackup extends TestWalletBackupEvent {
-  const VerifyPhysicalBackup();
-}
-
 class LoadWallets extends TestWalletBackupEvent {
   const LoadWallets();
 }
 
-class LoadMnemonicForWallet extends TestWalletBackupEvent {
-  const LoadMnemonicForWallet({required this.wallet});
+class WalletSelected extends TestWalletBackupEvent {
+  const WalletSelected({required this.wallet});
   final Wallet wallet;
+}
+
+class VerifyPhysicalBackup extends TestWalletBackupEvent {
+  const VerifyPhysicalBackup({required this.reorderedWords});
+  final List<String> reorderedWords;
 }
 
 class ClearError extends TestWalletBackupEvent {
