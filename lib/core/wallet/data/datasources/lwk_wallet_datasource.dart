@@ -50,12 +50,12 @@ class LwkWalletDatasource {
       }).value;
 
       final balance = BalanceModel(
-        confirmedSat: BigInt.from(lBtcAssetBalance),
+        confirmedSat: lBtcAssetBalance,
         immatureSat: BigInt.zero,
         trustedPendingSat: BigInt.zero,
         untrustedPendingSat: BigInt.zero,
-        spendableSat: BigInt.from(lBtcAssetBalance),
-        totalSat: BigInt.from(lBtcAssetBalance),
+        spendableSat: lBtcAssetBalance,
+        totalSat: lBtcAssetBalance,
       );
 
       return balance;
@@ -517,7 +517,7 @@ class LwkWalletDatasource {
       // final decoded = await lwkWallet.decodeTx(pset: pset);
       return (
         decoded.discountedVsize.toInt(),
-        decoded.absoluteFees.first.value,
+        decoded.absoluteFees.first.value.toInt(),
       );
     } catch (e) {
       if (e is lwk.LwkError) {
