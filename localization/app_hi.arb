@@ -334,15 +334,6 @@
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "arkAboutDurationSeconds": "{seconds} सेकंड",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "इनवॉइस ने क्लिपबोर्ड पर कॉपी किया",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -395,10 +386,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "arkReceiveBoardingAddress": "BTC Boarding Address",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "sellSendPaymentTitle": "भुगतान की पुष्टि करें",
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
@@ -447,10 +434,6 @@
   "recoverbullSelectErrorPrefix": "त्रुटि:",
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
-  },
-  "arkReceiveBtcAddress": "BTC पता",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
   },
   "exchangeLandingRecommendedExchange": "बिटकॉइन एक्सचेंज",
   "@exchangeLandingRecommendedExchange": {
@@ -530,10 +513,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "arkContinueButton": "जारी",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
-  },
   "ledgerImportButton": "आयात प्रारंभ करें",
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
@@ -582,10 +561,6 @@
   "globalDefaultBitcoinWalletLabel": "सुरक्षित Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
-  },
-  "arkAboutServerUrl": "सर्वर यूआरएल",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
   },
   "fundExchangeLabelRecipientAddress": "Recipient address",
   "@fundExchangeLabelRecipientAddress": {
@@ -677,10 +652,6 @@
   "importQrDeviceJadeStep5": "विकल्प सूची से \"Wallet\" चुनें",
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
-  },
-  "arkSettled": "निपटान",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "transactionFilterBuy": "खरीदें",
   "@transactionFilterBuy": {
@@ -826,10 +797,6 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "arkReceiveSegmentBoarding": "बोर्डिंग",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "exchangeLandingLoginToUseSupport": "संपर्क संबंधित मुद्दों के लिए समर्थन चैट का उपयोग करने के लिए लॉगिन या साइन अप करें।।",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -846,10 +813,6 @@
   "transactionLabelTransferStatus": "स्थानांतरण स्थिति",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
-  },
-  "arkSessionDuration": "सत्र अवधि",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
   },
   "buyAboveMaxAmountError": "आप अधिकतम राशि से अधिक खरीदने की कोशिश कर रहे हैं।।",
   "@buyAboveMaxAmountError": {
@@ -954,10 +917,6 @@
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
-  "arkSettleTransactions": "निपटान",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "transactionLabelConfirmationTime": "पुष्टि का समय",
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
@@ -981,10 +940,6 @@
   "receiveShareAddress": "शेयर",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "लंबित",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "आप इस वॉलेट से अधिकतम भुगतान योग्य राशि से अधिक भुगतान करने का प्रयास कर रहे हैं।",
   "@payAboveMaxAmountError": {
@@ -1122,10 +1077,6 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "arkAvailable": "उपलब्ध",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "transactionSwapDescChainFailed": "आपके ट्रांसफर में कोई समस्या आई। यदि 24 घंटों के भीतर फंड वापस नहीं मिले तो कृपया सहायता से संपर्क करें।",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -1133,10 +1084,6 @@
   "testBackupWarningMessage": "बैकअप के बिना, आप अंततः अपने पैसे तक पहुंच सकते हैं। बैकअप करना महत्वपूर्ण है।।",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "नेटवर्क",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
@@ -1364,10 +1311,6 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "arkSettleCancel": "रद्द करना",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "testBackupTapWordsInOrder": "में वसूली शब्द टैप करें\nसही क्रम",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1485,10 +1428,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "निपटान",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "न्यूनतम 0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1590,10 +1529,6 @@
   "@sendErrorInsufficientFundsForPayment": {
     "description": "Error when insufficient funds available"
   },
-  "arkAboutShow": "प्रदर्शन",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
   "fundExchangeETransferTitle": "E-Transfer विवरण",
   "@fundExchangeETransferTitle": {
     "description": "Screen title for E-Transfer payment details"
@@ -1625,19 +1560,6 @@
   "receiveNote": "नोट",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
-  },
-  "arkCopiedToClipboard": "{label} क्लिपबोर्ड को कॉपी किया",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Recipient address",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
   },
   "payLightningNetwork": "Lightning Network",
   "@payLightningNetwork": {
@@ -1695,15 +1617,6 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "arkDurationMinutes": "{minutes} मिनट",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "अपर्याप्त शेष",
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
@@ -1731,10 +1644,6 @@
   "sellKYCApproved": "KYC ने मंजूरी दे दी",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "लेनदेन",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "महीना",
   "@dcaFrequencyMonthly": {
@@ -1915,10 +1824,6 @@
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
-  "arkAboutNetwork": "नेटवर्क",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
   "payLastName": "अंतिम नाम",
   "@payLastName": {
     "description": "Label for last name field"
@@ -2017,10 +1922,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "बोर्डिंग",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "exchangeAmountInputValidationInsufficient": "अपर्याप्त संतुलन",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
@@ -2033,10 +1934,6 @@
         "type": "String"
       }
     }
-  },
-  "arkTransactions": "लेनदेन",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "broadcastSignedTxCameraButton": "कैमरा",
   "@broadcastSignedTxCameraButton": {
@@ -2061,10 +1958,6 @@
   "transactionFilterAll": "सभी",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "arkSendTitle": "भेजें",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "प्राप्त राशि",
   "@transactionDetailLabelAmountReceived": {
@@ -2188,10 +2081,6 @@
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
   },
-  "arkDust": "धूल",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "dcaConfirmPaymentMethod": "भुगतान विधि",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -2223,10 +2112,6 @@
   "testBackupPassphrase": "पैसफल",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "arkSetupEnable": "Ark",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "आप डिफ़ॉल्ट वॉलेट नहीं हटा सकते।",
   "@walletDeletionErrorDefaultWallet": {
@@ -2287,15 +2172,6 @@
   "paySinpeMonto": "राशि",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
-  },
-  "arkDurationSeconds": "{seconds} सेकंड",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "receiveCopyOrScanAddressOnly": "केवल पता कॉपी या स्कैन करें",
   "@receiveCopyOrScanAddressOnly": {
@@ -2378,10 +2254,6 @@
   "buyConfirmBitcoinPrice": "बिटकॉइन मूल्य",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
-  },
-  "arkUnifiedAddressCopied": "एकीकृत पता कॉपी",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "transactionSwapDescLnSendCompleted": "Lightning भुगतान सफलतापूर्वक भेज दिया गया! आपका swap अब पूर्ण है।",
   "@transactionSwapDescLnSendCompleted": {
@@ -2780,10 +2652,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "Ark तत्काल भुगतान",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "पासवर्ड",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -2835,10 +2703,6 @@
   "payAddressRequired": "पता आवश्यक है",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "लेनदेन विवरण",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "कुल राशि",
   "@payTotalAmount": {
@@ -2982,26 +2846,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "पुष्टि की",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "नहीं चुना गया",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} दिन",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "भेजें",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "buyInputContinue": "जारी",
   "@buyInputContinue": {
@@ -3034,15 +2881,6 @@
   "paySelectActiveWallet": "कृपया एक वॉलेट चुनें",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} घंटे",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "लॉगआउट की पुष्टि करें",
   "@logoutConfirmationTitle": {
@@ -3177,10 +3015,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "राशि",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "वे आपको इस चेतावनी की चिंता न करने के लिए कह रहे हैं",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -3313,10 +3147,6 @@
   "backupCompletedTitle": "बैकअप पूरा हो गया!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
-  },
-  "arkDate": "तारीख",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "psbtFlowInstructions": "निर्देश",
   "@psbtFlowInstructions": {
@@ -3513,10 +3343,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "प्रायोगिक",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "importQrDeviceKeystoneStep5": "बटुओं की सूची से \"बुल\" का चयन करें",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
@@ -3570,22 +3396,9 @@
       }
     }
   },
-  "arkDurationMinute": "{minutes} मिनट",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "यदि आपको कोई परेशानी स्कैनिंग है:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
-  },
-  "arkReceiveUnifiedCopied": "एकीकृत पता कॉपी",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
   },
   "importQrDeviceJadeStep9": "अपने डिवाइस पर दिखाई देने वाले QR कोड को स्कैन करें।।",
   "@importQrDeviceJadeStep9": {
@@ -3630,10 +3443,6 @@
   "backupInstruction3": "आपके 12 शब्द बैकअप तक पहुंच वाले कोई भी आपके बिटकॉइन को चोरी कर सकता है। इसे अच्छी तरह से छिपाएं।।",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "रेडीम",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "लाभार्थी पता",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -3951,10 +3760,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "फोरफिट एड्रेस",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "स्थानांतरण Refunded",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -3995,10 +3800,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "BTC पता",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "प्राप्त करें",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -4010,10 +3811,6 @@
   "payBumpFee": "बंप शुल्क",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "रद्द करना",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "अपनी घड़ी केवल बटुए की स्थापना ..।",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -4034,10 +3831,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "SINPE का उपयोग कर Colones स्थानांतरण",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "Ark Instant Payments",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "अनुमानित डिलीवरी ~ ",
   "@sendEstimatedDelivery": {
@@ -4258,10 +4051,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "arkSendRecipientTitle": "प्राप्तकर्ता को भेजें",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "आयात",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
@@ -4269,10 +4058,6 @@
   "recoverbullPasswordTooShort": "पासवर्ड कम से कम 6 अक्षर लंबा होना चाहिए",
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
-  },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
   },
   "payNetwork": "नेटवर्क",
   "@payNetwork": {
@@ -4290,10 +4075,6 @@
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
-  "arkBoardingConfirmed": "बोर्डिंग की पुष्टि",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
   "exchangeFileUploadInstructionsWithParams": "अधिकतम {maxFiles} फ़ाइलें अपलोड करें। अनुमत प्रारूप: PDF, JPG, PNG, GIF, HEIC। अधिकतम फ़ाइल आकार: प्रति फ़ाइल 10MB।",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4310,10 +4091,6 @@
   "backupWalletVaultProviderTakeYourTime": "अपना समय ले लो",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
-  },
-  "arkSettleIncludeRecoverable": "वसूली योग्य vtxos शामिल",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
   },
   "ledgerWalletTypeSegwitDescription": "मूल SegWit - अनुशंसित",
   "@ledgerWalletTypeSegwitDescription": {
@@ -4374,10 +4151,6 @@
   "fiatCurrencySettingsLabel": "फ़िएट मुद्रा",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
-  },
-  "arkStatusConfirmed": "पुष्टि",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
   },
   "withdrawConfirmAmount": "राशि",
   "@withdrawConfirmAmount": {
@@ -4443,10 +4216,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkServerPubkey": "सर्वर पबकी",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
   "testBackupPhysicalBackupDescription": "12 शब्दों को कागज के एक टुकड़े पर लिखें। उन्हें सुरक्षित रखें और उन्हें खोने के लिए सुनिश्चित करें।।",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4478,10 +4247,6 @@
   "receiveWaitForSenderToFinish": "प्रेषक द्वारा payjoin लेनदेन पूर्ण करने की प्रतीक्षा करें",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "आर्क सेटअप",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
   "@seedsignerStep3": {
@@ -4643,10 +4408,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "आज",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "importQrDeviceJadeStep2": "मुख्य मेनू से \"QR मोड\" चुनें",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
@@ -4700,10 +4461,6 @@
   "sendErrorHardwareWalletCannotSwap": "हार्डवेयर वॉलेट का उपयोग स्वैप के लिए नहीं किया जा सकता।",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "उपलब्ध बैलेंस डेटा",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "autoswapWarningCardTitle": "Autoswap सक्षम है",
   "@autoswapWarningCardTitle": {
@@ -4916,10 +4673,6 @@
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
-  "arkReceiveCopyAddress": "पता कॉपी करें",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
   "testBackupErrorWriteFailed": "भंडारण विफल: {error}",
   "@testBackupErrorWriteFailed": {
     "description": "Error when writing verification status to storage fails",
@@ -4949,10 +4702,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "arkSendAmountTitle": "राशि दर्ज करें",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "translationWarningTitle": "AI-जनित अनुवाद",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -4964,10 +4713,6 @@
   "payOnChainFee": "ऑन-चेन फीस",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
-  },
-  "arkReceiveUnifiedAddress": "एकीकृत पता (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
   },
   "sellHowToPayInvoice": "आप इस invoice का भुगतान कैसे करना चाहते हैं?",
   "@sellHowToPayInvoice": {
@@ -5041,17 +4786,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "लंबित लेनदेन को अंतिम रूप देना और यदि आवश्यक हो तो वसूली योग्य vtxos शामिल करना",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "कस्टम स्थान: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "आपका Ark लेनदेन सफल रहा!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "sats",
   "@sendSats": {
@@ -5188,14 +4925,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "एकतरफा निकास देरी",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkStatusPending": "लंबित",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5203,10 +4932,6 @@
   "dcaInsufficientBalanceTitle": "अपर्याप्त शेष",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
-  },
-  "arkType": "प्रकार",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "बैकअप के बिना, आप अंततः अपने पैसे तक पहुंच सकते हैं। बैकअप करना महत्वपूर्ण है।।",
   "@backupImportanceMessage": {
@@ -5243,10 +4968,6 @@
   "pinCodeConfirmTitle": "नए PIN की पुष्टि करें",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "arkSetupExperimentalWarning": "आर्क अभी भी प्रयोगात्मक है।\n\nआपका आर्क वॉलेट आपके मुख्य वॉलेट के बीज वाक्यांश से लिया गया है। कोई अतिरिक्त बैकअप की आवश्यकता नहीं है, आपका मौजूदा वॉलेट बैकअप भी आपके Ark फंड को पुनर्स्थापित करता है।\n\nजारी रखने के बाद, आप आर्क की प्रायोगिक प्रकृति और धन खोने का जोखिम स्वीकार करते हैं।\n\nडेवलपर नोट: Ark रहस्य एक मनमाने ढंग से BIP-85 derivation (index 11811) का उपयोग कर मुख्य वॉलेट बीज से व्युत्पन्न है।।",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "कुंजी सर्वर ",
   "@keyServerLabel": {
@@ -5719,15 +5440,6 @@
   "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -5747,10 +5459,6 @@
   "recoverbullErrorServiceUnavailable": "अनुपलब्ध सेवा कृपया अपने कनेक्शन की जांच करें।।",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
-  },
-  "arkSettleTitle": "निपटान",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
   },
   "sendErrorInsufficientBalanceForSwap": "लिक्विड के माध्यम से इस स्वैप का भुगतान करने के लिए पर्याप्त संतुलन नहीं है और बिटकॉइन के माध्यम से भुगतान करने के लिए स्वैप सीमा के भीतर नहीं है।।",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5815,10 +5523,6 @@
   "sendReceiveNetworkFee": "प्राप्त नेटवर्क शुल्क",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "arkTxPayment": "भुगतान",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
   },
   "importQrDeviceSeedsignerStep6": "निर्यात विकल्प के रूप में \"स्पारो\" का चयन करें",
   "@importQrDeviceSeedsignerStep6": {
@@ -5907,10 +5611,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "वसूली योग्य vtxos शामिल",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "आपका भुगतान पूर्ण हो गया है और प्राप्तकर्ता को राशि मिल गई है।",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -5955,10 +5655,6 @@
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
-  "arkReceiveTitle": "Ark प्राप्त करना",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
   "payDebitCardNumberHint": "डेबिट कार्ड नंबर दर्ज करें",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -6002,10 +5698,6 @@
   "exchangeFeatureSelfCustody": "• बिटकॉइन को सीधे स्वयं-कटोडी में खरीदें",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "arkBoardingUnconfirmed": "बोर्डिंग Unconfirmed",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "भुगतान विवरण",
   "@fundExchangeLabelPaymentDescription": {
@@ -6132,10 +5824,6 @@
   "coldcardStep9": "एक बार जब लेनदेन आपके कोल्डकार्ड में आयात किया जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "ARK भुगतान अनुरोध केवल प्रयोगात्मक Ark सुविधा से उपलब्ध हैं।।",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "पूरा करें केवाईसी",
   "@exchangeKycComplete": {
@@ -6422,15 +6110,6 @@
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
   },
-  "arkAboutDurationDays": "{days} दिन",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "भुगतान विवरण",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -6524,10 +6203,6 @@
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
   },
-  "arkAboutForfeitAddress": "फोरफिट एड्रेस",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "kruxStep13": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
@@ -6581,10 +6256,6 @@
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
   },
-  "arkAboutDust": "धूल",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
   "ledgerSuccessVerifyDescription": "पता आपके लेजर डिवाइस पर सत्यापित किया गया है।।",
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
@@ -6617,10 +6288,6 @@
   "@buySelfie": {
     "description": "Type of document required"
   },
-  "arkAboutSecretKey": "गुप्त कुंजी",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "sellMxnBalance": "MXN शेष",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
@@ -6637,10 +6304,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "रेडीम",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "Ledger पर पता सत्यापित करें",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -6656,10 +6319,6 @@
   "backupSettingsKeyWarningBold": "चेतावनी: ध्यान रखें कि आप बैकअप कुंजी कहाँ सेव करते हैं।।",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "Ark",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "exchangeLandingConnectAccount": "अपने बुल बिटकॉइन एक्सचेंज अकाउंट को कनेक्ट करें",
   "@exchangeLandingConnectAccount": {
@@ -6765,10 +6424,6 @@
   "mempoolCustomServerLabel": "कस्टम",
   "@mempoolCustomServerLabel": {
     "description": "Label badge for custom server"
-  },
-  "arkAboutSessionDuration": "सत्र अवधि",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
   },
   "transferFeeLabel": "स्थानांतरण शुल्क",
   "@transferFeeLabel": {
@@ -6882,10 +6537,6 @@
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
-  "arkSendConfirm": "पुष्टि",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "rbfErrorFeeTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
@@ -6901,15 +6552,6 @@
   "jadeStep10": "अपने जेड पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "arkAboutDurationHour": "{hours} घंटे",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenUnknownError": "अज्ञात त्रुटि हुई",
   "@bitboxScreenUnknownError": {
@@ -6935,21 +6577,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkAboutTitle": "के बारे में",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "गणना..।",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "Recoverable Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "psbtFlowTransactionImported": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
   "@psbtFlowTransactionImported": {
@@ -7139,10 +6769,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "बोर्डिंग निकास देरी",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "exchangeDcaFrequencyHour": "घंटे",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7166,10 +6792,6 @@
   "importQrDeviceSuccess": "वॉलेट सफलतापूर्वक आयात किया गया",
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
-  },
-  "arkTxSettlement": "निपटान",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "autoswapEnable": "ऑटो ट्रांसफर",
   "@autoswapEnable": {
@@ -7325,10 +6947,6 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "arkConfirmed": "पुष्टि",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
   "importQrDevicePassportStep6": "\"सिंगल-सिग\" चुनें",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
@@ -7411,10 +7029,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "arkAboutEsploraUrl": "Esplora URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
   "backupKeyExampleWarning": "उदाहरण के लिए, यदि आप अपनी बैकअप फ़ाइल के लिए Google ड्राइव का उपयोग करते हैं, तो अपनी बैकअप कुंजी के लिए Google ड्राइव का उपयोग न करें।।",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -7487,10 +7101,6 @@
   "backupSettingsBackupKey": "बैकअप कुंजी",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "लेनदेन आईडी",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "इनवॉइस ने क्लिपबोर्ड पर कॉपी किया",
   "@payInvoiceCopied": {
@@ -7814,10 +7424,6 @@
       }
     }
   },
-  "arkSendConfirmedBalance": "बैलेंस की पुष्टि",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
   "sellFastest": "सबसे तेज़",
   "@sellFastest": {
     "description": "Display text for fastest fee option"
@@ -7926,10 +7532,6 @@
   "backupSettingsSecurityWarning": "सुरक्षा चेतावनी",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
-  },
-  "arkCopyAddress": "पता कॉपी करें",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
   },
   "sendScheduleFor": "{date} के लिए अनुसूची",
   "@sendScheduleFor": {
@@ -8127,24 +7729,6 @@
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
   },
-  "arkAboutDurationDay": "{days} दिन",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} घंटे",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "यह शुल्क भेजी गई राशि से काटा जाएगा",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -8172,10 +7756,6 @@
   "recoverbullTorNotStarted": "Tor शुरू नहीं किया गया है",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
-  },
-  "arkPending": "लंबित",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
   },
   "transactionOrderLabelOrderStatus": "आदेश स्थिति",
   "@transactionOrderLabelOrderStatus": {
@@ -8266,10 +7846,6 @@
   "recoverbullGoogleDriveDeleteButton": "डिलीट",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "बैलेंस ब्रेकडाउन",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "exchangeDcaDeactivateTitle": "Recurring Buy",
   "@exchangeDcaDeactivateTitle": {
@@ -8381,10 +7957,6 @@
   "receivePayjoinFailQuestion": "प्रतीक्षा का समय नहीं है या प्रेषक की तरफ से payjoin विफल हो गया?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
-  },
-  "arkSendConfirmTitle": "पुष्टि करें",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
   },
   "importQrDeviceSeedsignerStep1": "अपने बीजसिग्नर डिवाइस पर पावर",
   "@importQrDeviceSeedsignerStep1": {
@@ -8838,10 +8410,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "बैलेंस ब्रेकडाउन",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "एक बार जब आपके बीजगणित में लेनदेन का आयात हो जाता है, तो आपको उस बीज का चयन करना चाहिए जिसके साथ आप साइन करना चाहते हैं।।",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -8849,10 +8417,6 @@
   "sellSendPaymentPriceRefresh": "मूल्य में ताज़ा होगा ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "arkAboutCopy": "कॉपी",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
   },
   "recoverbullPasswordRequired": "पासवर्ड की आवश्यकता है",
   "@recoverbullPasswordRequired": {
@@ -8865,10 +8429,6 @@
   "payFirstName": "पहला नाम",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "अभी तक कोई लेनदेन नहीं है।।",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "recoverViaCloudDescription": "अपने बैकअप को क्लाउड के माध्यम से अपने पिन का उपयोग करके पुनर्प्राप्त करें।।",
   "@recoverViaCloudDescription": {
@@ -8975,10 +8535,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "साटन",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "न्यूनतम: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -9068,10 +8624,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "arkSettleButton": "सेटल",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
   "electrumAddFailedError": "कस्टम सर्वर  जोड़ने में विफल",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
@@ -9080,22 +8632,9 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "arkAboutDurationHours": "{hours} घंटे",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "जेनेरिक वॉलेट",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "टेस्ट नहीं",
   "@backupSettingsNotTested": {
@@ -9182,10 +8721,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "arkAboutHide": "छुपाना",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
   "ledgerProcessingVerify": "लेजर पर पता दिखा रहा है ..।",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
@@ -9193,10 +8728,6 @@
   "coreScreensFeePriorityLabel": "शुल्क प्राथमिकता",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "arkSendPendingBalance": "ऋण राशि    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coreScreensLogsTitle": "लॉग",
   "@coreScreensLogsTitle": {
@@ -9241,10 +8772,6 @@
   "payBelowMinAmountError": "आप इस वॉलेट से न्यूनतम भुगतान योग्य राशि से कम भुगतान करने का प्रयास कर रहे हैं।",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "आर्क",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
   },
   "autoswapRecipientWalletInfo": "चुनें कि कौन से बिटकॉइन वॉलेट को हस्तांतरित फंड (आवश्यक) प्राप्त होंगे।",
   "@autoswapRecipientWalletInfo": {
@@ -9345,10 +8872,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "सफल",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "importQrDevicePassportStep3": "\"Manage account\" चुनें",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
@@ -9376,10 +8899,6 @@
   "walletNetworkLiquid": "Liquid नेटवर्क",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "आर्क",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "मैक्स",
   "@swapMaxButton": {
@@ -9469,10 +8988,6 @@
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
   },
-  "arkUnifiedAddressBip21": "एकीकृत पता (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "pickPasswordOrPinButton": "इसके बजाय {pinOrPassword} चुनें >>",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -9546,10 +9061,6 @@
   "testBackupGoogleDrivePrivacyPart4": "कभी नहीं ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "पुष्टि",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "sendCoinControl": "सिक्का नियंत्रण",
   "@sendCoinControl": {
@@ -9808,10 +9319,6 @@
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
   },
-  "arkCollaborativeRedeem": "सहयोगात्मक रीडीम",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
   "pinCodeCheckingStatus": "PIN स्थिति जाँची जा रही है",
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
@@ -9954,10 +9461,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "arkSendConfirmMessage": "भेजने से पहले कृपया अपने लेनदेन के विवरण की पुष्टि करें।।",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
   "bitcoinSettingsLegacySeedsTitle": "लेगेसी सीड्स",
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
@@ -10098,14 +9601,6 @@
   "exchangeAppSettingsDefaultCurrencyLabel": "डिफ़ॉल्ट मुद्रा",
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
-  },
-  "arkSendRecipientError": "कृपया एक प्राप्तकर्ता दर्ज करें",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkArkAddress": "Ark address",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
   },
   "payRecipientName": "प्राप्तकर्ता का नाम",
   "@payRecipientName": {
@@ -10282,10 +9777,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "arkCopy": "कॉपी",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "बिल्डिंग लेनदेन..।",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -10350,10 +9841,6 @@
   "recoverbullConfirm": "पुष्टि",
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
-  },
-  "arkPendingBalance": "ऋण राशि",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "हमारा बैंक देश यूनाइटेड किंगडम है।।",
   "@fundExchangeInfoBankCountryUk": {
@@ -10510,10 +9997,6 @@
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
-  "arkSendRecipientLabel": "प्राप्तकर्ता का पता",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
   "defaultWalletsLabel": "डिफ़ॉल्ट वॉलेट",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
@@ -10558,10 +10041,6 @@
   "testBackupGoogleDrivePrivacyPart5": "बिटकॉइन के साथ साझा किया गया।।",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "कुल",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "bitboxActionSignTransactionSuccessSubtext": "आपके लेन-देन पर सफलतापूर्वक हस्ताक्षर किए गए हैं।।",
   "@bitboxActionSignTransactionSuccessSubtext": {
@@ -10644,10 +10123,6 @@
   "importQrDeviceKruxStep5": "अपने डिवाइस पर दिखाई देने वाले QR कोड को स्कैन करें।।",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "स्थिति",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "इसे हस्तांतरण के कारण के रूप में जोड़ें",
   "@fundExchangeHelpTransferCode": {
@@ -10745,15 +10220,6 @@
   "psbtFlowMoveCloserFurther": "अपने डिवाइस को करीब या आगे बढ़ने की कोशिश करें",
   "@psbtFlowMoveCloserFurther": {
     "description": "Troubleshooting tip to adjust distance"
-  },
-  "arkAboutDurationMinutes": "{minutes} मिनट",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "swapProgressTitle": "आंतरिक स्थानांतरण",
   "@swapProgressTitle": {
@@ -10940,15 +10406,6 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "arkAboutDurationMinute": "{minutes} मिनट",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "ऑर्डर और खाता अपडेट के लिए ईमेल सूचनाएं प्राप्त करें",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
@@ -10996,18 +10453,6 @@
   "electrumSaveFailedError": "उन्नत विकल्पों को बचाने में विफल",
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
-  },
-  "arkSettleTransactionCount": "{count} {transaction} निपटाएं",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenWalletTypeLabel": "वॉलेट प्रकार:",
   "@bitboxScreenWalletTypeLabel": {
@@ -11241,10 +10686,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "प्राप्त करना",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "Retry गिनती नकारात्मक नहीं हो सकती",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -11309,10 +10750,6 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "arkSettleMessage": "लंबित लेनदेन को अंतिम रूप देना और यदि आवश्यक हो तो वसूली योग्य vtxos शामिल करना",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "receiveCopyInvoice": "Invoice",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -11336,10 +10773,6 @@
   "recoverbullGoogleDriveDeleteConfirmation": "क्या आप इस vault बैकअप को हटाना चाहते हैं? यह कार्रवाई नहीं की जा सकती है।।",
   "@recoverbullGoogleDriveDeleteConfirmation": {
     "description": "Confirmation message for deleting a vault backup"
-  },
-  "arkReceiveArkAddress": "Ark address",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
   },
   "googleDriveSignInMessage": "आपको Google ड्राइव पर हस्ताक्षर करने की आवश्यकता होगी",
   "@googleDriveSignInMessage": {
@@ -11370,10 +10803,6 @@
       }
     }
   },
-  "arkServerUrl": "सर्वर यूआरएल",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "आयात करने के लिए एक वॉलेट प्रकार का चयन करें",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -11385,15 +10814,6 @@
   "importQrDeviceKeystoneStep1": "अपने कीस्टोन पर पावर",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} दिन",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 निर्धारित एंट्रॉपी",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -11622,10 +11042,6 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "arkAboutBoardingExitDelay": "बोर्डिंग निकास देरी",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
   "receiveConfirmedInFewSeconds": "यह कुछ सेकंड में पुष्टि हो जाएगा",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
@@ -11695,10 +11111,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "बैलेंस की पुष्टि",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "Native SegWit",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -11748,10 +11160,6 @@
   "backupWalletPhysicalBackupTitle": "भौतिक बैकअप",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "arkTxBoarding": "बोर्डिंग",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "bitboxActionVerifyAddressSuccess": "सफलतापूर्वक सत्यापित",
   "@bitboxActionVerifyAddressSuccess": {
@@ -11850,10 +11258,6 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "arkAboutUnilateralExitDelay": "एकतरफा निकास देरी",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
   "payUnsupportedInvoiceType": "Unsupported चालान प्रकार",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
@@ -11945,15 +11349,6 @@
   "encryptedVaultDescription": "अपने क्लाउड का उपयोग करके मजबूत एन्क्रिप्शन के साथ अनाम बैकअप।।",
   "@encryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "arkAboutCopiedMessage": "{label} क्लिपबोर्ड को कॉपी किया",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "swapAmountLabel": "राशि",
   "@swapAmountLabel": {
@@ -12104,10 +11499,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "arkAboutServerPubkey": "सर्वर पबकी",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "receiveReceiveAmount": "प्राप्त राशि",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -12192,10 +11583,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "प्रतिबद्धता",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "मिशन में शामिल हों",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -12235,10 +11622,6 @@
   "bitboxScreenConnectDevice": "अपने Bitbox डिवाइस कनेक्ट",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "कल",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "राशि का अनुरोध: {amount}",
   "@amountRequestedLabel": {

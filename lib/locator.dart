@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
@@ -127,6 +126,5 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
-    ArkCoreLocator.setup(locator);
   }
 }

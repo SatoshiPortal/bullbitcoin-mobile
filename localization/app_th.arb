@@ -333,15 +333,6 @@
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "arkAboutDurationSeconds": "{seconds} วินาที",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "พิธีการศุลกากร",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -394,10 +385,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "arkReceiveBoardingAddress": "ไปรษณีย์",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "sellSendPaymentTitle": "ยืนยันการชําระเงิน",
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
@@ -446,10 +433,6 @@
   "recoverbullSelectErrorPrefix": "ข้อผิดพลาด:",
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
-  },
-  "arkReceiveBtcAddress": "ที่อยู่อีเมล",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
   },
   "exchangeLandingRecommendedExchange": "อัตราแลกเปลี่ยน Bitcoin",
   "@exchangeLandingRecommendedExchange": {
@@ -530,10 +513,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "arkContinueButton": "อ่านต่อ",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
-  },
   "ledgerImportButton": "เริ่มต้น",
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
@@ -582,10 +561,6 @@
   "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
-  },
-  "arkAboutServerUrl": "เซิร์ฟเวอร์",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
   },
   "fundExchangeLabelRecipientAddress": "ที่อยู่อีเมล",
   "@fundExchangeLabelRecipientAddress": {
@@ -677,10 +652,6 @@
   "importQrDeviceJadeStep5": "เลือก \"กระเป๋าสตางค์\" จากรายการ",
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
-  },
-  "arkSettled": "ชุด",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "transactionFilterBuy": "ซื้อ",
   "@transactionFilterBuy": {
@@ -826,10 +797,6 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "arkReceiveSegmentBoarding": "คณะกรรมการ",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "exchangeLandingLoginToUseSupport": "กรุณาเข้าสู่ระบบหรือลงทะเบียนเพื่อใช้บริการแชทสําหรับรายงานที่เกี่ยวข้อง.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -846,10 +813,6 @@
   "transactionLabelTransferStatus": "การโอนเงิน",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
-  },
-  "arkSessionDuration": "ระยะเวลา",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
   },
   "buyAboveMaxAmountError": "คุณพยายามที่จะซื้อข้างต้น.",
   "@buyAboveMaxAmountError": {
@@ -954,10 +917,6 @@
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
-  "arkSettleTransactions": "ตั้งค่าการทําธุรกรรม",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "transactionLabelConfirmationTime": "การยืนยัน",
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
@@ -981,10 +940,6 @@
   "receiveShareAddress": "ที่อยู่",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "สิ้นสุด",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "คุณพยายามที่จะจ่ายเงินข้างต้นจํานวนเงินสูงสุดที่ไม่สามารถชําระเงินกับกระเป๋าสตางค์นี้.",
   "@payAboveMaxAmountError": {
@@ -1122,10 +1077,6 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "arkAvailable": "พร้อมใช้งาน",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "transactionSwapDescChainFailed": "มีปัญหากับการโอนเงินของคุณ โปรดติดต่อหากเงินจะส่งคืนภายใน 24 ชั่วโมง.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -1133,10 +1084,6 @@
   "testBackupWarningMessage": "ไม่มีการสํารองข้อมูล, คุณจะได้รับการเข้าถึงเงินของคุณ. มันเป็นสิ่งสําคัญที่จะสํารองข้อมูล.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "เครือข่ายเครือข่าย",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "y",
   "@importWatchOnlyYpub": {
@@ -1364,10 +1311,6 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "arkSettleCancel": "ยกเลิก",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "testBackupTapWordsInOrder": "แตะคํากู้คืนในคําพูด\nคําสั่งซื้อ",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1485,10 +1428,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "ชุด",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1590,10 +1529,6 @@
   "@sendErrorInsufficientFundsForPayment": {
     "description": "Error when insufficient funds available"
   },
-  "arkAboutShow": "แสดง",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
   "fundExchangeETransferTitle": "รายละเอียดรายละเอียด",
   "@fundExchangeETransferTitle": {
     "description": "Screen title for E-Transfer payment details"
@@ -1625,19 +1560,6 @@
   "receiveNote": "หมายเหตุ",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
-  },
-  "arkCopiedToClipboard": "{label} คัดลอกไปยังคลิปบอร์ด",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "ที่อยู่อีเมล",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
   },
   "payLightningNetwork": "เครือข่ายไร้สาย",
   "@payLightningNetwork": {
@@ -1695,15 +1617,6 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "arkDurationMinutes": "{minutes} นาที",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "สมดุล",
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
@@ -1731,10 +1644,6 @@
   "sellKYCApproved": "ได้รับการอนุมัติ",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "การทําธุรกรรม",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "เดือน",
   "@dcaFrequencyMonthly": {
@@ -1915,10 +1824,6 @@
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
-  "arkAboutNetwork": "เครือข่ายเครือข่าย",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
   "payLastName": "ชื่อ",
   "@payLastName": {
     "description": "Label for last name field"
@@ -2017,10 +1922,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "คณะกรรมการ",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "exchangeAmountInputValidationInsufficient": "สมดุล",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
@@ -2033,10 +1934,6 @@
         "type": "String"
       }
     }
-  },
-  "arkTransactions": "การทําธุรกรรม",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "broadcastSignedTxCameraButton": "กล้อง",
   "@broadcastSignedTxCameraButton": {
@@ -2061,10 +1958,6 @@
   "transactionFilterAll": "ทั้งหมด",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "arkSendTitle": "ส่ง",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "จํานวน",
   "@transactionDetailLabelAmountReceived": {
@@ -2188,10 +2081,6 @@
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
   },
-  "arkDust": "ฝุ่นละออง",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "dcaConfirmPaymentMethod": "วิธีการชําระเงิน",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -2223,10 +2112,6 @@
   "testBackupPassphrase": "บัตร",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "arkSetupEnable": "เปิดใช้งาน",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "คุณสามารถลบกระเป๋าสตางค์เริ่มต้น.",
   "@walletDeletionErrorDefaultWallet": {
@@ -2287,15 +2172,6 @@
   "paySinpeMonto": "จํานวน",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
-  },
-  "arkDurationSeconds": "{seconds} วินาที",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "receiveCopyOrScanAddressOnly": "สําเนาหรือรหัสผ่านเท่านั้น",
   "@receiveCopyOrScanAddressOnly": {
@@ -2378,10 +2254,6 @@
   "buyConfirmBitcoinPrice": "ราคา",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
-  },
-  "arkUnifiedAddressCopied": "ที่อยู่อีเมล",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "transactionSwapDescLnSendCompleted": "การชําระเงินไร้สายได้รับการส่ง! รหัสของคุณเสร็จสมบูรณ์.",
   "@transactionSwapDescLnSendCompleted": {
@@ -2780,10 +2652,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "ชําระเงินทันที",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "รหัสผ่าน",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -2835,10 +2703,6 @@
   "payAddressRequired": "ที่อยู่",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "รายละเอียด",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "จํานวนจํานวน",
   "@payTotalAmount": {
@@ -2982,26 +2846,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "ยืนยัน",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "ไฟล์ไม่เลือก",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} วัน",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "ส่ง",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "buyInputContinue": "อ่านต่อ",
   "@buyInputContinue": {
@@ -3034,15 +2881,6 @@
   "paySelectActiveWallet": "เลือกกระเป๋าสตางค์",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} ชั่วโมง",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "ยืนยันโลโก้",
   "@logoutConfirmationTitle": {
@@ -3177,10 +3015,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "จํานวน",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "พวกเขาบอกคุณเกี่ยวกับคําเตือนนี้",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -3313,10 +3147,6 @@
   "backupCompletedTitle": "การสํารองข้อมูลเสร็จสิ้น!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
-  },
-  "arkDate": "วันที่",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "psbtFlowInstructions": "คําแนะนํา",
   "@psbtFlowInstructions": {
@@ -3513,10 +3343,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "การทดลอง",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "importQrDeviceKeystoneStep5": "เลือก \"BULL\" จากรายการของกระเป๋าเงิน",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
@@ -3570,22 +3396,9 @@
       }
     }
   },
-  "arkDurationMinute": "{minutes} นาที",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "หากคุณมีปัญหา:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
-  },
-  "arkReceiveUnifiedCopied": "ที่อยู่อีเมล",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
   },
   "importQrDeviceJadeStep9": "สแกนรหัส QR เพื่อดูอุปกรณ์ของคุณ.",
   "@importQrDeviceJadeStep9": {
@@ -3630,10 +3443,6 @@
   "backupInstruction3": "วิธีใด ๆ กับการเข้าถึง 12 คําสํารองข้อมูลของคุณสามารถขโมย Bitcoin ของคุณ ซ่อน.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "สีแดง",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "ข้อเสีย",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -3951,10 +3760,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "สําหรับที่อยู่",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "การโอนเงิน",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -3995,10 +3800,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "ที่อยู่อีเมล",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "ลงทะเบียน",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -4010,10 +3811,6 @@
   "payBumpFee": "ค่าธรรมเนียม",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "ยกเลิก",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "การตั้งค่านาฬิกาของคุณเท่านั้น ...",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -4034,10 +3831,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "การโอนเงินโดยใช้ SINPE",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "ตั๋วเครื่องบินทันที",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "ราคาโดยประมาณ ~ ",
   "@sendEstimatedDelivery": {
@@ -4258,10 +4051,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "arkSendRecipientTitle": "ส่ง",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "การนําเข้า",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
@@ -4269,10 +4058,6 @@
   "recoverbullPasswordTooShort": "รหัสผ่านจะต้องไม่เกิน 6 ตัวอักษร",
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
-  },
-  "arkAddressPlaceholder": "สีส้ม1qp9wsjfpsj5v6v6v6..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
   },
   "payNetwork": "เครือข่ายเครือข่าย",
   "@payNetwork": {
@@ -4290,10 +4075,6 @@
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
-  "arkBoardingConfirmed": "คณะกรรมการยืนยัน",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
   "exchangeFileUploadInstructionsWithParams": "อัปโหลด {maxFiles} ไฟล์ ใช้รูปแบบ: PDF, JPG, PNG, GIF ขนาดไฟล์สูงสุด: 10MB ต่อไฟล์.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4310,10 +4091,6 @@
   "backupWalletVaultProviderTakeYourTime": "ใช้เวลาของคุณ",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
-  },
-  "arkSettleIncludeRecoverable": "รวมการกู้คืน",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
   },
   "ledgerWalletTypeSegwitDescription": "ข้อควรระวัง - แนะนํา",
   "@ledgerWalletTypeSegwitDescription": {
@@ -4374,10 +4151,6 @@
   "fiatCurrencySettingsLabel": "สกุลเงิน",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
-  },
-  "arkStatusConfirmed": "ยืนยัน",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
   },
   "withdrawConfirmAmount": "จํานวน",
   "@withdrawConfirmAmount": {
@@ -4443,10 +4216,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkServerPubkey": "เซิร์ฟเวอร์",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
   "testBackupPhysicalBackupDescription": "เขียน 12 คําบนกระดาษ เพื่อให้ปลอดภัยและให้แน่ใจว่าไม่สูญเสียพวกเขา.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4478,10 +4247,6 @@
   "receiveWaitForSenderToFinish": "รอให้การส่งชําระเงิน",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "การตั้งค่า",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "สแกนรหัส QR จะแสดงในกระเป๋าเงิน",
   "@seedsignerStep3": {
@@ -4643,10 +4408,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "วันนี้",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "importQrDeviceJadeStep2": "เลือก \"QR\" จากเมนูหลัก",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
@@ -4700,10 +4461,6 @@
   "sendErrorHardwareWalletCannotSwap": "ไม่สามารถใช้กระเป๋าเงินฮาร์ดแวร์สำหรับการแลกเปลี่ยนได้",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "ไม่มีข้อมูล",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "autoswapWarningCardTitle": "Autoswap เปิดใช้งาน",
   "@autoswapWarningCardTitle": {
@@ -4916,10 +4673,6 @@
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
-  "arkReceiveCopyAddress": "สําเนา",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
   "testBackupErrorWriteFailed": "เขียนข้อมูลลงที่จัดเก็บไม่สำเร็จ: {error}",
   "@testBackupErrorWriteFailed": {
     "description": "Error when writing verification status to storage fails",
@@ -4949,10 +4702,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "arkSendAmountTitle": "กรอก",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "translationWarningTitle": "AI สร้างการแปล",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -4964,10 +4713,6 @@
   "payOnChainFee": "ค่าธรรมเนียม",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
-  },
-  "arkReceiveUnifiedAddress": "ที่อยู่ (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
   },
   "sellHowToPayInvoice": "วิธีที่คุณต้องการชําระเงินนี้?",
   "@sellHowToPayInvoice": {
@@ -5041,17 +4786,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "เพิ่มการทําธุรกรรมและบันทึกรวมถึง การกู้คืน",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "สถานที่ที่กําหนดเอง: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "ธุรกรรมของคุณประสบความสําเร็จ!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "นอน",
   "@sendSats": {
@@ -5188,14 +4925,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "วันหมดอายุ",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkStatusPending": "สิ้นสุด",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "ชื่อ",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5203,10 +4932,6 @@
   "dcaInsufficientBalanceTitle": "สมดุล",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
-  },
-  "arkType": "ประเภท",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "ไม่มีการสํารองข้อมูล, คุณจะได้รับการเข้าถึงเงินของคุณ. มันเป็นสิ่งสําคัญที่จะสํารองข้อมูล.",
   "@backupImportanceMessage": {
@@ -5243,10 +4968,6 @@
   "pinCodeConfirmTitle": "ยืนยันเข็มใหม่",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "arkSetupExperimentalWarning": "ประเทศยังคงทดลอง\n\nวลีของกระเป๋าเงินของคุณมาจากวลีหลักของกระเป๋าสตางค์ของคุณ ไม่มีการสํารองข้อมูลเพิ่มเติมที่จําเป็น, การสํารองข้อมูลกระเป๋าเงินที่มีอยู่ของคุณ.\n\nเสมอ, คุณรับทราบลักษณะของท่าเรือและความเสี่ยงของการสูญเสียเงิน.\n\nนักพัฒนา: ความลับมาจากกระเป๋าสตางค์หลักโดยใช้เมล็ด BIP-85 รบกวน (index).",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "เซิร์ฟเวอร์ ",
   "@keyServerLabel": {
@@ -5719,15 +5440,6 @@
   "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - เพิ่มความสว่างบนหน้าจอของคุณ",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -5747,10 +5459,6 @@
   "recoverbullErrorServiceUnavailable": "บริการ โปรดตรวจสอบการเชื่อมต่อของคุณ.",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
-  },
-  "arkSettleTitle": "ตั้งค่าการทําธุรกรรม",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
   },
   "sendErrorInsufficientBalanceForSwap": "จํานวนเงินเพียงพอที่จะจ่ายสัญญาณนี้ผ่านของเหลวและไม่สามารถชําระเงินผ่านทาง Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5815,10 +5523,6 @@
   "sendReceiveNetworkFee": "รับค่าธรรมเนียมเครือข่าย",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "arkTxPayment": "การชําระเงิน",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
   },
   "importQrDeviceSeedsignerStep6": "เลือก \"ตัวเลือก\" เป็นตัวเลือกการส่งออก",
   "@importQrDeviceSeedsignerStep6": {
@@ -5907,10 +5611,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "รวมการกู้คืน",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "การชําระเงินของคุณเสร็จสิ้นและผู้รับจะได้รับเงิน.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -5955,10 +5655,6 @@
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
-  "arkReceiveTitle": "สํานักงาน",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
   "payDebitCardNumberHint": "ใส่บัตร",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -6002,10 +5698,6 @@
   "exchangeFeatureSelfCustody": "• ซื้อ Bitcoin ตรงกับตนเอง",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "arkBoardingUnconfirmed": "คณะกรรมการตรวจสอบ",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "รายละเอียดการชําระเงิน",
   "@fundExchangeLabelPaymentDescription": {
@@ -6132,10 +5824,6 @@
   "coldcardStep9": "เมื่อการทําธุรกรรมนําเข้าในบัตรเย็นของคุณตรวจสอบที่อยู่และจํานวนเงิน.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "Mt คําขอการชําระเงินที่มีอยู่จากรูปแบบการทดลอง.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "สมบูรณ์แบบของคุณ © 2019",
   "@exchangeKycComplete": {
@@ -6422,15 +6110,6 @@
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
   },
-  "arkAboutDurationDays": "{days} วัน",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "รายละเอียดการชําระเงิน",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -6524,10 +6203,6 @@
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
   },
-  "arkAboutForfeitAddress": "สําหรับที่อยู่",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "kruxStep13": "คลิก \"ฉันทํา\" ในกระเป๋าเงิน Bitcoin.",
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
@@ -6581,10 +6256,6 @@
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
   },
-  "arkAboutDust": "ฝุ่นละออง",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
   "ledgerSuccessVerifyDescription": "ที่อยู่ที่ได้รับการยืนยันบนอุปกรณ์ LED ของคุณ.",
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
@@ -6617,10 +6288,6 @@
   "@buySelfie": {
     "description": "Type of document required"
   },
-  "arkAboutSecretKey": "ความลับ",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "sellMxnBalance": "LTC สมดุล",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
@@ -6637,10 +6304,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "สีแดง",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "ระบุที่อยู่บน Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -6656,10 +6319,6 @@
   "backupSettingsKeyWarningBold": "คําเตือน: ระมัดระวังที่คุณประหยัดเงิน.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "ประเทศ",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "exchangeLandingConnectAccount": "เชื่อมต่อบัญชี Bitcoin",
   "@exchangeLandingConnectAccount": {
@@ -6765,10 +6424,6 @@
   "mempoolCustomServerLabel": "ลูกค้า",
   "@mempoolCustomServerLabel": {
     "description": "Label badge for custom server"
-  },
-  "arkAboutSessionDuration": "ระยะเวลา",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
   },
   "transferFeeLabel": "ค่าธรรมเนียม",
   "@transferFeeLabel": {
@@ -6882,10 +6537,6 @@
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
-  "arkSendConfirm": "ยืนยัน",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "rbfErrorFeeTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
@@ -6901,15 +6552,6 @@
   "jadeStep10": "คลิกที่ปุ่มไปยังการทําธุรกรรมในปักกิ่งของคุณ.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "arkAboutDurationHour": "{hours} ชั่วโมง",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenUnknownError": "ความผิดพลาดที่เป็นที่รู้จัก",
   "@bitboxScreenUnknownError": {
@@ -6935,17 +6577,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkSendRecipientHint": "สีส้ม1qp9wsjfpsj5v6v6v6..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "คํานวณ.",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "การกู้คืน Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "psbtFlowTransactionImported": "การทําธุรกรรมจะถูกนําเข้าในกระเป๋าสตางค์ Bitcoin.",
   "@psbtFlowTransactionImported": {
@@ -7139,10 +6773,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "คณะกรรมการหยุดล่าช้า",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "exchangeDcaFrequencyHour": "ชั่วโมง",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7166,10 +6796,6 @@
   "importQrDeviceSuccess": "กระเป๋าสตางค์",
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
-  },
-  "arkTxSettlement": "ค่าธรรมเนียมการชําระเงิน",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "autoswapEnable": "เปิดใช้งานการถ่ายโอนข้อมูลอัตโนมัติ",
   "@autoswapEnable": {
@@ -7325,10 +6951,6 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "arkConfirmed": "ยืนยัน",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
   "importQrDevicePassportStep6": "เลือก \"เดี่ยว\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
@@ -7411,10 +7033,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "arkAboutEsploraUrl": "อีเมล",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
   "backupKeyExampleWarning": "ตัวอย่างเช่นถ้าคุณใช้ Google Drive สําหรับไฟล์การสํารองข้อมูลของคุณไม่ได้ใช้ Google Drive สําหรับการสํารองข้อมูลของคุณ.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -7487,10 +7105,6 @@
   "backupSettingsBackupKey": "การสํารองข้อมูล",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "รหัส",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "พิธีการศุลกากร",
   "@payInvoiceCopied": {
@@ -7814,10 +7428,6 @@
       }
     }
   },
-  "arkSendConfirmedBalance": "ยืนยัน",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
   "sellFastest": "รวดเร็ว",
   "@sellFastest": {
     "description": "Display text for fastest fee option"
@@ -7926,10 +7536,6 @@
   "backupSettingsSecurityWarning": "คําเตือน",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
-  },
-  "arkCopyAddress": "สําเนา",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
   },
   "sendScheduleFor": "ตารางสําหรับ {date}",
   "@sendScheduleFor": {
@@ -8127,24 +7733,6 @@
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
   },
-  "arkAboutDurationDay": "{days} วัน",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} ชั่วโมง",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "ค่าธรรมเนียมนี้จะถูกหักจากจํานวนเงิน",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -8172,10 +7760,6 @@
   "recoverbullTorNotStarted": "Tor ไม่ได้เริ่มต้น",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
-  },
-  "arkPending": "สิ้นสุด",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
   },
   "transactionOrderLabelOrderStatus": "ข้อมูล",
   "@transactionOrderLabelOrderStatus": {
@@ -8266,10 +7850,6 @@
   "recoverbullGoogleDriveDeleteButton": "ลบ",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "สมดุล",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "exchangeDcaDeactivateTitle": "การลบซ้ําซื้อ",
   "@exchangeDcaDeactivateTitle": {
@@ -8377,10 +7957,6 @@
   "receivePayjoinFailQuestion": "ไม่มีเวลาที่จะรอหรือไม่ชําระเงินในผู้รับ?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
-  },
-  "arkSendConfirmTitle": "ยืนยัน",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
   },
   "importQrDeviceSeedsignerStep1": "อุปกรณ์บนเมล็ดพันธุ์ของคุณ",
   "@importQrDeviceSeedsignerStep1": {
@@ -8834,10 +8410,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "สมดุล",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "เมื่อการทําธุรกรรมนําเข้าในเมล็ดพันธุ์ของคุณคุณควรเลือกเมล็ดที่คุณต้องการลงชื่อเข้าใช้.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -8845,10 +8417,6 @@
   "sellSendPaymentPriceRefresh": "ราคาจะผ่อนคลาย ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "arkAboutCopy": "คัดลอก",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
   },
   "recoverbullPasswordRequired": "รหัสผ่าน",
   "@recoverbullPasswordRequired": {
@@ -8861,10 +8429,6 @@
   "payFirstName": "ชื่อ",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "ไม่มีการทําธุรกรรม.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "recoverViaCloudDescription": "การกู้คืนการสํารองข้อมูลของคุณผ่านทางระบบคลาวด์ของคุณ.",
   "@recoverViaCloudDescription": {
@@ -8971,10 +8535,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "นอน",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "ขั้นต่ํา: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -9064,10 +8624,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "arkSettleButton": "ชุด",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
   "electrumAddFailedError": "เพิ่มเซิร์ฟเวอร์ที่กำหนดเองไม่สำเร็จ",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
@@ -9076,22 +8632,9 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "arkAboutDurationHours": "{hours} ชั่วโมง",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "กระเป๋าเงิน",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "อีเมล",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "ไม่ทดสอบ",
   "@backupSettingsNotTested": {
@@ -9178,10 +8721,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "arkAboutHide": "ซ่อน",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
   "ledgerProcessingVerify": "แสดงที่อยู่บน LED...",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
@@ -9189,10 +8728,6 @@
   "coreScreensFeePriorityLabel": "ค่าธรรมเนียม",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "arkSendPendingBalance": "สมดุล    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coreScreensLogsTitle": "เข้าสู่ระบบ",
   "@coreScreensLogsTitle": {
@@ -9237,10 +8772,6 @@
   "payBelowMinAmountError": "คุณพยายามที่จะจ่ายขั้นต่ําต่ํากว่าจํานวนขั้นต่ํา.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "ประเทศ",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
   },
   "autoswapRecipientWalletInfo": "เลือกกระเป๋าสตางค์ Bitcoin จะโอนเงิน (ต้องการ)",
   "@autoswapRecipientWalletInfo": {
@@ -9341,10 +8872,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "ส่ง",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "importQrDevicePassportStep3": "เลือก \"จัดการบัญชี\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
@@ -9372,10 +8899,6 @@
   "walletNetworkLiquid": "เครือข่ายของเหลว",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "ประเทศ",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "แม็กซ์",
   "@swapMaxButton": {
@@ -9465,10 +8988,6 @@
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
   },
-  "arkUnifiedAddressBip21": "ที่อยู่ (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "pickPasswordOrPinButton": "เลือก {pinOrPassword}",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -9542,10 +9061,6 @@
   "testBackupGoogleDrivePrivacyPart4": "ไม่ต้องกังวล ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "ยืนยัน",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "sendCoinControl": "บันทึก",
   "@sendCoinControl": {
@@ -9804,10 +9319,6 @@
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
   },
-  "arkCollaborativeRedeem": "อาหารสีแดง",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
   "pinCodeCheckingStatus": "ตรวจสอบสถานะ PIN",
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
@@ -9950,10 +9461,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "arkSendConfirmMessage": "โปรดยืนยันรายละเอียดของการทําธุรกรรมของคุณก่อนที่จะส่ง.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
   "bitcoinSettingsLegacySeedsTitle": "เมล็ด",
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
@@ -10094,14 +9601,6 @@
   "exchangeAppSettingsDefaultCurrencyLabel": "เพิ่มสกุลเงิน",
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
-  },
-  "arkSendRecipientError": "กรุณาใส่ผู้รับ",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkArkAddress": "ที่อยู่",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
   },
   "payRecipientName": "ชื่อ",
   "@payRecipientName": {
@@ -10278,10 +9777,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "arkCopy": "คัดลอก",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "การทําธุรกรรม.",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -10346,10 +9841,6 @@
   "recoverbullConfirm": "ยืนยัน",
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
-  },
-  "arkPendingBalance": "สมดุล",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "ธนาคารของเราเป็นราชอาณาจักร.",
   "@fundExchangeInfoBankCountryUk": {
@@ -10506,10 +9997,6 @@
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
-  "arkSendRecipientLabel": "ที่อยู่อีเมล",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
   "defaultWalletsLabel": "ค่าเริ่มต้นกระเป๋าสตางค์",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
@@ -10554,10 +10041,6 @@
   "testBackupGoogleDrivePrivacyPart5": "แชร์กับ Bull Bitcoin.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "ทั้งหมด",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "bitboxActionSignTransactionSuccessSubtext": "การทําธุรกรรมของคุณถูกลงทะเบียน.",
   "@bitboxActionSignTransactionSuccessSubtext": {
@@ -10640,10 +10123,6 @@
   "importQrDeviceKruxStep5": "สแกนรหัส QR เพื่อดูอุปกรณ์ของคุณ.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "สถานะ",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "เพิ่มเหตุผลนี้สําหรับการถ่ายโอน",
   "@fundExchangeHelpTransferCode": {
@@ -10741,15 +10220,6 @@
   "psbtFlowMoveCloserFurther": "ลองย้ายอุปกรณ์ของคุณใกล้ชิดหรือออกไป",
   "@psbtFlowMoveCloserFurther": {
     "description": "Troubleshooting tip to adjust distance"
-  },
-  "arkAboutDurationMinutes": "{minutes} นาที",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "swapProgressTitle": "โอนภายใน",
   "@swapProgressTitle": {
@@ -10936,15 +10406,6 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "arkAboutDurationMinute": "{minutes} นาที",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "รับการแจ้งเตือนอีเมลสําหรับคําสั่งและอัปเดต",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
@@ -10992,18 +10453,6 @@
   "electrumSaveFailedError": "เก็บตัวเลือกขั้นสูง",
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
-  },
-  "arkSettleTransactionCount": "ชำระ {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenWalletTypeLabel": "ประเภทข้อความ:",
   "@bitboxScreenWalletTypeLabel": {
@@ -11237,10 +10686,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "ลงทะเบียน",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "ผู้สมัครสามารถลบ",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -11305,10 +10750,6 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "arkSettleMessage": "เพิ่มการทําธุรกรรมและบันทึกรวมถึง การกู้คืน",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "receiveCopyInvoice": "ใบแจ้งหนี้",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -11332,10 +10773,6 @@
   "recoverbullGoogleDriveDeleteConfirmation": "คุณแน่ใจว่าคุณต้องลบรหัสนี้? การกระทํานี้ไม่สามารถได้.",
   "@recoverbullGoogleDriveDeleteConfirmation": {
     "description": "Confirmation message for deleting a vault backup"
-  },
-  "arkReceiveArkAddress": "ที่อยู่",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
   },
   "googleDriveSignInMessage": "คุณจะต้องลงทะเบียนไปยัง Google Drive",
   "@googleDriveSignInMessage": {
@@ -11366,10 +10803,6 @@
       }
     }
   },
-  "arkServerUrl": "เซิร์ฟเวอร์",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "เลือกกระเป๋าสําหรับนําเข้า",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -11381,15 +10814,6 @@
   "importQrDeviceKeystoneStep1": "พลังงานบนแม่เหล็กของคุณ",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} วัน",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 การกําหนดข้อมูล",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -11618,10 +11042,6 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "arkAboutBoardingExitDelay": "คณะกรรมการหยุดล่าช้า",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
   "receiveConfirmedInFewSeconds": "มันจะได้รับการยืนยันในไม่กี่วินาที",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
@@ -11691,10 +11111,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "ยืนยัน",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "Ative",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -11744,10 +11160,6 @@
   "backupWalletPhysicalBackupTitle": "การสํารองข้อมูลทางกายภาพ",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "arkTxBoarding": "คณะกรรมการ",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "bitboxActionVerifyAddressSuccess": "ที่อยู่",
   "@bitboxActionVerifyAddressSuccess": {
@@ -11846,10 +11258,6 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "arkAboutUnilateralExitDelay": "วันหมดอายุ",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
   "payUnsupportedInvoiceType": "ระบุใบแจ้งหนี้",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
@@ -11941,15 +11349,6 @@
   "encryptedVaultDescription": "สํารองข้อมูลด้วยการเข้ารหัสที่แข็งแกร่งโดยใช้ระบบคลาวด์ของคุณ.",
   "@encryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "arkAboutCopiedMessage": "{label} คัดลอกไปยังคลิปบอร์ด",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "swapAmountLabel": "จํานวน",
   "@swapAmountLabel": {
@@ -12100,10 +11499,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "arkAboutServerPubkey": "เซิร์ฟเวอร์",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "receiveReceiveAmount": "จํานวนเงิน",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -12188,10 +11583,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "บริการ",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "เข้าร่วมภารกิจ",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -12231,10 +11622,6 @@
   "bitboxScreenConnectDevice": "เชื่อมต่อโทรศัพท์มือถือ",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "สุดท้าย",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "ปริมาณ: {amount}",
   "@amountRequestedLabel": {
@@ -12296,10 +11683,6 @@
   "importWatchOnlyCancel": "ยกเลิก",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  },
-  "arkAboutTitle": "เกี่ยวกับ",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
   },
   "exchangeSettingsSecuritySettingsTitle": "การตั้งค่าความปลอดภัย",
   "@exchangeSettingsSecuritySettingsTitle": {

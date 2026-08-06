@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -5,14 +6,16 @@ import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_vie
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LegacySeedViewScreen extends StatelessWidget {
+class LegacySeedViewScreen extends StatelessWidget with PrivacyScreen {
   const LegacySeedViewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    enableScreenPrivacy();
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
+          disableScreenPrivacy();
           context.read<LegacySeedViewCubit>().clearState();
         } else {}
       },
