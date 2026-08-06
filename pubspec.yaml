@@ -134,7 +134,7 @@ dependencies:
   tor:
     git:
       url: https://github.com/Foundation-Devices/tor
-      ref: b92e2bc
+      ref: b92e2bc5a404367298b6016f171df29d1aae66d0
   meta: ^1.17.0
   workmanager: ^0.9.0
   path: ^1.9.1
