@@ -107,10 +107,22 @@ RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USER
 
-# Install Rust (pinned via RUST_VERSION arg)
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
-RUN sh /tmp/rustup.sh -y --no-modify-path --default-toolchain ${RUST_VERSION}
-RUN rm /tmp/rustup.sh
+# Install Rust (pinned via RUST_VERSION arg).
+# rustup-init is fetched from the immutable archive path and checked against
+# the SHA256 rustup publishes next to it, rather than piping sh.rustup.rs into
+# a shell: everything downstream — the FFI crypto in bull_sdk, payjoin and tor
+# — is built by whatever this step installs, so it has to be tamper-evident.
+# The base image is pinned to linux/amd64, so a single x86_64 digest is right.
+# Refresh: curl -fsSL https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init.sha256
+ARG RUSTUP_VERSION="1.29.0"
+ARG RUSTUP_INIT_SHA256="4acc9acc76d5079515b46346a485974457b5a79893cfb01112423c89aeb5aa10"
+RUN curl --proto '=https' --tlsv1.2 -fsSL \
+      https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init \
+      -o /tmp/rustup-init \
+    && echo "${RUSTUP_INIT_SHA256}  /tmp/rustup-init" | sha256sum -c - \
+    && chmod +x /tmp/rustup-init \
+    && /tmp/rustup-init -y --no-modify-path --default-toolchain ${RUST_VERSION} \
+    && rm /tmp/rustup-init
 ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
 # Pre-install clippy and rustfmt for the pinned toolchain.
@@ -173,10 +185,22 @@ RUN if [ -n "$EXPECTED_RUST_VERSION" ]; then \
       fi; \
     fi
 
-# Install FVM
-RUN curl -fsSL https://fvm.app/install.sh -o /tmp/fvm-install.sh
-RUN bash /tmp/fvm-install.sh ${FVM_VERSION}
-RUN rm /tmp/fvm-install.sh
+# Install FVM from its pinned release tarball rather than piping fvm.app's
+# install.sh into bash: that script is itself unversioned, so only the FVM
+# version was pinned and never the installer fetching it. The layout below is
+# what install.sh produces — it copies the contents of the archive's fvm/
+# directory into ${INSTALL_BASE}/bin, which is the directory added to PATH.
+# Refresh: sha256sum of the linux-x64 asset on the FVM release for this version.
+ARG FVM_SHA256="2d7fdfc3e77591806efe38fab23098a79567a89a9570de713c43f30cc54348d7"
+RUN curl -fsSL \
+      https://github.com/leoafarias/fvm/releases/download/${FVM_VERSION}/fvm-${FVM_VERSION}-linux-x64.tar.gz \
+      -o /tmp/fvm.tar.gz \
+    && echo "${FVM_SHA256}  /tmp/fvm.tar.gz" | sha256sum -c - \
+    && mkdir -p /home/$USER/fvm/bin /tmp/fvm-extract \
+    && tar -xzf /tmp/fvm.tar.gz -C /tmp/fvm-extract \
+    && cp -a /tmp/fvm-extract/fvm/. /home/$USER/fvm/bin/ \
+    && chmod +x /home/$USER/fvm/bin/fvm \
+    && rm -rf /tmp/fvm.tar.gz /tmp/fvm-extract
 ENV PATH="/home/$USER/fvm/bin:${PATH}"
 
 # Install Flutter via FVM.
@@ -196,7 +220,13 @@ ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 # podman user namespaces — sudo fails with "account validation failure" —
 # and are unnecessary at build time since USER switching achieves the same.)
 USER root
-RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
+# The zip is versioned but Google serves it from a _latest.zip URL, so verify
+# the digest: this archive provides sdkmanager, which installs the rest of the
+# Android SDK used to build the release APK.
+# Refresh: sha256sum of the downloaded zip for this ANDROID_CMDLINE_TOOLS_VERSION.
+ARG ANDROID_CMDLINE_TOOLS_SHA256="04453066b540409d975c676d781da1477479dde3761310f1a7eb92a1dfb15af7"
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip \
+    && echo "${ANDROID_CMDLINE_TOOLS_SHA256}  /tmp/android-cmdline-tools.zip" | sha256sum -c -
 
 # Set up Android SDK
 RUN mkdir -p ${ANDROID_HOME}/cmdline-tools
