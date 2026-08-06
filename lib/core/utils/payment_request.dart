@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/msats.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bip21_uri/bip21_uri.dart';
@@ -274,7 +275,7 @@ sealed class PaymentRequest with _$PaymentRequest {
 
     try {
       final invoice = await boltz.DecodedInvoice.fromString(s: data);
-      final sats = invoice.msats.toInt() ~/ 1000;
+      final sats = msatsToSats(invoice.msats.toInt());
 
       return PaymentRequest.bolt11(
         invoice: data,
