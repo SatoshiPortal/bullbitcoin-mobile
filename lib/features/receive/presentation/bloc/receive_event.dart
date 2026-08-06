@@ -24,8 +24,6 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceivePayjoinOriginalTxBroadcasted;
   const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =
       ReceiveTransactionReceived;
-  const factory ReceiveEvent.receiveLightningSwapUpdated(LnReceiveSwap swap) =
-      ReceiveLightningSwapUpdated;
   const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
       ReceivePayjoinSettingChanged;
   const factory ReceiveEvent.receivePayjoinMinAmountChanged(int amountSat) =
@@ -34,4 +32,7 @@ class ReceiveEvent with _$ReceiveEvent {
     bool enabled,
     Future<bool> Function() requestConsent,
   ) = ReceivePayjoinToggled;
+  const factory ReceiveEvent.receiveOrderSwapUpdated(
+    OrderSwapRecord orderSwap,
+  ) = ReceiveOrderSwapUpdated;
 }
