@@ -16,6 +16,7 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
   Swap swap;
   int claimCalls = 0;
   int refundCalls = 0;
+  int? lastRefundFees;
   Duration claimDelay = Duration.zero;
   Object? claimError;
   String? outspendTxid;
@@ -49,6 +50,21 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
     bool cooperate = true,
   }) async {
     refundCalls++;
+    lastRefundFees = absoluteFees;
+    final error = claimError;
+    if (error != null) throw error;
+    return 'refund-txid';
+  }
+
+  @override
+  Future<String> refundLiquidToBitcoinSwap({
+    required String swapId,
+    required String liquidRefundAddress,
+    required int absoluteFees,
+    bool cooperate = true,
+  }) async {
+    refundCalls++;
+    lastRefundFees = absoluteFees;
     final error = claimError;
     if (error != null) throw error;
     return 'refund-txid';
@@ -139,16 +155,19 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
 }
 
 class FakeFeesRepository implements FeesRepository {
-  /// 0.5 sat/vb relative estimate: with a 1000 vb tx this gives 500 sats.
   /// Rates are stored in sat/kwu (1 sat/vB = 250 sat/kwu): 0.5→125, 0.3→75,
-  /// 0.1→25.
+  /// 0.1→25. The default 0.5 sat/vb gives 500 sats on a 1000 vb tx.
+  final int fastestSatPerKwu;
+
+  const FakeFeesRepository({this.fastestSatPerKwu = 125});
+
   @override
   Future<FeeOptions> getNetworkFees({required Network network}) async =>
-      const FeeOptions(
-        fastest: NetworkFee.relativeSatPerKwu(125),
-        economic: NetworkFee.relativeSatPerKwu(75),
-        slow: NetworkFee.relativeSatPerKwu(25),
-        minRelay: RelativeFee(25),
+      FeeOptions(
+        fastest: NetworkFee.relativeSatPerKwu(fastestSatPerKwu),
+        economic: const NetworkFee.relativeSatPerKwu(75),
+        slow: const NetworkFee.relativeSatPerKwu(25),
+        minRelay: const RelativeFee(25),
       );
 
   @override
@@ -197,13 +216,34 @@ void main() {
           )
           as LnSendSwap;
 
-  SwapWatcherService watcher(FakeBoltzSwapRepository repo) =>
-      SwapWatcherService(
-        boltzRepo: repo,
-        walletAddressRepository: FakeWalletAddressRepository(),
-        feesRepository: FakeFeesRepository(),
-        autoStart: false,
-      );
+  /// A chain swap carries its amount as a plain `paymentAmount` int, unlike
+  /// the LN fixtures whose placeholder invoice parses to 0 sats. It is
+  /// therefore the fixture that actually exercises the amount-based fee cap.
+  ChainSwap chainRefundableSwap({int paymentAmount = 1000}) =>
+      Swap.chain(
+            id: 'chn123456789',
+            keyIndex: 0,
+            type: SwapType.liquidToBitcoin,
+            status: SwapStatus.refundable,
+            environment: Environment.mainnet,
+            creationTime: DateTime(2026, 6, 12),
+            sendWalletId: 'w1',
+            paymentAddress: 'lq1qqlockup',
+            paymentAmount: paymentAmount,
+            sendTxid: 'lockup-txid',
+            refundAddress: 'lq1qqrefund',
+          )
+          as ChainSwap;
+
+  SwapWatcherService watcher(
+    FakeBoltzSwapRepository repo, {
+    FakeFeesRepository fees = const FakeFeesRepository(),
+  }) => SwapWatcherService(
+    boltzRepo: repo,
+    walletAddressRepository: FakeWalletAddressRepository(),
+    feesRepository: fees,
+    autoStart: false,
+  );
 
   group('claim execution', () {
     test(
@@ -334,6 +374,56 @@ void main() {
       await service.processSwap(repo.swap);
 
       expect(repo.refundCalls, 0);
+    });
+  });
+
+  group('refund fee cap', () {
+    test(
+      'never burns more than half the swap when the fee API spikes',
+      () async {
+        final repo = FakeBoltzSwapRepository(
+          chainRefundableSwap(paymentAmount: 1000),
+        );
+        // 10 sat/vb (2500 sat/kwu) on a 1000 vb tx would cost 10000 sats,
+        // ten times the amount being refunded.
+        final service = watcher(
+          repo,
+          fees: const FakeFeesRepository(fastestSatPerKwu: 2500),
+        );
+
+        await service.processSwap(repo.swap);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(repo.refundCalls, 1);
+        expect(repo.lastRefundFees, 500);
+      },
+    );
+
+    test('the relay floor still wins over the cap on a dust swap', () async {
+      // Half of 100 sats is 50, below the 111 sat Liquid relay floor for a
+      // 1000 vb tx. Paying the floor beats broadcasting an unrelayable tx.
+      final repo = FakeBoltzSwapRepository(
+        chainRefundableSwap(paymentAmount: 100),
+      );
+      final service = watcher(repo);
+
+      await service.processSwap(repo.swap);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repo.lastRefundFees, 111);
+    });
+
+    test('leaves a normal refund untouched', () async {
+      final repo = FakeBoltzSwapRepository(
+        chainRefundableSwap(paymentAmount: 100000),
+      );
+      final service = watcher(repo);
+
+      await service.processSwap(repo.swap);
+      await Future<void>.delayed(Duration.zero);
+
+      // 1000 vb at 0.5 sat/vb = 500 sats, far below half the swap.
+      expect(repo.lastRefundFees, 500);
     });
   });
 }

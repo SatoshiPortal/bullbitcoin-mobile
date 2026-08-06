@@ -450,10 +450,12 @@ class SwapWatcherService {
         swapId: swap.id,
         swapType: swap.type,
       );
-      var absoluteFees = _absoluteWithFloor(
+      final amountSat = _amountSatOrNull(swap);
+      var absoluteFees = _cappedFees(
         networkFee.toAbsolute(txSize).fastest.value.toInt(),
         txSize: txSize,
         isLiquid: isLiquid,
+        amountSat: amountSat,
       );
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
@@ -483,10 +485,11 @@ class SwapWatcherService {
           swapType: swap.type,
           isCooperative: false,
         );
-        absoluteFees = _absoluteWithFloor(
+        absoluteFees = _cappedFees(
           networkFee.toAbsolute(scriptPathTxSize).fastest.value.toInt(),
           txSize: scriptPathTxSize,
           isLiquid: isLiquid,
+          amountSat: amountSat,
         );
         refundTxid = isLiquid
             ? await _boltzRepo.refundLiquidToLightningSwap(
@@ -541,10 +544,12 @@ class SwapWatcherService {
         swapType: swap.type,
         refundAddressForChainSwaps: refundAddress,
       );
-      var absoluteFees = _absoluteWithFloor(
+      final amountSat = _amountSatOrNull(swap);
+      var absoluteFees = _cappedFees(
         networkFee.toAbsolute(txSize).fastest.value.toInt(),
         txSize: txSize,
         isLiquid: refundOnLiquid,
+        amountSat: amountSat,
       );
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
@@ -575,10 +580,11 @@ class SwapWatcherService {
           isCooperative: false,
           refundAddressForChainSwaps: refundAddress,
         );
-        absoluteFees = _absoluteWithFloor(
+        absoluteFees = _cappedFees(
           networkFee.toAbsolute(scriptPathTxSize).fastest.value.toInt(),
           txSize: scriptPathTxSize,
           isLiquid: refundOnLiquid,
+          amountSat: amountSat,
         );
         refundTxid = refundOnLiquid
             ? await _boltzRepo.refundLiquidToBitcoinSwap(
