@@ -19,17 +19,8 @@ class Settings extends Table {
   TextColumn get exchangeTestnetBasicAuthUsername => text().nullable()();
   TextColumn get exchangeTestnetBasicAuthPassword => text().nullable()();
 
-  // Legacy migration source only. Runtime Payjoin policy lives in
-  // payjoin.sqlite; these columns stay for one compatibility release so an
-  // existing installation can be imported transactionally.
-  BoolColumn get payjoinEnabled =>
-      boolean().withDefault(const Constant(false))();
-
-  // Legacy default matching PayjoinPolicy.defaults (10,000 sats).
-  IntColumn get payjoinMinAmountSat =>
-      integer().withDefault(const Constant(10000))();
-
-  // Legacy default matching PayjoinPolicy.defaults (24 hours).
-  IntColumn get payjoinExpireAfterSec =>
-      integer().withDefault(const Constant(86400))();
+  // No payjoin columns here: the Payjoin policy lives in payjoin.sqlite, owned
+  // by the bull_payjoin package. Schema 14 briefly added payjoin_enabled,
+  // payjoin_min_amount_sat and payjoin_expire_after_sec here, but 14 was never
+  // released, so nothing to keep for compatibility.
 }

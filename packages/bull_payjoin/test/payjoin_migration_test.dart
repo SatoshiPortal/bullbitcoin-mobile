@@ -35,7 +35,6 @@ PayjoinLegacySnapshot _snapshot() => PayjoinLegacySnapshot(
       transactionId: 'payjoin-tx',
       isExpired: false,
       isCompleted: true,
-      isAborted: false,
     ),
   ],
   receivers: [
@@ -56,14 +55,8 @@ PayjoinLegacySnapshot _snapshot() => PayjoinLegacySnapshot(
       transactionId: null,
       isExpired: false,
       isCompleted: false,
-      isAborted: true,
     ),
   ],
-  policy: const PayjoinLegacyPolicy(
-    enabled: true,
-    minimumAmountSat: 12000,
-    sessionLifetimeSeconds: 7200,
-  ),
 );
 
 void main() {
@@ -75,7 +68,7 @@ void main() {
 
   tearDown(() => database.close());
 
-  test('imports sessions and policy with a verified marker', () async {
+  test('imports sessions with a verified marker', () async {
     final source = _LegacyData(_snapshot());
 
     await importLegacyPayjoinData(database, source);
@@ -85,10 +78,6 @@ void main() {
       await database.select(database.payjoinReceivers).get(),
       hasLength(1),
     );
-    final policy = await database.select(database.payjoinPolicies).getSingle();
-    expect(policy.enabled, isTrue);
-    expect(policy.minimumAmountSat, 12000);
-    expect(policy.sessionLifetimeSeconds, 7200);
     final marker = await database
         .select(database.payjoinMigrations)
         .getSingle();
@@ -98,6 +87,33 @@ void main() {
     expect(marker.verificationDigest, hasLength(64));
   });
 
+  test('imported sessions start un-aborted', () async {
+    // The root schema never shipped is_aborted, so there is nothing to carry
+    // over: every imported session must land on the un-aborted default.
+    await importLegacyPayjoinData(database, _LegacyData(_snapshot()));
+
+    final sender = await database.select(database.payjoinSenders).getSingle();
+    final receiver = await database
+        .select(database.payjoinReceivers)
+        .getSingle();
+    expect(sender.isAborted, isFalse);
+    expect(receiver.isAborted, isFalse);
+  });
+
+  test('seeds the policy row from the defaults', () async {
+    // The root settings payjoin columns only existed in the unreleased schema
+    // 14, so no install carries a stored preference: the store's single row is
+    // created from the conservative defaults, payjoin disabled.
+    await importLegacyPayjoinData(database, _LegacyData(_snapshot()));
+
+    final policy = await database.select(database.payjoinPolicies).getSingle();
+    final defaults = PayjoinPolicy.defaults();
+    expect(policy.enabled, defaults.enabled);
+    expect(policy.enabled, isFalse);
+    expect(policy.minimumAmountSat, defaults.minimumAmount.value.toInt());
+    expect(policy.sessionLifetimeSeconds, defaults.sessionLifetime.inSeconds);
+  });
+
   test('does not re-import after the verified marker exists', () async {
     final source = _LegacyData(_snapshot());
     await importLegacyPayjoinData(database, source);
@@ -105,7 +121,6 @@ void main() {
       sourceSchemaVersion: 14,
       senders: const [],
       receivers: const [],
-      policy: source.snapshot.policy,
     );
 
     await importLegacyPayjoinData(database, source);
@@ -128,7 +143,6 @@ void main() {
       sourceSchemaVersion: 14,
       senders: const [],
       receivers: const [],
-      policy: source.snapshot.policy,
     );
 
     await importLegacyPayjoinData(database, source);
@@ -138,34 +152,42 @@ void main() {
     expect(source.reads, 1);
   });
 
-  test('audit reproducer (H5): invalid rows are quarantined, not fatal', () async {
-    final valid = _snapshot();
-    final source = _LegacyData(
-      PayjoinLegacySnapshot(
-        sourceSchemaVersion: valid.sourceSchemaVersion,
-        // Duplicate uri: one corrupt row must not brick the whole import —
-        // the caller maps any throw to a permanent migration failure, and
-        // reservedOutpoints() gates coin selection app-wide.
-        senders: [valid.senders.single, valid.senders.single],
-        receivers: valid.receivers,
-        policy: valid.policy,
-      ),
-    );
+  test(
+    'audit reproducer (H5): invalid rows are quarantined, not fatal',
+    () async {
+      final valid = _snapshot();
+      final source = _LegacyData(
+        PayjoinLegacySnapshot(
+          sourceSchemaVersion: valid.sourceSchemaVersion,
+          // Duplicate uri: one corrupt row must not brick the whole import —
+          // the caller maps any throw to a permanent migration failure, and
+          // reservedOutpoints() gates coin selection app-wide.
+          senders: [valid.senders.single, valid.senders.single],
+          receivers: valid.receivers,
+        ),
+      );
 
-    await importLegacyPayjoinData(database, source);
+      await importLegacyPayjoinData(database, source);
 
-    expect(await database.select(database.payjoinSenders).get(), hasLength(1));
-    expect(
-      await database.select(database.payjoinReceivers).get(),
-      hasLength(1),
-    );
-    expect(await database.select(database.payjoinPolicies).get(), hasLength(1));
-    final marker = await database
-        .select(database.payjoinMigrations)
-        .getSingle();
-    expect(marker.senderCount, 1);
-    expect(marker.receiverCount, 1);
-  });
+      expect(
+        await database.select(database.payjoinSenders).get(),
+        hasLength(1),
+      );
+      expect(
+        await database.select(database.payjoinReceivers).get(),
+        hasLength(1),
+      );
+      expect(
+        await database.select(database.payjoinPolicies).get(),
+        hasLength(1),
+      );
+      final marker = await database
+          .select(database.payjoinMigrations)
+          .getSingle();
+      expect(marker.senderCount, 1);
+      expect(marker.receiverCount, 1);
+    },
+  );
 
   test('quarantines rows with blank ids or non-positive expiry', () async {
     final valid = _snapshot();
@@ -183,7 +205,6 @@ void main() {
       transactionId: null,
       isExpired: false,
       isCompleted: false,
-      isAborted: false,
     );
     final badReceiver = PayjoinLegacyReceiver(
       id: 'bad-receiver',
@@ -202,14 +223,12 @@ void main() {
       transactionId: null,
       isExpired: false,
       isCompleted: false,
-      isAborted: false,
     );
     final source = _LegacyData(
       PayjoinLegacySnapshot(
         sourceSchemaVersion: valid.sourceSchemaVersion,
         senders: [valid.senders.single, badSender],
         receivers: [valid.receivers.single, badReceiver],
-        policy: valid.policy,
       ),
     );
 
@@ -221,42 +240,4 @@ void main() {
       hasLength(1),
     );
   });
-
-  test(
-    'falls back to default policy when the legacy policy is invalid',
-    () async {
-      final valid = _snapshot();
-      final source = _LegacyData(
-        PayjoinLegacySnapshot(
-          sourceSchemaVersion: valid.sourceSchemaVersion,
-          senders: valid.senders,
-          receivers: valid.receivers,
-          // Below the 1000-sat minimum: invalid per PayjoinPolicy.
-          policy: const PayjoinLegacyPolicy(
-            enabled: true,
-            minimumAmountSat: 10,
-            sessionLifetimeSeconds: 7200,
-          ),
-        ),
-      );
-
-      await importLegacyPayjoinData(database, source);
-
-      final policy = await database
-          .select(database.payjoinPolicies)
-          .getSingle();
-      final defaults = PayjoinPolicy.defaults();
-      expect(policy.enabled, defaults.enabled);
-      expect(policy.minimumAmountSat, defaults.minimumAmount.value.toInt());
-      expect(
-        policy.sessionLifetimeSeconds,
-        defaults.sessionLifetime.inSeconds,
-      );
-      // Sessions still import.
-      expect(
-        await database.select(database.payjoinSenders).get(),
-        hasLength(1),
-      );
-    },
-  );
 }

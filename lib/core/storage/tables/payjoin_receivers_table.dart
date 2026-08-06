@@ -18,13 +18,6 @@ class PayjoinReceivers extends Table {
   TextColumn get txId => text().nullable()();
   BoolColumn get isExpired => boolean()();
   BoolColumn get isCompleted => boolean()();
-  // Set when WE broadcast the original transaction instead of completing a
-  // real payjoin (below-minimum decline, manual "send without payjoin", or
-  // expiry with an original available) — see PayjoinStatus.aborted. Kept
-  // distinct from [isCompleted], which now means only "a real payjoin
-  // proposal was broadcast" — conflating the two used to make every
-  // fallback broadcast display as a completed payjoin.
-  BoolColumn get isAborted => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

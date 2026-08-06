@@ -10,7 +10,6 @@ final class PayjoinLegacyDataAdapter implements PayjoinLegacyDataPort {
   Future<PayjoinLegacySnapshot> readSnapshot() async {
     final senders = await _database.select(_database.payjoinSenders).get();
     final receivers = await _database.select(_database.payjoinReceivers).get();
-    final settings = await _database.select(_database.settings).getSingle();
     return PayjoinLegacySnapshot(
       sourceSchemaVersion: SqliteDatabase.currentSchemaVersion,
       senders: senders
@@ -29,7 +28,6 @@ final class PayjoinLegacyDataAdapter implements PayjoinLegacyDataPort {
               transactionId: row.txId,
               isExpired: row.isExpired,
               isCompleted: row.isCompleted,
-              isAborted: row.isAborted,
             ),
           )
           .toList(),
@@ -52,15 +50,9 @@ final class PayjoinLegacyDataAdapter implements PayjoinLegacyDataPort {
               transactionId: row.txId,
               isExpired: row.isExpired,
               isCompleted: row.isCompleted,
-              isAborted: row.isAborted,
             ),
           )
           .toList(),
-      policy: PayjoinLegacyPolicy(
-        enabled: settings.payjoinEnabled,
-        minimumAmountSat: settings.payjoinMinAmountSat,
-        sessionLifetimeSeconds: settings.payjoinExpireAfterSec,
-      ),
     );
   }
 }

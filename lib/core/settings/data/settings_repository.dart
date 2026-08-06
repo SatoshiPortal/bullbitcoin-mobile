@@ -55,9 +55,6 @@ class SettingsRepository implements domain.SettingsRepository {
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
         exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
-        payjoinEnabled: false,
-        payjoinMinAmountSat: 10000,
-        payjoinExpireAfterSec: 86400,
       ),
     );
   }

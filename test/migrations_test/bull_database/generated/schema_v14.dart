@@ -1828,33 +1828,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         requiredDuringInsert: false,
         $customConstraints: 'NULL',
       );
-  late final GeneratedColumn<int> payjoinEnabled = GeneratedColumn<int>(
-    'payjoin_enabled',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (payjoin_enabled IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
-  late final GeneratedColumn<int> payjoinMinAmountSat = GeneratedColumn<int>(
-    'payjoin_min_amount_sat',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 10000',
-    defaultValue: const CustomExpression('10000'),
-  );
-  late final GeneratedColumn<int> payjoinExpireAfterSec = GeneratedColumn<int>(
-    'payjoin_expire_after_sec',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 86400',
-    defaultValue: const CustomExpression('86400'),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1871,9 +1844,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     isErrorReportingEnabled,
     exchangeTestnetBasicAuthUsername,
     exchangeTestnetBasicAuthPassword,
-    payjoinEnabled,
-    payjoinMinAmountSat,
-    payjoinExpireAfterSec,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1942,18 +1912,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.string,
         data['${effectivePrefix}exchange_testnet_basic_auth_password'],
       ),
-      payjoinEnabled: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}payjoin_enabled'],
-      )!,
-      payjoinMinAmountSat: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}payjoin_min_amount_sat'],
-      )!,
-      payjoinExpireAfterSec: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}payjoin_expire_after_sec'],
-      )!,
     );
   }
 
@@ -1981,9 +1939,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
   final String? exchangeTestnetBasicAuthPassword;
-  final int payjoinEnabled;
-  final int payjoinMinAmountSat;
-  final int payjoinExpireAfterSec;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1999,9 +1954,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
     this.exchangeTestnetBasicAuthPassword,
-    required this.payjoinEnabled,
-    required this.payjoinMinAmountSat,
-    required this.payjoinExpireAfterSec,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2028,9 +1980,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
         exchangeTestnetBasicAuthPassword,
       );
     }
-    map['payjoin_enabled'] = Variable<int>(payjoinEnabled);
-    map['payjoin_min_amount_sat'] = Variable<int>(payjoinMinAmountSat);
-    map['payjoin_expire_after_sec'] = Variable<int>(payjoinExpireAfterSec);
     return map;
   }
 
@@ -2056,9 +2005,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           exchangeTestnetBasicAuthPassword == null && nullToAbsent
           ? const Value.absent()
           : Value(exchangeTestnetBasicAuthPassword),
-      payjoinEnabled: Value(payjoinEnabled),
-      payjoinMinAmountSat: Value(payjoinMinAmountSat),
-      payjoinExpireAfterSec: Value(payjoinExpireAfterSec),
     );
   }
 
@@ -2088,13 +2034,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       exchangeTestnetBasicAuthPassword: serializer.fromJson<String?>(
         json['exchangeTestnetBasicAuthPassword'],
       ),
-      payjoinEnabled: serializer.fromJson<int>(json['payjoinEnabled']),
-      payjoinMinAmountSat: serializer.fromJson<int>(
-        json['payjoinMinAmountSat'],
-      ),
-      payjoinExpireAfterSec: serializer.fromJson<int>(
-        json['payjoinExpireAfterSec'],
-      ),
     );
   }
   @override
@@ -2121,9 +2060,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'exchangeTestnetBasicAuthPassword': serializer.toJson<String?>(
         exchangeTestnetBasicAuthPassword,
       ),
-      'payjoinEnabled': serializer.toJson<int>(payjoinEnabled),
-      'payjoinMinAmountSat': serializer.toJson<int>(payjoinMinAmountSat),
-      'payjoinExpireAfterSec': serializer.toJson<int>(payjoinExpireAfterSec),
     };
   }
 
@@ -2142,9 +2078,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? isErrorReportingEnabled,
     Value<String?> exchangeTestnetBasicAuthUsername = const Value.absent(),
     Value<String?> exchangeTestnetBasicAuthPassword = const Value.absent(),
-    int? payjoinEnabled,
-    int? payjoinMinAmountSat,
-    int? payjoinExpireAfterSec,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -2165,9 +2098,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword.present
         ? exchangeTestnetBasicAuthPassword.value
         : this.exchangeTestnetBasicAuthPassword,
-    payjoinEnabled: payjoinEnabled ?? this.payjoinEnabled,
-    payjoinMinAmountSat: payjoinMinAmountSat ?? this.payjoinMinAmountSat,
-    payjoinExpireAfterSec: payjoinExpireAfterSec ?? this.payjoinExpireAfterSec,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2207,15 +2137,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           data.exchangeTestnetBasicAuthPassword.present
           ? data.exchangeTestnetBasicAuthPassword.value
           : this.exchangeTestnetBasicAuthPassword,
-      payjoinEnabled: data.payjoinEnabled.present
-          ? data.payjoinEnabled.value
-          : this.payjoinEnabled,
-      payjoinMinAmountSat: data.payjoinMinAmountSat.present
-          ? data.payjoinMinAmountSat.value
-          : this.payjoinMinAmountSat,
-      payjoinExpireAfterSec: data.payjoinExpireAfterSec.present
-          ? data.payjoinExpireAfterSec.value
-          : this.payjoinExpireAfterSec,
     );
   }
 
@@ -2238,11 +2159,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
             'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
           )
           ..write(
-            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword, ',
+            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword',
           )
-          ..write('payjoinEnabled: $payjoinEnabled, ')
-          ..write('payjoinMinAmountSat: $payjoinMinAmountSat, ')
-          ..write('payjoinExpireAfterSec: $payjoinExpireAfterSec')
           ..write(')'))
         .toString();
   }
@@ -2263,9 +2181,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     isErrorReportingEnabled,
     exchangeTestnetBasicAuthUsername,
     exchangeTestnetBasicAuthPassword,
-    payjoinEnabled,
-    payjoinMinAmountSat,
-    payjoinExpireAfterSec,
   );
   @override
   bool operator ==(Object other) =>
@@ -2286,10 +2201,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.exchangeTestnetBasicAuthUsername ==
               this.exchangeTestnetBasicAuthUsername &&
           other.exchangeTestnetBasicAuthPassword ==
-              this.exchangeTestnetBasicAuthPassword &&
-          other.payjoinEnabled == this.payjoinEnabled &&
-          other.payjoinMinAmountSat == this.payjoinMinAmountSat &&
-          other.payjoinExpireAfterSec == this.payjoinExpireAfterSec);
+              this.exchangeTestnetBasicAuthPassword);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2307,9 +2219,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> isErrorReportingEnabled;
   final Value<String?> exchangeTestnetBasicAuthUsername;
   final Value<String?> exchangeTestnetBasicAuthPassword;
-  final Value<int> payjoinEnabled;
-  final Value<int> payjoinMinAmountSat;
-  final Value<int> payjoinExpireAfterSec;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2325,9 +2234,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.isErrorReportingEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
     this.exchangeTestnetBasicAuthPassword = const Value.absent(),
-    this.payjoinEnabled = const Value.absent(),
-    this.payjoinMinAmountSat = const Value.absent(),
-    this.payjoinExpireAfterSec = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2344,9 +2250,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.isErrorReportingEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
     this.exchangeTestnetBasicAuthPassword = const Value.absent(),
-    this.payjoinEnabled = const Value.absent(),
-    this.payjoinMinAmountSat = const Value.absent(),
-    this.payjoinExpireAfterSec = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2368,9 +2271,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? isErrorReportingEnabled,
     Expression<String>? exchangeTestnetBasicAuthUsername,
     Expression<String>? exchangeTestnetBasicAuthPassword,
-    Expression<int>? payjoinEnabled,
-    Expression<int>? payjoinMinAmountSat,
-    Expression<int>? payjoinExpireAfterSec,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2392,11 +2292,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (exchangeTestnetBasicAuthPassword != null)
         'exchange_testnet_basic_auth_password':
             exchangeTestnetBasicAuthPassword,
-      if (payjoinEnabled != null) 'payjoin_enabled': payjoinEnabled,
-      if (payjoinMinAmountSat != null)
-        'payjoin_min_amount_sat': payjoinMinAmountSat,
-      if (payjoinExpireAfterSec != null)
-        'payjoin_expire_after_sec': payjoinExpireAfterSec,
     });
   }
 
@@ -2415,9 +2310,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? isErrorReportingEnabled,
     Value<String?>? exchangeTestnetBasicAuthUsername,
     Value<String?>? exchangeTestnetBasicAuthPassword,
-    Value<int>? payjoinEnabled,
-    Value<int>? payjoinMinAmountSat,
-    Value<int>? payjoinExpireAfterSec,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2439,10 +2331,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       exchangeTestnetBasicAuthPassword:
           exchangeTestnetBasicAuthPassword ??
           this.exchangeTestnetBasicAuthPassword,
-      payjoinEnabled: payjoinEnabled ?? this.payjoinEnabled,
-      payjoinMinAmountSat: payjoinMinAmountSat ?? this.payjoinMinAmountSat,
-      payjoinExpireAfterSec:
-          payjoinExpireAfterSec ?? this.payjoinExpireAfterSec,
     );
   }
 
@@ -2497,17 +2385,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
         exchangeTestnetBasicAuthPassword.value,
       );
     }
-    if (payjoinEnabled.present) {
-      map['payjoin_enabled'] = Variable<int>(payjoinEnabled.value);
-    }
-    if (payjoinMinAmountSat.present) {
-      map['payjoin_min_amount_sat'] = Variable<int>(payjoinMinAmountSat.value);
-    }
-    if (payjoinExpireAfterSec.present) {
-      map['payjoin_expire_after_sec'] = Variable<int>(
-        payjoinExpireAfterSec.value,
-      );
-    }
     return map;
   }
 
@@ -2530,11 +2407,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
             'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
           )
           ..write(
-            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword, ',
+            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword',
           )
-          ..write('payjoinEnabled: $payjoinEnabled, ')
-          ..write('payjoinMinAmountSat: $payjoinMinAmountSat, ')
-          ..write('payjoinExpireAfterSec: $payjoinExpireAfterSec')
           ..write(')'))
         .toString();
   }
@@ -2650,15 +2524,6 @@ class PayjoinSenders extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (is_completed IN (0, 1))',
   );
-  late final GeneratedColumn<int> isAborted = GeneratedColumn<int>(
-    'is_aborted',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_aborted IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     uri,
@@ -2674,7 +2539,6 @@ class PayjoinSenders extends Table
     txId,
     isExpired,
     isCompleted,
-    isAborted,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2739,10 +2603,6 @@ class PayjoinSenders extends Table
         DriftSqlType.int,
         data['${effectivePrefix}is_completed'],
       )!,
-      isAborted: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}is_aborted'],
-      )!,
     );
   }
 
@@ -2772,7 +2632,6 @@ class PayjoinSendersData extends DataClass
   final String? txId;
   final int isExpired;
   final int isCompleted;
-  final int isAborted;
   const PayjoinSendersData({
     required this.uri,
     required this.isTestnet,
@@ -2787,7 +2646,6 @@ class PayjoinSendersData extends DataClass
     this.txId,
     required this.isExpired,
     required this.isCompleted,
-    required this.isAborted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2809,7 +2667,6 @@ class PayjoinSendersData extends DataClass
     }
     map['is_expired'] = Variable<int>(isExpired);
     map['is_completed'] = Variable<int>(isCompleted);
-    map['is_aborted'] = Variable<int>(isAborted);
     return map;
   }
 
@@ -2830,7 +2687,6 @@ class PayjoinSendersData extends DataClass
       txId: txId == null && nullToAbsent ? const Value.absent() : Value(txId),
       isExpired: Value(isExpired),
       isCompleted: Value(isCompleted),
-      isAborted: Value(isAborted),
     );
   }
 
@@ -2853,7 +2709,6 @@ class PayjoinSendersData extends DataClass
       txId: serializer.fromJson<String?>(json['txId']),
       isExpired: serializer.fromJson<int>(json['isExpired']),
       isCompleted: serializer.fromJson<int>(json['isCompleted']),
-      isAborted: serializer.fromJson<int>(json['isAborted']),
     );
   }
   @override
@@ -2873,7 +2728,6 @@ class PayjoinSendersData extends DataClass
       'txId': serializer.toJson<String?>(txId),
       'isExpired': serializer.toJson<int>(isExpired),
       'isCompleted': serializer.toJson<int>(isCompleted),
-      'isAborted': serializer.toJson<int>(isAborted),
     };
   }
 
@@ -2891,7 +2745,6 @@ class PayjoinSendersData extends DataClass
     Value<String?> txId = const Value.absent(),
     int? isExpired,
     int? isCompleted,
-    int? isAborted,
   }) => PayjoinSendersData(
     uri: uri ?? this.uri,
     isTestnet: isTestnet ?? this.isTestnet,
@@ -2906,7 +2759,6 @@ class PayjoinSendersData extends DataClass
     txId: txId.present ? txId.value : this.txId,
     isExpired: isExpired ?? this.isExpired,
     isCompleted: isCompleted ?? this.isCompleted,
-    isAborted: isAborted ?? this.isAborted,
   );
   PayjoinSendersData copyWithCompanion(PayjoinSendersCompanion data) {
     return PayjoinSendersData(
@@ -2933,7 +2785,6 @@ class PayjoinSendersData extends DataClass
       isCompleted: data.isCompleted.present
           ? data.isCompleted.value
           : this.isCompleted,
-      isAborted: data.isAborted.present ? data.isAborted.value : this.isAborted,
     );
   }
 
@@ -2952,8 +2803,7 @@ class PayjoinSendersData extends DataClass
           ..write('proposalPsbt: $proposalPsbt, ')
           ..write('txId: $txId, ')
           ..write('isExpired: $isExpired, ')
-          ..write('isCompleted: $isCompleted, ')
-          ..write('isAborted: $isAborted')
+          ..write('isCompleted: $isCompleted')
           ..write(')'))
         .toString();
   }
@@ -2973,7 +2823,6 @@ class PayjoinSendersData extends DataClass
     txId,
     isExpired,
     isCompleted,
-    isAborted,
   );
   @override
   bool operator ==(Object other) =>
@@ -2991,8 +2840,7 @@ class PayjoinSendersData extends DataClass
           other.proposalPsbt == this.proposalPsbt &&
           other.txId == this.txId &&
           other.isExpired == this.isExpired &&
-          other.isCompleted == this.isCompleted &&
-          other.isAborted == this.isAborted);
+          other.isCompleted == this.isCompleted);
 }
 
 class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
@@ -3009,7 +2857,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
   final Value<String?> txId;
   final Value<int> isExpired;
   final Value<int> isCompleted;
-  final Value<int> isAborted;
   final Value<int> rowid;
   const PayjoinSendersCompanion({
     this.uri = const Value.absent(),
@@ -3025,7 +2872,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     this.txId = const Value.absent(),
     this.isExpired = const Value.absent(),
     this.isCompleted = const Value.absent(),
-    this.isAborted = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PayjoinSendersCompanion.insert({
@@ -3042,7 +2888,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     this.txId = const Value.absent(),
     required int isExpired,
     required int isCompleted,
-    this.isAborted = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : uri = Value(uri),
        isTestnet = Value(isTestnet),
@@ -3069,7 +2914,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     Expression<String>? txId,
     Expression<int>? isExpired,
     Expression<int>? isCompleted,
-    Expression<int>? isAborted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3086,7 +2930,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
       if (txId != null) 'tx_id': txId,
       if (isExpired != null) 'is_expired': isExpired,
       if (isCompleted != null) 'is_completed': isCompleted,
-      if (isAborted != null) 'is_aborted': isAborted,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3105,7 +2948,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     Value<String?>? txId,
     Value<int>? isExpired,
     Value<int>? isCompleted,
-    Value<int>? isAborted,
     Value<int>? rowid,
   }) {
     return PayjoinSendersCompanion(
@@ -3122,7 +2964,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
       txId: txId ?? this.txId,
       isExpired: isExpired ?? this.isExpired,
       isCompleted: isCompleted ?? this.isCompleted,
-      isAborted: isAborted ?? this.isAborted,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3169,9 +3010,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     if (isCompleted.present) {
       map['is_completed'] = Variable<int>(isCompleted.value);
     }
-    if (isAborted.present) {
-      map['is_aborted'] = Variable<int>(isAborted.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3194,7 +3032,6 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
           ..write('txId: $txId, ')
           ..write('isExpired: $isExpired, ')
           ..write('isCompleted: $isCompleted, ')
-          ..write('isAborted: $isAborted, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3336,15 +3173,6 @@ class PayjoinReceivers extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (is_completed IN (0, 1))',
   );
-  late final GeneratedColumn<int> isAborted = GeneratedColumn<int>(
-    'is_aborted',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_aborted IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3363,7 +3191,6 @@ class PayjoinReceivers extends Table
     txId,
     isExpired,
     isCompleted,
-    isAborted,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3440,10 +3267,6 @@ class PayjoinReceivers extends Table
         DriftSqlType.int,
         data['${effectivePrefix}is_completed'],
       )!,
-      isAborted: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}is_aborted'],
-      )!,
     );
   }
 
@@ -3476,7 +3299,6 @@ class PayjoinReceiversData extends DataClass
   final String? txId;
   final int isExpired;
   final int isCompleted;
-  final int isAborted;
   const PayjoinReceiversData({
     required this.id,
     required this.address,
@@ -3494,7 +3316,6 @@ class PayjoinReceiversData extends DataClass
     this.txId,
     required this.isExpired,
     required this.isCompleted,
-    required this.isAborted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3525,7 +3346,6 @@ class PayjoinReceiversData extends DataClass
     }
     map['is_expired'] = Variable<int>(isExpired);
     map['is_completed'] = Variable<int>(isCompleted);
-    map['is_aborted'] = Variable<int>(isAborted);
     return map;
   }
 
@@ -3555,7 +3375,6 @@ class PayjoinReceiversData extends DataClass
       txId: txId == null && nullToAbsent ? const Value.absent() : Value(txId),
       isExpired: Value(isExpired),
       isCompleted: Value(isCompleted),
-      isAborted: Value(isAborted),
     );
   }
 
@@ -3583,7 +3402,6 @@ class PayjoinReceiversData extends DataClass
       txId: serializer.fromJson<String?>(json['txId']),
       isExpired: serializer.fromJson<int>(json['isExpired']),
       isCompleted: serializer.fromJson<int>(json['isCompleted']),
-      isAborted: serializer.fromJson<int>(json['isAborted']),
     );
   }
   @override
@@ -3606,7 +3424,6 @@ class PayjoinReceiversData extends DataClass
       'txId': serializer.toJson<String?>(txId),
       'isExpired': serializer.toJson<int>(isExpired),
       'isCompleted': serializer.toJson<int>(isCompleted),
-      'isAborted': serializer.toJson<int>(isAborted),
     };
   }
 
@@ -3627,7 +3444,6 @@ class PayjoinReceiversData extends DataClass
     Value<String?> txId = const Value.absent(),
     int? isExpired,
     int? isCompleted,
-    int? isAborted,
   }) => PayjoinReceiversData(
     id: id ?? this.id,
     address: address ?? this.address,
@@ -3647,7 +3463,6 @@ class PayjoinReceiversData extends DataClass
     txId: txId.present ? txId.value : this.txId,
     isExpired: isExpired ?? this.isExpired,
     isCompleted: isCompleted ?? this.isCompleted,
-    isAborted: isAborted ?? this.isAborted,
   );
   PayjoinReceiversData copyWithCompanion(PayjoinReceiversCompanion data) {
     return PayjoinReceiversData(
@@ -3679,7 +3494,6 @@ class PayjoinReceiversData extends DataClass
       isCompleted: data.isCompleted.present
           ? data.isCompleted.value
           : this.isCompleted,
-      isAborted: data.isAborted.present ? data.isAborted.value : this.isAborted,
     );
   }
 
@@ -3701,8 +3515,7 @@ class PayjoinReceiversData extends DataClass
           ..write('proposalPsbt: $proposalPsbt, ')
           ..write('txId: $txId, ')
           ..write('isExpired: $isExpired, ')
-          ..write('isCompleted: $isCompleted, ')
-          ..write('isAborted: $isAborted')
+          ..write('isCompleted: $isCompleted')
           ..write(')'))
         .toString();
   }
@@ -3725,7 +3538,6 @@ class PayjoinReceiversData extends DataClass
     txId,
     isExpired,
     isCompleted,
-    isAborted,
   );
   @override
   bool operator ==(Object other) =>
@@ -3749,8 +3561,7 @@ class PayjoinReceiversData extends DataClass
           other.proposalPsbt == this.proposalPsbt &&
           other.txId == this.txId &&
           other.isExpired == this.isExpired &&
-          other.isCompleted == this.isCompleted &&
-          other.isAborted == this.isAborted);
+          other.isCompleted == this.isCompleted);
 }
 
 class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
@@ -3770,7 +3581,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   final Value<String?> txId;
   final Value<int> isExpired;
   final Value<int> isCompleted;
-  final Value<int> isAborted;
   final Value<int> rowid;
   const PayjoinReceiversCompanion({
     this.id = const Value.absent(),
@@ -3789,7 +3599,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     this.txId = const Value.absent(),
     this.isExpired = const Value.absent(),
     this.isCompleted = const Value.absent(),
-    this.isAborted = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PayjoinReceiversCompanion.insert({
@@ -3809,7 +3618,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     this.txId = const Value.absent(),
     required int isExpired,
     required int isCompleted,
-    this.isAborted = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        address = Value(address),
@@ -3839,7 +3647,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Expression<String>? txId,
     Expression<int>? isExpired,
     Expression<int>? isCompleted,
-    Expression<int>? isAborted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3860,7 +3667,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       if (txId != null) 'tx_id': txId,
       if (isExpired != null) 'is_expired': isExpired,
       if (isCompleted != null) 'is_completed': isCompleted,
-      if (isAborted != null) 'is_aborted': isAborted,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3882,7 +3688,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Value<String?>? txId,
     Value<int>? isExpired,
     Value<int>? isCompleted,
-    Value<int>? isAborted,
     Value<int>? rowid,
   }) {
     return PayjoinReceiversCompanion(
@@ -3902,7 +3707,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       txId: txId ?? this.txId,
       isExpired: isExpired ?? this.isExpired,
       isCompleted: isCompleted ?? this.isCompleted,
-      isAborted: isAborted ?? this.isAborted,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3958,9 +3762,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     if (isCompleted.present) {
       map['is_completed'] = Variable<int>(isCompleted.value);
     }
-    if (isAborted.present) {
-      map['is_aborted'] = Variable<int>(isAborted.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3986,7 +3787,6 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
           ..write('txId: $txId, ')
           ..write('isExpired: $isExpired, ')
           ..write('isCompleted: $isCompleted, ')
-          ..write('isAborted: $isAborted, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

@@ -120,17 +120,21 @@ final class PayjoinUtxo {
   }
 }
 
+/// The payjoin state readable from the root database, as it actually shipped.
+///
+/// Carries no policy: the root `settings` payjoin columns only ever existed in
+/// schema 14, which was never released (every tag up to v6.12.5 is on 13), so
+/// no installation can hold a user-chosen policy to import. A fresh payjoin
+/// database is seeded from `PayjoinPolicy.defaults()` instead.
 final class PayjoinLegacySnapshot {
   final int sourceSchemaVersion;
   final List<PayjoinLegacySender> senders;
   final List<PayjoinLegacyReceiver> receivers;
-  final PayjoinLegacyPolicy policy;
 
   const PayjoinLegacySnapshot({
     required this.sourceSchemaVersion,
     required this.senders,
     required this.receivers,
-    required this.policy,
   });
 }
 
@@ -148,7 +152,6 @@ final class PayjoinLegacySender {
   final String? transactionId;
   final bool isExpired;
   final bool isCompleted;
-  final bool isAborted;
 
   const PayjoinLegacySender({
     required this.uri,
@@ -164,7 +167,6 @@ final class PayjoinLegacySender {
     required this.transactionId,
     required this.isExpired,
     required this.isCompleted,
-    required this.isAborted,
   });
 }
 
@@ -185,7 +187,6 @@ final class PayjoinLegacyReceiver {
   final String? transactionId;
   final bool isExpired;
   final bool isCompleted;
-  final bool isAborted;
 
   const PayjoinLegacyReceiver({
     required this.id,
@@ -204,19 +205,6 @@ final class PayjoinLegacyReceiver {
     required this.transactionId,
     required this.isExpired,
     required this.isCompleted,
-    required this.isAborted,
-  });
-}
-
-final class PayjoinLegacyPolicy {
-  final bool enabled;
-  final int minimumAmountSat;
-  final int sessionLifetimeSeconds;
-
-  const PayjoinLegacyPolicy({
-    required this.enabled,
-    required this.minimumAmountSat,
-    required this.sessionLifetimeSeconds,
   });
 }
 

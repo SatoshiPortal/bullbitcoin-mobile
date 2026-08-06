@@ -16,9 +16,6 @@ class SettingsModel {
   final bool isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
   final String? exchangeTestnetBasicAuthPassword;
-  final bool payjoinEnabled;
-  final int payjoinMinAmountSat;
-  final int payjoinExpireAfterSec;
 
   const SettingsModel({
     required this.id,
@@ -35,9 +32,6 @@ class SettingsModel {
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
     this.exchangeTestnetBasicAuthPassword,
-    required this.payjoinEnabled,
-    required this.payjoinMinAmountSat,
-    required this.payjoinExpireAfterSec,
   });
 
   SettingsRow toSqlite() {
@@ -56,9 +50,6 @@ class SettingsModel {
       isErrorReportingEnabled: isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
-      payjoinEnabled: payjoinEnabled,
-      payjoinMinAmountSat: payjoinMinAmountSat,
-      payjoinExpireAfterSec: payjoinExpireAfterSec,
     );
   }
 
@@ -78,9 +69,6 @@ class SettingsModel {
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: row.exchangeTestnetBasicAuthPassword,
-      payjoinEnabled: row.payjoinEnabled,
-      payjoinMinAmountSat: row.payjoinMinAmountSat,
-      payjoinExpireAfterSec: row.payjoinExpireAfterSec,
     );
   }
 }

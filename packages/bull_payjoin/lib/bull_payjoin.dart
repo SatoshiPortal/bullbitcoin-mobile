@@ -29,7 +29,6 @@ export 'src/domain/payjoin_ports.dart'
         PayjoinLegacySnapshot,
         PayjoinLegacySender,
         PayjoinLegacyReceiver,
-        PayjoinLegacyPolicy,
         PayjoinLogLevel,
         PayjoinLogCode,
         PayjoinLogEvent;

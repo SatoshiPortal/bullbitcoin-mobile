@@ -6,7 +6,6 @@ import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart';
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
-import 'package:primitives/primitives.dart';
 
 const _legacyImportName = 'root-payjoin-v1';
 
@@ -47,7 +46,9 @@ Future<void> importLegacyPayjoinData(
               txId: Value(sender.transactionId),
               isExpired: sender.isExpired,
               isCompleted: sender.isCompleted,
-              isAborted: sender.isAborted,
+              // The root schema never shipped is_aborted (added in schema 14,
+              // unreleased), so every imported row starts un-aborted.
+              isAborted: false,
             ),
           );
     }
@@ -72,18 +73,24 @@ Future<void> importLegacyPayjoinData(
               txId: Value(receiver.transactionId),
               isExpired: receiver.isExpired,
               isCompleted: receiver.isCompleted,
-              isAborted: receiver.isAborted,
+              // See the sender insert above: is_aborted has no legacy source.
+              isAborted: false,
             ),
           );
     }
+    // Seeds the single policy row the store reads with getSingle(). There is
+    // nothing to carry over: the root settings payjoin columns only existed in
+    // the unreleased schema 14, so every install arrives here without a stored
+    // preference and starts from the conservative defaults (payjoin disabled).
+    final defaults = PayjoinPolicy.defaults();
     await database
         .into(database.payjoinPolicies)
         .insert(
           PayjoinPoliciesCompanion.insert(
             id: const Value(1),
-            enabled: snapshot.policy.enabled,
-            minimumAmountSat: snapshot.policy.minimumAmountSat,
-            sessionLifetimeSeconds: snapshot.policy.sessionLifetimeSeconds,
+            enabled: defaults.enabled,
+            minimumAmountSat: defaults.minimumAmount.value.toInt(),
+            sessionLifetimeSeconds: defaults.sessionLifetime.inSeconds,
           ),
         );
 
@@ -119,9 +126,7 @@ Future<void> importLegacyPayjoinData(
 /// PayjoinMigrationFailure, and `reservedOutpoints()` gates coin selection —
 /// so one bad row would brick every bitcoin send in the app with no
 /// recovery path. Skipped rows are lost for good (the one-shot marker still
-/// records the import), which is why every skip is logged. A corrupt policy
-/// falls back to the defaults (disabled, conservative bounds) rather than
-/// failing: the user can re-enable payjoin in settings.
+/// records the import), which is why every skip is logged.
 PayjoinLegacySnapshot _quarantineSnapshot(
   PayjoinLegacySnapshot snapshot, {
   PayjoinLogPort? log,
@@ -153,31 +158,6 @@ PayjoinLegacySnapshot _quarantineSnapshot(
     }
   }
 
-  var policy = snapshot.policy;
-  try {
-    PayjoinPolicy(
-      enabled: policy.enabled,
-      minimumAmount: Sats.fromInt(policy.minimumAmountSat),
-      sessionLifetime: Duration(seconds: policy.sessionLifetimeSeconds),
-    );
-  } catch (_) {
-    final defaults = PayjoinPolicy.defaults();
-    policy = PayjoinLegacyPolicy(
-      enabled: defaults.enabled,
-      minimumAmountSat: defaults.minimumAmount.value.toInt(),
-      sessionLifetimeSeconds: defaults.sessionLifetime.inSeconds,
-    );
-    log?.write(
-      PayjoinLogEvent(
-        level: PayjoinLogLevel.warning,
-        code: PayjoinLogCode.migrationFailure,
-        error: StateError(
-          'Legacy Payjoin policy was invalid; imported defaults instead',
-        ),
-      ),
-    );
-  }
-
   if (skippedSenders > 0 || skippedReceivers > 0) {
     log?.write(
       PayjoinLogEvent(
@@ -195,7 +175,6 @@ PayjoinLegacySnapshot _quarantineSnapshot(
     sourceSchemaVersion: snapshot.sourceSchemaVersion,
     senders: senders,
     receivers: receivers,
-    policy: policy,
   );
 }
 
@@ -205,9 +184,6 @@ Future<PayjoinLegacySnapshot> _readSnapshot(
 }) async {
   final senders = await database.select(database.payjoinSenders).get();
   final receivers = await database.select(database.payjoinReceivers).get();
-  final policy = await (database.select(
-    database.payjoinPolicies,
-  )..where((row) => row.id.equals(1))).getSingle();
   return PayjoinLegacySnapshot(
     sourceSchemaVersion: sourceSchemaVersion,
     senders: senders
@@ -226,7 +202,6 @@ Future<PayjoinLegacySnapshot> _readSnapshot(
             transactionId: row.txId,
             isExpired: row.isExpired,
             isCompleted: row.isCompleted,
-            isAborted: row.isAborted,
           ),
         )
         .toList(),
@@ -249,15 +224,9 @@ Future<PayjoinLegacySnapshot> _readSnapshot(
             transactionId: row.txId,
             isExpired: row.isExpired,
             isCompleted: row.isCompleted,
-            isAborted: row.isAborted,
           ),
         )
         .toList(),
-    policy: PayjoinLegacyPolicy(
-      enabled: policy.enabled,
-      minimumAmountSat: policy.minimumAmountSat,
-      sessionLifetimeSeconds: policy.sessionLifetimeSeconds,
-    ),
   );
 }
 
@@ -281,7 +250,6 @@ String _snapshotDigest(PayjoinLegacySnapshot snapshot) {
     _writeText(sink, sender.transactionId);
     _writeBool(sink, sender.isExpired);
     _writeBool(sink, sender.isCompleted);
-    _writeBool(sink, sender.isAborted);
   }
   for (final receiver in receivers) {
     _writeText(sink, 'receiver');
@@ -301,12 +269,9 @@ String _snapshotDigest(PayjoinLegacySnapshot snapshot) {
     _writeText(sink, receiver.transactionId);
     _writeBool(sink, receiver.isExpired);
     _writeBool(sink, receiver.isCompleted);
-    _writeBool(sink, receiver.isAborted);
   }
-  _writeText(sink, 'policy');
-  _writeBool(sink, snapshot.policy.enabled);
-  _writeInt(sink, snapshot.policy.minimumAmountSat);
-  _writeInt(sink, snapshot.policy.sessionLifetimeSeconds);
+  // No policy in the digest: it is seeded from the defaults rather than
+  // imported, so there is nothing to round-trip and verify.
   return sha256.convert(sink.takeBytes()).toString();
 }
 

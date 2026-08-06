@@ -72,17 +72,15 @@ final class _LabelsPort implements PayjoinLabelsPort {
 }
 
 final class _LegacyData implements PayjoinLegacyDataPort {
-  final PayjoinLegacyPolicy policy;
-
-  const _LegacyData(this.policy);
+  const _LegacyData();
 
   @override
-  Future<PayjoinLegacySnapshot> readSnapshot() async => PayjoinLegacySnapshot(
-    sourceSchemaVersion: 14,
-    senders: const [],
-    receivers: const [],
-    policy: policy,
-  );
+  Future<PayjoinLegacySnapshot> readSnapshot() async =>
+      const PayjoinLegacySnapshot(
+        sourceSchemaVersion: 14,
+        senders: [],
+        receivers: [],
+      );
 }
 
 final class _LogPort implements PayjoinLogPort {
@@ -101,29 +99,20 @@ void main() {
 
   tearDown(() => directory.delete(recursive: true));
 
-  Future<Result<PayjoinLifecycle, PayjoinFailure>> open(
-    PayjoinLegacyPolicy policy, {
-    PayjoinLogPort? log,
-  }) {
+  Future<Result<PayjoinLifecycle, PayjoinFailure>> open({PayjoinLogPort? log}) {
     return openPayjoin(
       databasePath: '${directory.path}/payjoin.sqlite',
       wallet: _WalletPort(),
       blockchain: _BlockchainPort(),
       transactions: _TransactionPort(),
       labels: _LabelsPort(),
-      legacyData: _LegacyData(policy),
+      legacyData: const _LegacyData(),
       log: log ?? _LogPort(),
     );
   }
 
-  test('opens roles over migrated policy and disposes cleanly', () async {
-    final result = await open(
-      const PayjoinLegacyPolicy(
-        enabled: true,
-        minimumAmountSat: 12000,
-        sessionLifetimeSeconds: 7200,
-      ),
-    );
+  test('opens roles over the seeded policy and disposes cleanly', () async {
+    final result = await open();
     final lifecycle = switch (result) {
       Ok(:final value) => value,
       Err(:final failure) => throw failure,
@@ -131,8 +120,19 @@ void main() {
 
     final policy = await lifecycle.payjoin.policy.load();
 
-    expect(policy, isA<Ok<PayjoinPolicy, PayjoinFailure>>());
-    expect((policy as Ok<PayjoinPolicy, PayjoinFailure>).value.enabled, isTrue);
+    // Nothing to migrate: the root settings payjoin columns only existed in
+    // the unreleased schema 14, so a freshly opened payjoin database starts on
+    // the conservative defaults, payjoin disabled.
+    final loaded = switch (policy) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    final defaults = PayjoinPolicy.defaults();
+    expect(loaded.enabled, defaults.enabled);
+    expect(loaded.enabled, isFalse);
+    expect(loaded.minimumAmount.value, defaults.minimumAmount.value);
+    expect(loaded.sessionLifetime, defaults.sessionLifetime);
+
     final invalidMinimum = await lifecycle.payjoin.policy.setMinimumAmount(
       Sats.fromInt(500),
     );
@@ -140,40 +140,6 @@ void main() {
       Ok() => null,
       Err(:final failure) => failure,
     }, isA<PayjoinInvalidInputFailure>());
-    await lifecycle.dispose();
-  });
-
-  test('falls back to default policy for invalid legacy policy', () async {
-    final log = _LogPort();
-    final result = await open(
-      const PayjoinLegacyPolicy(
-        enabled: true,
-        minimumAmountSat: 500,
-        sessionLifetimeSeconds: 7200,
-      ),
-      log: log,
-    );
-
-    // An invalid legacy policy must not brick the open: the import
-    // quarantines it and falls back to the defaults (disabled, conservative
-    // bounds), reporting the substitution as a warning.
-    final lifecycle = switch (result) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw failure,
-    };
-    final policy = await lifecycle.payjoin.policy.load();
-    final loaded = switch (policy) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw failure,
-    };
-    final defaults = PayjoinPolicy.defaults();
-    expect(loaded.enabled, defaults.enabled);
-    expect(loaded.minimumAmount.value, defaults.minimumAmount.value);
-    expect(loaded.sessionLifetime, defaults.sessionLifetime);
-    expect(
-      log.events.where((e) => e.code == PayjoinLogCode.migrationFailure),
-      isNotEmpty,
-    );
     await lifecycle.dispose();
   });
 }
