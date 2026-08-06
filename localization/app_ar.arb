@@ -2942,10 +2942,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "backupWalletPhysicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
@@ -5103,10 +5099,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "لا توجد بذور إرث.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "keystoneStep5": "   - زيادة السطوع على جهازك",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -7159,10 +7151,6 @@
   "@exchangeDcaAddressLabelBitcoin": {
     "description": "Label for Bitcoin address in DCA settings"
   },
-  "legacySeedViewPassphrasesLabel": "تصاريح:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "استمر",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -7456,10 +7444,6 @@
   "exchangeRecipientsTitle": "المتلقين",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(فاري)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Derivation Path",
   "@importWatchOnlyDerivationPath": {
@@ -8840,10 +8824,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "وقت الإنشاء",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -9357,10 +9337,6 @@
   "dcaConfirmFrequencyHourly": "كل ساعة",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC Code",
   "@sellSwiftCode": {

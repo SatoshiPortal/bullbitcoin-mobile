@@ -3120,10 +3120,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "Lütfen yedek dosyanızı alırken bekleyin.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -5416,10 +5412,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "Hiçbir miras tohumları bulundu.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "keystoneStep5": "   - Cihazınızda ekran parlaklığı artırmak",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -7614,10 +7606,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Pasphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "Devam etmeye devam et",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -7902,10 +7890,6 @@
   "exchangeRecipientsTitle": "Recipient",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(eylül)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Türleme Yolu",
   "@importWatchOnlyDerivationPath": {
@@ -9390,10 +9374,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin yaratım zamanı",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -9945,10 +9925,6 @@
   "dcaConfirmFrequencyHourly": "Her saat",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonik",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC Code",
   "@sellSwiftCode": {

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
@@ -139,7 +138,6 @@ class SettingsLocator {
         setCurrencyUsecase: locator<SetCurrencyUsecase>(),
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
-        getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),

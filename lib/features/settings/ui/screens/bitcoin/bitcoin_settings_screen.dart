@@ -20,9 +20,6 @@ class BitcoinSettingsScreen extends StatelessWidget {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
-    final hasLegacySeeds = context.select(
-      (SettingsCubit cubit) => cubit.state.hasLegacySeeds ?? false,
-    );
     final isDevModeEnabled = context.select(
       (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
     );
@@ -95,14 +92,6 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     context.pushNamed(MempoolSettingsRoute.name);
                   },
                 ),
-                if (hasLegacySeeds)
-                  SettingsEntryItem(
-                    icon: Icons.vpn_key,
-                    title: context.loc.bitcoinSettingsLegacySeedsTitle,
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.legacySeeds.name);
-                    },
-                  ),
                 if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,

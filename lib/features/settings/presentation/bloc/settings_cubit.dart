@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -40,7 +39,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setIsSuperuserUsecase,
     required this._setIsDevModeUsecase,
     required this._setThemeModeUsecase,
-    required this._getOldSeedsUsecase,
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
@@ -64,7 +62,6 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final SetThemeModeUsecase _setThemeModeUsecase;
-  final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
@@ -90,8 +87,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
-
-    await checkHasLegacySeeds();
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -167,11 +162,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
     );
-  }
-
-  Future<void> checkHasLegacySeeds() async {
-    final seeds = await _getOldSeedsUsecase.execute();
-    emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
   }
 
   Future<void> toggleDevMode(bool isEnabled) async {

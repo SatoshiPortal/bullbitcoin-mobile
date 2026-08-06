@@ -34,11 +34,9 @@ class LocalPayjoinDatasource {
   /// stalling on the pre-POST state. A no-op when no row matches (tests that
   /// never persisted).
   Future<void> updateSenderSessionState(PayjoinSenderModel sender) async {
-    await (_db.update(
-      _db.payjoinSenders,
-    )..where((row) => row.uri.equals(sender.id))).write(
-      PayjoinSendersCompanion(sender: Value(sender.sender)),
-    );
+    await (_db.update(_db.payjoinSenders)
+          ..where((row) => row.uri.equals(sender.id)))
+        .write(PayjoinSendersCompanion(sender: Value(sender.sender)));
   }
 
   /// Replaces only a sender that expired without a known broadcast outcome.

@@ -56,7 +56,6 @@ class CoreLocator {
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
-    StorageLocator.registerRepositories(locator);
     await RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);

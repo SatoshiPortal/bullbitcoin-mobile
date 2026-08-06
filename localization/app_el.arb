@@ -7871,10 +7871,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin Δημιουργία χρόνος",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -10196,10 +10192,6 @@
   "@backupWalletInstructionSecurityRisk": {
     "description": "Security warning about protecting backup from theft"
   },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "Παρακαλώ περιμένετε ενώ θα τραβήξουμε το εφεδρικό αρχείο σας.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -10570,10 +10562,6 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "legacySeedViewNoSeedsMessage": "Κανένας κληρονομικός σπόρος δεν βρέθηκε.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "dcaContinueButton": "Συνεχίστε να συνεχίζετε",
   "@dcaContinueButton": {
     "description": "Button label to proceed to next step in DCA flow"
@@ -10933,10 +10921,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "Συνεχίστε να συνεχίζετε",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -11020,10 +11004,6 @@
         "type": "String"
       }
     }
-  },
-  "legacySeedViewEmptyPassphrase": "(άδεια)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "backupWalletHowToDecideVaultModalTitle": "Πώς να αποφασίσετε",
   "@backupWalletHowToDecideVaultModalTitle": {
@@ -11427,10 +11407,6 @@
   "exchangeSupportChatMessageEmptyError": "Το μήνυμα δεν μπορεί να είναι άδειο",
   "@exchangeSupportChatMessageEmptyError": {
     "description": "Error message when trying to send an empty message"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "fundExchangeCanadaPostTitle": "Σε μετρητά προσώπου ή χρέωση στον Καναδά Post",
   "@fundExchangeCanadaPostTitle": {

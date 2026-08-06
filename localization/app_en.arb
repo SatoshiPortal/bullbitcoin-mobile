@@ -761,10 +761,6 @@
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "bitcoinSettingsImportWalletTitle": "Import Wallet",
   "@bitcoinSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
@@ -4522,26 +4518,6 @@
   "gotItButton": "Got it",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
-  "legacySeedViewNoSeedsMessage": "No legacy seeds found.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
-  },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
-  "legacySeedViewEmptyPassphrase": "(empty)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "enterBackupKeyManuallyTitle": "Enter backup key manually",
   "@enterBackupKeyManuallyTitle": {
@@ -14433,5 +14409,37 @@
   "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
   "@mnemonicUnknownWordError": {
     "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
+  },
+  "legacyBackupTitle": "Backup required",
+  "@legacyBackupTitle": {
+    "description": "Title of the blocking backup screen shown to pre-v5 (legacy) installs"
+  },
+  "legacyBackupMessage": "This version of the app is too old to be upgraded automatically. To keep your bitcoin, write down the recovery phrase(s) below, then delete and reinstall the app.",
+  "@legacyBackupMessage": {
+    "description": "Explanation on the legacy backup gate screen"
+  },
+  "legacyBackupWalletLabel": "Wallet",
+  "@legacyBackupWalletLabel": {
+    "description": "Label above a legacy wallet fingerprint on the backup gate screen"
+  },
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "@legacyBackupPassphraseLabel": {
+    "description": "Label above a legacy wallet passphrase on the backup gate screen"
+  },
+  "legacyBackupConfirm": "I have written down all recovery phrases and passphrases above",
+  "@legacyBackupConfirm": {
+    "description": "Confirmation checkbox label on the legacy backup gate screen"
+  },
+  "legacyBackupReinstallMessage": "Delete this app and reinstall it from the store. During setup, choose to recover an existing wallet and enter your recovery phrase.",
+  "@legacyBackupReinstallMessage": {
+    "description": "Reinstall instructions shown after the user confirms their backup"
+  },
+  "legacyBackupReinstallTitle": "Next steps",
+  "@legacyBackupReinstallTitle": {
+    "description": "Title of the instructions shown after the user confirms their backup"
+  },
+  "legacyBackupNoSeedsMessage": "No recovery phrase could be read from this install. Do NOT delete the app — contact support first.",
+  "@legacyBackupNoSeedsMessage": {
+    "description": "Warning shown when a legacy install has no readable seed"
   }
 }

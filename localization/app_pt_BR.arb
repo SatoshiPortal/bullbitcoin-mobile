@@ -2750,9 +2750,9 @@
   "@exchangeFeatureCustomerSupport": {
     "description": "Feature bullet point describing customer support chat feature"
   },
-  "legacySeedViewScreenTitle": "Sementes Legacy",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
+  "importColdcardButtonPurchase": "Dispositivo de compra",
+  "@importColdcardButtonPurchase": {
+    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
   "payRecipientType": "Tipo de destinatário",
   "@payRecipientType": {
@@ -5134,10 +5134,6 @@
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
   },
-  "legacySeedViewNoSeedsMessage": "Nenhuma semente encontrada.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "sendSelectedCoins": "{count} moedas selecionadas",
   "@sendSelectedCoins": {
     "description": "Label showing number of UTXOs selected",
@@ -6628,10 +6624,6 @@
   "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
   "@exchangeDcaAddressLabelBitcoin": {
     "description": "Label for Bitcoin address in DCA settings"
-  },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
   },
   "exchangeStatisticsSellStats": "Estatísticas de venda",
   "@exchangeStatisticsSellStats": {
@@ -9489,10 +9481,6 @@
   "@dcaConfirmOrderTypeValue": {
     "description": "Order type value"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Sementes Legacy",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "testBackupEncryptedVaultTitle": "Vault criptografado",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -9997,10 +9985,6 @@
   "receiveAddLabel": "Adicionar etiqueta",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemónica",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "ledgerErrorUnknown": "Erro desconhecido",
   "@ledgerErrorUnknown": {
@@ -11304,10 +11288,6 @@
   "dcaSetRecurringBuyTitle": "Definir Recorrer Comprar",
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
-  },
-  "legacySeedViewEmptyPassphrase": "(empty)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Caminho de Derivação",
   "@importWatchOnlyDerivationPath": {

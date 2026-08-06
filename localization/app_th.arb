@@ -3128,10 +3128,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "legacySeedViewScreenTitle": "เมล็ด",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "โปรดรอในขณะที่เราเขียนไฟล์สํารองข้อมูลของคุณ.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -5440,10 +5436,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "ไม่มีเมล็ดโบราณ.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "keystoneStep5": "   - เพิ่มความสว่างบนหน้าจอของคุณ",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -7672,10 +7664,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "ข้อความ:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "อ่านต่อ",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -7969,10 +7957,6 @@
   "exchangeRecipientsTitle": "การเก็บรักษา",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(ยกเว้น)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "กฎระเบียบ",
   "@importWatchOnlyDerivationPath": {
@@ -9465,10 +9449,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "bitcoinSettingsLegacySeedsTitle": "เมล็ด",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "ประหยัดเวลา",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -10020,10 +10000,6 @@
   "dcaConfirmFrequencyHourly": "ทุกวัน",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "รหัส SWIFT/BIC",
   "@sellSwiftCode": {
