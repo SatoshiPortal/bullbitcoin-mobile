@@ -8403,6 +8403,63 @@
   "@recoverbullKeyServer": {
     "description": "Label for key server connection status"
   },
+  "recoverbullTelemetrySuspiciousActivityTitle": "Unknown activity detected on a backup",
+  "@recoverbullTelemetrySuspiciousActivityTitle": {
+    "description": "Title of the strong warning shown when the key server reports more recovery attempts than this device made"
+  },
+  "recoverbullTelemetrySuspiciousActivityBody": "The key server reports {observed} recovery attempts on one of your backups, but only {expected} were made from this device.\n\nCheck first whether it was you or another of your devices.\n\nNever enter your seed words or password because of this alert.",
+  "@recoverbullTelemetrySuspiciousActivityBody": {
+    "description": "Body of the strong warning shown when the key server reports more recovery attempts than this device made",
+    "placeholders": {
+      "observed": {
+        "type": "int"
+      },
+      "expected": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullTelemetryLockoutTitle": "A backup is temporarily locked",
+  "@recoverbullTelemetryLockoutTitle": {
+    "description": "Title of the strong warning shown when the user's own fetch hits the per-identifier rate limit"
+  },
+  "recoverbullTelemetryLockoutBody": "Too many recovery attempts were made on one of your backups, so the key server is rate-limiting it. If this was not you or another of your devices, someone may be probing your backup.\n\nNever enter your seed words or password because of this alert.",
+  "@recoverbullTelemetryLockoutBody": {
+    "description": "Body of the strong warning shown when the user's own fetch hits the per-identifier rate limit"
+  },
+  "recoverbullTelemetryServicePressure": "The key server is under heavy load. This is a service issue, not an attack on your backup.",
+  "@recoverbullTelemetryServicePressure": {
+    "description": "Inline notice shown when the key server is overloaded or its rate-limit map is nearly full"
+  },
+  "recoverbullTelemetryUnavailable": "Backup activity monitoring has been unreachable for {days} days. Your backup is still safe, but you will not be warned of suspicious activity.",
+  "@recoverbullTelemetryUnavailable": {
+    "description": "Soft warning shown when the telemetry endpoint has been unreachable for several days",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullTelemetryUnavailableUnknownDuration": "Backup activity monitoring is unreachable. Your backup is still safe, but you will not be warned of suspicious activity.",
+  "@recoverbullTelemetryUnavailableUnknownDuration": {
+    "description": "Soft warning shown when telemetry has never succeeded yet, so no duration can be reported"
+  },
+  "recoverbullTelemetryCountersWiped": "The key server restarted and reset its activity counters. This is routine, not an attack.",
+  "@recoverbullTelemetryCountersWiped": {
+    "description": "Neutral notice shown when the key server wipes its attempt counters"
+  },
+  "recoverbullSettingsTelemetryToggle": "Backup activity monitoring",
+  "@recoverbullSettingsTelemetryToggle": {
+    "description": "Dev-mode toggle label for the brute-force telemetry checks"
+  },
+  "recoverbullSettingsTelemetryToggleHint": "Warns you when the key server reports recovery attempts you did not make. Advisory only.",
+  "@recoverbullSettingsTelemetryToggleHint": {
+    "description": "Dev-mode toggle hint for the brute-force telemetry checks"
+  },
+  "recoverbullTelemetryDismiss": "Got it",
+  "@recoverbullTelemetryDismiss": {
+    "description": "Button text to acknowledge and dismiss a telemetry alert"
+  },
   "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
   "@recoverbullMemorizeWarning": {
     "description": "Warning message about memorizing PIN or password",

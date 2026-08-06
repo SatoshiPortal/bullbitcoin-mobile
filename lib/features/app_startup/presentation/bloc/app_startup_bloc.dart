@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart'
@@ -31,6 +32,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkBackupUsecase,
     required this._isTorRequiredUsecase,
     required this._initTorUsecase,
+    required this._recoverbullTelemetryCubit,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -44,6 +46,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
+  final RecoverbullTelemetryCubit _recoverbullTelemetryCubit;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -121,6 +124,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
           trace: StackTrace.current,
         );
       }
+
+      // Brute-force telemetry check: cold launch only, unawaited, never
+      // blocking startup. The cubit is a no-op when the feature flag is
+      // off, when Tor is not ready, or when the last check is still fresh.
+      unawaited(_recoverbullTelemetryCubit.checkOnColdLaunch());
 
       emit(
         AppStartupState.success(

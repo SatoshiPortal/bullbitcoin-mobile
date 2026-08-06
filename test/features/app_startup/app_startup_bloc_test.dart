@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_inst
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -30,6 +31,9 @@ class _MockIsTorRequiredUsecase extends Mock implements IsTorRequiredUsecase {}
 
 class _MockInitTorUsecase extends Mock implements InitTorUsecase {}
 
+class _MockRecoverbullTelemetryCubit extends Mock
+    implements RecoverbullTelemetryCubit {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
@@ -45,6 +49,7 @@ void main() {
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockCheckLegacyInstallUsecase checkLegacyInstall;
   late _MockIsTorRequiredUsecase isTorRequired;
+  late _MockRecoverbullTelemetryCubit recoverbullTelemetryCubit;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -54,6 +59,7 @@ void main() {
     checkBackupUsecase: _MockCheckBackupUsecase(),
     isTorRequiredUsecase: isTorRequired,
     initTorUsecase: _MockInitTorUsecase(),
+    recoverbullTelemetryCubit: recoverbullTelemetryCubit,
   );
 
   setUp(() {
@@ -62,9 +68,13 @@ void main() {
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     checkLegacyInstall = _MockCheckLegacyInstallUsecase();
     isTorRequired = _MockIsTorRequiredUsecase();
+    recoverbullTelemetryCubit = _MockRecoverbullTelemetryCubit();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
     when(() => isTorRequired.execute()).thenAnswer((_) async => false);
+    when(
+      () => recoverbullTelemetryCubit.checkOnColdLaunch(),
+    ).thenAnswer((_) async {});
   });
 
   test(

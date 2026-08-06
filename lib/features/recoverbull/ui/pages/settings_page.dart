@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/is_recoverbull_telemetry_enabled_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/set_recoverbull_telemetry_enabled_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -23,6 +26,13 @@ class _SettingsPageState extends State<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final _fetchUrlUsecase = locator<FetchRecoverbullUrlUsecase>();
   final _storeUrlUsecase = locator<StoreRecoverbullUrlUsecase>();
+  final _isTelemetryEnabledUsecase =
+      locator<IsRecoverbullTelemetryEnabledUsecase>();
+  final _setTelemetryEnabledUsecase =
+      locator<SetRecoverbullTelemetryEnabledUsecase>();
+  final _getSettingsUsecase = locator<GetSettingsUsecase>();
+  bool _isDevMode = false;
+  bool _isTelemetryEnabled = false;
   bool _isLoading = false;
   bool _isSaving = false;
   bool _isEditing = false;
@@ -45,10 +55,25 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       final url = await _fetchUrlUsecase.execute();
       _originalUrl = url.toString();
+      // The telemetry flag is a rollout gate, not a user preference: the
+      // toggle is only surfaced in dev mode so QA can exercise the feature
+      // before it is enabled for everyone.
+      _isTelemetryEnabled = await _isTelemetryEnabledUsecase.execute();
+      _isDevMode =
+          (await _getSettingsUsecase.execute()).isDevModeEnabled ?? false;
     } catch (e) {
       log.warning('Error loading recoverbull url: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _toggleTelemetry(bool value) async {
+    try {
+      await _setTelemetryEnabledUsecase.execute(value);
+      if (mounted) setState(() => _isTelemetryEnabled = value);
+    } catch (e) {
+      log.warning('Error toggling recoverbull telemetry: $e');
     }
   }
 
@@ -166,6 +191,30 @@ class _SettingsPageState extends State<SettingsPage> {
                           style: context.font.bodyMedium,
                           color: context.appColors.onSurface,
                         ),
+                      ),
+                    ],
+                    if (_isDevMode) ...[
+                      const Gap(24),
+                      Row(
+                        mainAxisAlignment: .spaceBetween,
+                        children: [
+                          Expanded(
+                            child: BBText(
+                              context.loc.recoverbullSettingsTelemetryToggle,
+                              style: context.font.titleMedium,
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                          Switch(
+                            value: _isTelemetryEnabled,
+                            onChanged: _toggleTelemetry,
+                          ),
+                        ],
+                      ),
+                      BBText(
+                        context.loc.recoverbullSettingsTelemetryToggleHint,
+                        style: context.font.bodySmall,
+                        color: context.appColors.textMuted,
                       ),
                     ],
                     const Spacer(),

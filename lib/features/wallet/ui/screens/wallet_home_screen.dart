@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_state.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/telemetry_warnings.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
@@ -10,6 +13,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +28,8 @@ class WalletHomeScreen extends StatefulWidget {
 class _WalletHomeScreenState extends State<WalletHomeScreen> {
   bool _hasShownAutoSwapWarning = false;
   // ensures that the warning is only showed once on app startup
+  bool _hasShownTelemetryWarning = false;
+  // ensures the telemetry bottom sheet is only showed once per app session
 
   final GlobalKey<RefreshIndicatorState> _indicatorKey =
       GlobalKey<RefreshIndicatorState>();
@@ -116,6 +122,24 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             }
           },
         ),
+        // Strong telemetry warnings (suspicious activity, targeted lockout)
+        // surface as a bottom sheet once per app session; the persistent
+        // banner stays until acknowledged.
+        BlocListener<RecoverbullTelemetryCubit, RecoverbullTelemetryState>(
+          bloc: locator<RecoverbullTelemetryCubit>(),
+          listenWhen: (previous, current) =>
+              previous.strongWarnings.length < current.strongWarnings.length,
+          listener: (context, state) {
+            if (_hasShownTelemetryWarning) return;
+            final alert = state.strongWarnings.firstOrNull;
+            if (alert == null) return;
+            _hasShownTelemetryWarning = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              RecoverbullTelemetryAlertBottomSheet.show(context, alert);
+            });
+          },
+        ),
       ],
       child: PopScope(
         canPop: false,
@@ -139,6 +163,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const SliverToBoxAdapter(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
+                const SliverToBoxAdapter(child: RecoverbullTelemetryWarnings()),
                 const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),
                 SliverToBoxAdapter(
