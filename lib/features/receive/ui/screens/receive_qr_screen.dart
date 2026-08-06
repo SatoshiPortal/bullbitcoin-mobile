@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -469,17 +470,21 @@ class ReceiveLnSwapID extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
+    final orderNumber = context.select(
+      (ReceiveBloc bloc) => bloc.state.orderSwap?.order?.orderNumber,
+    );
+    final identifier = orderNumber?.toString() ?? swap?.id;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           BBText(
-            context.loc.receiveSwapId,
+            context.loc.swapTransferTitle,
             style: context.font.bodySmall,
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
-          if (swap == null)
+          if (identifier == null)
             const LoadingLineContent(
               width: 120,
               height: 14,
@@ -487,7 +492,8 @@ class ReceiveLnSwapID extends StatelessWidget {
             )
           else ...[
             BBText(
-              swap.id,
+              orderNumber?.toString() ??
+                  StringFormatting.truncateMiddle(identifier),
               style: context.font.bodyLarge,
               color: context.appColors.secondary,
               textAlign: .end,
@@ -500,7 +506,7 @@ class ReceiveLnSwapID extends StatelessWidget {
                 size: 16,
               ),
               onTap: () {
-                Clipboard.setData(ClipboardData(text: swap.id));
+                Clipboard.setData(ClipboardData(text: identifier));
               },
             ),
           ],
