@@ -55,7 +55,6 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.liquidElectrum),
                     const SizedBox(height: 12),
-                    _ServiceStatusItem(service: serviceStatus.boltz),
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.payjoin),
                     const SizedBox(height: 12),
