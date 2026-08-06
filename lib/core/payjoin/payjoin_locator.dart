@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
@@ -114,6 +115,7 @@ class PayjoinLocator {
       () => ReceiveWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        feesRepository: locator<FeesRepository>(),
       ),
     );
 
