@@ -1,9 +1,6 @@
-import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
@@ -36,27 +33,14 @@ class _MockRecoverBullRepository extends Mock
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
-class _MockFetchArkSecretUsecase extends Mock
-    implements FetchArkSecretUsecase {}
-
 class _MockTorStatusUsecase extends Mock implements TorStatusUsecase {}
 
 void main() {
   test('disabled Payjoin is not probed or reported offline', () async {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final payjoinDiagnostics = _MockPayjoinDiagnostics();
-    final settingsRepository = _MockSettingsRepository();
     final walletRepository = _MockWalletRepository();
     final torStatusUsecase = _MockTorStatusUsecase();
-    when(settingsRepository.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
-      ),
-    );
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     when(torStatusUsecase.execute).thenAnswer((_) async => TorStatus.unknown);
     when(
@@ -71,8 +55,6 @@ void main() {
       feesRepository: _MockFeesRepository(),
       recoverBullRepository: _MockRecoverBullRepository(),
       walletRepository: walletRepository,
-      settingsRepository: settingsRepository,
-      fetchArkSecretUsecase: _MockFetchArkSecretUsecase(),
       torStatusUsecase: torStatusUsecase,
     );
 

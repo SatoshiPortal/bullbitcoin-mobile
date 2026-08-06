@@ -22,10 +22,6 @@ enum SendType {
 
   static SendType from(PaymentRequest paymentRequest) {
     switch (paymentRequest) {
-      case ArkPaymentRequest():
-        throw UnimplementedError(
-          'ARK payment requests are available from experimental Ark feature only.',
-        );
       case BitcoinPaymentRequest():
         return SendType.bitcoin;
       case LiquidPaymentRequest():

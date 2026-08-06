@@ -128,7 +128,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Langue",
   "settingsThemeTitle": "Thème",
-  "settingsArkTitle": "Ark",
   "settingsDevModeWarningTitle": "Mode développeur",
   "settingsDevModeWarningMessage": "Ce mode est risqué. En l'activant, vous reconnaissez que vous pourriez perdre de l'argent",
   "settingsDevModeUnderstandButton": "Je comprends",
@@ -827,8 +826,6 @@
   "walletBalanceUnconfirmedIncoming": "En cours",
   "walletButtonReceive": "Recevoir",
   "walletButtonSend": "Envoyer",
-  "walletArkInstantPayments": "Paiements instantanés Ark",
-  "walletArkExperimental": "Expérimental",
   "fundExchangeTitle": "Financement",
   "fundExchangeAccountTitle": "Approvisionner votre compte",
   "fundExchangeAccountSubtitle": "Sélectionnez votre pays et votre mode de paiement",
@@ -1523,150 +1520,6 @@
     }
   },
   "autoswapTriggerBalanceError": "Le solde maximal doit être au moins égal à 2 fois le solde cible",
-  "arkNoTransactionsYet": "Aucune transaction pour le moment.",
-  "arkToday": "Aujourd'hui",
-  "arkYesterday": "Hier",
-  "arkSettleTransactions": "Régler les Transactions",
-  "arkSettleDescription": "Finaliser les transactions en attente et inclure les vtxos récupérables si nécessaire",
-  "arkIncludeRecoverableVtxos": "Inclure les vtxos récupérables",
-  "arkCancelButton": "Annuler",
-  "arkSettleButton": "Régler",
-  "arkReceiveTitle": "Recevoir Ark",
-  "arkUnifiedAddressCopied": "Adresse unifiée copiée",
-  "arkCopyAddress": "Copier l'adresse",
-  "arkUnifiedAddressBip21": "Adresse unifiée (BIP21)",
-  "arkBtcAddress": "Adresse BTC",
-  "arkArkAddress": "Adresse Ark",
-  "arkSendTitle": "Envoyer",
-  "arkRecipientAddress": "Adresse du destinataire",
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkConfirmedBalance": "Solde Confirmé",
-  "arkPendingBalance": "Solde en Attente",
-  "arkConfirmButton": "Confirmer",
-  "arkCollaborativeRedeem": "Remboursement Collaboratif",
-  "arkRecoverableVtxos": "Vtxos Récupérables",
-  "arkRedeemButton": "Rembourser",
-  "arkInstantPayments": "Paiements Instantanés Ark",
-  "arkSettleTransactionCount": "Régler {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTransaction": "transaction",
-  "arkTransactions": "transactions",
-  "arkReceiveButton": "Recevoir",
-  "arkSendButton": "Envoyer",
-  "arkTxTypeBoarding": "Embarquement",
-  "arkTxTypeCommitment": "Engagement",
-  "arkTxTypeRedeem": "Rachat",
-  "arkTransactionDetails": "Détails de la transaction",
-  "arkStatusConfirmed": "Confirmé",
-  "arkStatusPending": "En attente",
-  "arkStatusSettled": "Réglé",
-  "arkTransactionId": "ID de transaction",
-  "arkType": "Type",
-  "arkStatus": "Statut",
-  "arkAmount": "Montant",
-  "arkDate": "Date",
-  "arkBalanceBreakdown": "Répartition du solde",
-  "arkConfirmed": "Confirmé",
-  "arkPending": "En attente",
-  "arkTotal": "Total",
-  "arkBalanceBreakdownTooltip": "Répartition du solde",
-  "arkAboutTitle": "À propos",
-  "arkServerUrl": "URL du serveur",
-  "arkServerPubkey": "Clé publique du serveur",
-  "arkForfeitAddress": "Adresse de confiscation",
-  "arkNetwork": "Réseau",
-  "arkDust": "Poussière",
-  "arkSessionDuration": "Durée de session",
-  "arkBoardingExitDelay": "Délai de sortie d'embarquement",
-  "arkUnilateralExitDelay": "Délai de sortie unilatérale",
-  "arkEsploraUrl": "URL Esplora",
-  "arkDurationSeconds": "{seconds} secondes",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} minute",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} minutes",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} heure",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHours": "{hours} heures",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDay": "{days} jour",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDays": "{days} jours",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Copier",
-  "arkCopiedToClipboard": "{label} copié dans le presse-papiers",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendSuccessTitle": "Envoi réussi",
-  "arkSendSuccessMessage": "Votre transaction Ark a été effectuée avec succès !",
-  "arkBoardingUnconfirmed": "Embarquement non confirmé",
-  "arkBoardingConfirmed": "Embarquement confirmé",
-  "arkPreconfirmed": "Préconfirmé",
-  "arkSettled": "Réglé",
-  "arkAvailable": "Disponible",
-  "arkNoBalanceData": "Aucune donnée de solde disponible",
-  "arkTxPending": "En attente",
-  "arkTxBoarding": "Embarquement",
-  "arkTxSettlement": "Règlement",
-  "arkTxPayment": "Paiement",
-  "arkSatsUnit": "sats",
   "bitboxErrorPermissionDenied": "Les autorisations USB sont nécessaires pour se connecter aux appareils BitBox.",
   "bitboxErrorNoDevicesFound": "Aucun appareil BitBox trouvé. Assurez-vous que votre appareil est allumé et connecté via USB.",
   "bitboxErrorMultipleDevicesFound": "Plusieurs appareils BitBox trouvés. Veuillez vous assurer qu'un seul appareil est connecté.",
@@ -2148,7 +2001,6 @@
   },
   "sendEnterAbsoluteFee": "Entrer les frais absolus en sats",
   "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
-  "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
   "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
   "sendErrorHardwareWalletCannotSwap": "Les portefeuilles matériels ne peuvent pas être utilisés pour les échanges.",
   "sendErrorInvoiceMustContainAmount": "La facture doit contenir un montant",
@@ -2338,7 +2190,6 @@
   "receiveBitcoinNetwork": "Bitcoin",
   "receiveLightningNetwork": "Lightning",
   "receiveLiquidNetwork": "Liquid",
-  "receiveArkNetwork": "Ark",
   "receiveInvoice": "Facture Lightning",
   "receiveFixedAmount": "Montant",
   "receiveDescription": "Description (optionnelle)",
@@ -3455,9 +3306,6 @@
   "sellSendPaymentAboveMax": "Vous essayez de vendre au-dessus du montant maximum qui peut être vendu avec ce portefeuille.",
   "sellSendPaymentBelowMin": "Vous essayez de vendre en dessous du montant minimum qui peut être vendu avec ce portefeuille.",
   "sellSendPaymentInsufficientBalance": "Solde insuffisant dans le portefeuille sélectionné pour compléter cette commande de vente.",
-  "arkSetupTitle": "Configuration Ark",
-  "arkSetupExperimentalWarning": "Ark est encore expérimental.\n\nVotre portefeuille Ark est dérivé de la phrase de récupération de votre portefeuille principal. Aucune sauvegarde supplémentaire n'est nécessaire, votre sauvegarde de portefeuille existante restaure également vos fonds Ark.\n\nEn continuant, vous reconnaissez la nature expérimentale d'Ark et le risque de perte de fonds.\n\nNote développeur : Le secret Ark est dérivé de la graine du portefeuille principal en utilisant une dérivation BIP-85 arbitraire (index 11811).",
-  "arkSetupEnable": "Activer Ark",
   "swapTitle": "Transfert interne",
   "swapInfoBanner": "Transférez Bitcoin de manière transparente entre vos portefeuilles. Ne conservez des fonds dans le Portefeuille de paiement instantané que pour les dépenses quotidiennes.",
   "swapMax": "MAX",
@@ -3640,114 +3488,6 @@
   "electrumServerNotUsed": "Non utilisé",
   "electrumServerOnline": "En ligne",
   "electrumServerOffline": "Hors ligne",
-  "arkSendRecipientLabel": "Adresse du destinataire",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkSendConfirmedBalance": "Solde confirmé",
-  "arkSendPendingBalance": "Solde en attente    ",
-  "arkSendConfirm": "Confirmer",
-  "arkReceiveCopyAddress": "Copier l'adresse",
-  "arkReceiveUnifiedAddress": "Adresse unifiée (BIP21)",
-  "arkReceiveBtcAddress": "Adresse BTC",
-  "arkReceiveArkAddress": "Adresse Ark",
-  "arkReceiveUnifiedCopied": "Adresse unifiée copiée",
-  "arkSettleTitle": "Régler les transactions",
-  "arkSettleMessage": "Finaliser les transactions en attente et inclure les vtxos récupérables si nécessaire",
-  "arkSettleIncludeRecoverable": "Inclure les vtxos récupérables",
-  "arkSettleCancel": "Annuler",
-  "arkAboutServerUrl": "URL du serveur",
-  "arkAboutServerPubkey": "Clé publique du serveur",
-  "arkAboutForfeitAddress": "Adresse de confiscation",
-  "arkAboutNetwork": "Réseau",
-  "arkAboutDust": "Poussière",
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "Durée de la session",
-  "arkAboutBoardingExitDelay": "Délai de sortie d'embarquement",
-  "arkAboutUnilateralExitDelay": "Délai de sortie unilatérale",
-  "arkAboutEsploraUrl": "URL Esplora",
-  "arkAboutCopy": "Copier",
-  "arkAboutCopiedMessage": "{label} copié dans le presse-papiers",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} secondes",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} minute",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} minutes",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} heure",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} heures",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} jour",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} jours",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "Envoyer au destinataire",
-  "arkSendRecipientError": "Veuillez entrer un destinataire",
-  "arkSendAmountTitle": "Entrez le montant",
-  "arkSendConfirmTitle": "Confirmer l'envoi",
-  "arkSendConfirmMessage": "Veuillez confirmer les détails de votre transaction avant d'envoyer.",
-  "arkReceiveSegmentArk": "Ark",
-  "arkReceiveSegmentBoarding": "Embarquement",
-  "arkReceiveBoardingAddress": "Adresse d'embarquement BTC",
-  "arkAboutSecretKey": "Clé secrète",
-  "arkAboutShow": "Afficher",
-  "arkAboutHide": "Masquer",
-  "arkContinueButton": "Continuer",
   "addressViewNoAddressesFound": "Aucune adresse trouvée",
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",

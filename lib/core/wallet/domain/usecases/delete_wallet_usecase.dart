@@ -47,16 +47,15 @@ class DeleteWalletUsecase {
           (w) => w.masterFingerprint == wallet.masterFingerprint,
         );
         if (!stillUsed) {
-          // Best-effort cleanup: delete() reports failures via Result (it
-          // never throws), and an orphaned seed must not fail the wallet
-          // deletion that already happened.
+          // Best-effort cleanup: a failure here leaves an orphan seed entry
+          // but must not fail the wallet deletion the user asked for.
           final deleted = await _seedRepository.delete(
             wallet.masterFingerprint,
           );
           if (deleted case Err(:final failure)) {
             log.warning(
               'DeleteWalletUsecase: failed to clean up seed for $walletId: '
-              '$failure',
+              '${failure.logMessage}',
             );
           }
         }

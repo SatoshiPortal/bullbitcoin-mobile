@@ -16,226 +16,13 @@
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
   },
-  "arkAboutTitle": "دربارهٔ ما",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkSendConfirm": "تایید",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
-  "arkReceiveCopyAddress": "آدرس Copy Address",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
-  "arkReceiveUnifiedAddress": "آدرس یکپارچه (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
-  },
-  "arkReceiveBtcAddress": "آدرس Bitcoin",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
-  },
-  "arkReceiveArkAddress": "آدرس Ark",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
-  },
-  "arkReceiveUnifiedCopied": "Unified Address",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
-  },
-  "arkSettleTitle": "معاملات موقت",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
-  },
-  "arkSettleMessage": "نهایی کردن معاملات در انتظار و شامل vtxo های قابل بازیابی در صورت نیاز",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
-  "arkSettleIncludeRecoverable": "Vtxo های قابل بازیابی",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
-  },
-  "arkSettleCancel": "لغو",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
-  "arkAboutServerUrl": "سرور URL",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
-  },
-  "arkAboutServerPubkey": "سرور",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
-  "arkAboutForfeitAddress": "آدرس Forfeit",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
-  "arkAboutNetwork": "شبکه Network",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
-  "arkAboutDust": "گرد و غبار",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "مدت زمان جلسه",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
-  },
-  "arkAboutBoardingExitDelay": "تاخیر خروج",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
-  "arkAboutUnilateralExitDelay": "تاخیر خروج سه جانبه",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
-  "arkAboutEsploraUrl": "URL Esplora",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
-  "arkAboutCopy": "کپی رایت",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
-  },
-  "arkAboutCopiedMessage": "{label} کپی شده برای Clipboard",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} ثانیه",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} دقیقه",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} minutes",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} ساعت",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} hours",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} روز",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} روزها",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "ارسال به Recipient",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
-  "arkSendRecipientError": "لطفا یک گیرنده را وارد کنید",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
   "appStartupErrorTitle": "خطای راه اندازی",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "arkSendAmountTitle": "ورودی",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
-  "arkSendConfirmTitle": "تایید ارسال",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
-  },
-  "arkSendConfirmMessage": "لطفا جزئیات معامله خود را قبل از ارسال تایید کنید.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
-  "arkReceiveSegmentArk": "Ark",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
-  },
-  "arkReceiveSegmentBoarding": "هیئت مدیره",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
-  "arkReceiveBoardingAddress": "Bitcoin Boarding Address",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
-  "arkAboutSecretKey": "راز کلید راز",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "appStartupErrorMessage": "برنامه اجرا نشد. برنامه را کاملاً ببندید و دوباره راه‌اندازی کنید. اگر خطا ادامه داشت، با پشتیبانی تماس بگیرید و لاگ‌های خود را ارسال کنید.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
-  },
-  "arkAboutShow": "نمایش Show",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
-  "arkAboutHide": "Hide",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
-  "arkContinueButton": "ادامه",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
   },
   "addressViewNoAddressesFound": "هیچ آدرسی پیدا نشد",
   "@addressViewNoAddressesFound": {
@@ -1813,10 +1600,6 @@
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
   },
-  "arkSettled": "پناهگاه",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
-  },
   "transactionFilterBuy": "خرید",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
@@ -1969,10 +1752,6 @@
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "arkSessionDuration": "مدت زمان جلسه",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
-  },
   "electrumTimeoutWarning": "زمان‌بندی شما ({timeoutValue} ثانیه) کمتر از مقدار توصیه‌شده ({recommended} ثانیه) برای این Stop Gap است.",
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
@@ -2058,10 +1837,6 @@
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
-  "arkSettleTransactions": "معاملات موقت",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "transactionLabelConfirmationTime": "تایید زمان",
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
@@ -2085,10 +1860,6 @@
   "receiveShareAddress": "Share Address",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "امتناع",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
   "@payAboveMaxAmountError": {
@@ -2194,17 +1965,9 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "arkAvailable": "در دسترس",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "testBackupWarningMessage": "بدون نسخه پشتیبان، شما در نهایت دسترسی به پول خود را از دست خواهید داد. بسیار مهم است که یک پشتیبان بگیرید.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "شبکه Network",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
@@ -2492,10 +2255,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "پناهگاه",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "حداقل 0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -2584,19 +2343,6 @@
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
   },
-  "arkCopiedToClipboard": "{label} کپی شده برای Clipboard",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Recipient Address",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
-  },
   "payLightningNetwork": "شبکه Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
@@ -2633,15 +2379,6 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "arkDurationMinutes": "{minutes} minutes",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "عدم تعادل",
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
@@ -2665,10 +2402,6 @@
   "sellKYCApproved": "KYC تایید شده",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "معامله تراکنش",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "ماه",
   "@dcaFrequencyMonthly": {
@@ -2931,14 +2664,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "هیئت مدیره",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
-  "arkTransactions": "معاملات",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
-  },
   "broadcastSignedTxCameraButton": "دوربین",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
@@ -2962,10 +2687,6 @@
   "transactionFilterAll": "همه چیز",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "arkSendTitle": "ارسال",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "مبلغ دریافت شده",
   "@transactionDetailLabelAmountReceived": {
@@ -3069,10 +2790,6 @@
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
   },
-  "arkDust": "گرد و غبار",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "dcaConfirmPaymentMethod": "روش پرداخت",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -3104,10 +2821,6 @@
   "testBackupPassphrase": "Passphrase",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "arkSetupEnable": "امکان پذیر کردن Ark",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "شما نمی توانید یک کیف پول پیش فرض را حذف کنید.",
   "@walletDeletionErrorDefaultWallet": {
@@ -3160,15 +2873,6 @@
   "paySinpeMonto": "مبلغ",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
-  },
-  "arkDurationSeconds": "{seconds} ثانیه",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "receiveCopyOrScanAddressOnly": "آدرس کپی یا اسکن فقط",
   "@receiveCopyOrScanAddressOnly": {
@@ -3233,10 +2937,6 @@
   "buyConfirmBitcoinPrice": "Bitcoin Price",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
-  },
-  "arkUnifiedAddressCopied": "Unified Address",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "sellOrderAlreadyConfirmedError": "این سفارش فروش تاکنون تایید شده است.",
   "@sellOrderAlreadyConfirmedError": {
@@ -3551,10 +3251,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "پرداخت فوری",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "Password",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -3598,10 +3294,6 @@
   "payAddressRequired": "آدرس مورد نیاز است",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "جزئیات معاملات",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "مجموع مبلغ",
   "@payTotalAmount": {
@@ -3733,26 +3425,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "تایید شده",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "فایل انتخاب نشده",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} روز",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "ارسال",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "buyInputContinue": "ادامه",
   "@buyInputContinue": {
@@ -3785,15 +3460,6 @@
   "paySelectActiveWallet": "کیف پول را انتخاب کنید",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} hours",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "transcribeLabel": "Transcribe",
   "@transcribeLabel": {
@@ -3912,10 +3578,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "مبلغ",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "به شما می گویند نگران این هشدار نباشید",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -4024,10 +3686,6 @@
   "backupCompletedTitle": "پشتیبان گیری کامل!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
-  },
-  "arkDate": "تاریخ",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "psbtFlowInstructions": "دستورالعمل ها",
   "@psbtFlowInstructions": {
@@ -4187,10 +3845,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "تجربی",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails"
@@ -4236,15 +3890,6 @@
       }
     }
   },
-  "arkDurationMinute": "{minutes} دقیقه",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceJadeStep9": "کد QR را که در دستگاه خود می بینید، اسکن کنید.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
@@ -4280,10 +3925,6 @@
   "backupInstruction3": "هر کسی با دسترسی به 12 کلمه پشتیبان می تواند بیت کوین شما را سرقت کند. آن را خوب پنهان کنید.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "قرمز",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "آدرس Beneficiary",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -4557,10 +4198,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "آدرس Forfeit",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "انتقال مجدد",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -4593,10 +4230,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "آدرس Bitcoin",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "دریافت کننده",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -4604,10 +4237,6 @@
   "payBumpFee": "هزینه Bump",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "لغو",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "راه اندازی کیف پول تنها ساعت شما ...",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -4624,10 +4253,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "انتقال کولون با استفاده از SINPE",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "Ark Instant Payments",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "تحویل تخمین زده شده - ",
   "@sendEstimatedDelivery": {
@@ -4816,10 +4441,6 @@
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
   },
-  "arkAddressPlaceholder": "ark1qp9wsjj5v5ex022v6",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
-  },
   "payNetwork": "شبکه Network",
   "@payNetwork": {
     "description": "Label for network"
@@ -4835,10 +4456,6 @@
   "exchangeAccountSettingsTitle": "تنظیمات حساب Exchange Account Settings",
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
-  },
-  "arkBoardingConfirmed": "هیئت مدیره تایید شد",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
   },
   "exchangeFileUploadInstructionsWithParams": "حداکثر {maxFiles} فایل آپلود کنید. فرمت‌های مجاز: PDF، JPG، PNG، GIF، HEIC. حداکثر حجم هر فایل: ۱۰ مگابایت.",
   "@exchangeFileUploadInstructionsWithParams": {
@@ -4909,10 +4526,6 @@
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
   },
-  "arkStatusConfirmed": "تایید",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
-  },
   "withdrawConfirmAmount": "مبلغ",
   "@withdrawConfirmAmount": {
     "description": "Field label for withdrawal amount"
@@ -4973,10 +4586,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkServerPubkey": "سرور",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
   "testBackupPhysicalBackupDescription": "12 کلمه را روی یک تکه کاغذ بنویسید. آنها را امن نگه دارید و مطمئن شوید که آنها را از دست ندهید.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -5008,10 +4617,6 @@
   "receiveWaitForSenderToFinish": "منتظر فرستنده باشید تا معامله Payjoin را به پایان برساند",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "سازنده: Ark",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "کد QR نشان داده شده در کیف پول بول",
   "@seedsignerStep3": {
@@ -5143,10 +4748,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "امروز",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "importQrDeviceJadeStep2": "گزینه “QR Mode” را از منوی اصلی انتخاب کنید",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
@@ -5196,10 +4797,6 @@
   "sendErrorHardwareWalletCannotSwap": "کیف پول‌های سخت‌افزاری را نمی‌توان برای مبادله استفاده کرد.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "هیچ اطلاعات تعادلی در دسترس نیست",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "coreSwapsChainCompletedSuccess": "انتقال با موفقیت تکمیل می شود.",
   "@coreSwapsChainCompletedSuccess": {
@@ -5452,17 +5049,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "نهایی کردن معاملات در انتظار و شامل vtxo های قابل بازیابی در صورت نیاز",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "مکان سفارشی: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "معامله کشتی شما موفق بود!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "نشستن",
   "@sendSats": {
@@ -5573,14 +5162,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "تاخیر خروج سه جانبه",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkStatusPending": "امتناع",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5588,10 +5169,6 @@
   "dcaInsufficientBalanceTitle": "عدم تعادل",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
-  },
-  "arkType": "نوع",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "بدون نسخه پشتیبان، شما در نهایت دسترسی به پول خود را از دست خواهید داد. بسیار مهم است که یک پشتیبان بگیرید.",
   "@backupImportanceMessage": {
@@ -5620,10 +5197,6 @@
   "pinCodeConfirmTitle": "تایید جدید پین",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "arkSetupExperimentalWarning": "کشتی هنوز هم تجربی است.\n\nکیف پول شما از جمله اصلی کیف پول شما گرفته شده است. هیچ پشتیبان اضافی مورد نیاز نیست، پشتیبان گیری کیف پول موجود شما نیز وجوه Ark شما را بازیابی می کند.\n\nبا ادامه، شما ماهیت تجربی Ark و خطر از دست دادن وجوه را تصدیق می کنید.\n\nیادداشت توسعه دهنده: راز Ark از بذر کیف پول اصلی با استفاده از یک محرک جانبی BIP-85 (index 11811) مشتق شده است.",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
@@ -6100,10 +5673,6 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "arkTxPayment": "پرداخت",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
-  },
   "swapValidationMaximumAmount": "حداکثر مقدار {amount} {currency} است",
   "@swapValidationMaximumAmount": {
     "description": "Validation error when amount exceeds maximum",
@@ -6160,10 +5729,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "Vtxo های قابل بازیابی",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "پرداخت شما تکمیل شده و دریافت کننده وجوه را دریافت کرده است.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -6195,10 +5760,6 @@
   "transactionDetailLabelTransactionId": "تراکنش ID",
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
-  },
-  "arkReceiveTitle": "کشتی دریافت",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
   },
   "payDebitCardNumberHint": "شماره کارت اعتباری ورود",
   "@payDebitCardNumberHint": {
@@ -6239,10 +5800,6 @@
   "sellFeePriority": "اولویت هزینه",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
-  },
-  "arkBoardingUnconfirmed": "هیئت مدیره تایید نشده",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "توضیحات پرداخت",
   "@fundExchangeLabelPaymentDescription": {
@@ -6353,10 +5910,6 @@
   "coldcardStep9": "هنگامی که معامله در کارت سرد شما وارد می شود، آدرس مقصد و مقدار را بررسی کنید.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "درخواست پرداخت ARK تنها از ویژگی های آزمایشی Ark در دسترس است.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "تکمیل خود را KYC",
   "@exchangeKycComplete": {
@@ -6775,10 +6328,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "قرمز",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "بررسی آدرس در Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -6794,10 +6343,6 @@
   "backupSettingsKeyWarningBold": "هشدار: مراقب باشید که کلید پشتیبان را کجا ذخیره می کنید.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "Ark",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "recoverYourWalletTitle": "بازیابی کیف پول",
   "@recoverYourWalletTitle": {
@@ -7003,17 +6548,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkSendRecipientHint": "ark1qp9wsjj5v5ex022v6",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "محاسبه ...",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "قابلیت بازیابی Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "translationWarningDismissButton": "It Got It",
   "@translationWarningDismissButton": {
@@ -7177,10 +6714,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "تاخیر خروج",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "transactionLabelPayjoinCreationTime": "ایجاد زمان",
   "@transactionLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation timestamp"
@@ -7192,10 +6725,6 @@
   "importQrDeviceSuccess": "کیف پول با موفقیت",
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
-  },
-  "arkTxSettlement": "شهرک سازی",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "autoswapEnable": "امکان انتقال خودکار",
   "@autoswapEnable": {
@@ -7314,10 +6843,6 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "arkConfirmed": "تایید",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
   "sendSatsPerVB": "نشستن/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
@@ -7417,10 +6942,6 @@
   "backupSettingsBackupKey": "کلید پشتیبان",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "تراکنش ID",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "کپی شده در Clipboard",
   "@payInvoiceCopied": {
@@ -7694,10 +7215,6 @@
   "@sendDustAmount": {
     "description": "Error for uneconomical amount"
   },
-  "arkSendConfirmedBalance": "تعادل تایید شده",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
   "sellFastest": "سریع ترین",
   "@sellFastest": {
     "description": "Display text for fastest fee option"
@@ -7778,10 +7295,6 @@
   "backupSettingsSecurityWarning": "هشدار امنیتی",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
-  },
-  "arkCopyAddress": "آدرس Copy Address",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
   },
   "sendScheduleFor": "برنامه ریزی برای {date}",
   "@sendScheduleFor": {
@@ -7959,15 +7472,6 @@
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
   },
-  "arkDurationHour": "{hours} ساعت",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "buyConfirmYouPay": "پرداخت می کنید",
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
@@ -7987,10 +7491,6 @@
   "recoverbullTorNotStarted": "Tor شروع نشده است",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
-  },
-  "arkPending": "امتناع",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
   },
   "transactionOrderLabelOrderStatus": "سفارش وضعیت",
   "@transactionOrderLabelOrderStatus": {
@@ -8068,10 +7568,6 @@
   "recoverbullGoogleDriveDeleteButton": "حذف",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "تعادل تعادل",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "fundExchangeMethodEmailETransferSubtitle": "سریعترین و سریع ترین روش (Stant)",
   "@fundExchangeMethodEmailETransferSubtitle": {
@@ -8568,10 +8064,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "تعادل",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "هنگامی که معامله در SeedSigner شما وارد می شود، باید بذری را که می خواهید با آن وارد شوید انتخاب کنید.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -8668,10 +8160,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "نشستن",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "حداقل: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -8757,10 +8245,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "arkSettleButton": "پناهگاه",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
   "electrumAddFailedError": "افزودن سرور سفارشی ممکن نشد",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
@@ -8772,10 +8256,6 @@
   "importWalletSectionGeneric": "کیف پول های Generic",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "URL Esplora",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "تست نکردن",
   "@backupSettingsNotTested": {
@@ -8832,10 +8312,6 @@
   "recoverbullErrorVaultCreatedKeyNotStored": "شکست: فایل Vault ایجاد شده اما کلید ذخیره نشده در سرور",
   "@recoverbullErrorVaultCreatedKeyNotStored": {
     "description": "Error when vault file created but server key storage failed"
-  },
-  "arkSendPendingBalance": "توازن    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "recoverbullVaultKeyInput": "Vault Key",
   "@recoverbullVaultKeyInput": {
@@ -8952,10 +8428,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "ارسال موفق",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "exchangeAuthErrorMessage": "یک خطا رخ داد، لطفا دوباره وارد شوید.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
@@ -8979,10 +8451,6 @@
   "walletNetworkLiquid": "شبکه نقدینگی",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "Ark",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
@@ -9056,10 +8524,6 @@
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
   },
-  "arkUnifiedAddressBip21": "آدرس یکپارچه (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "transactionDetailLabelOrderType": "سفارش نوع",
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
@@ -9115,10 +8579,6 @@
   "testBackupGoogleDrivePrivacyPart4": "هرگز ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "تایید",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "sendCoinControl": "Coin Control",
   "@sendCoinControl": {
@@ -9328,10 +8788,6 @@
   "dcaConfirmAutoMessage": "سفارش خرید به طور خودکار در هر این تنظیمات قرار می گیرد. شما می توانید آنها را در هر زمان غیرفعال کنید.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "arkCollaborativeRedeem": "همکاری Redeem",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
   },
   "pinCodeCheckingStatus": "بررسی وضعیت PIN",
   "@pinCodeCheckingStatus": {
@@ -9570,10 +9026,6 @@
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
   },
-  "arkArkAddress": "آدرس Ark",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
-  },
   "payRecipientName": "نام اضطراری",
   "@payRecipientName": {
     "description": "Label for recipient name"
@@ -9725,10 +9177,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "arkCopy": "کپی رایت",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "ساخت معامله ...",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -9785,10 +9233,6 @@
   "recoverbullConfirm": "تایید",
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
-  },
-  "arkPendingBalance": "توازن",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "کشور بانکی ما انگلستان است.",
   "@fundExchangeInfoBankCountryUk": {
@@ -9921,10 +9365,6 @@
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
-  "arkSendRecipientLabel": "آدرس Recipient",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
   "defaultWalletsLabel": "کیف پول های شکست خورده",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
@@ -9961,10 +9401,6 @@
   "testBackupGoogleDrivePrivacyPart5": "مشترک با Bitcoin Bull.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "مجموع",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "bitboxActionSignTransactionSuccessSubtext": "معامله شما با موفقیت امضا شده است.",
   "@bitboxActionSignTransactionSuccessSubtext": {
@@ -10025,10 +9461,6 @@
   "importQrDeviceKruxStep5": "کد QR را که در دستگاه خود می بینید، اسکن کنید.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "وضعیت",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "این را به عنوان دلیل انتقال اضافه کنید",
   "@fundExchangeHelpTransferCode": {
@@ -10328,18 +9760,6 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "arkSettleTransactionCount": "{count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenWalletTypeLabel": "نوع کیف پول:",
   "@bitboxScreenWalletTypeLabel": {
     "description": "Label for wallet type selector"
@@ -10552,10 +9972,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "دریافت کننده",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "Retry Count نمی تواند منفی باشد",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -10653,10 +10069,6 @@
       }
     }
   },
-  "arkServerUrl": "سرور URL",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "انتخاب یک نوع کیف پول برای واردات",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -10668,15 +10080,6 @@
   "importQrDeviceKeystoneStep1": "قدرت در Keystone",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} روزها",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 تعیین کننده Entropies",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -10945,10 +10348,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "تعادل تایید شده",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "بومی Segwit",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -10998,10 +10397,6 @@
   "backupWalletPhysicalBackupTitle": "پشتیبانی فیزیکی",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "arkTxBoarding": "هیئت مدیره",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
   },
   "bitboxActionVerifyAddressSuccess": "آدرس معتبر",
   "@bitboxActionVerifyAddressSuccess": {
@@ -11348,10 +10743,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "تعهد",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "پیوستن به ماموریت",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -11387,10 +10778,6 @@
   "bitboxScreenConnectDevice": "اتصال دستگاه BitBox",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "دیروز",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "درخواست: {amount}",
   "@amountRequestedLabel": {
@@ -12073,10 +11460,6 @@
   "importQrDevicePassportStep5": "گزینه “Sparrow” را انتخاب کنید",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "arkNoTransactionsYet": "هنوز معاملات نیست.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "autoswapMaximumFeeError": "حداکثر آستانه‌ی هزینه {threshold}% است",
   "@autoswapMaximumFeeError": {

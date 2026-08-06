@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -27,8 +24,6 @@ class CheckAllServiceStatusUsecase {
   final FeesRepository _feesRepository;
   final RecoverBullRepository _recoverBullRepository;
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
-  final FetchArkSecretUsecase _fetchArkSecretUsecase;
   final TorStatusUsecase _torStatusUsecase;
 
   CheckAllServiceStatusUsecase({
@@ -40,8 +35,6 @@ class CheckAllServiceStatusUsecase {
     required this._feesRepository,
     required this._recoverBullRepository,
     required this._walletRepository,
-    required this._settingsRepository,
-    required this._fetchArkSecretUsecase,
     required this._torStatusUsecase,
   });
 
@@ -59,7 +52,6 @@ class CheckAllServiceStatusUsecase {
         _checkMempoolService(network),
         _checkTorConnection(),
         _checkRecoverbullConnection(),
-        _checkArkConnection(),
       ]);
 
       return AllServicesStatus(
@@ -72,7 +64,6 @@ class CheckAllServiceStatusUsecase {
         mempool: results[6],
         tor: results[7],
         recoverbull: results[8],
-        ark: results[9],
         lastChecked: now,
       );
     } catch (e) {
@@ -291,30 +282,6 @@ class CheckAllServiceStatusUsecase {
       } catch (e) {
         status = status.copyWith(status: ServiceStatus.offline);
       }
-    }
-
-    return status;
-  }
-
-  Future<ServiceStatusInfo> _checkArkConnection() async {
-    var status = ServiceStatusInfo(
-      status: ServiceStatus.unknown,
-      name: 'Ark',
-      lastChecked: DateTime.now(),
-    );
-
-    try {
-      final settings = await _settingsRepository.fetch();
-      if (settings.isDevModeEnabled != true) return status;
-
-      final arkSecretKey = await _fetchArkSecretUsecase.execute();
-      if (arkSecretKey == null) return status;
-
-      await ArkWalletEntity.init(secretKey: arkSecretKey);
-
-      status = status.copyWith(status: ServiceStatus.online);
-    } catch (e) {
-      status = status.copyWith(status: ServiceStatus.offline);
     }
 
     return status;

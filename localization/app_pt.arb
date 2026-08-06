@@ -118,14 +118,6 @@
   "onboardingEncryptedVaultDescription": "Recupere seu backup via nuvem usando seu PIN.",
   "transactionOrderLabelPayoutStatus": "Status de pagamento",
   "transactionSwapStatusSwapStatus": "Estado do balanço",
-  "arkAboutDurationSeconds": "{seconds} segundos",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "Fatura copiada para clipboard",
   "kruxStep7": "   - Aumente o brilho da tela em seu dispositivo",
   "autoswapUpdateSettingsError": "Falhado para atualizar as configurações de troca automática",
@@ -138,7 +130,6 @@
   "importQrDeviceImporting": "Importação de carteira...",
   "rbfFastest": "Mais rápido",
   "buyConfirmExpressWithdrawal": "Confirmação expressa",
-  "arkReceiveBoardingAddress": "BTC Endereço de embarque",
   "sellSendPaymentTitle": "Confirmar pagamento",
   "recoverbullReenterConfirm": "Por favor, volte a entrar no seu {inputType} para confirmar.",
   "@recoverbullReenterConfirm": {
@@ -157,7 +148,6 @@
   "recoverbullSelectVaultImportSuccess": "Seu cofre foi importado com sucesso",
   "mempoolServerNotUsed": "Não usado (servidor personalizado ativo)",
   "recoverbullSelectErrorPrefix": "Erro:",
-  "arkReceiveBtcAddress": "Endereço de BTC",
   "exchangeLandingRecommendedExchange": "Troca de Bitcoin recomendada",
   "backupWalletHowToDecideVaultMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
   "recoverbullGoBackEdit": "< Voltar e editar",
@@ -198,7 +188,6 @@
   },
   "swapReceiveExactAmountLabel": "Receber quantidade exata",
   "swapInsufficientFunds": "Fundos insuficientes",
-  "arkContinueButton": "Continue",
   "ledgerImportButton": "Importação de início",
   "dcaActivate": "Ativar a recuperação",
   "labelInputLabel": "Etiqueta",
@@ -217,7 +206,6 @@
   "buyFundYourAccount": "Fina sua conta",
   "sellReplaceByFeeActivated": "Substitui-a-taxa activada",
   "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
-  "arkAboutServerUrl": "URL do servidor",
   "fundExchangeLabelRecipientAddress": "Endereço de destinatário",
   "save": "Salvar",
   "dcaWalletLiquidSubtitle": "Requer carteira compatível",
@@ -248,7 +236,6 @@
   "importQrDeviceSpecterStep7": "Desativar \"Use SLIP-132\"",
   "customLocationTitle": "Localização personalizada",
   "importQrDeviceJadeStep5": "Selecione \"Wallet\" na lista de opções",
-  "arkSettled": "Preparado",
   "transactionFilterBuy": "Comprar",
   "approximateFiatPrefix": "~",
   "sendEstimatedDeliveryHoursToDays": "horas para dias",
@@ -308,11 +295,9 @@
   },
   "sendTransferFeeDescription": "Esta é a taxa total deduzida do montante enviado",
   "bitcoinSettingsWalletsTitle": "Carteiras",
-  "arkReceiveSegmentBoarding": "Quadro",
   "seedsignerStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no SeedSigner. Analisa-o.",
   "psbtFlowKeystoneTitle": "Instruções de Keystone",
   "transactionLabelTransferStatus": "Status de transferência",
-  "arkSessionDuration": "Duração da sessão",
   "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
   "electrumTimeoutWarning": "Seu timeout ({timeoutValue} segundos) é menor do que o valor recomendado ({recommended} segundos) para este Stop Gap.",
   "@electrumTimeoutWarning": {
@@ -349,14 +334,12 @@
   "sellSendPaymentUsdBalance": "USD / USD Balanço",
   "backupWalletEncryptedVaultTag": "Fácil e simples (1 minuto)",
   "payBroadcastFailed": "Transmissão falhou",
-  "arkSettleTransactions": "Transações de Settle",
   "transactionLabelConfirmationTime": "Tempo de confirmação",
   "languageSettingsScreenTitle": "Língua",
   "payNetworkFees": "Taxas de rede",
   "bitboxScreenSegwitBip84": "Segwit (BIP84)",
   "bitboxScreenConnectingSubtext": "Estabelecer uma ligação segura...",
   "receiveShareAddress": "Compartilhar Endereço",
-  "arkTxPending": "Pendente",
   "payAboveMaxAmountError": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
   "sharedWithBullBitcoin": "compartilhado com Bull Bitcoin.",
   "jadeStep7": "   - Mantenha o código QR estável e centralizado",
@@ -399,10 +382,8 @@
   "buyCantBuyMoreThan": "Você não pode comprar mais do que",
   "dcaUnableToGetConfig": "Incapaz de obter configuração DCA",
   "exchangeAuthLoginFailed": "Login Falhado",
-  "arkAvailable": "Disponível",
   "transactionSwapDescChainFailed": "Houve um problema com a sua transferência. Por favor, contacte o suporte se os fundos não tiverem sido devolvidos dentro de 24 horas.",
   "testBackupWarningMessage": "Sem um backup, você eventualmente perderá o acesso ao seu dinheiro. É criticamente importante fazer um backup.",
-  "arkNetwork": "Rede",
   "importWatchOnlyYpub": "- sim",
   "ledgerVerifyTitle": "Verificar endereço no Ledger",
   "recoverbullSwitchToPassword": "Escolha uma senha em vez",
@@ -474,7 +455,6 @@
   "dcaConfirmNetworkLiquid": "Líquido",
   "walletDetailsAddressTypeLabel": "Tipo de endereço",
   "emptyMnemonicWordsError": "Digite todas as palavras de seu mnemônico",
-  "arkSettleCancel": "Cancelar",
   "testBackupTapWordsInOrder": "Toque nas palavras de recuperação no\nordem certa",
   "transactionSwapDescLnSendExpired": "Esta troca expirou. Os seus fundos serão automaticamente devolvidos à sua carteira.",
   "testBackupButton": "Teste de backup",
@@ -510,7 +490,6 @@
   "appStartupErrorMessage": "Falha ao iniciar a aplicação. Tente fechá-la completamente e reiniciá-la. Se o erro persistir, contacte o suporte e partilhe os seus registos.",
   "appStartupErrorMessageWithBackup": "Não foi possível inicializar. Exclua e reinstale para corrigir.",
   "payPasteInvoice": "Fatura de pasta",
-  "arkStatusSettled": "Preparado",
   "dcaWalletBitcoinSubtitle": "Mínimo 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Digite sua senha no dispositivo BitBox para continuar.",
   "systemLabelSwaps": "Swaps",
@@ -542,7 +521,6 @@
   "dcaWalletSelectionContinueButton": "Continue",
   "pinButtonChange": "Mudar PIN",
   "sendErrorInsufficientFundsForPayment": "Não há fundos suficientes disponíveis para fazer este pagamento.",
-  "arkAboutShow": "Mostrar",
   "fundExchangeETransferTitle": "Detalhes de E-Transfer",
   "verifyButton": "Verificar",
   "autoswapWarningOkButton": "ESTÁ BEM",
@@ -551,15 +529,6 @@
   "copiedToClipboardMessage": "Copiado para clipboard",
   "torSettingsStatusConnected": "Conectado",
   "receiveNote": "Nota",
-  "arkCopiedToClipboard": "{label} copiado para clipboard",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Endereço de destinatário",
   "payLightningNetwork": "Rede de relâmpago",
   "shareLogsLabel": "Registos de compartilhamento",
   "ledgerSuccessVerifyTitle": "Verificando endereço no Ledger...",
@@ -574,14 +543,6 @@
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Este número de conta única é criado apenas para você",
   "psbtFlowReadyToBroadcast": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "sendErrorLiquidWalletRequired": "Carteira líquida deve ser usada para um líquido para troca de raios",
-  "arkDurationMinutes": "{minutes}",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "Balança insuficiente",
   "swapTransferRefundedMessage": "A transferência foi reembolsada com sucesso.",
   "payInvalidState": "Estado inválido",
@@ -589,7 +550,6 @@
   "seedsignerStep5": "   - Aumente o brilho da tela em seu dispositivo",
   "transactionSwapDescLnReceiveExpired": "Esta troca expirou. Quaisquer fundos enviados serão automaticamente devolvidos ao remetente.",
   "sellKYCApproved": "KYC aprovado",
-  "arkTransaction": "transação",
   "dcaFrequencyMonthly": "mês",
   "buyKYCLevel": "KYC Nível",
   "passportInstructionsTitle": "Instruções do passaporte da Fundação",
@@ -644,7 +604,6 @@
   },
   "loginButton": "LOGIA",
   "revealingVaultKeyButton": "Revelando...",
-  "arkAboutNetwork": "Rede",
   "payLastName": "Último nome",
   "transactionPayjoinStatusExpired": "Expirou",
   "fundExchangeMethodBankTransferWire": "Transferência bancária (Wire ou EFT)",
@@ -681,7 +640,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Falhado para buscar cofres do Google Drive",
   "systemLabelExchangeBuy": "Comprar",
   "sendRecipientAddress": "Endereço do destinatário",
-  "arkTxTypeBoarding": "Quadro",
   "exchangeAmountInputValidationInsufficient": "Balança insuficiente",
   "psbtFlowReviewTransaction": "Uma vez que a transação é importada em seu {device}, revise o endereço de destino e o valor.",
   "@psbtFlowReviewTransaction": {
@@ -691,14 +649,12 @@
       }
     }
   },
-  "arkTransactions": "transações",
   "broadcastSignedTxCameraButton": "Câmara",
   "importQrDeviceJadeName": "Blockstream Jade",
   "importWalletImportMnemonic": "Importação Mnemonic",
   "bip85NextMnemonic": "Próximo Mnemonic",
   "dcaFundAccountButton": "Fina sua conta",
   "transactionFilterAll": "Todos",
-  "arkSendTitle": "Enviar",
   "transactionDetailLabelAmountReceived": "Montante recebido",
   "receivePaymentReceived": "Pagamento recebido!",
   "backupWalletHowToDecideVaultCloudSecurity": "Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Eles só podem acessar seu Bitcoin no caso improvável que eles colludem com o servidor chave (o serviço on-line que armazena sua senha de criptografia). Se o servidor chave alguma vez for hackeado, seu Bitcoin pode estar em risco com o Google ou a nuvem da Apple.",
@@ -742,7 +698,6 @@
   "recoverbullGoogleDriveNoBackupsFound": "Nenhum backup encontrado",
   "sellSelectNetwork": "Selecione Rede",
   "sellSendPaymentOrderNumber": "Número de ordem",
-  "arkDust": "Pó",
   "dcaConfirmPaymentMethod": "Método de pagamento",
   "sellSendPaymentAdvanced": "Configurações avançadas",
   "bitcoinSettingsImportWalletTitle": "Carteira de importação",
@@ -751,7 +706,6 @@
   "broadcastSignedTxPasteHint": "Cole um PSBT ou transação HEX",
   "transactionLabelAmountSent": "Montante enviado",
   "testBackupPassphrase": "Passphrase",
-  "arkSetupEnable": "Habilitar a arca",
   "walletDeletionErrorDefaultWallet": "Você não pode excluir uma carteira padrão.",
   "confirmTransferTitle": "Confirmar transferência",
   "payFeeBreakdown": "Repartição das taxas",
@@ -767,14 +721,6 @@
   "payNoInvoiceData": "Não existem dados de fatura disponíveis",
   "recoverbullErrorInvalidCredentials": "Senha errada para este arquivo de backup",
   "paySinpeMonto": "Montante",
-  "arkDurationSeconds": "{seconds} segundos",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "receiveCopyOrScanAddressOnly": "Copiar ou escanear endereço somente",
   "transactionDetailAccelerate": "Acelerar",
   "importQrDevicePassportStep11": "Digite um rótulo para sua carteira de passaporte e toque em \"Importar\"",
@@ -801,7 +747,6 @@
   "sendErrorBitcoinWalletRequired": "Bitcoin carteira deve ser usado para um bitcoin para troca de raios",
   "pinCodeManageTitle": "Gerenciar seu PIN de segurança",
   "buyConfirmBitcoinPrice": "Preço de Bitcoin",
-  "arkUnifiedAddressCopied": "Endereço unificado copiado",
   "transactionSwapDescLnSendCompleted": "O pagamento Lightning foi enviado com sucesso! A tua troca já está completa.",
   "exchangeDcaCancelDialogCancelButton": "Cancelar",
   "sellOrderAlreadyConfirmedError": "Esta ordem de venda já foi confirmada.",
@@ -946,7 +891,6 @@
   "broadcastSignedTxPageTitle": "Transmissão de transmissão",
   "sendInsufficientBalance": "Balança insuficiente",
   "paySecurityAnswer": "Resposta de segurança",
-  "walletArkInstantPayments": "Ark Pagamentos imediatos",
   "passwordLabel": "Senha",
   "importQrDeviceError": "Falhado para importar carteira",
   "onboardingSplashDescription": "Soberana auto custódia Bitcoin carteira e serviço de troca apenas Bitcoin.",
@@ -960,7 +904,6 @@
   "buyOrderNotFoundError": "A ordem de compra não foi encontrada. Por favor, tente novamente.",
   "backupWalletGoogleDrivePrivacyMessage2": "não terá ",
   "payAddressRequired": "O endereço é necessário",
-  "arkTransactionDetails": "Detalhes da transação",
   "payTotalAmount": "Montante total",
   "exchangeLegacyTransactionsTitle": "Transações Legadas",
   "autoswapWarningDontShowAgain": "Não mostre este aviso novamente.",
@@ -1006,17 +949,7 @@
   "payActualFee": "Taxa real",
   "electrumValidateDomain": "Validar domínio",
   "importQrDeviceJadeFirmwareWarning": "Certifique-se de que seu dispositivo é atualizado para o firmware mais recente",
-  "arkPreconfirmed": "Confirmado",
   "recoverbullSelectFileNotSelectedError": "Arquivo não selecionado",
-  "arkDurationDay": "{days} dia",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "Enviar",
   "buyInputContinue": "Continue",
   "fundExchangeMethodSpeiTransferSubtitle": "Transferir fundos usando seu CLABE",
   "importQrDeviceJadeStep3": "Siga as instruções do dispositivo para desbloquear o Jade",
@@ -1025,14 +958,6 @@
   "bitboxErrorDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
   "transferIdLabel": "ID de transferência",
   "paySelectActiveWallet": "Por favor, selecione uma carteira",
-  "arkDurationHours": "{hours} horas",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transcribeLabel": "Transcrição",
   "pinCodeProcessing": "Processamento",
   "transactionDetailLabelRefunded": "Reembolsos",
@@ -1071,7 +996,6 @@
   "ledgerProcessingImportSubtext": "A montar a tua carteira só de relógio...",
   "digitalCopyLabel": "Cópia digital",
   "receiveNewAddress": "Novo endereço",
-  "arkAmount": "Montante",
   "fundExchangeWarningTactic7": "Eles dizem para não se preocupar com este aviso",
   "importQrDeviceSpecterStep1": "Poder no seu dispositivo Specter",
   "transactionNoteAddTitle": "Adicionar nota",
@@ -1110,7 +1034,6 @@
   "electrumReset": "Redefinição",
   "payInsufficientBalanceError": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
   "backupCompletedTitle": "Backup concluído!",
-  "arkDate": "Data",
   "psbtFlowInstructions": "Instruções",
   "systemLabelExchangeSell": "Venda",
   "sendHighFeeWarning": "Aviso de alta taxa",
@@ -1182,7 +1105,6 @@
     }
   },
   "broadcastSignedTxReviewTransaction": "Revisão",
-  "walletArkExperimental": "Experimental",
   "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
   "electrumLoadFailedError": "Falhados em servidores de carga",
   "@electrumLoadFailedError": {
@@ -1208,16 +1130,7 @@
       }
     }
   },
-  "arkDurationMinute": "{minutes} minuto",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Se você tiver problemas de digitalização:",
-  "arkReceiveUnifiedCopied": "Endereço unificado copiado",
   "importQrDeviceJadeStep9": "Analise o código QR que você vê no seu dispositivo.",
   "transactionDetailLabelPayjoinCompleted": "Completada",
   "sellArsBalance": "Saldo ARS",
@@ -1229,7 +1142,6 @@
   "recoverbullKeyServer": "Servidor chave ",
   "recoverbullPasswordTooCommon": "Esta senha é muito comum. Por favor, escolha um diferente",
   "backupInstruction3": "Qualquer pessoa com acesso ao seu backup de 12 palavras pode roubar seus bitcoins. Esconde-o bem.",
-  "arkRedeemButton": "Redeem",
   "fundExchangeLabelBeneficiaryAddress": "Endereço Beneficiário",
   "testBackupVerify": "Verificar",
   "transactionDetailLabelCreatedAt": "Criado em",
@@ -1308,7 +1220,6 @@
   "storeItSafelyMessage": "Armazená-lo em algum lugar seguro.",
   "receiveLightningNetwork": "Luz",
   "receiveVerifyAddressError": "Incapaz de verificar o endereço: Falta de informações de carteira ou endereço",
-  "arkForfeitAddress": "Endereço falso",
   "swapTransferRefundedTitle": "Transferência reembolsada",
   "bitboxErrorConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
   "exchangeFileUploadDocumentTitle": "Carregar qualquer documento",
@@ -1318,17 +1229,14 @@
   "withdrawUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "sellBitcoinAmount": "Quantidade de Bitcoin",
   "recoverbullTestCompletedTitle": "Teste concluído com sucesso!",
-  "arkBtcAddress": "Endereço de BTC",
   "transactionFilterReceive": "Receber",
   "exchangeDcaFrequencyDay": "dia",
   "payBumpFee": "Bump Fee",
-  "arkCancelButton": "Cancelar",
   "bitboxActionImportWalletProcessingSubtext": "A montar a tua carteira só de relógio...",
   "psbtFlowDone": "Estou acabado",
   "exchangeHomeDepositButton": "Depósito",
   "testBackupRecoverWallet": "Recuperar Carteira",
   "fundExchangeMethodSinpeTransferSubtitle": "Transferir Colones usando SINPE",
-  "arkInstantPayments": "Ark Pagamentos instantâneos",
   "sendEstimatedDelivery": "Entrega estimada ~ ",
   "fundExchangeMethodOnlineBillPayment": "Pagamento de Bill Online",
   "coreScreensTransferIdLabel": "ID de transferência",
@@ -1410,18 +1318,14 @@
   "payExchangeRate": "Taxa de câmbio",
   "startBackupButton": "Iniciar backup",
   "buyInputTitle": "Comprar Bitcoin",
-  "arkSendRecipientTitle": "Enviar para o Recipiente",
   "importMnemonicImport": "Importação",
   "recoverbullPasswordTooShort": "Senha deve ter pelo menos 6 caracteres de comprimento",
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6..",
   "payNetwork": "Rede",
   "sendBuildFailed": "Falhado em construir a transação",
   "paySwapFee": "Taxa de balanço",
   "exchangeAccountSettingsTitle": "Configurações da conta do Exchange",
-  "arkBoardingConfirmed": "Encaminhamento confirmado",
   "broadcastSignedTxTitle": "Transação de transmissão",
   "backupWalletVaultProviderTakeYourTime": "Leve o seu tempo",
-  "arkSettleIncludeRecoverable": "Incluir vtxos recuperáveis",
   "ledgerWalletTypeSegwitDescription": "Nativo SegWit - Recomendado",
   "exchangeAccountInfoFirstNameLabel": "Primeiro nome",
   "payPaymentFailed": "O pagamento falhou",
@@ -1436,7 +1340,6 @@
   "payBroadcastingTransaction": "Transmissão...",
   "bip329LabelsImportButton": "Etiquetas de importação",
   "fiatCurrencySettingsLabel": "Moeda de Fiat",
-  "arkStatusConfirmed": "Confirmado",
   "withdrawConfirmAmount": "Montante",
   "transactionSwapDoNotUninstall": "Não desinstale o aplicativo até que o swap seja concluído.",
   "payDefaultCommentHint": "Insira o comentário padrão",
@@ -1453,7 +1356,6 @@
   "electrumServerOffline": "Offline",
   "sendTransferFee": "Taxa de transferência",
   "fundExchangeLabelIbanCrcOnly": "Número da conta IBAN (apenas para Colones)",
-  "arkServerPubkey": "Servidor pubkey",
   "testBackupPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
   "sendInitiatingSwap": "Iniciando troca...",
   "sellLightningNetwork": "Rede de relâmpago",
@@ -1462,7 +1364,6 @@
   "importColdcardInstructionsStep6": "Escolha \"Bull Bitcoin\" como a opção de exportação",
   "swapValidationSelectToWallet": "Selecione uma carteira para transferir para",
   "receiveWaitForSenderToFinish": "Aguarde o remetente para terminar a transação payjoin",
-  "arkSetupTitle": "Configuração de arca",
   "seedsignerStep3": "Digitalizar o código QR mostrado na carteira Bull",
   "sellErrorLoadUtxos": "Falhado para carregar UTXOs: {error}",
   "@sellErrorLoadUtxos": {
@@ -1521,7 +1422,6 @@
   "payFailedPayments": "Falhado",
   "transactionDetailLabelToWallet": "Para a carteira",
   "fundExchangeLabelRecipientName": "Nome do destinatário",
-  "arkToday": "Hoje",
   "importQrDeviceJadeStep2": "Selecione \"Modo QR\" no menu principal",
   "rbfErrorAlreadyConfirmed": "A transação original foi confirmada",
   "psbtFlowMoveBack": "Tente mover seu dispositivo de volta um pouco",
@@ -1542,7 +1442,6 @@
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
   "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
   "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
-  "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
   "autoswapWarningCardTitle": "O Autoswap está ativado.",
   "coreSwapsChainCompletedSuccess": "A transferência é concluída com sucesso.",
   "physicalBackupRecommendation": "Backup físico: ",
@@ -1612,7 +1511,6 @@
   "sellNoInvoiceData": "Não existem dados de fatura disponíveis",
   "ledgerInstructionsIos": "Certifique-se de que seu Ledger está desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
   "replaceByFeeScreenTitle": "Substituir por taxa",
-  "arkReceiveCopyAddress": "Endereço de cópia",
   "testBackupErrorWriteFailed": "Escrever para armazenamento falhou: {error}",
   "@testBackupErrorWriteFailed": {
     "placeholders": {
@@ -1626,10 +1524,8 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "exchangeHomeWithdrawButton": "Retirar",
   "transactionListOngoingTransfersTitle": "Transferências em curso",
-  "arkSendAmountTitle": "Digite o valor",
   "addressViewAddress": "Endereço",
   "payOnChainFee": "Taxas On-Chain",
-  "arkReceiveUnifiedAddress": "Endereço unificado (BIP21)",
   "sellHowToPayInvoice": "Como você quer pagar esta fatura?",
   "payUseCoinjoin": "Use CoinJoin",
   "autoswapWarningExplanation": "Quando o seu saldo exceder a quantidade do gatilho, uma troca será acionada. A quantidade de base será mantida em sua carteira de pagamentos instantâneos e a quantidade restante será trocada em sua carteira de Bitcoin seguro.",
@@ -1655,9 +1551,7 @@
   "buyInputKycMessage": "Você deve concluir a verificação de identificação primeiro",
   "ledgerSuccessAddressVerified": "Endereço verificado com sucesso!",
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
-  "arkSettleDescription": "Finalize transações pendentes e inclua vtxos recuperáveis se necessário",
   "backupWalletHowToDecideVaultCustomRecommendation": "Localização personalizada: ",
-  "arkSendSuccessMessage": "Sua transacção Ark foi bem sucedida!",
   "sendSats": "sats",
   "electrumInvalidTimeoutError": "Valor de Timeout inválido: {value}",
   "@electrumInvalidTimeoutError": {
@@ -1703,11 +1597,8 @@
   "sellRoutingNumber": "Número de roteamento",
   "sellDailyLimitReached": "Limite de venda diário alcançado",
   "requiredHint": "Requisitos",
-  "arkUnilateralExitDelay": "Atraso de saída unilateral",
-  "arkStatusPending": "Pendente",
   "importWatchOnlyXpub": "x pub",
   "dcaInsufficientBalanceTitle": "Balança insuficiente",
-  "arkType": "Tipo",
   "backupImportanceMessage": "Sem um backup, você eventualmente perderá o acesso ao seu dinheiro. É criticamente importante fazer um backup.",
   "testBackupGoogleDrivePermission": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
   "testnetModeSettingsLabel": "Modo de Testnet",
@@ -1717,7 +1608,6 @@
   "systemLabelPayjoin": "Payjoin",
   "onboardingScreenTitle": "Bem-vindo",
   "pinCodeConfirmTitle": "Confirme o novo pino",
-  "arkSetupExperimentalWarning": "A arca ainda é experimental.\n\nSua carteira Ark é derivada da frase de semente da sua carteira principal. Nenhum backup adicional é necessário, seu backup de carteira existente restaura seus fundos Ark também.\n\nAo continuar, você reconhece a natureza experimental da Arca e o risco de perder fundos.\n\nNota do desenvolvedor : O segredo da arca é derivado da principal semente da carteira usando uma derivação arbitrária BIP-85 (index 11811).",
   "keyServerLabel": "Servidor chave ",
   "recoverbullEnterToView": "Digite seu {inputType} para ver sua chave do cofre.",
   "@recoverbullEnterToView": {
@@ -1875,20 +1765,11 @@
   "recoverbullEnterVaultKeyInstead": "Digite uma chave de cofre em vez",
   "exchangeAccountInfoEmailLabel": "Email",
   "legacySeedViewNoSeedsMessage": "Nenhuma semente encontrada.",
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - Aumente o brilho da tela em seu dispositivo",
   "sendSelectCoinsManually": "Selecione moedas manualmente",
   "importMnemonicEmpty": "Vazio",
   "electrumBitcoinServerInfo": "Digite o endereço do servidor em formato: host:port (por exemplo, example.com:50001)",
   "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
-  "arkSettleTitle": "Transações de Settle",
   "sendErrorInsufficientBalanceForSwap": "Não saldo suficiente para pagar esta troca via Liquid e não dentro de limites de swap para pagar via Bitcoin.",
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Instruções",
   "transactionFilterPayjoin": "Payjoin",
@@ -1904,7 +1785,6 @@
   "coreScreensNetworkFeesLabel": "Taxas de rede",
   "kruxStep9": "   - Tente mover seu dispositivo para trás um pouco",
   "sendReceiveNetworkFee": "Receber Taxas de Rede",
-  "arkTxPayment": "Pagamento",
   "importQrDeviceSeedsignerStep6": "Selecione \"Seta\" como a opção de exportação",
   "swapValidationMaximumAmount": "A quantidade máxima é {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -1931,7 +1811,6 @@
   "electrumRetryCountEmptyError": "Retry Count não pode estar vazio",
   "ledgerErrorBitcoinAppNotOpen": "Por favor, abra o aplicativo Bitcoin em seu dispositivo Ledger e tente novamente.",
   "physicalBackupTag": "Trustless (ter o seu tempo)",
-  "arkIncludeRecoverableVtxos": "Incluir vtxos recuperáveis",
   "payCompletedDescription": "Seu pagamento foi concluído e o destinatário recebeu os fundos.",
   "recoverbullConnecting": "Conexão",
   "swapExternalAddressHint": "Digite o endereço da carteira externa",
@@ -1941,7 +1820,6 @@
   "exchangeAccountInfoVerificationNotVerified": "Não verificado",
   "fundExchangeWarningDescription": "Se alguém está pedindo para você comprar Bitcoin ou \"ajudar você\", tenha cuidado, eles podem estar tentando enganar você!",
   "transactionDetailLabelTransactionId": "ID de transação",
-  "arkReceiveTitle": "Ark Receber",
   "payDebitCardNumberHint": "Digite número de cartão de débito",
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Vault criptografado: ",
   "seedsignerStep9": "Revise o endereço de destino e o valor, e confirme a assinatura no SeedSigner.",
@@ -1953,7 +1831,6 @@
   "settingsExchangeSettingsTitle": "Configurações de troca",
   "sellFeePriority": "Prioridade de Taxas",
   "exchangeFeatureSelfCustody": "• Comprar Bitcoin direto para self-custody",
-  "arkBoardingUnconfirmed": "Embarque sem confirmação",
   "fundExchangeLabelPaymentDescription": "Descrição do pagamento",
   "payAmountTooHigh": "Quantidade superior ao máximo",
   "dcaConfirmPaymentBalance": "{currency} equilíbrio",
@@ -1997,7 +1874,6 @@
   "coreSwapsChainPending": "Transferência ainda não é inicializada.",
   "importWalletImportWatchOnly": "Importar apenas relógio",
   "coldcardStep9": "Uma vez que a transação é importada em seu Coldcard, revise o endereço de destino e o valor.",
-  "sendErrorArkExperimentalOnly": "Os pedidos de pagamento ARK estão disponíveis apenas a partir do recurso Ark experimental.",
   "exchangeKycComplete": "Completar seu KYC",
   "enterBackupKeyManuallyDescription": "Se você tiver exportado sua chave de backup e salvá-lo em um local seperado por si mesmo, você pode digitá-lo manualmente aqui. Caso contrário, volte para a tela anterior.",
   "sellBitcoinPriceLabel": "Preço de Bitcoin",
@@ -2077,14 +1953,6 @@
   "payPriceWillRefreshIn": "Preço irá refrescar-se ",
   "recoverbullGoogleDriveErrorDeleteFailed": "Falhado para excluir o vault do Google Drive",
   "broadcastSignedTxTo": "Para",
-  "arkAboutDurationDays": "{days} dias",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "Detalhes do pagamento",
   "bitboxActionVerifyAddressTitle": "Verificar o endereço no BitBox",
   "psbtSignTransaction": "Transação de assinatura",
@@ -2114,7 +1982,6 @@
   "transactionStatusPayjoinRequested": "Pedir desculpa",
   "payOwnerNameHint": "Digite o nome do proprietário",
   "customLocationRecommendationText": "você está confiante de que você não vai perder o arquivo do vault e ainda será acessível se você perder seu telefone.",
-  "arkAboutForfeitAddress": "Endereço falso",
   "kruxStep13": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "transactionSwapInfoRefundableTransfer": "Esta transferência será reembolsada automaticamente dentro de alguns segundos. Se não, você pode tentar um reembolso manual clicando no botão \"Restaurar reembolso\".",
   "payBitcoinPrice": "Preço de Bitcoin",
@@ -2141,7 +2008,6 @@
   "swapInfoBanner": "Transferir Bitcoin perfeitamente entre suas carteiras. Apenas mantenha fundos na Carteira de Pagamento Instantânea para gastos diários.",
   "payRBFEnabled": "RBF habilitado",
   "takeYourTimeTag": "Leve o seu tempo",
-  "arkAboutDust": "Pó",
   "ledgerSuccessVerifyDescription": "O endereço foi verificado no seu dispositivo Ledger.",
   "bip85Title": "BIP85 Entropias Deterministas",
   "sendSwapTimeout": "Swap timed out",
@@ -2150,17 +2016,14 @@
   "sendSwapInProgressBitcoin": "A troca está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
   "electrumDeleteServerTitle": "Excluir servidor personalizado",
   "buySelfie": "Selfie com ID",
-  "arkAboutSecretKey": "Chave secreta",
   "sellMxnBalance": "MXN Balanço",
   "fundExchangeWarningTactic4": "Eles pedem para enviar Bitcoin para seu endereço",
   "fundExchangeSinpeDescription": "Transferir Colones usando SINPE",
   "wordsDropdownSuffix": " palavras",
-  "arkTxTypeRedeem": "Redeem",
   "receiveVerifyAddressOnLedger": "Verificar endereço no Ledger",
   "buyWaitForFreeWithdrawal": "Aguarde a retirada livre",
   "sellSendPaymentCrcBalance": "CRC Balanço",
   "backupSettingsKeyWarningBold": "Atenção: Tenha cuidado onde você salvar a chave de backup.",
-  "settingsArkTitle": "Arca",
   "exchangeLandingConnectAccount": "Conecte sua conta de câmbio Bull Bitcoin",
   "recoverYourWalletTitle": "Recupere sua carteira",
   "importWatchOnlyLabel": "Etiqueta",
@@ -2192,7 +2055,6 @@
   "coreSwapsLnSendCompletedRefunded": "O Swap foi reembolsado.",
   "transactionSwapInfoClaimableSwap": "A troca será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Retentar Swap Claim\".",
   "mempoolCustomServerLabel": "CUSTOM",
-  "arkAboutSessionDuration": "Duração da sessão",
   "transferFeeLabel": "Taxa de transferência",
   "pinValidationError": "PIN deve ser pelo menos {minLength} dígitos longo",
   "@pinValidationError": {
@@ -2236,29 +2098,17 @@
   "exchangeTestnetBasicAuthSaveButton": "Guardar",
   "payDecodeFailed": "Falhado para decodificar fatura",
   "sendAbsoluteFees": "Taxas absolutas",
-  "arkSendConfirm": "Confirmação",
   "rbfErrorFeeTooLow": "Você precisa aumentar a taxa de taxa em pelo menos 1 sat/vbyte em comparação com a transação original",
   "ledgerErrorMissingDerivationPathSign": "O caminho de derivação é necessário para assinar",
   "backupWalletTitle": "Faça backup da sua carteira",
   "jadeStep10": "Clique nos botões para assinar a transação no seu Jade.",
-  "arkAboutDurationHour": "{hours} hora",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "bitboxScreenUnknownError": "O erro desconhecido ocorreu",
   "electrumPrivacyNoticeTitle": "Aviso de privacidade",
   "receiveLiquid": "Líquido",
   "payOpenChannelRequired": "Abrir um canal é necessário para este pagamento",
   "coldcardStep1": "Faça login no seu dispositivo Coldcard Q",
   "transactionDetailLabelBitcoinTxId": "ID de transação de Bitcoin",
-  "arkAboutTitle": "Sobre a",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6..",
   "sellSendPaymentCalculating": "Cálculo...",
-  "arkRecoverableVtxos": "Vtxos recuperáveis",
   "psbtFlowTransactionImported": "A transação será importada na carteira Bull Bitcoin.",
   "testBackupGoogleDriveSignIn": "Você precisará se inscrever no Google Drive",
   "sendTransactionSignedLedger": "Transação assinada com sucesso com Ledger",
@@ -2323,14 +2173,12 @@
   "recoverbullVaultSelected": "Vault selecionado",
   "receiveTransferFee": "Taxa de transferência",
   "fundExchangeInfoTransferCodeRequired": "Você deve adicionar o código de transferência como a \"mensagem\" ou \"razão\" ou \"descrição\" ao fazer o pagamento. Se você esquecer de colocar este código o seu pagamento pode ser rejeitado.",
-  "arkBoardingExitDelay": "Atraso de saída de embarque",
   "exchangeDcaFrequencyHour": "hora da hora",
   "transactionLabelPayjoinCreationTime": "Tempo de criação Payjoin",
   "payRBFDisabled": "RBF desativado",
   "exchangeAuthLoginFailedOkButton": "ESTÁ BEM",
   "exchangeKycCardTitle": "Completar seu KYC",
   "importQrDeviceSuccess": "Carteira importada com sucesso",
-  "arkTxSettlement": "Fixação",
   "autoswapEnable": "Habilitar a transferência automática",
   "transactionStatusTransferCompleted": "Transferência Completa",
   "payInvalidSinpe": "Sinpe inválido",
@@ -2374,7 +2222,6 @@
   "appUnlockAttemptPlural": "tentativas falhadas",
   "exportVaultButton": "Padrão de exportação",
   "coreSwapsChainPaid": "Aguardando o pagamento do provedor de transferência para receber confirmação. Isto pode demorar um pouco a terminar.",
-  "arkConfirmed": "Confirmado",
   "importQrDevicePassportStep6": "Selecione \"Single-sig\"",
   "sendSatsPerVB": "sats/vB",
   "withdrawRecipientsContinue": "Continue",
@@ -2400,7 +2247,6 @@
   "coreSwapsChainClaimable": "A transferência está pronta para ser reivindicada.",
   "dcaNetworkLightning": "Rede de relâmpago",
   "backupWalletHowToDecideVaultCloudRecommendationText": "você quer se certificar de que você nunca perder o acesso ao seu arquivo de vault mesmo se você perder seus dispositivos.",
-  "arkAboutEsploraUrl": "URL de impressão",
   "backupKeyExampleWarning": "Por exemplo, se você usou o Google Drive para seu arquivo de backup, não use o Google Drive para sua chave de backup.",
   "importColdcardInstructionsStep3": "Navegue para \"Advanced / ferramentas\"",
   "buyPhotoID": "ID da foto",
@@ -2425,7 +2271,6 @@
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
   "allSeedViewDeleteWarningTitle": "ATENÇÃO!",
   "backupSettingsBackupKey": "Chave de backup",
-  "arkTransactionId": "ID de transação",
   "payInvoiceCopied": "Fatura copiada para clipboard",
   "recoverbullEncryptedVaultCreated": "Criptografado Vault criado!",
   "addressViewChangeAddressesComingSoon": "Mudar endereços em breve",
@@ -2548,7 +2393,6 @@
       }
     }
   },
-  "arkSendConfirmedBalance": "Balanço confirmado",
   "sellFastest": "Mais rápido",
   "receiveTitle": "Receber",
   "transactionSwapInfoRefundableSwap": "Esta troca será reembolsada automaticamente dentro de alguns segundos. Se não, você pode tentar um reembolso manual clicando no botão \"Restaurar Swap Refund\".",
@@ -2580,7 +2424,6 @@
   "backupSettingsPhysicalBackup": "Backup físico",
   "importColdcardDescription": "Importar o código QR do descritor da carteira do seu Coldcard Q",
   "backupSettingsSecurityWarning": "Aviso de Segurança",
-  "arkCopyAddress": "Endereço de cópia",
   "sendScheduleFor": "Calendário para {date}",
   "@sendScheduleFor": {
     "placeholders": {
@@ -2653,22 +2496,6 @@
   "ledgerErrorMissingScriptTypeSign": "O tipo de script é necessário para assinar",
   "dcaSetupContinue": "Continue",
   "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
-  "arkAboutDurationDay": "{days} dia",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} hora",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "Essas taxas serão deduzidas do montante enviado",
   "buyConfirmYouPay": "Você paga",
   "importWatchOnlyTitle": "Importar apenas relógio",
@@ -2676,7 +2503,6 @@
   "walletDetailsWalletFingerprintLabel": "Carteira digital",
   "logsViewerTitle": "Logs",
   "recoverbullTorNotStarted": "Tor não é iniciado",
-  "arkPending": "Pendente",
   "transactionOrderLabelOrderStatus": "Status da ordem",
   "testBackupCreatedAt": "Criado em:",
   "dcaSetRecurringBuyTitle": "Definir Recorrer Comprar",
@@ -2711,7 +2537,6 @@
   "payLightningFee": "Taxa de iluminação",
   "payLabelOptional": "Etiqueta (opcional)",
   "recoverbullGoogleDriveDeleteButton": "Excluir",
-  "arkBalanceBreakdownTooltip": "Repartição do saldo",
   "exchangeDcaDeactivateTitle": "Desativar a recuperação",
   "exchangeSettingsSecuritySettingsTitle": "Configurações de segurança",
   "fundExchangeMethodEmailETransferSubtitle": "Método mais fácil e mais rápido (instant)",
@@ -2757,7 +2582,6 @@
   "jadeStep5": "Se você tiver problemas de digitalização:",
   "electrumProtocolError": "Não inclua protocolo (ssl:// ou tcp://).",
   "receivePayjoinFailQuestion": "Não há tempo para esperar ou o payjoin falhou no lado do remetente?",
-  "arkSendConfirmTitle": "Enviar",
   "importQrDeviceSeedsignerStep1": "Poder no seu dispositivo SeedSigner",
   "exchangeRecipientsTitle": "Os participantes",
   "legacySeedViewEmptyPassphrase": "(empty)",
@@ -2902,14 +2726,11 @@
   "recoverbullSelectBackupFileNotValidError": "O arquivo de backup do Recoverbull não é válido",
   "swapErrorInsufficientFunds": "Não consegui construir a transação. Provavelmente devido a fundos insuficientes para cobrir taxas e montante.",
   "dcaConfirmAmount": "Montante",
-  "arkBalanceBreakdown": "Interrupção de equilíbrio",
   "seedsignerStep8": "Uma vez que a transação é importada em seu SeedSigner, você deve selecionar a semente que deseja assinar.",
   "sellSendPaymentPriceRefresh": "Preço irá refrescar-se ",
-  "arkAboutCopy": "Entendido",
   "recoverbullPasswordRequired": "A senha é necessária",
   "receiveNoteLabel": "Nota",
   "payFirstName": "Primeiro nome",
-  "arkNoTransactionsYet": "Ainda não há transações.",
   "recoverViaCloudDescription": "Recupere seu backup via nuvem usando seu PIN.",
   "importWatchOnlySigningDevice": "Dispositivo de assinatura",
   "receiveInvoiceExpired": "Fatura expirada",
@@ -2942,7 +2763,6 @@
   "receiveFeeExplanation": "Esta taxa será deduzida do montante enviado",
   "payCannotBumpFee": "Não pode pagar por esta transação",
   "payAccountNumber": "Número de conta",
-  "arkSatsUnit": "sats",
   "payMinimumAmount": "Mínimo: {amount}",
   "@payMinimumAmount": {
     "placeholders": {
@@ -2969,7 +2789,6 @@
   "bitboxCubitDeviceNotFound": "Nenhum dispositivo BitBox encontrado. Por favor, conecte seu dispositivo e tente novamente.",
   "buyStandardWithdrawal": "Retirada padrão",
   "swapContinue": "Continue",
-  "arkSettleButton": "Settle",
   "electrumAddFailedError": "Falhado em adicionar servidor personalizado",
   "@electrumAddFailedError": {
     "placeholders": {
@@ -2979,16 +2798,7 @@
     }
   },
   "transactionDetailLabelTransferFees": "Taxas de transferência",
-  "arkAboutDurationHours": "{hours} horas",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "Carteiras genéricas",
-  "arkEsploraUrl": "URL de impressão",
   "backupSettingsNotTested": "Não testado",
   "googleDrivePrivacyMessage": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
   "errorGenericTitle": "Oops! Algo correu mal",
@@ -3016,10 +2826,8 @@
   "recoverbullErrorVaultCreatedKeyNotStored": "Falhado: arquivo Vault criado mas chave não armazenado no servidor",
   "exchangeSupportChatWalletIssuesInfo": "Este chat é apenas para questões relacionadas com a troca em Funding/Buy/Sell/Withdraw/Pay.\nPara problemas relacionados à carteira, junte-se ao grupo telegrama clicando aqui.",
   "exchangeLoginButton": "Login Ou Inscreva-se",
-  "arkAboutHide": "Esconde-te",
   "ledgerProcessingVerify": "Mostrando endereço no Ledger...",
   "coreScreensFeePriorityLabel": "Prioridade de Taxas",
-  "arkSendPendingBalance": "Equilíbrio Pendente    ",
   "coreScreensLogsTitle": "Logs",
   "recoverbullVaultKeyInput": "Chave de fenda",
   "testBackupErrorWalletMismatch": "Backup não corresponde à carteira existente",
@@ -3031,7 +2839,6 @@
   "sendInvoicePaid": "Fatura paga",
   "buyKycPendingDescription": "Você deve concluir a verificação de identificação primeiro",
   "payBelowMinAmountError": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
-  "arkReceiveSegmentArk": "Arca",
   "autoswapRecipientWalletInfo": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
   "importWalletKrux": "Krux",
   "swapContinueButton": "Continue",
@@ -3080,7 +2887,6 @@
   "keystoneStep1": "Entre no seu dispositivo Keystone",
   "keystoneStep3": "Digitalizar o código QR mostrado na carteira Bull",
   "backupKeyWarningMessage": "Atenção: Tenha cuidado onde você salvar a chave de backup.",
-  "arkSendSuccessTitle": "Enviar Sucesso",
   "importQrDevicePassportStep3": "Selecione \"Conta de gerenciamento\"",
   "exchangeAuthErrorMessage": "Um erro ocorreu, tente fazer login novamente.",
   "bitboxActionSignTransactionTitle": "Transação de Sinais",
@@ -3088,7 +2894,6 @@
   "logSettingsErrorLoadingMessage": "Registros de carregamento de erros: ",
   "dcaAmountLabel": "Montante",
   "walletNetworkLiquid": "Rede líquida",
-  "receiveArkNetwork": "Arca",
   "swapMaxButton": "MAX",
   "transactionSwapStatusTransferStatus": "Status de transferência",
   "importQrDeviceSeedsignerStep8": "Digitalize o código QR exibido no SeedSigner",
@@ -3112,7 +2917,6 @@
   "dcaDeactivate": "Desativar a recuperação",
   "exchangeAuthLoginFailedTitle": "Login Falhado",
   "autoswapRecipientWallet": "Carteira de Bitcoin",
-  "arkUnifiedAddressBip21": "Endereço unificado (BIP21)",
   "pickPasswordOrPinButton": "Escolha um {pinOrPassword} em vez >>",
   "@pickPasswordOrPinButton": {
     "placeholders": {
@@ -3137,7 +2941,6 @@
   "encryptedVaultTag": "Fácil e simples (1 minuto)",
   "electrumDelete": "Excluir",
   "testBackupGoogleDrivePrivacyPart4": "nunca ",
-  "arkConfirmButton": "Confirmação",
   "sendCoinControl": "Controle de moeda",
   "exchangeLandingConnect": "Conecte sua conta de câmbio Bull Bitcoin",
   "payProcessingPayment": "Processamento de pagamento...",
@@ -3219,7 +3022,6 @@
   "sellSendPaymentInstantPayments": "Pagamentos imediatos",
   "onboardingRecoverWalletButton": "Recuperar Carteira",
   "dcaConfirmAutoMessage": "Comprar ordens serão colocadas automaticamente por estas configurações. Você pode desabilitá-los a qualquer momento.",
-  "arkCollaborativeRedeem": "Redenção Colaborativa",
   "pinCodeCheckingStatus": "Verificando o status PIN",
   "usePasswordInsteadButton": "Use {pinOrPassword} em vez >>",
   "@usePasswordInsteadButton": {
@@ -3268,7 +3070,6 @@
   "pinCodeAuthentication": "Autenticação",
   "payLowPriority": "Baixa",
   "coreSwapsLnReceivePending": "Swap ainda não é inicializado.",
-  "arkSendConfirmMessage": "Por favor, confirme os detalhes da sua transação antes de enviar.",
   "bitcoinSettingsLegacySeedsTitle": "Sementes Legacy",
   "transactionDetailLabelPayjoinCreationTime": "Tempo de criação Payjoin",
   "backupWalletBestPracticesTitle": "Melhores práticas de backup",
@@ -3323,8 +3124,6 @@
   "electrumNetworkBitcoin": "Bitcoin",
   "paySecureBitcoinWallet": "Carteira Bitcoin segura",
   "exchangeAppSettingsDefaultCurrencyLabel": "Moeda padrão",
-  "arkSendRecipientError": "Digite um destinatário",
-  "arkArkAddress": "Endereço da arca",
   "payRecipientName": "Nome do destinatário",
   "exchangeBitcoinWalletsLightningAddressLabel": "Relâmpago (endereço LN)",
   "bitboxActionVerifyAddressButton": "Verificar endereço",
@@ -3387,7 +3186,6 @@
   "recoverbullSelectFetchDriveFilesError": "Falhado para buscar todos os backups de unidade",
   "psbtFlowLoadFromCamera": "Clique em Carregar da câmera",
   "exchangeAccountInfoVerificationLimitedVerification": "Verificação limitada",
-  "arkCopy": "Entendido",
   "sendBuildingTransaction": "A transação de edifícios...",
   "fundExchangeMethodEmailETransfer": "E-mail E-Transfer",
   "electrumConfirm": "Confirmação",
@@ -3405,7 +3203,6 @@
   "sellRateExpired": "A taxa de câmbio expirou. Refrescando...",
   "payExternalWallet": "Carteira externa",
   "recoverbullConfirm": "Confirmação",
-  "arkPendingBalance": "Equilíbrio Pendente",
   "fundExchangeInfoBankCountryUk": "O nosso país bancário é o Reino Unido.",
   "dcaConfirmNetworkBitcoin": "Bitcoin",
   "seedsignerStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
@@ -3462,7 +3259,6 @@
   "transactionLabelToWallet": "Para a carteira",
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado, ou conectar o dispositivo via USB.",
-  "arkSendRecipientLabel": "Endereço do destinatário",
   "defaultWalletsLabel": "Carteiras padrão",
   "jadeStep9": "Uma vez que a transação é importada em seu Jade, revise o endereço de destino e o valor.",
   "receiveAddLabel": "Adicionar etiqueta",
@@ -3480,7 +3276,6 @@
     }
   },
   "testBackupGoogleDrivePrivacyPart5": "compartilhado com Bull Bitcoin.",
-  "arkTotal": "Total",
   "bitboxActionSignTransactionSuccessSubtext": "Sua transação foi assinada com sucesso.",
   "transactionStatusTransferExpired": "Transferência Expirou",
   "backupWalletInstructionLosePhone": "Sem um backup, se você perder ou quebrar seu telefone, ou se você desinstalar o aplicativo Bull Bitcoin, seus bitcoins serão perdidos para sempre.",
@@ -3508,7 +3303,6 @@
   "settingsScreenTitle": "Configurações",
   "transactionDetailLabelTransferFee": "Taxa de transferência",
   "importQrDeviceKruxStep5": "Analise o código QR que você vê no seu dispositivo.",
-  "arkStatus": "Estado",
   "fundExchangeHelpTransferCode": "Adicione isso como a razão para a transferência",
   "mempoolCustomServerEdit": "Editar",
   "importQrDeviceKruxStep2": "Clique em Extended Public Key",
@@ -3538,14 +3332,6 @@
   "coreSwapsStatusCompleted": "Completada",
   "fundExchangeCrIbanUsdDescriptionEnd": ". Os fundos serão adicionados ao saldo da sua conta.",
   "psbtFlowMoveCloserFurther": "Tente mover seu dispositivo mais perto ou mais longe",
-  "arkAboutDurationMinutes": "{minutes}",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "swapProgressTitle": "Transferência interna",
   "pinButtonConfirm": "Confirmação",
   "coldcardStep2": "Adicionar uma senha se você tiver um (opcional)",
@@ -3610,14 +3396,6 @@
   },
   "sendErrorBuildFailed": "Construa Falhado",
   "transactionDetailSwapProgress": "Progresso de balanço",
-  "arkAboutDurationMinute": "{minutes} minuto",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "backupWalletInstructionLoseBackup": "Se você perder seu backup de 12 palavras, você não será capaz de recuperar o acesso à carteira Bitcoin.",
   "payIsCorporateAccount": "Isto é uma conta corporativa?",
   "sellSendPaymentInsufficientBalance": "Equilíbrio insuficiente na carteira selecionada para completar esta ordem de venda.",
@@ -3629,17 +3407,6 @@
   "electrumTimeout": "Timeout (segundos)",
   "transactionDetailLabelOrderStatus": "Status da ordem",
   "electrumSaveFailedError": "Falhado para salvar opções avançadas",
-  "arkSettleTransactionCount": "Liquidar {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenWalletTypeLabel": "Tipo de carteira:",
   "importQrDeviceKruxStep6": "É isso!",
   "recoverbullRecoveryErrorMissingDerivationPath": "Arquivo de backup faltando caminho de derivação.",
@@ -3727,7 +3494,6 @@
   },
   "recoverbullErrorFetchKeyFailed": "Falhado para buscar a chave do cofre do servidor",
   "sendSwapInProgressInvoice": "A troca está em andamento. A fatura será paga em alguns segundos.",
-  "arkReceiveButton": "Receber",
   "electrumRetryCountNegativeError": "Retry Count não pode ser negativo",
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Adicione isso como número de conta",
   "importQrDeviceJadeStep4": "Selecione \"Opções\" no menu principal",
@@ -3743,13 +3509,11 @@
   "payPaymentInProgressDescription": "O seu pagamento foi iniciado e o destinatário receberá os fundos após a sua transação receber 1 confirmação de compra.",
   "transactionLabelTotalTransferFees": "Total das taxas de transferência",
   "recoverbullRetry": "Repito",
-  "arkSettleMessage": "Finalize transações pendentes e inclua vtxos recuperáveis se necessário",
   "receiveCopyInvoice": "Fatura de cópia",
   "exchangeAccountInfoLastNameLabel": "Sobrenome",
   "importQrDeviceJadeInstructionsTitle": "Instruções Blockstream Jade",
   "paySendMax": "Max",
   "recoverbullGoogleDriveDeleteConfirmation": "Tem a certeza de que deseja apagar este backup do vault? Esta ação não pode ser desfeita.",
-  "arkReceiveArkAddress": "Endereço da arca",
   "googleDriveSignInMessage": "Você precisará se inscrever no Google Drive",
   "transactionNoteEditTitle": "Editar nota",
   "transactionDetailLabelCompletedAt": "Completa em",
@@ -3763,18 +3527,9 @@
       }
     }
   },
-  "arkServerUrl": "URL do servidor",
   "importMnemonicSelectType": "Selecione um tipo de carteira para importar",
   "fundExchangeMethodArsBankTransfer": "Transferência bancária",
   "importQrDeviceKeystoneStep1": "Ligue seu Keystone",
-  "arkDurationDays": "{days} dias",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Entropias Deterministas",
   "swapTransferAmount": "Valor de transferência",
   "feePriorityLabel": "Prioridade de Taxas",
@@ -3848,7 +3603,6 @@
   "payFirstNameHint": "Insira o primeiro nome",
   "payAdvancedSettings": "Configurações avançadas",
   "walletDetailsPubkeyLabel": "Pubkey",
-  "arkAboutBoardingExitDelay": "Atraso de saída de embarque",
   "receiveConfirmedInFewSeconds": "Ele será confirmado em alguns segundos",
   "backupWalletInstructionNoPassphrase": "Seu backup não é protegido por senha. Adicione uma senha ao seu backup mais tarde, criando uma nova carteira.",
   "transactionDetailLabelSwapId": "ID do balanço",
@@ -3871,7 +3625,6 @@
   },
   "fundExchangeWarningTacticsTitle": "Táticas comuns do scammer",
   "payInstitutionCodeHint": "Digite o código da instituição",
-  "arkConfirmedBalance": "Balanço confirmado",
   "walletAddressTypeNativeSegwit": "Nativo Segwit",
   "payOpenInvoice": "Fatura aberta",
   "payMaximumAmount": "Máximo: {amount}",
@@ -3896,7 +3649,6 @@
   },
   "fundExchangeHelpBeneficiaryAddress": "Nosso endereço oficial, caso isso seja exigido pelo seu banco",
   "backupWalletPhysicalBackupTitle": "Backup físico",
-  "arkTxBoarding": "Quadro",
   "bitboxActionVerifyAddressSuccess": "Endereço Verificado com sucesso",
   "psbtImDone": "Estou acabado",
   "bitboxScreenSelectWalletType": "Selecione a carteira Tipo",
@@ -3927,7 +3679,6 @@
     }
   },
   "payFeeBumpFailed": "Esboço de taxas falhou",
-  "arkAboutUnilateralExitDelay": "Atraso de saída unilateral",
   "payUnsupportedInvoiceType": "Tipo de fatura não suportado",
   "seedsignerStep13": "A transação será importada na carteira Bull Bitcoin.",
   "autoswapRecipientWalletDefaultLabel": "Carteira Bitcoin",
@@ -3962,14 +3713,6 @@
   "dcaWalletTypeLiquid": "Líquido (LBTC)",
   "fundExchangeLabelInstitutionNumber": "Número de instituição",
   "encryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
-  "arkAboutCopiedMessage": "{label} copiado para clipboard",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "swapAmountLabel": "Montante",
   "recoverbullSelectCustomLocation": "Localização personalizada",
   "sellConfirmOrder": "Confirmação de Venda",
@@ -4012,7 +3755,6 @@
   "recoverbullTestRecovery": "Recuperação de Teste",
   "sellNetAmount": "Montante líquido",
   "willNot": "não terá ",
-  "arkAboutServerPubkey": "Servidor pubkey",
   "receiveReceiveAmount": "Receber valor",
   "exchangeReferralsApplyToJoinMessage": "Aplicar para se juntar ao programa aqui",
   "payLabelHint": "Digite um rótulo para este destinatário",
@@ -4033,7 +3775,6 @@
   "payRetryPayment": "Restrição de pagamento",
   "exchangeSupportChatTitle": "Chat de Suporte",
   "sellAdvancedSettings": "Configurações avançadas",
-  "arkTxTypeCommitment": "Autorizações",
   "exchangeReferralsJoinMissionTitle": "Junte-se à missão",
   "exchangeSettingsLogInTitle": "Entrar",
   "customLocationRecommendation": "Localização personalizada: ",
@@ -4043,7 +3784,6 @@
   "receiveDescription": "Descrição (opcional)",
   "bitboxScreenVerifyAddress": "Verificar endereço",
   "bitboxScreenConnectDevice": "Conecte seu dispositivo BitBox",
-  "arkYesterday": "Ontem",
   "amountRequestedLabel": "Montante solicitado: {amount}",
   "@amountRequestedLabel": {
     "placeholders": {

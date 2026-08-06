@@ -1,9 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
-import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -56,8 +53,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._disableAutoswapUsecase,
     required this._autoSwapExecutionUsecase,
     required this._deleteWalletUsecase,
-    required this._getArkWalletUsecase,
-    required this._checkArkWalletSetupUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
     required this._ensureSwapMasterKeyUsecase,
@@ -72,7 +67,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwap>(_onExecuteAutoSwap);
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
-    on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
     on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
     on<DisableAutoSwap>(_onDisableAutoSwap);
     on<DismissBackupWarning>(_onDismissBackupWarning);
@@ -96,8 +90,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final DisableAutoswapUsecase _disableAutoswapUsecase;
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final GetArkWalletUsecase _getArkWalletUsecase;
-  final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final EnsureSwapMasterKeyUsecase _ensureSwapMasterKeyUsecase;
@@ -148,8 +140,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           isOnLegacyStorage: isOnLegacyStorage,
         ),
       );
-
-      add(const RefreshArkWalletBalance());
 
       // Derive + persist the swap master key from the default wallet seed now
       // that wallets are ready, so swaps read it from storage and never derive
@@ -229,8 +219,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       final wallets = await _getWalletsUsecase.execute();
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
-
-      add(const RefreshArkWalletBalance());
 
       final defaultLiquidWallet = wallets
           .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
@@ -575,41 +563,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         error: e,
         trace: StackTrace.current,
       );
-    }
-  }
-
-  Future<void> _onRefreshArkWalletBalance(
-    RefreshArkWalletBalance event,
-    Emitter<WalletState> emit,
-  ) async {
-    if (event.amount != null) {
-      emit(state.copyWith(arkBalanceSat: event.amount!));
-      return;
-    } else {
-      // First check if Ark wallet is set up
-      final isArkWalletSetup = await _checkArkWalletSetupUsecase.execute();
-      emit(state.copyWith(isArkWalletSetup: isArkWalletSetup));
-
-      if (!isArkWalletSetup) {
-        return;
-      }
-
-      // If set up, show loading state and load the wallet
-      emit(state.copyWith(isArkWalletLoading: true));
-
-      try {
-        final arkWallet = await _getArkWalletUsecase.execute();
-        final arkBalance = await arkWallet?.balance;
-        emit(
-          state.copyWith(
-            arkWallet: arkWallet,
-            arkBalanceSat: arkBalance?.completeTotal ?? 0,
-            isArkWalletLoading: false,
-          ),
-        );
-      } catch (e) {
-        emit(state.copyWith(isArkWalletLoading: false));
-      }
     }
   }
 
