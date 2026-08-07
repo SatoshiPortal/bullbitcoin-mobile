@@ -1146,7 +1146,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               children: [
                 Flexible(
                   child: BBText(
-                    swap!.orderId!,
+                    swap!.order!.orderNumber.toString(),
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
                     textAlign: .end,
@@ -1155,7 +1155,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 const Gap(4),
                 InkWell(
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: swap.orderId!));
+                    Clipboard.setData(
+                      ClipboardData(text: swap.order!.orderNumber.toString()),
+                    );
                   },
                   child: Icon(
                     Icons.copy,
@@ -1410,7 +1412,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     final orderSwap = context.select(
       (SendCubit cubit) => cubit.state.lightningOrder,
     );
-    final swapId = orderSwap?.orderId ?? legacySwap!.id;
+    final swapId = orderSwap?.order?.orderNumber.toString() ?? legacySwap!.id;
     final sendAmount =
         orderSwap?.order?.payinAmountSat.toInt() ?? legacySwap!.sendAmount!;
     final receiveAmount =
