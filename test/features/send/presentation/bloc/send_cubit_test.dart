@@ -354,6 +354,8 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_FakeNewLabel());
+    registerFallbackValue(_bitcoinLocalWallet());
+    registerFallbackValue(BigInt.zero);
   });
 
   setUp(() {
@@ -531,5 +533,61 @@ void main() {
         expect(cubit.state.failure, isNull);
       },
     );
+  });
+
+  group('SendCubit.onAmountConfirmed note handling', () {
+    /// A Lightning send whose invoice carries a description. The description is
+    /// the only record of what the payment was for, and the note is what ends
+    /// up as a label on the sender's own transaction — so an empty note takes
+    /// the description rather than dropping it. A note the user typed always
+    /// wins over the description.
+    SendState lightningReadyState({String label = ''}) => SendState(
+      step: SendStep.confirm,
+      sendType: SendType.lightning,
+      selectedWallet: _bitcoinLocalWallet(),
+      paymentRequest: const PaymentRequest.bolt11(
+        invoice: 'lnbc1-invoice',
+        amountSat: 50000,
+        paymentHash: 'hash',
+        description: 'Order 123456',
+        expiresAt: 0,
+        isTestnet: false,
+      ),
+      label: label,
+    );
+
+    /// Stops `onAmountConfirmed` right after the emit under test: the quote
+    /// lookup is the next call and returning an error makes it bail out.
+    void stubQuoteFailure() {
+      when(
+        () => getSendSwapQuoteUsecase.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: any(named: 'amountSat'),
+        ),
+      ).thenAnswer((_) async => const Err(SendInvoiceExpiredFailure()));
+    }
+
+    test('an empty note is seeded with the invoice description', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubQuoteFailure();
+      cubit.setStateForTest(lightningReadyState());
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.lightningInvoice, isNotNull);
+      expect(cubit.state.label, 'Order 123456');
+    });
+
+    test('a note the user typed overrides the invoice description', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubQuoteFailure();
+      cubit.setStateForTest(lightningReadyState(label: 'coffee'));
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.label, 'coffee');
+    });
   });
 }
