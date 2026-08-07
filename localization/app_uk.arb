@@ -4969,5 +4969,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin увімкнено, але в цьому гаманці ще немає коштів для участі. Він активується, щойно ви отримаєте кошти.",
   "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
   "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
-  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз."
+  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз.",
+  "coreSwapsStatusNotStarted": "Не розпочато",
+  "coreSwapsStatusAwaitingPayment": "Очікування оплати",
+  "coreSwapsStatusAwaitingConfirmation": "Очікування підтвердження",
+  "coreSwapsStatusUnderReview": "На розгляді",
+  "coreSwapsStatusRejected": "Відхилено",
+  "coreSwapsStatusCanceled": "Скасовано",
+  "coreSwapsStatusPaymentDeadlineExpired": "Термін оплати минув",
+  "coreSwapsStatusScheduled": "Заплановано",
+  "coreSwapsStatusAwaitingClaim": "Очікування отримання",
+  "coreSwapsStatusUnknown": "Невідомо"
 }

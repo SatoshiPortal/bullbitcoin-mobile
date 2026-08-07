@@ -12555,5 +12555,15 @@
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
   "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
-  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง"
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "coreSwapsStatusNotStarted": "ยังไม่เริ่ม",
+  "coreSwapsStatusAwaitingPayment": "รอการชำระเงิน",
+  "coreSwapsStatusAwaitingConfirmation": "รอการยืนยัน",
+  "coreSwapsStatusUnderReview": "อยู่ระหว่างตรวจสอบ",
+  "coreSwapsStatusRejected": "ถูกปฏิเสธ",
+  "coreSwapsStatusCanceled": "ยกเลิกแล้ว",
+  "coreSwapsStatusPaymentDeadlineExpired": "หมดกำหนดชำระเงิน",
+  "coreSwapsStatusScheduled": "กำหนดเวลาแล้ว",
+  "coreSwapsStatusAwaitingClaim": "รอการรับ",
+  "coreSwapsStatusUnknown": "ไม่ทราบ"
 }

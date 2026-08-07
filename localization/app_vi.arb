@@ -3609,5 +3609,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin đã được bật, nhưng ví này chưa có số dư để đóng góp. Tính năng sẽ hoạt động khi bạn nhận được tiền.",
   "announcementAutoswapDescription": "Liquid của bạn được tự động đổi sang Bitcoin.",
   "addressViewErrorWalletNotFound": "Không tìm thấy ví này.",
-  "addressViewErrorLoadFailed": "Không thể tải địa chỉ của bạn. Vui lòng thử lại."
+  "addressViewErrorLoadFailed": "Không thể tải địa chỉ của bạn. Vui lòng thử lại.",
+  "coreSwapsStatusNotStarted": "Chưa bắt đầu",
+  "coreSwapsStatusAwaitingPayment": "Đang chờ thanh toán",
+  "coreSwapsStatusAwaitingConfirmation": "Đang chờ xác nhận",
+  "coreSwapsStatusUnderReview": "Đang xem xét",
+  "coreSwapsStatusRejected": "Bị từ chối",
+  "coreSwapsStatusCanceled": "Đã hủy",
+  "coreSwapsStatusPaymentDeadlineExpired": "Đã hết hạn thanh toán",
+  "coreSwapsStatusScheduled": "Đã lên lịch",
+  "coreSwapsStatusAwaitingClaim": "Đang chờ nhận",
+  "coreSwapsStatusUnknown": "Không xác định"
 }

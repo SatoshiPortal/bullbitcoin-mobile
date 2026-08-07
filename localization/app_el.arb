@@ -12551,5 +12551,15 @@
   "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
   "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
-  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά."
+  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
+  "coreSwapsStatusNotStarted": "Δεν ξεκίνησε",
+  "coreSwapsStatusAwaitingPayment": "Αναμονή πληρωμής",
+  "coreSwapsStatusAwaitingConfirmation": "Αναμονή επιβεβαίωσης",
+  "coreSwapsStatusUnderReview": "Υπό εξέταση",
+  "coreSwapsStatusRejected": "Απορρίφθηκε",
+  "coreSwapsStatusCanceled": "Ακυρώθηκε",
+  "coreSwapsStatusPaymentDeadlineExpired": "Η προθεσμία πληρωμής έληξε",
+  "coreSwapsStatusScheduled": "Προγραμματισμένο",
+  "coreSwapsStatusAwaitingClaim": "Αναμονή διεκδίκησης",
+  "coreSwapsStatusUnknown": "Άγνωστο"
 }

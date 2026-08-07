@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -226,15 +227,18 @@ class TransactionDetailsTable extends StatelessWidget {
           if (orderSwap.order != null) ...[
             DetailsTableItem(
               label: context.loc.transactionDetailLabelPayinStatus,
-              displayValue: orderSwap.order!.payinStatus,
+              displayValue: orderSwap.order!.payinStatus
+                  .toTranslatedOrderStatus(context),
             ),
             DetailsTableItem(
               label: context.loc.transactionDetailLabelOrderStatus,
-              displayValue: orderSwap.order!.orderStatus,
+              displayValue: orderSwap.order!.orderStatus
+                  .toTranslatedOrderStatus(context),
             ),
             DetailsTableItem(
               label: context.loc.transactionDetailLabelPayoutStatus,
-              displayValue: orderSwap.order!.payoutStatus,
+              displayValue: orderSwap.order!.payoutStatus
+                  .toTranslatedOrderStatus(context),
             ),
           ],
         ],
