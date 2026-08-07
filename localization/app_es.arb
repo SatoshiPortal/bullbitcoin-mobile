@@ -4970,5 +4970,15 @@
   "legacyBackupMessage": "Esta versión de la aplicación es demasiado antigua para actualizarse automáticamente. Para conservar tus bitcoin, anota la(s) frase(s) de recuperación a continuación, luego elimina y reinstala la aplicación.",
   "legacyBackupReinstallMessage": "Elimina esta aplicación y reinstálala desde la tienda. Durante la configuración, elige recuperar un monedero existente e introduce tu frase de recuperación.",
   "legacyBackupConfirm": "He anotado todas las frases de recuperación y passphrases anteriores",
-  "legacyBackupNoSeedsMessage": "No se pudo leer ninguna frase de recuperación de esta instalación. NO elimines la aplicación — contacta primero con soporte."
+  "legacyBackupNoSeedsMessage": "No se pudo leer ninguna frase de recuperación de esta instalación. NO elimines la aplicación — contacta primero con soporte.",
+  "coreSwapsStatusNotStarted": "No iniciado",
+  "coreSwapsStatusAwaitingPayment": "Esperando pago",
+  "coreSwapsStatusAwaitingConfirmation": "Esperando confirmación",
+  "coreSwapsStatusUnderReview": "En revisión",
+  "coreSwapsStatusRejected": "Rechazado",
+  "coreSwapsStatusCanceled": "Cancelado",
+  "coreSwapsStatusPaymentDeadlineExpired": "Plazo de pago vencido",
+  "coreSwapsStatusScheduled": "Programado",
+  "coreSwapsStatusAwaitingClaim": "Esperando reclamación",
+  "coreSwapsStatusUnknown": "Desconocido"
 }

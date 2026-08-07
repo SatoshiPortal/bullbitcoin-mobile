@@ -4914,5 +4914,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin ist aktiviert, aber dieses Wallet hat noch kein Guthaben für einen Beitrag. Es wird aktiv, sobald du Guthaben empfängst.",
   "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht.",
   "addressViewErrorWalletNotFound": "Diese Wallet konnte nicht gefunden werden.",
-  "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut."
+  "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "coreSwapsStatusNotStarted": "Nicht begonnen",
+  "coreSwapsStatusAwaitingPayment": "Warten auf Zahlung",
+  "coreSwapsStatusAwaitingConfirmation": "Warten auf Bestätigung",
+  "coreSwapsStatusUnderReview": "In Prüfung",
+  "coreSwapsStatusRejected": "Abgelehnt",
+  "coreSwapsStatusCanceled": "Storniert",
+  "coreSwapsStatusPaymentDeadlineExpired": "Zahlungsfrist abgelaufen",
+  "coreSwapsStatusScheduled": "Geplant",
+  "coreSwapsStatusAwaitingClaim": "Warten auf Einlösung",
+  "coreSwapsStatusUnknown": "Unbekannt"
 }

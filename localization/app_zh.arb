@@ -4971,5 +4971,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
   "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。",
   "addressViewErrorWalletNotFound": "找不到此钱包。",
-  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。"
+  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。",
+  "coreSwapsStatusNotStarted": "未开始",
+  "coreSwapsStatusAwaitingPayment": "等待付款",
+  "coreSwapsStatusAwaitingConfirmation": "等待确认",
+  "coreSwapsStatusUnderReview": "审核中",
+  "coreSwapsStatusRejected": "已拒绝",
+  "coreSwapsStatusCanceled": "已取消",
+  "coreSwapsStatusPaymentDeadlineExpired": "付款期限已过",
+  "coreSwapsStatusScheduled": "已排定",
+  "coreSwapsStatusAwaitingClaim": "等待领取",
+  "coreSwapsStatusUnknown": "未知"
 }

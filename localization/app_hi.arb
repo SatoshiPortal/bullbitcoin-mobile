@@ -12737,5 +12737,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
   "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
-  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।"
+  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "coreSwapsStatusNotStarted": "शुरू नहीं हुआ",
+  "coreSwapsStatusAwaitingPayment": "भुगतान की प्रतीक्षा",
+  "coreSwapsStatusAwaitingConfirmation": "पुष्टि की प्रतीक्षा",
+  "coreSwapsStatusUnderReview": "समीक्षाधीन",
+  "coreSwapsStatusRejected": "अस्वीकृत",
+  "coreSwapsStatusCanceled": "रद्द",
+  "coreSwapsStatusPaymentDeadlineExpired": "भुगतान की समय-सीमा समाप्त",
+  "coreSwapsStatusScheduled": "निर्धारित",
+  "coreSwapsStatusAwaitingClaim": "दावे की प्रतीक्षा",
+  "coreSwapsStatusUnknown": "अज्ञात"
 }

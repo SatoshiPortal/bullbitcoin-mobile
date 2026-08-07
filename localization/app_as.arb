@@ -9617,5 +9617,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin সক্ৰিয় কৰা হৈছে, কিন্তু এই ৱালেটত এতিয়াও অৱদান দিবলৈ কোনো বেলেঞ্চ নাই। আপুনি ধন লাভ কৰিলেই ই সক্ৰিয় হ’ব।",
   "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
-  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "coreSwapsStatusNotStarted": "আৰম্ভ হোৱা নাই",
+  "coreSwapsStatusAwaitingPayment": "পৰিশোধৰ অপেক্ষাত",
+  "coreSwapsStatusAwaitingConfirmation": "নিশ্চিতকৰণৰ অপেক্ষাত",
+  "coreSwapsStatusUnderReview": "পৰ্যালোচনাধীন",
+  "coreSwapsStatusRejected": "প্ৰত্যাখ্যাত",
+  "coreSwapsStatusCanceled": "বাতিল",
+  "coreSwapsStatusPaymentDeadlineExpired": "পৰিশোধৰ সময়সীমা শেষ",
+  "coreSwapsStatusScheduled": "নিৰ্ধাৰিত",
+  "coreSwapsStatusAwaitingClaim": "দাবীৰ অপেক্ষাত",
+  "coreSwapsStatusUnknown": "অজ্ঞাত"
 }

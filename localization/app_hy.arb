@@ -3608,5 +3608,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin-ը միացված է, սակայն այս դրամապանակը դեռ ներդրման համար մնացորդ չունի։ Այն կակտիվանա միջոցներ ստանալուն պես։",
   "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։",
   "addressViewErrorWalletNotFound": "Այս դրամապանակը չի գտնվել։",
-  "addressViewErrorLoadFailed": "Ձեր հասցեները չհաջողվեց բեռնել։ Խնդրում ենք կրկին փորձել։"
+  "addressViewErrorLoadFailed": "Ձեր հասցեները չհաջողվեց բեռնել։ Խնդրում ենք կրկին փորձել։",
+  "coreSwapsStatusNotStarted": "Չի սկսվել",
+  "coreSwapsStatusAwaitingPayment": "Սպասում է վճարման",
+  "coreSwapsStatusAwaitingConfirmation": "Սպասում է հաստատման",
+  "coreSwapsStatusUnderReview": "Վերանայվում է",
+  "coreSwapsStatusRejected": "Մերժված",
+  "coreSwapsStatusCanceled": "Չեղարկված",
+  "coreSwapsStatusPaymentDeadlineExpired": "Վճարման ժամկետը լրացել է",
+  "coreSwapsStatusScheduled": "Պլանավորված",
+  "coreSwapsStatusAwaitingClaim": "Սպասում է ստացման",
+  "coreSwapsStatusUnknown": "Անհայտ"
 }

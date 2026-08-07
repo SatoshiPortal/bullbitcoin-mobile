@@ -12938,5 +12938,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
   "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
-  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein."
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
+  "coreSwapsStatusNotStarted": "Shuru nahi hua",
+  "coreSwapsStatusAwaitingPayment": "Bhugtan ka intezaar",
+  "coreSwapsStatusAwaitingConfirmation": "Pushti ka intezaar",
+  "coreSwapsStatusUnderReview": "Samiksha mein",
+  "coreSwapsStatusRejected": "Asvikrit",
+  "coreSwapsStatusCanceled": "Radd",
+  "coreSwapsStatusPaymentDeadlineExpired": "Bhugtan ki samay-seema samapt",
+  "coreSwapsStatusScheduled": "Nirdharit",
+  "coreSwapsStatusAwaitingClaim": "Dawe ka intezaar",
+  "coreSwapsStatusUnknown": "Agyaat"
 }

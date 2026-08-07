@@ -12547,5 +12547,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
   "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
-  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin."
+  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
+  "coreSwapsStatusNotStarted": "Başlatılmadı",
+  "coreSwapsStatusAwaitingPayment": "Ödeme bekleniyor",
+  "coreSwapsStatusAwaitingConfirmation": "Onay bekleniyor",
+  "coreSwapsStatusUnderReview": "İnceleniyor",
+  "coreSwapsStatusRejected": "Reddedildi",
+  "coreSwapsStatusCanceled": "İptal edildi",
+  "coreSwapsStatusPaymentDeadlineExpired": "Ödeme süresi doldu",
+  "coreSwapsStatusScheduled": "Planlandı",
+  "coreSwapsStatusAwaitingClaim": "Talep bekleniyor",
+  "coreSwapsStatusUnknown": "Bilinmiyor"
 }

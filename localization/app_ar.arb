@@ -12550,5 +12550,15 @@
   "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
   "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
-  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى."
+  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
+  "coreSwapsStatusNotStarted": "لم يبدأ",
+  "coreSwapsStatusAwaitingPayment": "في انتظار الدفع",
+  "coreSwapsStatusAwaitingConfirmation": "في انتظار التأكيد",
+  "coreSwapsStatusUnderReview": "قيد المراجعة",
+  "coreSwapsStatusRejected": "مرفوض",
+  "coreSwapsStatusCanceled": "ملغى",
+  "coreSwapsStatusPaymentDeadlineExpired": "انتهت مهلة الدفع",
+  "coreSwapsStatusScheduled": "مجدول",
+  "coreSwapsStatusAwaitingClaim": "في انتظار المطالبة",
+  "coreSwapsStatusUnknown": "غير معروف"
 }
