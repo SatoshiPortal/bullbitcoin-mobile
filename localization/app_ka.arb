@@ -2172,7 +2172,6 @@
   "totalFeeLabel": "ჯამური საკომისიო",
   "networkFeeLabel": "ქსელის საკომისიო",
   "transferFeeLabel": "გადარიცხვის საკომისიო",
-  "sendNetworkFeesLabel": "გაგზავნის ქსელის საკომისიო",
   "confirmButtonLabel": "დადასტურება",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",

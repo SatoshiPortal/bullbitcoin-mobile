@@ -2393,7 +2393,6 @@
   "hwSeedSigner": "SeedSigner",
   "bitboxActionUnlockDeviceButton": "Sblocca il dispositivo",
   "payNetworkError": "Errore di rete. Si prega di riprovare",
-  "sendNetworkFeesLabel": "Inviare quote di rete",
   "electrumUnknownError": "Si è verificato un errore",
   "payWhichWallet": "Da quale portafogli vuoi pagare?",
   "autoswapBaseBalanceInfoText": "Il saldo del tuo Portafoglio Pagamenti Istantanei tornerà a questo saldo obiettivo dopo un autotransfer.",

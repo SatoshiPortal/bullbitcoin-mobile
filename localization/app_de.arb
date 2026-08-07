@@ -2342,7 +2342,6 @@
   "hwSeedSigner": "SeedSigner",
   "bitboxActionUnlockDeviceButton": "Entsperren Sie das Gerät",
   "payNetworkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
-  "sendNetworkFeesLabel": "Netzwerkgebühren senden",
   "payWhichWallet": "Aus welcher Wallet möchten Sie bezahlen?",
   "autoswapBaseBalanceInfoText": "Der Saldo Ihrer Sofortzahlungs-Wallet wird nach einem automatischen Transfer auf diesen Zielsaldo zurückgesetzt.",
   "recoverbullSelectDecryptVault": "Tresor entschlüsseln",

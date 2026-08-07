@@ -7165,10 +7165,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "নেটওয়ার্ক ফি পাঠান",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "payWhichWallet": "আপনি কোন ওয়ালেট থেকে পেমেন্ট করতে চান?",
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"

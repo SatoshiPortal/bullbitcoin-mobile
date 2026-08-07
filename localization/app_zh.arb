@@ -2395,7 +2395,6 @@
   "hwSeedSigner": "SeedSigner",
   "bitboxActionUnlockDeviceButton": "闭锁装置",
   "payNetworkError": "网络错误。 请再次审判",
-  "sendNetworkFeesLabel": "Send Network Fees",
   "electrumUnknownError": "发生错误",
   "payWhichWallet": "你们想要从哪条墙上花钱?",
   "autoswapBaseBalanceInfoText": "在自动换币后，您的即时支付钱包余额将恢复到该目标余额。",

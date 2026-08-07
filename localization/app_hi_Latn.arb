@@ -4997,10 +4997,6 @@
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
   },
-  "sendNetworkFeesLabel": "Bhejne ki Network Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "confirmButtonLabel": "Confirm Karo",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"

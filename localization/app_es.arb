@@ -1694,7 +1694,6 @@
   "totalFeeLabel": "Tarifa total",
   "networkFeeLabel": "Tarifa de red",
   "transferFeeLabel": "Tarifa de transferencia",
-  "sendNetworkFeesLabel": "Tarifas de red de envío",
   "confirmButtonLabel": "Confirmar",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",

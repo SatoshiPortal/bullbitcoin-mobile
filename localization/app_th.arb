@@ -7378,10 +7378,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "ค่าธรรมเนียมเครือข่าย",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "ข้อผิดพลาดเกิดขึ้น",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"

@@ -5648,10 +5648,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Изпрати мрежовите такси",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "payWhichWallet": "От кой портфейл искате да платите?",
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"

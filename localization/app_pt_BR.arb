@@ -6340,10 +6340,6 @@
   "@payOpenChannelRequired": {
     "description": "Message indicating a new Lightning channel is needed"
   },
-  "sendNetworkFeesLabel": "Enviar taxas de rede",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "sendErrorAmountExceedsMaximum": "O montante excede o montante máximo de transfer",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
