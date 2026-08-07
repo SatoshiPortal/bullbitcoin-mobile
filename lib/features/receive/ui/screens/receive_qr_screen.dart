@@ -25,9 +25,8 @@ import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -235,18 +234,6 @@ class ReceiveQRDetails extends StatelessWidget {
 class ReceiveInfoDetails extends StatelessWidget {
   const ReceiveInfoDetails({super.key});
 
-  /// Suffix showing the unit the user entered in, when it wasn't BTC:
-  /// sats → " (N sats)", fiat → " (~X CUR)". Entered-in-BTC shows nothing —
-  /// the BTC value on the row already IS what the user typed.
-  String _enteredUnitSuffix(BuildContext context, int amountSat) {
-    final state = context.read<ReceiveBloc>().state;
-    if (state.inputAmountCurrencyCode == BitcoinUnit.btc.code) return '';
-    if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return ' (${FormatAmount.sats(amountSat)})';
-    }
-    return ' (~${state.formattedConfirmedAmountFiat})';
-  }
-
   @override
   Widget build(BuildContext context) {
     final amountSat = context.select(
@@ -256,6 +243,18 @@ class ReceiveInfoDetails extends StatelessWidget {
     final type = context.select<ReceiveBloc, ReceiveType?>(
       (bloc) => bloc.state.type,
     );
+    final enteredUnitSuffix = context.select<ReceiveBloc, String>((bloc) {
+      final state = bloc.state;
+      final sats = state.confirmedAmountSat;
+      if (sats == null ||
+          state.inputAmountCurrencyCode == BitcoinUnit.btc.code) {
+        return '';
+      }
+      if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        return ' (${FormatAmount.sats(sats)})';
+      }
+      return ' (~${state.formattedConfirmedAmountFiat})';
+    });
 
     if (type == ReceiveType.lightning) return const ReceiveLnInfoDetails();
 
@@ -294,7 +293,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           '${context.loc.coreScreensAmountLabel}: '
                           '${FormatAmount.btc(ConvertAmount.satsToBtc(amountSat))}'
-                          '${_enteredUnitSuffix(context, amountSat)}',
+                          '$enteredUnitSuffix',
                           style: context.font.bodyMedium,
                           maxLines: 1,
                           overflow: .ellipsis,
@@ -343,7 +342,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
     );
 
     return AnimatedContainer(
-      duration: 300.ms,
+      duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(

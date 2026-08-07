@@ -128,7 +128,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Idioma",
   "settingsThemeTitle": "Tema",
-  "settingsArkTitle": "Ark",
   "settingsDevModeWarningTitle": "Modo desarrollador",
   "settingsDevModeWarningMessage": "Este modo es arriesgado. Al activarlo, reconoces que podrías perder dinero",
   "settingsDevModeUnderstandButton": "Entiendo",
@@ -173,7 +172,6 @@
   "mempoolSettingsUseForFeeEstimation": "Utilice para Estimación de Comisión",
   "mempoolSettingsUseForFeeEstimationDescription": "Cuando habilitado, este servidor será utilizado para estimación de comisión. Cuando inhabilitado, el servidor mempool de Bull Bitcoin será utilizado en su lugar.",
   "bitcoinSettingsAutoTransferTitle": "Transferencia automática",
-  "bitcoinSettingsLegacySeedsTitle": "Semillas heredadas",
   "bitcoinSettingsImportWalletTitle": "Importar billetera",
   "bitcoinSettingsBroadcastTransactionTitle": "Transmitir transacción",
   "bitcoinSettingsTestnetModeTitle": "Modo Testnet",
@@ -384,7 +382,7 @@
   "buyPayoutMethod": "Método de pago",
   "buyAwaitingConfirmation": "Esperando confirmación ",
   "buyConfirmPurchase": "Confirmar compra",
-  "buyYouBought": "Ha comprado {amount}",
+  "buyYouBought": "Ha comprado {amount} por {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -829,8 +827,6 @@
   "walletBalanceUnconfirmedIncoming": "En progreso",
   "walletButtonReceive": "Recibir",
   "walletButtonSend": "Enviar",
-  "walletArkInstantPayments": "Pagos instantáneos Ark",
-  "walletArkExperimental": "Experimental",
   "fundExchangeTitle": "Financiación",
   "fundExchangeAccountTitle": "Fondea tu cuenta",
   "fundExchangeAccountSubtitle": "Selecciona tu país y método de pago",
@@ -1089,11 +1085,6 @@
   "testCompletedSuccessTitle": "¡Prueba completada con éxito!",
   "testCompletedSuccessMessage": "Puedes recuperar el acceso a una billetera Bitcoin perdida",
   "gotItButton": "Entendido",
-  "legacySeedViewScreenTitle": "Semillas heredadas",
-  "legacySeedViewNoSeedsMessage": "No se encontraron semillas heredadas.",
-  "legacySeedViewMnemonicLabel": "Mnemónico",
-  "legacySeedViewPassphrasesLabel": "Frases de contraseña:",
-  "legacySeedViewEmptyPassphrase": "(vacía)",
   "enterBackupKeyManuallyTitle": "Ingresar clave de respaldo manualmente",
   "enterBackupKeyManuallyDescription": "Si has exportado tu clave de respaldo y la has guardado en una ubicación separada por ti mismo, puedes ingresarla manualmente aquí. De lo contrario, regresa a la pantalla anterior.",
   "enterBackupKeyLabel": "Ingresar clave de respaldo",
@@ -1526,150 +1517,6 @@
     }
   },
   "autoswapTriggerBalanceError": "El saldo máximo debe ser al menos 2 veces el saldo objetivo",
-  "arkNoTransactionsYet": "Aún no hay transacciones.",
-  "arkToday": "Hoy",
-  "arkYesterday": "Ayer",
-  "arkSettleTransactions": "Liquidar Transacciones",
-  "arkSettleDescription": "Finalice las transacciones pendientes e incluya vtxos recuperables si es necesario",
-  "arkIncludeRecoverableVtxos": "Incluir vtxos recuperables",
-  "arkCancelButton": "Cancelar",
-  "arkSettleButton": "Liquidar",
-  "arkReceiveTitle": "Recibir Ark",
-  "arkUnifiedAddressCopied": "Dirección unificada copiada",
-  "arkCopyAddress": "Copiar dirección",
-  "arkUnifiedAddressBip21": "Dirección unificada (BIP21)",
-  "arkBtcAddress": "Dirección BTC",
-  "arkArkAddress": "Dirección Ark",
-  "arkSendTitle": "Enviar",
-  "arkRecipientAddress": "Dirección del destinatario",
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkConfirmedBalance": "Saldo Confirmado",
-  "arkPendingBalance": "Saldo Pendiente",
-  "arkConfirmButton": "Confirmar",
-  "arkCollaborativeRedeem": "Redención Colaborativa",
-  "arkRecoverableVtxos": "Vtxos Recuperables",
-  "arkRedeemButton": "Redimir",
-  "arkInstantPayments": "Pagos Instantáneos Ark",
-  "arkSettleTransactionCount": "Liquidar {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTransaction": "transacción",
-  "arkTransactions": "transacciones",
-  "arkReceiveButton": "Recibir",
-  "arkSendButton": "Enviar",
-  "arkTxTypeBoarding": "Abordaje",
-  "arkTxTypeCommitment": "Compromiso",
-  "arkTxTypeRedeem": "Canjear",
-  "arkTransactionDetails": "Detalles de la transacción",
-  "arkStatusConfirmed": "Confirmado",
-  "arkStatusPending": "Pendiente",
-  "arkStatusSettled": "Liquidado",
-  "arkTransactionId": "ID de transacción",
-  "arkType": "Tipo",
-  "arkStatus": "Estado",
-  "arkAmount": "Monto",
-  "arkDate": "Fecha",
-  "arkBalanceBreakdown": "Desglose del saldo",
-  "arkConfirmed": "Confirmado",
-  "arkPending": "Pendiente",
-  "arkTotal": "Total",
-  "arkBalanceBreakdownTooltip": "Desglose del saldo",
-  "arkAboutTitle": "Acerca de",
-  "arkServerUrl": "URL del servidor",
-  "arkServerPubkey": "Clave pública del servidor",
-  "arkForfeitAddress": "Dirección de confiscación",
-  "arkNetwork": "Red",
-  "arkDust": "Polvo",
-  "arkSessionDuration": "Duración de la sesión",
-  "arkBoardingExitDelay": "Retraso de salida de abordaje",
-  "arkUnilateralExitDelay": "Retraso de salida unilateral",
-  "arkEsploraUrl": "URL de Esplora",
-  "arkDurationSeconds": "{seconds} segundos",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} minuto",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} minutos",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} hora",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHours": "{hours} horas",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDay": "{days} día",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDays": "{days} días",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Copiar",
-  "arkCopiedToClipboard": "{label} copiado al portapapeles",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendSuccessTitle": "Envío exitoso",
-  "arkSendSuccessMessage": "¡Tu transacción Ark fue exitosa!",
-  "arkBoardingUnconfirmed": "Embarque sin confirmar",
-  "arkBoardingConfirmed": "Embarque confirmado",
-  "arkPreconfirmed": "Preconfirmado",
-  "arkSettled": "Liquidado",
-  "arkAvailable": "Disponible",
-  "arkNoBalanceData": "No hay datos de saldo disponibles",
-  "arkTxPending": "Pendiente",
-  "arkTxBoarding": "Embarque",
-  "arkTxSettlement": "Liquidación",
-  "arkTxPayment": "Pago",
-  "arkSatsUnit": "sats",
   "bitboxErrorPermissionDenied": "Se requieren permisos USB para conectarse a dispositivos BitBox.",
   "bitboxErrorNoDevicesFound": "No se encontraron dispositivos BitBox. Asegúrese de que su dispositivo esté encendido y conectado por USB.",
   "bitboxErrorMultipleDevicesFound": "Se encontraron múltiples dispositivos BitBox. Asegúrese de que solo un dispositivo esté conectado.",
@@ -2151,7 +1998,6 @@
   },
   "sendEnterAbsoluteFee": "Ingrese la comisión absoluta en sats",
   "sendEnterRelativeFee": "Ingrese la comisión relativa en sats/vB",
-  "sendErrorArkExperimentalOnly": "Las solicitudes de pago ARK solo están disponibles desde la función experimental Ark.",
   "sendErrorSwapCreationFailed": "Error al crear el intercambio.",
   "sendErrorHardwareWalletCannotSwap": "Las billeteras hardware no pueden usarse para intercambios.",
   "sendErrorInvoiceMustContainAmount": "La factura debe contener un monto",
@@ -2341,7 +2187,6 @@
   "receiveBitcoinNetwork": "Bitcoin",
   "receiveLightningNetwork": "Lightning",
   "receiveLiquidNetwork": "Liquid",
-  "receiveArkNetwork": "Ark",
   "receiveInvoice": "Factura Lightning",
   "receiveFixedAmount": "Cantidad",
   "receiveDescription": "Descripción (opcional)",
@@ -3439,6 +3284,9 @@
   "buyConfirmYouPay": "Usted paga",
   "buyConfirmYouReceive": "Usted recibe",
   "buyConfirmBitcoinPrice": "Precio de Bitcoin",
+  "buyConfirmPayoutWallet": "Cartera de pago",
+  "buyPayoutMethodLiquid": "L-BTC en Liquid",
+  "buyPayoutMethodBitcoin": "BTC en la cadena de Bitcoin",
   "buyConfirmPayoutMethod": "Método de pago",
   "buyConfirmExternalWallet": "Billetera Bitcoin externo",
   "buyConfirmAwaitingConfirmation": "Esperando confirmación ",
@@ -3466,9 +3314,6 @@
   "sellSendPaymentAboveMax": "Está intentando vender por encima del monto máximo que se puede vender con esta billetera.",
   "sellSendPaymentBelowMin": "Está intentando vender por debajo del monto mínimo que se puede vender con esta billetera.",
   "sellSendPaymentInsufficientBalance": "Saldo insuficiente en la billetera seleccionada para completar esta orden de venta.",
-  "arkSetupTitle": "Configuración Ark",
-  "arkSetupExperimentalWarning": "Ark aún es experimental.\n\nSu billetera Ark se deriva de la frase semilla de su billetera principal. No se necesita respaldo adicional, su respaldo de billetera existente también restaura sus fondos Ark.\n\nAl continuar, usted reconoce la naturaleza experimental de Ark y el riesgo de perder fondos.\n\nNota del desarrollador: El secreto Ark se deriva de la semilla de la billetera principal utilizando una derivación BIP-85 arbitraria (índice 11811).",
-  "arkSetupEnable": "Activar Ark",
   "swapTitle": "Transferencia interna",
   "swapInfoBanner": "Transfiera Bitcoin sin problemas entre sus billeteras. Solo mantenga fondos en la Billetera de pago instantáneo para gastos del día a día.",
   "swapMax": "MÁX",
@@ -3651,114 +3496,6 @@
   "electrumServerNotUsed": "No utilizado",
   "electrumServerOnline": "En línea",
   "electrumServerOffline": "Fuera de línea",
-  "arkSendRecipientLabel": "Dirección del destinatario",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkSendConfirmedBalance": "Saldo confirmado",
-  "arkSendPendingBalance": "Saldo pendiente    ",
-  "arkSendConfirm": "Confirmar",
-  "arkReceiveCopyAddress": "Copiar dirección",
-  "arkReceiveUnifiedAddress": "Dirección unificada (BIP21)",
-  "arkReceiveBtcAddress": "Dirección BTC",
-  "arkReceiveArkAddress": "Dirección Ark",
-  "arkReceiveUnifiedCopied": "Dirección unificada copiada",
-  "arkSettleTitle": "Liquidar transacciones",
-  "arkSettleMessage": "Finalizar transacciones pendientes e incluir vtxos recuperables si es necesario",
-  "arkSettleIncludeRecoverable": "Incluir vtxos recuperables",
-  "arkSettleCancel": "Cancelar",
-  "arkAboutServerUrl": "URL del servidor",
-  "arkAboutServerPubkey": "Clave pública del servidor",
-  "arkAboutForfeitAddress": "Dirección de decomiso",
-  "arkAboutNetwork": "Red",
-  "arkAboutDust": "Polvo",
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "Duración de sesión",
-  "arkAboutBoardingExitDelay": "Retraso de salida de embarque",
-  "arkAboutUnilateralExitDelay": "Retraso de salida unilateral",
-  "arkAboutEsploraUrl": "URL Esplora",
-  "arkAboutCopy": "Copiar",
-  "arkAboutCopiedMessage": "{label} copiado al portapapeles",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} segundos",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} minuto",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} minutos",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} hora",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} horas",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} día",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} días",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "Enviar al destinatario",
-  "arkSendRecipientError": "Por favor ingrese un destinatario",
-  "arkSendAmountTitle": "Ingrese el monto",
-  "arkSendConfirmTitle": "Confirmar envío",
-  "arkSendConfirmMessage": "Por favor confirme los detalles de su transacción antes de enviar.",
-  "arkReceiveSegmentArk": "Ark",
-  "arkReceiveSegmentBoarding": "Embarque",
-  "arkReceiveBoardingAddress": "Dirección de embarque BTC",
-  "arkAboutSecretKey": "Clave secreta",
-  "arkAboutShow": "Mostrar",
-  "arkAboutHide": "Ocultar",
-  "arkContinueButton": "Continuar",
   "addressViewNoAddressesFound": "No se encontraron direcciones",
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Exhiba direcciones de cambio de la billetera",
@@ -4061,6 +3798,7 @@
   "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
   "buyInsufficientFundsError": "Fondos insuficientes en su cuenta Bull Bitcoin para completar esta compra.",
   "buyOrderNotFoundError": "No se encontró la orden de compra. Por favor, inténtelo de nuevo.",
+  "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
   "buyOrderAlreadyConfirmedError": "Esta orden de compra ya ha sido confirmada.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",
@@ -5225,5 +4963,13 @@
   "receivePayjoinAwaitingFunds": "Payjoin está activado, pero esta cartera todavía no tiene saldo para contribuir. Se activará cuando recibas fondos.",
   "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin.",
   "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
-  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo."
+  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
+  "legacyBackupTitle": "Copia de seguridad necesaria",
+  "legacyBackupWalletLabel": "Monedero",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupReinstallTitle": "Próximos pasos",
+  "legacyBackupMessage": "Esta versión de la aplicación es demasiado antigua para actualizarse automáticamente. Para conservar tus bitcoin, anota la(s) frase(s) de recuperación a continuación, luego elimina y reinstala la aplicación.",
+  "legacyBackupReinstallMessage": "Elimina esta aplicación y reinstálala desde la tienda. Durante la configuración, elige recuperar un monedero existente e introduce tu frase de recuperación.",
+  "legacyBackupConfirm": "He anotado todas las frases de recuperación y passphrases anteriores",
+  "legacyBackupNoSeedsMessage": "No se pudo leer ninguna frase de recuperación de esta instalación. NO elimines la aplicación — contacta primero con soporte."
 }

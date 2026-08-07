@@ -8,10 +8,10 @@ import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:url_launcher/url_launcher.dart';
 
-enum _TransactionNetwork { bitcoin, liquid, ark }
+enum _TransactionNetwork { bitcoin, liquid }
 
 /// Displays a transaction ID truncated to fit the available width.
 ///
@@ -21,7 +21,6 @@ enum _TransactionNetwork { bitcoin, liquid, ark }
 /// Use the named constructors to specify the network:
 /// - [TransactionViewer.bitcoin] for on-chain Bitcoin transactions.
 /// - [TransactionViewer.liquid] for Liquid transactions.
-/// - [TransactionViewer.ark] for Ark transactions.
 class TransactionViewer extends StatelessWidget {
   const TransactionViewer.bitcoin(
     this.data, {
@@ -42,16 +41,6 @@ class TransactionViewer extends StatelessWidget {
     required this._isTestnet,
     this._unblindedUrl,
   }) : _network = _TransactionNetwork.liquid;
-
-  const TransactionViewer.ark(
-    this.data, {
-    super.key,
-    this.style,
-    this.color,
-    this.clipboardText,
-    this._isTestnet = false,
-  }) : _network = _TransactionNetwork.ark,
-       _unblindedUrl = null;
 
   final String data;
   final TextStyle? style;
@@ -141,9 +130,6 @@ class TransactionViewer extends StatelessWidget {
           isTestnet: _isTestnet,
           unblindedUrl: _unblindedUrl,
         );
-      case _TransactionNetwork.ark:
-        // TODO(ark): no public testnet explorer; both networks resolve to mainnet for now
-        return 'https://explorer.arkade.sh/tx/$data';
     }
   }
 

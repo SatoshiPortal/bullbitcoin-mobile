@@ -9,9 +9,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -42,17 +39,21 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolut
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -94,6 +95,7 @@ class SendCubit extends Cubit<SendState>
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
     required this._checkLiquidConsolidationUsecase,
+    required this._getSendPayjoinEnabledUsecase,
   }) : super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
@@ -109,6 +111,7 @@ class SendCubit extends Cubit<SendState>
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
+  final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
@@ -147,7 +150,7 @@ class SendCubit extends Cubit<SendState>
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
-  StreamSubscription<Payjoin>? _payjoinSubscription;
+  StreamSubscription<PayjoinSession>? _payjoinSubscription;
 
   /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
   /// captures it before its `await` and re-checks before writing results
@@ -843,6 +846,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> getCurrencies() async {
     final settings = await _getSettingsUsecase.execute();
+    final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
 
     final (exchangeRate, fiatCurrencies) = await (
       _convertSatsToCurrencyAmountUsecase.execute(),
@@ -859,7 +863,7 @@ class SendCubit extends Cubit<SendState>
         exchangeRate: exchangeRate,
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
-        payjoinGloballyEnabled: settings.isPayjoinEnabled,
+        payjoinGloballyEnabled: payjoinEnabled,
       ),
     );
   }
@@ -968,12 +972,13 @@ class SendCubit extends Cubit<SendState>
       final currencyValues = await Future.wait([
         _getSettingsUsecase.execute(),
         _convertSatsToCurrencyAmountUsecase.execute(),
+        _getSendPayjoinEnabledUsecase.execute(),
       ]);
 
       final settings = currencyValues[0] as SettingsEntity;
       fiatCurrencyCode = settings.currencyCode;
       exchangeRate = currencyValues[1] as double;
-      payjoinGloballyEnabled = settings.isPayjoinEnabled;
+      payjoinGloballyEnabled = currencyValues[2] as bool;
     }
 
     emit(
@@ -2231,8 +2236,8 @@ class SendCubit extends Cubit<SendState>
     final userLabel = state.label;
     _payjoinSubscription = _watchPayjoinUsecase
         .execute(ids: [payjoinId])
-        .where((payjoin) => payjoin is PayjoinSender)
-        .cast<PayjoinSender>()
+        .where((payjoin) => payjoin is PayjoinSenderSession)
+        .cast<PayjoinSenderSession>()
         .listen((payjoin) {
           // The payjoin poll lives in the repository and outlives this cubit;
           // an event can arrive after the send flow is torn down. Never emit

@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
@@ -74,9 +74,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     style: context.font.bodyMedium,
                     color: context.appColors.outline,
                   ),
-                  if (order != null)
+                  if (order?.confirmationDeadline case final deadline?)
                     Countdown(
-                      until: order.confirmationDeadline,
+                      until: deadline,
                       onTimeout: () {
                         context.read<SellBloc>().add(
                           const SellEvent.orderRefreshTimePassed(),

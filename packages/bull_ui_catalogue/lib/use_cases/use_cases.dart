@@ -168,6 +168,31 @@ m.Widget bullScaffoldUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullSuccessScreen)
+m.Widget bullSuccessScreenUseCase(m.BuildContext context) {
+  return BullSuccessScreen(
+    title: context.knobs.string(label: 'title', initialValue: 'Sell'),
+    headline: context.knobs.string(
+      label: 'headline',
+      initialValue: 'Order completed',
+    ),
+    amountLine: context.knobs.string(
+      label: 'amount',
+      initialValue: '100 000 sats for \$50.00',
+    ),
+    message: const m.Text('Your payment was completed successfully.'),
+    onClose: () {},
+    actions: [
+      BullButton.big(
+        label: 'View details',
+        onPressed: () {},
+        bgColor: context.bull.secondary,
+        textColor: context.bull.onSecondary,
+      ),
+    ],
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullTopBar)
 m.Widget bullTopBarUseCase(m.BuildContext context) {
   return _frame(

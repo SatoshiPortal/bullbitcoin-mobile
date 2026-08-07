@@ -1,18 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart'
-    show NoSpendableUtxoException;
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Ok, Outpoint;
 
-class _MockPayjoinRepository extends Mock implements PayjoinRepository {}
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 class _MockBitcoinWalletRepository extends Mock
     implements BitcoinWalletRepository {}
@@ -30,7 +29,7 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
     );
 
 void main() {
-  late _MockPayjoinRepository payjoin;
+  late _MockPayjoinSessions payjoin;
   late _MockBitcoinWalletRepository bitcoinWallet;
   late _MockWalletUtxoRepository walletUtxo;
   late PrepareBitcoinSendUsecase usecase;
@@ -44,11 +43,11 @@ void main() {
   });
 
   setUp(() {
-    payjoin = _MockPayjoinRepository();
+    payjoin = _MockPayjoinSessions();
     bitcoinWallet = _MockBitcoinWalletRepository();
     walletUtxo = _MockWalletUtxoRepository();
     usecase = PrepareBitcoinSendUsecase(
-      payjoinRepository: payjoin,
+      payjoinSessions: payjoin,
       walletUtxoRepository: walletUtxo,
       bitcoinWalletRepository: bitcoinWallet,
     );
@@ -116,8 +115,8 @@ void main() {
         () => walletUtxo.getAllFrozenOutpoints(),
       ).thenAnswer((_) async => []);
       when(
-        () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-      ).thenAnswer((_) async => []);
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => const Ok({}));
 
       await usecase.execute(
         walletId: walletId,
@@ -128,7 +127,7 @@ void main() {
 
       // Both unspendable sources are consulted on every build — no gate.
       verify(() => walletUtxo.getAllFrozenOutpoints()).called(1);
-      verify(() => payjoin.getUtxosFrozenByOngoingPayjoins()).called(1);
+      verify(() => payjoin.reservedOutpoints()).called(1);
       expect(capturedUnspendable(), isEmpty);
     },
   );
@@ -140,8 +139,8 @@ void main() {
         () => walletUtxo.getAllFrozenOutpoints(),
       ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1)]);
       when(
-        () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-      ).thenAnswer((_) async => [(txId: 'tx-payjoin', vout: 2)]);
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => const Ok({(txId: 'tx-payjoin', vout: 2)}));
 
       await usecase.execute(
         walletId: walletId,
@@ -178,8 +177,8 @@ void main() {
         () => walletUtxo.getAllFrozenOutpoints(),
       ).thenAnswer((_) async => []);
       when(
-        () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-      ).thenAnswer((_) async => []);
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => const Ok(<Outpoint>{}));
       when(
         () => bitcoinWallet.buildPsbt(
           walletId: any(named: 'walletId'),
@@ -212,8 +211,8 @@ void main() {
         () => walletUtxo.getAllFrozenOutpoints(),
       ).thenAnswer((_) async => []);
       when(
-        () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-      ).thenAnswer((_) async => []);
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => const Ok(<Outpoint>{}));
       when(
         () => bitcoinWallet.buildPsbt(
           walletId: any(named: 'walletId'),
@@ -247,8 +246,8 @@ void main() {
         () => walletUtxo.getAllFrozenOutpoints(),
       ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1), shared]);
       when(
-        () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-      ).thenAnswer((_) async => [(txId: 'tx-payjoin', vout: 2), shared]);
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => Ok({(txId: 'tx-payjoin', vout: 2), shared}));
 
       await usecase.execute(
         walletId: walletId,
@@ -272,8 +271,8 @@ void main() {
       () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => [(txId: 'tx-frozen', vout: 0)]);
     when(
-      () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-    ).thenAnswer((_) async => []);
+      () => payjoin.reservedOutpoints(),
+    ).thenAnswer((_) async => const Ok(<Outpoint>{}));
 
     final frozenInput = _utxo(txId: 'tx-frozen', vout: 0);
     final spendableInput = _utxo(txId: 'tx-ok', vout: 1);
@@ -299,8 +298,8 @@ void main() {
         () => walletUtxo.getAllFrozenOutpoints(),
       ).thenAnswer((_) async => []);
       when(
-        () => payjoin.getUtxosFrozenByOngoingPayjoins(),
-      ).thenAnswer((_) async => []);
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => const Ok(<Outpoint>{}));
 
       final input = _utxo(txId: 'tx-ok', vout: 0);
 

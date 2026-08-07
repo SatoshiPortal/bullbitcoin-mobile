@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -18,8 +17,9 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 class TransactionDetailsTable extends StatelessWidget {
   const TransactionDetailsTable({super.key});
@@ -55,7 +55,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
-    final txFee = walletTransaction?.feeSat;
+    final txFee = transaction?.payjoinSenderFeeSat ?? walletTransaction?.feeSat;
     final swapSendNetworkFee = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapSendNetworkFeeSat,
     );
@@ -359,9 +359,14 @@ class TransactionDetailsTable extends StatelessWidget {
                     label: context.loc.transactionDetailLabelPaymentDescription,
                     displayValue: order.paymentDescription,
                   ),
+                if (order.recipientToDisplay != null)
+                  DetailsTableItem(
+                    label: context.loc.transactionDetailLabelRecipient,
+                    displayValue: order.recipientToDisplay,
+                  ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: order.payoutAmountToDisplay,
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -749,10 +754,12 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
               ];
             } else {
+              // Order types with no dedicated section land here, so this must
+              // report the server-sent name rather than 'Unknown'.
               return [
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order?.orderType.value,
+                  displayValue: order?.orderTypeLabel,
                 ),
               ];
             }

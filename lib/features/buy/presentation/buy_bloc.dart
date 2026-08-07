@@ -15,8 +15,10 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -37,6 +39,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._convertSatsToCurrencyAmountUsecase,
     required this._accelerateBuyOrderUsecase,
     required this._getSettingsUsecase,
+    required this._cancelAbandonedBuyPayjoinUsecase,
+    required this._getBuyPayjoinEnabledUsecase,
   }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -47,6 +51,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyRefreshOrder>(_onRefreshOrder);
     on<_BuyConfirmOrder>(_onConfirmOrder);
+    on<_BuyPayjoinToggled>(_onPayjoinToggled);
     on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
     on<_BuyAccelerateTransactionConfirmed>(_onAccelerateTransactionConfirmed);
   }
@@ -61,11 +66,14 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
+  final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
+  final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
       final settings = await _getSettingsUsecase.execute();
+      final payjoinEnabled = await _getBuyPayjoinEnabledUsecase.execute();
       final preferredCurrency = summary.currency ?? settings.currencyCode;
       final balances = summary.balances.fold<Map<String, double>>({}, (
         map,
@@ -90,6 +98,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           currencyInput: currencyInput,
           bitcoinUnit: settings.bitcoinUnit,
           balances: balances,
+          payjoinGloballyEnabled: payjoinEnabled,
         ),
       );
 
@@ -202,6 +211,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     Emitter<BuyState> emit,
   ) async {
     try {
+      await _cancelAbandonedPayjoin(state.buyOrder);
       // Clear any previous exceptions and reset the buy order so that we create
       //  a new one on every Continue button press as the data may have changed.
       emit(
@@ -225,6 +235,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         // If no wallet is selected, use the bitcoin address input.
         toAddress = state.bitcoinAddressInput;
       }
+      // A payjoin payout needs a wallet of ours, on-chain, plus a rough amount
+      // — the exchange rejects a payjoin URI without one and replaces it with
+      // what it actually pays. The decision belongs here rather than on the
+      // confirmation screen: the URI is handed over with the order and no
+      // endpoint can revise it afterwards. Everything else (an external
+      // address, Liquid, an account outside the pilot) keeps placing the order
+      // exactly as before.
+      final usePayjoin = state.shouldUsePayjoin;
+
       final order = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
         orderAmount: state.isFiatCurrencyInput
@@ -233,6 +252,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         currency: state.currency!,
         isLiquid: state.selectedWallet?.network.isLiquid == true,
         isOwner: true,
+        payjoinWalletId: usePayjoin ? wallet!.id : null,
+        payjoinAmountSat: usePayjoin ? state.amountSat : null,
       );
 
       emit(state.copyWith(buyOrder: order));
@@ -272,7 +293,14 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         state.copyWith(isRefreshingOrder: true, refreshBuyOrderException: null),
       );
 
-      final order = await _refreshBuyOrderUsecase.execute(orderId: orderId);
+      final refreshedOrder = await _refreshBuyOrderUsecase.execute(
+        orderId: orderId,
+      );
+      final order = refreshedOrder.bip21URI == null
+          ? refreshedOrder.copyWith(bip21URI: state.buyOrder?.bip21URI)
+          : refreshedOrder;
+
+      if (order.isExpired()) await _cancelAbandonedPayjoin(order);
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
@@ -294,9 +322,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         state.copyWith(isConfirmingOrder: true, confirmBuyOrderException: null),
       );
 
-      final order = await _confirmBuyOrderUsecase.execute(
+      final confirmedOrder = await _confirmBuyOrderUsecase.execute(
         orderId: state.buyOrder!.orderId,
       );
+      final order = confirmedOrder.bip21URI == null
+          ? confirmedOrder.copyWith(bip21URI: state.buyOrder?.bip21URI)
+          : confirmedOrder;
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
@@ -307,6 +338,24 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     } finally {
       emit(state.copyWith(isConfirmingOrder: false));
     }
+  }
+
+  void _onPayjoinToggled(_BuyPayjoinToggled event, Emitter<BuyState> emit) {
+    emit(state.copyWith(isPayjoinEnabled: event.enabled));
+  }
+
+  Future<void> _cancelAbandonedPayjoin(BuyOrder? order) async {
+    try {
+      await _cancelAbandonedBuyPayjoinUsecase.execute(order);
+    } catch (e) {
+      log.warning('Failed to cancel abandoned buy Payjoin: $e');
+    }
+  }
+
+  @override
+  Future<void> close() async {
+    await _cancelAbandonedPayjoin(state.buyOrder);
+    return super.close();
   }
 
   Future<void> _onAccelerateTransactionPressed(

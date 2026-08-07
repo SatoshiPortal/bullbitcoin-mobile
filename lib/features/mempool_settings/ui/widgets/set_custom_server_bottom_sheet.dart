@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/mempool_settings/presentation/mempool_setting
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;

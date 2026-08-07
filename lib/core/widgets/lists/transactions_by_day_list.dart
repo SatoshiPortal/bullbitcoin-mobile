@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
 
 class TransactionsByDayList extends StatelessWidget {

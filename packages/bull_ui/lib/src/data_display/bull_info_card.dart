@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// A coloured info panel with a leading accent bar and info icon —
 /// duplicated from `core/widgets/cards/info_card.dart`.

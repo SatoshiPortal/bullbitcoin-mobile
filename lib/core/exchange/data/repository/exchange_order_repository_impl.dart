@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
@@ -67,12 +67,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
       );
 
-      final orderModel = orderModels.firstWhere(
-        (model) =>
-            model.bitcoinTransactionId == txId ||
-            model.liquidTransactionId == txId,
-        orElse: () => throw Exception('Order not found for txId: $txId'),
+      // A wallet transaction with no matching order is the normal case, not an
+      // error, so it must not be logged as one.
+      final orderModel = orderModels.firstWhereOrNull(
+        (model) => model.matchesTxId(txId),
       );
+      if (orderModel == null) return null;
 
       return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
@@ -104,8 +104,23 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
       );
 
+      // Map each order on its own. The catch-all below returns an empty list, so
+      // a single order the app can't map would otherwise cost the user all of
+      // them.
       List<Order> orders = orderModels
-          .map((model) => model.toEntity(isTestnet: _isTestnet))
+          .map((model) {
+            try {
+              return model.toEntity(isTestnet: _isTestnet);
+            } catch (e, stackTrace) {
+              log.severe(
+                message: 'Error mapping order ${model.orderId}',
+                error: e,
+                trace: stackTrace,
+              );
+              return null;
+            }
+          })
+          .whereType<Order>()
           .toList();
 
       // this filtering should also be done separately, read from disk not over network
@@ -127,6 +142,10 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
             orders = orders.whereType<RefundOrder>().toList();
           case OrderType.balanceAdjustment:
             orders = orders.whereType<BalanceAdjustmentOrder>().toList();
+          case OrderType.sellUsdt:
+          case OrderType.unknown:
+            // Both map onto GenericOrder, so match on the type itself.
+            orders = orders.where((o) => o.orderType == type).toList();
         }
       }
 
@@ -160,6 +179,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
     required bool isOwner,
+    String? payjoinBip21,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -176,20 +196,23 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderAmount: orderAmount,
         network: network,
         isOwner: isOwner,
-        address: toAddress,
+        address: payjoinBip21 == null ? toAddress : null,
+        bip21URI: payjoinBip21,
       );
 
       final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
 
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
-      final minAmountBtc = e.minAmount;
-      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
-      throw BuyError.belowMinAmount(minAmountSat: minAmountSat);
+      throw BuyError.belowMinAmount(
+        minAmount: e.minAmount,
+        currency: e.currency,
+      );
     } on BullBitcoinApiMaxAmountException catch (e) {
-      final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
-      throw BuyError.aboveMaxAmount(maxAmountSat: maxAmountSat);
+      throw BuyError.aboveMaxAmount(
+        maxAmount: e.maxAmount,
+        currency: e.currency,
+      );
     } catch (e) {
       throw Exception('Failed to place buy order: $e');
     }
@@ -200,6 +223,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
+    bool usePayjoin = false,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -215,19 +239,22 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         fiatCurrency: currency,
         orderAmount: orderAmount,
         network: network,
+        usePayjoin: usePayjoin,
       );
 
       final order = orderModel.toEntity(isTestnet: _isTestnet) as SellOrder;
 
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
-      final minAmountBtc = e.minAmount;
-      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
-      throw SellError.belowMinAmount(minAmountSat: minAmountSat);
+      throw SellError.belowMinAmount(
+        minAmount: e.minAmount,
+        currency: e.currency,
+      );
     } on BullBitcoinApiMaxAmountException catch (e) {
-      final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
-      throw SellError.aboveMaxAmount(maxAmountSat: maxAmountSat);
+      throw SellError.aboveMaxAmount(
+        maxAmount: e.maxAmount,
+        currency: e.currency,
+      );
     } catch (e) {
       throw Exception('Failed to place sell order: $e');
     }
@@ -239,6 +266,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    bool usePayjoin = false,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -255,6 +283,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
+        usePayjoin: usePayjoin,
       );
 
       final order =
@@ -262,13 +291,15 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
-      final minAmountBtc = e.minAmount;
-      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
-      throw PayError.belowMinAmount(minAmountSat: minAmountSat);
+      throw PayError.belowMinAmount(
+        minAmount: e.minAmount,
+        currency: e.currency,
+      );
     } on BullBitcoinApiMaxAmountException catch (e) {
-      final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
-      throw PayError.aboveMaxAmount(maxAmountSat: maxAmountSat);
+      throw PayError.aboveMaxAmount(
+        maxAmount: e.maxAmount,
+        currency: e.currency,
+      );
     } catch (e) {
       throw Exception('Failed to place pay order: $e');
     }
@@ -524,13 +555,15 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
-      final minAmountBtc = e.minAmount;
-      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
-      throw WithdrawError.belowMinAmount(minAmountSat: minAmountSat);
+      throw WithdrawError.belowMinAmount(
+        minAmount: e.minAmount,
+        currency: e.currency,
+      );
     } on BullBitcoinApiMaxAmountException catch (e) {
-      final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
-      throw WithdrawError.aboveMaxAmount(maxAmountSat: maxAmountSat);
+      throw WithdrawError.aboveMaxAmount(
+        maxAmount: e.maxAmount,
+        currency: e.currency,
+      );
     } catch (e) {
       throw Exception('Failed to create withdrawal order: $e');
     }

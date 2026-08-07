@@ -6341,7 +6341,7 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape40 settings = Shape40(
+  late final Shape37 settings = Shape37(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -6362,15 +6362,12 @@ final class Schema14 extends i0.VersionedSchema {
         _column_233,
         _column_235,
         _column_236,
-        _column_242,
-        _column_243,
-        _column_244,
       ],
       attachedDatabase: database,
     ),
     alias: null,
   );
-  late final Shape41 payjoinSenders = Shape41(
+  late final Shape24 payjoinSenders = Shape24(
     source: i0.VersionedTable(
       entityName: 'payjoin_senders',
       withoutRowId: false,
@@ -6390,13 +6387,12 @@ final class Schema14 extends i0.VersionedSchema {
         _column_168,
         _column_169,
         _column_170,
-        _column_245,
       ],
       attachedDatabase: database,
     ),
     alias: null,
   );
-  late final Shape42 payjoinReceivers = Shape42(
+  late final Shape25 payjoinReceivers = Shape25(
     source: i0.VersionedTable(
       entityName: 'payjoin_receivers',
       withoutRowId: false,
@@ -6419,7 +6415,6 @@ final class Schema14 extends i0.VersionedSchema {
         _column_168,
         _column_169,
         _column_170,
-        _column_245,
       ],
       attachedDatabase: database,
     ),
@@ -6611,13 +6606,13 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape43 dismissedAnnouncements = Shape43(
+  late final Shape40 dismissedAnnouncements = Shape40(
     source: i0.VersionedTable(
       entityName: 'dismissed_announcements',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(announcement_id)'],
-      columns: [_column_246, _column_247],
+      columns: [_column_242, _column_243],
       attachedDatabase: database,
     ),
     alias: null,
@@ -6626,162 +6621,13 @@ final class Schema14 extends i0.VersionedSchema {
 
 class Shape40 extends i0.VersionedTable {
   Shape40({required super.source, required super.alias}) : super.aliased();
-  i1.GeneratedColumn<int> get id =>
-      columnsByName['id']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get environment =>
-      columnsByName['environment']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get bitcoinUnit =>
-      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get language =>
-      columnsByName['language']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get currency =>
-      columnsByName['currency']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get hideAmounts =>
-      columnsByName['hide_amounts']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isSuperuser =>
-      columnsByName['is_superuser']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isDevModeEnabled =>
-      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get useTorProxy =>
-      columnsByName['use_tor_proxy']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get torProxyPort =>
-      columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get themeMode =>
-      columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isErrorReportingEnabled =>
-      columnsByName['is_error_reporting_enabled']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthUsername =>
-      columnsByName['exchange_testnet_basic_auth_username']!
-          as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthPassword =>
-      columnsByName['exchange_testnet_basic_auth_password']!
-          as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get payjoinEnabled =>
-      columnsByName['payjoin_enabled']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get payjoinMinAmountSat =>
-      columnsByName['payjoin_min_amount_sat']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get payjoinExpireAfterSec =>
-      columnsByName['payjoin_expire_after_sec']! as i1.GeneratedColumn<int>;
-}
-
-i1.GeneratedColumn<int> _column_242(String aliasedName) =>
-    i1.GeneratedColumn<int>(
-      'payjoin_enabled',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.int,
-      $customConstraints:
-          'NOT NULL DEFAULT 0 CHECK (payjoin_enabled IN (0, 1))',
-      defaultValue: const i1.CustomExpression('0'),
-    );
-i1.GeneratedColumn<int> _column_243(String aliasedName) =>
-    i1.GeneratedColumn<int>(
-      'payjoin_min_amount_sat',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.int,
-      $customConstraints: 'NOT NULL DEFAULT 10000',
-      defaultValue: const i1.CustomExpression('10000'),
-    );
-i1.GeneratedColumn<int> _column_244(String aliasedName) =>
-    i1.GeneratedColumn<int>(
-      'payjoin_expire_after_sec',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.int,
-      $customConstraints: 'NOT NULL DEFAULT 86400',
-      defaultValue: const i1.CustomExpression('86400'),
-    );
-
-class Shape41 extends i0.VersionedTable {
-  Shape41({required super.source, required super.alias}) : super.aliased();
-  i1.GeneratedColumn<String> get uri =>
-      columnsByName['uri']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isTestnet =>
-      columnsByName['is_testnet']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get sender =>
-      columnsByName['sender']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get walletId =>
-      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get originalPsbt =>
-      columnsByName['original_psbt']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get originalTxId =>
-      columnsByName['original_tx_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get amountSat =>
-      columnsByName['amount_sat']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get createdAt =>
-      columnsByName['created_at']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get expireAfterSec =>
-      columnsByName['expire_after_sec']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get proposalPsbt =>
-      columnsByName['proposal_psbt']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get txId =>
-      columnsByName['tx_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isExpired =>
-      columnsByName['is_expired']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isCompleted =>
-      columnsByName['is_completed']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isAborted =>
-      columnsByName['is_aborted']! as i1.GeneratedColumn<int>;
-}
-
-i1.GeneratedColumn<int> _column_245(String aliasedName) =>
-    i1.GeneratedColumn<int>(
-      'is_aborted',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.int,
-      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_aborted IN (0, 1))',
-      defaultValue: const i1.CustomExpression('0'),
-    );
-
-class Shape42 extends i0.VersionedTable {
-  Shape42({required super.source, required super.alias}) : super.aliased();
-  i1.GeneratedColumn<String> get id =>
-      columnsByName['id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get address =>
-      columnsByName['address']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isTestnet =>
-      columnsByName['is_testnet']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get receiver =>
-      columnsByName['receiver']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get walletId =>
-      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get pjUri =>
-      columnsByName['pj_uri']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get maxFeeRateSatPerVb =>
-      columnsByName['max_fee_rate_sat_per_vb']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get createdAt =>
-      columnsByName['created_at']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get expireAfterSec =>
-      columnsByName['expire_after_sec']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<i2.Uint8List> get originalTxBytes =>
-      columnsByName['original_tx_bytes']! as i1.GeneratedColumn<i2.Uint8List>;
-  i1.GeneratedColumn<String> get originalTxId =>
-      columnsByName['original_tx_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get amountSat =>
-      columnsByName['amount_sat']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get proposalPsbt =>
-      columnsByName['proposal_psbt']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get txId =>
-      columnsByName['tx_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isExpired =>
-      columnsByName['is_expired']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isCompleted =>
-      columnsByName['is_completed']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isAborted =>
-      columnsByName['is_aborted']! as i1.GeneratedColumn<int>;
-}
-
-class Shape43 extends i0.VersionedTable {
-  Shape43({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get announcementId =>
       columnsByName['announcement_id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get dismissedAt =>
       columnsByName['dismissed_at']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<String> _column_246(String aliasedName) =>
+i1.GeneratedColumn<String> _column_242(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'announcement_id',
       aliasedName,
@@ -6789,7 +6635,7 @@ i1.GeneratedColumn<String> _column_246(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_247(String aliasedName) =>
+i1.GeneratedColumn<String> _column_243(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'dismissed_at',
       aliasedName,

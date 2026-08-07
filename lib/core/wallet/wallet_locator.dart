@@ -166,6 +166,7 @@ class WalletLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
     locator.registerFactory<GetAddressAtIndexUsecase>(

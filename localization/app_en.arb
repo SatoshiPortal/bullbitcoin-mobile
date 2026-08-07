@@ -67,7 +67,9 @@
   "@swapRestoreActionable": {
     "description": "Header count of restorable swaps with locked, unresolved funds",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "swapRestoreNoSwaps": "No swaps found to restore",
@@ -491,10 +493,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "settingsArkTitle": "Ark",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
-  },
   "settingsDevModeWarningTitle": "Dev Mode",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
@@ -762,10 +760,6 @@
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
-  },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
   },
   "bitcoinSettingsImportWalletTitle": "Import Wallet",
   "@bitcoinSettingsImportWalletTitle": {
@@ -1800,11 +1794,14 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "buyYouBought": "You bought {amount}",
+  "buyYouBought": "You bought {amount} with {fiatAmount}",
   "@buyYouBought": {
-    "description": "Success message with amount bought",
+    "description": "Success message with amount bought and the fiat amount debited",
     "placeholders": {
       "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
         "type": "String"
       }
     }
@@ -2072,6 +2069,18 @@
   "sellBalanceWillBeCredited": "Your account balance will be credited after your transaction receives 1 confirmation onchain.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
+  },
+  "sellYouSold": "You sold {amount} for {fiatAmount}",
+  "@sellYouSold": {
+    "description": "Success message with the amount sold and the fiat amount received",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
+        "type": "String"
+      }
+    }
   },
   "payTitle": "Pay",
   "@payTitle": {
@@ -2534,14 +2543,6 @@
   "@payInvalidState": {
     "description": "Error message for invalid state"
   },
-  "payInProgress": "Payment In Progress!",
-  "@payInProgress": {
-    "description": "Title for payment in progress screen"
-  },
-  "payInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
-  "@payInProgressDescription": {
-    "description": "Description for payment in progress"
-  },
   "payViewDetails": "View details",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -2558,9 +2559,17 @@
   "@payCompleted": {
     "description": "Title for payment completed screen"
   },
-  "payCompletedDescription": "Your payment has been completed and the recipient has received the funds.",
-  "@payCompletedDescription": {
-    "description": "Description for payment completed"
+  "payCompletedDescriptionDetails": "The payment of {fiatAmount} to {recipient} has been completed.",
+  "@payCompletedDescriptionDetails": {
+    "description": "Description for payment completed, with the fiat amount and the recipient",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -2622,9 +2631,29 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payPaymentInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
-  "@payPaymentInProgressDescription": {
-    "description": "Description for payment in progress"
+  "payPaymentInProgressDescriptionDetails": "The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescriptionDetails": {
+    "description": "Description for payment in progress, before the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPaymentPayinConfirmedDescriptionDetails": "Your transaction is confirmed. The payment of {fiatAmount} to {recipient} is being processed.",
+  "@payPaymentPayinConfirmedDescriptionDetails": {
+    "description": "Description for payment in progress, once the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
   },
   "payPriceRefreshIn": "Price will refresh in ",
   "@payPriceRefreshIn": {
@@ -3273,6 +3302,14 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
+  "transactionDetailLoadError": "Could not load the transaction details.",
+  "@transactionDetailLoadError": {
+    "description": "Error message shown when the transaction details could not be loaded"
+  },
+  "transactionDetailLabelRecipient": "Recipient",
+  "@transactionDetailLabelRecipient": {
+    "description": "Label for the recipient of a fiat payment order"
+  },
   "transactionDetailLabelTransactionId": "Transaction ID",
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
@@ -3512,14 +3549,6 @@
   "walletButtonSend": "Send",
   "@walletButtonSend": {
     "description": "Button label to send funds"
-  },
-  "walletArkInstantPayments": "Ark Instant payments",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
-  "walletArkExperimental": "Experimental",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
   },
   "fundExchangeTitle": "Funding",
   "@fundExchangeTitle": {
@@ -4489,26 +4518,6 @@
   "gotItButton": "Got it",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
-  "legacySeedViewNoSeedsMessage": "No legacy seeds found.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
-  },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
-  "legacySeedViewEmptyPassphrase": "(empty)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "enterBackupKeyManuallyTitle": "Enter backup key manually",
   "@enterBackupKeyManuallyTitle": {
@@ -5556,366 +5565,6 @@
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when maximum balance is less than 2x the target balance"
   },
-  "arkNoTransactionsYet": "No transactions yet.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
-  },
-  "arkToday": "Today",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
-  "arkYesterday": "Yesterday",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
-  },
-  "arkSettleTransactions": "Settle Transactions",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
-  "arkSettleDescription": "Finalize pending transactions and include recoverable vtxos if needed",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
-  "arkIncludeRecoverableVtxos": "Include recoverable vtxos",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
-  "arkCancelButton": "Cancel",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
-  },
-  "arkSettleButton": "Settle",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
-  "arkReceiveTitle": "Ark Receive",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
-  "arkUnifiedAddressCopied": "Unified address copied",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
-  },
-  "arkCopyAddress": "Copy address",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
-  },
-  "arkUnifiedAddressBip21": "Unified address (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
-  "arkBtcAddress": "BTC address",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
-  "arkArkAddress": "Ark address",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
-  },
-  "arkSendTitle": "Send",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
-  },
-  "arkRecipientAddress": "Recipient address",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
-  },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
-  },
-  "arkConfirmedBalance": "Confirmed Balance",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
-  "arkPendingBalance": "Pending Balance",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
-  },
-  "arkConfirmButton": "Confirm",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
-  },
-  "arkCollaborativeRedeem": "Collaborative Redeem",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
-  "arkRecoverableVtxos": "Recoverable Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
-  },
-  "arkRedeemButton": "Redeem",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
-  },
-  "arkInstantPayments": "Ark Instant Payments",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
-  },
-  "arkSettleTransactionCount": "Settle {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTransaction": "transaction",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
-  },
-  "arkTransactions": "transactions",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
-  },
-  "arkReceiveButton": "Receive",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
-  "arkSendButton": "Send",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
-  },
-  "arkTxTypeBoarding": "Boarding",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
-  "arkTxTypeCommitment": "Commitment",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
-  "arkTxTypeRedeem": "Redeem",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
-  "arkTransactionDetails": "Transaction details",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
-  },
-  "arkStatusConfirmed": "Confirmed",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
-  },
-  "arkStatusPending": "Pending",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
-  "arkStatusSettled": "Settled",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
-  "arkTransactionId": "Transaction ID",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
-  },
-  "arkType": "Type",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
-  },
-  "arkStatus": "Status",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
-  },
-  "arkAmount": "Amount",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
-  "arkDate": "Date",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
-  },
-  "arkBalanceBreakdown": "Balance Breakdown",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
-  "arkConfirmed": "Confirmed",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
-  "arkPending": "Pending",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
-  },
-  "arkTotal": "Total",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
-  },
-  "arkBalanceBreakdownTooltip": "Balance breakdown",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
-  },
-  "arkAboutTitle": "About",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkServerUrl": "Server URL",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
-  "arkServerPubkey": "Server pubkey",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
-  "arkForfeitAddress": "Forfeit address",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
-  "arkNetwork": "Network",
-  "@arkNetwork": {
-    "description": "Label for network field"
-  },
-  "arkDust": "Dust",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
-  "arkSessionDuration": "Session duration",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
-  },
-  "arkBoardingExitDelay": "Boarding exit delay",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
-  "arkUnilateralExitDelay": "Unilateral exit delay",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
-  },
-  "arkDurationSeconds": "{seconds} seconds",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} minute",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} minutes",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} hour",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHours": "{hours} hours",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDay": "{days} day",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDays": "{days} days",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Copy",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
-  "arkCopiedToClipboard": "{label} copied to clipboard",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendSuccessTitle": "Send Successful",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
-  "arkSendSuccessMessage": "Your Ark transaction was successful!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
-  },
-  "arkBoardingUnconfirmed": "Boarding Unconfirmed",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
-  },
-  "arkBoardingConfirmed": "Boarding Confirmed",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
-  "arkPreconfirmed": "Preconfirmed",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
-  "arkSettled": "Settled",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
-  },
-  "arkAvailable": "Available",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
-  "arkNoBalanceData": "No balance data available",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
-  },
-  "arkTxPending": "Pending",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
-  },
-  "arkTxBoarding": "Boarding",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
-  },
-  "arkTxSettlement": "Settlement",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
-  },
-  "arkTxPayment": "Payment",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
-  },
-  "arkSatsUnit": "sats",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "bitboxErrorPermissionDenied": "USB permissions are required to connect to BitBox devices.",
   "@bitboxErrorPermissionDenied": {
     "description": "Error when USB permissions are not granted for BitBox"
@@ -6502,6 +6151,10 @@
   "feePriorityLabel": "Fee Priority",
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
+  },
+  "feePrioritySlow": "Slow",
+  "@feePrioritySlow": {
+    "description": "Name of the slow (cheapest) network fee tier"
   },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
@@ -7379,10 +7032,6 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "sendErrorArkExperimentalOnly": "ARK payment requests are available from experimental Ark feature only.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
-  },
   "sendErrorSwapCreationFailed": "Failed to create swap.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -7881,10 +7530,6 @@
   "receiveLiquidNetwork": "Liquid",
   "@receiveLiquidNetwork": {
     "description": "Liquid Network option"
-  },
-  "receiveArkNetwork": "Ark",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "receiveInvoice": "Lightning Invoice",
   "@receiveInvoice": {
@@ -11306,9 +10951,21 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
+  "buyConfirmPayoutWallet": "Payout wallet",
+  "@buyConfirmPayoutWallet": {
+    "description": "Field label for the wallet a buy pays out to"
+  },
   "buyConfirmPayoutMethod": "Payout method",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
+  },
+  "buyPayoutMethodLiquid": "L-BTC on Liquid",
+  "@buyPayoutMethodLiquid": {
+    "description": "Payout method for buys paid out over the Liquid network"
+  },
+  "buyPayoutMethodBitcoin": "BTC on Bitcoin chain",
+  "@buyPayoutMethodBitcoin": {
+    "description": "Payout method for buys paid out over the Bitcoin network"
   },
   "buyConfirmExternalWallet": "External Bitcoin wallet",
   "@buyConfirmExternalWallet": {
@@ -11402,6 +11059,14 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
+  "sellSendingPayment": "Sending payment…",
+  "@sellSendingPayment": {
+    "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
+  },
+  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@sellPaymentSentRefreshingOrder": {
+    "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
+  },
   "sellSendPaymentAboveMax": "You are trying to sell above the maximum amount that can be sold with this wallet.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -11413,18 +11078,6 @@
   "sellSendPaymentInsufficientBalance": "Insufficient balance in the selected wallet to complete this sell order.",
   "@sellSendPaymentInsufficientBalance": {
     "description": "Insufficient balance error"
-  },
-  "arkSetupTitle": "Ark Setup",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
-  },
-  "arkSetupExperimentalWarning": "Ark is still experimental.\n\nYour Ark wallet is derived from your main wallet's seed phrase. No additional backup is needed, your existing wallet backup restores your Ark funds too.\n\nBy continuing, you acknowledge the experimental nature of Ark and the risk of losing funds.\n\nDeveloper note : Ark secret is derived from the main wallet seed using an arbitrary BIP-85 derivation (index 11811).",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
-  },
-  "arkSetupEnable": "Enable Ark",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "swapTitle": "Internal Transfer",
   "@swapTitle": {
@@ -11843,231 +11496,6 @@
   "electrumServerOffline": "Offline",
   "@electrumServerOffline": {
     "description": "Status text for offline servers"
-  },
-  "arkSendRecipientLabel": "Recipient's address",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
-  "arkSendConfirmedBalance": "Confirmed Balance",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
-  "arkSendPendingBalance": "Pending Balance    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
-  },
-  "arkSendConfirm": "Confirm",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
-  "arkReceiveCopyAddress": "Copy address",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
-  "arkReceiveUnifiedAddress": "Unified address (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
-  },
-  "arkReceiveBtcAddress": "BTC address",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
-  },
-  "arkReceiveArkAddress": "Ark address",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
-  },
-  "arkReceiveUnifiedCopied": "Unified address copied",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
-  },
-  "arkSettleTitle": "Settle Transactions",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
-  },
-  "arkSettleMessage": "Finalize pending transactions and include recoverable vtxos if needed",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
-  "arkSettleIncludeRecoverable": "Include recoverable vtxos",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
-  },
-  "arkSettleCancel": "Cancel",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
-  "arkAboutServerUrl": "Server URL",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
-  },
-  "arkAboutServerPubkey": "Server pubkey",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
-  "arkAboutForfeitAddress": "Forfeit address",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
-  "arkAboutNetwork": "Network",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
-  "arkAboutDust": "Dust",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "Session duration",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
-  },
-  "arkAboutBoardingExitDelay": "Boarding exit delay",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
-  "arkAboutUnilateralExitDelay": "Unilateral exit delay",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
-  "arkAboutEsploraUrl": "Esplora URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
-  "arkAboutCopy": "Copy",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
-  },
-  "arkAboutCopiedMessage": "{label} copied to clipboard",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} seconds",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} minute",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} minutes",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} hour",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} hours",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} day",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} days",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "Send to Recipient",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
-  "arkSendRecipientError": "Please enter a recipient",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkSendAmountTitle": "Enter Amount",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
-  "arkSendConfirmTitle": "Confirm Send",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
-  },
-  "arkSendConfirmMessage": "Please confirm the details of your transaction before sending.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
-  "arkReceiveSegmentArk": "Ark",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
-  },
-  "arkReceiveSegmentBoarding": "Boarding",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
-  "arkReceiveBoardingAddress": "BTC Boarding Address",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
-  "arkAboutSecretKey": "Secret Key",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
-  "arkAboutShow": "Show",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
-  "arkAboutHide": "Hide",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
-  "arkContinueButton": "Continue",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
   },
   "addressViewNoAddressesFound": "No addresses found",
   "@addressViewNoAddressesFound": {
@@ -12963,6 +12391,10 @@
   "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
+  },
+  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
+  "@buyUnexpectedError": {
+    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
   },
   "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@withdrawUnauthenticatedError": {
@@ -14929,6 +14361,30 @@
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
   },
+  "payjoinInProgress": "Payjoin in progress",
+  "@payjoinInProgress": {
+    "description": "Shown while a payjoin negotiation is still running, before its outcome is known"
+  },
+  "payjoinSucceeded": "Payjoin succeeded",
+  "@payjoinSucceeded": {
+    "description": "Shown when the payjoin negotiation completed and the payjoin transaction was broadcast"
+  },
+  "payjoinBuyRegularSend": "Bitcoin sent to your wallet via regular send",
+  "@payjoinBuyRegularSend": {
+    "description": "Shown on a buy when the payout did not use payjoin and arrived as a plain transaction"
+  },
+  "payjoinViaPayjoin": "via Payjoin",
+  "@payjoinViaPayjoin": {
+    "description": "Suffix appended to a completed order summary when the payment used payjoin"
+  },
+  "payjoinViaRegularSend": "via regular send",
+  "@payjoinViaRegularSend": {
+    "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
+  },
+  "payjoinUseToggle": "Use payjoin",
+  "@payjoinUseToggle": {
+    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
+  },
   "addressViewErrorWalletNotFound": "This wallet could not be found.",
   "@addressViewErrorWalletNotFound": {
     "description": "Shown when the wallet backing the addresses screen has no stored metadata"
@@ -14936,5 +14392,54 @@
   "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
   "@addressViewErrorLoadFailed": {
     "description": "Shown when loading or paginating the wallet address list fails"
+  },
+  "mnemonicPossibleLastWords": "{count} possible last words",
+  "@mnemonicPossibleLastWords": {
+    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
+  "@mnemonicInvalidChecksumError": {
+    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
+  },
+  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
+  "@mnemonicUnknownWordError": {
+    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
+  },
+  "legacyBackupTitle": "Backup required",
+  "@legacyBackupTitle": {
+    "description": "Title of the blocking backup screen shown to pre-v5 (legacy) installs"
+  },
+  "legacyBackupMessage": "This version of the app is too old to be upgraded automatically. To keep your bitcoin, write down the recovery phrase(s) below, then delete and reinstall the app.",
+  "@legacyBackupMessage": {
+    "description": "Explanation on the legacy backup gate screen"
+  },
+  "legacyBackupWalletLabel": "Wallet",
+  "@legacyBackupWalletLabel": {
+    "description": "Label above a legacy wallet fingerprint on the backup gate screen"
+  },
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "@legacyBackupPassphraseLabel": {
+    "description": "Label above a legacy wallet passphrase on the backup gate screen"
+  },
+  "legacyBackupConfirm": "I have written down all recovery phrases and passphrases above",
+  "@legacyBackupConfirm": {
+    "description": "Confirmation checkbox label on the legacy backup gate screen"
+  },
+  "legacyBackupReinstallMessage": "Delete this app and reinstall it from the store. During setup, choose to recover an existing wallet and enter your recovery phrase.",
+  "@legacyBackupReinstallMessage": {
+    "description": "Reinstall instructions shown after the user confirms their backup"
+  },
+  "legacyBackupReinstallTitle": "Next steps",
+  "@legacyBackupReinstallTitle": {
+    "description": "Title of the instructions shown after the user confirms their backup"
+  },
+  "legacyBackupNoSeedsMessage": "No recovery phrase could be read from this install. Do NOT delete the app — contact support first.",
+  "@legacyBackupNoSeedsMessage": {
+    "description": "Warning shown when a legacy install has no readable seed"
   }
 }

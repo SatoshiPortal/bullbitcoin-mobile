@@ -20,7 +20,7 @@ abstract class ReceiveState with _$ReceiveState {
     SwapLimits? swapLimits,
     WalletAddress? liquidAddress,
     @Default('') String note,
-    PayjoinReceiver? payjoin,
+    PayjoinReceiverSession? payjoin,
     // The global payjoin setting as last read by the bloc. Tri-state on
     // purpose: null = settings not fetched yet (treat as "may become
     // enabled", keep waiting), false = disabled (never wait for a payjoin),
@@ -256,7 +256,7 @@ abstract class ReceiveState with _$ReceiveState {
     if (type != ReceiveType.bitcoin || receiver == null) return false;
     if (receiver.status == PayjoinStatus.started) return false;
     return !(receiver.status == PayjoinStatus.expired &&
-        receiver.originalTxBytes == null);
+        !receiver.hasOriginalTransaction);
   }
 
   /// True when the payjoin session resolved via the plain-broadcast fallback

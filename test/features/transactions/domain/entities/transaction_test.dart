@@ -1,13 +1,15 @@
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 WalletTransaction _walletTx({
   required String txId,
   WalletTransactionDirection direction = WalletTransactionDirection.outgoing,
   int amountSat = 50000,
+  int feeSat = 500,
 }) => WalletTransaction(
   walletId: 'w1',
   network: Network.bitcoinMainnet,
@@ -15,31 +17,87 @@ WalletTransaction _walletTx({
   status: WalletTransactionStatus.pending,
   txId: txId,
   amountSat: amountSat,
-  feeSat: 500,
+  feeSat: feeSat,
   vsize: 150,
   inputs: const [],
   outputs: const [],
   isRbf: false,
 );
 
-Payjoin _senderPayjoin({
+PayjoinSession _senderPayjoin({
   PayjoinStatus status = PayjoinStatus.requested,
   String originalTxId = 'orig-txid',
   String? txId,
-}) => Payjoin.sender(
+  int amountSat = 50000,
+}) => PayjoinSenderSession(
   status: status,
   uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
-  isTestnet: false,
+  network: BitcoinNetwork.mainnet,
   walletId: 'w1',
-  originalPsbt: 'cHNidP8=',
-  originalTxId: originalTxId,
-  amountSat: 50000,
+  originalTransactionId: originalTxId,
+  amount: Sats.fromInt(amountSat),
   createdAt: DateTime(2026),
   expiresAt: DateTime(2026, 1, 1, 0, 5),
-  txId: txId,
+  transactionId: txId,
 );
 
 void main() {
+  group('Transaction Payjoin sender amounts', () {
+    test(
+      'displays the negotiated amount instead of BDK receiver-net amount',
+      () {
+        final transaction = Transaction(
+          walletTransaction: _walletTx(
+            txId: 'payjoin-txid',
+            amountSat: 99705,
+            feeSat: 2381,
+          ),
+          payjoin: _senderPayjoin(
+            status: PayjoinStatus.completed,
+            txId: 'payjoin-txid',
+            amountSat: 100001,
+          ),
+        );
+
+        expect(transaction.amountSat, 100001);
+      },
+    );
+
+    test('attributes only the sender fee share to the sender', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'payjoin-txid',
+          amountSat: 99705,
+          feeSat: 2381,
+        ),
+        payjoin: _senderPayjoin(
+          status: PayjoinStatus.completed,
+          txId: 'payjoin-txid',
+          amountSat: 100001,
+        ),
+      );
+
+      expect(transaction.payjoinSenderFeeSat, 2085);
+    });
+
+    test('keeps the full sender fee for a plain fallback', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'orig-txid',
+          amountSat: 100001,
+          feeSat: 500,
+        ),
+        payjoin: _senderPayjoin(
+          status: PayjoinStatus.aborted,
+          amountSat: 100001,
+        ),
+      );
+
+      expect(transaction.amountSat, 100001);
+      expect(transaction.payjoinSenderFeeSat, 500);
+    });
+  });
+
   group('Transaction.displayPayjoinStatus', () {
     test('is null when the transaction has no payjoin', () {
       expect(const Transaction().displayPayjoinStatus, isNull);
@@ -135,20 +193,20 @@ void main() {
           isRbf: false,
         );
 
-    Payjoin buildReceiver({
+    PayjoinSession buildReceiver({
       required int amountSat,
       required PayjoinStatus status,
       String? txId,
-    }) => Payjoin.receiver(
+    }) => PayjoinReceiverSession(
       status: status,
       id: 'r1',
-      isTestnet: false,
+      network: BitcoinNetwork.mainnet,
       walletId: 'w1',
-      pjUri: 'bitcoin:addr?pj=https://payjo.in/x',
+      payjoinUri: 'bitcoin:addr?pj=https://payjo.in/x',
       createdAt: DateTime(2026),
       expiresAt: DateTime(2026, 1, 2),
-      amountSat: amountSat,
-      txId: txId,
+      amount: Sats.fromInt(amountSat),
+      transactionId: txId,
     );
 
     test('derives the gap between the negotiated amount and the wallet-visible '
@@ -222,14 +280,13 @@ void main() {
     test('null for a sender payjoin (receive-side only)', () {
       final transaction = Transaction(
         walletTransaction: buildWalletTransaction(948),
-        payjoin: Payjoin.sender(
+        payjoin: PayjoinSenderSession(
           status: PayjoinStatus.completed,
           uri: 'bitcoin:addr?pj=https://payjo.in/x',
-          isTestnet: false,
+          network: BitcoinNetwork.mainnet,
           walletId: 'w1',
-          originalPsbt: 'psbt',
-          originalTxId: 'a' * 64,
-          amountSat: 1002,
+          originalTransactionId: 'a' * 64,
+          amount: Sats.fromInt(1002),
           createdAt: DateTime(2026),
           expiresAt: DateTime(2026, 1, 2),
         ),

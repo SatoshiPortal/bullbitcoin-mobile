@@ -4,13 +4,14 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:url_launcher/url_launcher.dart';
 
 class AppStartupWidget extends StatefulWidget {
@@ -40,6 +41,8 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
               // return const HomeScreen();
               return widget.app;
+            } else if (state is AppStartupLegacyBackupRequired) {
+              return const LegacyBackupScreen();
             } else if (state is AppStartupFailure) {
               return AppStartupFailureScreen(
                 hasBackup: state.hasBackup,

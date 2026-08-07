@@ -2,10 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -18,10 +14,16 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
@@ -38,6 +40,9 @@ class _MockGetSwapUsecase extends Mock implements GetSwapUsecase {}
 
 class _MockGetPayjoinByIdUsecase extends Mock
     implements GetPayjoinByIdUsecase {}
+
+class _MockGetPayjoinByTxIdUsecase extends Mock
+    implements GetPayjoinByTxIdUsecase {}
 
 class _MockGetOrderUsecase extends Mock implements GetOrderUsecase {}
 
@@ -80,31 +85,29 @@ WalletTransaction _walletTx({required String txId, String walletId = 'w1'}) =>
       isRbf: false,
     );
 
-PayjoinSender _sender({
+PayjoinSenderSession _sender({
   required PayjoinStatus status,
   String? txId,
   String? proposalPsbt,
-}) =>
-    Payjoin.sender(
-          status: status,
-          uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
-          isTestnet: true,
-          walletId: 'w1',
-          originalPsbt: 'cHNidP8=',
-          originalTxId: 'sender-orig-txid',
-          amountSat: 50000,
-          createdAt: DateTime(2026),
-          expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
-          txId: txId,
-          proposalPsbt: proposalPsbt,
-        )
-        as PayjoinSender;
+}) => PayjoinSenderSession(
+  status: status,
+  uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+  network: BitcoinNetwork.testnet,
+  walletId: 'w1',
+  originalTransactionId: 'sender-orig-txid',
+  amount: Sats.fromInt(50000),
+  createdAt: DateTime(2026),
+  expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+  transactionId: txId,
+  hasProposal: proposalPsbt != null,
+);
 
 void main() {
   late _MockGetWalletUsecase getWallet;
   late _MockGetTransactionsByTxIdUsecase getTransactionsByTxId;
   late _MockGetWalletTransactionUsecase getWalletTransaction;
   late _MockGetPayjoinByIdUsecase getPayjoinById;
+  late _MockGetPayjoinByTxIdUsecase getPayjoinByTxId;
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByTxIdUsecase watchWalletTransactionByTxId;
   late _MockBroadcastOriginalTransactionUsecase broadcastOriginalTransaction;
@@ -116,6 +119,7 @@ void main() {
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxId,
     getSwapUsecase: _MockGetSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
+    getPayjoinByTxIdUsecase: getPayjoinByTxId,
     getOrderUsecase: _MockGetOrderUsecase(),
     watchSwapUsecase: _MockWatchSwapUsecase(),
     watchPayjoinUsecase: watchPayjoin,
@@ -133,6 +137,7 @@ void main() {
     getTransactionsByTxId = _MockGetTransactionsByTxIdUsecase();
     getWalletTransaction = _MockGetWalletTransactionUsecase();
     getPayjoinById = _MockGetPayjoinByIdUsecase();
+    getPayjoinByTxId = _MockGetPayjoinByTxIdUsecase();
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransactionByTxId = _MockWatchWalletTransactionByTxIdUsecase();
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
@@ -279,6 +284,35 @@ void main() {
   });
 
   group('TransactionDetailsCubit.initByPayjoinId broadcast resolution', () {
+    test('refresh retries a failed init by Payjoin transaction id', () async {
+      final payjoin = _sender(status: PayjoinStatus.requested);
+      var attempts = 0;
+      when(() => getPayjoinByTxId.execute('payjoin-txid')).thenAnswer((
+        _,
+      ) async {
+        if (attempts++ == 0) throw Exception('storage unavailable');
+        return payjoin;
+      });
+      when(
+        () => getPayjoinById.execute(payjoin.id),
+      ).thenAnswer((_) async => payjoin);
+      when(
+        () => getTransactionsByTxId.execute(any()),
+      ).thenAnswer((_) async => [Transaction(payjoin: payjoin)]);
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByPayjoinTxId('payjoin-txid');
+
+      expect(cubit.state.err, isNotNull);
+
+      await cubit.refresh();
+
+      verify(() => getPayjoinByTxId.execute('payjoin-txid')).called(2);
+      expect(cubit.state.err, isNull);
+      expect(cubit.state.payjoin, payjoin);
+    });
+
     test(
       'resolves straight to the wallet transaction when the broadcast is '
       'already visible locally — the screen must show the pending bitcoin '
@@ -477,7 +511,7 @@ void main() {
       () async {
         final ongoing = _sender(status: PayjoinStatus.requested);
         final completedViaFallback = _sender(status: PayjoinStatus.aborted);
-        final payjoinEvents = StreamController<Payjoin>.broadcast();
+        final payjoinEvents = StreamController<PayjoinSession>.broadcast();
         addTearDown(payjoinEvents.close);
 
         var loadCount = 0;
@@ -516,7 +550,7 @@ void main() {
         'shows up promptly instead of at the next scheduled sync', () async {
       final ongoing = _sender(status: PayjoinStatus.requested);
       final completedViaFallback = _sender(status: PayjoinStatus.aborted);
-      final payjoinEvents = StreamController<Payjoin>.broadcast();
+      final payjoinEvents = StreamController<PayjoinSession>.broadcast();
       addTearDown(payjoinEvents.close);
 
       var loadCount = 0;
@@ -549,7 +583,7 @@ void main() {
           status: PayjoinStatus.proposed,
           proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
         );
-        final payjoinEvents = StreamController<Payjoin>.broadcast();
+        final payjoinEvents = StreamController<PayjoinSession>.broadcast();
         addTearDown(payjoinEvents.close);
 
         var loadCount = 0;

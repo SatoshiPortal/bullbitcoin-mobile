@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_ty
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class RecipientTypeSelector extends StatelessWidget {
   const RecipientTypeSelector({

@@ -160,10 +160,8 @@ class Logger {
   /// Best-effort log loss is acceptable in isolation, but here it
   /// destroys the most recent (and most diagnostically useful) BG
   /// lines — the exact lines a user would share to support after a
-  /// crash. Each isolate prunes its own file: FG cold-start prunes
-  /// `bull_logs.tsv` via `Bull.initLogs`; BG `logs-prune` task fires
-  /// every 15 minutes (Android) / on iOS BGTaskScheduler windows and
-  /// prunes `bull_background_logs.tsv`.
+  /// crash. Each isolate must therefore prune its own file; foreground
+  /// cold-start pruning is triggered by `Bull.initLogs`.
   Future<void> prune() => _enqueue(() async {
     final sizeInKb = (await logsFile.stat()).size ~/ 1000;
     if (sizeInKb <= _maxLogSizeKb) return;

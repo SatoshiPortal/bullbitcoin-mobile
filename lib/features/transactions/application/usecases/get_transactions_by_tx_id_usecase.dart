@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart';
 
 // This use case retrieves transactions by their transaction ID (txId).
 // Two wallet transactions can exist for the same txId if the transaction was
@@ -19,8 +19,8 @@ import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 class GetTransactionsByTxIdUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final BoltzSwapRepository _boltzSwapRepository;
-  final PayjoinRepository _payjoinRepository;
+  final SwapHistoryRepository _boltzSwapRepository;
+  final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
 
@@ -28,7 +28,7 @@ class GetTransactionsByTxIdUsecase {
     required this._settingsRepository,
     required this._walletTransactionRepository,
     required this._boltzSwapRepository,
-    required this._payjoinRepository,
+    required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
   });
@@ -41,18 +41,22 @@ class GetTransactionsByTxIdUsecase {
           : _mainnetExchangeOrderRepository;
 
       // Fetch wallet transactions, swap and payjoins by txId
-      final (walletTransactions, swap, payjoins, order) = await (
+      final (walletTransactions, swap, payjoinResult, order) = await (
         _walletTransactionRepository.getWalletTransactions(txId: txId),
         _boltzSwapRepository.getSwapByTxId(txId),
-        _payjoinRepository.getPayjoinsByTxId(txId),
+        _payjoinSessions.byTransactionId(txId),
         orderRepository.getOrderByTxId(txId),
       ).wait;
+      final payjoins = switch (payjoinResult) {
+        Ok(:final value) => value,
+        Err() => <PayjoinSession>[],
+      };
 
       if (walletTransactions.isNotEmpty) {
         return walletTransactions.map((walletTransaction) {
           // Both a send and a receive transaction can exist for the same txId,
           // so we take the one with the matching walletId.
-          Payjoin? payjoin;
+          PayjoinSession? payjoin;
           try {
             payjoin = payjoins.firstWhere(
               (pj) => pj.walletId == walletTransaction.walletId,

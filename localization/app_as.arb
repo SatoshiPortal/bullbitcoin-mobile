@@ -302,7 +302,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
-  "settingsArkTitle": "Ark",
   "settingsDevModeWarningTitle": "Dev মোড",
   "settingsDevModeWarningMessage": "এই মোড বিপজ্জনক। ইয়াক সামৰ্থ্য কৰি আপুনি স্বীকাৰ কৰিছে যে আপুনি ধন হেৰুৱাব পাৰে",
   "settingsDevModeUnderstandButton": "মই বুজি পাইছোঁ",
@@ -391,7 +390,6 @@
     }
   },
   "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্ৰিয় Transfer ছেটিংছ",
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
   "bitcoinSettingsImportWalletTitle": "Wallet আমদানি কৰক",
   "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্ৰচাৰ কৰক",
   "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
@@ -687,7 +685,7 @@
   "buyPayoutMethod": "পেআউট পদ্ধতি",
   "buyAwaitingConfirmation": "নিশ্চিতকৰণৰ বাবে অপেক্ষা কৰা হৈছে ",
   "buyConfirmPurchase": "কেনাকাটা নিশ্চিত কৰক",
-  "buyYouBought": "আপুনি {amount} কিনিলে",
+  "buyYouBought": "আপুনি {fiatAmount}ৰ বিনিময়ত {amount} কিনিলে",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -1136,8 +1134,6 @@
   "walletBalanceUnconfirmedIncoming": "চলি আছে",
   "walletButtonReceive": "গ্ৰহণ কৰক",
   "walletButtonSend": "প্ৰেৰণ কৰক",
-  "walletArkInstantPayments": "Ark তাৎক্ষণিক পৰিশোধ",
-  "walletArkExperimental": "পৰীক্ষামূলক",
   "fundExchangeTitle": "ফান্ডিং",
   "fundExchangeAccountTitle": "আপোনাৰ একাউন্ট ফান্ড কৰক",
   "fundExchangeAccountSubtitle": "আপোনাৰ দেশ আৰু পৰিশোধৰ পদ্ধতি বাছক",
@@ -1395,11 +1391,6 @@
   "testCompletedSuccessTitle": "পৰীক্ষা সফলতাৰে সম্পন্ন হৈছে!",
   "testCompletedSuccessMessage": "আপুনি হেৰুওৱা Bitcoin wallet পুনৰ প্ৰাপ্ত কৰিব পাৰিব",
   "gotItButton": "বুজিলোঁ",
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "legacySeedViewNoSeedsMessage": "কোনো legacy seed পোৱা নগ'ল।",
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "legacySeedViewEmptyPassphrase": "(খালী)",
   "enterBackupKeyManuallyTitle": "বেকআপ key হাতেৰে দিয়ক",
   "enterBackupKeyManuallyDescription": "যদি আপুনি বেকআপ key ৰপ্তানি কৰি নিজে পৃথক ঠাইত সংৰক্ষণ কৰিছে, তেন্তে ইয়াত হাতেৰে দিব পাৰে। অন্যথা, আগৰ স্ক্ৰীনলৈ উভতি যাওক।",
   "enterBackupKeyLabel": "বেকআপ key দিয়ক",
@@ -2296,366 +2287,6 @@
   "autoswapTriggerBalanceError": "সৰ্বোচ্চ বেলেঞ্চ লক্ষ্য বেলেঞ্চৰ কমেও ২গুণ হ'ব লাগিব",
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when maximum balance is less than 2x the target balance"
-  },
-  "arkNoTransactionsYet": "এতিয়ালৈকে কোনো লেনদেন নাই।",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
-  },
-  "arkToday": "আজি",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
-  "arkYesterday": "কালি",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
-  },
-  "arkSettleTransactions": "লেনদেন নিষ্পত্তি কৰক",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
-  "arkSettleDescription": "বিচাৰাধীন লেনদেন চূড়ান্ত কৰক আৰু প্ৰয়োজনে পুনৰুদ্ধাৰযোগ্য vtxo অন্তৰ্ভুক্ত কৰক",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
-  "arkIncludeRecoverableVtxos": "পুনৰুদ্ধাৰযোগ্য vtxo অন্তৰ্ভুক্ত কৰক",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
-  "arkCancelButton": "বাতিল কৰক",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
-  },
-  "arkSettleButton": "নিষ্পত্তি কৰক",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
-  "arkReceiveTitle": "Ark গ্ৰহণ",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
-  "arkUnifiedAddressCopied": "একীভূত ঠিকনা কপি কৰা হৈছে",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
-  },
-  "arkCopyAddress": "ঠিকনা কপি কৰক",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
-  },
-  "arkUnifiedAddressBip21": "একীভূত ঠিকনা (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
-  "arkBtcAddress": "BTC ঠিকনা",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
-  "arkArkAddress": "Ark ঠিকনা",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
-  },
-  "arkSendTitle": "পঠিয়াওক",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
-  },
-  "arkRecipientAddress": "প্ৰাপকৰ ঠিকনা",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
-  },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
-  },
-  "arkConfirmedBalance": "নিশ্চিত বেলেঞ্চ",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
-  "arkPendingBalance": "বিচাৰাধীন বেলেঞ্চ",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
-  },
-  "arkConfirmButton": "নিশ্চিত কৰক",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
-  },
-  "arkCollaborativeRedeem": "সহযোগিতামূলক ৰিডিম",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
-  },
-  "arkRecoverableVtxos": "পুনৰুদ্ধাৰযোগ্য Vtxo",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
-  },
-  "arkRedeemButton": "ৰিডিম কৰক",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
-  },
-  "arkInstantPayments": "Ark তাৎক্ষণিক পেমেণ্ট",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
-  },
-  "arkSettleTransactionCount": "{count} {transaction} নিষ্পত্তি কৰক",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTransaction": "লেনদেন",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
-  },
-  "arkTransactions": "লেনদেনসমূহ",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
-  },
-  "arkReceiveButton": "গ্ৰহণ কৰক",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
-  "arkSendButton": "পঠিয়াওক",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
-  },
-  "arkTxTypeBoarding": "বোৰ্ডিং",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
-  "arkTxTypeCommitment": "প্ৰতিশ্ৰুতি",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
-  "arkTxTypeRedeem": "ৰিডিম",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
-  "arkTransactionDetails": "লেনদেনৰ বিৱৰণ",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
-  },
-  "arkStatusConfirmed": "নিশ্চিত হৈছে",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
-  },
-  "arkStatusPending": "বিচাৰাধীন",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
-  "arkStatusSettled": "নিষ্পত্তি হৈছে",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
-  "arkTransactionId": "লেনদেন ID",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
-  },
-  "arkType": "ধৰণ",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
-  },
-  "arkStatus": "স্থিতি",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
-  },
-  "arkAmount": "পৰিমাণ",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
-  "arkDate": "তাৰিখ",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
-  },
-  "arkBalanceBreakdown": "বেলেঞ্চৰ বিশদ বিৱৰণ",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
-  "arkConfirmed": "নিশ্চিত হৈছে",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
-  },
-  "arkPending": "বিচাৰাধীন",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
-  },
-  "arkTotal": "মুঠ",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
-  },
-  "arkBalanceBreakdownTooltip": "বেলেঞ্চৰ বিশদ বিৱৰণ",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
-  },
-  "arkAboutTitle": "বিষয়ে",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkServerUrl": "চাৰ্ভাৰ URL",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
-  "arkServerPubkey": "চাৰ্ভাৰ pubkey",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
-  "arkForfeitAddress": "বাজেয়াপ্ত ঠিকনা",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
-  "arkNetwork": "নেটৱৰ্ক",
-  "@arkNetwork": {
-    "description": "Label for network field"
-  },
-  "arkDust": "ডাষ্ট",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
-  "arkSessionDuration": "ছেচন ম্যাদ",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
-  },
-  "arkBoardingExitDelay": "বোৰ্ডিং প্ৰস্থান বিলম্ব",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
-  "arkUnilateralExitDelay": "একতৰফীয়া প্ৰস্থান বিলম্ব",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
-  },
-  "arkDurationSeconds": "{seconds} ছেকেণ্ড",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} মিনিট",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} মিনিট",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} ঘণ্টা",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHours": "{hours} ঘণ্টা",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDay": "{days} দিন",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDays": "{days} দিন",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "কপি কৰক",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
-  "arkCopiedToClipboard": "{label} ক্লিপবোৰ্ডত কপি কৰা হৈছে",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendSuccessTitle": "পঠোৱা সফল হৈছে",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
-  "arkSendSuccessMessage": "আপোনাৰ Ark লেনদেন সফল হৈছে!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
-  },
-  "arkBoardingUnconfirmed": "বোৰ্ডিং অনিশ্চিত",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
-  },
-  "arkBoardingConfirmed": "বোৰ্ডিং নিশ্চিত হৈছে",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
-  "arkPreconfirmed": "পূৰ্ব-নিশ্চিত",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
-  "arkSettled": "নিষ্পত্তি হৈছে",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
-  },
-  "arkAvailable": "উপলব্ধ",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
-  "arkNoBalanceData": "কোনো বেলেঞ্চ তথ্য উপলব্ধ নাই",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
-  },
-  "arkTxPending": "বিচাৰাধীন",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
-  },
-  "arkTxBoarding": "বোৰ্ডিং",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
-  },
-  "arkTxSettlement": "নিষ্পত্তি",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
-  },
-  "arkTxPayment": "পেমেণ্ট",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
-  },
-  "arkSatsUnit": "sats",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
   },
   "bitboxErrorPermissionDenied": "BitBox ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ USB অনুমতি প্ৰয়োজন।",
   "@bitboxErrorPermissionDenied": {
@@ -4091,10 +3722,6 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "sendErrorArkExperimentalOnly": "ARK পেমেণ্ট অনুৰোধ কেৱল পৰীক্ষামূলক Ark সুবিধাৰ পৰাহে উপলব্ধ।",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
-  },
   "sendErrorSwapCreationFailed": "Swap তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -4517,10 +4144,6 @@
   "receiveLiquidNetwork": "Liquid",
   "@receiveLiquidNetwork": {
     "description": "Liquid Network option"
-  },
-  "receiveArkNetwork": "Ark",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "receiveInvoice": "Lightning Invoice",
   "@receiveInvoice": {
@@ -7654,6 +7277,9 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
+  "buyConfirmPayoutWallet": "পৰিশোধ ৱালেট",
+  "buyPayoutMethodLiquid": "Liquid-ত L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin শৃংখলত BTC",
   "buyConfirmPayoutMethod": "Payout পদ্ধতি",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -7761,18 +7387,6 @@
   "sellSendPaymentInsufficientBalance": "এই বিক্ৰয় অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet ত যথেষ্ট ব্যালেন্স নাই।",
   "@sellSendPaymentInsufficientBalance": {
     "description": "Insufficient balance error"
-  },
-  "arkSetupTitle": "Ark ছেটআপ",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
-  },
-  "arkSetupExperimentalWarning": "Ark এতিয়াও পৰীক্ষামূলক।\n\nআপোনাৰ Ark wallet আপোনাৰ মূল wallet ৰ seed phrase ৰ পৰা উৎপন্ন হয়। কোনো অতিৰিক্ত বেকআপৰ প্ৰয়োজন নাই, আপোনাৰ বিদ্যমান wallet বেকআপে আপোনাৰ Ark পুঁজিও পুনৰুদ্ধাৰ কৰে।\n\nঅব্যাহত ৰাখি, আপুনি Ark ৰ পৰীক্ষামূলক প্ৰকৃতি আৰু পুঁজি হেৰুৱাৰ আশংকা স্বীকাৰ কৰিছে।\n\nবিকাশকাৰী টোকা: Ark secret মূল wallet seed ৰ পৰা এটা ঐচ্ছিক BIP-85 derivation (index 11811) ব্যৱহাৰ কৰি উৎপন্ন হয়।",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
-  },
-  "arkSetupEnable": "Ark সক্ৰিয় কৰক",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "swapTitle": "আভ্যন্তৰীণ Transfer",
   "@swapTitle": {
@@ -8184,231 +7798,6 @@
   "electrumServerOffline": "অফলাইন",
   "@electrumServerOffline": {
     "description": "Status text for offline servers"
-  },
-  "arkSendRecipientLabel": "প্ৰাপকৰ ঠিকনা",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
-  "arkSendConfirmedBalance": "নিশ্চিত বেলেঞ্চ",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
-  },
-  "arkSendPendingBalance": "অপেক্ষাৰত বেলেঞ্চ    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
-  },
-  "arkSendConfirm": "নিশ্চিত কৰক",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
-  "arkReceiveCopyAddress": "ঠিকনা কপি কৰক",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
-  "arkReceiveUnifiedAddress": "একত্ৰিত ঠিকনা (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
-  },
-  "arkReceiveBtcAddress": "BTC ঠিকনা",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
-  },
-  "arkReceiveArkAddress": "Ark ঠিকনা",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
-  },
-  "arkReceiveUnifiedCopied": "একত্ৰিত ঠিকনা কপি হৈছে",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
-  },
-  "arkSettleTitle": "লেনদেন সম্পন্ন কৰক",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
-  },
-  "arkSettleMessage": "অপেক্ষাৰত লেনদেনসমূহ চূড়ান্ত কৰক আৰু প্ৰয়োজন হলে পুনৰুদ্ধাৰযোগ্য vtxo অন্তৰ্ভুক্ত কৰক",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
-  "arkSettleIncludeRecoverable": "পুনৰুদ্ধাৰযোগ্য vtxo অন্তৰ্ভুক্ত কৰক",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
-  },
-  "arkSettleCancel": "বাতিল কৰক",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
-  "arkAboutServerUrl": "চাৰ্ভাৰ URL",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
-  },
-  "arkAboutServerPubkey": "চাৰ্ভাৰ pubkey",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
-  "arkAboutForfeitAddress": "Forfeit ঠিকনা",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
-  "arkAboutNetwork": "নেটৱৰ্ক",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
-  "arkAboutDust": "Dust",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "চেছনৰ সময়কাল",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
-  },
-  "arkAboutBoardingExitDelay": "Boarding প্ৰস্থান বিলম্ব",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
-  "arkAboutUnilateralExitDelay": "একতৰফীয়া প্ৰস্থান বিলম্ব",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
-  "arkAboutEsploraUrl": "Esplora URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
-  "arkAboutCopy": "কপি কৰক",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
-  },
-  "arkAboutCopiedMessage": "{label} ক্লিপব'ৰ্ডত কপি হৈছে",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} ছেকেণ্ড",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} মিনিট",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} মিনিট",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} ঘণ্টা",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} ঘণ্টা",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} দিন",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} দিন",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "প্ৰাপকলৈ পঠাওক",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
-  "arkSendRecipientError": "অনুগ্ৰহ কৰি এজন প্ৰাপক দিয়ক",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkSendAmountTitle": "পৰিমাণ দিয়ক",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
-  "arkSendConfirmTitle": "পঠোৱা নিশ্চিত কৰক",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
-  },
-  "arkSendConfirmMessage": "পঠোৱাৰ আগতে আপোনাৰ লেনদেনৰ বিৱৰণ নিশ্চিত কৰক।",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
-  "arkReceiveSegmentArk": "Ark",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
-  },
-  "arkReceiveSegmentBoarding": "Boarding",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
-  "arkReceiveBoardingAddress": "BTC Boarding ঠিকনা",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
-  "arkAboutSecretKey": "গুপ্ত চাবিকাঠি",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
-  "arkAboutShow": "দেখুৱাওক",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
-  "arkAboutHide": "লুকুৱাওক",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
-  "arkContinueButton": "অব্যাহত ৰাখক",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
   },
   "addressViewNoAddressesFound": "কোনো ঠিকনা পোৱা নগ'ল",
   "@addressViewNoAddressesFound": {
@@ -9300,6 +8689,7 @@
   "@buyOrderNotFoundError": {
     "description": "Error message for order not found during buy"
   },
+  "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
   "buyOrderAlreadyConfirmedError": "এই ক্ৰয় অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"

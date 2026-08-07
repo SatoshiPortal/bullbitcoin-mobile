@@ -118,10 +118,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip21_uri
-      sha256: f6df9f5ac5f53c70871cb23b16864ec4c8493bb74b26ee3cb6f314f8743e1c27
+      sha256: ecf94765830e3859b04be49a9cf02a3a92079b2606a1323171a661e2c225e123
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.2.0"
   bip329_labels:
     dependency: "direct main"
     description:
@@ -142,10 +142,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip39_mnemonic
-      sha256: dd6bdfc2547d986b2c00f99bba209c69c0b6fa5c1a185e1f728998282f1249d5
+      sha256: "0fe4ac6c9f2e5b3fb65783371c806007acbcfb66590f4121f577adf5e4523f96"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.1"
+    version: "4.1.0"
   bip85_entropy:
     dependency: "direct main"
     description:
@@ -158,8 +158,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
-      resolved-ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
+      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -216,8 +216,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
-      resolved-ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
+      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -305,8 +305,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
-      resolved-ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
+      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -551,7 +551,7 @@ packages:
     source: hosted
     version: "0.7.14"
   decimal:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: decimal
       sha256: fc706a5618b81e5b367b01dd62621def37abc096f2b46a9bd9068b64c1fa36d0
@@ -691,14 +691,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_animate:
-    dependency: "direct main"
-    description:
-      name: flutter_animate
-      sha256: "7befe2d3252728afb77aecaaea1dec88a89d35b9b1d2eea6d04479e8af9117b5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.5.2"
   flutter_bloc:
     dependency: "direct main"
     description:
@@ -848,14 +840,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  flutter_shaders:
-    dependency: transitive
-    description:
-      name: flutter_shaders
-      sha256: "34794acadd8275d971e02df03afee3dee0f98dbfb8c4837082ad0034f612a3e2"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.3"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -890,14 +874,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  font_awesome_flutter:
-    dependency: "direct main"
-    description:
-      name: font_awesome_flutter
-      sha256: "09dcde8ab90ffae1a7d65ff2ef96fc62a17ad9d0ce7c127b317ded676b0d5935"
-      url: "https://pub.dev"
-    source: hosted
-    version: "11.0.0"
   freezed:
     dependency: "direct main"
     description:
@@ -927,14 +903,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  gap:
-    dependency: "direct main"
-    description:
-      name: gap
-      sha256: f19387d4e32f849394758b91377f9153a1b41d79513ef7668c088c77dbc6955d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   get_it:
     dependency: "direct main"
     description:
@@ -1063,14 +1031,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  hive:
-    dependency: "direct main"
-    description:
-      name: hive
-      sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.3"
   hooks:
     dependency: transitive
     description:
@@ -1088,7 +1048,7 @@ packages:
     source: hosted
     version: "0.15.6"
   http:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -1534,14 +1494,13 @@ packages:
     source: hosted
     version: "2.3.0"
   payjoin:
-    dependency: "direct main"
+    dependency: transitive
     description:
-      path: "."
-      ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"
-      resolved-ref: "26595d9821250bbd88f4e43b97acc85f17a93d71"
-      url: "https://github.com/SatoshiPortal/payjoin-dart"
-    source: git
-    version: "0.1.2"
+      name: payjoin
+      sha256: "52696fe34ef3c05f9827f5dd08a984e8ea86642677ba934f65a7f3a722755985"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1+payjoin-1.0.0-rc.8"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1747,8 +1706,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
-      resolved-ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
+      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1764,8 +1723,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
-      resolved-ref: "3dcd008d1ca5233a65f2f354c03b3975e2ab33f7"
+      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1902,14 +1861,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  sliver_tools:
-    dependency: "direct main"
-    description:
-      name: sliver_tools
-      sha256: eae28220badfb9d0559207badcbbc9ad5331aac829a88cb0964d330d2a4636a6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.12"
   socks5_proxy:
     dependency: "direct main"
     description:
@@ -2090,7 +2041,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: b92e2bc
+      ref: b92e2bc5a404367298b6016f171df29d1aae66d0
       resolved-ref: b92e2bc5a404367298b6016f171df29d1aae66d0
       url: "https://github.com/Foundation-Devices/tor"
     source: git

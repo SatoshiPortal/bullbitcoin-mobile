@@ -67,7 +67,6 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.recoverbull),
                     const SizedBox(height: 12),
-                    _ServiceStatusItem(service: serviceStatus.ark),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: .center,

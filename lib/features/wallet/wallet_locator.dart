@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
-import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
@@ -38,8 +36,6 @@ class WalletLocator {
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
-        getArkWalletUsecase: locator<GetArkWalletUsecase>(),
-        checkArkWalletSetupUsecase: locator<CheckArkWalletSetupUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchStartedWalletSyncsUsecase:

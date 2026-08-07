@@ -85,25 +85,6 @@ class SettingsDatasource {
     );
   }
 
-  Future<void> setPayjoinEnabled(bool enabled) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), payjoinEnabled: Value(enabled)),
-    );
-  }
-
-  Future<void> setPayjoinMinAmountSat(int amountSat) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), payjoinMinAmountSat: Value(amountSat)),
-    );
-  }
-
-  Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
-    await _sqlite.managers.settings.update(
-      (f) =>
-          f(id: const Value(1), payjoinExpireAfterSec: Value(expireAfterSec)),
-    );
-  }
-
   Future<void> setExchangeTestnetBasicAuth({
     String? username,
     String? password,
