@@ -238,6 +238,7 @@ This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold thes
 - **Block capture on secret screens** — `no_screenshot` plus exclusion from the semantics/accessibility tree.
 - **Validate at the domain boundary.** Addresses, amounts, descriptors are value objects that reject invalid input at construction (rule #9) — never trust a raw string deeper in.
 - When a change touches key material, signing, or backup/recovery, **say so explicitly in the PR** so it gets the right review.
+- **Keep `SECURITY.md` current, sourced, and reviewed.** When a security question is settled — an external report is triaged, a protocol behavior is analyzed, a security-relevant dependency changes — document the outcome in `SECURITY.md`: every claim must cite an official source (BIP/RFC section, upstream repo/release, exact dependency version from `pubspec.lock`) and the change must get a careful review before merging. Future reports are then triaged against documented, verifiable invariants instead of re-analyzed from scratch.
 
 ## Don'ts (the short list)
 
