@@ -1242,12 +1242,13 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           if (networkFee != null) ...[
             InfoRow(
-              title: context.loc.sendNetworkFeesLabel,
+              title: context.loc.sendSendNetworkFee,
               details: CurrencyText(
                 networkFee,
                 showFiat: false,
                 style: context.font.bodyLarge,
                 color: context.appColors.secondary,
+                textAlign: TextAlign.end,
               ),
             ),
             _divider(context),
@@ -1260,6 +1261,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 showFiat: false,
                 style: context.font.bodyLarge,
                 color: context.appColors.secondary,
+                textAlign: TextAlign.end,
               ),
             ),
           if (showFeeWarning == true) ...[
@@ -1557,6 +1559,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 showFiat: false,
                 style: context.font.bodyLarge,
                 color: context.appColors.secondary,
+                textAlign: TextAlign.end,
               ),
             ),
           const Gap(16),

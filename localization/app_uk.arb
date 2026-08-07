@@ -2795,7 +2795,6 @@
   "hwSeedSigner": "НасінняСинер",
   "bitboxActionUnlockDeviceButton": "Розблокувати пристрій",
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
-  "sendNetworkFeesLabel": "Відправка мереж",
   "electrumUnknownError": "Помилки",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
   "recoverbullSelectDecryptVault": "Розшифрування за замовчуванням",

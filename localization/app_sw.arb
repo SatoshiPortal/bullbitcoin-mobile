@@ -2026,7 +2026,6 @@
   "totalFeeLabel": "Jumla ya Ada",
   "networkFeeLabel": "Ada ya Mtandao",
   "transferFeeLabel": "Ada ya Uhamisho",
-  "sendNetworkFeesLabel": "Ada za Mtandao za Kutuma",
   "confirmButtonLabel": "Thibitisha",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",

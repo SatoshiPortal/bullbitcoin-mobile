@@ -2866,10 +2866,6 @@
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
   },
-  "sendNetworkFeesLabel": "প্ৰেৰণ নেটৱৰ্ক ফি",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "confirmButtonLabel": "নিশ্চিত কৰক",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"

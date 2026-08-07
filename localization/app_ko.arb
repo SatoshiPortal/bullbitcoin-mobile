@@ -7374,10 +7374,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "네트워크 수수료",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "오류가 발생했습니다",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"

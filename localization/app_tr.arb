@@ -7324,10 +7324,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Network Fees Gönder",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "Bir hata oluştu",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"

@@ -7329,10 +7329,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Odeslat poplatky",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "Došlo k chybě",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"

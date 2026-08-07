@@ -2013,7 +2013,6 @@
   "totalFeeLabel": "Ընդհանուր վճար",
   "networkFeeLabel": "Ցանցի վճար",
   "transferFeeLabel": "Փոխանցման վճար",
-  "sendNetworkFeesLabel": "Ուղարկման ցանցի վճարներ",
   "confirmButtonLabel": "Հաստատել",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",

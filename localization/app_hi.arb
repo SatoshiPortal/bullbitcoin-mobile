@@ -7374,10 +7374,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "नेटवर्क शुल्क भेजें",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "त्रुटि हुई",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"

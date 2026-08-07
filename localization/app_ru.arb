@@ -2392,7 +2392,6 @@
   "hwSeedSigner": "SeedSigner",
   "bitboxActionUnlockDeviceButton": "Устройство блокировки",
   "payNetworkError": "Сетевая ошибка. Пожалуйста, попробуйте еще раз",
-  "sendNetworkFeesLabel": "Отправить сетевые сборы",
   "electrumUnknownError": "Произошла ошибка",
   "payWhichWallet": "От какого кошелька вы хотите заплатить?",
   "autoswapBaseBalanceInfoText": "Баланс вашего мгновенного платежного кошелька вернется к этому целевому балансу после автоматического обмена.",

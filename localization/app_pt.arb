@@ -2373,7 +2373,6 @@
   "hwSeedSigner": "Sementes",
   "bitboxActionUnlockDeviceButton": "Desbloquear dispositivo",
   "payNetworkError": "Erro de rede. Por favor, tente novamente",
-  "sendNetworkFeesLabel": "Enviar taxas de rede",
   "electrumUnknownError": "Um erro ocorreu",
   "payWhichWallet": "De que carteira queres pagar?",
   "autoswapBaseBalanceInfoText": "Seu saldo imediato da carteira de pagamento retornará a este equilíbrio após um autoswap.",

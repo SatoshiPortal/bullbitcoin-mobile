@@ -7175,10 +7175,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "ارسال هزینه های شبکه",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "خطایی رخ داد",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"

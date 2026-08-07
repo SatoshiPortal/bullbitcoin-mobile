@@ -1643,7 +1643,6 @@
   "totalFeeLabel": "Kokonaiskulu",
   "networkFeeLabel": "Verkkokulu",
   "transferFeeLabel": "Siirtokulu",
-  "sendNetworkFeesLabel": "Lähetyksen verkkokulut",
   "confirmButtonLabel": "Vahvista",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
