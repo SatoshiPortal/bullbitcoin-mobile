@@ -3621,5 +3621,15 @@
   "receivePayjoinAwaitingFunds": "Payjoin imewashwa, lakini pochi hii bado haina salio la kuchangia. Itaanza kufanya kazi mara tu utakapopokea fedha.",
   "announcementAutoswapDescription": "Liquid yako hubadilishwa kiotomatiki kuwa Bitcoin.",
   "addressViewErrorWalletNotFound": "Pochi hii haikupatikana.",
-  "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena."
+  "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
+  "coreSwapsStatusNotStarted": "Haijaanza",
+  "coreSwapsStatusAwaitingPayment": "Inasubiri malipo",
+  "coreSwapsStatusAwaitingConfirmation": "Inasubiri uthibitisho",
+  "coreSwapsStatusUnderReview": "Inakaguliwa",
+  "coreSwapsStatusRejected": "Imekataliwa",
+  "coreSwapsStatusCanceled": "Imeghairiwa",
+  "coreSwapsStatusPaymentDeadlineExpired": "Muda wa malipo umeisha",
+  "coreSwapsStatusScheduled": "Imepangwa",
+  "coreSwapsStatusAwaitingClaim": "Inasubiri kudai",
+  "coreSwapsStatusUnknown": "Haijulikani"
 }

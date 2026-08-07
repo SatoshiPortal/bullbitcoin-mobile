@@ -4999,5 +4999,15 @@
   "legacyBackupConfirm": "J'ai noté toutes les phrases de récupération et passphrases ci-dessus",
   "legacyBackupReinstallMessage": "Supprimez cette application et réinstallez-la depuis le store. Lors de la configuration, choisissez de récupérer un portefeuille existant et saisissez votre phrase de récupération.",
   "legacyBackupReinstallTitle": "Prochaines étapes",
-  "legacyBackupNoSeedsMessage": "Aucune phrase de récupération n'a pu être lue sur cette installation. Ne supprimez PAS l'application — contactez d'abord le support."
+  "legacyBackupNoSeedsMessage": "Aucune phrase de récupération n'a pu être lue sur cette installation. Ne supprimez PAS l'application — contactez d'abord le support.",
+  "coreSwapsStatusNotStarted": "Non démarré",
+  "coreSwapsStatusAwaitingPayment": "En attente de paiement",
+  "coreSwapsStatusAwaitingConfirmation": "En attente de confirmation",
+  "coreSwapsStatusUnderReview": "En cours d'examen",
+  "coreSwapsStatusRejected": "Rejeté",
+  "coreSwapsStatusCanceled": "Annulé",
+  "coreSwapsStatusPaymentDeadlineExpired": "Délai de paiement expiré",
+  "coreSwapsStatusScheduled": "Planifié",
+  "coreSwapsStatusAwaitingClaim": "En attente de réclamation",
+  "coreSwapsStatusUnknown": "Inconnu"
 }

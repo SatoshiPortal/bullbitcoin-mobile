@@ -5027,5 +5027,15 @@
   "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Será ativado assim que receber fundos.",
   "announcementAutoswapDescription": "O seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
-  "addressViewErrorLoadFailed": "Não foi possível carregar os seus endereços. Tente novamente."
+  "addressViewErrorLoadFailed": "Não foi possível carregar os seus endereços. Tente novamente.",
+  "coreSwapsStatusNotStarted": "Não iniciado",
+  "coreSwapsStatusAwaitingPayment": "Aguardando pagamento",
+  "coreSwapsStatusAwaitingConfirmation": "Aguardando confirmação",
+  "coreSwapsStatusUnderReview": "Em análise",
+  "coreSwapsStatusRejected": "Rejeitado",
+  "coreSwapsStatusCanceled": "Cancelado",
+  "coreSwapsStatusPaymentDeadlineExpired": "Prazo de pagamento expirado",
+  "coreSwapsStatusScheduled": "Agendado",
+  "coreSwapsStatusAwaitingClaim": "Aguardando resgate",
+  "coreSwapsStatusUnknown": "Desconhecido"
 }

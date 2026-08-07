@@ -14441,5 +14441,45 @@
   "legacyBackupNoSeedsMessage": "No recovery phrase could be read from this install. Do NOT delete the app — contact support first.",
   "@legacyBackupNoSeedsMessage": {
     "description": "Warning shown when a legacy install has no readable seed"
+  },
+  "coreSwapsStatusNotStarted": "Not started",
+  "@coreSwapsStatusNotStarted": {
+    "description": "Order status label: the payin or payout has not begun."
+  },
+  "coreSwapsStatusAwaitingPayment": "Awaiting payment",
+  "@coreSwapsStatusAwaitingPayment": {
+    "description": "Order status label: waiting for the user to pay."
+  },
+  "coreSwapsStatusAwaitingConfirmation": "Awaiting confirmation",
+  "@coreSwapsStatusAwaitingConfirmation": {
+    "description": "Order status label: waiting for confirmation."
+  },
+  "coreSwapsStatusUnderReview": "Under review",
+  "@coreSwapsStatusUnderReview": {
+    "description": "Order status label: the payment is being reviewed."
+  },
+  "coreSwapsStatusRejected": "Rejected",
+  "@coreSwapsStatusRejected": {
+    "description": "Order status label: the order was rejected."
+  },
+  "coreSwapsStatusCanceled": "Canceled",
+  "@coreSwapsStatusCanceled": {
+    "description": "Order status label: the order was canceled."
+  },
+  "coreSwapsStatusPaymentDeadlineExpired": "Payment deadline expired",
+  "@coreSwapsStatusPaymentDeadlineExpired": {
+    "description": "Order status label: the pay-in deadline lapsed."
+  },
+  "coreSwapsStatusScheduled": "Scheduled",
+  "@coreSwapsStatusScheduled": {
+    "description": "Order status label: the payout is scheduled."
+  },
+  "coreSwapsStatusAwaitingClaim": "Awaiting claim",
+  "@coreSwapsStatusAwaitingClaim": {
+    "description": "Order status label: the payout is waiting to be claimed."
+  },
+  "coreSwapsStatusUnknown": "Unknown",
+  "@coreSwapsStatusUnknown": {
+    "description": "Order status label: status not recognized."
   }
 }
