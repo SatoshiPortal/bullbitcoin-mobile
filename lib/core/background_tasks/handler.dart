@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/database_encryption_key_store.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -32,7 +33,14 @@ Future<bool> tasksHandler(String task) async {
   await Bull.initFlutterRustBridgeDependencies();
 
   try {
-    final driftIsolate = await SqliteDatabase.createIsolateWithSpawn();
+    final databaseKey = await DatabaseEncryptionKeyStore.loadExisting();
+    if (databaseKey == null) {
+      log.warning('Background task skipped before database key initialization');
+      return false;
+    }
+    final driftIsolate = await SqliteDatabase.createIsolateWithSpawn(
+      databaseKey,
+    );
     final sqlite = SqliteDatabase(
       await driftIsolate.connect(singleClientMode: true),
     );
@@ -46,6 +54,7 @@ Future<bool> tasksHandler(String task) async {
     await AppLocator.setup(
       locator,
       sqlite,
+      databaseKey: databaseKey,
       startPayjoinRecovery: false,
       // No order-swap polling either: the watcher is lifecycle-gated to the
       // foreground app, and this isolate runs on a ~30s iOS background budget.

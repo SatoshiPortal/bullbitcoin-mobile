@@ -23,6 +23,7 @@ abstract final class PayjoinSetup {
   static void setup(
     GetIt locator,
     SqliteDatabase database, {
+    required String databaseKey,
     String? databasePath,
     bool startRecovery = true,
   }) {
@@ -35,6 +36,7 @@ abstract final class PayjoinSetup {
           );
       return openPayjoin(
         databasePath: path,
+        databaseKey: databaseKey,
         wallet: PayjoinWalletAdapter(
           locator<SeedDatasource>(),
           locator<BdkWalletDatasource>(),

@@ -23,6 +23,9 @@ import 'package:synchronized/synchronized.dart';
 
 Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required String databasePath,
+
+  /// Payjoin storage is always encrypted; there is no unkeyed path.
+  required String databaseKey,
   required PayjoinWalletPort wallet,
   required PayjoinBlockchainPort blockchain,
   required PayjoinFeesPort fees,
@@ -36,7 +39,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   // other's destination, and the order of `openPayjoin` calls would silently
   // decide where a session's failures are reported.
   final payjoinLog = logger.PayjoinLogger(log);
-  var database = await _tryOpenDatabase(databasePath, payjoinLog);
+  var database = await _tryOpenDatabase(databasePath, databaseKey, payjoinLog);
   if (database == null) {
     // Self-heal: a corrupt database file or a schema downgrade would
     // otherwise fail every open retry identically — and because
@@ -47,7 +50,11 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     // created after that import are lost, but their funds are not: a
     // sender's counterparty still holds the original and can broadcast it,
     // and a receiver's sender owns their own fallback.
-    database = await _quarantineAndReopenDatabase(databasePath, payjoinLog);
+    database = await _quarantineAndReopenDatabase(
+      databasePath,
+      databaseKey,
+      payjoinLog,
+    );
     if (database == null) {
       return const Err(
         PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
@@ -101,10 +108,14 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
 
 Future<PayjoinDatabase?> _tryOpenDatabase(
   String databasePath,
+  String databaseKey,
   logger.PayjoinLogger payjoinLog,
 ) async {
   try {
-    final database = PayjoinDatabase.open(databasePath);
+    final database = PayjoinDatabase.open(
+      databasePath,
+      encryptionKey: databaseKey,
+    );
     // Force the lazy open NOW: drift spawns the background isolate, opens
     // the file and runs schema migrations on the first statement, so a
     // corrupt file or a schema downgrade surfaces here rather than
@@ -124,6 +135,7 @@ Future<PayjoinDatabase?> _tryOpenDatabase(
 
 Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
   String databasePath,
+  String databaseKey,
   logger.PayjoinLogger payjoinLog,
 ) async {
   try {
@@ -157,7 +169,7 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
       'sessions created after the legacy import were lost',
     ),
   );
-  return _tryOpenDatabase(databasePath, payjoinLog);
+  return _tryOpenDatabase(databasePath, databaseKey, payjoinLog);
 }
 
 final class _PayjoinLifecycle implements PayjoinLifecycle {

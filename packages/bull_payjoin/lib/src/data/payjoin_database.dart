@@ -87,11 +87,21 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   PayjoinDatabase._(super.executor);
 
-  factory PayjoinDatabase.open(String path) {
+  /// The Payjoin database is always encrypted. There is deliberately no
+  /// unkeyed variant of this factory, so no call site — production or test —
+  /// can produce a plaintext file holding original PSBTs, proposals and
+  /// session metadata.
+  factory PayjoinDatabase.open(String path, {required String encryptionKey}) {
     return PayjoinDatabase._(
       NativeDatabase.createInBackground(
         File(path),
         setup: (database) {
+          // Keying runs first: it must precede every other pragma, query and
+          // schema migration issued on this connection.
+          if (database.select('PRAGMA cipher;').isEmpty) {
+            throw StateError('Encrypted SQLite binary is unavailable');
+          }
+          database.execute("PRAGMA key = '${_escape(encryptionKey)}';");
           database.execute('PRAGMA busy_timeout = 2000;');
           database.execute('PRAGMA journal_mode = WAL;');
           database.execute('PRAGMA synchronous = FULL;');
@@ -102,6 +112,8 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   factory PayjoinDatabase.forTesting(QueryExecutor executor) =
       PayjoinDatabase._;
+
+  static String _escape(String value) => value.replaceAll("'", "''");
 
   @override
   int get schemaVersion => schema;

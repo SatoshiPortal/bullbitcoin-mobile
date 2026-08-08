@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -30,6 +31,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 part 'sqlite_database.g.dart';
 
@@ -58,7 +60,7 @@ part 'sqlite_database.g.dart';
 class SqliteDatabase extends _$SqliteDatabase {
   static const name = 'bullbitcoin_sqlite';
 
-  static Future<DriftIsolate> createIsolateWithSpawn() async {
+  static Future<DriftIsolate> createIsolateWithSpawn(String key) async {
     final token = RootIsolateToken.instance!;
     return await DriftIsolate.spawn(() {
       BackgroundIsolateBinaryMessenger.ensureInitialized(token);
@@ -69,6 +71,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         return NativeDatabase(
           File(dbPath),
           setup: (database) {
+            _setupEncryptedConnection(database, key);
             // busy_timeout MUST be set FIRST so the subsequent
             // `journal_mode = WAL` switch retries (instead of
             // returning `database is locked, errno=261` —
@@ -96,8 +99,19 @@ class SqliteDatabase extends _$SqliteDatabase {
     });
   }
 
-  SqliteDatabase([QueryExecutor? executor])
-    : super(executor ?? _openConnection());
+  /// Takes an already-built [executor]. There is deliberately no constructor
+  /// that opens the on-disk database without a key, so no call site can end
+  /// up on a plaintext file.
+  SqliteDatabase(super.executor);
+
+  SqliteDatabase.encrypted(String key) : super(_openConnection(key));
+
+  static Future<SqliteDatabase> openEncrypted(String key) async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final databaseFile = File(p.join(dbFolder.path, '$name.sqlite'));
+    await _encryptExistingDatabase(databaseFile, key);
+    return SqliteDatabase.encrypted(key);
+  }
 
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
@@ -107,7 +121,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   @override
   int get schemaVersion => currentSchemaVersion;
 
-  static QueryExecutor _openConnection() {
+  static QueryExecutor _openConnection(String key) {
     return driftDatabase(
       name: name,
       native: DriftNativeOptions(
@@ -118,6 +132,8 @@ class SqliteDatabase extends _$SqliteDatabase {
         /// preventing "database is locked" errors due to concurrent transactions.
         shareAcrossIsolates: true,
         setup: (database) {
+          // Keying runs before every other statement on this connection.
+          _setupEncryptedConnection(database as sqlite.Database, key);
           // busy_timeout MUST be set FIRST so subsequent PRAGMA
           // writes that require an exclusive lock (notably
           // `journal_mode = WAL`) retry instead of returning
@@ -140,6 +156,143 @@ class SqliteDatabase extends _$SqliteDatabase {
       ),
     );
   }
+
+  static void _setupEncryptedConnection(sqlite.Database database, String key) {
+    if (database.select('PRAGMA cipher;').isEmpty) {
+      throw StateError('Encrypted SQLite binary is unavailable');
+    }
+    database.execute("PRAGMA key = '${_escape(key)}';");
+  }
+
+  static Future<void> _encryptExistingDatabase(
+    File databaseFile,
+    String key,
+  ) async {
+    final temporary = File('${databaseFile.path}.encryption-tmp');
+    final backup = File('${databaseFile.path}.plaintext-backup');
+    await _recoverEncryptionMigration(
+      databaseFile: databaseFile,
+      temporary: temporary,
+      backup: backup,
+      key: key,
+    );
+
+    if (!await databaseFile.exists() ||
+        !await _hasPlaintextSqliteHeader(databaseFile)) {
+      return;
+    }
+
+    final plaintext = sqlite.sqlite3.open(databaseFile.path);
+    try {
+      plaintext.execute('PRAGMA busy_timeout = 2000;');
+      plaintext.execute('PRAGMA wal_checkpoint(TRUNCATE);');
+      plaintext.execute("VACUUM INTO '${_escape(temporary.path)}';");
+    } finally {
+      plaintext.close();
+    }
+
+    final encrypted = sqlite.sqlite3.open(temporary.path);
+    try {
+      if (encrypted.select('PRAGMA cipher;').isEmpty) {
+        throw StateError('Encrypted SQLite binary is unavailable');
+      }
+      encrypted.execute("PRAGMA rekey = '${_escape(key)}';");
+    } finally {
+      encrypted.close();
+    }
+
+    await _verifyEncryptedDatabase(temporary, key);
+    for (final suffix in ['-wal', '-shm']) {
+      final sidecar = File('${databaseFile.path}$suffix');
+      if (await sidecar.exists()) await sidecar.delete();
+    }
+    await databaseFile.rename(backup.path);
+    try {
+      await temporary.rename(databaseFile.path);
+      await _verifyEncryptedDatabase(databaseFile, key);
+    } catch (_) {
+      if (await databaseFile.exists()) {
+        await databaseFile.delete();
+      }
+      if (await backup.exists()) {
+        await backup.rename(databaseFile.path);
+      }
+      rethrow;
+    }
+    await backup.delete();
+  }
+
+  static Future<void> _recoverEncryptionMigration({
+    required File databaseFile,
+    required File temporary,
+    required File backup,
+    required String key,
+  }) async {
+    final databaseExists = await databaseFile.exists();
+    final temporaryExists = await temporary.exists();
+    final backupExists = await backup.exists();
+
+    if (!backupExists) {
+      if (temporaryExists) {
+        if (!databaseExists) {
+          throw StateError('Incomplete database encryption migration');
+        }
+        await temporary.delete();
+      }
+      return;
+    }
+
+    if (databaseExists) {
+      if (await _hasPlaintextSqliteHeader(databaseFile)) {
+        throw StateError('Incomplete database encryption migration');
+      }
+      await _verifyEncryptedDatabase(databaseFile, key);
+      if (temporaryExists) await temporary.delete();
+      await backup.delete();
+      return;
+    }
+
+    if (temporaryExists) {
+      try {
+        await _verifyEncryptedDatabase(temporary, key);
+        await temporary.rename(databaseFile.path);
+        await _verifyEncryptedDatabase(databaseFile, key);
+        await backup.delete();
+        return;
+      } catch (_) {
+        if (await databaseFile.exists()) await databaseFile.delete();
+        if (await temporary.exists()) await temporary.delete();
+      }
+    }
+
+    await backup.rename(databaseFile.path);
+  }
+
+  static Future<void> _verifyEncryptedDatabase(File file, String key) async {
+    final database = sqlite.sqlite3.open(file.path);
+    try {
+      _setupEncryptedConnection(database, key);
+      final result = database.select('PRAGMA quick_check;');
+      if (result.length != 1 || result.single.values.single != 'ok') {
+        throw StateError('Encrypted database integrity check failed');
+      }
+    } finally {
+      database.close();
+    }
+  }
+
+  static Future<bool> _hasPlaintextSqliteHeader(File file) async {
+    final handle = await file.open();
+    try {
+      final header = await handle.read(16);
+      return utf8.decode(header, allowMalformed: true) ==
+          'SQLite format 3\u0000';
+    } finally {
+      await handle.close();
+    }
+  }
+
+  static String _escape(String value) => value.replaceAll("'", "''");
 
   @override
   MigrationStrategy get migration {

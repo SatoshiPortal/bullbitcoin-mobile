@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show File, Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/database_encryption_key_store.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -37,6 +38,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -136,9 +138,22 @@ class Bull {
   }
 
   static Future<void> initLocator({String? payjoinDatabasePath}) async {
+    final databaseDirectory = await getApplicationDocumentsDirectory();
+    final hasExistingDatabase = await Future.wait([
+      File(
+        p.join(databaseDirectory.path, '${SqliteDatabase.name}.sqlite'),
+      ).exists(),
+      File(
+        payjoinDatabasePath ?? p.join(databaseDirectory.path, 'payjoin.sqlite'),
+      ).exists(),
+    ]).then((exists) => exists.any((value) => value));
+    final databaseKey = await DatabaseEncryptionKeyStore.loadOrCreate(
+      hasExistingDatabase: hasExistingDatabase,
+    );
     await AppLocator.setup(
       locator,
-      SqliteDatabase(),
+      await SqliteDatabase.openEncrypted(databaseKey),
+      databaseKey: databaseKey,
       payjoinDatabasePath: payjoinDatabasePath,
     );
     Bloc.observer = AppBlocObserver();
