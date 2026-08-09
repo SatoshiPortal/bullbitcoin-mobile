@@ -109,7 +109,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   static Future<SqliteDatabase> openEncrypted(String key) async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final databaseFile = File(p.join(dbFolder.path, '$name.sqlite'));
-    await _encryptExistingDatabase(databaseFile, key);
+    await encryptExistingDatabase(databaseFile, key);
     return SqliteDatabase.encrypted(key);
   }
 
@@ -164,7 +164,11 @@ class SqliteDatabase extends _$SqliteDatabase {
     database.execute("PRAGMA key = '${_escape(key)}';");
   }
 
-  static Future<void> _encryptExistingDatabase(
+  /// Encrypts an existing plaintext SQLite database in place.
+  ///
+  /// Public so the Payjoin database follows the exact same crash-safe
+  /// migration before its encrypted connection is opened.
+  static Future<void> encryptExistingDatabase(
     File databaseFile,
     String key,
   ) async {

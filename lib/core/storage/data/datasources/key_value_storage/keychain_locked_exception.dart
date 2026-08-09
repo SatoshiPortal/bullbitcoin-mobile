@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart' show PlatformException;
+
 /// Thrown by secure-storage datasources when the underlying OS keychain
 /// refuses an operation because the device is in a state where keychain
 /// items aren't currently readable.
@@ -34,3 +36,30 @@ class KeychainLockedException implements Exception {
   String toString() =>
       'KeychainLockedException: device not unlocked since boot';
 }
+
+/// iOS keychain `OSStatus` for `errSecInteractionNotAllowed`. Returned
+/// by `SecItemCopyMatching` / `SecItemAdd` when the item's accessibility
+/// class requires the device to be unlocked (or to have been unlocked
+/// since boot) and the current state doesn't satisfy that.
+const int errSecInteractionNotAllowed = -25308;
+
+/// Whether [e] is the keychain telling us "not now, the device has not
+/// been unlocked since boot" rather than "no such item" or a real
+/// failure.
+///
+/// Belt-and-suspenders: across `flutter_secure_storage` releases the
+/// OSStatus has historically appeared in `details` (current fork), in
+/// `code` (older versions, as a string), or embedded in `message`.
+/// Match all three so a future fork bump that shifts the field doesn't
+/// silently regress this whole class of handling without a compile
+/// error.
+///
+/// Shared by every caller that talks to the keychain — the fss9 and
+/// fss10 datasource impls can't share their `_wrap` (the two plugins
+/// expose distinct types) but this predicate only touches
+/// `PlatformException`, which they do share, and duplicating a
+/// security-critical constant is how one copy silently drifts.
+bool isKeychainLocked(PlatformException e) =>
+    e.details == errSecInteractionNotAllowed ||
+    e.code == '$errSecInteractionNotAllowed' ||
+    (e.message ?? '').contains('$errSecInteractionNotAllowed');

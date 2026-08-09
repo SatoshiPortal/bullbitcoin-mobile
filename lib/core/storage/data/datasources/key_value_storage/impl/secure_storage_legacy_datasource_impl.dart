@@ -10,12 +10,6 @@ import 'package:flutter_secure_storage_legacy/flutter_secure_storage.dart';
 /// and the two impls share no code.
 enum _Operation { read, write, delete, contains, readAll, deleteAll }
 
-/// See [_errSecInteractionNotAllowed] in
-/// `secure_storage_data_source_impl.dart`. Duplicated here because the
-/// fss9 and fss10 plugins expose distinct `PlatformException` types and
-/// can't share a single wrapper without coupling the impls.
-const int _errSecInteractionNotAllowed = -25308;
-
 class SecureStorageLegacyDatasourceImpl
     implements KeyValueStorageDatasource<String> {
   final FlutterSecureStorage _storage;
@@ -30,10 +24,7 @@ class SecureStorageLegacyDatasourceImpl
     try {
       return await body();
     } on PlatformException catch (e) {
-      // See note in `secure_storage_data_source_impl.dart` `_isLocked`
-      // — the OSStatus field has shifted across fss releases, so we
-      // check `details` / `code` / `message` all three.
-      if (_isLocked(e)) {
+      if (isKeychainLocked(e)) {
         final target = key != null ? ' "$key"' : '';
         log.warning(
           'Device not unlocked since boot '
@@ -44,11 +35,6 @@ class SecureStorageLegacyDatasourceImpl
       rethrow;
     }
   }
-
-  bool _isLocked(PlatformException e) =>
-      e.details == _errSecInteractionNotAllowed ||
-      e.code == '$_errSecInteractionNotAllowed' ||
-      (e.message ?? '').contains('$_errSecInteractionNotAllowed');
 
   @override
   Future<void> saveValue({required String key, required String value}) {

@@ -71,6 +71,43 @@ void main() {
     }
   });
 
+  test('shared migration encrypts a plaintext Payjoin database', () async {
+    final directory = await Directory.systemTemp.createTemp('payjoin-migrate-');
+    addTearDown(() => directory.delete(recursive: true));
+
+    final payjoin = File('${directory.path}/payjoin.sqlite');
+    const key = 'test-only-payjoin-key';
+    const marker = 'persisted-payjoin-session';
+
+    final plaintext = sqlite3.open(payjoin.path);
+    try {
+      plaintext.execute('CREATE TABLE sessions (payload TEXT NOT NULL);');
+      plaintext.execute("INSERT INTO sessions VALUES ('$marker');");
+    } finally {
+      plaintext.close();
+    }
+
+    await SqliteDatabase.encryptExistingDatabase(payjoin, key);
+
+    expect(
+      utf8.decode(
+        await payjoin.openRead(0, 16).fold(<int>[], (a, b) => a..addAll(b)),
+        allowMalformed: true,
+      ),
+      isNot('SQLite format 3\u0000'),
+    );
+    final encrypted = sqlite3.open(payjoin.path);
+    try {
+      encrypted.execute("PRAGMA key = '${_escape(key)}';");
+      expect(
+        encrypted.select('SELECT payload FROM sessions;').single['payload'],
+        marker,
+      );
+    } finally {
+      encrypted.close();
+    }
+  });
+
   test('drift_flutter applies the key in its database isolate', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
     final directory = await Directory.systemTemp.createTemp('drift-spike-');

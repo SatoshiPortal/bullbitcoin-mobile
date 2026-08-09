@@ -6,8 +6,14 @@ import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
+import 'package:bb_mobile/core/screens/local_data_recovery_screen.dart';
+import 'package:bb_mobile/core/screens/startup_keychain_locked_screen.dart';
+import 'package:bb_mobile/core/storage/backup_exclusion.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/database_encryption_key_store.dart';
+import 'package:bb_mobile/core/storage/database_key_unavailable_exception.dart';
+import 'package:bb_mobile/core/storage/local_database_reset.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -64,19 +70,43 @@ void resumePayjoinsOnAppResume(
 }
 
 class Bull {
+  /// Guards the process-wide, one-shot half of [init].
+  ///
+  /// [init] is re-entrant now: a boot that hits a locked keychain, or
+  /// one the user resolves by resetting local data, runs it again.
+  /// Everything below this flag installs a process-level singleton —
+  /// `SentryFlutter.init` re-registers the native crash handler,
+  /// `BullSdk.init` and `BitBoxApi.initialize` bind flutter_rust_bridge
+  /// — and running any of them twice is at best wasteful and at worst
+  /// corrupting. The locator setup below the flag *is* safe to redo,
+  /// because a retry only ever happens on a path that failed before
+  /// reaching it.
+  static bool _oneTimeInitDone = false;
+
+  /// Absolute paths of the local databases, sidecar suffixes excluded.
+  /// Cached at [initLocator] so the lifecycle sweep and the recovery
+  /// screen don't each have to re-derive them.
+  static List<String> _databasePaths = const [];
+
+  /// Empty until [initLocator] has run far enough to derive them.
+  static List<String> get databasePaths => _databasePaths;
+
   static Future<void> init({String? payjoinDatabasePath}) async {
-    await initLogs();
-    // The pre-init wizard writes consent to prefs via the bloc's
-    // `SavePendingWizardChoicesUsecase` right before this runs. Pull
-    // it so Sentry initializes with the user's freshest answer rather
-    // than a stale mirror, and so migration errors that happen on this
-    // very boot are captured if the user just opted in.
-    final preInitRepo = _buildPreInitWizardRepository();
-    final pending = await ReadPendingWizardChoicesUsecase(
-      repository: preInitRepo,
-    ).execute();
-    await Report.init(wizardConsent: pending?.reportingConsent);
-    await initFlutterRustBridgeDependencies();
+    if (!_oneTimeInitDone) {
+      await initLogs();
+      // The pre-init wizard writes consent to prefs via the bloc's
+      // `SavePendingWizardChoicesUsecase` right before this runs. Pull
+      // it so Sentry initializes with the user's freshest answer rather
+      // than a stale mirror, and so migration errors that happen on this
+      // very boot are captured if the user just opted in.
+      final preInitRepo = _buildPreInitWizardRepository();
+      final pending = await ReadPendingWizardChoicesUsecase(
+        repository: preInitRepo,
+      ).execute();
+      await Report.init(wizardConsent: pending?.reportingConsent);
+      await initFlutterRustBridgeDependencies();
+      _oneTimeInitDone = true;
+    }
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator(payjoinDatabasePath: payjoinDatabasePath);
@@ -139,16 +169,23 @@ class Bull {
 
   static Future<void> initLocator({String? payjoinDatabasePath}) async {
     final databaseDirectory = await getApplicationDocumentsDirectory();
-    final hasExistingDatabase = await Future.wait([
-      File(
-        p.join(databaseDirectory.path, '${SqliteDatabase.name}.sqlite'),
-      ).exists(),
-      File(
-        payjoinDatabasePath ?? p.join(databaseDirectory.path, 'payjoin.sqlite'),
-      ).exists(),
-    ]).then((exists) => exists.any((value) => value));
+    _databasePaths = [
+      p.join(databaseDirectory.path, '${SqliteDatabase.name}.sqlite'),
+      payjoinDatabasePath ?? p.join(databaseDirectory.path, 'payjoin.sqlite'),
+    ];
+    final hasDatabaseRequiringExistingKey =
+        await DatabaseEncryptionKeyStore.hasDatabaseRequiringExistingKey(
+          _databasePaths.map(File.new),
+        );
     final databaseKey = await DatabaseEncryptionKeyStore.loadOrCreate(
-      hasExistingDatabase: hasExistingDatabase,
+      hasDatabaseRequiringExistingKey: hasDatabaseRequiringExistingKey,
+    );
+    // Payjoin existed as plaintext on source-built `develop` installs.
+    // Migrate it synchronously so startup does not report success while
+    // an unawaited recovery task is still changing its storage format.
+    await SqliteDatabase.encryptExistingDatabase(
+      File(_databasePaths[1]),
+      databaseKey,
     );
     await AppLocator.setup(
       locator,
@@ -156,8 +193,20 @@ class Bull {
       databaseKey: databaseKey,
       payjoinDatabasePath: payjoinDatabasePath,
     );
+    // First pass, so a fresh install is protected from the very first
+    // backup window. `payjoin.sqlite` is opened lazily by the payjoin
+    // runtime and the `-wal`/`-shm` sidecars only appear on first write,
+    // so this can't catch everything — `_excludeDatabasesFromBackup` runs
+    // again when the app goes to the background, which is the state a
+    // device is in when iCloud actually backs it up.
+    await excludeDatabasesFromBackup();
     Bloc.observer = AppBlocObserver();
   }
+
+  /// Re-marks the local databases as "do not back up". Cheap, idempotent
+  /// and a no-op off iOS.
+  static Future<void> excludeDatabasesFromBackup() =>
+      BackupExclusion.excludeDatabases(_databasePaths);
 
   static Future<void> initWorkmanager() async {
     await Workmanager().initialize(backgroundTasksHandler);
@@ -166,6 +215,58 @@ class Bull {
     // remove those persisted native tasks.
     await Workmanager().cancelAll();
   }
+}
+
+/// Runs `Bull.init` and puts on screen whichever of the four outcomes it
+/// produced.
+///
+/// Split out of [main] because two of those outcomes are recoverable and
+/// their screens call straight back into it: unlocking the device, or
+/// resetting local data, re-runs startup in place rather than asking the
+/// user to kill and relaunch the app.
+Future<void> startApp() async {
+  try {
+    await Bull.init();
+  } on KeychainLockedException catch (error) {
+    // Not an error: the device simply has not been unlocked since boot,
+    // so a `first_unlock_this_device` keychain item is unreadable. The
+    // data is intact and nothing must be created, deleted or migrated —
+    // the user just has to unlock. Logged at warning, never severe, so
+    // it doesn't drown the real failures in a shared log.
+    log.warning('App init deferred: $error');
+    await log.flush();
+    runApp(StartupKeychainLockedScreen(onRetry: startApp));
+    return;
+  } on DatabaseKeyUnavailableException catch (error, stackTrace) {
+    // Fail closed: a database exists that nothing can open. The generic
+    // error screen would leave the user with no action here, so this one
+    // offers the only real one — a confirmed local-data reset.
+    log.severe(
+      message: 'App init failed closed: local database key unavailable',
+      error: error,
+      trace: stackTrace,
+    );
+    await log.flush();
+    runApp(
+      LocalDataRecoveryScreen(
+        onReset: () => LocalDatabaseReset.run(Bull.databasePaths),
+        onRestart: startApp,
+        error: error,
+      ),
+    );
+    return;
+  } catch (error, stackTrace) {
+    log.severe(message: 'App Init Error', error: error, trace: stackTrace);
+    // Make sure the just-logged severe line is on disk before we
+    // render AppInitErrorScreen — the user typically shares logs
+    // from that screen to support, and the buffered severe write
+    // would otherwise still be pending in the IOSink.
+    await log.flush();
+    runApp(AppInitErrorScreen(error: error));
+    return;
+  }
+  await log.flush();
+  runApp(const BullBitcoinWalletApp());
 }
 
 Future main() async {
@@ -187,19 +288,13 @@ Future main() async {
           runApp(WizardApp(onDone: (_) => completer.complete()));
           await completer.future;
         }
-        await Bull.init();
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
+        await log.flush();
         runApp(AppInitErrorScreen(error: error));
         return;
-      } finally {
-        // Make sure the just-logged severe line is on disk before we
-        // render AppInitErrorScreen — the user typically shares logs
-        // from that screen to support, and the buffered severe write
-        // would otherwise still be pending in the IOSink.
-        await log.flush();
       }
-      runApp(const BullBitcoinWalletApp());
+      await startApp();
     },
     (error, stackTrace) {
       // Use try-catch to prevent cascading crashes if logging itself fails
@@ -273,6 +368,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         state == AppLifecycleState.hidden ||
         state == AppLifecycleState.paused) {
       log.flush();
+    }
+    if (state == AppLifecycleState.paused) {
+      // Backgrounding is the last moment we control before iOS may back
+      // the container up (backups run while the device is locked and
+      // charging, with the app not in the foreground). By now the
+      // lazily-opened payjoin database and the `-wal`/`-shm` sidecars
+      // exist, which the pass during `initLocator` could not assume.
+      unawaited(Bull.excludeDatabasesFromBackup());
     }
   }
 
