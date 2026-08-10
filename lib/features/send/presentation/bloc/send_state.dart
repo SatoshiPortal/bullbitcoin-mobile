@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -237,6 +238,21 @@ abstract class SendState with _$SendState {
     return copiedRawPaymentRequest.isNotEmpty
         ? copiedRawPaymentRequest
         : scannedRawPaymentRequest;
+  }
+
+  /// True when the destination is a Liquid address that does not support
+  /// Confidential Transactions: the amount sent to it will be publicly
+  /// visible on-chain. The confirm screen warns before building such a
+  /// payment — Liquid's privacy promise makes the silent case dangerous.
+  bool get isUnconfidentialLiquidDestination {
+    if (sendType != SendType.liquid) return false;
+    final address = switch (paymentRequest) {
+      LiquidPaymentRequest(:final address) => address,
+      Bip21PaymentRequest(:final address) => address,
+      _ => null,
+    };
+    if (address == null || address.isEmpty) return false;
+    return !isConfidentialLiquidAddress(address);
   }
 
   bool get isInputAmountFiat => ![

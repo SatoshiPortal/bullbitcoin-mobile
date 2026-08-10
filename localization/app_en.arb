@@ -14466,5 +14466,13 @@
         "type": "int"
       }
     }
+  },
+  "sendUnconfidentialLiquidWarning": "Public amount",
+  "@sendUnconfidentialLiquidWarning": {
+    "description": "Liquid send confirm: warning title when the destination address does not support Confidential Transactions"
+  },
+  "sendUnconfidentialLiquidWarningDescription": "This Liquid address does not support Confidential Transactions. The amount you send will be publicly visible on the blockchain.",
+  "@sendUnconfidentialLiquidWarningDescription": {
+    "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
   }
 }

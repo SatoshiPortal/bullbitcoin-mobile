@@ -464,4 +464,80 @@ void main() {
       expect(state.willAttemptPayjoin, isFalse);
     });
   });
+
+  group('SendState.isUnconfidentialLiquidDestination', () {
+    const confidentialAddress =
+        'lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24';
+    const unconfidentialAddress =
+        'ex1qq000000000000000000000000000000000000000';
+
+    test('true for an unconfidential Liquid address', () {
+      // The audit case: an unconfidential destination makes the sent amount
+      // public on-chain — the confirm screen must be able to flag it.
+      final state = SendState(
+        sendType: SendType.liquid,
+        paymentRequest: const LiquidPaymentRequest(
+          address: unconfidentialAddress,
+          isTestnet: false,
+        ),
+      );
+      expect(state.isUnconfidentialLiquidDestination, isTrue);
+    });
+
+    test('true when a Bitcoin wallet sends through a Liquid chain swap', () {
+      final state = SendState(
+        sendType: SendType.liquid,
+        selectedWallet: bitcoinWallet(),
+        paymentRequest: const LiquidPaymentRequest(
+          address: unconfidentialAddress,
+          isTestnet: false,
+        ),
+      );
+
+      expect(state.requireChainSwap, isTrue);
+      expect(state.isUnconfidentialLiquidDestination, isTrue);
+    });
+
+    test(
+      'true for a liquidnetwork BIP21 URI with an unconfidential address',
+      () {
+        final state = SendState(
+          sendType: SendType.liquid,
+          paymentRequest: const Bip21PaymentRequest(
+            network: Network.liquidMainnet,
+            uri: 'liquidnetwork:$unconfidentialAddress',
+            address: unconfidentialAddress,
+          ),
+        );
+        expect(state.isUnconfidentialLiquidDestination, isTrue);
+      },
+    );
+
+    test('false for a confidential Liquid address', () {
+      final state = SendState(
+        sendType: SendType.liquid,
+        paymentRequest: const LiquidPaymentRequest(
+          address: confidentialAddress,
+          isTestnet: false,
+        ),
+      );
+      expect(state.isUnconfidentialLiquidDestination, isFalse);
+    });
+
+    test('false for a bitcoin send', () {
+      final state = SendState(
+        sendType: SendType.bitcoin,
+        paymentRequest: const BitcoinPaymentRequest(
+          address: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
+          isTestnet: false,
+        ),
+      );
+      expect(state.isUnconfidentialLiquidDestination, isFalse);
+    });
+
+    test('false with no payment request yet', () {
+      const state = SendState(sendType: SendType.liquid);
+      expect(state.isUnconfidentialLiquidDestination, isFalse);
+    });
+  });
 }

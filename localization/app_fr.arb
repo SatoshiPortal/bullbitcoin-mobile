@@ -5004,5 +5004,7 @@
   "payDepositAddress": "Adresse de dépôt",
   "sellDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
   "payDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
-  "appUnlockTryAgainIn": "Trop de tentatives échouées. Réessayez dans {seconds} s."
+  "appUnlockTryAgainIn": "Trop de tentatives échouées. Réessayez dans {seconds} s.",
+  "sendUnconfidentialLiquidWarning": "Montant public",
+  "sendUnconfidentialLiquidWarningDescription": "Cette adresse Liquid ne prend pas en charge les transactions confidentielles. Le montant envoyé sera publiquement visible sur la blockchain."
 }
