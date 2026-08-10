@@ -747,6 +747,9 @@ class SendConfirmScreen extends StatelessWidget {
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid ?? false,
     );
+    final isUnconfidentialLiquidDestination = context.select(
+      (SendCubit cubit) => cubit.state.isUnconfidentialLiquidDestination,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -786,6 +789,10 @@ class SendConfirmScreen extends StatelessWidget {
                       const _LiquidOnchainSendInfoSection()
                     else
                       const _OnchainTransactionReview(),
+                    if (isUnconfidentialLiquidDestination) ...[
+                      const Gap(16),
+                      const _UnconfidentialLiquidWarning(),
+                    ],
                     const Gap(40),
                     const _SendError(),
                     const _BottomButtons(),
@@ -1102,7 +1109,6 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     );
 
     final label = context.select((SendCubit cubit) => cubit.state.label);
-
     return CommonOnchainSendInfoSection(
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
@@ -1113,6 +1119,22 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       note: label,
       // Liquid has fixed fees — no fee priority selector
       onFeePriorityTap: null,
+    );
+  }
+}
+
+/// Warns that the destination Liquid address is unconfidential: the amount
+/// sent to it will be publicly visible on-chain.
+class _UnconfidentialLiquidWarning extends StatelessWidget {
+  const _UnconfidentialLiquidWarning();
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      title: context.loc.sendUnconfidentialLiquidWarning,
+      description: context.loc.sendUnconfidentialLiquidWarningDescription,
+      tagColor: context.appColors.error,
+      bgColor: context.appColors.errorContainer,
     );
   }
 }
@@ -2069,12 +2091,15 @@ class SignLedgerButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          SnackBarUtils.showSnackBar(
-            context,
-            context.loc.sendTransactionSignedLedger,
-          );
-          // Update the signedBitcoinTx with the result from Ledger
-          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+          final accepted = await context
+              .read<SendCubit>()
+              .updateSignedBitcoinTx(result);
+          if (accepted && context.mounted) {
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.sendTransactionSignedLedger,
+            );
+          }
         }
       },
       bgColor: context.appColors.secondary,

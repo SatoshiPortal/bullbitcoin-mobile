@@ -38,6 +38,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -142,6 +143,9 @@ class _MockCheckLiquidConsolidationUsecase extends Mock
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
+class _MockVerifySignedTxUsecase extends Mock
+    implements VerifySignedTxUsecase {}
+
 class _FakeNewLabel extends Fake implements NewLabel {}
 
 /// Test seam: [SendCubit]'s payjoin watcher ([_watchPayjoin]) is private and
@@ -187,6 +191,7 @@ class _TestableSendCubit extends SendCubit {
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
+    required super.verifySignedTxUsecase,
   });
 
   void setStateForTest(SendState state) => emit(state);
@@ -269,6 +274,7 @@ void main() {
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
+  late _MockVerifySignedTxUsecase verifySignedTxUsecase;
 
   late StreamController<PayjoinSession> payjoinEvents;
 
@@ -308,6 +314,7 @@ void main() {
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
+    verifySignedTxUsecase: verifySignedTxUsecase,
   );
 
   /// Precondition state that makes [SendState.willAttemptPayjoin] true and
@@ -371,6 +378,15 @@ void main() {
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
+    verifySignedTxUsecase = _MockVerifySignedTxUsecase();
+    // A hardware signer that returns what it was asked to sign: the default
+    // is acceptance, tests that need a tampered device re-stub it.
+    when(
+      () => verifySignedTxUsecase.execute(
+        unsignedPsbt: any(named: 'unsignedPsbt'),
+        signedTxHex: any(named: 'signedTxHex'),
+      ),
+    ).thenAnswer((_) async {});
 
     payjoinEvents = StreamController<PayjoinSession>.broadcast();
 
@@ -502,6 +518,110 @@ void main() {
         expect(cubit.state.step, stepBefore);
         expect(cubit.state.step, isNot(SendStep.success));
         expect(cubit.state.confirmTransactionException, isNull);
+      },
+    );
+  });
+
+  group('SendCubit — hardware-signer transaction verification', () {
+    SendState hardwareSignReadyState() => SendState(
+      step: SendStep.confirm,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinLocalWallet(),
+      unsignedPsbt: 'cHNidP8=',
+      confirmedAmountSat: 50000,
+    );
+
+    test('audit reproducer: a signed transaction that fails verification is '
+        'refused, never stored for broadcast', () async {
+      // Before the fix, updateSignedBitcoinTx stored the device-returned
+      // bytes verbatim and onConfirmTransactionClicked broadcast them
+      // unchecked, while the confirm screen kept showing the pre-signing
+      // address and amount.
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      when(
+        () => verifySignedTxUsecase.execute(
+          unsignedPsbt: any(named: 'unsignedPsbt'),
+          signedTxHex: any(named: 'signedTxHex'),
+        ),
+      ).thenThrow(
+        VerifySignedTxException('The signed transaction does not match'),
+      );
+
+      await cubit.updateSignedBitcoinTx('deadbeef');
+
+      expect(
+        cubit.state.signedBitcoinTx,
+        isNull,
+        reason: 'a tampered transaction must never reach the broadcast path',
+      );
+      expect(cubit.state.confirmTransactionException, isNotNull);
+    });
+
+    test('a signed transaction passing the output check is stored', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+
+      await cubit.updateSignedBitcoinTx('deadbeef');
+
+      expect(cubit.state.signedBitcoinTx, 'deadbeef');
+      expect(cubit.state.confirmTransactionException, isNull);
+      verify(
+        () => verifySignedTxUsecase.execute(
+          unsignedPsbt: 'cHNidP8=',
+          signedTxHex: 'deadbeef',
+        ),
+      ).called(1);
+    });
+
+    test('a valid retry clears the previous verification error', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      var attempts = 0;
+      when(
+        () => verifySignedTxUsecase.execute(
+          unsignedPsbt: any(named: 'unsignedPsbt'),
+          signedTxHex: any(named: 'signedTxHex'),
+        ),
+      ).thenAnswer((_) async {
+        attempts++;
+        if (attempts == 1) {
+          throw VerifySignedTxException(
+            'The signed transaction does not match',
+          );
+        }
+      });
+
+      expect(await cubit.updateSignedBitcoinTx('tampered'), isFalse);
+      expect(cubit.state.confirmTransactionException, isNotNull);
+
+      expect(await cubit.updateSignedBitcoinTx('valid'), isTrue);
+      expect(cubit.state.signedBitcoinTx, 'valid');
+      expect(cubit.state.confirmTransactionException, isNull);
+    });
+
+    test(
+      'a signed transaction with no unsigned PSBT in state is refused',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          hardwareSignReadyState().copyWith(unsignedPsbt: null),
+        );
+
+        await cubit.updateSignedBitcoinTx('deadbeef');
+
+        expect(cubit.state.signedBitcoinTx, isNull);
+        expect(cubit.state.confirmTransactionException, isNotNull);
+        verifyNever(
+          () => verifySignedTxUsecase.execute(
+            unsignedPsbt: any(named: 'unsignedPsbt'),
+            signedTxHex: any(named: 'signedTxHex'),
+          ),
+        );
       },
     );
   });

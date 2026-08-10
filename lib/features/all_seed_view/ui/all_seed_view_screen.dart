@@ -11,24 +11,18 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
-  const AllSeedViewScreen({super.key});
+  final AppUnlockFacade appUnlockFacade;
+
+  const AllSeedViewScreen({super.key, required this.appUnlockFacade});
 
   @override
   Widget build(BuildContext context) {
     enableScreenPrivacy();
-    final cubit = context.read<AllSeedViewCubit>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (cubit.state.loading &&
-          cubit.state.existingWallets.isEmpty &&
-          cubit.state.oldWallets.isEmpty &&
-          cubit.state.failure == null) {
-        cubit.fetchAllSeeds();
-      }
-    });
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
@@ -45,6 +39,17 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
         },
         child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
           builder: (context, state) {
+            // Viewing raw seed phrases exposes full custody of every wallet,
+            // so it demands the same step-up re-authentication the app
+            // already requires before changing the PIN. With no PIN set the
+            // unlock screen succeeds immediately.
+            if (!state.isUnlocked) {
+              return appUnlockFacade.buildReauthenticationGate(
+                canPop: true,
+                onSuccess: (grant) =>
+                    context.read<AllSeedViewCubit>().unlock(grant),
+              );
+            }
             return Scaffold(
               appBar: AppBar(
                 title: BBText(

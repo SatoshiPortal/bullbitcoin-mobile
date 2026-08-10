@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.d
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
@@ -319,7 +320,7 @@ class SettingsRouter {
         name: SettingsRoute.allSeedView.name,
         builder: (context, state) => BlocProvider(
           create: (_) => locator<AllSeedViewCubit>(),
-          child: const AllSeedViewScreen(),
+          child: const AllSeedViewScreen(appUnlockFacade: AppUnlockFacade()),
         ),
       ),
       GoRoute(

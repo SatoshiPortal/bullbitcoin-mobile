@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/attachment_filename_sanitizer.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -308,7 +309,14 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
       if (attachment.fileData != null && attachment.fileName != null) {
         final tempDir = await getTemporaryDirectory();
-        final tempFile = File('${tempDir.path}/${attachment.fileName}');
+        // fileName is server-controlled input: never let it become path
+        // material beyond a bare filename, or a crafted response could
+        // write outside the temp directory (path traversal).
+        final safeFileName = sanitizeAttachmentFileName(
+          attachment.fileName!,
+          attachmentId: attachmentId,
+        );
+        final tempFile = File('${tempDir.path}/$safeFileName');
         await tempFile.writeAsBytes(attachment.fileData!);
         final xFile = XFile(tempFile.path);
         await SharePlus.instance.share(

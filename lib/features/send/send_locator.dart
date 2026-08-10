@@ -30,6 +30,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
@@ -154,6 +155,9 @@ class SendLocator {
     locator.registerFactory<GetSendPayjoinEnabledUsecase>(
       () => GetSendPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
+    locator.registerFactory<VerifySignedTxUsecase>(
+      () => VerifySignedTxUsecase(),
+    );
   }
 
   static void registerBlocs(GetIt locator) {
@@ -207,6 +211,7 @@ class SendLocator {
         checkLiquidConsolidationUsecase:
             locator<CheckLiquidConsolidationUsecase>(),
         getSendPayjoinEnabledUsecase: locator<GetSendPayjoinEnabledUsecase>(),
+        verifySignedTxUsecase: locator<VerifySignedTxUsecase>(),
       ),
     );
   }

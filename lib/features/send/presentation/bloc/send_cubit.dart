@@ -46,6 +46,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
@@ -96,6 +97,7 @@ class SendCubit extends Cubit<SendState>
     required this._previewBitcoinFeePresetsUsecase,
     required this._checkLiquidConsolidationUsecase,
     required this._getSendPayjoinEnabledUsecase,
+    required this._verifySignedTxUsecase,
   }) : super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
@@ -146,6 +148,7 @@ class SendCubit extends Cubit<SendState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
+  final VerifySignedTxUsecase _verifySignedTxUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
@@ -2472,8 +2475,72 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  Future<void> updateSignedBitcoinTx(String signedTx) async {
-    emit(state.copyWith(signedBitcoinTx: signedTx));
+  Future<bool> updateSignedBitcoinTx(String signedTx) async {
+    // A directly-connected hardware signer (Ledger, BitBox) returns raw
+    // signed bytes that are broadcast as-is, while the confirm screen keeps
+    // showing the pre-signing address and amount. Verify the signed
+    // transaction pays exactly what the unsigned PSBT pays before trusting
+    // it: a compromised device or transport could otherwise redirect the
+    // payment or the change undetected.
+    final unsignedPsbt = state.unsignedPsbt;
+    if (unsignedPsbt == null) {
+      log.severe(
+        error:
+            'updateSignedBitcoinTx called with no unsigned PSBT in state; '
+            'refusing the signed transaction',
+        trace: StackTrace.current,
+      );
+      emit(
+        state.copyWith(
+          signedBitcoinTx: null,
+          confirmTransactionException: ConfirmTransactionException(
+            'No transaction to sign',
+          ),
+        ),
+      );
+      return false;
+    }
+    emit(
+      state.copyWith(signedBitcoinTx: null, confirmTransactionException: null),
+    );
+    try {
+      await _verifySignedTxUsecase.execute(
+        unsignedPsbt: unsignedPsbt,
+        signedTxHex: signedTx,
+      );
+    } on VerifySignedTxException catch (e) {
+      log.severe(
+        error:
+            'Hardware signer returned a transaction that does not match '
+            'the confirmed one: $e',
+        trace: StackTrace.current,
+      );
+      emit(
+        state.copyWith(
+          signedBitcoinTx: null,
+          confirmTransactionException: ConfirmTransactionException(e.message),
+        ),
+      );
+      return false;
+    }
+    if (state.unsignedPsbt != unsignedPsbt) {
+      emit(
+        state.copyWith(
+          signedBitcoinTx: null,
+          confirmTransactionException: ConfirmTransactionException(
+            'The transaction changed while it was being signed',
+          ),
+        ),
+      );
+      return false;
+    }
+    emit(
+      state.copyWith(
+        signedBitcoinTx: signedTx,
+        confirmTransactionException: null,
+      ),
+    );
+    return true;
   }
 
   Future<void> updateSelectedWallet(Wallet newWallet) =>

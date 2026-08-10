@@ -1,6 +1,9 @@
+import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
@@ -55,6 +58,50 @@ Future<void> main({bool isInitialized = false}) async {
           (result as LnAddressPaymentRequest).address,
           'ishi@walletofsatoshi.com',
         );
+      },
+    );
+  });
+
+  group('Liquid address confidentiality (security audit)', () {
+    // Derives a real (standard, confidential) address pair from a known
+    // P2WPKH scriptPubkey, so the test runs on genuinely valid addresses.
+    late final lwk.Address pair;
+    setUpAll(() async {
+      pair = await lwk.Address.addressFromScript(
+        network: lwk.LiquidNetwork.mainnet,
+        // P2WPKH scriptPubkey: OP_0 <20 bytes>.
+        script: '0014${'22' * 20}',
+        blindingKey:
+            '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+      );
+    });
+
+    test('the helper classifies both address forms correctly', () {
+      expect(isConfidentialLiquidAddress(pair.confidential), isTrue);
+      expect(isConfidentialLiquidAddress(pair.standard), isFalse);
+    });
+
+    test(
+      'audit reproducer: an unconfidential Liquid address is accepted by '
+      'parse with no confidentiality signal, and the send state flags it',
+      () async {
+        // Before the fix, nothing in the send flow distinguished this from a
+        // confidential address: the amount would go on-chain in the clear
+        // with no warning.
+        final result = await PaymentRequest.parse(pair.standard);
+        expect(result, isA<LiquidPaymentRequest>());
+
+        final state = SendState(
+          sendType: SendType.liquid,
+          paymentRequest: result,
+        );
+        expect(state.isUnconfidentialLiquidDestination, isTrue);
+
+        final confidentialState = SendState(
+          sendType: SendType.liquid,
+          paymentRequest: await PaymentRequest.parse(pair.confidential),
+        );
+        expect(confidentialState.isUnconfidentialLiquidDestination, isFalse);
       },
     );
   });

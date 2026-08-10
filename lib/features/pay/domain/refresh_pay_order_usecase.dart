@@ -15,7 +15,10 @@ class RefreshPayOrderUsecase {
     required this._settingsRepository,
   });
 
-  Future<FiatPaymentOrder> execute({required String orderId}) async {
+  Future<FiatPaymentOrder> execute({
+    required String orderId,
+    required String? expectedDepositAddress,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -23,6 +26,10 @@ class RefreshPayOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
       final order = await repo.refreshPayOrder(orderId);
+      validatePayOrderDepositAddress(
+        order: order,
+        expectedDepositAddress: expectedDepositAddress,
+      );
       return order;
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -31,5 +38,16 @@ class RefreshPayOrderUsecase {
       }
       throw PayError.unexpected(message: '$e');
     }
+  }
+}
+
+void validatePayOrderDepositAddress({
+  required FiatPaymentOrder order,
+  required String? expectedDepositAddress,
+}) {
+  if (expectedDepositAddress == null ||
+      expectedDepositAddress.isEmpty ||
+      order.toAddress != expectedDepositAddress) {
+    throw const PayError.depositAddressChanged();
   }
 }

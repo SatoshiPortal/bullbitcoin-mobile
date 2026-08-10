@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
@@ -243,6 +244,11 @@ void main() {
     when(() => sellOrder.payinAmount).thenReturn(0.001);
     when(
       () => sellOrder.bitcoinAddress,
+    ).thenReturn('bc1q0000000000000000000000000000000000000');
+    // The deposit-address pinning compares orders through this getter; the
+    // default order carries the creation-time address.
+    when(
+      () => sellOrder.toAddress,
     ).thenReturn('bc1q0000000000000000000000000000000000000');
     // The post-broadcast completion only succeeds once the exchange sees the
     // payin; default to seen, tests that need otherwise re-stub it.
@@ -792,7 +798,10 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
       verifyNever(
-        () => refreshSellOrder.execute(orderId: any(named: 'orderId')),
+        () => refreshSellOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
       );
       expect((bloc.state as SellPaymentState).isConfirmingPayment, isTrue);
 
@@ -825,14 +834,26 @@ void main() {
     // The refresh compares payin amounts to decide whether the cached fee
     // previews still describe this order.
     when(() => refreshedOrder.payinAmount).thenReturn(0.001);
+    // A benign refresh keeps the deposit address the order was created with.
     when(
-      () => refreshSellOrder.execute(orderId: any(named: 'orderId')),
+      () => refreshedOrder.toAddress,
+    ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(
+      () => refreshSellOrder.execute(
+        orderId: any(named: 'orderId'),
+        expectedDepositAddress: any(named: 'expectedDepositAddress'),
+      ),
     ).thenAnswer((_) async => refreshedOrder);
 
     bloc.add(const SellEvent.sendPaymentConfirmed());
     await Future<void>.delayed(const Duration(milliseconds: 200));
 
-    verify(() => refreshSellOrder.execute(orderId: 'order-1')).called(1);
+    verify(
+      () => refreshSellOrder.execute(
+        orderId: 'order-1',
+        expectedDepositAddress: 'bc1q0000000000000000000000000000000000000',
+      ),
+    ).called(1);
     verifyNever(
       () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
     );
@@ -843,6 +864,160 @@ void main() {
     expect(state.payinBroadcastTxid, isNull);
     // The refresh must not erase why the send failed.
     expect(state.error, isNotNull);
+  });
+
+  group('SellBloc — deposit address pinning', () {
+    /// A refresh response whose deposit address differs from the one the
+    /// order was created with. Stands in for a compromised backend or a
+    /// MITM rewriting the exchange API response.
+    _MockSellOrder tamperedOrder() {
+      final order = _MockSellOrder();
+      when(() => order.orderId).thenReturn('order-1');
+      when(() => order.payinAmount).thenReturn(0.001);
+      when(
+        () => order.toAddress,
+      ).thenReturn('bc1qattacker00000000000000000000000000000');
+      return order;
+    }
+
+    test('audit reproducer: a refreshed order carrying a different deposit '
+        'address is refused, never adopted', () async {
+      // Before the fix, _onOrderRefreshTimePassed replaced the whole order
+      // unconditionally and the confirm screen never showed the address, so
+      // a tampered refresh silently redirected the payin.
+      when(
+        () => refreshSellOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
+      ).thenThrow(const SellError.depositAddressChanged());
+
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final state = bloc.state as SellPaymentState;
+      expect(
+        state.sellOrder,
+        same(sellOrder),
+        reason:
+            'a refreshed order with a different deposit address must never '
+            'replace the order the payin is built from',
+      );
+      expect(state.error, isA<DepositAddressChangedSellError>());
+    });
+
+    test(
+      'a refreshed order carrying the same deposit address is adopted',
+      () async {
+        final refreshedOrder = _MockSellOrder();
+        when(() => refreshedOrder.orderId).thenReturn('order-1');
+        // A new price lock moves the payin amount — that part of the refresh
+        // must keep working.
+        when(() => refreshedOrder.payinAmount).thenReturn(0.002);
+        when(
+          () => refreshedOrder.toAddress,
+        ).thenReturn('bc1q0000000000000000000000000000000000000');
+        when(
+          () => refreshSellOrder.execute(
+            orderId: any(named: 'orderId'),
+            expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          ),
+        ).thenAnswer((_) async => refreshedOrder);
+
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        final state = bloc.state as SellPaymentState;
+        expect(state.sellOrder, same(refreshedOrder));
+        expect(state.error, isNull);
+      },
+    );
+
+    test('a polled order carrying a different deposit address is refused '
+        'while the payment is still unsigned', () async {
+      // The periodic order poll is a second adoption path for a tampered
+      // order: it merges the fetched order into the live payment state.
+      final tampered = tamperedOrder();
+      when(
+        () => tampered.payinStatus,
+      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      when(
+        () => getOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) async => tampered);
+
+      bloc.add(const SellEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final state = bloc.state as SellPaymentState;
+      expect(state.sellOrder, same(sellOrder));
+      expect(state.error, isA<DepositAddressChangedSellError>());
+    });
+
+    test(
+      'a changed address is refused even when the poll reports progress',
+      () async {
+        final tampered = tamperedOrder();
+        when(
+          () => tampered.payinStatus,
+        ).thenReturn(OrderPayinStatus.inProgress);
+        when(
+          () => getOrder.execute(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => tampered);
+
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        expect(bloc.state, isA<SellPaymentState>());
+        expect(
+          (bloc.state as SellPaymentState).error,
+          isA<DepositAddressChangedSellError>(),
+        );
+      },
+    );
+
+    test('after a refused refresh, the payin still targets the creation-time '
+        'address', () async {
+      when(
+        () => refreshSellOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
+      ).thenThrow(const SellError.depositAddressChanged());
+      when(
+        () => getOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) async => sellOrder);
+
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(
+        (bloc.state as SellPaymentState).error,
+        isA<DepositAddressChangedSellError>(),
+      );
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+
+      final builtAddresses = verify(
+        () => prepareBitcoinSend.execute(
+          walletId: any(named: 'walletId'),
+          address: captureAny(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).captured;
+      expect(
+        builtAddresses,
+        everyElement('bc1q0000000000000000000000000000000000000'),
+        reason:
+            'the payin must only ever pay the address the order was created '
+            'with',
+      );
+
+      // Let the confirmation settle so nothing emits after tearDown closes.
+      await Future<void>.delayed(const Duration(seconds: 6));
+    }, timeout: const Timeout(Duration(seconds: 60)));
   });
 
   group('SellBloc — fee selection (#2521)', () {

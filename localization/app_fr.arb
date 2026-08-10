@@ -4999,5 +4999,12 @@
   "legacyBackupConfirm": "J'ai noté toutes les phrases de récupération et passphrases ci-dessus",
   "legacyBackupReinstallMessage": "Supprimez cette application et réinstallez-la depuis le store. Lors de la configuration, choisissez de récupérer un portefeuille existant et saisissez votre phrase de récupération.",
   "legacyBackupReinstallTitle": "Prochaines étapes",
-  "legacyBackupNoSeedsMessage": "Aucune phrase de récupération n'a pu être lue sur cette installation. Ne supprimez PAS l'application — contactez d'abord le support."
+  "legacyBackupNoSeedsMessage": "Aucune phrase de récupération n'a pu être lue sur cette installation. Ne supprimez PAS l'application — contactez d'abord le support.",
+  "sellDepositAddress": "Adresse de dépôt",
+  "payDepositAddress": "Adresse de dépôt",
+  "sellDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
+  "payDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
+  "appUnlockTryAgainIn": "Trop de tentatives échouées. Réessayez dans {seconds} s.",
+  "sendUnconfidentialLiquidWarning": "Montant public",
+  "sendUnconfidentialLiquidWarningDescription": "Cette adresse Liquid ne prend pas en charge les transactions confidentielles. Le montant envoyé sera publiquement visible sur la blockchain."
 }

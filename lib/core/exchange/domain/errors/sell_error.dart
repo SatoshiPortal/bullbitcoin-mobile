@@ -21,6 +21,12 @@ sealed class SellError with _$SellError {
   const factory SellError.orderNotFound() = OrderNotFoundSellError;
   const factory SellError.orderAlreadyConfirmed() =
       OrderAlreadyConfirmedSellError;
+
+  /// A price-lock refresh came back with a different deposit address than
+  /// the order was created with. That must never happen in correct backend
+  /// operation, so the refreshed order is refused rather than paid.
+  const factory SellError.depositAddressChanged() =
+      DepositAddressChangedSellError;
   const factory SellError.unexpected({required String message}) =
       UnexpectedSellError;
   const factory SellError.insufficientBalance({
@@ -36,6 +42,7 @@ sealed class SellError with _$SellError {
     aboveMaxAmount: (_, _) => context.loc.sellAboveMaxAmountError,
     orderNotFound: () => context.loc.sellOrderNotFoundError,
     orderAlreadyConfirmed: () => context.loc.sellOrderAlreadyConfirmedError,
+    depositAddressChanged: () => context.loc.sellDepositAddressChangedError,
     unexpected: (message) => message,
     insufficientBalance: (_) => context.loc.sellInsufficientBalanceError,
   );
