@@ -362,7 +362,8 @@ class SwapPageState extends State<SwapPage> {
                           state.isStarting ||
                           state.isCreatingSwap ||
                           state.continueClicked ||
-                          state.hasAmountError,
+                          state.hasAmountError ||
+                          state.isExternalAddressBlocking,
                       builder: (context, disabled) {
                         return BBButton.big(
                           label: context.loc.swapContinueButton,

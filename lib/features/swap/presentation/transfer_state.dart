@@ -223,6 +223,13 @@ sealed class TransferState with _$TransferState {
     return amountValidationError != null || isInsufficientBalance;
   }
 
+  /// Continue must stay disabled while sending to an external wallet if the
+  /// address is missing or fails counter-network validation.
+  bool get isExternalAddressBlocking {
+    if (!sendToExternal) return false;
+    return externalAddress.isEmpty || externalAddressError != null;
+  }
+
   String? get amountValidationError {
     if (amount.isEmpty) return null;
 
