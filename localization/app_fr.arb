@@ -5003,5 +5003,6 @@
   "sellDepositAddress": "Adresse de dépôt",
   "payDepositAddress": "Adresse de dépôt",
   "sellDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
-  "payDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau."
+  "payDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
+  "appUnlockTryAgainIn": "Trop de tentatives échouées. Réessayez dans {seconds} s."
 }

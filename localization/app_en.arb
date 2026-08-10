@@ -14457,5 +14457,14 @@
   "payDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
   "@payDepositAddressChangedError": {
     "description": "Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "appUnlockTryAgainIn": "Too many failed attempts. Try again in {seconds} s.",
+  "@appUnlockTryAgainIn": {
+    "description": "Shown on the unlock screen while a brute-force cooldown is running; the dial pad is disabled for its duration",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   }
 }
