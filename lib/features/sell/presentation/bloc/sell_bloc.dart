@@ -452,6 +452,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     try {
       final refreshedOrder = await _refreshSellOrderUsecase.execute(
         orderId: paymentState.sellOrder.orderId,
+        expectedDepositAddress: paymentState.sellOrder.toAddress,
       );
 
       // A confirmation may have started while the refresh was in flight, so
@@ -945,6 +946,22 @@ class SellBloc extends Bloc<SellEvent, SellState>
         return;
       }
 
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (!current.isPayinBroadcast) {
+        try {
+          validateSellOrderDepositAddress(
+            order: latestOrder,
+            expectedDepositAddress: current.sellOrder.toAddress,
+          );
+        } on DepositAddressChangedSellError catch (error, stackTrace) {
+          log.severe(error: error, trace: stackTrace);
+          _stopPolling();
+          emit(current.copyWith(error: error, isPolling: false));
+          return;
+        }
+      }
+
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -953,10 +970,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
         _stopPolling();
         await _labelPayjoinSellTransaction(
           latestOrder,
-          sellPaymentState.selectedWallet?.id,
+          current.selectedWallet?.id,
         );
         emit(
-          sellPaymentState
+          current
               .copyWith(sellOrder: latestOrder, isPolling: false)
               .toSuccessState(sellOrder: latestOrder),
         );
@@ -965,8 +982,6 @@ class SellBloc extends Bloc<SellEvent, SellState>
         // so it routinely spans the broadcast. Emitting the pre-await snapshot
         // would drop the latch and re-arm Confirm (#2522), so merge into the
         // current state instead.
-        final current = _currentPaymentState;
-        if (current == null) return;
         emit(current.copyWith(sellOrder: latestOrder, isPolling: true));
       }
     } catch (e) {

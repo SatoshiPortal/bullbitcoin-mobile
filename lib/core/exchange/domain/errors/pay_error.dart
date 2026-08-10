@@ -22,6 +22,12 @@ sealed class PayError with _$PayError {
   const factory PayError.orderNotFound() = OrderNotFoundPayError;
   const factory PayError.orderAlreadyConfirmed() =
       OrderAlreadyConfirmedPayError;
+
+  /// A price-lock refresh came back with a different deposit address than
+  /// the order was created with. That must never happen in correct backend
+  /// operation, so the refreshed order is refused rather than paid.
+  const factory PayError.depositAddressChanged() =
+      DepositAddressChangedPayError;
   const factory PayError.unexpected({required String message}) =
       UnexpectedPayError;
 
@@ -35,6 +41,7 @@ sealed class PayError with _$PayError {
     insufficientBalance: () => context.loc.payInsufficientBalance,
     orderNotFound: () => context.loc.payOrderNotFound,
     orderAlreadyConfirmed: () => context.loc.payOrderAlreadyConfirmed,
+    depositAddressChanged: () => context.loc.payDepositAddressChangedError,
     unexpected: (message) => message,
   );
 }

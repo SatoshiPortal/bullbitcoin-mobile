@@ -467,6 +467,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     try {
       final refreshedOrder = await _refreshPayOrderUsecase.execute(
         orderId: paymentState.payOrder.orderId,
+        expectedDepositAddress: paymentState.payOrder.toAddress,
       );
 
       final current = _currentPaymentState;
@@ -788,6 +789,22 @@ class PayBloc extends Bloc<PayEvent, PayState>
         return;
       }
 
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (!current.isPayinBroadcast) {
+        try {
+          validatePayOrderDepositAddress(
+            order: latestOrder,
+            expectedDepositAddress: current.payOrder.toAddress,
+          );
+        } on DepositAddressChangedPayError catch (error, stackTrace) {
+          log.severe(error: error, trace: stackTrace);
+          _stopPolling();
+          emit(current.copyWith(error: error, isPolling: false));
+          return;
+        }
+      }
+
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -795,13 +812,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
           payinStatus == OrderPayinStatus.completed) {
         _stopPolling();
         emit(
-          payPaymentState
+          current
               .copyWith(payOrder: latestOrder, isPolling: false)
               .toSuccessState(payOrder: latestOrder),
         );
       } else {
-        final current = _currentPaymentState;
-        if (current == null) return;
         emit(current.copyWith(payOrder: latestOrder, isPolling: true));
       }
     } catch (e) {

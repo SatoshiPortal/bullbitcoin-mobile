@@ -14441,5 +14441,21 @@
   "legacyBackupNoSeedsMessage": "No recovery phrase could be read from this install. Do NOT delete the app — contact support first.",
   "@legacyBackupNoSeedsMessage": {
     "description": "Warning shown when a legacy install has no readable seed"
+  },
+  "sellDepositAddress": "Deposit address",
+  "@sellDepositAddress": {
+    "description": "Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "payDepositAddress": "Deposit address",
+  "@payDepositAddress": {
+    "description": "Pay confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "sellDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@sellDepositAddressChangedError": {
+    "description": "Sell: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "payDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@payDepositAddressChangedError": {
+    "description": "Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
   }
 }

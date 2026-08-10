@@ -107,6 +107,13 @@ class SellSendPaymentScreen extends StatelessWidget {
               value: order?.orderNumber.toString(),
               copyValue: order?.orderNumber.toString(),
             ),
+            // The payin goes to this address: showing it is the user's only
+            // way to notice if it ever changed under them.
+            _DetailRow(
+              title: context.loc.sellDepositAddress,
+              value: order?.toAddress,
+              copyValue: order?.toAddress,
+            ),
             _DetailRow(
               title: context.loc.sellPayoutRecipient,
               value: switch (order?.payoutMethod) {
