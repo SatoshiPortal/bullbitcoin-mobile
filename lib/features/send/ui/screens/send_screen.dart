@@ -2069,12 +2069,15 @@ class SignLedgerButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          SnackBarUtils.showSnackBar(
-            context,
-            context.loc.sendTransactionSignedLedger,
-          );
-          // Update the signedBitcoinTx with the result from Ledger
-          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+          final accepted = await context
+              .read<SendCubit>()
+              .updateSignedBitcoinTx(result);
+          if (accepted && context.mounted) {
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.sendTransactionSignedLedger,
+            );
+          }
         }
       },
       bgColor: context.appColors.secondary,
