@@ -260,6 +260,7 @@ class SwapLocator {
         verifyChainSwapAmountSendUsecase:
             locator<VerifyChainSwapAmountSendUsecase>(),
         getOrderSwapQuoteUsecase: locator<GetOrderSwapQuoteUsecase>(),
+        getPendingOrderSwapsUsecase: locator<GetPendingOrderSwapsUsecase>(),
         createOrderSwapUsecase: locator<CreateOrderSwapUsecase>(),
         savePreparedOrderSwapPayinUsecase:
             locator<SavePreparedOrderSwapPayinUsecase>(),
