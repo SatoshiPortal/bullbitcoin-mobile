@@ -74,6 +74,7 @@ void main() {
               outNetwork: 'lightning',
               isInAmountFixed: 0,
               requestedAmountSat: 1000,
+              quotedAmountSat: const Value(100000),
               destination: 'invoice',
               fallback: 'fallback',
               createdAt: '2026-08-05T12:00:00.000Z',
@@ -84,6 +85,7 @@ void main() {
       final rows = await migratedDb.select(migratedDb.orderSwaps).get();
       expect(rows.single.localId, 'local-1');
       expect(rows.single.requestId, 'request-1');
+      expect(rows.single.quotedAmountSat, 100000);
       final indexes = await migratedDb
           .customSelect(
             "SELECT name FROM sqlite_master WHERE type = 'index' "

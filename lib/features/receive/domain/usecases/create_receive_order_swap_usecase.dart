@@ -68,6 +68,7 @@ class CreateReceiveOrderSwapUsecase {
         purpose: OrderSwapPurpose.receiveLightning,
         environment: environment,
         destinationWalletId: wallet.id,
+        quotedCounterpartAmountSat: quote.outAmountSat,
         note: note,
       );
       final OrderSwapRecord record;

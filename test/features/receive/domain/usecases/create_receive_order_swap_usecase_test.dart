@@ -57,9 +57,10 @@ void main() {
           fallbackAddress: null,
           purpose: OrderSwapPurpose.receiveLightning,
           environment: OrderSwapEnvironment.testnet,
-          sourceWalletId: null,
-          destinationWalletId: 'wallet-1',
-          note: 'invoice note',
+           sourceWalletId: null,
+           destinationWalletId: 'wallet-1',
+           quotedCounterpartAmountSat: BigInt.from(99000),
+           note: 'invoice note',
         ),
       ).thenAnswer((_) async => Ok(_record()));
 
@@ -80,9 +81,10 @@ void main() {
           fallbackAddress: null,
           purpose: OrderSwapPurpose.receiveLightning,
           environment: OrderSwapEnvironment.testnet,
-          sourceWalletId: null,
-          destinationWalletId: 'wallet-1',
-          note: 'invoice note',
+           sourceWalletId: null,
+           destinationWalletId: 'wallet-1',
+           quotedCounterpartAmountSat: BigInt.from(99000),
+           note: 'invoice note',
         ),
       ).called(1);
     },
@@ -288,9 +290,10 @@ void _stubSuccessfulCreation(
       fallbackAddress: null,
       purpose: OrderSwapPurpose.receiveLightning,
       environment: OrderSwapEnvironment.testnet,
-      sourceWalletId: null,
-      destinationWalletId: 'wallet-1',
-      note: null,
+       sourceWalletId: null,
+       destinationWalletId: 'wallet-1',
+       quotedCounterpartAmountSat: BigInt.from(99000),
+       note: null,
     ),
   ).thenAnswer((_) async => Ok(record ?? _record()));
 }

@@ -542,6 +542,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       environment: orderEnvironment,
       sourceWalletId: fromWallet.id,
       destinationWalletId: destinationWallet?.id,
+      quotedCounterpartAmountSat: isInAmountFixed
+          ? quote.outAmountSat
+          : quote.inAmountSat,
     );
     if (createResult case Err(:final failure)) {
       log.warning('[Transfer] create failed (${failure.runtimeType})');

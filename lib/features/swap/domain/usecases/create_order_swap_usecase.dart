@@ -21,6 +21,7 @@ class CreateOrderSwapUsecase {
     String? sourceWalletId,
     String? destinationWalletId,
     String? note,
+    BigInt? quotedCounterpartAmountSat,
   }) => _repository.createOrder(
     amountSat: amountSat,
     isInAmountFixed: isInAmountFixed,
@@ -33,5 +34,6 @@ class CreateOrderSwapUsecase {
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     note: note,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
   );
 }

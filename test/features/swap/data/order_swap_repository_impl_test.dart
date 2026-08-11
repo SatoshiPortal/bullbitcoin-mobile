@@ -225,6 +225,69 @@ void main() {
     expect(row.fallback, 'fallback');
   });
 
+  test('persists the quoted counterpart amount', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+
+    final result = await repository.createOrder(
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: false,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      destinationAddress: 'invoice',
+      fallbackAddress: 'fallback',
+      purpose: OrderSwapPurpose.sendLightning,
+      environment: OrderSwapEnvironment.testnet,
+      quotedCounterpartAmountSat: BigInt.from(1000),
+    );
+
+    expect(result, isA<Ok<OrderSwapRecord, SwapFailure>>());
+    final row = await database.select(database.orderSwaps).getSingle();
+    expect(row.quotedAmountSat, 1000);
+  });
+
+  test('maps a deviating server order to a mismatch failure', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer(
+      (_) async => _orderModel(payinAmount: '0.00101001'),
+    );
+
+    final result = await repository.createOrder(
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: false,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      destinationAddress: 'invoice',
+      fallbackAddress: 'fallback',
+      purpose: OrderSwapPurpose.sendLightning,
+      environment: OrderSwapEnvironment.testnet,
+      quotedCounterpartAmountSat: BigInt.from(100000),
+    );
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    final failure = (result as Err<OrderSwapRecord, SwapFailure>).failure;
+    expect(failure, isA<SwapOrderMismatchFailure>());
+    expect(failure, isNot(isA<SwapCreationUnknownFailure>()));
+  });
+
   test('gets orders belonging to either side of a wallet', () async {
     await _insertRecord(
       database,
@@ -934,12 +997,13 @@ Future<void> _insertRecord(
     );
 
 OrderSwapModel _orderModel({
+  String payinAmount = '0.00001010',
   String payoutAmount = '0.00001000',
   String orderStatus = 'Awaiting payment',
 }) => OrderSwapModel(
   orderId: 'order-1',
   orderNumber: 1,
-  payinAmount: '0.00001010',
+  payinAmount: payinAmount,
   payoutAmount: payoutAmount,
   payinCurrency: 'LBTC',
   payoutCurrency: 'BTCLN',

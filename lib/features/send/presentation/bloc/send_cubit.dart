@@ -410,6 +410,7 @@ class SendCubit extends Cubit<SendState>
           walletId: wallet.id,
           invoice: paymentRequest,
           amountSat: paymentRequest.amountSat,
+          quote: state.lightningQuote,
           note: state.label,
         )) {
           case Ok(:final value):
@@ -932,6 +933,7 @@ class SendCubit extends Cubit<SendState>
         walletId: state.selectedWallet!.id,
         invoice: invoice,
         amountSat: state.inputAmountSat,
+        quote: state.lightningQuote,
         note: state.label,
       )) {
         case Ok(:final value):

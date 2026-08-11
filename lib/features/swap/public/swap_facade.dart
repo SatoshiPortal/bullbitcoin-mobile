@@ -81,6 +81,7 @@ class SwapFacade {
     String? sourceWalletId,
     String? destinationWalletId,
     String? note,
+    BigInt? quotedCounterpartAmountSat,
   }) => _createOrder.execute(
     amountSat: amountSat,
     isInAmountFixed: isInAmountFixed,
@@ -93,6 +94,7 @@ class SwapFacade {
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     note: note,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
   );
 
   Future<Result<OrderSwapRecord, SwapFailure>> refreshOrder(String localId) =>

@@ -15,6 +15,11 @@ extension OrderSwapRecordToCompanionMapper on OrderSwapRecord {
     outNetwork: outNetwork.name,
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: _sqliteInt(requestedAmountSat),
+    quotedAmountSat: Value(
+      quotedCounterpartAmountSat == null
+          ? null
+          : _sqliteInt(quotedCounterpartAmountSat!),
+    ),
     sourceWalletId: Value(sourceWalletId),
     destinationWalletId: Value(destinationWalletId),
     destination: destination,
@@ -69,6 +74,9 @@ extension OrderSwapRowToEntityMapper on OrderSwapRow {
     outNetwork: _byName(OrderSwapNetwork.values, outNetwork, 'outNetwork'),
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: BigInt.from(requestedAmountSat),
+    quotedCounterpartAmountSat: quotedAmountSat == null
+        ? null
+        : BigInt.from(quotedAmountSat!),
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     destination: destination,

@@ -82,6 +82,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     String? sourceWalletId,
     String? destinationWalletId,
     String? note,
+    BigInt? quotedCounterpartAmountSat,
   }) async {
     final previousCreate = _createQueue;
     final createCompleted = Completer<void>();
@@ -100,6 +101,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
         sourceWalletId: sourceWalletId,
         destinationWalletId: destinationWalletId,
         note: note,
+        quotedCounterpartAmountSat: quotedCounterpartAmountSat,
       );
     } finally {
       createCompleted.complete();
@@ -118,6 +120,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     String? sourceWalletId,
     String? destinationWalletId,
     String? note,
+    BigInt? quotedCounterpartAmountSat,
   }) async {
     try {
       final activeStatuses = OrderSwapLocalStatus.values
@@ -211,6 +214,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       createdAt: _now(),
       localStatus: OrderSwapLocalStatus.creating,
       note: note,
+      quotedCounterpartAmountSat: quotedCounterpartAmountSat,
     );
 
     try {

@@ -2123,6 +2123,16 @@
             "dsl_features": []
           },
           {
+            "name": "quoted_amount_sat",
+            "getter_name": "quotedAmountSat",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
             "name": "source_wallet_id",
             "getter_name": "sourceWalletId",
             "moor_type": "string",
@@ -2758,7 +2768,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"order_swaps\" (\"local_id\" TEXT NOT NULL, \"request_id\" TEXT NULL, \"order_id\" TEXT NULL UNIQUE, \"purpose\" TEXT NOT NULL, \"environment\" TEXT NOT NULL, \"in_network\" TEXT NOT NULL, \"out_network\" TEXT NOT NULL, \"is_in_amount_fixed\" INTEGER NOT NULL CHECK (\"is_in_amount_fixed\" IN (0, 1)), \"requested_amount_sat\" INTEGER NOT NULL, \"source_wallet_id\" TEXT NULL, \"destination_wallet_id\" TEXT NULL, \"destination\" TEXT NOT NULL, \"fallback\" TEXT NOT NULL, \"bitcoin_address\" TEXT NULL, \"liquid_address\" TEXT NULL, \"lightning_invoice\" TEXT NULL, \"payin_amount_sat\" INTEGER NULL, \"payout_amount_sat\" INTEGER NULL, \"payin_currency\" TEXT NULL, \"payout_currency\" TEXT NULL, \"payin_method\" TEXT NULL, \"payout_method\" TEXT NULL, \"order_type\" TEXT NULL, \"order_status\" TEXT NULL, \"payin_status\" TEXT NULL, \"payout_status\" TEXT NULL, \"message_code\" TEXT NULL, \"bitcoin_transaction_id\" TEXT NULL, \"liquid_transaction_id\" TEXT NULL, \"local_payin_transaction_id\" TEXT NULL, \"signed_payin_transaction\" TEXT NULL, \"payin_is_psbt\" INTEGER NULL CHECK (\"payin_is_psbt\" IN (0, 1)), \"order_number\" INTEGER NULL, \"created_at\" TEXT NOT NULL, \"server_created_at\" TEXT NULL, \"confirmation_deadline\" TEXT NULL, \"sent_at\" TEXT NULL, \"local_status\" TEXT NOT NULL, \"last_polled_at\" TEXT NULL, \"note\" TEXT NULL, \"server_completed_at\" TEXT NULL, \"labels_applied_at\" TEXT NULL, PRIMARY KEY (\"local_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"order_swaps\" (\"local_id\" TEXT NOT NULL, \"request_id\" TEXT NULL, \"order_id\" TEXT NULL UNIQUE, \"purpose\" TEXT NOT NULL, \"environment\" TEXT NOT NULL, \"in_network\" TEXT NOT NULL, \"out_network\" TEXT NOT NULL, \"is_in_amount_fixed\" INTEGER NOT NULL CHECK (\"is_in_amount_fixed\" IN (0, 1)), \"requested_amount_sat\" INTEGER NOT NULL, \"quoted_amount_sat\" INTEGER NULL, \"source_wallet_id\" TEXT NULL, \"destination_wallet_id\" TEXT NULL, \"destination\" TEXT NOT NULL, \"fallback\" TEXT NOT NULL, \"bitcoin_address\" TEXT NULL, \"liquid_address\" TEXT NULL, \"lightning_invoice\" TEXT NULL, \"payin_amount_sat\" INTEGER NULL, \"payout_amount_sat\" INTEGER NULL, \"payin_currency\" TEXT NULL, \"payout_currency\" TEXT NULL, \"payin_method\" TEXT NULL, \"payout_method\" TEXT NULL, \"order_type\" TEXT NULL, \"order_status\" TEXT NULL, \"payin_status\" TEXT NULL, \"payout_status\" TEXT NULL, \"message_code\" TEXT NULL, \"bitcoin_transaction_id\" TEXT NULL, \"liquid_transaction_id\" TEXT NULL, \"local_payin_transaction_id\" TEXT NULL, \"signed_payin_transaction\" TEXT NULL, \"payin_is_psbt\" INTEGER NULL CHECK (\"payin_is_psbt\" IN (0, 1)), \"order_number\" INTEGER NULL, \"created_at\" TEXT NOT NULL, \"server_created_at\" TEXT NULL, \"confirmation_deadline\" TEXT NULL, \"sent_at\" TEXT NULL, \"local_status\" TEXT NOT NULL, \"last_polled_at\" TEXT NULL, \"note\" TEXT NULL, \"server_completed_at\" TEXT NULL, \"labels_applied_at\" TEXT NULL, PRIMARY KEY (\"local_id\"));"
         }
       ]
     },

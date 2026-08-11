@@ -28,6 +28,7 @@ abstract interface class OrderSwapRepository {
     String? sourceWalletId,
     String? destinationWalletId,
     String? note,
+    BigInt? quotedCounterpartAmountSat,
   });
 
   @useResult

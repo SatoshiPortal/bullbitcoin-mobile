@@ -8240,6 +8240,14 @@ class OrderSwaps extends Table with TableInfo<OrderSwaps, OrderSwapsData> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
+  late final GeneratedColumn<int> quotedAmountSat = GeneratedColumn<int>(
+    'quoted_amount_sat',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   late final GeneratedColumn<String> sourceWalletId = GeneratedColumn<String>(
     'source_wallet_id',
     aliasedName,
@@ -8522,6 +8530,7 @@ class OrderSwaps extends Table with TableInfo<OrderSwaps, OrderSwapsData> {
     outNetwork,
     isInAmountFixed,
     requestedAmountSat,
+    quotedAmountSat,
     sourceWalletId,
     destinationWalletId,
     destination,
@@ -8603,6 +8612,10 @@ class OrderSwaps extends Table with TableInfo<OrderSwaps, OrderSwapsData> {
         DriftSqlType.int,
         data['${effectivePrefix}requested_amount_sat'],
       )!,
+      quotedAmountSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quoted_amount_sat'],
+      ),
       sourceWalletId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}source_wallet_id'],
@@ -8759,6 +8772,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
   final String outNetwork;
   final int isInAmountFixed;
   final int requestedAmountSat;
+  final int? quotedAmountSat;
   final String? sourceWalletId;
   final String? destinationWalletId;
   final String destination;
@@ -8802,6 +8816,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
     required this.outNetwork,
     required this.isInAmountFixed,
     required this.requestedAmountSat,
+    this.quotedAmountSat,
     this.sourceWalletId,
     this.destinationWalletId,
     required this.destination,
@@ -8852,6 +8867,9 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
     map['out_network'] = Variable<String>(outNetwork);
     map['is_in_amount_fixed'] = Variable<int>(isInAmountFixed);
     map['requested_amount_sat'] = Variable<int>(requestedAmountSat);
+    if (!nullToAbsent || quotedAmountSat != null) {
+      map['quoted_amount_sat'] = Variable<int>(quotedAmountSat);
+    }
     if (!nullToAbsent || sourceWalletId != null) {
       map['source_wallet_id'] = Variable<String>(sourceWalletId);
     }
@@ -8965,6 +8983,9 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
       outNetwork: Value(outNetwork),
       isInAmountFixed: Value(isInAmountFixed),
       requestedAmountSat: Value(requestedAmountSat),
+      quotedAmountSat: quotedAmountSat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quotedAmountSat),
       sourceWalletId: sourceWalletId == null && nullToAbsent
           ? const Value.absent()
           : Value(sourceWalletId),
@@ -9072,6 +9093,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
       outNetwork: serializer.fromJson<String>(json['outNetwork']),
       isInAmountFixed: serializer.fromJson<int>(json['isInAmountFixed']),
       requestedAmountSat: serializer.fromJson<int>(json['requestedAmountSat']),
+      quotedAmountSat: serializer.fromJson<int?>(json['quotedAmountSat']),
       sourceWalletId: serializer.fromJson<String?>(json['sourceWalletId']),
       destinationWalletId: serializer.fromJson<String?>(
         json['destinationWalletId'],
@@ -9134,6 +9156,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
       'outNetwork': serializer.toJson<String>(outNetwork),
       'isInAmountFixed': serializer.toJson<int>(isInAmountFixed),
       'requestedAmountSat': serializer.toJson<int>(requestedAmountSat),
+      'quotedAmountSat': serializer.toJson<int?>(quotedAmountSat),
       'sourceWalletId': serializer.toJson<String?>(sourceWalletId),
       'destinationWalletId': serializer.toJson<String?>(destinationWalletId),
       'destination': serializer.toJson<String>(destination),
@@ -9184,6 +9207,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
     String? outNetwork,
     int? isInAmountFixed,
     int? requestedAmountSat,
+    Value<int?> quotedAmountSat = const Value.absent(),
     Value<String?> sourceWalletId = const Value.absent(),
     Value<String?> destinationWalletId = const Value.absent(),
     String? destination,
@@ -9227,6 +9251,9 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
     outNetwork: outNetwork ?? this.outNetwork,
     isInAmountFixed: isInAmountFixed ?? this.isInAmountFixed,
     requestedAmountSat: requestedAmountSat ?? this.requestedAmountSat,
+    quotedAmountSat: quotedAmountSat.present
+        ? quotedAmountSat.value
+        : this.quotedAmountSat,
     sourceWalletId: sourceWalletId.present
         ? sourceWalletId.value
         : this.sourceWalletId,
@@ -9314,6 +9341,9 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
       requestedAmountSat: data.requestedAmountSat.present
           ? data.requestedAmountSat.value
           : this.requestedAmountSat,
+      quotedAmountSat: data.quotedAmountSat.present
+          ? data.quotedAmountSat.value
+          : this.quotedAmountSat,
       sourceWalletId: data.sourceWalletId.present
           ? data.sourceWalletId.value
           : this.sourceWalletId,
@@ -9418,6 +9448,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
           ..write('outNetwork: $outNetwork, ')
           ..write('isInAmountFixed: $isInAmountFixed, ')
           ..write('requestedAmountSat: $requestedAmountSat, ')
+          ..write('quotedAmountSat: $quotedAmountSat, ')
           ..write('sourceWalletId: $sourceWalletId, ')
           ..write('destinationWalletId: $destinationWalletId, ')
           ..write('destination: $destination, ')
@@ -9466,6 +9497,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
     outNetwork,
     isInAmountFixed,
     requestedAmountSat,
+    quotedAmountSat,
     sourceWalletId,
     destinationWalletId,
     destination,
@@ -9513,6 +9545,7 @@ class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
           other.outNetwork == this.outNetwork &&
           other.isInAmountFixed == this.isInAmountFixed &&
           other.requestedAmountSat == this.requestedAmountSat &&
+          other.quotedAmountSat == this.quotedAmountSat &&
           other.sourceWalletId == this.sourceWalletId &&
           other.destinationWalletId == this.destinationWalletId &&
           other.destination == this.destination &&
@@ -9558,6 +9591,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
   final Value<String> outNetwork;
   final Value<int> isInAmountFixed;
   final Value<int> requestedAmountSat;
+  final Value<int?> quotedAmountSat;
   final Value<String?> sourceWalletId;
   final Value<String?> destinationWalletId;
   final Value<String> destination;
@@ -9602,6 +9636,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
     this.outNetwork = const Value.absent(),
     this.isInAmountFixed = const Value.absent(),
     this.requestedAmountSat = const Value.absent(),
+    this.quotedAmountSat = const Value.absent(),
     this.sourceWalletId = const Value.absent(),
     this.destinationWalletId = const Value.absent(),
     this.destination = const Value.absent(),
@@ -9647,6 +9682,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
     required String outNetwork,
     required int isInAmountFixed,
     required int requestedAmountSat,
+    this.quotedAmountSat = const Value.absent(),
     this.sourceWalletId = const Value.absent(),
     this.destinationWalletId = const Value.absent(),
     required String destination,
@@ -9702,6 +9738,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
     Expression<String>? outNetwork,
     Expression<int>? isInAmountFixed,
     Expression<int>? requestedAmountSat,
+    Expression<int>? quotedAmountSat,
     Expression<String>? sourceWalletId,
     Expression<String>? destinationWalletId,
     Expression<String>? destination,
@@ -9748,6 +9785,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
       if (isInAmountFixed != null) 'is_in_amount_fixed': isInAmountFixed,
       if (requestedAmountSat != null)
         'requested_amount_sat': requestedAmountSat,
+      if (quotedAmountSat != null) 'quoted_amount_sat': quotedAmountSat,
       if (sourceWalletId != null) 'source_wallet_id': sourceWalletId,
       if (destinationWalletId != null)
         'destination_wallet_id': destinationWalletId,
@@ -9801,6 +9839,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
     Value<String>? outNetwork,
     Value<int>? isInAmountFixed,
     Value<int>? requestedAmountSat,
+    Value<int?>? quotedAmountSat,
     Value<String?>? sourceWalletId,
     Value<String?>? destinationWalletId,
     Value<String>? destination,
@@ -9846,6 +9885,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
       outNetwork: outNetwork ?? this.outNetwork,
       isInAmountFixed: isInAmountFixed ?? this.isInAmountFixed,
       requestedAmountSat: requestedAmountSat ?? this.requestedAmountSat,
+      quotedAmountSat: quotedAmountSat ?? this.quotedAmountSat,
       sourceWalletId: sourceWalletId ?? this.sourceWalletId,
       destinationWalletId: destinationWalletId ?? this.destinationWalletId,
       destination: destination ?? this.destination,
@@ -9914,6 +9954,9 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
     }
     if (requestedAmountSat.present) {
       map['requested_amount_sat'] = Variable<int>(requestedAmountSat.value);
+    }
+    if (quotedAmountSat.present) {
+      map['quoted_amount_sat'] = Variable<int>(quotedAmountSat.value);
     }
     if (sourceWalletId.present) {
       map['source_wallet_id'] = Variable<String>(sourceWalletId.value);
@@ -10044,6 +10087,7 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
           ..write('outNetwork: $outNetwork, ')
           ..write('isInAmountFixed: $isInAmountFixed, ')
           ..write('requestedAmountSat: $requestedAmountSat, ')
+          ..write('quotedAmountSat: $quotedAmountSat, ')
           ..write('sourceWalletId: $sourceWalletId, ')
           ..write('destinationWalletId: $destinationWalletId, ')
           ..write('destination: $destination, ')

@@ -80,6 +80,42 @@ void main() {
     );
   });
 
+  test('rejects a server-chosen amount beyond the quote tolerance', () {
+    final record = _quotedRecord();
+    expect(
+      () => record.withServerOrder(
+        _order(payinAmountSat: BigInt.from(101001)),
+        status: OrderSwapLocalStatus.awaitingUserConfirmation,
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('accepts quoted server-chosen amounts within tolerance in both directions', () {
+    final record = _quotedRecord();
+    expect(
+      () => record.withServerOrder(
+        _order(payinAmountSat: BigInt.from(99001)),
+        status: OrderSwapLocalStatus.awaitingUserConfirmation,
+      ),
+      returnsNormally,
+    );
+    expect(
+      () => record.withServerOrder(
+        _order(payinAmountSat: BigInt.from(100999)),
+        status: OrderSwapLocalStatus.awaitingUserConfirmation,
+      ),
+      returnsNormally,
+    );
+    expect(
+      () => record.withServerOrder(
+        _order(payinAmountSat: BigInt.from(101001)),
+        status: OrderSwapLocalStatus.awaitingUserConfirmation,
+      ),
+      throwsArgumentError,
+    );
+  });
+
   test('uses the destination Liquid leg for a Lightning receive', () {
     final createdAt = DateTime.utc(2026);
     final record = OrderSwapRecord(
@@ -124,13 +160,31 @@ void main() {
   });
 }
 
-OrderSwap _order({required BigInt payoutAmountSat}) => OrderSwap(
+OrderSwapRecord _quotedRecord() => OrderSwapRecord(
+  localId: 'local-1',
+  purpose: OrderSwapPurpose.sendLightning,
+  environment: OrderSwapEnvironment.testnet,
+  inNetwork: OrderSwapNetwork.liquid,
+  outNetwork: OrderSwapNetwork.lightning,
+  isInAmountFixed: false,
+  requestedAmountSat: BigInt.from(1000),
+  quotedCounterpartAmountSat: BigInt.from(100000),
+  destination: 'destination',
+  fallback: 'fallback',
+  createdAt: DateTime.utc(2026),
+  localStatus: OrderSwapLocalStatus.creating,
+);
+
+OrderSwap _order({
+  BigInt? payinAmountSat,
+  BigInt? payoutAmountSat,
+}) => OrderSwap(
   orderId: 'order-1',
   orderNumber: 1,
   inNetwork: OrderSwapNetwork.liquid,
   outNetwork: OrderSwapNetwork.lightning,
-  payinAmountSat: BigInt.from(1010),
-  payoutAmountSat: payoutAmountSat,
+  payinAmountSat: payinAmountSat ?? BigInt.from(1010),
+  payoutAmountSat: payoutAmountSat ?? BigInt.from(1000),
   payinCurrency: 'LBTC',
   payoutCurrency: 'BTCLN',
   payinMethod: 'Liquid',

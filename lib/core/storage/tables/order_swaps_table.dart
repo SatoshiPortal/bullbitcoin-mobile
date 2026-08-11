@@ -24,6 +24,7 @@ class OrderSwaps extends Table {
   TextColumn get outNetwork => text()();
   BoolColumn get isInAmountFixed => boolean()();
   IntColumn get requestedAmountSat => integer()();
+  IntColumn get quotedAmountSat => integer().nullable()();
   TextColumn get sourceWalletId => text().nullable()();
   TextColumn get destinationWalletId => text().nullable()();
   TextColumn get destination => text()();

@@ -25,6 +25,7 @@ class CreateSendSwapUsecase {
     required String walletId,
     required Bolt11PaymentRequest invoice,
     required int amountSat,
+    OrderSwapQuote? quote,
     String? note,
   }) async {
     if (amountSat <= 0) {
@@ -73,6 +74,7 @@ class CreateSendSwapUsecase {
             ? OrderSwapEnvironment.testnet
             : OrderSwapEnvironment.mainnet,
         sourceWalletId: walletId,
+        quotedCounterpartAmountSat: quote?.inAmountSat,
         note: note,
       );
       return result.mapErr(mapSwapFailureToSendFailure);

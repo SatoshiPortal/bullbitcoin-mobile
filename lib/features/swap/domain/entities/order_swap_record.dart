@@ -11,6 +11,16 @@ enum OrderSwapPurpose {
 
 enum OrderSwapEnvironment { testnet, mainnet }
 
+/// The maximum allowed deviation from the amount shown in the swap quote.
+final class OrderSwapQuoteTolerance {
+  const OrderSwapQuoteTolerance._();
+
+  static BigInt forQuotedAmount(BigInt quotedAmountSat) {
+    final percentage = quotedAmountSat ~/ BigInt.from(100);
+    return percentage > BigInt.from(1000) ? percentage : BigInt.from(1000);
+  }
+}
+
 enum OrderSwapLocalStatus {
   creating,
   creationUnknown,
@@ -40,6 +50,7 @@ class OrderSwapRecord {
   final OrderSwapNetwork outNetwork;
   final bool isInAmountFixed;
   final BigInt requestedAmountSat;
+  final BigInt? quotedCounterpartAmountSat;
   final String? sourceWalletId;
   final String? destinationWalletId;
   final String destination;
@@ -62,6 +73,7 @@ class OrderSwapRecord {
     required this.outNetwork,
     required this.isInAmountFixed,
     required this.requestedAmountSat,
+    this.quotedCounterpartAmountSat,
     required this.destination,
     required this.fallback,
     required this.createdAt,
@@ -100,6 +112,16 @@ class OrderSwapRecord {
             ? order!.payinAmountSat != requestedAmountSat
             : order!.payoutAmountSat != requestedAmountSat)) {
       throw ArgumentError('Server order does not preserve the fixed amount');
+    }
+    if (order != null && quotedCounterpartAmountSat != null) {
+      final serverChosenAmount = isInAmountFixed
+          ? order!.payoutAmountSat
+          : order!.payinAmountSat;
+      final deviation = (serverChosenAmount - quotedCounterpartAmountSat!).abs();
+      if (deviation >
+          OrderSwapQuoteTolerance.forQuotedAmount(quotedCounterpartAmountSat!)) {
+        throw ArgumentError('Server order deviates too far from the quote');
+      }
     }
     if (order == null &&
         localStatus != OrderSwapLocalStatus.creating &&
@@ -170,6 +192,7 @@ class OrderSwapRecord {
     outNetwork: outNetwork,
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: requestedAmountSat,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     destination: destination,
@@ -194,6 +217,7 @@ class OrderSwapRecord {
     outNetwork: outNetwork,
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: requestedAmountSat,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     destination: destination,
@@ -212,6 +236,7 @@ class OrderSwapRecord {
     outNetwork: outNetwork,
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: requestedAmountSat,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     destination: destination,
@@ -235,6 +260,7 @@ class OrderSwapRecord {
     outNetwork: outNetwork,
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: requestedAmountSat,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     destination: destination,
@@ -259,6 +285,7 @@ class OrderSwapRecord {
     outNetwork: outNetwork,
     isInAmountFixed: isInAmountFixed,
     requestedAmountSat: requestedAmountSat,
+    quotedCounterpartAmountSat: quotedCounterpartAmountSat,
     sourceWalletId: sourceWalletId,
     destinationWalletId: destinationWalletId,
     destination: destination,

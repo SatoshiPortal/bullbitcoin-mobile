@@ -15,6 +15,8 @@ import 'package:drift/drift.dart';
 /// folded out of this step rather than added and then migrated away.
 ///
 /// Adds the order_swaps table and indexes for crash-safe Exchange transfers.
+/// The table includes the nullable quoted_amount_sat column used to validate
+/// server-selected amounts against the quote captured at order creation.
 class Schema13To14 {
   static Future<void> migrate(Migrator m, Schema14 schema14) async {
     // New dismissed_announcements table: one row per home announcement the
