@@ -45,3 +45,8 @@ final class AutoswapFeeThresholdTooHighFailure extends AutoswapFailure {
 
   const AutoswapFeeThresholdTooHighFailure(this.maximumPercent);
 }
+
+/// The Boltz fallback server URL is not a valid absolute HTTPS URL.
+final class AutoswapInvalidBoltzServerUrlFailure extends AutoswapFailure {
+  const AutoswapInvalidBoltzServerUrlFailure();
+}

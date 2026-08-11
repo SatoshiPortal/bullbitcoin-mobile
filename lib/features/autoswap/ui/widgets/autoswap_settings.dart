@@ -141,6 +141,8 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                                             _WalletSelectionDropdown(),
                                             const Gap(16),
                                             _AlwaysBlockToggle(),
+                                            const Gap(16),
+                                            _BoltzServerUrlField(),
                                             const Gap(32),
                                             _SaveButton(),
                                           ],
@@ -615,6 +617,55 @@ class _WalletSelectionDropdown extends StatelessWidget {
             color: enabled && selectedWalletId == null
                 ? context.appColors.error
                 : context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BoltzServerUrlField extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final urlInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.boltzServerUrlInput,
+    );
+    final urlFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.boltzServerUrlFailure,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        BBText(
+          context.loc.autoswapBoltzServerUrlLabel,
+          style: context.font.bodyLarge?.copyWith(
+            color: context.appColors.text,
+          ),
+        ),
+        const Gap(8),
+        BBInputText(
+          value: urlInput ?? '',
+          onChanged: (value) {
+            context.read<AutoSwapSettingsCubit>().onBoltzServerUrlChanged(
+              value,
+            );
+          },
+        ),
+        if (urlFailure != null) ...[
+          const Gap(8),
+          BBText(
+            urlFailure.toTranslated(context),
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+        ],
+        const Gap(4),
+        BBText(
+          context.loc.autoswapBoltzServerUrlInfoText,
+          style: context.font.labelSmall?.copyWith(
+            color: context.appColors.textMuted,
           ),
         ),
       ],

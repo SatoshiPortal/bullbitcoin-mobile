@@ -14546,5 +14546,17 @@
   "coreSwapsStatusUnknown": "Unknown",
   "@coreSwapsStatusUnknown": {
     "description": "Order status label: status not recognized."
+  },
+  "autoswapBoltzServerUrlLabel": "Boltz server URL",
+  "@autoswapBoltzServerUrlLabel": {
+    "description": "Label for the optional Boltz fallback server URL field in autoswap settings"
+  },
+  "autoswapBoltzServerUrlInfoText": "Optional. Used as fallback when the exchange is unavailable.",
+  "@autoswapBoltzServerUrlInfoText": {
+    "description": "Info text below the Boltz server URL field"
+  },
+  "autoswapInvalidBoltzServerUrlError": "Enter a valid HTTPS URL (e.g. https://boltz.example.com/v2)",
+  "@autoswapInvalidBoltzServerUrlError": {
+    "description": "Error shown when the Boltz server URL is invalid"
   }
 }

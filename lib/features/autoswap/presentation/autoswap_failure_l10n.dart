@@ -23,5 +23,7 @@ extension AutoswapFailureL10n on AutoswapFailure {
           context.loc.autoswapTriggerBalanceError,
         AutoswapFeeThresholdTooHighFailure(:final maximumPercent) =>
           context.loc.autoswapMaximumFeeError('$maximumPercent'),
+        AutoswapInvalidBoltzServerUrlFailure() =>
+          context.loc.autoswapInvalidBoltzServerUrlError,
       };
 }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_server_url.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
@@ -261,6 +262,80 @@ void main() {
         cubit.state.triggerBalanceFailure,
         isA<AutoswapTriggerBalanceTooLowFailure>(),
       );
+      await cubit.close();
+    });
+  });
+
+  group('AutoSwapSettingsCubit Boltz server URL', () {
+    test('populates the URL field from loaded settings', () async {
+      when(() => load.execute()).thenAnswer(
+        (_) async => Ok((
+          settings: AutoSwap(
+            enabled: true,
+            balanceThresholdSats: 100000,
+            triggerBalanceSats: 250000,
+            feeThresholdPercent: 3,
+            recipientWalletId: 'btc',
+            boltzFallbackUrl: BoltzServerUrl.parse(
+              'https://boltz.example.com',
+            ),
+          ),
+          bitcoinUnit: BitcoinUnit.sats,
+          bitcoinWallets: <Wallet>[FakeWallet()],
+          recipientWalletId: 'btc',
+        )),
+      );
+      final cubit = buildCubit();
+      await cubit.loadSettings();
+
+      expect(
+        cubit.state.boltzServerUrlInput,
+        'https://boltz.example.com/v2',
+      );
+      await cubit.close();
+    });
+
+    test('rejects an invalid URL on save', () async {
+      final cubit = await loadedCubit();
+
+      cubit.onBoltzServerUrlChanged('not-a-url');
+      await cubit.updateSettings();
+
+      expect(
+        cubit.state.boltzServerUrlFailure,
+        isA<AutoswapInvalidBoltzServerUrlFailure>(),
+      );
+      expect(cubit.state.successfullySaved, isFalse);
+      verifyNever(() => save.execute(any()));
+      await cubit.close();
+    });
+
+    test('persists a normalized valid URL', () async {
+      final cubit = await loadedCubit();
+
+      cubit.onBoltzServerUrlChanged('https://boltz.example.com/');
+      await cubit.updateSettings();
+
+      expect(cubit.state.successfullySaved, isTrue);
+      final saved =
+          verify(() => save.execute(captureAny())).captured.single as AutoSwap;
+      expect(
+        saved.boltzFallbackUrl?.toString(),
+        'https://boltz.example.com/v2',
+      );
+      await cubit.close();
+    });
+
+    test('saves null when the URL field is empty', () async {
+      final cubit = await loadedCubit();
+
+      cubit.onBoltzServerUrlChanged('');
+      await cubit.updateSettings();
+
+      expect(cubit.state.successfullySaved, isTrue);
+      final saved =
+          verify(() => save.execute(captureAny())).captured.single as AutoSwap;
+      expect(saved.boltzFallbackUrl, isNull);
       await cubit.close();
     });
   });

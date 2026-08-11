@@ -21,6 +21,8 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     @Default([]) List<Wallet> availableBitcoinWallets,
     String? selectedBitcoinWalletId,
     @Default(false) bool loadingWallets,
+    String? boltzServerUrlInput,
+    AutoswapFailure? boltzServerUrlFailure,
   }) = _AutoSwapSettingsState;
 
   const AutoSwapSettingsState._();

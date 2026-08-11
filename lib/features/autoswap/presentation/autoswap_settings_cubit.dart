@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_server_url.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -49,6 +50,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
             bitcoinUnit: data.bitcoinUnit,
             availableBitcoinWallets: data.bitcoinWallets,
             selectedBitcoinWalletId: data.recipientWalletId,
+            boltzServerUrlInput: settings.boltzFallbackUrl?.toString(),
           ),
         );
       case Err(:final failure):
@@ -71,6 +73,20 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     );
 
     final unit = state.unit;
+    final urlInput = state.boltzServerUrlInput?.trim() ?? '';
+    final boltzUrl = urlInput.isEmpty
+        ? null
+        : BoltzServerUrl.tryParse(urlInput);
+    if (urlInput.isNotEmpty && boltzUrl == null) {
+      emit(
+        state.copyWith(
+          saving: false,
+          boltzServerUrlFailure: const AutoswapInvalidBoltzServerUrlFailure(),
+        ),
+      );
+      return;
+    }
+
     final result = await _saveAutoswapSettingsUsecase.execute(
       AutoSwap(
         enabled: enabled,
@@ -82,6 +98,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         // Keep the warning pending only while auto swap stays on; disabling
         // clears it so re-enabling shows it again.
         showWarning: enabled ? state.settings?.showWarning ?? true : false,
+        boltzFallbackUrl: boltzUrl,
       ),
     );
     if (isClosed) return;
@@ -109,6 +126,10 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         AutoswapFeeThresholdTooHighFailure() => state.copyWith(
           saving: false,
           feeThresholdFailure: failure,
+        ),
+        AutoswapInvalidBoltzServerUrlFailure() => state.copyWith(
+          saving: false,
+          boltzServerUrlFailure: failure,
         ),
         _ => state.copyWith(saving: false, failure: failure),
       };
@@ -179,6 +200,15 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       state.copyWith(
         feeThresholdInput: sanitizedValue,
         feeThresholdFailure: null,
+      ),
+    );
+  }
+
+  void onBoltzServerUrlChanged(String value) {
+    emit(
+      state.copyWith(
+        boltzServerUrlInput: value,
+        boltzServerUrlFailure: null,
       ),
     );
   }

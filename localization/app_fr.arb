@@ -5020,5 +5020,8 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Délai de paiement expiré",
   "coreSwapsStatusScheduled": "Planifié",
   "coreSwapsStatusAwaitingClaim": "En attente de réclamation",
-  "coreSwapsStatusUnknown": "Inconnu"
+  "coreSwapsStatusUnknown": "Inconnu",
+  "autoswapBoltzServerUrlLabel": "URL du serveur Boltz",
+  "autoswapBoltzServerUrlInfoText": "Optionnel. Utilisé comme solution de repli quand l'exchange est indisponible.",
+  "autoswapInvalidBoltzServerUrlError": "Entrez une URL HTTPS valide (ex. https://boltz.example.com/v2)"
 }
