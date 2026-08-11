@@ -6,9 +6,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -156,23 +153,6 @@ class SendLocator {
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
       ),
     );
-    locator.registerFactory<CreateChainSwapToExternalUsecase>(
-      () => CreateChainSwapToExternalUsecase(
-        walletRepository: locator<WalletRepository>(),
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-    locator.registerFactory<UpdateSendSwapLockupFeesUsecase>(
-      () => UpdateSendSwapLockupFeesUsecase(
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
     locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
       () => VerifyChainSwapAmountSendUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -218,7 +198,6 @@ class SendLocator {
         updateSendSwapPayinUsecase: locator<UpdateSendSwapPayinUsecase>(),
         watchSendSwapUsecase: locator<WatchSendSwapUsecase>(),
         updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
-        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         watchFinishedWalletSyncsUsecase:
@@ -231,8 +210,6 @@ class SendLocator {
             locator<WatchWalletTransactionByTxIdUsecase>(),
         calculateBitcoinAbsoluteFeesUsecase:
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-        updateSendSwapLockupFeesUsecase:
-            locator<UpdateSendSwapLockupFeesUsecase>(),
         verifyChainSwapAmountSendUsecase:
             locator<VerifyChainSwapAmountSendUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),

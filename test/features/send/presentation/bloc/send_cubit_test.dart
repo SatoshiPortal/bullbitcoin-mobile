@@ -8,8 +8,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -112,8 +110,6 @@ class _MockWatchSendSwapUsecase extends Mock implements WatchSendSwapUsecase {}
 class _MockUpdatePaidSendSwapUsecase extends Mock
     implements UpdatePaidSendSwapUsecase {}
 
-class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
-
 class _MockWatchFinishedWalletSyncsUsecase extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
 
@@ -138,9 +134,6 @@ class _MockWatchWalletTransactionByTxIdUsecase extends Mock
 
 class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
-
-class _MockUpdateSendSwapLockupFeesUsecase extends Mock
-    implements UpdateSendSwapLockupFeesUsecase {}
 
 class _MockVerifyChainSwapAmountSendUsecase extends Mock
     implements VerifyChainSwapAmountSendUsecase {}
@@ -192,7 +185,6 @@ class _TestableSendCubit extends SendCubit {
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
     required super.updatePaidSendSwapUsecase,
-    required super.getSwapLimitsUsecase,
     required super.watchFinishedWalletSyncsUsecase,
     required super.signBitcoinTxUsecase,
     required super.signLiquidTxUsecase,
@@ -202,7 +194,6 @@ class _TestableSendCubit extends SendCubit {
     required super.calculateLiquidPsetSizeUsecase,
     required super.watchWalletTransactionByTxIdUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
-    required super.updateSendSwapLockupFeesUsecase,
     required super.verifyChainSwapAmountSendUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -276,7 +267,6 @@ void main() {
   late _MockUpdateSendSwapPayinUsecase updateSendSwapPayinUsecase;
   late _MockWatchSendSwapUsecase watchSendSwapUsecase;
   late _MockUpdatePaidSendSwapUsecase updatePaidSendSwapUsecase;
-  late _MockGetSwapLimitsUsecase getSwapLimitsUsecase;
   late _MockWatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase;
   late _MockSignBitcoinTxUsecase signBitcoinTxUsecase;
   late _MockSignLiquidTxUsecase signLiquidTxUsecase;
@@ -289,7 +279,6 @@ void main() {
   watchWalletTransactionByTxIdUsecase;
   late _MockCalculateBitcoinAbsoluteFeesUsecase
   calculateBitcoinAbsoluteFeesUsecase;
-  late _MockUpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase;
   late _MockVerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase;
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
@@ -321,7 +310,6 @@ void main() {
     updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
     watchSendSwapUsecase: watchSendSwapUsecase,
     updatePaidSendSwapUsecase: updatePaidSendSwapUsecase,
-    getSwapLimitsUsecase: getSwapLimitsUsecase,
     watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
     signBitcoinTxUsecase: signBitcoinTxUsecase,
     signLiquidTxUsecase: signLiquidTxUsecase,
@@ -331,7 +319,6 @@ void main() {
     calculateLiquidPsetSizeUsecase: calculateLiquidPsetSizeUsecase,
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxIdUsecase,
     calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinAbsoluteFeesUsecase,
-    updateSendSwapLockupFeesUsecase: updateSendSwapLockupFeesUsecase,
     verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
     previewBitcoinFeeUsecase: previewBitcoinFeeUsecase,
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
@@ -388,7 +375,6 @@ void main() {
     updateSendSwapPayinUsecase = _MockUpdateSendSwapPayinUsecase();
     watchSendSwapUsecase = _MockWatchSendSwapUsecase();
     updatePaidSendSwapUsecase = _MockUpdatePaidSendSwapUsecase();
-    getSwapLimitsUsecase = _MockGetSwapLimitsUsecase();
     watchFinishedWalletSyncsUsecase = _MockWatchFinishedWalletSyncsUsecase();
     signBitcoinTxUsecase = _MockSignBitcoinTxUsecase();
     signLiquidTxUsecase = _MockSignLiquidTxUsecase();
@@ -401,7 +387,6 @@ void main() {
         _MockWatchWalletTransactionByTxIdUsecase();
     calculateBitcoinAbsoluteFeesUsecase =
         _MockCalculateBitcoinAbsoluteFeesUsecase();
-    updateSendSwapLockupFeesUsecase = _MockUpdateSendSwapLockupFeesUsecase();
     verifyChainSwapAmountSendUsecase = _MockVerifyChainSwapAmountSendUsecase();
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
