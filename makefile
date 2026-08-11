@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -97,6 +97,12 @@ ios-sqlite-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
+
+ios-release:
+	@if [ "$$(uname)" != "Darwin" ]; then echo "iOS releases require macOS"; exit 1; fi
+	@case "$(BUILD_NUMBER)" in ''|*[!0-9]*|0) echo "BUILD_NUMBER must be a positive integer"; exit 1;; esac
+	@echo "Building App Store IPA (build $(BUILD_NUMBER))"
+	@fvm flutter build ipa --release --build-number "$(BUILD_NUMBER)" $(if $(EXPORT_OPTIONS_PLIST),--export-options-plist "$(EXPORT_OPTIONS_PLIST)")
 
 # Container runtime — default podman, override with CONTAINER=docker for
 # environments without podman.
