@@ -23,6 +23,7 @@ class DatabaseSeeds {
             torProxyPort: 9050,
             themeMode: 'system',
             isErrorReportingEnabled: false,
+            isRecoverbullTelemetryEnabled: false,
           ),
         );
   }

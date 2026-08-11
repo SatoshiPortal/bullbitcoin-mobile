@@ -2525,6 +2525,17 @@
   "recoverbullGoBackEdit": "<< Retour pour modifier",
   "recoverbullGotIt": "Compris",
   "recoverbullKeyServer": "Serveur de clés ",
+  "recoverbullTelemetrySuspiciousActivityTitle": "Activité inconnue détectée sur une sauvegarde",
+  "recoverbullTelemetrySuspiciousActivityBody": "Le serveur de clés rapporte {observed} tentatives de récupération sur l'une de vos sauvegardes, mais seulement {expected} ont été faites depuis cet appareil.\n\nVérifiez d'abord qu'il ne s'agissait pas de vous ou d'un autre de vos appareils.\n\nNe saisissez jamais votre phrase de récupération ni votre mot de passe à cause de cette alerte.",
+  "recoverbullTelemetryLockoutTitle": "Une sauvegarde est temporairement verrouillée",
+  "recoverbullTelemetryLockoutBody": "Trop de tentatives de récupération ont été faites sur l'une de vos sauvegardes, le serveur de clés la limite donc temporairement. S'il ne s'agissait pas de vous ou d'un autre de vos appareils, quelqu'un sonde peut-être votre sauvegarde.\n\nNe saisissez jamais votre phrase de récupération ni votre mot de passe à cause de cette alerte.",
+  "recoverbullTelemetryServicePressure": "Le serveur de clés est fortement chargé. Il s'agit d'un problème de service, pas d'une attaque sur votre sauvegarde.",
+  "recoverbullTelemetryUnavailable": "La surveillance d'activité des sauvegardes est injoignable depuis {days} jours. Votre sauvegarde est toujours en sécurité, mais vous ne serez pas averti d'une activité suspecte.",
+  "recoverbullTelemetryUnavailableUnknownDuration": "La surveillance d'activité des sauvegardes est injoignable. Votre sauvegarde est toujours en sécurité, mais vous ne serez pas averti d'une activité suspecte.",
+  "recoverbullTelemetryCountersWiped": "Le serveur de clés a redémarré et remis à zéro ses compteurs d'activité. C'est une opération de routine, pas une attaque.",
+  "recoverbullSettingsTelemetryToggle": "Surveillance d'activité des sauvegardes",
+  "recoverbullSettingsTelemetryToggleHint": "Vous avertit quand le serveur de clés rapporte des tentatives de récupération que vous n'avez pas faites. Informatif uniquement.",
+  "recoverbullTelemetryDismiss": "Compris",
   "recoverbullMemorizeWarning": "Vous devez mémoriser ce {inputType} pour récupérer l'accès à votre portefeuille. Il doit contenir au moins 6 chiffres. Si vous perdez ce {inputType}, vous ne pourrez pas récupérer votre sauvegarde.",
   "@recoverbullMemorizeWarning": {
     "placeholders": {

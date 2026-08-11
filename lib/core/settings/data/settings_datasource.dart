@@ -97,4 +97,21 @@ class SettingsDatasource {
       ),
     );
   }
+
+  /// Targeted accessor: the telemetry flag is deliberately NOT part of
+  /// [SettingsModel] (it would ripple into every settings constructor call
+  /// site). Read and written through these methods only.
+  Future<bool> fetchIsRecoverbullTelemetryEnabled() async {
+    final row = await _sqlite.managers.settings
+        .filter((f) => f.id(1))
+        .getSingle();
+    return row.isRecoverbullTelemetryEnabled;
+  }
+
+  Future<void> setIsRecoverbullTelemetryEnabled(bool enabled) async {
+    await _sqlite.managers.settings.update(
+      (f) =>
+          f(id: const Value(1), isRecoverbullTelemetryEnabled: Value(enabled)),
+    );
+  }
 }

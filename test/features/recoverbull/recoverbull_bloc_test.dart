@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_with_status_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,7 +36,10 @@ class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 class _MockCheckConnection extends Mock
     implements CheckServerConnectionUsecase {}
 
-class _MockFetchKey extends Mock implements FetchVaultKeyFromServerUsecase {}
+class _MockFetchKeyWithStatus extends Mock
+    implements FetchVaultKeyWithStatusFromServerUsecase {}
+
+class _MockTelemetryCubit extends Mock implements RecoverbullTelemetryCubit {}
 
 class _MockDecrypt extends Mock implements DecryptVaultUsecase {}
 
@@ -67,7 +71,8 @@ void main() {
   late _MockCreateVault createVault;
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
-  late _MockFetchKey fetchKey;
+  late _MockFetchKeyWithStatus fetchKeyWithStatus;
+  late _MockTelemetryCubit telemetryCubit;
   late _MockDecrypt decrypt;
   late _MockRestore restore;
   late _MockConnectDrive connectDrive;
@@ -89,7 +94,8 @@ void main() {
     createVault = _MockCreateVault();
     storeKey = _MockStoreKey();
     checkConnection = _MockCheckConnection();
-    fetchKey = _MockFetchKey();
+    fetchKeyWithStatus = _MockFetchKeyWithStatus();
+    telemetryCubit = _MockTelemetryCubit();
     decrypt = _MockDecrypt();
     restore = _MockRestore();
     connectDrive = _MockConnectDrive();
@@ -100,6 +106,20 @@ void main() {
     updateLatest = _MockUpdateLatest();
     torStatus = _MockTorStatus();
     torConfig = _MockTorConfig();
+
+    // The telemetry cubit is fail-safe and unawaited: stub its methods so
+    // unawaited calls never see a null future.
+    when(
+      () => telemetryCubit.recordLocalAttempt(
+        backupIdHex: any(named: 'backupIdHex'),
+        attemptStatus: any(named: 'attemptStatus'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => telemetryCubit.reportTargetedLockout(
+        backupIdHex: any(named: 'backupIdHex'),
+      ),
+    ).thenAnswer((_) async {});
   });
 
   // The bloc constructor does not auto-dispatch any event, so unstubbed mocks
@@ -115,7 +135,6 @@ void main() {
     createEncryptedVaultUsecase: createVault,
     storeVaultKeyIntoServerUsecase: storeKey,
     checkKeyServerConnectionUsecase: checkConnection,
-    fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
     connectToGoogleDriveUsecase: connectDrive,
@@ -126,6 +145,8 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     torStatusUsecase: torStatus,
     torConfigPort: torConfig,
+    fetchVaultKeyWithStatusFromServerUsecase: fetchKeyWithStatus,
+    recoverbullTelemetryCubit: telemetryCubit,
   );
 
   group('OnVaultPasswordSet guard', () {
@@ -143,7 +164,7 @@ void main() {
       // through to `state.vault!`).
       expect(bloc.state.vaultPassword, isNull);
       verifyNever(
-        () => fetchKey.execute(
+        () => fetchKeyWithStatus.execute(
           vault: any(named: 'vault'),
           password: any(named: 'password'),
         ),

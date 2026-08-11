@@ -1689,8 +1689,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "92925c959f219fa4dfd0fe0f40392ddf868e2774"
-      resolved-ref: "92925c959f219fa4dfd0fe0f40392ddf868e2774"
+      ref: "2fe9bac92671645aef0b041d0d0ffdd34440dc92"
+      resolved-ref: "2fe9bac92671645aef0b041d0d0ffdd34440dc92"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"

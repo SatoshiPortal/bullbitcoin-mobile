@@ -52,4 +52,9 @@ abstract class SettingsRepository {
     String? username,
     String? password,
   });
+
+  /// The brute-force telemetry feature flag (default false).
+  Future<bool> fetchIsRecoverbullTelemetryEnabled();
+
+  Future<void> setIsRecoverbullTelemetryEnabled(bool enabled);
 }

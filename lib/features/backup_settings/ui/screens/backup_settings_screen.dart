@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/telemetry_warnings.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,9 @@ class _Screen extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
                       ),
-                      const Gap(40),
+                      const Gap(16),
+                      const RecoverbullTelemetryWarnings(),
+                      const Gap(24),
                       const _StartBackupButton(),
                       if (state.lastEncryptedBackup != null)
                         const _ViewVaultKeyButton(),

@@ -26,6 +26,29 @@ final class KeyServerRateLimitedFailure extends RecoverBullCoreFailure {
     : super(logMessage);
 }
 
+/// The targeted per-identifier lockout (HTTP 429, `KeyServerRateLimitedException`).
+/// On the user's own fetch this is an alarm signal: someone may be probing or
+/// griefing this backup. Distinct from the generic [KeyServerRateLimitedFailure]
+/// kept for legacy mappings.
+final class KeyServerTargetedRateLimitedFailure extends RecoverBullCoreFailure {
+  final Duration? retryIn;
+  const KeyServerTargetedRateLimitedFailure({this.retryIn, String? logMessage})
+    : super(logMessage);
+}
+
+/// The server's whole lookup/store/attempts bucket is exhausted (HTTP 429,
+/// `KeyServerOverloadedException`). Service-wide pressure, **not** an attack
+/// signal.
+final class KeyServerOverloadedFailure extends RecoverBullCoreFailure {
+  const KeyServerOverloadedFailure([super.logMessage]);
+}
+
+/// The server's rate-limit map is full (HTTP 503, `KeyServerCapacityException`).
+/// Service pressure, not an attack signal.
+final class KeyServerCapacityFailure extends RecoverBullCoreFailure {
+  const KeyServerCapacityFailure([super.logMessage]);
+}
+
 /// Key server rejected the request with a client error (HTTP 4xx, not 401/429).
 final class KeyServerRejectedFailure extends RecoverBullCoreFailure {
   const KeyServerRejectedFailure([super.logMessage]);
