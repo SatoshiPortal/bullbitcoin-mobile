@@ -15,9 +15,6 @@ enum AnnouncementId {
   /// inviting the user to enable payjoin for better on-chain privacy.
   payjoinPrivacy,
 
-  /// Shown while autoswap is enabled, so the user is aware it's active and can
-  /// learn what it does.
-  autoswapActive,
 }
 
 /// Visual/semantic tone of an announcement, mapped to theme colors in the UI.

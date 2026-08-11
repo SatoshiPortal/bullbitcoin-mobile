@@ -1,10 +1,6 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
@@ -57,10 +53,6 @@ class WalletLocator {
             locator<IsTorRequiredUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
-        getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
-        saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
-        disableAutoswapWarningUsecase: locator<DisableAutoswapWarningUsecase>(),
-        disableAutoswapUsecase: locator<DisableAutoswapUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
