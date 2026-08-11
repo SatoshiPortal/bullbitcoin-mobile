@@ -5,16 +5,11 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -78,17 +73,6 @@ class SwapsLocator {
       ),
     );
 
-    locator.registerFactory<DecodeInvoiceUsecase>(
-      () => DecodeInvoiceUsecase(
-        boltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-
-    locator.registerFactory<GetSwapLimitsUsecase>(GetSwapLimitsUsecase.new);
-
     locator.registerFactory<GetSwapUsecase>(
       () => GetSwapUsecase(
         boltzSwapRepository: locator<BoltzSwapRepository>(
@@ -109,32 +93,6 @@ class SwapsLocator {
 
     locator.registerFactory<WatchSwapUsecase>(
       () => WatchSwapUsecase(
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-    locator.registerFactory<UpdatePaidChainSwapUsecase>(
-      () => UpdatePaidChainSwapUsecase(
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-    locator.registerFactory<CreateChainSwapUsecase>(
-      () => CreateChainSwapUsecase(
-        walletRepository: locator<WalletRepository>(),
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-    locator.registerFactory<CreateChainSwapToExternalUsecase>(
-      () => CreateChainSwapToExternalUsecase(
-        walletRepository: locator<WalletRepository>(),
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

@@ -13,9 +13,6 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -89,7 +86,6 @@ class SendCubit extends Cubit<SendState>
     required this._updateSendSwapPayinUsecase,
     required this._watchSendSwapUsecase,
     required this._updatePaidSendSwapUsecase,
-    required this._getSwapLimitsUsecase,
     required this._watchFinishedWalletSyncsUsecase,
     required this._signBitcoinTxUsecase,
     required this._signLiquidTxUsecase,
@@ -99,7 +95,6 @@ class SendCubit extends Cubit<SendState>
     required this._calculateLiquidPsetSizeUsecase,
     required this._watchWalletTransactionByTxIdUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
-    required this._updateSendSwapLockupFeesUsecase,
     required this._verifyChainSwapAmountSendUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
@@ -144,7 +139,6 @@ class SendCubit extends Cubit<SendState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
-  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
@@ -153,7 +147,6 @@ class SendCubit extends Cubit<SendState>
 
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
-  final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
@@ -431,9 +424,7 @@ class SendCubit extends Cubit<SendState>
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
           await handleChainSwap();
-          if (state.swapAmountAboveLimit ||
-              state.swapAmountBelowLimit ||
-              state.failure != null) {
+          if (state.failure != null) {
             return;
           }
           await createTransaction();
@@ -578,90 +569,6 @@ class SendCubit extends Cubit<SendState>
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
         return false;
-    }
-  }
-
-  Future<void> loadSwapLimits() async {
-    final paymentRequest = state.paymentRequest;
-    final loadLnSwapLimits =
-        paymentRequest?.isBolt11 == true || paymentRequest?.isLnAddress == true;
-    if (loadLnSwapLimits) {
-      final (
-        (liquidSwapLimits, liquidSwapFees),
-        (bitcoinSwapLimits, bitcoinSwapFees),
-      ) = await (
-        _getSwapLimitsUsecase.execute(type: SwapType.liquidToLightning),
-        _getSwapLimitsUsecase.execute(type: SwapType.bitcoinToLightning),
-      ).wait;
-      emit(
-        state.copyWith(
-          liquidLnSwapLimits: liquidSwapLimits,
-          liquidLnSwapFees: liquidSwapFees,
-          bitcoinLnSwapLimits: bitcoinSwapLimits,
-          bitcoinLnSwapFees: bitcoinSwapFees,
-        ),
-      );
-    }
-    if (state.requireChainSwap) {
-      final (
-        (lbtcToBtcSwapLimits, lbtcToBtcSwapFees),
-        (btcToLbtcSwapLimits, btcToLbtcSwapFees),
-      ) = await (
-        _getSwapLimitsUsecase.execute(type: SwapType.liquidToBitcoin),
-        _getSwapLimitsUsecase.execute(type: SwapType.bitcoinToLiquid),
-      ).wait;
-      emit(
-        state.copyWith(
-          btcToLbtcChainSwapLimits: btcToLbtcSwapLimits,
-          btcToLbtcChainSwapFees: btcToLbtcSwapFees,
-          lbtcToBtcChainSwapLimits: lbtcToBtcSwapLimits,
-          lbtcToBtcChainSwapFees: lbtcToBtcSwapFees,
-        ),
-      );
-    }
-  }
-
-  void setSelectedSwapLimits() {
-    if (state.selectedWallet == null) return;
-
-    final walletNetwork = state.selectedWallet!.network;
-    switch (walletNetwork) {
-      case Network.bitcoinMainnet:
-      case Network.bitcoinTestnet:
-        if (state.paymentRequest?.isBolt11 == true ||
-            state.paymentRequest?.isLnAddress == true) {
-          emit(
-            state.copyWith(
-              selectedSwapFees: state.bitcoinLnSwapFees,
-              selectedSwapLimits: state.bitcoinLnSwapLimits,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              selectedSwapFees: state.btcToLbtcChainSwapFees,
-              selectedSwapLimits: state.btcToLbtcChainSwapLimits,
-            ),
-          );
-        }
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
-        if (state.paymentRequest?.isBolt11 == true ||
-            state.paymentRequest?.isLnAddress == true) {
-          emit(
-            state.copyWith(
-              selectedSwapFees: state.liquidLnSwapFees,
-              selectedSwapLimits: state.liquidLnSwapLimits,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              selectedSwapFees: state.lbtcToBtcChainSwapFees,
-              selectedSwapLimits: state.lbtcToBtcChainSwapLimits,
-            ),
-          );
-        }
     }
   }
 
@@ -953,9 +860,7 @@ class SendCubit extends Cubit<SendState>
 
     if (state.isChainSwap) {
       await handleChainSwap();
-      if (state.swapAmountAboveLimit ||
-          state.swapAmountBelowLimit ||
-          state.failure != null) {
+      if (state.failure != null) {
         return;
       }
       await createTransaction();
@@ -1482,20 +1387,7 @@ class SendCubit extends Cubit<SendState>
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,
         );
-        if (state.chainSwap != null) {
-          final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-            swapId: state.chainSwap!.id,
-            lockupFees: absoluteFees,
-          );
-          emit(
-            state.copyWith(
-              unsignedPsbt: pset,
-              liquidAbsoluteFees: absoluteFees,
-              chainSwap: updatedSwap as ChainSwap,
-              buildingTransaction: false,
-            ),
-          );
-        } else if (state.lightningOrder != null) {
+        if (state.lightningOrder != null) {
           emit(
             state.copyWith(
               unsignedPsbt: pset,
@@ -1653,23 +1545,7 @@ class SendCubit extends Cubit<SendState>
               await _calculateBitcoinAbsoluteFeesUsecase.execute(
                 psbt: signedPsbtAndTxSize.signedPsbt,
               );
-          if (state.chainSwap != null) {
-            final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-              swapId: state.chainSwap!.id,
-              lockupFees: bitcoinAbsoluteFeesSat,
-            );
-            emit(
-              state.copyWith(
-                unsignedPsbt: txPreparation.unsignedPsbt,
-                signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
-                bitcoinTxSize: signedPsbtAndTxSize.txSize,
-                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
-                isToSelf: txPreparation.isToSelf,
-                chainSwap: updatedSwap as ChainSwap,
-                buildingTransaction: false,
-              ),
-            );
-          } else if (state.lightningOrder != null) {
+          if (state.lightningOrder != null) {
             emit(
               state.copyWith(
                 unsignedPsbt: txPreparation.unsignedPsbt,
@@ -1841,20 +1717,7 @@ class SendCubit extends Cubit<SendState>
             emit(state.copyWith(signingTransaction: false));
             return;
           }
-          if (state.chainSwap != null) {
-            final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-              swapId: state.chainSwap!.id,
-              lockupFees: bitcoinAbsoluteFeesSat,
-            );
-            emit(
-              state.copyWith(
-                signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
-                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
-                chainSwap: updatedSwap as ChainSwap,
-                signingTransaction: false,
-              ),
-            );
-          } else {
+          {
             emit(
               state.copyWith(
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
@@ -2269,114 +2132,6 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  // [CHAIN SWAP LIFECYCLE — Step 2a: first drain, against a dummy address]
-  // Used only when sendMax is selected for a chain swap. Drains the wallet
-  // against a dummy P2TR address to discover the absolute fees, then
-  // publishes state.amount = balance - fees so the caller can use it as
-  // the swap paymentAmount.
-  //
-  // The dummies below are P2TR by design — Boltz returns P2TR lockup
-  // addresses today, so dummyFees == realFees and Step 3's drain to the
-  // real swap.paymentAddress produces an output equal to the committed
-  // swap.paymentAmount. If Boltz ever switches lockup script type,
-  // dummyFees != realFees and Step 3b (verify) will fire — replace the
-  // dummies below with addresses matching the new lockup type.
-  Future<void> buildDummyTxsForMaxSwapAmount() async {
-    try {
-      if (state.selectedWallet == null) return;
-      clearFailure();
-      await loadSwapLimits();
-      setSelectedSwapLimits();
-      final swapLimits = state.selectedWallet!.isLiquid
-          ? state.lbtcToBtcChainSwapLimits
-          : state.btcToLbtcChainSwapLimits;
-      if (swapLimits == null) return;
-      if (state.selectedFee == null) await loadFees();
-      final networkFee = state.selectedFee!;
-      int absoluteFees;
-      if (state.selectedWallet!.isLiquid) {
-        // P2TR dummy matching Boltz's L-BTC P2TR lockup script.
-        const String dummySwapAddress =
-            "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
-        final liquidFeeRate = await _resolveLiquidFeeRate(
-          fee: networkFee,
-          walletId: state.selectedWallet!.id,
-          address: dummySwapAddress,
-          amountSat: null,
-          drain: true,
-        );
-        final dummyPset = await _prepareLiquidSendUsecase.execute(
-          walletId: state.selectedWallet!.id,
-          address: dummySwapAddress,
-          feeRate: liquidFeeRate,
-          drain: true,
-        );
-        absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: dummyPset,
-        );
-        emit(state.copyWith(liquidAbsoluteFees: absoluteFees));
-      } else {
-        // P2TR dummy matching Boltz's BTC P2TR lockup script.
-        const String dummySwapAddress =
-            "bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4";
-        final dummyDrainTxInfo = await _prepareBitcoinSendUsecase.execute(
-          walletId: state.selectedWallet!.id,
-          address: dummySwapAddress,
-          networkFee: networkFee,
-          drain: true,
-        );
-        absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: dummyDrainTxInfo.unsignedPsbt,
-        );
-        // Surface the real drain fee, mirroring the Liquid branch above
-        // (line 1759). The user is asking "what's my max" — the drain
-        // dummy's fee is exactly what they'd pay.
-        emit(
-          state.copyWith(
-            bitcoinTxSize: dummyDrainTxInfo.txSize,
-            bitcoinAbsoluteFeesSat: absoluteFees,
-          ),
-        );
-      }
-      // D7: base MAX on the spendable balance — the funding drain excludes
-      // frozen coins, so committing `fullBalance - fee` would overstate the
-      // swap amount by the frozen total and trip the Step 3b verify. Equals the
-      // full balance on Liquid (freeze isn't surfaced there).
-      final balance = state.spendableBalanceSat;
-      final maxAmount = balance - absoluteFees;
-      if (state.bitcoinUnit == BitcoinUnit.sats) {
-        emit(state.copyWith(amount: maxAmount.toString()));
-      } else {
-        final validatedAmount = ConvertAmount.satsToBtc(maxAmount);
-        emit(state.copyWith(amount: validatedAmount.toString()));
-      }
-      if (swapLimits.min > maxAmount) {
-        emit(
-          state.copyWith(
-            failure: SendAmountOutOfBoundsFailure(
-              minimumSat: BigInt.from(swapLimits.min),
-              logMessage: 'Balance too low for minimum swap amount',
-            ),
-          ),
-        );
-        return;
-      }
-      if (swapLimits.max < maxAmount) {
-        emit(
-          state.copyWith(
-            failure: SendAmountOutOfBoundsFailure(
-              maximumSat: BigInt.from(swapLimits.max),
-              logMessage: 'Amount exceeds maximum swap amount',
-            ),
-          ),
-        );
-        return;
-      }
-    } catch (e) {
-      emit(state.copyWith(failure: SendTransactionBuildFailure(e.toString())));
-    }
-  }
-
   Future<bool> updateSignedBitcoinTx(String signedTx) async {
     // A directly-connected hardware signer (Ledger, BitBox) returns raw
     // signed bytes that are broadcast as-is, while the confirm screen keeps
@@ -2474,7 +2229,6 @@ class SendCubit extends Cubit<SendState>
     // emit so the loading flags don't race with the wallet swap. Skip
     // when the "swap" picks the same wallet — common via updateBestWallet.
     if (walletChanged) clearBitcoinFeePreviews();
-    setSelectedSwapLimits();
     // Load utxos up front so the spendable balance (which excludes frozen
     // coins, D7) is known during amount entry — not only after the first sync.
     // Guarded on an actual wallet change so the per-keystroke auto-pick

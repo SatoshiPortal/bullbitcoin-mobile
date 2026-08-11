@@ -167,18 +167,6 @@ abstract class SendState with _$SendState {
     @Default(false) bool consolidationRequired,
     SendFailure? failure,
 
-    // swapLimits
-    SwapLimits? bitcoinLnSwapLimits,
-    SwapLimits? liquidLnSwapLimits,
-    SwapLimits? btcToLbtcChainSwapLimits,
-    SwapLimits? lbtcToBtcChainSwapLimits,
-    SwapLimits? selectedSwapLimits,
-
-    SwapFees? bitcoinLnSwapFees,
-    SwapFees? liquidLnSwapFees,
-    SwapFees? btcToLbtcChainSwapFees,
-    SwapFees? lbtcToBtcChainSwapFees,
-    SwapFees? selectedSwapFees,
   }) = _SendState;
   const SendState._();
 
@@ -448,47 +436,6 @@ abstract class SendState with _$SendState {
   bool get isLightning => sendType == SendType.lightning;
   bool get isLightningBitcoinSwap =>
       isLightning && selectedWallet!.network.isBitcoin;
-
-  bool get swapAmountBelowLimit {
-    final amount = effectiveAmountSat;
-    if (isLightning && amount != 0) {
-      if (selectedSwapLimits == null) return false;
-      // Allow 100 sats minimum for Liquid to Lightning swaps
-      final isLiquidToLightning =
-          selectedWallet != null && selectedWallet!.isLiquid;
-      final minLimit = isLiquidToLightning ? 100 : selectedSwapLimits!.min;
-      return amount < minLimit;
-    }
-    if (requireChainSwap && amount != 0) {
-      return selectedSwapLimits != null && amount < selectedSwapLimits!.min;
-    }
-    return false;
-  }
-
-  int get swapMinimum {
-    final min = selectedSwapLimits?.min ?? 0;
-    if (min != 0) return min;
-    return selectedWallet?.isLiquid == true ? 100 : 25000;
-  }
-
-  bool get swapAmountAboveLimit {
-    final amount = effectiveAmountSat;
-    if (isLightning) {
-      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
-    }
-    if (requireChainSwap && amount != 0) {
-      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
-    }
-    return false;
-  }
-
-  bool get isSwapAmountValid =>
-      isLightning ||
-      requireChainSwap &&
-          (selectedSwapLimits == null ||
-              inputAmountSat == 0 ||
-              swapAmountBelowLimit ||
-              swapAmountAboveLimit);
 
   bool get isLnInvoicePaid {
     return lightningOrder?.localStatus == OrderSwapLocalStatus.completed;
