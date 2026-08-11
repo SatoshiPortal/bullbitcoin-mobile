@@ -12,4 +12,5 @@ class AutoSwap extends Table {
   BoolColumn get alwaysBlock => boolean().withDefault(const Constant(false))();
   TextColumn get recipientWalletId => text().nullable()();
   BoolColumn get showWarning => boolean().withDefault(const Constant(true))();
+  TextColumn get boltzFallbackUrl => text().nullable()();
 }

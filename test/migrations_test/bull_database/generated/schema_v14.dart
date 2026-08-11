@@ -6231,6 +6231,14 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     $customConstraints: 'NOT NULL DEFAULT 1 CHECK (show_warning IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
+  late final GeneratedColumn<String> boltzFallbackUrl = GeneratedColumn<String>(
+    'boltz_fallback_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6242,6 +6250,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     alwaysBlock,
     recipientWalletId,
     showWarning,
+    boltzFallbackUrl,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6290,6 +6299,10 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         DriftSqlType.int,
         data['${effectivePrefix}show_warning'],
       )!,
+      boltzFallbackUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}boltz_fallback_url'],
+      ),
     );
   }
 
@@ -6312,6 +6325,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   final int alwaysBlock;
   final String? recipientWalletId;
   final int showWarning;
+  final String? boltzFallbackUrl;
   const AutoSwapData({
     required this.id,
     required this.enabled,
@@ -6322,6 +6336,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     required this.alwaysBlock,
     this.recipientWalletId,
     required this.showWarning,
+    this.boltzFallbackUrl,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6337,6 +6352,9 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       map['recipient_wallet_id'] = Variable<String>(recipientWalletId);
     }
     map['show_warning'] = Variable<int>(showWarning);
+    if (!nullToAbsent || boltzFallbackUrl != null) {
+      map['boltz_fallback_url'] = Variable<String>(boltzFallbackUrl);
+    }
     return map;
   }
 
@@ -6353,6 +6371,9 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
           ? const Value.absent()
           : Value(recipientWalletId),
       showWarning: Value(showWarning),
+      boltzFallbackUrl: boltzFallbackUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(boltzFallbackUrl),
     );
   }
 
@@ -6379,6 +6400,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
         json['recipientWalletId'],
       ),
       showWarning: serializer.fromJson<int>(json['showWarning']),
+      boltzFallbackUrl: serializer.fromJson<String?>(json['boltzFallbackUrl']),
     );
   }
   @override
@@ -6394,6 +6416,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       'alwaysBlock': serializer.toJson<int>(alwaysBlock),
       'recipientWalletId': serializer.toJson<String?>(recipientWalletId),
       'showWarning': serializer.toJson<int>(showWarning),
+      'boltzFallbackUrl': serializer.toJson<String?>(boltzFallbackUrl),
     };
   }
 
@@ -6407,6 +6430,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     int? alwaysBlock,
     Value<String?> recipientWalletId = const Value.absent(),
     int? showWarning,
+    Value<String?> boltzFallbackUrl = const Value.absent(),
   }) => AutoSwapData(
     id: id ?? this.id,
     enabled: enabled ?? this.enabled,
@@ -6420,6 +6444,9 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
         ? recipientWalletId.value
         : this.recipientWalletId,
     showWarning: showWarning ?? this.showWarning,
+    boltzFallbackUrl: boltzFallbackUrl.present
+        ? boltzFallbackUrl.value
+        : this.boltzFallbackUrl,
   );
   AutoSwapData copyWithCompanion(AutoSwapCompanion data) {
     return AutoSwapData(
@@ -6446,6 +6473,9 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       showWarning: data.showWarning.present
           ? data.showWarning.value
           : this.showWarning,
+      boltzFallbackUrl: data.boltzFallbackUrl.present
+          ? data.boltzFallbackUrl.value
+          : this.boltzFallbackUrl,
     );
   }
 
@@ -6460,7 +6490,8 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
           ..write('blockTillNextExecution: $blockTillNextExecution, ')
           ..write('alwaysBlock: $alwaysBlock, ')
           ..write('recipientWalletId: $recipientWalletId, ')
-          ..write('showWarning: $showWarning')
+          ..write('showWarning: $showWarning, ')
+          ..write('boltzFallbackUrl: $boltzFallbackUrl')
           ..write(')'))
         .toString();
   }
@@ -6476,6 +6507,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     alwaysBlock,
     recipientWalletId,
     showWarning,
+    boltzFallbackUrl,
   );
   @override
   bool operator ==(Object other) =>
@@ -6489,7 +6521,8 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
           other.blockTillNextExecution == this.blockTillNextExecution &&
           other.alwaysBlock == this.alwaysBlock &&
           other.recipientWalletId == this.recipientWalletId &&
-          other.showWarning == this.showWarning);
+          other.showWarning == this.showWarning &&
+          other.boltzFallbackUrl == this.boltzFallbackUrl);
 }
 
 class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
@@ -6502,6 +6535,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   final Value<int> alwaysBlock;
   final Value<String?> recipientWalletId;
   final Value<int> showWarning;
+  final Value<String?> boltzFallbackUrl;
   const AutoSwapCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
@@ -6512,6 +6546,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     this.alwaysBlock = const Value.absent(),
     this.recipientWalletId = const Value.absent(),
     this.showWarning = const Value.absent(),
+    this.boltzFallbackUrl = const Value.absent(),
   });
   AutoSwapCompanion.insert({
     this.id = const Value.absent(),
@@ -6523,6 +6558,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     this.alwaysBlock = const Value.absent(),
     this.recipientWalletId = const Value.absent(),
     this.showWarning = const Value.absent(),
+    this.boltzFallbackUrl = const Value.absent(),
   }) : balanceThresholdSats = Value(balanceThresholdSats),
        triggerBalanceSats = Value(triggerBalanceSats),
        feeThresholdPercent = Value(feeThresholdPercent);
@@ -6536,6 +6572,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     Expression<int>? alwaysBlock,
     Expression<String>? recipientWalletId,
     Expression<int>? showWarning,
+    Expression<String>? boltzFallbackUrl,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -6551,6 +6588,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
       if (alwaysBlock != null) 'always_block': alwaysBlock,
       if (recipientWalletId != null) 'recipient_wallet_id': recipientWalletId,
       if (showWarning != null) 'show_warning': showWarning,
+      if (boltzFallbackUrl != null) 'boltz_fallback_url': boltzFallbackUrl,
     });
   }
 
@@ -6564,6 +6602,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     Value<int>? alwaysBlock,
     Value<String?>? recipientWalletId,
     Value<int>? showWarning,
+    Value<String?>? boltzFallbackUrl,
   }) {
     return AutoSwapCompanion(
       id: id ?? this.id,
@@ -6576,6 +6615,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
       alwaysBlock: alwaysBlock ?? this.alwaysBlock,
       recipientWalletId: recipientWalletId ?? this.recipientWalletId,
       showWarning: showWarning ?? this.showWarning,
+      boltzFallbackUrl: boltzFallbackUrl ?? this.boltzFallbackUrl,
     );
   }
 
@@ -6613,6 +6653,9 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     if (showWarning.present) {
       map['show_warning'] = Variable<int>(showWarning.value);
     }
+    if (boltzFallbackUrl.present) {
+      map['boltz_fallback_url'] = Variable<String>(boltzFallbackUrl.value);
+    }
     return map;
   }
 
@@ -6627,7 +6670,8 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
           ..write('blockTillNextExecution: $blockTillNextExecution, ')
           ..write('alwaysBlock: $alwaysBlock, ')
           ..write('recipientWalletId: $recipientWalletId, ')
-          ..write('showWarning: $showWarning')
+          ..write('showWarning: $showWarning, ')
+          ..write('boltzFallbackUrl: $boltzFallbackUrl')
           ..write(')'))
         .toString();
   }

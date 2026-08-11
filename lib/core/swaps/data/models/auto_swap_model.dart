@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_server_url.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auto_swap_model.freezed.dart';
@@ -15,6 +16,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     @Default(false) bool alwaysBlock,
     @Default(null) String? recipientWalletId,
     @Default(true) bool showWarning,
+    String? boltzFallbackUrl,
   }) = _AutoSwapModel;
 
   const AutoSwapModel._();
@@ -29,6 +31,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       alwaysBlock: entity.alwaysBlock,
       recipientWalletId: entity.recipientWalletId,
       showWarning: entity.showWarning,
+      boltzFallbackUrl: entity.boltzFallbackUrl?.toString(),
     );
   }
 
@@ -42,6 +45,9 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       alwaysBlock: alwaysBlock,
       recipientWalletId: recipientWalletId,
       showWarning: showWarning,
+      boltzFallbackUrl: boltzFallbackUrl == null
+          ? null
+          : BoltzServerUrl.parse(boltzFallbackUrl!),
     );
   }
 
@@ -55,6 +61,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       alwaysBlock: row.alwaysBlock,
       recipientWalletId: row.recipientWalletId,
       showWarning: row.showWarning,
+      boltzFallbackUrl: row.boltzFallbackUrl,
     );
   }
 
@@ -69,6 +76,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       alwaysBlock: alwaysBlock,
       recipientWalletId: recipientWalletId,
       showWarning: showWarning,
+      boltzFallbackUrl: boltzFallbackUrl,
     );
   }
 }

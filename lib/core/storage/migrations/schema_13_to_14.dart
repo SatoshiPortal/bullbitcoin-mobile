@@ -59,6 +59,14 @@ class Schema13To14 {
       () => m.createIndex(schema14.orderSwapsLocalPayinTxid),
       'order_swaps_local_payin_txid index',
     );
+
+    await _addColumnIfNotExists(
+      () => m.addColumn(
+        schema14.autoSwap,
+        schema14.autoSwap.boltzFallbackUrl,
+      ),
+      'auto_swap.boltz_fallback_url column',
+    );
   }
 }
 
@@ -75,6 +83,21 @@ Future<void> _createIfNotExists(
     if (!e.toString().contains('already exists')) rethrow;
     log.warning(
       'Schema13To14: $description already exists — skipping create',
+      error: e,
+    );
+  }
+}
+
+Future<void> _addColumnIfNotExists(
+  Future<void> Function() add,
+  String description,
+) async {
+  try {
+    await add();
+  } catch (e) {
+    if (!e.toString().contains('duplicate column name')) rethrow;
+    log.warning(
+      'Schema13To14: $description already exists — skipping add',
       error: e,
     );
   }

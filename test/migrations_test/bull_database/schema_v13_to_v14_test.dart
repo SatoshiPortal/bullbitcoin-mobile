@@ -107,6 +107,38 @@ void main() {
     },
   );
 
+  test(
+    'v13 to v14 keeps existing autoswap settings without a fallback URL',
+    () async {
+      final schema = await verifier.schemaAt(13);
+      final connection = schema.newConnection();
+      final db = SqliteDatabase(connection);
+      await db.customStatement('''
+      INSERT INTO auto_swap (
+        id,
+        enabled,
+        balance_threshold_sats,
+        trigger_balance_sats,
+        fee_threshold_percent,
+        block_till_next_execution,
+        always_block,
+        recipient_wallet_id,
+        show_warning
+      ) VALUES (1, 1, 100000, 200000, 3.0, 0, 0, 'wallet-id', 1)
+    ''');
+
+      await verifier.migrateAndValidate(db, 14);
+      final row = await db
+          .customSelect(
+            'SELECT recipient_wallet_id, boltz_fallback_url FROM auto_swap',
+          )
+          .getSingle();
+      expect(row.read<String>('recipient_wallet_id'), 'wallet-id');
+      expect(row.readNullable<String>('boltz_fallback_url'), isNull);
+      await db.close();
+    },
+  );
+
   test('v13 to v14 tolerates a repeated migration', () async {
     final schema = await verifier.schemaAt(13);
     final db = SqliteDatabase(schema.newConnection());

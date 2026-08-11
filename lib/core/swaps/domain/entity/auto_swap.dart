@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'boltz_server_url.dart';
+
 part 'auto_swap.freezed.dart';
 part 'auto_swap.g.dart';
 
@@ -23,6 +25,8 @@ sealed class AutoSwap with _$AutoSwap {
     @Default(false) bool alwaysBlock,
     @Default(null) String? recipientWalletId,
     @Default(true) bool showWarning,
+    @JsonKey(fromJson: boltzServerUrlFromJson, toJson: boltzServerUrlToJson)
+    BoltzServerUrl? boltzFallbackUrl,
   }) = _AutoSwap;
 
   const AutoSwap._();
