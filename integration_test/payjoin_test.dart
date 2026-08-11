@@ -45,6 +45,27 @@ Future<void> main({bool isInitialized = false}) async {
   late Wallet senderWallet;
   bool? previousPayjoinEnabled;
 
+  /// Fee rate for every transaction this fixture broadcasts, in sat/vB.
+  ///
+  /// This used to be 1000. Nothing needed it: none of the assertions below wait
+  /// for a confirmation — the happy path waits for `PayjoinStatus.completed`,
+  /// which is the protocol exchange, not a block. What it did do was burn the
+  /// fixture wallets. A ~250 vB payjoin plus two drain-consolidations cost on
+  /// the order of half a million sats per run, on every run, of every PR in the
+  /// repository. The wallets emptied faster than anyone could refill them, and
+  /// once the balance fell just below what the next transaction needed, this
+  /// test failed and turned every open PR red — the failure that sent us
+  /// looking here in the first place was 341 sats short.
+  ///
+  /// Verified against mempool.space on 2026-08-10: testnet3 and testnet4 both
+  /// report 1 sat/vB across every tier, `fastestFee` included, so there is no
+  /// backlog to outbid. 10 leaves a wide margin anyway, because testnet3 mines
+  /// in bursts — the 20-minute difficulty reset makes block intervals erratic —
+  /// and a transaction left unconfirmed between runs is what would corrupt the
+  /// next run's UTXO set. Ten times the fastest recommendation buys that safety
+  /// for a few hundred sats.
+  const testnetFeeRate = 10.0;
+
   Future<void> consolidateUtxos(String walletId) async {
     final utxos = await utxoRepository.getWalletUtxos(walletId: walletId);
     if (utxos.length <= 1) return;
@@ -55,7 +76,7 @@ Future<void> main({bool isInitialized = false}) async {
       walletId: walletId,
       address: address.address,
       drain: true,
-      networkFee: NetworkFee.relativeFromSatPerVbyte(1000),
+      networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
     final signed = await signBitcoinTx.execute(
       psbt: prepared.unsignedPsbt,
@@ -82,9 +103,10 @@ Future<void> main({bool isInitialized = false}) async {
       receiverMnemonic != null &&
       receiverMnemonic.isNotEmpty &&
       senderMnemonic != null &&
-      senderMnemonic.isNotEmpty;
+      senderMnemonic.isNotEmpty &&
+      Platform.environment['RUN_FUNDED_PAYJOIN_TEST'] == 'true';
   const fixtureSkip =
-      'requires TEST_ALICE_MNEMONIC and TEST_BOB_MNEMONIC (funded testnet wallets)';
+      'requires a PR to main or a manually dispatched CI run with funded testnet wallets';
 
   // Belongs to this file's own Bull.init above, not to the fixtures, so it
   // stays at the root scope and runs even when the funded group is skipped.
@@ -129,13 +151,11 @@ Future<void> main({bool isInitialized = false}) async {
   // are individually skipped still runs its setUpAll and tearDownAll, whereas
   // a skipped group runs neither. Verified against package:test 1.31.
   //
-  // That distinction is what made every fork PR red. GitHub withholds secrets
-  // from pull_request runs on forks, so TEST_ALICE_MNEMONIC/TEST_BOB_MNEMONIC
-  // expand to the empty string — set but empty. The tests below skipped
-  // correctly, yet this setUpAll still ran, and createFromMnemonic rejected a
-  // 1-word mnemonic. Because gen_all_test.dart calls each file's main()
-  // without wrapping it in a group, the failure landed on the root scope of
-  // the aggregated suite and took down the whole integration job.
+  // This also keeps shared funded wallets out of concurrent pull-request jobs.
+  // Every such job otherwise derives the same BIP84 account and broadcasts
+  // consolidation transactions from the same UTXOs, causing RBF conflicts.
+  // The workflow enables this group for delivery PRs to main or manual runs,
+  // not for every branch in a concurrent develop stack.
   //
   // Scoping the hooks to the group also stops them leaking into the other
   // seven aggregated files, which previously inherited this setUp and paid a
@@ -215,7 +235,7 @@ Future<void> main({bool isInitialized = false}) async {
         expect(uri.path, address.address);
         expect(uri.queryParameters, contains('pj'));
 
-        const feeRate = 1000.0;
+        const feeRate = testnetFeeRate;
         final prepared = await prepareBitcoinSend.execute(
           walletId: senderWallet.id,
           address: address.address,

@@ -16,6 +16,10 @@ on:
       - '.gitignore'
       - '.git-blame-ignore-revs'
       - '.github/ISSUE_TEMPLATE/**'
+  # The funded Payjoin fixture spends from shared testnet wallets. It does not
+  # run for the concurrent develop stack; workflow_dispatch lets a reviewer run
+  # it for an arbitrary branch.
+  workflow_dispatch:
 
 # Checkout + tests only; no writes to the repo via the token.
 permissions:
@@ -169,6 +173,10 @@ jobs:
         env:
           TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
           TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
+          # The fixture spends from these two shared wallets. It runs as a final
+          # delivery gate on PRs to main, rather than for every develop PR in a
+          # stack, and can still be run manually for an arbitrary branch.
+          RUN_FUNDED_PAYJOIN_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
           SCCACHE_GHA_ENABLED: "true"
           RUSTC_WRAPPER: sccache
           # sccache cannot cache incremental compilation artifacts; disabling
