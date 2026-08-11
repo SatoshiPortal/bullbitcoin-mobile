@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_13_to_14.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,4 +106,15 @@ void main() {
       await migratedDb.close();
     },
   );
+
+  test('v13 to v14 tolerates a repeated migration', () async {
+    final schema = await verifier.schemaAt(13);
+    final db = SqliteDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 14);
+
+    final schema14 = Schema14(database: db);
+    await Schema13To14.migrate(Migrator(db, schema14), schema14);
+
+    await db.close();
+  });
 }
