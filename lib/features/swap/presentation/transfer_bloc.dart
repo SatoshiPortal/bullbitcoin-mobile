@@ -36,6 +36,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
@@ -70,6 +71,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._broadcastLiquidTxUsecase,
     required this._verifyChainSwapAmountSendUsecase,
     required this._getOrderSwapQuoteUsecase,
+    required this._getPendingOrderSwapsUsecase,
     required this._createOrderSwapUsecase,
     required this._savePreparedOrderSwapPayinUsecase,
     required this._replacePreparedOrderSwapPayinUsecase,
@@ -121,6 +123,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final GetOrderSwapQuoteUsecase _getOrderSwapQuoteUsecase;
+  final GetPendingOrderSwapsUsecase _getPendingOrderSwapsUsecase;
   final CreateOrderSwapUsecase _createOrderSwapUsecase;
   final SavePreparedOrderSwapPayinUsecase _savePreparedOrderSwapPayinUsecase;
   final ReplacePreparedOrderSwapPayinUsecase
@@ -210,11 +213,95 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           : null;
 
       emit(state.copyWith(maxAmountSat: maxAmountSat));
+      await _resumePendingTransfer(emit);
     } catch (e) {
       emit(state.copyWith(startError: Exception(e.toString())));
     } finally {
       emit(state.copyWith(isStarting: false));
     }
+  }
+
+  Future<void> _resumePendingTransfer(Emitter<TransferState> emit) async {
+    final fromWallet = state.fromWallet;
+    if (fromWallet == null) return;
+    final pendingResult = await _getPendingOrderSwapsUsecase.execute();
+    if (pendingResult case Err()) return;
+    final pending =
+        (pendingResult as Ok<List<OrderSwapRecord>, SwapFailure>).value;
+    final record = pending.where((candidate) {
+      final expectedEnvironment = fromWallet.network.isTestnet
+          ? OrderSwapEnvironment.testnet
+          : OrderSwapEnvironment.mainnet;
+      final expectedInNetwork = fromWallet.isLiquid
+          ? OrderSwapNetwork.liquid
+          : OrderSwapNetwork.bitcoin;
+      final expectedOutNetwork = state.toWallet?.isLiquid == true
+          ? OrderSwapNetwork.liquid
+          : OrderSwapNetwork.bitcoin;
+      final amountMatches =
+          state.amount.isEmpty ||
+          candidate.requestedAmountSat == BigInt.from(state.inputAmountSat);
+      return candidate.purpose == OrderSwapPurpose.transfer &&
+          candidate.environment == expectedEnvironment &&
+          candidate.inNetwork == expectedInNetwork &&
+          candidate.outNetwork == expectedOutNetwork &&
+          amountMatches &&
+          candidate.sourceWalletId == fromWallet.id &&
+          candidate.destinationWalletId == state.toWallet?.id;
+    }).firstOrNull;
+    if (record == null || record.order == null) return;
+
+    final order = record.order!;
+    final isExpired =
+        record.localStatus == OrderSwapLocalStatus.expired ||
+        !order.confirmationDeadline.isAfter(DateTime.now());
+    final displaySwap =
+        Swap.chain(
+              id: record.localId,
+              keyIndex: 0,
+              type: fromWallet.isLiquid
+                  ? SwapType.liquidToBitcoin
+                  : SwapType.bitcoinToLiquid,
+              status: isExpired
+                  ? SwapStatus.expired
+                  : transferSwapStatusForOrderSwap(record.localStatus),
+              environment: record.environment == OrderSwapEnvironment.testnet
+                  ? Environment.testnet
+                  : Environment.mainnet,
+              creationTime: record.createdAt,
+              sendWalletId: fromWallet.id,
+              paymentAddress: order.payinAddress,
+              paymentAmount: order.payinAmountSat.toInt(),
+              receiveWalletId: state.toWallet?.id,
+              receiveAddress: record.destination,
+              refundAddress: record.fallback,
+              fees: SwapFees(
+                boltzFee: (order.payinAmountSat - order.payoutAmountSat)
+                    .toInt(),
+              ),
+            )
+            as ChainSwap;
+
+    if (isExpired) {
+      emit(
+        state.copyWith(orderSwap: record, swap: displaySwap, signedPsbt: ''),
+      );
+      return;
+    }
+    final resumable =
+        record.localStatus == OrderSwapLocalStatus.readyToBroadcast ||
+        record.localStatus == OrderSwapLocalStatus.broadcastUnknown;
+    if (!resumable || !record.hasPreparedPayin) return;
+    emit(
+      state.copyWith(
+        orderSwap: record,
+        swap: displaySwap,
+        signedPsbt: record.signedPayinTransaction!,
+        amount: record.requestedAmountSat.toString(),
+        receiveAddress: record.destination,
+      ),
+    );
+    _watchExchangeOrderSwap(record.localId);
   }
 
   Future<void> _onWalletsChanged(
