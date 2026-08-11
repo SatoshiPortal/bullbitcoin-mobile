@@ -154,6 +154,7 @@ class CreateReceiveOrderSwapUsecase {
     SwapOrderNotFoundFailure() ||
     SwapOrderExpiredFailure() ||
     SwapCreationUnknownFailure() ||
+    SwapOrderMismatchFailure() ||
     SwapInvalidStateFailure() ||
     SwapStorageFailure() ||
     SwapUnexpectedFailure() => ReceiveUnexpectedFailure(failure.logMessage),

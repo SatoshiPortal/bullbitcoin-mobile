@@ -366,7 +366,85 @@ void main() {
         destinationAddress: 'invoice',
         fallbackAddress: 'fallback',
       ),
-    ).called(1);
+    ).called(2);
+  });
+
+  test('replays an unknown creation with its persisted request id', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenThrow(const ExchangeTimeoutException('timeout'));
+    await _create(repository);
+
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+
+    final result = await _create(repository);
+
+    expect(result, isA<Ok<OrderSwapRecord, SwapFailure>>());
+    expect((result as Ok<OrderSwapRecord, SwapFailure>).value.orderId, 'order-1');
+    verify(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).called(2);
+  });
+
+  test('marks a fixed-amount server mismatch as a typed failure', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: true,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel(payoutAmount: '0.00001000'));
+
+    final result = await repository.createOrder(
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: true,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      destinationAddress: 'invoice',
+      fallbackAddress: 'fallback',
+      purpose: OrderSwapPurpose.transfer,
+      environment: OrderSwapEnvironment.testnet,
+    );
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    expect(
+      (result as Err<OrderSwapRecord, SwapFailure>).failure,
+      isA<SwapOrderMismatchFailure>(),
+    );
+    expect(
+      (await database.select(database.orderSwaps).getSingle()).localStatus,
+      OrderSwapLocalStatus.failed.name,
+    );
   });
 
   test('does not substitute the Liquid destination as a fallback', () async {
@@ -767,7 +845,7 @@ void main() {
 
     expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
     final row = await database.select(database.orderSwaps).getSingle();
-    expect(row.localStatus, OrderSwapLocalStatus.creationUnknown.name);
+    expect(row.localStatus, OrderSwapLocalStatus.failed.name);
   });
 
   test('completed orders stop awaiting labels only after marking', () async {

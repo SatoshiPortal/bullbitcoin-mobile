@@ -136,13 +136,41 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       );
       if (matchingRow != null) {
         final matching = matchingRow.toEntity();
-        if (matching.localStatus == OrderSwapLocalStatus.creating ||
-            matching.localStatus == OrderSwapLocalStatus.creationUnknown) {
+        if (matching.localStatus == OrderSwapLocalStatus.creating) {
           return const Err(
             SwapCreationUnknownFailure(
               'A matching order has an unknown creation outcome',
             ),
           );
+        }
+        if (matching.localStatus == OrderSwapLocalStatus.creationUnknown) {
+          try {
+            final order = await _createServerOrder(
+              record: matching,
+              amountSat: amountSat,
+              isInAmountFixed: isInAmountFixed,
+              inNetwork: inNetwork,
+              outNetwork: outNetwork,
+              destinationAddress: destinationAddress,
+              fallbackAddress: fallbackAddress,
+            );
+            final recovered = matching.withServerOrder(
+              order,
+              status: OrderSwapLocalStatus.awaitingUserConfirmation,
+            );
+            await _local.save(recovered.toCompanion());
+            return Ok(recovered);
+          } catch (error) {
+            if (error is ArgumentError) {
+              await _local.save(matching.markFailed().toCompanion());
+              return Err(_mapFailure(error));
+            }
+            return const Err(
+              SwapCreationUnknownFailure(
+                'A matching order has an unknown creation outcome',
+              ),
+            );
+          }
         }
         final deadline = matching.order?.confirmationDeadline;
         final canExpireLocally =
@@ -225,6 +253,12 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       if (_createOutcomeIsUnknown(error)) {
         try {
           await _local.save(record.markCreationUnknown().toCompanion());
+        } catch (storageError) {
+          return Err(SwapStorageFailure(storageError.toString()));
+        }
+      } else if (error is ArgumentError) {
+        try {
+          await _local.save(record.markFailed().toCompanion());
         } catch (storageError) {
           return Err(SwapStorageFailure(storageError.toString()));
         }
@@ -510,7 +544,9 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   }
 
   bool _createOutcomeIsUnknown(Object error) =>
-      error is! ExchangeRpcException && error is! ExchangeRateLimitException;
+      error is! ExchangeRpcException &&
+      error is! ExchangeRateLimitException &&
+      error is! ArgumentError;
 
   ExchangePublicApiDatasource _remote(OrderSwapEnvironment environment) =>
       environment == OrderSwapEnvironment.testnet
@@ -546,6 +582,9 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   }
 
   SwapFailure _mapFailure(Object error) {
+    if (error is ArgumentError) {
+      return SwapOrderMismatchFailure(error.message.toString());
+    }
     if (error is ExchangeRateLimitException) {
       return SwapRateLimitedFailure(
         retryAfter: error.retryAfterSeconds == null

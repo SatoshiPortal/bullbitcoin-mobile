@@ -15,6 +15,7 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
       SwapNoPaymentOptionFailure() ||
       SwapOrderExpiredFailure() ||
       SwapCreationUnknownFailure() ||
+      SwapOrderMismatchFailure() ||
       SwapInvalidStateFailure() ||
       SwapProviderFailure() ||
       SwapNetworkFailure() ||

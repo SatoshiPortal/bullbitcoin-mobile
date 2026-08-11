@@ -38,6 +38,10 @@ final class SwapCreationUnknownFailure extends SwapFailure {
   const SwapCreationUnknownFailure([super.logMessage]);
 }
 
+final class SwapOrderMismatchFailure extends SwapFailure {
+  const SwapOrderMismatchFailure([super.logMessage]);
+}
+
 final class SwapInvalidStateFailure extends SwapFailure {
   const SwapInvalidStateFailure([super.logMessage]);
 }

@@ -20,6 +20,7 @@ extension SwapFailureL10n on SwapFailure {
     SwapOrderNotFoundFailure() ||
     SwapOrderExpiredFailure() ||
     SwapCreationUnknownFailure() ||
+    SwapOrderMismatchFailure() ||
     SwapInvalidStateFailure() ||
     SwapProviderFailure() ||
     SwapStorageFailure() ||
