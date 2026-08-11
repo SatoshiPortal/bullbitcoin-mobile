@@ -35,6 +35,8 @@ import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_useca
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -175,18 +177,24 @@ void main() {
     expect(bloc.state.orderSwap, refreshed);
   });
 
-  test('surfaces a broadcast exception in the current state', () async {
+  test('surfaces a broadcast network failure without raw exception text', () async {
     when(() => markUnknown.execute('local-1')).thenAnswer((_) async => Ok(prepared));
     when(() => broadcastBitcoin.execute('signed-psbt', isPsbt: true))
-        .thenThrow(Exception('broadcast failed'));
+        .thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/broadcast'),
+            message: 'broadcast failed',
+          ),
+        );
     bloc.emit(TransferState(
       orderSwap: prepared, signedPsbt: 'signed-psbt', fromWallet: _wallet(), swap: _swap(),
     ));
     bloc.add(const TransferEvent.confirmed());
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
-    expect(bloc.state.confirmTransactionException, isNotNull);
-    expect(bloc.state.confirmTransactionException!.message, contains('broadcast failed'));
+    expect(bloc.state.swapFailure, isA<SwapNetworkFailure>());
+    expect(bloc.state.confirmTransactionException, isNull);
+    expect(bloc.state.swapFailure!.logMessage, isNull);
   });
 }
 

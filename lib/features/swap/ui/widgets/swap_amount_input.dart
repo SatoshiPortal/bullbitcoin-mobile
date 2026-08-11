@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -36,6 +37,9 @@ class SwapAmountInput extends StatelessWidget {
     );
     final isInsufficientBalance = context.select(
       (TransferBloc bloc) => bloc.state.isInsufficientBalance,
+    );
+    final swapLimits = context.select(
+      (TransferBloc bloc) => bloc.state.swapLimits,
     );
 
     return Column(
@@ -108,8 +112,28 @@ class SwapAmountInput extends StatelessWidget {
         ),
         if (amountValidationError != null || isInsufficientBalance) ...[
           const Gap(8),
-          Text(
-            amountValidationError ?? context.loc.swapInsufficientFunds,
+           Text(
+            switch (amountValidationError) {
+              AmountValidationError.minimum => context.loc
+                  .swapErrorAmountBelowMinimum(
+                    (bitcoinUnit == BitcoinUnit.btc
+                            ? ConvertAmount.satsToBtc(
+                                swapLimits!.min,
+                              )
+                            : swapLimits!.min)
+                        .toString(),
+                  ),
+              AmountValidationError.maximum => context.loc
+                  .swapErrorAmountAboveMaximum(
+                    (bitcoinUnit == BitcoinUnit.btc
+                            ? ConvertAmount.satsToBtc(
+                                swapLimits!.max,
+                              )
+                            : swapLimits!.max)
+                        .toString(),
+                  ),
+              null => context.loc.swapInsufficientFunds,
+            },
             style: context.font.labelLarge?.copyWith(
               color: context.appColors.error,
             ),

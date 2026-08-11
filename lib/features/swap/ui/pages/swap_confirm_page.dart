@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,11 +26,8 @@ class SwapConfirmPage extends StatelessWidget {
     );
     final formattedConfirmedAmountBitcoin = formattedInputAmount;
 
-    final confirmError = context.select(
-      (TransferBloc bloc) => bloc.state.confirmTransactionException,
-    );
-    final buildError = context.select(
-      (TransferBloc bloc) => bloc.state.buildTransactionException,
+    final swapFailure = context.select(
+      (TransferBloc bloc) => bloc.state.swapFailure,
     );
     final absoluteFeesFormatted = context.select(
       (TransferBloc bloc) => bloc.state.absoluteFeesFormatted,
@@ -158,8 +156,7 @@ class SwapConfirmPage extends StatelessWidget {
                 ),
                 const Gap(24),
                 CommonConfirmSendErrorSection(
-                  confirmError: confirmError,
-                  buildError: buildError,
+                  errorMessage: swapFailure?.toTranslated(context),
                 ),
               ],
             ),

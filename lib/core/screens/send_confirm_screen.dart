@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -746,64 +745,38 @@ class CommonConfirmSendButton extends StatelessWidget {
 
 class CommonConfirmSendErrorSection extends StatelessWidget {
   const CommonConfirmSendErrorSection({
-    required this._buildError,
-    required this._confirmError,
+    required this.errorMessage,
   });
 
-  final BuildTransactionException? _buildError;
-  final ConfirmTransactionException? _confirmError;
+  final String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
-    if (_buildError != null) {
+    if (errorMessage != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            BBText(
-              context.loc.sendErrorBuildFailed,
+             BBText(
+               context.loc.sendErrorBuildFailed,
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
-              textAlign: .center,
-            ),
+               textAlign: .center,
+             ),
+             const Gap(8),
+             BBText(
+               errorMessage!,
+               style: context.font.bodyMedium,
+               color: context.appColors.error,
+               maxLines: 5,
+               textAlign: .center,
+             ),
             const Gap(8),
-            BBText(
-              _buildError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
           ],
         ),
       );
     }
-    if (_confirmError != null) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            BBText(
-              context.loc.sendErrorConfirmationFailed,
-              style: context.font.bodyLarge,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-            const Gap(8),
-            BBText(
-              _confirmError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-          ],
-        ),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return const SizedBox.shrink();
   }
 }

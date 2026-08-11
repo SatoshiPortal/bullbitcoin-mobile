@@ -46,6 +46,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dio/dio.dart';
 
 part 'transfer_event.dart';
 part 'transfer_state.dart';
@@ -404,7 +405,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           emit(
             state.copyWith(
               swapCreationException: SwapCreationException(
-                'Failed to get receive address: $e',
+                'receive_address_lookup_failed',
               ),
             ),
           );
@@ -415,7 +416,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         emit(
           state.copyWith(
             swapCreationException: SwapCreationException(
-              'Receive address not available',
+              'receive_address_unavailable',
             ),
           ),
         );
@@ -478,10 +479,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   }) async {
     final fromWallet = state.fromWallet;
     if (fromWallet == null) {
-      throw SwapCreationException('Source wallet is required');
+      throw SwapCreationException('source_wallet_required');
     }
     if (fromWallet.isHardwareWallet) {
-      throw SwapCreationException('Hardware wallet swaps are unavailable');
+      throw SwapCreationException('hardware_wallet_swap_unavailable');
     }
     final orderEnvironment = fromWallet.network.isTestnet
         ? OrderSwapEnvironment.testnet
@@ -489,7 +490,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
     final destinationWallet = state.sendToExternal ? null : state.toWallet;
     if (!state.sendToExternal && destinationWallet == null) {
-      throw SwapCreationException('Destination wallet is required');
+      throw SwapCreationException('destination_wallet_required');
     }
     final inNetwork = fromWallet.isLiquid
         ? OrderSwapNetwork.liquid
@@ -503,7 +504,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             walletId: destinationWallet!.id,
           )).address;
     if (destinationAddress.isEmpty) {
-      throw SwapCreationException('Destination address is required');
+      throw SwapCreationException('destination_address_required');
     }
     final fallbackAddress = (await _getReceiveAddressUsecase.execute(
       walletId: fromWallet.id,
@@ -635,7 +636,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         builtFeeSat: bitcoinAbsoluteFeesSat,
         txSize: bitcoinTxSize,
       )) {
-        throw BuildTransactionException('Built fee is below the relay floor');
+        throw BuildTransactionException('built_fee_below_relay_floor');
       }
       isPsbt = true;
     }
@@ -1224,8 +1225,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             stateToUse.copyWith(
               signedPsbt: '',
               buildTransactionException: BuildTransactionException(
-                'Built fee $bitcoinAbsoluteFeesSat sats at '
-                '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+                'built_fee_below_relay_floor',
               ),
             ),
           );
@@ -1297,8 +1297,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             stateToUse.copyWith(
               signedPsbt: '',
               buildTransactionException: BuildTransactionException(
-                'Built fee $bitcoinAbsoluteFeesSat sats at '
-                '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+                'built_fee_below_relay_floor',
               ),
             ),
           );
@@ -1353,6 +1352,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         txId: '',
         isConfirming: true,
         confirmTransactionException: null,
+        swapFailure: null,
       ),
     );
     try {
@@ -1425,26 +1425,27 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       }
       emit(state.copyWith(txId: txId));
     } catch (e) {
-      if (e is PrepareBitcoinSendException) {
-        emit(
-          state.copyWith(
-            confirmTransactionException: ConfirmTransactionException(
-              'Could not build transaction. Likely due to insufficient funds to cover fees and amount.',
-            ),
-          ),
-        );
-        return;
-      }
       emit(
         state.copyWith(
-          confirmTransactionException: ConfirmTransactionException(
-            e.toString(),
-          ),
+          confirmTransactionException: null,
+          swapFailure: _swapFailureFromException(e),
         ),
       );
     } finally {
       emit(state.copyWith(isConfirming: false));
     }
+  }
+
+  SwapFailure _swapFailureFromException(Object exception) {
+    if (exception is DioException) {
+      return switch (exception.type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout ||
+        DioExceptionType.receiveTimeout => const SwapTimeoutFailure(),
+        _ => const SwapNetworkFailure(),
+      };
+    }
+    return const SwapUnexpectedFailure();
   }
 
   Future<int?> getMaxAmountSat(Wallet fromWallet) async {
