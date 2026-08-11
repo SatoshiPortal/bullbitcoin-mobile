@@ -23,7 +23,9 @@ void main() {
     );
   });
 
-  test('the catalog is empty on purpose', () {
+  test('the catalog is empty on purpose — neither the payjoin card nor the '
+      'autoswap card lives on home anymore (autoswap kept its pre-existing '
+      'AutoSwapWarningCard surface, as in the last release)', () {
     expect(announcementCatalog, isEmpty);
   });
 

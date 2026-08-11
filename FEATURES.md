@@ -40,6 +40,7 @@ graph TB
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
     BG_TASKS[Background Tasks]
+    AUTOSWAPS[AutoSwaps]
     DCA[DCA]
     SELL[Sell]
     PAY[Pay]
@@ -63,6 +64,7 @@ graph TB
     ALL_SEED_VIEW --> APP_UNLOCK
     ANNOUNCEMENTS --> SETTINGS
     APP_STARTUP --> WALLETS
+    AUTOSWAPS --> TRANSFER
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
@@ -132,6 +134,7 @@ graph TB
 
     class CORE coreStyle
     class PRIMITIVES,BULL_PAYJOIN packageStyle
+    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -199,6 +202,7 @@ graph TB
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
+- **AutoSwaps**: Depends on Transfer
 - **Backups**: Depends on BIP85, Tor, Wallets
 
 ### Exchange-Related Features

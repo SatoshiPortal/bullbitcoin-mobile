@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/cards/autoswap_warning_card.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/autoswap_warning_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -17,13 +19,23 @@ class HomeWarnings extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.hasNoBackup() != current.hasNoBackup() ||
           previous.isOnLegacyStorage != current.isOnLegacyStorage ||
+          previous.showAutoSwapDefaultEnabledWarning() !=
+              current.showAutoSwapDefaultEnabledWarning() ||
+          previous.showAutoSwapActiveStatus() !=
+              current.showAutoSwapActiveStatus() ||
           previous.warnings != current.warnings,
       builder: (context, state) {
         final showBackupWarning =
             state.hasNoBackup() && !state.isOnLegacyStorage;
+        final showAutoSwapDefaultEnabledWarning = state
+            .showAutoSwapDefaultEnabledWarning();
+        final showAutoSwapActiveStatus = state.showAutoSwapActiveStatus();
         final serverWarning = state.warnings;
 
-        if (!showBackupWarning && serverWarning.isEmpty) {
+        if (!showBackupWarning &&
+            !showAutoSwapDefaultEnabledWarning &&
+            !showAutoSwapActiveStatus &&
+            serverWarning.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -38,6 +50,21 @@ class HomeWarnings extends StatelessWidget {
                     BackupSettingsSubroute.backupOptions.name,
                   ),
                 ),
+
+              if (showAutoSwapDefaultEnabledWarning) ...[
+                if (showBackupWarning) const Gap(5),
+                AutoSwapWarningCard(
+                  onTap: () => AutoSwapWarningBottomSheet.show(context),
+                ),
+              ],
+
+              if (showAutoSwapActiveStatus) ...[
+                if (showBackupWarning) const Gap(5),
+                AutoSwapWarningCard(
+                  isActiveMode: true,
+                  onTap: () => AutoSwapWarningBottomSheet.show(context),
+                ),
+              ],
 
               for (final warning in serverWarning) ...[
                 const Gap(5),

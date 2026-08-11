@@ -9,9 +9,12 @@ import 'package:flutter/widgets.dart';
 extension AnnouncementL10n on Announcement {
   String title(BuildContext context) => switch (id) {
     AnnouncementId.payjoinPrivacy => context.loc.announcementPayjoinTitle,
+    AnnouncementId.autoswapActive => context.loc.announcementAutoswapTitle,
   };
 
   String description(BuildContext context) => switch (id) {
     AnnouncementId.payjoinPrivacy => context.loc.announcementPayjoinDescription,
+    AnnouncementId.autoswapActive =>
+      context.loc.announcementAutoswapDescription,
   };
 }

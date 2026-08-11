@@ -33,5 +33,9 @@ class AnnouncementCatalogEntry {
 ///
 /// Currently EMPTY on purpose. The payjoin-privacy nudge was removed
 /// (product decision 2026-07-25): payjoin education lives in the enable-time
-/// disclaimer and the payjoin settings screen, not on home.
+/// disclaimer and the payjoin settings screen, not on home. The autoswap
+/// card was removed too (product decision 2026-07-28): autoswap's home
+/// surface is the pre-existing AutoSwapWarningCard driven by WalletBloc, as
+/// in the last release — not an announcement. Both [AnnouncementId] values
+/// stay so persisted dismissals keep mapping cleanly.
 final List<AnnouncementCatalogEntry> announcementCatalog = [];

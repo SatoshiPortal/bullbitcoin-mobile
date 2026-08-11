@@ -21,7 +21,11 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   bool _refreshing = false;
   bool _refreshQueued = false;
 
-  // No signal subscriptions: the catalog is currently empty.
+  // No signal subscriptions: the catalog is currently empty, and its only
+  // past signals (autoswap balance/settings) left with the autoswap card —
+  // autoswap's home surface is AutoSwapWarningCard, not an announcement.
+  // When a future announcement adds a signal, re-add the matching watch
+  // here (see git history for the wallet-sync + autoswap-settings pair).
   AnnouncementsCubit({
     required this._getVisibleAnnouncementsUsecase,
     required this._dismissAnnouncementUsecase,
