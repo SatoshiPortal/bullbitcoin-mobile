@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -6,7 +5,6 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
@@ -39,18 +37,6 @@ class SwapsLocator {
   }
 
   static void registerUsecases(GetIt locator) {
-    locator.registerFactory<EnsureSwapMasterKeyUsecase>(
-      () => EnsureSwapMasterKeyUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
-    );
-
     locator.registerFactory<GetSwapMasterKeyUsecase>(
       () => GetSwapMasterKeyUsecase(
         settingsRepository: locator<SettingsRepository>(),
