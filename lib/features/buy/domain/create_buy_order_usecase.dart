@@ -7,6 +7,15 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateBuyOrderUsecase {
+  /// Maximum requested lifetime for an exchange payout receiver.
+  ///
+  /// The exchange starts its five-minute window when it creates the order. Our
+  /// receiver starts first so its URI can be included in that request; one
+  /// additional minute prevents receiver setup, network latency, or clock skew
+  /// from making it expire before the exchange. A shorter user-configured
+  /// session lifetime still takes precedence in the Payjoin runtime.
+  static const _payjoinPayoutWindow = Duration(minutes: 6);
+
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
@@ -74,11 +83,20 @@ class CreateBuyOrderUsecase {
                   : BitcoinNetwork.mainnet,
               address: toAddress,
               amount: Sats.fromInt(payjoinAmountSat),
-              // The URI cannot be revised after order placement, so the
-              // exchange payout uses the protocol maximum lifetime.
-              expiresAt: DateTime.now().add(
-                PayjoinPolicy.maximumSessionLifetime,
-              ),
+              // The exchange gives up five minutes after creating the order.
+              // This receiver starts before that request, so request one
+              // additional minute to cover setup and network latency. The
+              // user's configured session lifetime may shorten this window.
+              // The previous 24h protocol maximum only resumed and re-watched
+              // a dead session on every app start for a day.
+              //
+              // Expiring costs nothing either. The BIP21 still carries a plain
+              // address, so an exchange payout that arrives late is an ordinary
+              // payment; only the payjoin is lost. And an idle receiver freezes
+              // no coins — `getUtxosFrozenByOngoingPayjoins` skips a session
+              // whose proposal PSBT is null, which is exactly a session no
+              // sender ever contacted.
+              expiresAt: DateTime.now().add(_payjoinPayoutWindow),
             ),
           );
           final receiver = switch (result) {
