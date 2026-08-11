@@ -39,6 +39,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_use
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -71,6 +72,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._createOrderSwapUsecase,
     required this._savePreparedOrderSwapPayinUsecase,
     required this._replacePreparedOrderSwapPayinUsecase,
+    required this._refreshOrderSwapUsecase,
     required this._markOrderSwapBroadcastUnknownUsecase,
     required this._markOrderSwapPayinBroadcastUsecase,
     required this._watchOrderSwapUsecase,
@@ -122,6 +124,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final SavePreparedOrderSwapPayinUsecase _savePreparedOrderSwapPayinUsecase;
   final ReplacePreparedOrderSwapPayinUsecase
   _replacePreparedOrderSwapPayinUsecase;
+  final RefreshOrderSwapUsecase _refreshOrderSwapUsecase;
   final MarkOrderSwapBroadcastUnknownUsecase
   _markOrderSwapBroadcastUnknownUsecase;
   final MarkOrderSwapPayinBroadcastUsecase _markOrderSwapPayinBroadcastUsecase;
@@ -1359,6 +1362,21 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       String txId;
       final orderSwap = state.orderSwap;
       if (orderSwap != null) {
+        if (orderSwap.localStatus == OrderSwapLocalStatus.broadcastUnknown) {
+          final refreshed = switch (await _refreshOrderSwapUsecase.execute(
+            orderSwap.localId,
+          )) {
+            Ok(:final value) => value,
+            Err(:final failure) => throw ConfirmTransactionException(
+              failure.logMessage ?? failure.runtimeType.toString(),
+            ),
+          };
+          final payinStatus = refreshed.order?.payinStatus.trim().toLowerCase();
+          if (payinStatus == 'completed') {
+            emit(state.copyWith(orderSwap: refreshed));
+            return;
+          }
+        }
         final broadcasting = switch (await _markOrderSwapBroadcastUnknownUsecase
             .execute(orderSwap.localId)) {
           Ok(:final value) => value,

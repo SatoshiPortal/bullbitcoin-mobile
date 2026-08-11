@@ -266,6 +266,7 @@ class SwapLocator {
             locator<SavePreparedOrderSwapPayinUsecase>(),
         replacePreparedOrderSwapPayinUsecase:
             locator<ReplacePreparedOrderSwapPayinUsecase>(),
+        refreshOrderSwapUsecase: locator<RefreshOrderSwapUsecase>(),
         markOrderSwapBroadcastUnknownUsecase:
             locator<MarkOrderSwapBroadcastUnknownUsecase>(),
         markOrderSwapPayinBroadcastUsecase:

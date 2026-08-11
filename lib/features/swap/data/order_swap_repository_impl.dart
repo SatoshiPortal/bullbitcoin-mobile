@@ -448,6 +448,9 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   Future<Result<OrderSwapRecord, SwapFailure>> markBroadcastUnknown(
     String localId,
   ) => _updateLocalRecord(localId, (record) {
+    if (!record.order!.confirmationDeadline.isAfter(_now())) {
+      throw const _ExpiredOrderSwapTransition();
+    }
     if (record.localStatus == OrderSwapLocalStatus.broadcastUnknown) {
       return record;
     }
@@ -455,9 +458,6 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       throw _InvalidOrderSwapTransition(
         'Cannot start a broadcast from ${record.localStatus.name}',
       );
-    }
-    if (!record.order!.confirmationDeadline.isAfter(_now())) {
-      throw const _ExpiredOrderSwapTransition();
     }
     return record.withPayinState(status: OrderSwapLocalStatus.broadcastUnknown);
   });

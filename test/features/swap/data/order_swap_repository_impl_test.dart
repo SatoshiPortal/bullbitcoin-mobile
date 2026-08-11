@@ -698,7 +698,7 @@ void main() {
     expect(row.signedPayinTransaction, 'signed-pset');
   });
 
-  test('keeps an unknown broadcast idempotent after the deadline', () async {
+  test('rejects an unknown broadcast after the deadline', () async {
     when(
       () => remote.createOrderSwap(
         requestId: 'request-1',
@@ -721,9 +721,10 @@ void main() {
 
     final result = await repository.markBroadcastUnknown('local-1');
 
-    final record = (result as Ok<OrderSwapRecord, SwapFailure>).value;
-    expect(record.localStatus, OrderSwapLocalStatus.broadcastUnknown);
-    expect(record.signedPayinTransaction, 'signed-pset');
+    expect(
+      (result as Err<OrderSwapRecord, SwapFailure>).failure,
+      isA<SwapOrderExpiredFailure>(),
+    );
   });
 
   test(

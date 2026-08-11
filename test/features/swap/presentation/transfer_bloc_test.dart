@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_use
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -54,6 +55,7 @@ class _MockGetQuote extends Mock implements GetOrderSwapQuoteUsecase {}
 class _MockCreateOrder extends Mock implements CreateOrderSwapUsecase {}
 class _MockSavePrepared extends Mock implements SavePreparedOrderSwapPayinUsecase {}
 class _MockReplacePrepared extends Mock implements ReplacePreparedOrderSwapPayinUsecase {}
+class _MockRefreshOrder extends Mock implements RefreshOrderSwapUsecase {}
 class _MockMarkUnknown extends Mock implements MarkOrderSwapBroadcastUnknownUsecase {}
 class _MockMarkBroadcast extends Mock implements MarkOrderSwapPayinBroadcastUsecase {}
 class _MockWatchOrder extends Mock implements WatchOrderSwapUsecase {}
@@ -69,6 +71,7 @@ void main() {
   late _MockMarkUnknown markUnknown;
   late _MockMarkBroadcast markBroadcast;
   late _MockBroadcastBitcoin broadcastBitcoin;
+  late _MockRefreshOrder refreshOrder;
   late _MockGetWallet getWallet;
   late OrderSwapRecord prepared;
   late TransferBloc bloc;
@@ -77,6 +80,7 @@ void main() {
     markUnknown = _MockMarkUnknown();
     markBroadcast = _MockMarkBroadcast();
     broadcastBitcoin = _MockBroadcastBitcoin();
+    refreshOrder = _MockRefreshOrder();
     getWallet = _MockGetWallet();
     prepared = _prepared();
     when(() => getWallet.execute('wallet-1', sync: true))
@@ -100,6 +104,7 @@ void main() {
       createOrderSwapUsecase: _MockCreateOrder(),
       savePreparedOrderSwapPayinUsecase: _MockSavePrepared(),
       replacePreparedOrderSwapPayinUsecase: _MockReplacePrepared(),
+      refreshOrderSwapUsecase: refreshOrder,
       markOrderSwapBroadcastUnknownUsecase: markUnknown,
       markOrderSwapPayinBroadcastUsecase: markBroadcast,
       watchOrderSwapUsecase: _MockWatchOrder(),
@@ -122,6 +127,7 @@ void main() {
       transactionId: 'txid-1',
     );
     when(() => markUnknown.execute('local-1')).thenAnswer((_) async => Ok(broadcasting));
+    when(() => refreshOrder.execute('local-1')).thenAnswer((_) async => Ok(broadcasting));
     when(() => broadcastBitcoin.execute('signed-psbt', isPsbt: true))
         .thenAnswer((_) async => 'txid-1');
     when(() => markBroadcast.execute(localId: 'local-1', transactionId: 'txid-1'))
@@ -145,6 +151,30 @@ void main() {
     expect(states.any((state) => state.txId == 'txid-1'), isTrue);
   });
 
+  test('refreshes an unknown broadcast and skips rebroadcast when payin is seen', () async {
+    final unknown = _prepared(status: OrderSwapLocalStatus.broadcastUnknown);
+    final refreshed = _prepared(
+      status: OrderSwapLocalStatus.payoutInProgress,
+      payinStatus: 'Completed',
+    );
+    when(() => refreshOrder.execute('local-1')).thenAnswer((_) async => Ok(refreshed));
+    bloc.emit(TransferState(
+      orderSwap: unknown,
+      signedPsbt: 'signed-psbt',
+      fromWallet: _wallet(),
+      swap: _swap(),
+    ));
+
+    bloc.add(const TransferEvent.confirmed());
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    verify(() => refreshOrder.execute('local-1')).called(1);
+    verifyNever(() => markUnknown.execute(any()));
+    verifyNever(() => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')));
+    expect(bloc.state.orderSwap, refreshed);
+  });
+
   test('surfaces a broadcast exception in the current state', () async {
     when(() => markUnknown.execute('local-1')).thenAnswer((_) async => Ok(prepared));
     when(() => broadcastBitcoin.execute('signed-psbt', isPsbt: true))
@@ -163,6 +193,7 @@ void main() {
 OrderSwapRecord _prepared({
   OrderSwapLocalStatus status = OrderSwapLocalStatus.readyToBroadcast,
   String? transactionId,
+  String payinStatus = 'In progress',
 }) => OrderSwapRecord(
   localId: 'local-1',
   purpose: OrderSwapPurpose.transfer,
@@ -174,7 +205,7 @@ OrderSwapRecord _prepared({
   sourceWalletId: 'wallet-1',
   destination: 'destination',
   fallback: 'fallback',
-  order: _order(),
+  order: _order(payinStatus: payinStatus),
   createdAt: DateTime.utc(2026),
   localStatus: status,
   localPayinTransactionId: transactionId,
@@ -182,13 +213,13 @@ OrderSwapRecord _prepared({
   payinIsPsbt: true,
 );
 
-OrderSwap _order() => OrderSwap(
+OrderSwap _order({String payinStatus = 'In progress'}) => OrderSwap(
   orderId: 'order-1', orderNumber: 1,
   inNetwork: OrderSwapNetwork.bitcoin, outNetwork: OrderSwapNetwork.liquid,
   payinAmountSat: BigInt.from(1010), payoutAmountSat: BigInt.from(1000),
   payinCurrency: 'BTC', payoutCurrency: 'LBTC', payinMethod: 'Bitcoin',
   payoutMethod: 'Liquid', orderType: 'Swap', orderStatus: 'Awaiting payment',
-  payinStatus: 'In progress', payoutStatus: 'Not started', messageCode: 'ORDER_CREATED',
+  payinStatus: payinStatus, payoutStatus: 'Not started', messageCode: 'ORDER_CREATED',
   liquidAddress: 'liquid-address', createdAt: DateTime.utc(2026),
   confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
 );
