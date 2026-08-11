@@ -181,7 +181,6 @@ class SwapLocator {
       () => OrderSwapWatcher(locator<SyncCoordinator>()),
       dispose: (watcher) => watcher.dispose(),
     );
-    locator<OrderSwapWatcher>().start();
   }
 
   static void registerUsecases(GetIt locator) {

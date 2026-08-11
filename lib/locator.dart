@@ -36,6 +36,7 @@ import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
+import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
@@ -55,6 +56,7 @@ class AppLocator {
     SqliteDatabase database, {
     String? payjoinDatabasePath,
     bool startPayjoinRecovery = true,
+    bool startOrderSwapWatcher = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -116,6 +118,12 @@ class AppLocator {
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
+    // Lifecycle side effect lives in the composition root, not in DI
+    // registration: the background handler opts out via
+    // [startOrderSwapWatcher] so polling only runs in the foreground app.
+    if (startOrderSwapWatcher) {
+      locator<OrderSwapWatcher>().start();
+    }
 
     ExchangeLocator.setup(locator);
     ExchangeSettingsLocator.setup(locator);

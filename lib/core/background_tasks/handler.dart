@@ -43,7 +43,14 @@ Future<bool> tasksHandler(String task) async {
     // isolate, run the legacy migration and the full recovery sweep —
     // concurrently with the foreground engine on the same database, inside a
     // ~30s iOS background budget.
-    await AppLocator.setup(locator, sqlite, startPayjoinRecovery: false);
+    await AppLocator.setup(
+      locator,
+      sqlite,
+      startPayjoinRecovery: false,
+      // No order-swap polling either: the watcher is lifecycle-gated to the
+      // foreground app, and this isolate runs on a ~30s iOS background budget.
+      startOrderSwapWatcher: false,
+    );
 
     final syncWalletUsecase = locator<SyncWalletUsecase>();
     final getWalletsUsecase = locator<GetWalletsUsecase>();
