@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
@@ -42,7 +41,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._deleteWalletUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
-    required this._ensureSwapMasterKeyUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
@@ -69,7 +67,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final DeleteWalletUsecase _deleteWalletUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
-  final EnsureSwapMasterKeyUsecase _ensureSwapMasterKeyUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -115,19 +112,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           isOnLegacyStorage: isOnLegacyStorage,
         ),
       );
-
-      // Derive + persist the swap master key from the default wallet seed now
-      // that wallets are ready, so swaps read it from storage and never derive
-      // it lazily. Best-effort: a failure here must not break wallet loading.
-      try {
-        await _ensureSwapMasterKeyUsecase.execute();
-      } catch (e, st) {
-        log.severe(
-          message: 'Failed to ensure swap master key',
-          error: e,
-          trace: st,
-        );
-      }
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());

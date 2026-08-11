@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
@@ -56,7 +55,6 @@ class WalletLocator {
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
-        ensureSwapMasterKeyUsecase: locator<EnsureSwapMasterKeyUsecase>(),
       ),
     );
   }
