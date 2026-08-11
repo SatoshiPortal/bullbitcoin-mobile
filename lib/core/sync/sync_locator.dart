@@ -9,13 +9,15 @@ class SyncLocator {
   /// widget binding to attach to in that isolate).
   static void setup(
     GetIt locator, {
-    required Future<void> Function() syncSwaps,
+    Future<void> Function()? syncSwaps,
+    Future<SyncOutcome> Function()? syncSwapsOutcome,
   }) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         syncWalletUsecase: locator<SyncWalletUsecase>(),
         syncSwaps: syncSwaps,
+        syncSwapsOutcome: syncSwapsOutcome,
       ),
     );
   }

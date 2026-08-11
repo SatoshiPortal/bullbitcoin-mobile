@@ -36,7 +36,8 @@ class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,
     required SyncWalletUsecase syncWalletUsecase,
-    required this._syncSwaps,
+    this._syncSwaps,
+    this._syncSwapsOutcome,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
@@ -57,7 +58,10 @@ class SyncCoordinator {
 
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
-  final Future<void> Function() _syncSwaps;
+  final Future<void> Function()? _syncSwaps;
+  final Future<SyncOutcome> Function()? _syncSwapsOutcome;
+
+  SyncOutcome? lastSwapSyncOutcome;
 
   late final AppLifecycleListener _lifecycleListener;
   bool _isAppResumed = true;
@@ -229,7 +233,14 @@ class SyncCoordinator {
           await _syncWallet.execute(wallet);
         }
       case SyncKind.swaps:
-        await _syncSwaps();
+        final outcomeCallback = _syncSwapsOutcome;
+        if (outcomeCallback != null) {
+          final outcome = await outcomeCallback();
+          lastSwapSyncOutcome = outcome;
+          if (outcome.failure != null) throw outcome.failure!;
+        } else {
+          await _syncSwaps!();
+        }
     }
   }
 
@@ -252,6 +263,25 @@ class SyncCoordinator {
   void dispose() {
     _lifecycleListener.dispose();
   }
+}
+
+enum SyncOutcomeKind { active, idle, rateLimited }
+
+class SyncOutcome {
+  const SyncOutcome._(this.kind, {this.retryAfter, this.failure});
+
+  const SyncOutcome.active() : this._(SyncOutcomeKind.active);
+  const SyncOutcome.idle() : this._(SyncOutcomeKind.idle);
+  const SyncOutcome.rateLimited({Duration? retryAfter, Object? failure})
+    : this._(
+        SyncOutcomeKind.rateLimited,
+        retryAfter: retryAfter,
+        failure: failure,
+      );
+
+  final SyncOutcomeKind kind;
+  final Duration? retryAfter;
+  final Object? failure;
 }
 
 /// Thrown by [SyncCoordinator.sync] when any of the requested kinds failed

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/payjoin_setup.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
@@ -39,6 +40,8 @@ import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -82,12 +85,31 @@ class AppLocator {
 
     SyncLocator.setup(
       locator,
-      syncSwaps: () async {
-        switch (await locator<SwapFacade>().refreshOrders()) {
-          case Ok():
-            return;
+      syncSwapsOutcome: () async {
+        final result = await locator<RefreshOrderSwapsUsecase>().execute();
+        switch (result) {
+          case Ok(:final value):
+            final rateLimited = value.failures
+                .whereType<SwapRateLimitedFailure>()
+                .firstOrNull;
+            if (rateLimited != null) {
+              return SyncOutcome.rateLimited(
+                retryAfter: rateLimited.retryAfter,
+                failure: _SwapSyncException(rateLimited.runtimeType),
+              );
+            }
+            return value.pollableOrderCount == 0
+                ? const SyncOutcome.idle()
+                : const SyncOutcome.active();
           case Err(:final failure):
-            throw _SwapSyncException(failure.runtimeType);
+            return failure is SwapRateLimitedFailure
+                ? SyncOutcome.rateLimited(
+                    retryAfter: failure.retryAfter,
+                    failure: _SwapSyncException(failure.runtimeType),
+                  )
+                : SyncOutcome.rateLimited(
+                    failure: _SwapSyncException(failure.runtimeType),
+                  );
         }
       },
     );

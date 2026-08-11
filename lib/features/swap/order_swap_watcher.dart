@@ -51,8 +51,23 @@ class OrderSwapWatcher {
     } catch (error) {
       log.warning('[OrderSwapWatcher] refresh failed: ${error.runtimeType}');
     } finally {
-      _schedule(_pollInterval);
+      _schedule(_nextDelay());
     }
+  }
+
+  Duration _nextDelay() {
+    final outcome = _syncCoordinator.lastSwapSyncOutcome;
+    if (outcome?.kind == SyncOutcomeKind.rateLimited) {
+      final retryAfter = outcome?.retryAfter;
+      if (retryAfter != null && retryAfter >= const Duration(seconds: 60)) {
+        return retryAfter;
+      }
+      return const Duration(seconds: 60);
+    }
+    if (outcome?.kind == SyncOutcomeKind.idle) {
+      return const Duration(minutes: 5);
+    }
+    return _pollInterval;
   }
 
   void _schedule(Duration delay) {
