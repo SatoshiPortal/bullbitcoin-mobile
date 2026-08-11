@@ -45,6 +45,27 @@ Future<void> main({bool isInitialized = false}) async {
   late Wallet senderWallet;
   bool? previousPayjoinEnabled;
 
+  /// Fee rate for every transaction this fixture broadcasts, in sat/vB.
+  ///
+  /// This used to be 1000. Nothing needed it: none of the assertions below wait
+  /// for a confirmation — the happy path waits for `PayjoinStatus.completed`,
+  /// which is the protocol exchange, not a block. What it did do was burn the
+  /// fixture wallets. A ~250 vB payjoin plus two drain-consolidations cost on
+  /// the order of half a million sats per run, on every run, of every PR in the
+  /// repository. The wallets emptied faster than anyone could refill them, and
+  /// once the balance fell just below what the next transaction needed, this
+  /// test failed and turned every open PR red — the failure that sent us
+  /// looking here in the first place was 341 sats short.
+  ///
+  /// Verified against mempool.space on 2026-08-10: testnet3 and testnet4 both
+  /// report 1 sat/vB across every tier, `fastestFee` included, so there is no
+  /// backlog to outbid. 10 leaves a wide margin anyway, because testnet3 mines
+  /// in bursts — the 20-minute difficulty reset makes block intervals erratic —
+  /// and a transaction left unconfirmed between runs is what would corrupt the
+  /// next run's UTXO set. Ten times the fastest recommendation buys that safety
+  /// for a few hundred sats.
+  const testnetFeeRate = 10.0;
+
   Future<void> consolidateUtxos(String walletId) async {
     final utxos = await utxoRepository.getWalletUtxos(walletId: walletId);
     if (utxos.length <= 1) return;
@@ -55,7 +76,7 @@ Future<void> main({bool isInitialized = false}) async {
       walletId: walletId,
       address: address.address,
       drain: true,
-      networkFee: NetworkFee.relativeFromSatPerVbyte(1000),
+      networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
     final signed = await signBitcoinTx.execute(
       psbt: prepared.unsignedPsbt,
@@ -215,7 +236,7 @@ Future<void> main({bool isInitialized = false}) async {
         expect(uri.path, address.address);
         expect(uri.queryParameters, contains('pj'));
 
-        const feeRate = 1000.0;
+        const feeRate = testnetFeeRate;
         final prepared = await prepareBitcoinSend.execute(
           walletId: senderWallet.id,
           address: address.address,
