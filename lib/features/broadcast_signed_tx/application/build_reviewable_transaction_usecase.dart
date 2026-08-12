@@ -30,6 +30,15 @@ class BuildReviewableTransactionUsecase {
       try {
         final parentTx = await _transactionPort.fetch(txid: input.previousTxId);
 
+        if (parentTx.txid != input.previousTxId) {
+          return Err(
+            TransactionReviewInputResolutionFailure(
+              parentTxId: input.previousTxId,
+              vout: input.previousVout,
+            ),
+          );
+        }
+
         if (input.previousVout >= parentTx.outputs.length) {
           return Err(
             TransactionReviewInputResolutionFailure(
