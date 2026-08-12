@@ -255,10 +255,12 @@ abstract class SendState with _$SendState {
     return !isConfidentialLiquidAddress(address);
   }
 
-  bool get isInputAmountFiat => ![
-    BitcoinUnit.btc.code,
-    BitcoinUnit.sats.code,
-  ].contains(inputAmountCurrencyCode);
+  bool get isInputAmountFiat =>
+      ![
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ].contains(inputAmountCurrencyCode) &&
+      exchangeRate > 0;
 
   int get inputAmountSat {
     int amountSat = 0;
