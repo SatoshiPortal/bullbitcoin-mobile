@@ -135,11 +135,11 @@ class AppLocator {
     CoinsLocator.setup(locator);
     ConsolidationLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
-    AnnouncementsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
+    AnnouncementsLocator.setup(locator);
     // Lifecycle side effect lives in the composition root, not in DI
     // registration: the background handler opts out via
     // [startOrderSwapWatcher] so polling only runs in the foreground app.

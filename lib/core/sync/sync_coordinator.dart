@@ -105,8 +105,9 @@ class SyncCoordinator {
     Set<SyncKind>? only,
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
+    final requestedKinds = only ?? const {SyncKind.bitcoin, SyncKind.liquid};
     final requested = SyncKind.values
-        .where((k) => only?.contains(k) ?? true)
+        .where(requestedKinds.contains)
         .toList(growable: false);
     final started = DateTime.now();
     final dropped = <String>[];

@@ -263,6 +263,104 @@ void main() {
     expect(bloc.state.swap, isA<ChainSwap>());
   });
 
+  test('resumes a stored transfer in the configured BTC unit', () async {
+    final settings = SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'USD',
+    );
+    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(
+      () => getWallets.execute(),
+    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => convertSats.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => 1.0);
+    when(
+      () => watchOrder.execute('local-1'),
+    ).thenAnswer((_) => const Stream.empty());
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    expect(bloc.state.amount, '0.00001');
+    expect(bloc.state.inputAmountSat, 1000);
+  });
+
+  test('resumes the persisted non-default wallet pair', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(() => getWallets.execute()).thenAnswer(
+      (_) async => [
+        _liquidWallet(id: 'default-liquid', isDefault: true),
+        _liquidWallet(),
+        _destinationWallet(id: 'default-bitcoin', isDefault: true),
+        _destinationWallet(),
+      ],
+    );
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => convertSats.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => 1.0);
+    when(
+      () => watchOrder.execute('local-1'),
+    ).thenAnswer((_) => const Stream.empty());
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    expect(bloc.state.fromWallet?.id, 'wallet-1');
+    expect(bloc.state.toWallet?.id, 'wallet-2');
+    expect(bloc.state.orderSwap?.localId, 'local-1');
+  });
+
+  test('surfaces a typed failure from the order watcher', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(
+      () => getWallets.execute(),
+    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => convertSats.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => 1.0);
+    when(() => watchOrder.execute('local-1')).thenAnswer(
+      (_) =>
+          Stream.value(const Err(SwapStorageFailure('database unavailable'))),
+    );
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => state.swapFailure != null);
+
+    expect(bloc.state.swapFailure, isA<SwapStorageFailure>());
+  });
+
   test(
     'refreshes an unknown broadcast and skips rebroadcast when payin is seen',
     () async {
@@ -366,6 +464,26 @@ void main() {
       expect(bloc.state.swapFailure!.logMessage, isNull);
     },
   );
+
+  test('preserves a typed swap failure while confirming', () async {
+    when(
+      () => markUnknown.execute('local-1'),
+    ).thenAnswer((_) async => const Err(SwapOrderExpiredFailure('expired')));
+    bloc.emit(
+      TransferState(
+        orderSwap: prepared,
+        signedPsbt: 'signed-psbt',
+        fromWallet: _wallet(),
+        swap: _swap(),
+      ),
+    );
+
+    bloc.add(const TransferEvent.confirmed());
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(bloc.state.swapFailure, isA<SwapOrderExpiredFailure>());
+  });
 }
 
 OrderSwapRecord _prepared({
@@ -410,9 +528,11 @@ OrderSwap _order({String payinStatus = 'In progress', DateTime? deadline}) =>
       payinStatus: payinStatus,
       payoutStatus: 'Not started',
       messageCode: 'ORDER_CREATED',
+      bitcoinAddress: 'destination',
       liquidAddress: 'liquid-address',
       createdAt: DateTime.utc(2026),
-      confirmationDeadline: deadline ?? DateTime.utc(2027, 1, 1, 0, 5),
+      confirmationDeadline:
+          deadline ?? DateTime.now().toUtc().add(const Duration(days: 365)),
     );
 
 ChainSwap _swap() =>
@@ -442,31 +562,35 @@ Wallet _wallet() => Wallet(
   balanceSat: BigInt.zero,
 );
 
-Wallet _liquidWallet() => Wallet(
-  origin: 'wallet-1',
-  network: Network.liquidTestnet,
-  xpubFingerprint: 'fingerprint-1',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub-1',
-  externalPublicDescriptor: 'external-1',
-  internalPublicDescriptor: 'internal-1',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-);
+Wallet _liquidWallet({String id = 'wallet-1', bool isDefault = false}) =>
+    Wallet(
+      origin: id,
+      network: Network.liquidTestnet,
+      xpubFingerprint: 'fingerprint-1',
+      scriptType: ScriptType.bip84,
+      xpub: 'xpub-1',
+      externalPublicDescriptor: 'external-1',
+      internalPublicDescriptor: 'internal-1',
+      signer: SignerEntity.local,
+      signerDevice: null,
+      isDefault: isDefault,
+      balanceSat: BigInt.zero,
+    );
 
-Wallet _destinationWallet() => Wallet(
-  origin: 'wallet-2',
-  network: Network.bitcoinTestnet,
-  xpubFingerprint: 'fingerprint-2',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub-2',
-  externalPublicDescriptor: 'external-2',
-  internalPublicDescriptor: 'internal-2',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(2000),
-);
+Wallet _destinationWallet({String id = 'wallet-2', bool isDefault = false}) =>
+    Wallet(
+      origin: id,
+      network: Network.bitcoinTestnet,
+      xpubFingerprint: 'fingerprint-2',
+      scriptType: ScriptType.bip84,
+      xpub: 'xpub-2',
+      externalPublicDescriptor: 'external-2',
+      internalPublicDescriptor: 'internal-2',
+      signer: SignerEntity.local,
+      signerDevice: null,
+      isDefault: isDefault,
+      balanceSat: BigInt.from(2000),
+    );
 
 FeeOptions _feeOptions() => const FeeOptions(
   fastest: RelativeFee(250),

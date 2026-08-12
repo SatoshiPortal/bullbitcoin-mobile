@@ -72,6 +72,7 @@ class _CarouselBodyState extends State<_CarouselBody> {
   /// card. Scales with the user's text size so larger accessibility settings
   /// never overflow.
   static const double _baseCardHeight = 90;
+  static const double _longCardHeight = 170;
 
   /// Extra height reserved for the page-indicator dots strip, only when more
   /// than one announcement is shown — reserving it for a single card renders
@@ -97,6 +98,8 @@ class _CarouselBodyState extends State<_CarouselBody> {
     switch (announcement.action) {
       case NavigateAction():
         context.pushNamed(announcement.route.name);
+      case NoAction():
+        break;
     }
   }
 
@@ -105,7 +108,9 @@ class _CarouselBodyState extends State<_CarouselBody> {
     final choice = await AnnouncementDismissDialog.show(context);
     switch (choice) {
       case AnnouncementDismissChoice.read:
-        if (mounted) _onTap(announcement);
+        if (mounted && announcement.action is NavigateAction) {
+          _onTap(announcement);
+        }
       case AnnouncementDismissChoice.dismiss:
         await cubit.dismiss(announcement.id);
       case null:
@@ -123,8 +128,14 @@ class _CarouselBodyState extends State<_CarouselBody> {
     // Adapt to the user's text-scale setting so the card grows with larger
     // accessibility font sizes instead of overflowing.
     final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final baseHeight =
+        announcements.any(
+          (announcement) => announcement.id == AnnouncementId.appUpdateRequired,
+        )
+        ? _longCardHeight
+        : _baseCardHeight;
     final cardHeight =
-        (_baseCardHeight + (showDots ? _dotsStripHeight : 0)) * textScale;
+        (baseHeight + (showDots ? _dotsStripHeight : 0)) * textScale;
 
     return SizedBox(
       height: cardHeight,

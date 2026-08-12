@@ -78,4 +78,10 @@ class OrderSwap {
         OrderSwapNetwork.lightning => lightningInvoice,
       } ??
       (throw StateError('Order has no payin address for ${inNetwork.name}'));
+
+  String? get payoutAddress => switch (outNetwork) {
+    OrderSwapNetwork.bitcoin => bitcoinAddress,
+    OrderSwapNetwork.liquid => liquidAddress,
+    OrderSwapNetwork.lightning => lightningInvoice,
+  };
 }

@@ -23,8 +23,11 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   final DateTime Function() _now;
   final String Function() _newLocalId;
   final String Function() _newRequestId;
+  final StreamController<bool> _appUpdateRequiredController =
+      StreamController<bool>.broadcast(sync: true);
   Future<void> _createQueue = Future.value();
   final Map<String, Future<void>> _recordQueues = {};
+  bool _isAppUpdateRequired = false;
 
   OrderSwapRepositoryImpl(
     this._testnetRemote,
@@ -36,6 +39,12 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   }) : _now = now ?? _utcNow,
        _newLocalId = newLocalId ?? _randomLocalId,
        _newRequestId = newRequestId ?? (() => 'mobile-${_randomLocalId()}');
+
+  @override
+  bool get isAppUpdateRequired => _isAppUpdateRequired;
+
+  @override
+  Stream<bool> watchAppUpdateRequired() => _appUpdateRequiredController.stream;
 
   @override
   Future<Result<OrderSwapQuote, SwapFailure>> getQuote({
@@ -317,7 +326,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       final order = (await _remote(
         record.environment,
       ).getOrderSwapSummary(orderId)).toEntity();
-      return _withRecordLock(localId, () async {
+      return await _withRecordLock(localId, () async {
         final latestRow = await _local.getByLocalId(localId);
         if (latestRow == null) {
           return const Err(SwapOrderNotFoundFailure('Local order not found'));
@@ -374,7 +383,8 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       final records = <OrderSwapRecord>[];
       for (final row in await _local.getByLocalStatuses(pendingNames)) {
         var record = row.toEntity();
-        if (record.localStatus == OrderSwapLocalStatus.creating) {
+        if (record.localStatus == OrderSwapLocalStatus.creating &&
+            _now().difference(record.createdAt) >= const Duration(minutes: 1)) {
           record = record.markCreationUnknown();
           await _local.save(record.toCompanion());
         }
@@ -452,16 +462,17 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   Future<Result<OrderSwapRecord, SwapFailure>> markBroadcastUnknown(
     String localId,
   ) => _updateLocalRecord(localId, (record) {
+    if (record.localStatus != OrderSwapLocalStatus.readyToBroadcast &&
+        record.localStatus != OrderSwapLocalStatus.broadcastUnknown) {
+      throw _InvalidOrderSwapTransition(
+        'Cannot start a broadcast from ${record.localStatus.name}',
+      );
+    }
     if (!record.order!.confirmationDeadline.isAfter(_now())) {
       throw const _ExpiredOrderSwapTransition();
     }
     if (record.localStatus == OrderSwapLocalStatus.broadcastUnknown) {
       return record;
-    }
-    if (record.localStatus != OrderSwapLocalStatus.readyToBroadcast) {
-      throw _InvalidOrderSwapTransition(
-        'Cannot start a broadcast from ${record.localStatus.name}',
-      );
     }
     return record.withPayinState(status: OrderSwapLocalStatus.broadcastUnknown);
   });
@@ -505,8 +516,17 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   });
 
   @override
-  Stream<OrderSwapRecord> watchOrder(String localId) =>
-      _local.watchByLocalId(localId).map((row) => row.toEntity());
+  Stream<Result<OrderSwapRecord, SwapFailure>> watchOrder(
+    String localId,
+  ) async* {
+    try {
+      await for (final row in _local.watchByLocalId(localId)) {
+        yield Ok(row.toEntity());
+      }
+    } catch (error) {
+      yield Err(SwapStorageFailure(error.toString()));
+    }
+  }
 
   Future<Result<OrderSwapRecord, SwapFailure>> _updateLocalRecord(
     String localId,
@@ -550,6 +570,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
   bool _createOutcomeIsUnknown(Object error) =>
       error is! ExchangeRpcException &&
       error is! ExchangeRateLimitException &&
+      error is! ExchangeAppUpdateRequiredException &&
       error is! ArgumentError;
 
   ExchangePublicApiDatasource _remote(OrderSwapEnvironment environment) =>
@@ -561,7 +582,17 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     OrderSwapLocalStatus current,
     OrderSwap order,
   ) {
+    if (current.isTerminal) return current;
     final orderStatus = order.orderStatus.trim().toLowerCase();
+    final payoutStatus = order.payoutStatus.trim().toLowerCase();
+    if (payoutStatus == 'completed') return OrderSwapLocalStatus.completed;
+    if (payoutStatus == 'refunded') return OrderSwapLocalStatus.refunded;
+    if (payoutStatus == 'failed' ||
+        payoutStatus == 'rejected' ||
+        payoutStatus == 'cancelled' ||
+        payoutStatus == 'canceled') {
+      return OrderSwapLocalStatus.failed;
+    }
     if (orderStatus == 'completed') return OrderSwapLocalStatus.completed;
     if (orderStatus == 'refunded') return OrderSwapLocalStatus.refunded;
     if (orderStatus == 'expired' || orderStatus == 'payment deadline expired') {
@@ -595,6 +626,13 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
             ? null
             : Duration(seconds: error.retryAfterSeconds!),
       );
+    }
+    if (error is ExchangeAppUpdateRequiredException) {
+      if (!_isAppUpdateRequired) {
+        _isAppUpdateRequired = true;
+        _appUpdateRequiredController.add(true);
+      }
+      return const SwapProviderFailure('App update required');
     }
     if (error is ExchangeTimeoutException) {
       return SwapTimeoutFailure(error.logMessage);

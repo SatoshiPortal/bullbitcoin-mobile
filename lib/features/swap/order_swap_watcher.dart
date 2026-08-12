@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 class OrderSwapWatcher {
   final SyncCoordinator _syncCoordinator;
   final Duration _pollInterval;
+  final bool Function() _isAppUpdateRequired;
 
   AppLifecycleListener? _lifecycleListener;
   Timer? _timer;
@@ -18,7 +19,8 @@ class OrderSwapWatcher {
   OrderSwapWatcher(
     this._syncCoordinator, {
     this._pollInterval = const Duration(seconds: 30),
-  });
+    bool Function()? isAppUpdateRequired,
+  }) : _isAppUpdateRequired = isAppUpdateRequired ?? (() => false);
 
   void start() {
     if (_isStarted) return;
@@ -33,7 +35,7 @@ class OrderSwapWatcher {
   }
 
   Future<void> refresh() {
-    if (!_isResumed) return Future.value();
+    if (!_isResumed || _isAppUpdateRequired()) return Future.value();
     final active = _activeRefresh;
     if (active != null) return active;
 
@@ -72,7 +74,7 @@ class OrderSwapWatcher {
 
   void _schedule(Duration delay) {
     _timer?.cancel();
-    if (!_isStarted || !_isResumed) return;
+    if (!_isStarted || !_isResumed || _isAppUpdateRequired()) return;
     _timer = Timer(delay, () => unawaited(refresh()));
   }
 

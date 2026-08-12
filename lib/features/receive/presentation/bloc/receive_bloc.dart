@@ -135,7 +135,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final Wallet? _wallet;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
-  StreamSubscription<OrderSwapRecord>? _orderSwapSubscription;
+  StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
+  _orderSwapSubscription;
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
   late final StreamSubscription<int> _payjoinMinAmountChangeSubscription;
 
@@ -1051,12 +1052,34 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveOrderSwapUpdated event,
     Emitter<ReceiveState> emit,
   ) async {
-    if (state.type != ReceiveType.lightning ||
-        event.orderSwap.localId != state.orderSwap?.localId) {
+    if (event.result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
       return;
     }
-    emit(state.copyWith(orderSwap: event.orderSwap));
-    if (event.orderSwap.localStatus == OrderSwapLocalStatus.completed) {
+    final orderSwap =
+        (event.result as Ok<OrderSwapRecord, ReceiveFailure>).value;
+    if (state.type != ReceiveType.lightning ||
+        orderSwap.localId != state.orderSwap?.localId) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        orderSwap: orderSwap,
+        failure: switch (orderSwap.localStatus) {
+          OrderSwapLocalStatus.expired => const ReceiveSwapUnavailableFailure(
+            'Exchange order expired',
+          ),
+          OrderSwapLocalStatus.failed => const ReceiveSwapUnavailableFailure(
+            'Exchange order failed',
+          ),
+          OrderSwapLocalStatus.refunded => const ReceiveSwapUnavailableFailure(
+            'Exchange order refunded',
+          ),
+          _ => state.failure,
+        },
+      ),
+    );
+    if (orderSwap.localStatus == OrderSwapLocalStatus.completed) {
       await _getWalletsUsecase.execute(sync: true);
     }
   }
@@ -1130,9 +1153,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _orderSwapSubscription?.cancel();
     _orderSwapSubscription = _watchReceiveOrderSwapUsecase
         .execute(localId)
-        .listen((orderSwap) {
+        .listen((result) {
           if (isClosed) return;
-          add(ReceiveOrderSwapUpdated(orderSwap));
+          add(ReceiveOrderSwapUpdated(result));
         });
   }
 }

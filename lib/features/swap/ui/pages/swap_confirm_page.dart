@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
+import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,9 @@ class SwapConfirmPage extends StatelessWidget {
 
     final swapFailure = context.select(
       (TransferBloc bloc) => bloc.state.swapFailure,
+    );
+    final buildTransactionException = context.select(
+      (TransferBloc bloc) => bloc.state.buildTransactionException,
     );
     final absoluteFeesFormatted = context.select(
       (TransferBloc bloc) => bloc.state.absoluteFeesFormatted,
@@ -156,7 +160,11 @@ class SwapConfirmPage extends StatelessWidget {
                 ),
                 const Gap(24),
                 CommonConfirmSendErrorSection(
-                  errorMessage: swapFailure?.toTranslated(context),
+                  errorMessage: transferConfirmErrorMessage(
+                    buildTransactionException: buildTransactionException,
+                    swapFailureMessage: swapFailure?.toTranslated(context),
+                    buildFailureMessage: context.loc.sendErrorBuildFailed,
+                  ),
                 ),
               ],
             ),

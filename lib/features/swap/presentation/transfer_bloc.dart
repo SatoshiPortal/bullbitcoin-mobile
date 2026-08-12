@@ -133,7 +133,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   _markOrderSwapBroadcastUnknownUsecase;
   final MarkOrderSwapPayinBroadcastUsecase _markOrderSwapPayinBroadcastUsecase;
   final WatchOrderSwapUsecase _watchOrderSwapUsecase;
-  StreamSubscription<OrderSwapRecord>? _orderSwapSubscription;
+  StreamSubscription<Result<OrderSwapRecord, SwapFailure>>?
+  _orderSwapSubscription;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
@@ -184,14 +185,30 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
           .toList();
 
-      final fromWallet = liquidWallets.isNotEmpty
+      var fromWallet = liquidWallets.isNotEmpty
           ? (liquidWallets.where((wallet) => wallet.isDefault).firstOrNull ??
                 liquidWallets.first)
           : null;
-      final toWallet = bitcoinWallets.isNotEmpty
+      var toWallet = bitcoinWallets.isNotEmpty
           ? (bitcoinWallets.where((wallet) => wallet.isDefault).firstOrNull ??
                 bitcoinWallets.first)
           : null;
+      final pendingResult = await _getPendingOrderSwapsUsecase.execute();
+      if (pendingResult case Ok(:final value)) {
+        final pendingTransfer = value
+            .where((order) => order.purpose == OrderSwapPurpose.transfer)
+            .firstOrNull;
+        if (pendingTransfer != null) {
+          fromWallet = wallets
+              .where((wallet) => wallet.id == pendingTransfer.sourceWalletId)
+              .firstOrNull;
+          toWallet = wallets
+              .where(
+                (wallet) => wallet.id == pendingTransfer.destinationWalletId,
+              )
+              .firstOrNull;
+        }
+      }
       // Set the bitcoin network fees and liquid network fees already here,
       //  since they are needed for the rest of the initialization steps, like
       //  calculating the max amount.
@@ -297,7 +314,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         orderSwap: record,
         swap: displaySwap,
         signedPsbt: record.signedPayinTransaction!,
-        amount: record.requestedAmountSat.toString(),
+        amount: state.bitcoinUnit == BitcoinUnit.sats
+            ? record.requestedAmountSat.toString()
+            : ConvertAmount.satsToBtc(
+                record.requestedAmountSat.toInt(),
+              ).toString(),
         receiveAddress: record.destination,
       ),
     );
@@ -993,7 +1014,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } catch (e) {
       log.severe(
         message: 'Error loading UTXOs',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
     }
@@ -1423,7 +1444,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } catch (e) {
       log.severe(
         message: 'Error rebuilding transaction',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
     }
@@ -1453,27 +1474,29 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final orderSwap = state.orderSwap;
       if (orderSwap != null) {
         if (orderSwap.localStatus == OrderSwapLocalStatus.broadcastUnknown) {
-          final refreshed = switch (await _refreshOrderSwapUsecase.execute(
+          final refreshResult = await _refreshOrderSwapUsecase.execute(
             orderSwap.localId,
-          )) {
-            Ok(:final value) => value,
-            Err(:final failure) => throw ConfirmTransactionException(
-              failure.logMessage ?? failure.runtimeType.toString(),
-            ),
-          };
+          );
+          if (refreshResult case Err(:final failure)) {
+            emit(state.copyWith(swapFailure: failure));
+            return;
+          }
+          final refreshed =
+              (refreshResult as Ok<OrderSwapRecord, SwapFailure>).value;
           final payinStatus = refreshed.order?.payinStatus.trim().toLowerCase();
           if (payinStatus == 'completed') {
             emit(state.copyWith(orderSwap: refreshed));
             return;
           }
         }
-        final broadcasting = switch (await _markOrderSwapBroadcastUnknownUsecase
-            .execute(orderSwap.localId)) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw ConfirmTransactionException(
-            failure.logMessage ?? failure.runtimeType.toString(),
-          ),
-        };
+        final broadcastStartResult = await _markOrderSwapBroadcastUnknownUsecase
+            .execute(orderSwap.localId);
+        if (broadcastStartResult case Err(:final failure)) {
+          emit(state.copyWith(swapFailure: failure));
+          return;
+        }
+        final broadcasting =
+            (broadcastStartResult as Ok<OrderSwapRecord, SwapFailure>).value;
         if (state.fromWallet?.isLiquid == true) {
           txId = await _broadcastLiquidTxUsecase.execute(
             broadcasting.signedPayinTransaction!,
@@ -1484,13 +1507,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             isPsbt: broadcasting.payinIsPsbt!,
           );
         }
-        final broadcast = switch (await _markOrderSwapPayinBroadcastUsecase
-            .execute(localId: orderSwap.localId, transactionId: txId)) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw ConfirmTransactionException(
-            failure.logMessage ?? failure.runtimeType.toString(),
-          ),
-        };
+        final broadcastResult = await _markOrderSwapPayinBroadcastUsecase
+            .execute(localId: orderSwap.localId, transactionId: txId);
+        if (broadcastResult case Err(:final failure)) {
+          emit(state.copyWith(swapFailure: failure, txId: txId));
+          return;
+        }
+        final broadcast =
+            (broadcastResult as Ok<OrderSwapRecord, SwapFailure>).value;
         final displaySwap = state.swap as ChainSwap;
         emit(
           state.copyWith(
@@ -1584,7 +1608,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } catch (e) {
       log.severe(
         message: 'Error getting max amount sat in transfer bloc',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
       return null;
@@ -1600,7 +1624,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferOrderSwapUpdated event,
     Emitter<TransferState> emit,
   ) async {
-    final orderSwap = event.orderSwap;
+    if (event.result case Err(:final failure)) {
+      emit(state.copyWith(swapFailure: failure));
+      return;
+    }
+    final orderSwap = (event.result as Ok<OrderSwapRecord, SwapFailure>).value;
     final currentSwap = state.swap;
     if (currentSwap is! ChainSwap) return;
     final status = transferSwapStatusForOrderSwap(orderSwap.localStatus);
@@ -1631,12 +1659,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     _orderSwapSubscription?.cancel();
     _orderSwapSubscription = _watchOrderSwapUsecase
         .execute(localId)
-        .listen(
-          (orderSwap) => add(TransferEvent.orderSwapUpdated(orderSwap)),
-          onError: (Object error) {
-            log.warning('Exchange transfer watcher failed: $error');
-          },
-        );
+        .listen((result) => add(TransferEvent.orderSwapUpdated(result)));
   }
 
   // ────── FeeModalViewState + FeeModalActions adoption ──────

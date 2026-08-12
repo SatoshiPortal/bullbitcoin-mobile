@@ -6,6 +6,10 @@ import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class OrderSwapRepository {
+  bool get isAppUpdateRequired;
+
+  Stream<bool> watchAppUpdateRequired();
+
   @useResult
   Future<Result<OrderSwapQuote, SwapFailure>> getQuote({
     required OrderSwapEnvironment environment,
@@ -81,5 +85,5 @@ abstract interface class OrderSwapRepository {
     required DateTime appliedAt,
   });
 
-  Stream<OrderSwapRecord> watchOrder(String localId);
+  Stream<Result<OrderSwapRecord, SwapFailure>> watchOrder(String localId);
 }

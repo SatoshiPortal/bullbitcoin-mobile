@@ -72,6 +72,19 @@ SendStep sendStepForOrderSwapStatus(OrderSwapLocalStatus status) =>
       OrderSwapLocalStatus.creationUnknown => SendStep.address,
     };
 
+SendStep sendStepForWatchedOrderSwap(
+  SendStep current,
+  OrderSwapLocalStatus status,
+) {
+  if (current == SendStep.address || current == SendStep.amount) return current;
+  return sendStepForOrderSwapStatus(status);
+}
+
+SendStep sendStepAfterBroadcastPersistenceFailure({
+  required SendStep current,
+  required String? transactionId,
+}) => transactionId == null ? SendStep.confirm : SendStep.success;
+
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({

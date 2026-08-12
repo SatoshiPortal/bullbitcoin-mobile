@@ -153,7 +153,8 @@ class SendCubit extends Cubit<SendState>
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
   final VerifySignedTxUsecase _verifySignedTxUsecase;
 
-  StreamSubscription<OrderSwapRecord>? _orderSwapSubscription;
+  StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
+  _orderSwapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
@@ -519,6 +520,7 @@ class SendCubit extends Cubit<SendState>
         destinationIsTestnet: state.paymentRequest!.isTestnet,
         amountSat: amountSat,
         isInAmountFixed: false,
+        quotedCounterpartAmountSat: quote.inAmountSat,
         note: state.label.isEmpty ? null : state.label,
       )) {
         case Ok(:final value):
@@ -1642,7 +1644,9 @@ class SendCubit extends Cubit<SendState>
     if (order == null) return true;
     switch (await _updateSendSwapPayinUsecase.execute(
       localId: order.localId,
-      update: SendSwapPayinUpdate.prepared,
+      update: order.localStatus == OrderSwapLocalStatus.readyToBroadcast
+          ? SendSwapPayinUpdate.replaced
+          : SendSwapPayinUpdate.prepared,
       signedTransaction: signedTransaction,
       isPsbt: isPsbt,
     )) {
@@ -1769,7 +1773,14 @@ class SendCubit extends Cubit<SendState>
             emit(state.copyWith(lightningOrder: value));
           case Err(:final failure):
             emit(
-              state.copyWith(failure: failure, broadcastingTransaction: false),
+              state.copyWith(
+                failure: failure,
+                broadcastingTransaction: false,
+                step: sendStepAfterBroadcastPersistenceFailure(
+                  current: state.step,
+                  transactionId: state.txId,
+                ),
+              ),
             );
             return;
         }
@@ -1782,22 +1793,16 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(txId: txId));
       } else {
         // Payjoin sends are already broadcast asynchronously by the repository
-        // and their state.txId is set in signTransaction, so only plain
-        // Bitcoin sends and Exchange payins broadcast here.
-        final paymentRequest = state.paymentRequest;
-        if (state.isToSelf != true &&
-            paymentRequest != null &&
-            paymentRequest is Bip21PaymentRequest &&
-            paymentRequest.pj.isNotEmpty) {
-          emit(state.copyWith(broadcastingTransaction: false));
-        } else {
-          final txId = await _broadcastBitcoinTxUsecase.execute(
-            persistedPayin ??
-                (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
-            isPsbt: persistedPayinIsPsbt ?? isPsbt,
-          );
-          emit(state.copyWith(txId: txId));
-        }
+        // and their state.txId is set in signTransaction, so the guard at the
+        // top of this method returns before reaching here. Only plain Bitcoin
+        // sends and Exchange payins broadcast at this point; a BIP21 `pj`
+        // advertisement alone is not proof a payjoin was attempted.
+        final txId = await _broadcastBitcoinTxUsecase.execute(
+          persistedPayin ??
+              (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
+          isPsbt: persistedPayinIsPsbt ?? isPsbt,
+        );
+        emit(state.copyWith(txId: txId));
       }
 
       if (lightningOrder != null) {
@@ -1810,7 +1815,14 @@ class SendCubit extends Cubit<SendState>
             emit(state.copyWith(lightningOrder: value));
           case Err(:final failure):
             emit(
-              state.copyWith(failure: failure, broadcastingTransaction: false),
+              state.copyWith(
+                failure: failure,
+                broadcastingTransaction: false,
+                step: sendStepAfterBroadcastPersistenceFailure(
+                  current: state.step,
+                  transactionId: state.txId,
+                ),
+              ),
             );
             return;
         }
@@ -1906,8 +1918,12 @@ class SendCubit extends Cubit<SendState>
       // }
       await broadcastTransaction(isPsbt: state.signedBitcoinTx == null);
       if (state.failure is SendTransactionConfirmationFailure) {
-        emit(state.copyWith(step: SendStep.confirm));
-        return;
+        final nextStep = sendStepAfterBroadcastPersistenceFailure(
+          current: state.step,
+          transactionId: state.txId,
+        );
+        emit(state.copyWith(step: nextStep));
+        if (state.txId == null) return;
       }
       // For a payjoin, _watchPayjoin (started in signTransaction) owns
       // resolving the flow to success — it watches the payjoin session and
@@ -1960,28 +1976,28 @@ class SendCubit extends Cubit<SendState>
 
   void _watchOrderSwap(String localId) {
     _orderSwapSubscription?.cancel();
-    _orderSwapSubscription = _watchSendSwapUsecase
-        .execute(localId)
-        .listen(
-          (order) {
-            emit(
-              state.copyWith(
-                lightningOrder: order,
-                step: sendStepForOrderSwapStatus(order.localStatus),
-              ),
+    _orderSwapSubscription = _watchSendSwapUsecase.execute(localId).listen((
+      result,
+    ) {
+      switch (result) {
+        case Ok(:final value):
+          if (isClosed) return;
+          emit(
+            state.copyWith(
+              lightningOrder: value,
+              step: sendStepForWatchedOrderSwap(state.step, value.localStatus),
+            ),
+          );
+          if (value.localStatus.isTerminal) {
+            unawaited(
+              _getWalletUsecase.execute(state.selectedWallet!.id, sync: true),
             );
-            if (order.localStatus.isTerminal) {
-              unawaited(
-                _getWalletUsecase.execute(state.selectedWallet!.id, sync: true),
-              );
-            }
-          },
-          onError: (Object error) {
-            emit(
-              state.copyWith(failure: SendUnexpectedFailure(error.toString())),
-            );
-          },
-        );
+          }
+        case Err(:final failure):
+          if (isClosed) return;
+          emit(state.copyWith(failure: failure));
+      }
+    });
   }
 
   /// Watches the sender side of an in-flight payjoin and resolves the send

@@ -105,6 +105,61 @@ void main() {
     );
   });
 
+  test('publishes the app update signal after HTTP 418', () async {
+    when(
+      () => remote.getBestSwapOption(
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.bitcoin,
+        outNetwork: OrderSwapNetwork.liquid,
+      ),
+    ).thenThrow(const ExchangeAppUpdateRequiredException());
+    final signal = expectLater(
+      repository.watchAppUpdateRequired(),
+      emits(true),
+    );
+
+    final result = await repository.getQuote(
+      environment: OrderSwapEnvironment.testnet,
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: false,
+      inNetwork: OrderSwapNetwork.bitcoin,
+      outNetwork: OrderSwapNetwork.liquid,
+    );
+
+    expect(result, isA<Err<OrderSwapQuote, SwapFailure>>());
+    expect(repository.isAppUpdateRequired, isTrue);
+    await signal;
+  });
+
+  test('does not preserve a false unknown order after HTTP 418', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: true,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.bitcoin,
+        destinationAddress: 'tb1destination',
+        fallbackAddress: 'tlq1fallback',
+      ),
+    ).thenThrow(const ExchangeAppUpdateRequiredException());
+
+    final result = await repository.createOrder(
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: true,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.bitcoin,
+      destinationAddress: 'tb1destination',
+      fallbackAddress: 'tlq1fallback',
+      purpose: OrderSwapPurpose.transfer,
+      environment: OrderSwapEnvironment.testnet,
+    );
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    expect(await database.select(database.orderSwaps).get(), isEmpty);
+  });
+
   test('routes mainnet order creation and refresh to mainnet', () async {
     when(
       () => mainnetRemote.createOrderSwap(
@@ -266,9 +321,7 @@ void main() {
         destinationAddress: 'invoice',
         fallbackAddress: 'fallback',
       ),
-    ).thenAnswer(
-      (_) async => _orderModel(payinAmount: '0.00101001'),
-    );
+    ).thenAnswer((_) async => _orderModel(payinAmount: '0.00101001'));
 
     final result = await repository.createOrder(
       amountSat: BigInt.from(1000),
@@ -461,7 +514,10 @@ void main() {
     final result = await _create(repository);
 
     expect(result, isA<Ok<OrderSwapRecord, SwapFailure>>());
-    expect((result as Ok<OrderSwapRecord, SwapFailure>).value.orderId, 'order-1');
+    expect(
+      (result as Ok<OrderSwapRecord, SwapFailure>).value.orderId,
+      'order-1',
+    );
     verify(
       () => remote.createOrderSwap(
         requestId: 'request-1',
@@ -605,6 +661,7 @@ void main() {
           localStatus: Value(OrderSwapLocalStatus.creating.name),
         ),
       );
+      now = now.add(const Duration(minutes: 1));
 
       final result = await repository.getPendingOrders();
 
@@ -625,6 +682,17 @@ void main() {
       ).called(1);
     },
   );
+
+  test('does not mark a recent in-flight creation as unknown', () async {
+    await _insertRecord(database, localId: 'local-1');
+
+    final result = await repository.getPendingOrders();
+
+    final records = (result as Ok<List<OrderSwapRecord>, SwapFailure>).value;
+    expect(records.single.localStatus, OrderSwapLocalStatus.creating);
+    final row = await database.select(database.orderSwaps).getSingle();
+    expect(row.localStatus, OrderSwapLocalStatus.creating.name);
+  });
 
   test(
     'persists the exact signed payload before and across broadcast',
@@ -858,6 +926,34 @@ void main() {
     }
   });
 
+  test('maps a terminal payout when the order status is unknown', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+    await _create(repository);
+    when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+      (_) async => _orderModel(
+        orderStatus: 'Future provider status',
+        payoutStatus: 'Refunded',
+      ),
+    );
+
+    final result = await repository.refreshOrder('local-1');
+
+    expect(
+      (result as Ok<OrderSwapRecord, SwapFailure>).value.localStatus,
+      OrderSwapLocalStatus.refunded,
+    );
+  });
+
   test('a late refresh does not roll back broadcast state', () async {
     when(
       () => remote.createOrderSwap(
@@ -891,6 +987,124 @@ void main() {
     expect(row.localStatus, OrderSwapLocalStatus.broadcastUnknown.name);
     expect(row.signedPayinTransaction, 'signed-pset');
   });
+
+  test('a late refresh cannot regress a completed order', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+    await _create(repository);
+    await (database.update(
+      database.orderSwaps,
+    )..where((table) => table.localId.equals('local-1'))).write(
+      OrderSwapsCompanion(
+        localStatus: Value(OrderSwapLocalStatus.completed.name),
+      ),
+    );
+    when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+      (_) async =>
+          _orderModel(orderStatus: 'In progress', payinStatus: 'Completed'),
+    );
+
+    final result = await repository.refreshOrder('local-1');
+
+    expect(
+      (result as Ok<OrderSwapRecord, SwapFailure>).value.localStatus,
+      OrderSwapLocalStatus.completed,
+    );
+  });
+
+  test('rejects a server order that changes the payout destination', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer(
+      (_) async => _orderModel(lightningInvoice: 'attacker-invoice'),
+    );
+
+    final result = await _create(repository);
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    expect(
+      (result as Err<OrderSwapRecord, SwapFailure>).failure,
+      isA<SwapOrderMismatchFailure>(),
+    );
+  });
+
+  test(
+    'markBroadcastUnknown reports invalid state when no server order exists',
+    () async {
+      when(
+        () => remote.createOrderSwap(
+          requestId: 'request-1',
+          amountSat: BigInt.from(1000),
+          isInAmountFixed: false,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.lightning,
+          destinationAddress: 'invoice',
+          fallbackAddress: 'fallback',
+        ),
+      ).thenThrow(const ExchangeTimeoutException('timeout'));
+      await _create(repository);
+
+      final result = await repository.markBroadcastUnknown('local-1');
+
+      expect(
+        (result as Err<OrderSwapRecord, SwapFailure>).failure,
+        isA<SwapInvalidStateFailure>(),
+      );
+    },
+  );
+
+  test(
+    'maps entity invariant failures during refresh instead of throwing',
+    () async {
+      when(
+        () => remote.createOrderSwap(
+          requestId: 'request-1',
+          amountSat: BigInt.from(1000),
+          isInAmountFixed: false,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.lightning,
+          destinationAddress: 'invoice',
+          fallbackAddress: 'fallback',
+        ),
+      ).thenAnswer((_) async => _orderModel());
+      await repository.createOrder(
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+        purpose: OrderSwapPurpose.sendLightning,
+        environment: OrderSwapEnvironment.testnet,
+        sourceWalletId: 'wallet-1',
+        quotedCounterpartAmountSat: BigInt.from(1010),
+      );
+      when(
+        () => remote.getOrderSwapSummary('order-1'),
+      ).thenAnswer((_) async => _orderModel(payinAmount: '0.00010000'));
+
+      final result = await repository.refreshOrder('local-1');
+
+      expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    },
+  );
 
   test('does not accept a response that changes the fixed output', () async {
     when(
@@ -954,6 +1168,32 @@ void main() {
     );
     expect((after as Ok<List<OrderSwapRecord>, SwapFailure>).value, isEmpty);
   });
+
+  test('maps watched order storage errors to a typed failure', () async {
+    await _insertRecord(
+      database,
+      localId: 'watched-order',
+      sourceWalletId: 'wallet-1',
+    );
+    final expectation = expectLater(
+      repository.watchOrder('watched-order'),
+      emitsInOrder([
+        isA<Ok<OrderSwapRecord, SwapFailure>>(),
+        isA<Err<OrderSwapRecord, SwapFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SwapStorageFailure>(),
+        ),
+      ]),
+    );
+
+    await Future<void>.delayed(Duration.zero);
+    await (database.delete(
+      database.orderSwaps,
+    )..where((table) => table.localId.equals('watched-order'))).go();
+
+    await expectation;
+  });
 }
 
 Future<Result<OrderSwapRecord, SwapFailure>> _create(
@@ -1000,6 +1240,9 @@ OrderSwapModel _orderModel({
   String payinAmount = '0.00001010',
   String payoutAmount = '0.00001000',
   String orderStatus = 'Awaiting payment',
+  String payinStatus = 'In progress',
+  String payoutStatus = 'In progress',
+  String lightningInvoice = 'invoice',
 }) => OrderSwapModel(
   orderId: 'order-1',
   orderNumber: 1,
@@ -1011,10 +1254,10 @@ OrderSwapModel _orderModel({
   payoutMethod: 'Lightning',
   orderType: 'Swap',
   orderStatus: orderStatus,
-  payinStatus: 'In progress',
-  payoutStatus: 'In progress',
+  payinStatus: payinStatus,
+  payoutStatus: payoutStatus,
   messageCode: 'ORDER_CREATED',
-  lightningInvoice: 'invoice',
+  lightningInvoice: lightningInvoice,
   createdAt: DateTime.utc(2026, 8, 5, 12),
   confirmationDeadline: DateTime.utc(2026, 8, 5, 12, 5),
 );

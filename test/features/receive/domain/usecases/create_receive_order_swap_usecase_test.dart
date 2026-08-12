@@ -45,7 +45,7 @@ void main() {
       ).thenAnswer((_) async => Ok(_quote()));
       when(
         () =>
-            getReceiveAddress.execute(walletId: 'wallet-1', generateNew: false),
+            getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true),
       ).thenAnswer((_) async => _address());
       when(
         () => swapFacade.createOrder(
@@ -278,7 +278,7 @@ void _stubSuccessfulCreation(
     ),
   ).thenAnswer((_) async => Ok(_quote()));
   when(
-    () => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: false),
+    () => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true),
   ).thenAnswer((_) async => _address());
   when(
     () => swapFacade.createOrder(

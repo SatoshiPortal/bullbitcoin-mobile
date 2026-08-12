@@ -9,13 +9,16 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_labels_applied_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
 
 export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
@@ -33,11 +36,14 @@ class SwapFacade {
   final GetPendingOrderSwapsUsecase _getPendingOrders;
   final GetOrderSwapsAwaitingLabelsUsecase _getOrdersAwaitingLabels;
   final SavePreparedOrderSwapPayinUsecase _savePreparedPayin;
+  final ReplacePreparedOrderSwapPayinUsecase _replacePreparedPayin;
   final MarkOrderSwapBroadcastUnknownUsecase _markBroadcastUnknown;
   final MarkOrderSwapPayinBroadcastUsecase _markPayinBroadcast;
   final MarkOrderSwapLabelsAppliedUsecase _markLabelsApplied;
   final WatchOrderSwapUsecase _watchOrder;
   final RefreshOrderSwapsUsecase _refreshOrders;
+  final GetSwapAppUpdateRequiredUsecase _getAppUpdateRequired;
+  final WatchSwapAppUpdateRequiredUsecase _watchAppUpdateRequired;
 
   SwapFacade(
     this._getQuote,
@@ -48,12 +54,19 @@ class SwapFacade {
     this._getPendingOrders,
     this._getOrdersAwaitingLabels,
     this._savePreparedPayin,
+    this._replacePreparedPayin,
     this._markBroadcastUnknown,
     this._markPayinBroadcast,
     this._markLabelsApplied,
     this._watchOrder,
     this._refreshOrders,
+    this._getAppUpdateRequired,
+    this._watchAppUpdateRequired,
   );
+
+  bool get isAppUpdateRequired => _getAppUpdateRequired.execute();
+
+  Stream<bool> watchAppUpdateRequired() => _watchAppUpdateRequired.execute();
 
   Future<Result<OrderSwapQuote, SwapFailure>> getQuote({
     required OrderSwapEnvironment environment,
@@ -124,6 +137,16 @@ class SwapFacade {
     isPsbt: isPsbt,
   );
 
+  Future<Result<OrderSwapRecord, SwapFailure>> replacePreparedPayin({
+    required String localId,
+    required String signedTransaction,
+    required bool isPsbt,
+  }) => _replacePreparedPayin.execute(
+    localId: localId,
+    signedTransaction: signedTransaction,
+    isPsbt: isPsbt,
+  );
+
   Future<Result<OrderSwapRecord, SwapFailure>> markBroadcastUnknown(
     String localId,
   ) => _markBroadcastUnknown.execute(localId);
@@ -141,7 +164,7 @@ class SwapFacade {
     required DateTime appliedAt,
   }) => _markLabelsApplied.execute(localId: localId, appliedAt: appliedAt);
 
-  Stream<OrderSwapRecord> watchOrder(String localId) =>
+  Stream<Result<OrderSwapRecord, SwapFailure>> watchOrder(String localId) =>
       _watchOrder.execute(localId);
 
   Future<Result<void, SwapFailure>> refreshOrders() async {

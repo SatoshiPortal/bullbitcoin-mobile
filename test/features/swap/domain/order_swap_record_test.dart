@@ -4,6 +4,26 @@ import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('accepts historical server orders without a payout echo', () {
+    expect(
+      () => OrderSwapRecord(
+        localId: 'local-1',
+        purpose: OrderSwapPurpose.sendLightning,
+        environment: OrderSwapEnvironment.testnet,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        isInAmountFixed: false,
+        requestedAmountSat: BigInt.from(1000),
+        destination: 'destination',
+        fallback: 'fallback',
+        order: _order(),
+        createdAt: DateTime.utc(2026),
+        localStatus: OrderSwapLocalStatus.awaitingUserConfirmation,
+      ),
+      returnsNormally,
+    );
+  });
+
   OrderSwapRecord buildRecord({
     BigInt? amount,
     OrderSwapNetwork outNetwork = OrderSwapNetwork.lightning,

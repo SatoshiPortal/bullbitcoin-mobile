@@ -33,6 +33,6 @@ class ReceiveEvent with _$ReceiveEvent {
     Future<bool> Function() requestConsent,
   ) = ReceivePayjoinToggled;
   const factory ReceiveEvent.receiveOrderSwapUpdated(
-    OrderSwapRecord orderSwap,
+    Result<OrderSwapRecord, ReceiveFailure> result,
   ) = ReceiveOrderSwapUpdated;
 }

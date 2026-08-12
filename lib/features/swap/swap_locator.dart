@@ -39,6 +39,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_use
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
@@ -49,6 +50,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/refresh_pending_order_sw
 import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:dio/dio.dart';
@@ -160,6 +162,12 @@ class SwapLocator {
     locator.registerFactory<WatchOrderSwapUsecase>(
       () => WatchOrderSwapUsecase(locator<OrderSwapRepository>()),
     );
+    locator.registerFactory<GetSwapAppUpdateRequiredUsecase>(
+      () => GetSwapAppUpdateRequiredUsecase(locator<OrderSwapRepository>()),
+    );
+    locator.registerFactory<WatchSwapAppUpdateRequiredUsecase>(
+      () => WatchSwapAppUpdateRequiredUsecase(locator<OrderSwapRepository>()),
+    );
     locator.registerFactory<SwapFacade>(
       () => SwapFacade(
         locator<GetOrderSwapQuoteUsecase>(),
@@ -170,15 +178,21 @@ class SwapLocator {
         locator<GetPendingOrderSwapsUsecase>(),
         locator<GetOrderSwapsAwaitingLabelsUsecase>(),
         locator<SavePreparedOrderSwapPayinUsecase>(),
+        locator<ReplacePreparedOrderSwapPayinUsecase>(),
         locator<MarkOrderSwapBroadcastUnknownUsecase>(),
         locator<MarkOrderSwapPayinBroadcastUsecase>(),
         locator<MarkOrderSwapLabelsAppliedUsecase>(),
         locator<WatchOrderSwapUsecase>(),
         locator<RefreshOrderSwapsUsecase>(),
+        locator<GetSwapAppUpdateRequiredUsecase>(),
+        locator<WatchSwapAppUpdateRequiredUsecase>(),
       ),
     );
     locator.registerLazySingleton<OrderSwapWatcher>(
-      () => OrderSwapWatcher(locator<SyncCoordinator>()),
+      () => OrderSwapWatcher(
+        locator<SyncCoordinator>(),
+        isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
+      ),
       dispose: (watcher) => watcher.dispose(),
     );
   }

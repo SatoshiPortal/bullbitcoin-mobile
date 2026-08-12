@@ -36,6 +36,33 @@ class _FakeWallet extends Fake implements Wallet {
 /// `b734968d…` (paid 30 sat, predicted 28) — divergences that justified
 /// removing the prediction path entirely.
 void main() {
+  test('a background swap poll does not pull the user back from amount', () {
+    expect(
+      sendStepForWatchedOrderSwap(
+        SendStep.amount,
+        OrderSwapLocalStatus.readyToBroadcast,
+      ),
+      SendStep.amount,
+    );
+  });
+
+  test('a post-broadcast persistence failure still completes the send', () {
+    expect(
+      sendStepAfterBroadcastPersistenceFailure(
+        current: SendStep.sending,
+        transactionId: 'txid-1',
+      ),
+      SendStep.success,
+    );
+    expect(
+      sendStepAfterBroadcastPersistenceFailure(
+        current: SendStep.sending,
+        transactionId: null,
+      ),
+      SendStep.confirm,
+    );
+  });
+
   Wallet bitcoinWallet() => Wallet(
     origin: 'test-btc-origin',
     network: Network.bitcoinMainnet,

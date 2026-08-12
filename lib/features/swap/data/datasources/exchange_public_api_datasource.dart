@@ -117,6 +117,9 @@ class ExchangePublicApiDatasource {
       );
       throw ExchangeRateLimitException(retryAfterSeconds: retryAfter);
     }
+    if (response.statusCode == 418) {
+      throw const ExchangeAppUpdateRequiredException();
+    }
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
@@ -167,6 +170,11 @@ final class ExchangeRateLimitException extends ExchangeDatasourceException {
   final int? retryAfterSeconds;
 
   const ExchangeRateLimitException({this.retryAfterSeconds});
+}
+
+final class ExchangeAppUpdateRequiredException
+    extends ExchangeDatasourceException {
+  const ExchangeAppUpdateRequiredException();
 }
 
 final class ExchangeRpcException extends ExchangeDatasourceException {

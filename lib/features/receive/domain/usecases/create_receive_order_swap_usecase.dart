@@ -56,7 +56,7 @@ class CreateReceiveOrderSwapUsecase {
     try {
       final destination = await _getReceiveAddressUsecase.execute(
         walletId: wallet.id,
-        generateNew: false,
+        generateNew: true,
       );
       final createResult = await _swapFacade.createOrder(
         amountSat: BigInt.from(amountSat),

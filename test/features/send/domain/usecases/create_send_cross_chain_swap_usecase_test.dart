@@ -54,6 +54,7 @@ void main() {
         environment: OrderSwapEnvironment.testnet,
         sourceWalletId: 'wallet-1',
         note: 'transfer',
+        quotedCounterpartAmountSat: BigInt.from(101000),
       ),
     ).thenAnswer((_) async => Ok(_record()));
     final result = await usecase.execute(
@@ -63,6 +64,7 @@ void main() {
       amountSat: 100000,
       isInAmountFixed: false,
       note: 'transfer',
+      quotedCounterpartAmountSat: BigInt.from(101000),
     );
 
     expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
@@ -86,6 +88,7 @@ void main() {
         purpose: OrderSwapPurpose.sendCrossChain,
         environment: OrderSwapEnvironment.testnet,
         sourceWalletId: 'wallet-1',
+        quotedCounterpartAmountSat: BigInt.from(101000),
         note: null,
       ),
     ).thenAnswer((_) async => Ok(_record()));
@@ -95,6 +98,7 @@ void main() {
       destinationIsTestnet: true,
       amountSat: 100000,
       isInAmountFixed: false,
+      quotedCounterpartAmountSat: BigInt.from(101000),
     );
 
     expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
@@ -114,6 +118,7 @@ void main() {
       destinationIsTestnet: true,
       amountSat: 100000,
       isInAmountFixed: false,
+      quotedCounterpartAmountSat: BigInt.from(101000),
     );
 
     expect(result, isA<Err<OrderSwapRecord, SendFailure>>());

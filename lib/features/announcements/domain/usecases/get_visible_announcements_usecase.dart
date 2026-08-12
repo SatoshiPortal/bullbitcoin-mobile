@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/announcements/domain/announcements_failure.da
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_catalog.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 /// Orchestrates which announcements are currently visible on the home carousel.
 ///
@@ -11,18 +12,19 @@ import 'package:bb_mobile/features/announcements/domain/repositories/announcemen
 /// dismissed (respecting the per-announcement dismiss policy), and returns
 /// the survivors ordered by ascending priority. All decision *rules* live on
 /// the entities / catalog; this use-case only wires signals to them. (The
-/// catalog is currently empty — see its doc comment — so this returns an
-/// empty list until a future announcement is added.)
 class GetVisibleAnnouncementsUsecase {
   final AnnouncementDismissalRepository _dismissalRepository;
+  final SwapFacade _swapFacade;
 
-  GetVisibleAnnouncementsUsecase({required this._dismissalRepository});
+  GetVisibleAnnouncementsUsecase(this._dismissalRepository, this._swapFacade);
 
   Future<Result<List<Announcement>, AnnouncementsFailure>> execute() async {
     try {
       final dismissals = await _dismissalRepository.getDismissals();
 
-      const signals = AnnouncementSignals();
+      final signals = AnnouncementSignals(
+        isAppUpdateRequired: _swapFacade.isAppUpdateRequired,
+      );
       final dismissedAtById = {for (final d in dismissals) d.id: d.dismissedAt};
       final now = DateTime.now().toUtc();
 

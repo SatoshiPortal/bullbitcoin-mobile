@@ -107,6 +107,12 @@ class OrderSwapRecord {
         (order!.inNetwork != inNetwork || order!.outNetwork != outNetwork)) {
       throw ArgumentError('Server order networks do not match the request');
     }
+    if (order?.payoutAddress case final payoutAddress?
+        when payoutAddress != destination) {
+      throw ArgumentError(
+        'Server order destination does not match the request',
+      );
+    }
     if (order != null &&
         (isInAmountFixed
             ? order!.payinAmountSat != requestedAmountSat

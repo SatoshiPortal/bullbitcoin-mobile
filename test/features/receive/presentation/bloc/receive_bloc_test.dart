@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -80,20 +81,21 @@ class _MockSetReceivePayjoinEnabledUsecase extends Mock
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
 
-class _LateOrderSwapStream extends Stream<OrderSwapRecord> {
-  void Function(OrderSwapRecord)? _onData;
+class _LateOrderSwapStream
+    extends Stream<Result<OrderSwapRecord, ReceiveFailure>> {
+  void Function(Result<OrderSwapRecord, ReceiveFailure>)? _onData;
 
-  void emit(OrderSwapRecord record) => _onData?.call(record);
+  void emit(OrderSwapRecord record) => _onData?.call(Ok(record));
 
   @override
-  StreamSubscription<OrderSwapRecord> listen(
-    void Function(OrderSwapRecord event)? onData, {
+  StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>> listen(
+    void Function(Result<OrderSwapRecord, ReceiveFailure> event)? onData, {
     Function? onError,
     void Function()? onDone,
     bool? cancelOnError,
   }) {
     _onData = onData;
-    return _NoopSubscription<OrderSwapRecord>();
+    return _NoopSubscription<Result<OrderSwapRecord, ReceiveFailure>>();
   }
 }
 

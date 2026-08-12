@@ -23,6 +23,7 @@ class CreateSendCrossChainSwapUsecase {
     required bool destinationIsTestnet,
     required int amountSat,
     required bool isInAmountFixed,
+    required BigInt quotedCounterpartAmountSat,
     String? note,
   }) async {
     if (amountSat <= 0 || destinationAddress.isEmpty) {
@@ -67,6 +68,7 @@ class CreateSendCrossChainSwapUsecase {
             ? OrderSwapEnvironment.testnet
             : OrderSwapEnvironment.mainnet,
         sourceWalletId: walletId,
+        quotedCounterpartAmountSat: quotedCounterpartAmountSat,
         note: note,
       );
       return result.mapErr(mapSwapFailureToSendFailure);

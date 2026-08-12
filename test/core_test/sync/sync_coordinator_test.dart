@@ -124,16 +124,16 @@ void main() {
 
     verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
     verify(() => getWallets.execute(onlyLiquid: true)).called(1);
-    verify(syncSwaps.call).called(1);
+    verifyNever(syncSwaps.call);
     // A user gesture bypasses the throttle and re-runs every kind.
     await coordinator.sync(trigger: SyncTrigger.user);
 
     verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
     verify(() => getWallets.execute(onlyLiquid: true)).called(1);
-    verify(syncSwaps.call).called(1);
+    verifyNever(syncSwaps.call);
   });
 
-  test('runs bitcoin, liquid, then swaps', () async {
+  test('a general sync does not wait for swap polling', () async {
     final order = <String>[];
     when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
       order.add('bitcoin');
@@ -147,7 +147,8 @@ void main() {
 
     await coordinator.sync(trigger: SyncTrigger.user);
 
-    expect(order, ['bitcoin', 'liquid', 'swaps']);
+    expect(order, ['bitcoin', 'liquid']);
+    verifyNever(syncSwaps.call);
   });
 
   test('deduplicates concurrent swap syncs', () async {

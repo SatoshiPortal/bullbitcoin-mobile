@@ -81,4 +81,32 @@ void main() {
       watcher.dispose();
     });
   });
+
+  test('stops polling after the provider requires an app update', () {
+    final coordinator = _MockSyncCoordinator();
+    var calls = 0;
+    var updateRequired = false;
+    when(() => coordinator.sync(only: {SyncKind.swaps})).thenAnswer((_) async {
+      calls++;
+      updateRequired = true;
+    });
+    when(
+      () => coordinator.lastSwapSyncOutcome,
+    ).thenReturn(const SyncOutcome.active());
+    final watcher = OrderSwapWatcher(
+      coordinator,
+      isAppUpdateRequired: () => updateRequired,
+    );
+
+    fakeAsync((async) {
+      watcher.start();
+      async.elapse(Duration.zero);
+      async.flushMicrotasks();
+      expect(calls, 1);
+      async.elapse(const Duration(minutes: 10));
+      async.flushMicrotasks();
+      expect(calls, 1);
+      watcher.dispose();
+    });
+  });
 }

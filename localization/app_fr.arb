@@ -5022,5 +5022,7 @@
   "coreSwapsStatusAwaitingClaim": "En attente de réclamation",
   "coreSwapsStatusUnknown": "Inconnu",
   "sendSwapExpiredTitle": "Commande expirée",
-  "sendSwapExpiredMessage": "Cette commande a expiré avant l'envoi de fonds. Rien n'a été envoyé depuis votre portefeuille."
+  "sendSwapExpiredMessage": "Cette commande a expiré avant l'envoi de fonds. Rien n'a été envoyé depuis votre portefeuille.",
+  "announcementAppUpdateRequiredTitle": "Mettez BULL à jour",
+  "announcementAppUpdateRequiredDescription": "Pour utiliser le service de paiement Lightning et de swap, veuillez mettre à jour l’application mobile BULL vers la nouvelle version."
 }

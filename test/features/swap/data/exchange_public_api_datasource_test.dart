@@ -151,6 +151,32 @@ void main() {
     );
   });
 
+  test('maps HTTP 418 to the app update signal', () async {
+    final dio = Dio()
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) => handler.resolve(
+            Response<dynamic>(
+              requestOptions: options,
+              statusCode: 418,
+              data: 'Upgrade Required',
+            ),
+          ),
+        ),
+      );
+    final datasource = ExchangePublicApiDatasource(dio);
+
+    await expectLater(
+      datasource.getBestSwapOption(
+        amountSat: BigInt.from(100000),
+        isInAmountFixed: true,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.bitcoin,
+      ),
+      throwsA(isA<ExchangeAppUpdateRequiredException>()),
+    );
+  });
+
   test('parses the measured nested API limit error', () async {
     final dio = Dio()
       ..interceptors.add(

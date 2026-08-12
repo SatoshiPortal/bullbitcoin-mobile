@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/announcements/domain/announcements_failure.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,15 +20,22 @@ part 'announcements_state.dart';
 class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   final GetVisibleAnnouncementsUsecase _getVisibleAnnouncementsUsecase;
   final DismissAnnouncementUsecase _dismissAnnouncementUsecase;
+  late final StreamSubscription<bool> _appUpdateRequiredSubscription;
 
   bool _refreshing = false;
   bool _refreshQueued = false;
 
-  // No signal subscriptions: the catalog is currently empty.
   AnnouncementsCubit({
     required this._getVisibleAnnouncementsUsecase,
     required this._dismissAnnouncementUsecase,
-  }) : super(const AnnouncementsState());
+    required WatchAppUpdateAnnouncementUsecase
+    watchAppUpdateAnnouncementUsecase,
+  }) : super(const AnnouncementsState()) {
+    _appUpdateRequiredSubscription = watchAppUpdateAnnouncementUsecase
+        .execute()
+        .where((isRequired) => isRequired)
+        .listen((_) => unawaited(refresh()));
+  }
 
   /// (Re)loads the visible announcements. Called on mount and whenever a
   /// trigger signal changes.
@@ -64,5 +74,11 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
       (_) => refresh(),
       (failure) async => emit(state.copyWith(failure: failure)),
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await _appUpdateRequiredSubscription.cancel();
+    return super.close();
   }
 }

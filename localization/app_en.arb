@@ -14554,5 +14554,13 @@
   "sendSwapExpiredMessage": "This order expired before any funds were sent. Nothing was sent from your wallet.",
   "@sendSwapExpiredMessage": {
     "description": "Message on the send result screen when a swap order expired before any funds were sent, so there is nothing to refund."
+  },
+  "announcementAppUpdateRequiredTitle": "Update BULL",
+  "@announcementAppUpdateRequiredTitle": {
+    "description": "Title for the wallet home announcement shown when swap services require an app update"
+  },
+  "announcementAppUpdateRequiredDescription": "To use the Lightning payment and swap service, please update the BULL mobile app with the new version.",
+  "@announcementAppUpdateRequiredDescription": {
+    "description": "Description shown after the swap API reports that this app version is no longer supported"
   }
 }

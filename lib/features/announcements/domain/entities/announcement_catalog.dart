@@ -5,7 +5,9 @@ import 'package:bb_mobile/features/announcements/domain/entities/announcement.da
 /// Extend this (and the gathering in `GetVisibleAnnouncementsUsecase`) as new
 /// announcements need new signals.
 class AnnouncementSignals {
-  const AnnouncementSignals();
+  final bool isAppUpdateRequired;
+
+  const AnnouncementSignals({required this.isAppUpdateRequired});
 }
 
 /// A catalog entry: an [Announcement] definition paired with the predicate that
@@ -31,7 +33,15 @@ class AnnouncementCatalogEntry {
 /// entry here with its trigger, and add the title/description l10n mapping in
 /// `presentation/announcement_l10n.dart`.
 ///
-/// Currently EMPTY on purpose. The payjoin-privacy nudge was removed
-/// (product decision 2026-07-25): payjoin education lives in the enable-time
-/// disclaimer and the payjoin settings screen, not on home.
-final List<AnnouncementCatalogEntry> announcementCatalog = [];
+final List<AnnouncementCatalogEntry> announcementCatalog = [
+  AnnouncementCatalogEntry(
+    announcement: Announcement(
+      id: AnnouncementId.appUpdateRequired,
+      priority: 0,
+      tone: AnnouncementTone.warning,
+      action: const NoAction(),
+      dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
+    ),
+    trigger: (signals) => signals.isAppUpdateRequired,
+  ),
+];

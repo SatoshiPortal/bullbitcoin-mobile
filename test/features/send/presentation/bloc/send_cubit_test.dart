@@ -695,4 +695,67 @@ void main() {
       expect(cubit.state.label, 'coffee');
     });
   });
+
+  group('SendCubit.broadcastTransaction - BIP21 advertising pj without an '
+      'attempted payjoin', () {
+    SendState plainSignedState({String label = ''}) => SendState(
+      step: SendStep.sending,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinLocalWallet(),
+      paymentRequest: _payjoinBip21(),
+      payjoinGloballyEnabled: false,
+      isToSelf: false,
+      signedBitcoinPsbt: 'signed-psbt',
+      label: label,
+    );
+
+    void stubBroadcast() {
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+        ),
+      ).thenAnswer((_) async => 'broadcast-txid');
+    }
+
+    test(
+      'broadcasts the signed transaction and succeeds with its txid',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubBroadcast();
+        cubit.setStateForTest(plainSignedState());
+
+        await cubit.broadcastTransaction();
+
+        verify(
+          () => broadcastBitcoinTxUsecase.execute('signed-psbt', isPsbt: true),
+        ).called(1);
+        expect(cubit.state.txId, 'broadcast-txid');
+        expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.failure, isNull);
+      },
+    );
+
+    test('with a user label, stores the label on the broadcast txid', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubBroadcast();
+      cubit.setStateForTest(plainSignedState(label: 'coffee'));
+
+      await cubit.broadcastTransaction();
+
+      verify(
+        () => broadcastBitcoinTxUsecase.execute('signed-psbt', isPsbt: true),
+      ).called(1);
+      expect(cubit.state.txId, 'broadcast-txid');
+      expect(cubit.state.step, SendStep.success);
+      expect(cubit.state.failure, isNull);
+      final stored =
+          verify(() => labelsFacade.store(captureAny())).captured.single
+              as NewLabel;
+      expect(stored.reference, 'broadcast-txid');
+      expect(stored.label, 'coffee');
+    });
+  });
 }
