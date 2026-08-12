@@ -58,5 +58,4 @@ sealed class WalletState with _$WalletState {
   bool showLegacyStorageWarning() {
     return isOnLegacyStorage && !legacyStorageWarningDismissed;
   }
-
 }

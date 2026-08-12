@@ -91,30 +91,33 @@ void main() {
     );
   });
 
-  test('accepts quoted server-chosen amounts within tolerance in both directions', () {
-    final record = _quotedRecord();
-    expect(
-      () => record.withServerOrder(
-        _order(payinAmountSat: BigInt.from(99001)),
-        status: OrderSwapLocalStatus.awaitingUserConfirmation,
-      ),
-      returnsNormally,
-    );
-    expect(
-      () => record.withServerOrder(
-        _order(payinAmountSat: BigInt.from(100999)),
-        status: OrderSwapLocalStatus.awaitingUserConfirmation,
-      ),
-      returnsNormally,
-    );
-    expect(
-      () => record.withServerOrder(
-        _order(payinAmountSat: BigInt.from(101001)),
-        status: OrderSwapLocalStatus.awaitingUserConfirmation,
-      ),
-      throwsArgumentError,
-    );
-  });
+  test(
+    'accepts quoted server-chosen amounts within tolerance in both directions',
+    () {
+      final record = _quotedRecord();
+      expect(
+        () => record.withServerOrder(
+          _order(payinAmountSat: BigInt.from(99001)),
+          status: OrderSwapLocalStatus.awaitingUserConfirmation,
+        ),
+        returnsNormally,
+      );
+      expect(
+        () => record.withServerOrder(
+          _order(payinAmountSat: BigInt.from(100999)),
+          status: OrderSwapLocalStatus.awaitingUserConfirmation,
+        ),
+        returnsNormally,
+      );
+      expect(
+        () => record.withServerOrder(
+          _order(payinAmountSat: BigInt.from(101001)),
+          status: OrderSwapLocalStatus.awaitingUserConfirmation,
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 
   test('uses the destination Liquid leg for a Lightning receive', () {
     final createdAt = DateTime.utc(2026);
@@ -175,26 +178,24 @@ OrderSwapRecord _quotedRecord() => OrderSwapRecord(
   localStatus: OrderSwapLocalStatus.creating,
 );
 
-OrderSwap _order({
-  BigInt? payinAmountSat,
-  BigInt? payoutAmountSat,
-}) => OrderSwap(
-  orderId: 'order-1',
-  orderNumber: 1,
-  inNetwork: OrderSwapNetwork.liquid,
-  outNetwork: OrderSwapNetwork.lightning,
-  payinAmountSat: payinAmountSat ?? BigInt.from(1010),
-  payoutAmountSat: payoutAmountSat ?? BigInt.from(1000),
-  payinCurrency: 'LBTC',
-  payoutCurrency: 'BTCLN',
-  payinMethod: 'Liquid',
-  payoutMethod: 'Lightning',
-  orderType: 'Swap',
-  orderStatus: 'Awaiting payment',
-  payinStatus: 'In progress',
-  payoutStatus: 'Not started',
-  messageCode: 'ORDER_CREATED',
-  liquidAddress: 'payin',
-  createdAt: DateTime.utc(2026),
-  confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
-);
+OrderSwap _order({BigInt? payinAmountSat, BigInt? payoutAmountSat}) =>
+    OrderSwap(
+      orderId: 'order-1',
+      orderNumber: 1,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      payinAmountSat: payinAmountSat ?? BigInt.from(1010),
+      payoutAmountSat: payoutAmountSat ?? BigInt.from(1000),
+      payinCurrency: 'LBTC',
+      payoutCurrency: 'BTCLN',
+      payinMethod: 'Liquid',
+      payoutMethod: 'Lightning',
+      orderType: 'Swap',
+      orderStatus: 'Awaiting payment',
+      payinStatus: 'In progress',
+      payoutStatus: 'Not started',
+      messageCode: 'ORDER_CREATED',
+      liquidAddress: 'payin',
+      createdAt: DateTime.utc(2026),
+      confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
+    );

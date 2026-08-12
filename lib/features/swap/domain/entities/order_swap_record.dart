@@ -117,9 +117,12 @@ class OrderSwapRecord {
       final serverChosenAmount = isInAmountFixed
           ? order!.payoutAmountSat
           : order!.payinAmountSat;
-      final deviation = (serverChosenAmount - quotedCounterpartAmountSat!).abs();
+      final deviation = (serverChosenAmount - quotedCounterpartAmountSat!)
+          .abs();
       if (deviation >
-          OrderSwapQuoteTolerance.forQuotedAmount(quotedCounterpartAmountSat!)) {
+          OrderSwapQuoteTolerance.forQuotedAmount(
+            quotedCounterpartAmountSat!,
+          )) {
         throw ArgumentError('Server order deviates too far from the quote');
       }
     }

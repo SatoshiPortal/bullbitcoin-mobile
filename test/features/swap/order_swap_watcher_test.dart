@@ -33,10 +33,9 @@ void main() {
   test('honors the retry-after delay after rate limiting', () {
     final coordinator = _MockSyncCoordinator();
     var calls = 0;
-    when(() => coordinator.sync(only: {SyncKind.swaps}))
-        .thenAnswer((_) async {
-          calls++;
-        });
+    when(() => coordinator.sync(only: {SyncKind.swaps})).thenAnswer((_) async {
+      calls++;
+    });
     when(() => coordinator.lastSwapSyncOutcome).thenReturn(
       const SyncOutcome.rateLimited(retryAfter: Duration(minutes: 2)),
     );
@@ -60,13 +59,12 @@ void main() {
   test('backs off when there are no pending orders', () {
     final coordinator = _MockSyncCoordinator();
     var calls = 0;
-    when(() => coordinator.sync(only: {SyncKind.swaps}))
-        .thenAnswer((_) async {
-          calls++;
-        });
-    when(() => coordinator.lastSwapSyncOutcome).thenReturn(
-      const SyncOutcome.idle(),
-    );
+    when(() => coordinator.sync(only: {SyncKind.swaps})).thenAnswer((_) async {
+      calls++;
+    });
+    when(
+      () => coordinator.lastSwapSyncOutcome,
+    ).thenReturn(const SyncOutcome.idle());
     final watcher = OrderSwapWatcher(coordinator);
 
     fakeAsync((async) {

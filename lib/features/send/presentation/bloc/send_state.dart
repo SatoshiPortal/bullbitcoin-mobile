@@ -166,7 +166,6 @@ abstract class SendState with _$SendState {
     // spend in a single transaction and needs consolidating first.
     @Default(false) bool consolidationRequired,
     SendFailure? failure,
-
   }) = _SendState;
   const SendState._();
 

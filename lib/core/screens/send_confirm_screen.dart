@@ -744,9 +744,7 @@ class CommonConfirmSendButton extends StatelessWidget {
 }
 
 class CommonConfirmSendErrorSection extends StatelessWidget {
-  const CommonConfirmSendErrorSection({
-    required this.errorMessage,
-  });
+  const CommonConfirmSendErrorSection({required this.errorMessage});
 
   final String? errorMessage;
 
@@ -757,21 +755,21 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-             BBText(
-               context.loc.sendErrorBuildFailed,
+            BBText(
+              context.loc.sendErrorBuildFailed,
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
-               textAlign: .center,
-             ),
-             const Gap(8),
-             BBText(
-               errorMessage!,
-               style: context.font.bodyMedium,
-               color: context.appColors.error,
-               maxLines: 5,
-               textAlign: .center,
-             ),
+              textAlign: .center,
+            ),
+            const Gap(8),
+            BBText(
+              errorMessage!,
+              style: context.font.bodyMedium,
+              color: context.appColors.error,
+              maxLines: 5,
+              textAlign: .center,
+            ),
             const Gap(8),
           ],
         ),

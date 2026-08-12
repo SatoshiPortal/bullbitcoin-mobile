@@ -112,26 +112,22 @@ class SwapAmountInput extends StatelessWidget {
         ),
         if (amountValidationError != null || isInsufficientBalance) ...[
           const Gap(8),
-           Text(
+          Text(
             switch (amountValidationError) {
-              AmountValidationError.minimum => context.loc
-                  .swapErrorAmountBelowMinimum(
-                    (bitcoinUnit == BitcoinUnit.btc
-                            ? ConvertAmount.satsToBtc(
-                                swapLimits!.min,
-                              )
-                            : swapLimits!.min)
-                        .toString(),
-                  ),
-              AmountValidationError.maximum => context.loc
-                  .swapErrorAmountAboveMaximum(
-                    (bitcoinUnit == BitcoinUnit.btc
-                            ? ConvertAmount.satsToBtc(
-                                swapLimits!.max,
-                              )
-                            : swapLimits!.max)
-                        .toString(),
-                  ),
+              AmountValidationError.minimum =>
+                context.loc.swapErrorAmountBelowMinimum(
+                  (bitcoinUnit == BitcoinUnit.btc
+                          ? ConvertAmount.satsToBtc(swapLimits!.min)
+                          : swapLimits!.min)
+                      .toString(),
+                ),
+              AmountValidationError.maximum =>
+                context.loc.swapErrorAmountAboveMaximum(
+                  (bitcoinUnit == BitcoinUnit.btc
+                          ? ConvertAmount.satsToBtc(swapLimits!.max)
+                          : swapLimits!.max)
+                      .toString(),
+                ),
               null => context.loc.swapInsufficientFunds,
             },
             style: context.font.labelLarge?.copyWith(
