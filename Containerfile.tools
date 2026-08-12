@@ -12,7 +12,7 @@ ENV USER=$USERNAME
 # android/gradle.properties); the FVM CI install pins FVM separately. Keep these
 # defaults in sync with .fvmrc / android/gradle.properties so the dev container
 # and the reproducible release build never diverge on toolchain versions.
-ARG FVM_VERSION="4.1.1"
+ARG FVM_VERSION="4.1.2"
 ARG FLUTTER_VERSION="3.44.9"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
@@ -191,7 +191,7 @@ RUN if [ -n "$EXPECTED_RUST_VERSION" ]; then \
 # what install.sh produces — it copies the contents of the archive's fvm/
 # directory into ${INSTALL_BASE}/bin, which is the directory added to PATH.
 # Refresh: sha256sum of the linux-x64 asset on the FVM release for this version.
-ARG FVM_SHA256="2d7fdfc3e77591806efe38fab23098a79567a89a9570de713c43f30cc54348d7"
+ARG FVM_SHA256="12b0656688450972750cb714fc5e44ed2dbdd6b1c6813ba6ba6fb71841c17fe4"
 RUN curl -fsSL \
       https://github.com/leoafarias/fvm/releases/download/${FVM_VERSION}/fvm-${FVM_VERSION}-linux-x64.tar.gz \
       -o /tmp/fvm.tar.gz \

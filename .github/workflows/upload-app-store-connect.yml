@@ -122,13 +122,13 @@ jobs:
 
       # Install the pinned native FVM binary without executing the mutable
       # fvm.app installer script on a runner that later receives signing keys.
-      - name: Install FVM 4.1.1
+      - name: Install FVM 4.1.2
         run: |
-          archive="$RUNNER_TEMP/fvm-4.1.1-macos-arm64.tar.gz"
+          archive="$RUNNER_TEMP/fvm-4.1.2-macos-arm64.tar.gz"
           curl -fsSL \
-            https://github.com/conceptadev/fvm/releases/download/4.1.1/fvm-4.1.1-macos-arm64.tar.gz \
+            https://github.com/leoafarias/fvm/releases/download/4.1.2/fvm-4.1.2-macos-arm64.tar.gz \
             -o "$archive"
-          echo "ffbcc64c227b33046b0b3aee0829466a8900a3c85d976c7f8449220c0730aad9  $archive" \
+          echo "0b2a146986c51f06331f135f0bdf2a202eb57f55d7edd420c9078e8520e4c033  $archive" \
             | shasum -a 256 -c -
           mkdir -p "$HOME/fvm/bin"
           tar -xzf "$archive" -C "$HOME/fvm/bin" --strip-components=1 fvm/fvm
