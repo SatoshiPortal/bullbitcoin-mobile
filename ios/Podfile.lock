@@ -11,8 +11,6 @@ PODS:
     - FlutterMacOS
   - webview_cookie_manager (0.0.1):
     - Flutter
-  - workmanager_apple (0.0.1):
-    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -21,7 +19,6 @@ DEPENDENCIES:
   - tor (from `.symlinks/plugins/tor/ios`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
   - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
-  - workmanager_apple (from `.symlinks/plugins/workmanager_apple/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
@@ -36,8 +33,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/universal_ble/darwin"
   webview_cookie_manager:
     :path: ".symlinks/plugins/webview_cookie_manager/ios"
-  workmanager_apple:
-    :path: ".symlinks/plugins/workmanager_apple/ios"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
@@ -46,7 +41,6 @@ SPEC CHECKSUMS:
   tor: 767208930250ef7be241963b75568c55c0a81890
   universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
   webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
-  workmanager_apple: 904529ae31e97fc5be632cf628507652294a0778
 
 PODFILE CHECKSUM: b9aa080c2a42d4d61d216015adddd3850778d844
 
