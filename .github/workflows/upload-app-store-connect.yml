@@ -58,6 +58,19 @@ jobs:
               missing=1
             fi
           done
+
+          # Fail here, in seconds, rather than after the 15-minute build:
+          # macOS `base64 -D` is strict, so a malformed secret must be caught
+          # early. Whitespace is stripped the same way the consuming steps do.
+          for name in \
+            IOS_DISTRIBUTION_CERTIFICATE_BASE64 \
+            IOS_APP_STORE_PROVISIONING_PROFILE_BASE64; do
+            if [ -n "${!name}" ] \
+              && ! printf '%s' "${!name}" | tr -d '[:space:]' | base64 -D -o /dev/null 2>/dev/null; then
+              echo "::error::$name is not valid base64."
+              missing=1
+            fi
+          done
           exit "$missing"
 
       - name: Resolve release metadata
@@ -207,7 +220,9 @@ jobs:
           encoded_profile="$RUNNER_TEMP/profile.b64"
           decoded_profile="$RUNNER_TEMP/profile.mobileprovision"
           profile_plist="$RUNNER_TEMP/profile.plist"
-          printf '%s' "$PROFILE_BASE64" > "$encoded_profile"
+          # Secrets pasted from line-wrapped `base64` output keep their
+          # newlines, which macOS `base64 -D` rejects; strip all whitespace.
+          printf '%s' "$PROFILE_BASE64" | tr -d '[:space:]' > "$encoded_profile"
           base64 -D -i "$encoded_profile" -o "$decoded_profile"
           security cms -D -i "$decoded_profile" > "$profile_plist"
 
