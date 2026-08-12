@@ -25,6 +25,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -78,6 +79,49 @@ class _MockSetReceivePayjoinEnabledUsecase extends Mock
 
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
+
+class _LateOrderSwapStream extends Stream<OrderSwapRecord> {
+  void Function(OrderSwapRecord)? _onData;
+
+  void emit(OrderSwapRecord record) => _onData?.call(record);
+
+  @override
+  StreamSubscription<OrderSwapRecord> listen(
+    void Function(OrderSwapRecord event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    _onData = onData;
+    return _NoopSubscription<OrderSwapRecord>();
+  }
+}
+
+class _NoopSubscription<T> implements StreamSubscription<T> {
+  @override
+  Future<void> cancel() async {}
+
+  @override
+  void onData(void Function(T data)? handleData) {}
+
+  @override
+  void onError(Function? handleError) {}
+
+  @override
+  void onDone(void Function()? handleDone) {}
+
+  @override
+  void pause([Future<void>? resumeSignal]) {}
+
+  @override
+  void resume() {}
+
+  @override
+  bool get isPaused => false;
+
+  @override
+  Future<E> asFuture<E>([E? futureValue]) async => futureValue as E;
+}
 
 // Defaults to a confirmed balance: most tests in this file are about the
 // isPayjoinEnabled/proposal-state gating, not the balance one. The
@@ -149,11 +193,14 @@ void main() {
   late _MockGetReceivePayjoinPolicyUsecase getPayjoinPolicy;
   late _MockSetReceivePayjoinEnabledUsecase setPayjoinEnabled;
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
+  late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
+  late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
   late StreamController<bool> payjoinEnabledChangeController;
   late StreamController<int> payjoinMinAmountChangeController;
 
   setUpAll(() {
     registerFallbackValue(_receiver());
+    registerFallbackValue(_testWallet());
   });
 
   ReceiveBloc buildBloc({Wallet? wallet}) => ReceiveBloc(
@@ -163,12 +210,12 @@ void main() {
     convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
     getReceiveAddressUsecase: getReceiveAddress,
     getAddressAtIndexUsecase: _MockGetAddressAtIndexUsecase(),
-    createReceiveOrderSwapUsecase: _MockCreateReceiveOrderSwapUsecase(),
+    createReceiveOrderSwapUsecase: createOrderSwap,
     receiveWithPayjoinUsecase: receiveWithPayjoin,
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
     watchPayjoinUsecase: watchPayjoin,
     watchWalletTransactionByAddressUsecase: watchWalletTransaction,
-    watchReceiveOrderSwapUsecase: _MockWatchReceiveOrderSwapUsecase(),
+    watchReceiveOrderSwapUsecase: watchOrderSwap,
     labelsFacade: labels,
     watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
     watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
@@ -190,6 +237,8 @@ void main() {
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
+    createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
+    watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
     labels = _MockLabelsFacade();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
     getPayjoinPolicy = _MockGetReceivePayjoinPolicyUsecase();
@@ -637,6 +686,31 @@ void main() {
     });
   });
 
+  test('ignores an in-flight order swap update after close', () async {
+    final record = _receiveOrderSwapRecord();
+    final lateStream = _LateOrderSwapStream();
+    when(
+      () => createOrderSwap.execute(
+        wallet: any(named: 'wallet'),
+        amountSat: 1000,
+        note: any(named: 'note'),
+      ),
+    ).thenAnswer((_) async => Ok(record));
+    when(
+      () => watchOrderSwap.execute(record.localId),
+    ).thenAnswer((_) => lateStream);
+    final bloc = buildBloc(wallet: _testWallet(network: Network.liquidTestnet));
+
+    bloc.add(const ReceiveLightningStarted());
+    await pumpEventQueue();
+    bloc.add(const ReceiveAmountInputChanged('1000'));
+    bloc.add(const ReceiveAmountConfirmed());
+    await pumpEventQueue();
+    await bloc.close();
+
+    expect(() => lateStream.emit(record), returnsNormally);
+  });
+
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
     // created once), so a receive entered from a liquid wallet must not
@@ -753,3 +827,39 @@ void main() {
     });
   });
 }
+
+OrderSwapRecord _receiveOrderSwapRecord() => OrderSwapRecord(
+  localId: 'local-1',
+  purpose: OrderSwapPurpose.receiveLightning,
+  environment: OrderSwapEnvironment.testnet,
+  inNetwork: OrderSwapNetwork.lightning,
+  outNetwork: OrderSwapNetwork.liquid,
+  isInAmountFixed: true,
+  requestedAmountSat: BigInt.from(1000),
+  destinationWalletId: 'w1',
+  destination: 'tlq1destination',
+  fallback: 'tlq1destination',
+  order: OrderSwap(
+    orderId: 'order-1',
+    orderNumber: 1,
+    inNetwork: OrderSwapNetwork.lightning,
+    outNetwork: OrderSwapNetwork.liquid,
+    payinAmountSat: BigInt.from(1000),
+    payoutAmountSat: BigInt.from(900),
+    payinCurrency: 'BTCLN',
+    payoutCurrency: 'LBTC',
+    payinMethod: 'Lightning',
+    payoutMethod: 'Liquid',
+    orderType: 'Swap',
+    orderStatus: 'In_pending',
+    payinStatus: 'Awaiting payment',
+    payoutStatus: 'Not started',
+    messageCode: 'PAYMENT_NOT_DETECTED',
+    lightningInvoice: 'lntb-invoice',
+    liquidAddress: 'tlq1destination',
+    createdAt: DateTime.utc(2026),
+    confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
+  ),
+  createdAt: DateTime.utc(2026),
+  localStatus: OrderSwapLocalStatus.awaitingUserConfirmation,
+);

@@ -1130,6 +1130,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _orderSwapSubscription?.cancel();
     _orderSwapSubscription = _watchReceiveOrderSwapUsecase
         .execute(localId)
-        .listen((orderSwap) => add(ReceiveOrderSwapUpdated(orderSwap)));
+        .listen((orderSwap) {
+          if (isClosed) return;
+          add(ReceiveOrderSwapUpdated(orderSwap));
+        });
   }
 }

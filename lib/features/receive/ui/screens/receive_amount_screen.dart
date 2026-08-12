@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
@@ -189,10 +190,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         label: context.loc.receiveContinue,
         onPressed: () {
           final bloc = context.read<ReceiveBloc>();
-          final inputAmountSat = bloc.state.inputAmountSat;
-          final confirmedAmountSat = bloc.state.confirmedAmountSat;
-          if (confirmedAmountSat != null &&
-              inputAmountSat == confirmedAmountSat) {
+          if (canReuseConfirmedReceiveDetails(bloc.state)) {
             // If an amount was already confirmed previously and the user didn't
             // change it, we don't need to confirm it again.
             onContinueNavigation?.call() ?? context.pop();

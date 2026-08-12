@@ -100,6 +100,14 @@ class ReceiveRouter {
               ),
               BlocListener<ReceiveBloc, ReceiveState>(
                 listenWhen: (previous, current) =>
+                    previous.hasTerminalOrderSwapFailure != true &&
+                    current.hasTerminalOrderSwapFailure,
+                listener: (context, state) {
+                  context.goNamed(ReceiveRoute.receiveLightning.name);
+                },
+              ),
+              BlocListener<ReceiveBloc, ReceiveState>(
+                listenWhen: (previous, current) =>
                     previous.isPaymentReceived != true &&
                     current.isPaymentReceived == true &&
                     // The payjoin-in-progress screen (on the root navigator)

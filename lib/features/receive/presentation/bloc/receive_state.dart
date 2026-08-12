@@ -246,6 +246,13 @@ abstract class ReceiveState with _$ReceiveState {
     }
   }
 
+  bool get hasTerminalOrderSwapFailure => switch (orderSwap?.localStatus) {
+    OrderSwapLocalStatus.expired ||
+    OrderSwapLocalStatus.failed ||
+    OrderSwapLocalStatus.refunded => true,
+    _ => false,
+  };
+
   /// Whether the payjoin flow owns navigation for this receive, so the
   /// shell's generic "payment received → transaction details" listener must
   /// defer: the payjoin-in-progress screen lives on the root navigator and

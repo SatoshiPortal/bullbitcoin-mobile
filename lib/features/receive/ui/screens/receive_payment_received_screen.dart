@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -105,26 +106,34 @@ class ReceiveDetailsButton extends StatelessWidget {
       child: BBButton.big(
         label: context.loc.receiveDetails,
         onPressed: () {
-          final transaction = context.read<ReceiveBloc>().state.transaction;
-          if (transaction.walletTransaction != null) {
-            context.pushNamed(
-              TransactionsRoute.transactionDetails.name,
-              pathParameters: {'txId': transaction.walletTransaction!.txId},
-              queryParameters: {
-                'walletId': transaction.walletTransaction!.walletId,
-              },
-            );
-          } else if (transaction.swap != null) {
-            context.pushNamed(
-              TransactionsRoute.swapTransactionDetails.name,
-              pathParameters: {'swapId': transaction.swap!.id},
-              queryParameters: {'walletId': transaction.swap!.walletId},
-            );
-          } else if (transaction.payjoin != null) {
-            context.pushNamed(
-              TransactionsRoute.payjoinTransactionDetails.name,
-              pathParameters: {'payjoinId': transaction.payjoin!.id},
-            );
+          final target = receiveDetailsTarget(
+            context.read<ReceiveBloc>().state,
+          );
+          switch (target?.kind) {
+            case ReceiveDetailsTargetKind.walletTransaction:
+              context.pushNamed(
+                TransactionsRoute.transactionDetails.name,
+                pathParameters: {'txId': target!.id},
+                queryParameters: {'walletId': target.walletId},
+              );
+            case ReceiveDetailsTargetKind.orderSwap:
+              context.pushNamed(
+                TransactionsRoute.orderSwapTransactionDetails.name,
+                pathParameters: {'localId': target!.id},
+              );
+            case ReceiveDetailsTargetKind.swap:
+              context.pushNamed(
+                TransactionsRoute.swapTransactionDetails.name,
+                pathParameters: {'swapId': target!.id},
+                queryParameters: {'walletId': target.walletId},
+              );
+            case ReceiveDetailsTargetKind.payjoin:
+              context.pushNamed(
+                TransactionsRoute.payjoinTransactionDetails.name,
+                pathParameters: {'payjoinId': target!.id},
+              );
+            case null:
+              break;
           }
         },
         bgColor: context.appColors.secondary,
