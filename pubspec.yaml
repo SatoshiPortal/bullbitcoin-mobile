@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.12.4+201
+version: 6.12.5+203
 
 environment:
   sdk: "3.12.2"
@@ -54,17 +54,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: bd4835ccb16dff5249cf048158389b5942cbe0fd
+      ref: 344a04e1801375042e7d238301e3ed9ac2ffde11
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: bd4835ccb16dff5249cf048158389b5942cbe0fd
+      ref: 344a04e1801375042e7d238301e3ed9ac2ffde11
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: bd4835ccb16dff5249cf048158389b5942cbe0fd
+      ref: 344a04e1801375042e7d238301e3ed9ac2ffde11
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   hex: ^0.2.0
@@ -119,7 +119,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: bd4835ccb16dff5249cf048158389b5942cbe0fd
+      ref: 344a04e1801375042e7d238301e3ed9ac2ffde11
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
