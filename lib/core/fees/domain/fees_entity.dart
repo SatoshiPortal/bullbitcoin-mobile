@@ -125,7 +125,10 @@ extension NetworkFeeRelayPolicy on NetworkFee {
     return switch (this) {
       RelativeFee(:final satPerKwu) => satPerKwu >= floor,
       AbsoluteFee(:final sats) =>
-        txSize != null && txSize > 0 && (sats * 250) >= (floor * txSize),
+        txSize != null &&
+            txSize > 0 &&
+            (BigInt.from(sats) * BigInt.from(250)) >=
+                (BigInt.from(floor) * BigInt.from(txSize)),
     };
   }
 }
