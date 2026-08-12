@@ -5020,5 +5020,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Délai de paiement expiré",
   "coreSwapsStatusScheduled": "Planifié",
   "coreSwapsStatusAwaitingClaim": "En attente de réclamation",
-  "coreSwapsStatusUnknown": "Inconnu"
+  "coreSwapsStatusUnknown": "Inconnu",
+  "sendSwapExpiredTitle": "Commande expirée",
+  "sendSwapExpiredMessage": "Cette commande a expiré avant l'envoi de fonds. Rien n'a été envoyé depuis votre portefeuille."
 }

@@ -1828,8 +1828,18 @@ class SendSucessScreen extends StatelessWidget {
         (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
             orderSwap.outNetwork == OrderSwapNetwork.lightning);
     final isChainSwap = chainSwap != null || (orderSwap != null && !isLnSwap);
-    final isSwap = isLnSwap || isChainSwap;
-
+    // An order that expired before payin holds no funds — show expiry, not refund.
+    final expiredBeforePayin =
+        orderSwap != null &&
+        orderSwap.localStatus == OrderSwapLocalStatus.expired &&
+        orderSwap.localPayinTransactionId == null;
+    // Decides whether the View Details button appears.
+    final hasDetails =
+        walletTransaction != null ||
+        (orderSwap != null
+            ? orderSwap.localPayinTransactionId != null &&
+                  orderSwap.sourceWalletId != null
+            : chainSwap != null || payjoin != null);
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -1851,7 +1861,19 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  if (orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
+                  if (expiredBeforePayin) ...[
+                    BBText(
+                      context.loc.sendSwapExpiredTitle,
+                      style: context.font.headlineLarge,
+                      textAlign: .center,
+                    ),
+                    BBText(
+                      context.loc.sendSwapExpiredMessage,
+                      style: context.font.headlineLarge,
+                      textAlign: .center,
+                    ),
+                  ] else if (orderSwap?.localStatus ==
+                          OrderSwapLocalStatus.failed ||
                       orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
                       chainSwap?.status == SwapStatus.failed ||
                       chainSwap?.status == SwapStatus.expired ||
@@ -1963,7 +1985,7 @@ class SendSucessScreen extends StatelessWidget {
               OrderSwapUnderReviewCard(orderSwap: orderSwap!),
             ],
             const Spacer(flex: 2),
-            if (walletTransaction != null || isSwap || payjoin != null)
+            if (hasDetails)
               BBButton.big(
                 label: context.loc.sendViewDetails,
                 onPressed: () {

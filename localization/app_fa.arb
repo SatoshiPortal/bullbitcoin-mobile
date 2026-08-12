@@ -12557,5 +12557,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "مهلت پرداخت به پایان رسید",
   "coreSwapsStatusScheduled": "زمان‌بندی‌شده",
   "coreSwapsStatusAwaitingClaim": "در انتظار دریافت",
-  "coreSwapsStatusUnknown": "نامشخص"
+  "coreSwapsStatusUnknown": "نامشخص",
+  "sendSwapExpiredTitle": "سفارش منقضی شد",
+  "sendSwapExpiredMessage": "این سفارش پیش از ارسال هرگونه وجهی منقضی شد. هیچ مبلغی از کیف پول شما ارسال نشد."
 }

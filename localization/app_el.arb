@@ -12557,5 +12557,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Η προθεσμία πληρωμής έληξε",
   "coreSwapsStatusScheduled": "Προγραμματισμένο",
   "coreSwapsStatusAwaitingClaim": "Αναμονή διεκδίκησης",
-  "coreSwapsStatusUnknown": "Άγνωστο"
+  "coreSwapsStatusUnknown": "Άγνωστο",
+  "sendSwapExpiredTitle": "Η παραγγελία έληξε",
+  "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας."
 }

@@ -14546,5 +14546,13 @@
   "coreSwapsStatusUnknown": "Unknown",
   "@coreSwapsStatusUnknown": {
     "description": "Order status label: status not recognized."
+  },
+  "sendSwapExpiredTitle": "Order Expired",
+  "@sendSwapExpiredTitle": {
+    "description": "Title on the send result screen when a swap order expired before any funds were sent."
+  },
+  "sendSwapExpiredMessage": "This order expired before any funds were sent. Nothing was sent from your wallet.",
+  "@sendSwapExpiredMessage": {
+    "description": "Message on the send result screen when a swap order expired before any funds were sent, so there is nothing to refund."
   }
 }

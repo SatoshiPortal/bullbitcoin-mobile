@@ -4981,5 +4981,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Termine di pagamento scaduto",
   "coreSwapsStatusScheduled": "Programmato",
   "coreSwapsStatusAwaitingClaim": "In attesa di riscossione",
-  "coreSwapsStatusUnknown": "Sconosciuto"
+  "coreSwapsStatusUnknown": "Sconosciuto",
+  "sendSwapExpiredTitle": "Ordine scaduto",
+  "sendSwapExpiredMessage": "Questo ordine è scaduto prima dell'invio di fondi. Non è stato inviato nulla dal tuo portafoglio."
 }

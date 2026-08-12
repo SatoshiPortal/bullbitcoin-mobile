@@ -3768,5 +3768,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "გადახდის ვადა ამოიწურა",
   "coreSwapsStatusScheduled": "დაგეგმილია",
   "coreSwapsStatusAwaitingClaim": "ელოდება მიღებას",
-  "coreSwapsStatusUnknown": "უცნობი"
+  "coreSwapsStatusUnknown": "უცნობი",
+  "sendSwapExpiredTitle": "შეკვეთის ვადა ამოიწურა",
+  "sendSwapExpiredMessage": "ამ შეკვეთის ვადა ამოიწურა თანხის გაგზავნამდე. თქვენი საფულიდან არაფერი გაიგზავნა."
 }

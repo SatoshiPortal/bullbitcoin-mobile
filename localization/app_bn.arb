@@ -12767,5 +12767,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "পেমেন্টের সময়সীমা শেষ",
   "coreSwapsStatusScheduled": "নির্ধারিত",
   "coreSwapsStatusAwaitingClaim": "দাবির অপেক্ষায়",
-  "coreSwapsStatusUnknown": "অজানা"
+  "coreSwapsStatusUnknown": "অজানা",
+  "sendSwapExpiredTitle": "অর্ডারের সময়সীমা শেষ",
+  "sendSwapExpiredMessage": "কোনো তহবিল পাঠানোর আগেই এই অর্ডারের সময়সীমা শেষ হয়ে গেছে। আপনার ওয়ালেট থেকে কিছুই পাঠানো হয়নি।"
 }

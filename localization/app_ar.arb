@@ -12560,5 +12560,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "انتهت مهلة الدفع",
   "coreSwapsStatusScheduled": "مجدول",
   "coreSwapsStatusAwaitingClaim": "في انتظار المطالبة",
-  "coreSwapsStatusUnknown": "غير معروف"
+  "coreSwapsStatusUnknown": "غير معروف",
+  "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
+  "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك."
 }
