@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -21,6 +22,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_result
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
+import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
@@ -48,6 +51,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._saveAutoSwapSettingsUsecase,
     required this._disableAutoswapWarningUsecase,
     required this._disableAutoswapUsecase,
+    required this._executeAutoswapUsecase,
     required this._deleteWalletUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
@@ -83,6 +87,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final DisableAutoswapWarningUsecase _disableAutoswapWarningUsecase;
   final DisableAutoswapUsecase _disableAutoswapUsecase;
+  final ExecuteAutoswapUsecase _executeAutoswapUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
@@ -451,33 +456,40 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future<void> _onExecuteAutoSwap(
     ExecuteAutoSwap event,
     Emitter<WalletState> emit,
-  ) => _disableUnavailableAutoSwap(emit);
+  ) async {
+    if (state.autoSwapExecuting) return;
+    emit(state.copyWith(autoSwapExecuting: true));
+    try {
+      final result = await _executeAutoswapUsecase.execute();
+      switch (result) {
+        case Ok(:final value):
+          log.info('[WalletBloc] Autoswap executed: $value');
+        case Err(:final failure):
+          // Guards (disabled, insufficient balance, …) are expected — log
+          // at fine level. Real execution errors are logged at warning.
+          if (failure is AutoswapExecutionFailure) {
+            log.warning('[WalletBloc] Autoswap execution failed', error: failure);
+          } else {
+            log.fine('[WalletBloc] Autoswap skipped: ${failure.runtimeType}');
+          }
+      }
+    } catch (e) {
+      log.severe(
+        message: '[WalletBloc] Autoswap execution crashed',
+        error: e,
+        trace: StackTrace.current,
+      );
+    } finally {
+      if (!isClosed) {
+        emit(state.copyWith(autoSwapExecuting: false));
+      }
+    }
+  }
 
   Future<void> _onExecuteAutoSwapFeeOverride(
     ExecuteAutoSwapFeeOverride event,
     Emitter<WalletState> emit,
-  ) => _disableUnavailableAutoSwap(emit);
-
-  Future<void> _disableUnavailableAutoSwap(Emitter<WalletState> emit) async {
-    emit(state.copyWith(autoSwapExecuting: true));
-    try {
-      final updatedSettings = await _disableAutoswapUsecase.execute();
-      emit(
-        state.copyWith(
-          autoSwapSettings: updatedSettings,
-          autoSwapFeeLimitExceeded: false,
-          autoSwapExecuting: false,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(autoSwapExecuting: false));
-      log.severe(
-        message: '[WalletBloc] Failed to disable unavailable auto swap',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
+  ) => _onExecuteAutoSwap(const ExecuteAutoSwap(), emit);
 
   Future<void> _onDismissAutoSwapWarning(
     DismissAutoSwapWarning event,

@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -60,6 +61,7 @@ class WalletLocator {
         saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
         disableAutoswapWarningUsecase: locator<DisableAutoswapWarningUsecase>(),
         disableAutoswapUsecase: locator<DisableAutoswapUsecase>(),
+        executeAutoswapUsecase: locator<ExecuteAutoswapUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
