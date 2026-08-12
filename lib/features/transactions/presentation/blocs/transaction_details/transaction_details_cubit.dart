@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -142,13 +143,31 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> initByOrderSwapLocalId(String localId) async {
+    _reload = () => _loadDetailsByOrderSwapLocalId(localId);
     await _loadDetailsByOrderSwapLocalId(localId);
     _orderSwapSubscription = _watchTransactionOrderSwapUsecase
         .execute(localId)
         .listen(
           (orderSwap) {
             if (isClosed) return;
-            _loadOrderSwapDetails(orderSwap);
+            final transaction = state.transaction;
+            if (transaction?.orderSwap?.localId != orderSwap.localId) return;
+            final walletTransaction = transaction?.walletTransaction;
+            final canonicalTransactionChanged =
+                walletTransaction != null &&
+                walletTransaction.txId !=
+                    orderSwap.canonicalWalletTransactionId;
+            emit(
+              state.copyWith(
+                transaction: transaction!.copyWith(
+                  walletTransaction: canonicalTransactionChanged
+                      ? null
+                      : walletTransaction,
+                  orderSwap: orderSwap,
+                ),
+                swapCounterpartTxId: orderSwap.counterpartTransactionId,
+              ),
+            );
           },
           onError: (Object error) {
             if (isClosed) return;
@@ -177,32 +196,37 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       emit(state.copyWith(err: TransactionNotFoundError()));
       return;
     }
-    final wallet = await _getWalletUsecase.execute(walletId);
     final counterpartWalletId = orderSwap.sourceWalletId == walletId
         ? orderSwap.destinationWalletId
         : orderSwap.sourceWalletId;
-    final counterpartWallet = counterpartWalletId == null
-        ? null
-        : await _getWalletUsecase.execute(counterpartWalletId);
-    var transaction = Transaction(orderSwap: orderSwap);
-    final walletTransactionId = orderSwap.canonicalWalletTransactionId;
-    if (walletTransactionId != null) {
-      try {
-        final transactions = await _getTransactionsByTxIdUsecase.execute(
-          walletTransactionId,
-        );
-        transaction = transactions.firstWhere(
-          (candidate) => candidate.walletId == walletId,
-          orElse: () => transaction,
-        );
-      } on TransactionNotFoundError {
-        // The order remains displayable while the wallet sync catches up.
-      }
-    }
+    final transactionId = orderSwap.canonicalWalletTransactionId;
+    final (wallet, counterpartWallet, walletTransactionResult) = await (
+      _getWalletUsecase.execute(walletId),
+      counterpartWalletId == null
+          ? Future<Wallet?>.value()
+          : _getWalletUsecase.execute(counterpartWalletId),
+      transactionId == null
+          ? Future.value(
+              const Ok<WalletTransaction?, WalletTransactionLookupFailure>(
+                null,
+              ),
+            )
+          : _getWalletTransactionUsecase.execute(
+              txId: transactionId,
+              walletId: walletId,
+            ),
+    ).wait;
+    final walletTransaction = switch (walletTransactionResult) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
     if (isClosed) return;
     emit(
       state.copyWith(
-        transaction: transaction,
+        transaction: Transaction(
+          walletTransaction: walletTransaction,
+          orderSwap: orderSwap,
+        ),
         wallet: wallet,
         counterpartWallet: counterpartWallet,
         swapCounterpartTxId: orderSwap.counterpartTransactionId,

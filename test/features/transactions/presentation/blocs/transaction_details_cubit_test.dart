@@ -2,10 +2,13 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
@@ -62,6 +65,7 @@ void main() {
     () async {
       final getWallet = _MockGetWalletUsecase();
       final getTransactions = _MockGetTransactionsByTxIdUsecase();
+      final getWalletTransaction = _MockGetWalletTransactionUsecase();
       final getOrderSwap = _MockGetTransactionOrderSwapUsecase();
       final watchOrderSwap = _MockWatchTransactionOrderSwapUsecase();
       final record = _record();
@@ -78,12 +82,19 @@ void main() {
         () => getWallet.execute('wallet-2'),
       ).thenAnswer((_) async => _wallet('wallet-2', Network.bitcoinTestnet));
       when(
-        () => getTransactions.execute('payin-tx'),
-      ).thenAnswer((_) async => [Transaction(orderSwap: record)]);
+        () => getWalletTransaction.execute(
+          txId: 'payin-tx',
+          walletId: 'wallet-1',
+          sync: false,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            const Ok<WalletTransaction?, WalletTransactionLookupFailure>(null),
+      );
       final cubit = TransactionDetailsCubit(
         getWalletUsecase: getWallet,
         getTransactionsByTxIdUsecase: getTransactions,
-        getWalletTransactionUsecase: _MockGetWalletTransactionUsecase(),
+        getWalletTransactionUsecase: getWalletTransaction,
         getTransactionOrderSwapUsecase: getOrderSwap,
         watchWalletTransactionByTxIdUsecase:
             _MockWatchWalletTransactionByTxIdUsecase(),
