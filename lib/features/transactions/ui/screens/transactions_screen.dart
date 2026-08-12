@@ -63,7 +63,10 @@ class _Screen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBText(
-                context.loc.transactionError(err.toString()),
+                // `err` is a domain failure whose `toString()` is the Dart
+                // default ("Instance of '…'"). Never interpolate it into a
+                // user-facing string; the raw reason belongs in the logs.
+                context.loc.oopsSomethingWentWrong,
                 style: context.font.bodyLarge,
                 color: context.appColors.error,
               ),

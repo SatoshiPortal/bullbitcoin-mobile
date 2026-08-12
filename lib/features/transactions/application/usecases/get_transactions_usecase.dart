@@ -3,10 +3,12 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -17,7 +19,6 @@ class GetTransactionsUsecase {
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
 
   GetTransactionsUsecase({
     required this._settingsRepository,
@@ -26,7 +27,6 @@ class GetTransactionsUsecase {
     required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
-    required this._labelExchangeOrdersUsecase,
   });
 
   Future<List<Transaction>> execute({
@@ -41,7 +41,6 @@ class GetTransactionsUsecase {
           : _mainnetExchangeOrderRepository;
 
       final orders = await orderRepository.getOrders();
-      await _labelExchangeOrdersUsecase.execute(orders: orders);
 
       // Labels must exist before wallet transactions are hydrated.
       final (walletTransactions, payjoinResult, swaps) = await (
@@ -76,12 +75,16 @@ class GetTransactionsUsecase {
       final broadcastedTransactions = walletTransactions.map((wt) {
         Swap? swap;
         try {
-          swap = swaps.firstWhere(
-            (s) =>
+          swap = swaps.firstWhere((s) {
+            final claimedLeg =
                 (wt.isOutgoing && s.sendTxId == wt.txId) ||
                 (wt.isIncoming &&
-                    (s.receiveTxId == wt.txId || s.refundTxId == wt.txId)),
-          );
+                    (s.receiveTxId == wt.txId || s.refundTxId == wt.txId));
+            return claimedLeg &&
+                s.walletId == wt.walletId &&
+                (s.amountSat == 0 || wt.amountSat <= s.amountSat) &&
+                _transactionPaysSwapAddress(wt, s);
+          });
         } catch (_) {
           // If no swap is found, it means the transaction is not a swap
           swap = null;
@@ -107,7 +110,18 @@ class GetTransactionsUsecase {
 
         Order? order;
         try {
-          order = orders.firstWhere((o) => o.transactionId == wt.txId);
+          order = orders.firstWhere((o) {
+            if (o.transactionId != wt.txId) return false;
+            if (o.toAddress != null && o.toAddress != wt.toAddress) {
+              return false;
+            }
+            final expectedDirection = o is BuyOrder
+                ? wt.isIncoming
+                : o is SellOrder
+                ? wt.isOutgoing
+                : true;
+            return expectedDirection && _transactionCoversOrderAmount(wt, o);
+          });
           // Remove the order from the list of orders to avoid duplication
           //  since it's already included in the broadcasted transaction
           orders.remove(order);
@@ -196,7 +210,66 @@ class GetTransactionsUsecase {
         error: e,
         trace: stackTrace,
       );
-      throw Exception('Failed to fetch transactions: $e');
+      throw TransactionAggregationFailure(e.toString());
     }
+  }
+
+  /// The exchange tells us which address a completed order paid. Before the
+  /// order is attached to one of the user's transactions, that transaction
+  /// must actually have moved at least what the order claims — otherwise a
+  /// wrong or hostile server figure gets attributed to unrelated funds.
+  ///
+  /// `>=` rather than `==` on purpose: payouts are batched, so one transaction
+  /// can legitimately carry several orders and more sats than a single one.
+  bool _transactionCoversOrderAmount(WalletTransaction wt, Order order) {
+    final double declared;
+    switch (order) {
+      case BuyOrder(:final payoutAmount, :final payoutCurrency):
+        if (payoutCurrency != 'BTC') return true;
+        declared = payoutAmount;
+      case SellOrder(:final payinAmount, :final payinCurrency):
+        if (payinCurrency != 'BTC') return true;
+        declared = payinAmount;
+      default:
+        return true;
+    }
+    final declaredSat = ConvertAmount.btcToSats(declared);
+    if (declaredSat <= 0) return true;
+    return wt.amountSat >= declaredSat;
+  }
+
+  /// A swap leg is only this transaction's if the transaction actually pays
+  /// the address the swap is built around. Matching on the server-reported
+  /// txid alone lets a wrong id graft a swap onto an unrelated payment.
+  bool _transactionPaysSwapAddress(WalletTransaction wt, Swap swap) {
+    // Liquid outputs expose the unconfidential address while a swap address is
+    // confidential, so the two are not comparable here; the txid + wallet +
+    // amount checks remain. TODO(swaps): unblind before comparing.
+    if (!wt.isBitcoin) return true;
+
+    final expected = <String>{
+      if (wt.isOutgoing)
+        ...switch (swap) {
+          LnSendSwap(:final paymentAddress) => [paymentAddress],
+          ChainSwap(:final paymentAddress) => [paymentAddress],
+          _ => <String>[],
+        },
+      if (wt.isIncoming)
+        ...switch (swap) {
+          LnReceiveSwap(:final receiveAddress) => [?receiveAddress],
+          ChainSwap(:final receiveAddress, :final refundAddress) => [
+            ?receiveAddress,
+            ?refundAddress,
+          ],
+          LnSendSwap(:final refundAddress) => [?refundAddress],
+        },
+    };
+    // Nothing to compare against (a recovered swap carries no address): fall
+    // back to the other checks rather than dropping a legitimate leg.
+    if (expected.isEmpty) return true;
+
+    return wt.outputs.any(
+      (output) => output.address != null && expected.contains(output.address),
+    );
   }
 }

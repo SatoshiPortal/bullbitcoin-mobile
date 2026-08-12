@@ -74,6 +74,7 @@ graph TB
     BUY --> EXCHANGE
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
+    BUY --> TX_HISTORY
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS --> WALLETS
@@ -94,6 +95,7 @@ graph TB
     SECRETS --> CORE
     SELL --> EXCHANGE
     SELL --> BULL_PAYJOIN
+    SELL --> TX_HISTORY
     SEND --> CONSOLIDATION
     SEND --> FEES
     SEND --> NETWORK

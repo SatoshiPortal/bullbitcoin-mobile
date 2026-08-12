@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -50,6 +51,12 @@ class TransactionsLocator {
       () => LabelExchangeOrdersUsecase(
         labelsFacade: locator<LabelsFacade>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+      ),
+    );
+    locator.registerFactory<TransactionsFacade>(
+      () => TransactionsFacade(
+        labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
       ),
     );
 
@@ -68,7 +75,6 @@ class TransactionsLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
       ),
     );
 
