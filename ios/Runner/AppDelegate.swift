@@ -9,6 +9,7 @@ import workmanager_apple
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+    excludeSensitiveFilesFromBackup()
 
     // workmanager_apple spawns a separate FlutterEngine per background task
     // (see BackgroundWorker.swift in workmanager_apple). Plugins registered
@@ -23,23 +24,22 @@ import workmanager_apple
       GeneratedPluginRegistrant.register(with: registry)
     }
 
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.bitcoin-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.liquid-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.swaps-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.logs-prune-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  private func excludeSensitiveFilesFromBackup() {
+    let fileManager = FileManager.default
+    guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+      return
+    }
+
+    // Wallet, payjoin, wallet-engine, and TSV log data all live below Documents.
+    // Excluding the directory also covers wallet directories created after startup.
+    var documentsURL = documentsDirectory
+    var resourceValues = URLResourceValues()
+    resourceValues.isExcludedFromBackup = true
+    // `setResourceValues` is `mutating`, so it needs a `var` receiver.
+    // URLResourceValues.isExcludedFromBackup sets NSURLIsExcludedFromBackupKey.
+    try? documentsURL.setResourceValues(resourceValues)
   }
 }
