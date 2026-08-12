@@ -179,9 +179,8 @@ sealed class Transaction with _$Transaction {
       swap?.type == SwapType.liquidToBitcoin ||
       (orderSwap?.inNetwork == OrderSwapNetwork.liquid &&
           orderSwap?.outNetwork == OrderSwapNetwork.bitcoin);
-
   // Internal swaps are outgoing from one wallet and incoming to the other.
-  bool isIncomingWallet(String? walletId) {
+  bool isReceivingWallet(String? walletId, {bool isCounterpart = false}) {
     final orderSwap = this.orderSwap;
     if (walletId != null && orderSwap != null) {
       return orderSwap.destinationWalletId == walletId &&
@@ -191,7 +190,7 @@ sealed class Transaction with _$Transaction {
     if (walletId != null && swap is ChainSwap) {
       return swap.receiveWalletId == walletId && swap.sendWalletId != walletId;
     }
-    return isIncoming;
+    return isCounterpart ? isOutgoing : isIncoming;
   }
 
   DateTime? get timestamp =>

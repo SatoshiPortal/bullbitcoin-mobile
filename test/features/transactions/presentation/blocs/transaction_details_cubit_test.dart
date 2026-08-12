@@ -18,7 +18,6 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -68,6 +67,7 @@ void main() {
       final getWalletTransaction = _MockGetWalletTransactionUsecase();
       final getOrderSwap = _MockGetTransactionOrderSwapUsecase();
       final watchOrderSwap = _MockWatchTransactionOrderSwapUsecase();
+      final watchWalletTransaction = _MockWatchWalletTransactionByTxIdUsecase();
       final record = _record();
       when(
         () => getOrderSwap.execute('local-1'),
@@ -91,13 +91,18 @@ void main() {
         (_) async =>
             const Ok<WalletTransaction?, WalletTransactionLookupFailure>(null),
       );
+      when(
+        () => watchWalletTransaction.execute(
+          txId: 'payin-tx',
+          walletId: 'wallet-1',
+        ),
+      ).thenAnswer((_) => const Stream.empty());
       final cubit = TransactionDetailsCubit(
         getWalletUsecase: getWallet,
         getTransactionsByTxIdUsecase: getTransactions,
         getWalletTransactionUsecase: getWalletTransaction,
         getTransactionOrderSwapUsecase: getOrderSwap,
-        watchWalletTransactionByTxIdUsecase:
-            _MockWatchWalletTransactionByTxIdUsecase(),
+        watchWalletTransactionByTxIdUsecase: watchWalletTransaction,
         getSwapUsecase: _MockGetSwapUsecase(),
         getPayjoinByIdUsecase: _MockGetPayjoinByIdUsecase(),
         getPayjoinByTxIdUsecase: _MockGetPayjoinByTxIdUsecase(),

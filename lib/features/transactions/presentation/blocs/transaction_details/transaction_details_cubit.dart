@@ -76,6 +76,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   StreamSubscription? _payjoinTxSubscription;
   StreamSubscription? _payjoinOriginalTxSubscription;
   StreamSubscription? _orderSwapSubscription;
+  String? _watchedOrderSwapTransactionId;
+  WalletTransaction? _pendingOrderSwapWalletTransaction;
+  int _orderSwapTransactionWatchGeneration = 0;
 
   // The payjoin id _payjoinSubscription is currently listening to on the
   // by-wallet-tx path, so reloads triggered by its own events don't
@@ -149,25 +152,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         .execute(localId)
         .listen(
           (orderSwap) {
-            if (isClosed) return;
-            final transaction = state.transaction;
-            if (transaction?.orderSwap?.localId != orderSwap.localId) return;
-            final walletTransaction = transaction?.walletTransaction;
-            final canonicalTransactionChanged =
-                walletTransaction != null &&
-                walletTransaction.txId !=
-                    orderSwap.canonicalWalletTransactionId;
-            emit(
-              state.copyWith(
-                transaction: transaction!.copyWith(
-                  walletTransaction: canonicalTransactionChanged
-                      ? null
-                      : walletTransaction,
-                  orderSwap: orderSwap,
-                ),
-                swapCounterpartTxId: orderSwap.counterpartTransactionId,
-              ),
-            );
+            unawaited(_handleOrderSwapUpdate(orderSwap));
           },
           onError: (Object error) {
             if (isClosed) return;
@@ -176,10 +161,88 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         );
   }
 
+  Future<void> _handleOrderSwapUpdate(OrderSwapRecord orderSwap) async {
+    if (isClosed) return;
+    final transaction = state.transaction;
+    if (transaction?.orderSwap?.localId != orderSwap.localId) {
+      await _loadDetailsByOrderSwapLocalId(orderSwap.localId);
+      await _watchOrderSwapWalletTransaction(state.transaction?.orderSwap);
+      return;
+    }
+    final walletTransaction = transaction?.walletTransaction;
+    final canonicalTransactionChanged =
+        walletTransaction != null &&
+        walletTransaction.txId != orderSwap.canonicalWalletTransactionId;
+    emit(
+      state.copyWith(
+        transaction: transaction!.copyWith(
+          walletTransaction: canonicalTransactionChanged
+              ? null
+              : walletTransaction,
+          orderSwap: orderSwap,
+        ),
+        swapCounterpartTxId: orderSwap.counterpartTransactionId,
+      ),
+    );
+    await _watchOrderSwapWalletTransaction(orderSwap);
+  }
+
+  Future<void> _watchOrderSwapWalletTransaction(
+    OrderSwapRecord? orderSwap,
+  ) async {
+    final transactionId = orderSwap?.canonicalWalletTransactionId;
+    final walletId = orderSwap?.canonicalWalletId;
+    if (transactionId == null || walletId == null) return;
+    if (_watchedOrderSwapTransactionId == transactionId) return;
+    final generation = ++_orderSwapTransactionWatchGeneration;
+    _pendingOrderSwapWalletTransaction = null;
+    await _walletTransactionSubscription?.cancel();
+    if (isClosed || generation != _orderSwapTransactionWatchGeneration) return;
+    try {
+      _walletTransactionSubscription = _watchWalletTransactionByTxIdUsecase
+          .execute(txId: transactionId, walletId: walletId)
+          .listen(
+            (walletTransaction) {
+              if (isClosed) return;
+              final latestOrderSwap = state.transaction?.orderSwap;
+              if (latestOrderSwap == null) {
+                _pendingOrderSwapWalletTransaction = walletTransaction;
+                return;
+              }
+              if (latestOrderSwap.canonicalWalletTransactionId !=
+                  transactionId) {
+                return;
+              }
+              emit(
+                state.copyWith(
+                  transaction: state.transaction?.copyWith(
+                    walletTransaction: walletTransaction,
+                  ),
+                ),
+              );
+            },
+            onError: (_) {
+              if (_watchedOrderSwapTransactionId == transactionId) {
+                _watchedOrderSwapTransactionId = null;
+              }
+              log.warning('Order swap wallet transaction watcher failed');
+            },
+          );
+      _watchedOrderSwapTransactionId = transactionId;
+    } catch (_) {
+      _watchedOrderSwapTransactionId = null;
+      log.warning('Order swap wallet transaction watcher failed');
+    }
+  }
+
   Future<void> _loadDetailsByOrderSwapLocalId(String localId) async {
     try {
       final orderSwap = await _getTransactionOrderSwapUsecase.execute(localId);
+      await _watchOrderSwapWalletTransaction(orderSwap);
       await _loadOrderSwapDetails(orderSwap);
+    } on ParallelWaitError catch (error) {
+      if (isClosed) return;
+      emit(state.copyWith(err: _firstParallelError(error)));
     } on TransactionNotFoundError catch (error) {
       if (isClosed) return;
       emit(state.copyWith(notFoundError: error));
@@ -216,10 +279,22 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
               walletId: walletId,
             ),
     ).wait;
-    final walletTransaction = switch (walletTransactionResult) {
+    final loadedWalletTransaction = switch (walletTransactionResult) {
       Ok(:final value) => value,
-      Err() => null,
+      Err() => () {
+        log.warning('Order swap wallet transaction lookup failed');
+        return null;
+      }(),
     };
+    final pendingWalletTransaction = _pendingOrderSwapWalletTransaction;
+    _pendingOrderSwapWalletTransaction = null;
+    final matchingPendingWalletTransaction =
+        pendingWalletTransaction?.txId == transactionId &&
+            pendingWalletTransaction?.walletId == walletId
+        ? pendingWalletTransaction
+        : null;
+    final walletTransaction =
+        matchingPendingWalletTransaction ?? loadedWalletTransaction;
     if (isClosed) return;
     emit(
       state.copyWith(
@@ -230,8 +305,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         wallet: wallet,
         counterpartWallet: counterpartWallet,
         swapCounterpartTxId: orderSwap.counterpartTransactionId,
+        err: null,
+        notFoundError: null,
       ),
     );
+  }
+
+  Object _firstParallelError(ParallelWaitError error) {
+    final errors = error.errors as (AsyncError?, AsyncError?, AsyncError?);
+    return (errors.$1 ?? errors.$2 ?? errors.$3)?.error ?? error;
   }
 
   Future<void> _loadDetailsByWalletTxId(

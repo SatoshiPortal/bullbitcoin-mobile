@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -456,6 +457,218 @@ void main() {
       expect(cubit.state.transaction?.txId, 'replacement-txid');
     },
   );
+
+  test('adds the wallet transaction after background sync completes', () async {
+    final orderSwap = _receiveOrderSwap();
+    final walletTransactions = StreamController<WalletTransaction>.broadcast();
+    addTearDown(walletTransactions.close);
+    when(
+      () => getTransactionOrderSwap.execute(orderSwap.localId),
+    ).thenAnswer((_) async => orderSwap);
+    when(
+      () => watchWalletTransactionByTxId.execute(
+        txId: orderSwap.canonicalWalletTransactionId!,
+        walletId: orderSwap.canonicalWalletId!,
+      ),
+    ).thenAnswer((_) => walletTransactions.stream);
+
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    await cubit.initByOrderSwapLocalId(orderSwap.localId);
+    expect(cubit.state.walletTransaction, isNull);
+
+    final walletTransaction = _walletTx(
+      txId: orderSwap.canonicalWalletTransactionId!,
+      walletId: orderSwap.canonicalWalletId!,
+      network: Network.liquidMainnet,
+      direction: WalletTransactionDirection.incoming,
+    );
+    walletTransactions.add(walletTransaction);
+    await pumpEventQueue();
+
+    expect(cubit.state.walletTransaction, walletTransaction);
+    expect(cubit.state.transaction?.orderSwap, orderSwap);
+  });
+
+  test('keeps a wallet sync result emitted during the initial load', () async {
+    final orderSwap = _receiveOrderSwap();
+    final walletTransactionLookup =
+        Completer<Result<WalletTransaction?, WalletTransactionLookupFailure>>();
+    final walletTransactions = StreamController<WalletTransaction>.broadcast();
+    addTearDown(walletTransactions.close);
+    when(
+      () => getTransactionOrderSwap.execute(orderSwap.localId),
+    ).thenAnswer((_) async => orderSwap);
+    when(
+      () => getWalletTransaction.execute(
+        txId: orderSwap.canonicalWalletTransactionId!,
+        walletId: orderSwap.canonicalWalletId!,
+        sync: false,
+      ),
+    ).thenAnswer((_) => walletTransactionLookup.future);
+    when(
+      () => watchWalletTransactionByTxId.execute(
+        txId: orderSwap.canonicalWalletTransactionId!,
+        walletId: orderSwap.canonicalWalletId!,
+      ),
+    ).thenAnswer((_) => walletTransactions.stream);
+
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    final load = cubit.initByOrderSwapLocalId(orderSwap.localId);
+    await pumpEventQueue();
+
+    final walletTransaction = _walletTx(
+      txId: orderSwap.canonicalWalletTransactionId!,
+      walletId: orderSwap.canonicalWalletId!,
+      network: Network.liquidMainnet,
+      direction: WalletTransactionDirection.incoming,
+    );
+    walletTransactions.add(walletTransaction);
+    await pumpEventQueue();
+    walletTransactionLookup.complete(
+      Ok(
+        _walletTx(
+          txId: orderSwap.canonicalWalletTransactionId!,
+          walletId: orderSwap.canonicalWalletId!,
+          network: Network.liquidMainnet,
+          direction: WalletTransactionDirection.incoming,
+          amountSat: 1,
+        ),
+      ),
+    );
+    await load;
+
+    expect(cubit.state.walletTransaction, walletTransaction);
+    expect(cubit.state.transaction?.orderSwap, orderSwap);
+  });
+
+  test('watches a replacement canonical wallet transaction', () async {
+    final initial = _receiveOrderSwap();
+    final orderUpdates = StreamController<OrderSwapRecord>.broadcast();
+    final replacementTransactions =
+        StreamController<WalletTransaction>.broadcast();
+    addTearDown(orderUpdates.close);
+    addTearDown(replacementTransactions.close);
+    when(
+      () => getTransactionOrderSwap.execute(initial.localId),
+    ).thenAnswer((_) async => initial);
+    when(
+      () => watchTransactionOrderSwap.execute(initial.localId),
+    ).thenAnswer((_) => orderUpdates.stream);
+    when(
+      () => watchWalletTransactionByTxId.execute(
+        txId: 'replacement-txid',
+        walletId: initial.canonicalWalletId!,
+      ),
+    ).thenAnswer((_) => replacementTransactions.stream);
+
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    await cubit.initByOrderSwapLocalId(initial.localId);
+    final updated = _copyOrderSwap(
+      initial,
+      localStatus: OrderSwapLocalStatus.completed,
+      order: _copyOrderSwapOrder(
+        initial.order!,
+        liquidTransactionId: 'replacement-txid',
+      ),
+    );
+    orderUpdates.add(updated);
+    await pumpEventQueue();
+
+    final replacement = _walletTx(
+      txId: 'replacement-txid',
+      walletId: initial.canonicalWalletId!,
+      network: Network.liquidMainnet,
+      direction: WalletTransactionDirection.incoming,
+    );
+    replacementTransactions.add(replacement);
+    await pumpEventQueue();
+
+    expect(cubit.state.walletTransaction, replacement);
+    expect(cubit.state.transaction?.orderSwap, updated);
+  });
+
+  test('recovers a failed initial load from an order update', () async {
+    final orderSwap = _receiveOrderSwap();
+    final updates = StreamController<OrderSwapRecord>.broadcast();
+    addTearDown(updates.close);
+    var attempts = 0;
+    when(() => getTransactionOrderSwap.execute(orderSwap.localId)).thenAnswer((
+      _,
+    ) async {
+      if (attempts++ == 0) throw TransactionNotFoundError();
+      return orderSwap;
+    });
+    when(
+      () => watchTransactionOrderSwap.execute(orderSwap.localId),
+    ).thenAnswer((_) => updates.stream);
+
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    await cubit.initByOrderSwapLocalId(orderSwap.localId);
+    expect(cubit.state.transaction, isNull);
+
+    updates.add(orderSwap);
+    await pumpEventQueue();
+
+    expect(cubit.state.transaction?.orderSwap, orderSwap);
+    expect(cubit.state.err, isNull);
+    expect(cubit.state.notFoundError, isNull);
+  });
+
+  test('retries the wallet transaction watcher after a stream error', () async {
+    final orderSwap = _receiveOrderSwap();
+    final orderUpdates = StreamController<OrderSwapRecord>.broadcast();
+    final firstWatcher = StreamController<WalletTransaction>.broadcast();
+    addTearDown(orderUpdates.close);
+    addTearDown(firstWatcher.close);
+    when(
+      () => getTransactionOrderSwap.execute(orderSwap.localId),
+    ).thenAnswer((_) async => orderSwap);
+    when(
+      () => watchTransactionOrderSwap.execute(orderSwap.localId),
+    ).thenAnswer((_) => orderUpdates.stream);
+    var watcherCalls = 0;
+    when(
+      () => watchWalletTransactionByTxId.execute(
+        txId: orderSwap.canonicalWalletTransactionId!,
+        walletId: orderSwap.canonicalWalletId!,
+      ),
+    ).thenAnswer((_) {
+      watcherCalls++;
+      return watcherCalls == 1 ? firstWatcher.stream : const Stream.empty();
+    });
+
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    await cubit.initByOrderSwapLocalId(orderSwap.localId);
+    firstWatcher.addError(StateError('watch failed'));
+    await pumpEventQueue();
+
+    orderUpdates.add(orderSwap);
+    await pumpEventQueue();
+
+    expect(watcherCalls, 2);
+  });
+
+  test('reports the underlying error from parallel wallet loading', () async {
+    final orderSwap = _receiveOrderSwap();
+    final failure = StateError('wallet unavailable');
+    when(
+      () => getTransactionOrderSwap.execute(orderSwap.localId),
+    ).thenAnswer((_) async => orderSwap);
+    when(
+      () => getWallet.execute(orderSwap.canonicalWalletId!, sync: false),
+    ).thenThrow(failure);
+
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    await cubit.initByOrderSwapLocalId(orderSwap.localId);
+
+    expect(cubit.state.err, same(failure));
+  });
 
   group('TransactionDetailsCubit.broadcastPayjoinOriginalTx guard', () {
     test(

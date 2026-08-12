@@ -52,8 +52,8 @@ void main() {
         ),
       );
 
-      expect(transaction.isIncomingWallet('bitcoin-wallet'), isFalse);
-      expect(transaction.isIncomingWallet('liquid-wallet'), isTrue);
+      expect(transaction.isReceivingWallet('bitcoin-wallet'), isFalse);
+      expect(transaction.isReceivingWallet('liquid-wallet'), isTrue);
     });
 
     test('identifies Liquid to Bitcoin transfer wallets', () {
@@ -64,8 +64,23 @@ void main() {
         ),
       );
 
-      expect(transaction.isIncomingWallet('liquid-wallet'), isFalse);
-      expect(transaction.isIncomingWallet('bitcoin-wallet'), isTrue);
+      expect(transaction.isReceivingWallet('liquid-wallet'), isFalse);
+      expect(transaction.isReceivingWallet('bitcoin-wallet'), isTrue);
+    });
+
+    test('ordinary transfer reverses direction for the counterpart', () {
+      final outgoing = Transaction(walletTransaction: _walletTx(txId: 'txid'));
+      final incoming = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'incoming-txid',
+          direction: WalletTransactionDirection.incoming,
+        ),
+      );
+
+      expect(outgoing.isReceivingWallet('w1'), isFalse);
+      expect(outgoing.isReceivingWallet('w2', isCounterpart: true), isTrue);
+      expect(incoming.isReceivingWallet('w1'), isTrue);
+      expect(incoming.isReceivingWallet('w2', isCounterpart: true), isFalse);
     });
   });
 

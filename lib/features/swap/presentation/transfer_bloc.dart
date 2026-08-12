@@ -1530,12 +1530,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           signedPsbt,
           isPsbt: true,
         );
-        if (state.fromWallet != null) {
-          unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
-        }
-        if (state.toWallet != null) {
-          unawaited(_syncWalletAfterBroadcast(state.toWallet!.id));
-        }
+        unawaited(
+          _syncWalletsAfterBroadcast([
+            if (state.fromWallet != null) state.fromWallet!.id,
+            if (state.toWallet != null) state.toWallet!.id,
+          ]),
+        );
       } else {
         return;
       }
@@ -1555,12 +1555,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   Future<void> _syncWalletAfterBroadcast(String walletId) async {
     try {
       await _getWalletUsecase.execute(walletId, sync: true);
-    } catch (error, stackTrace) {
-      log.warning(
-        'Failed to sync wallet after transfer broadcast',
-        error: error,
-        trace: stackTrace,
-      );
+    } catch (_) {
+      log.warning('Failed to sync wallet after transfer broadcast');
+    }
+  }
+
+  Future<void> _syncWalletsAfterBroadcast(List<String> walletIds) async {
+    for (final walletId in walletIds) {
+      await _syncWalletAfterBroadcast(walletId);
     }
   }
 

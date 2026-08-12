@@ -118,14 +118,19 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
-            label: transaction?.isIncomingWallet(wallet?.id) == true
+            label: transaction?.isReceivingWallet(wallet?.id) == true
                 ? context.loc.transactionDetailLabelToWallet
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
         if (counterpartWalletLabel.isNotEmpty && !recovered)
           DetailsTableItem(
-            label: transaction?.isIncomingWallet(counterpartWallet?.id) == true
+            label:
+                transaction?.isReceivingWallet(
+                      counterpartWallet?.id,
+                      isCounterpart: true,
+                    ) ==
+                    true
                 ? context.loc.transactionDetailLabelToWallet
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: counterpartWalletLabel,
