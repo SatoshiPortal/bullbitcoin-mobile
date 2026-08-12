@@ -16,17 +16,22 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 
+typedef LiquidAddressValidator =
+    Future<lwk.LiquidNetwork> Function({required String addressString});
+
 class LwkWalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
   final StreamController<String> _walletSyncStartedController;
   final StreamController<String> _walletSyncFinishedController;
+  final LiquidAddressValidator _validateAddress;
 
-  LwkWalletDatasource()
+  LwkWalletDatasource({LiquidAddressValidator? validateAddress})
     : _activeSyncs = {},
       _walletSyncStartedController = StreamController<String>.broadcast(),
-      _walletSyncFinishedController = StreamController<String>.broadcast();
+      _walletSyncFinishedController = StreamController<String>.broadcast(),
+      _validateAddress = validateAddress ?? lwk.Address.validate;
 
   Stream<String> get walletSyncStartedStream =>
       _walletSyncStartedController.stream;
@@ -385,6 +390,10 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
+      await validateDestinationAddress(
+        address: address,
+        isTestnet: wallet.isTestnet,
+      );
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
       // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
@@ -410,6 +419,22 @@ class LwkWalletDatasource {
       } else {
         rethrow;
       }
+    }
+  }
+
+  @visibleForTesting
+  Future<void> validateDestinationAddress({
+    required String address,
+    required bool isTestnet,
+  }) async {
+    final actualNetwork = await _validateAddress(addressString: address);
+    final expectedNetwork = isTestnet
+        ? lwk.LiquidNetwork.testnet
+        : lwk.LiquidNetwork.mainnet;
+    if (actualNetwork != expectedNetwork) {
+      throw BullException(
+        'Liquid destination address network does not match wallet network.',
+      );
     }
   }
 
