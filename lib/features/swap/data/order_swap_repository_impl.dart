@@ -599,6 +599,9 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     if (error is ExchangeTimeoutException) {
       return SwapTimeoutFailure(error.logMessage);
     }
+    if (error is ExchangeProviderUnavailableException) {
+      return SwapProviderUnavailableFailure(error.logMessage);
+    }
     if (error is ExchangeNetworkException) {
       return SwapNetworkFailure(error.logMessage);
     }

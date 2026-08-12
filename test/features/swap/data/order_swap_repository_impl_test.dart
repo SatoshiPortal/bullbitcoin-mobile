@@ -556,6 +556,28 @@ void main() {
     verifyNoMoreInteractions(remote);
   });
 
+  test('maps HTTP 418 to SwapProviderUnavailableFailure', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenThrow(const ExchangeProviderUnavailableException());
+
+    final result = await _create(repository);
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    expect(
+      (result as Err<OrderSwapRecord, SwapFailure>).failure,
+      isA<SwapProviderUnavailableFailure>(),
+    );
+  });
+
   test(
     'deletes a locally prepared request after a deterministic rejection',
     () async {

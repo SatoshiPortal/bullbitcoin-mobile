@@ -57,6 +57,12 @@ final class SwapProviderFailure extends SwapFailure {
   const SwapProviderFailure([super.logMessage]);
 }
 
+/// The Exchange explicitly signaled it cannot serve swap orders (HTTP 418).
+/// This is the only failure that authorizes a Boltz fallback.
+final class SwapProviderUnavailableFailure extends SwapFailure {
+  const SwapProviderUnavailableFailure([super.logMessage]);
+}
+
 final class SwapNetworkFailure extends SwapFailure {
   const SwapNetworkFailure([super.logMessage]);
 }

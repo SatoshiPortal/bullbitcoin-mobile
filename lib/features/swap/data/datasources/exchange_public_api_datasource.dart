@@ -111,6 +111,9 @@ class ExchangePublicApiDatasource {
       throw ExchangeNetworkException(error.message);
     }
 
+    if (response.statusCode == 418) {
+      throw const ExchangeProviderUnavailableException();
+    }
     if (response.statusCode == 429) {
       final retryAfter = int.tryParse(
         response.headers.value('retry-after') ?? '',
@@ -153,6 +156,13 @@ sealed class ExchangeDatasourceException implements Exception {
 
 final class ExchangeNetworkException extends ExchangeDatasourceException {
   const ExchangeNetworkException([super.logMessage]);
+}
+
+/// The Exchange explicitly signals it cannot serve swap orders (HTTP 418).
+/// This is the only status that authorizes a Boltz fallback.
+final class ExchangeProviderUnavailableException
+    extends ExchangeDatasourceException {
+  const ExchangeProviderUnavailableException([super.logMessage]);
 }
 
 final class ExchangeTimeoutException extends ExchangeDatasourceException {

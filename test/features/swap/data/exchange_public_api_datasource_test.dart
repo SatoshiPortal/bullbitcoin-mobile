@@ -343,6 +343,32 @@ void main() {
     );
   });
 
+  test('maps HTTP 418 to ExchangeProviderUnavailableException', () async {
+    final dio = Dio()
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) => handler.resolve(
+            Response<dynamic>(
+              requestOptions: options,
+              statusCode: 418,
+              data: "I'm a teapot",
+            ),
+          ),
+        ),
+      );
+    final datasource = ExchangePublicApiDatasource(dio);
+
+    await expectLater(
+      datasource.getBestSwapOption(
+        amountSat: BigInt.from(100000),
+        isInAmountFixed: true,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.bitcoin,
+      ),
+      throwsA(isA<ExchangeProviderUnavailableException>()),
+    );
+  });
+
   test('does not retry an ambiguous network failure', () async {
     var requestCount = 0;
     final dio = Dio()

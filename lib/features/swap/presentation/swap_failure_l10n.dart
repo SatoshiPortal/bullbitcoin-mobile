@@ -23,6 +23,7 @@ extension SwapFailureL10n on SwapFailure {
     SwapOrderMismatchFailure() ||
     SwapInvalidStateFailure() ||
     SwapProviderFailure() ||
+    SwapProviderUnavailableFailure() ||
     SwapStorageFailure() ||
     SwapUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
     SwapRateLimitedFailure(:final retryAfter) =>

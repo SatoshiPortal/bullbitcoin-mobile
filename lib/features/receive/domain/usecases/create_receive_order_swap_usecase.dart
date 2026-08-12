@@ -145,7 +145,9 @@ class CreateReceiveOrderSwapUsecase {
       ),
     SwapNoPaymentOptionFailure() ||
     SwapValidationFailure() ||
-    SwapProviderFailure() => ReceiveSwapUnavailableFailure(failure.logMessage),
+    SwapProviderFailure() ||
+    SwapProviderUnavailableFailure() =>
+      ReceiveSwapUnavailableFailure(failure.logMessage),
     SwapRateLimitedFailure(:final retryAfter) => ReceiveRateLimitedFailure(
       retryAfter: retryAfter,
       logMessage: failure.logMessage,

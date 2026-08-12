@@ -18,6 +18,7 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
       SwapOrderMismatchFailure() ||
       SwapInvalidStateFailure() ||
       SwapProviderFailure() ||
+      SwapProviderUnavailableFailure() ||
       SwapNetworkFailure() ||
       SwapTimeoutFailure() ||
       SwapStorageFailure() ||
