@@ -5023,5 +5023,9 @@
   "coreSwapsStatusUnknown": "Inconnu",
   "autoswapBoltzServerUrlLabel": "URL du serveur Boltz",
   "autoswapBoltzServerUrlInfoText": "Optionnel. Utilisé comme solution de repli quand l'exchange est indisponible.",
-  "autoswapInvalidBoltzServerUrlError": "Entrez une URL HTTPS valide (ex. https://boltz.example.com/v2)"
+  "autoswapInvalidBoltzServerUrlError": "Entrez une URL HTTPS valide (ex. https://boltz.example.com/v2)",
+  "autoswapExchangeUnavailableTitle": "Fournisseur de swap indisponible",
+  "autoswapExchangeUnavailableBody": "L'exchange de swap est actuellement indisponible. Vous pouvez configurer un serveur Boltz pour continuer à échanger.",
+  "autoswapExchangeUnavailableConfigure": "Configurer",
+  "autoswapExchangeUnavailableLater": "Plus tard"
 }

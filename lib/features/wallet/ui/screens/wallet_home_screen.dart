@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/themes/colors.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
+import 'package:bb_mobile/features/autoswap/presentation/swap_provider_availability_cubit.dart';
+import 'package:bb_mobile/features/autoswap/ui/widgets/autoswap_settings.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
@@ -10,6 +13,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -86,90 +90,128 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<WalletBloc, WalletState>(
-          listenWhen: (previous, current) =>
-              !previous.isRefreshing && current.isRefreshing,
-          listener: (context, state) {
-            // A refresh just started (manual pull, post-activity dispatch,
-            // env change, etc.) — surface the spinner. RefreshIndicator.show()
-            // is a no-op if it's already running, so this is safe to combine
-            // with the initState path.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              _indicatorKey.currentState?.show();
-            });
-          },
-        ),
-        BlocListener<WalletBloc, WalletState>(
-          listenWhen: (previous, current) =>
-              previous.autoSwapSettings != current.autoSwapSettings ||
-              previous.wallets != current.wallets,
-          listener: (context, state) {
-            if (!_hasShownAutoSwapWarning &&
-                state.showAutoSwapDefaultEnabledWarning()) {
-              _hasShownAutoSwapWarning = true;
+    return BlocProvider<SwapProviderAvailabilityCubit>(
+      create: (_) =>
+          locator<SwapProviderAvailabilityCubit>()..checkAvailability(),
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<SwapProviderAvailabilityCubit,
+              SwapProviderAvailabilityState>(
+            listenWhen: (previous, current) =>
+                !previous.exchangeUnavailable && current.exchangeUnavailable,
+            listener: (context, state) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                AutoSwapWarningBottomSheet.show(context);
+                if (!mounted) return;
+                _showExchangeUnavailablePrompt(context);
               });
-            }
-          },
-        ),
-      ],
-      child: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {},
-        child: Stack(
-          children: [
-            // Black background visible only during iOS top overscroll
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: ColoredBox(
-                color: AppColors.dark.background,
-                child: const SizedBox(height: 300),
-              ),
-            ),
-            BBPullableBody(
-              indicatorKey: _indicatorKey,
-              onRefresh: () => context.read<WalletBloc>().refresh(),
-              slivers: [
-                const SliverToBoxAdapter(child: WalletHomeTopSection()),
-                const SliverToBoxAdapter(child: AnnouncementCarousel()),
-                const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
-                const SliverToBoxAdapter(child: HomeConsolidationBanner()),
-                SliverToBoxAdapter(
-                  child: WalletCards(
-                    onTap: (w) {
-                      context.pushNamed(
-                        WalletRoute.walletDetail.name,
-                        pathParameters: {'walletId': w.id},
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13.0,
-                    vertical: 16.0,
-                  ),
-                  child: WalletBottomButtons(),
+            },
+          ),
+          BlocListener<WalletBloc, WalletState>(
+            listenWhen: (previous, current) =>
+                !previous.isRefreshing && current.isRefreshing,
+            listener: (context, state) {
+              // A refresh just started (manual pull, post-activity dispatch,
+              // env change, etc.) — surface the spinner. RefreshIndicator.show()
+              // is a no-op if it's already running, so this is safe to combine
+              // with the initState path.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                _indicatorKey.currentState?.show();
+              });
+            },
+          ),
+          BlocListener<WalletBloc, WalletState>(
+            listenWhen: (previous, current) =>
+                previous.autoSwapSettings != current.autoSwapSettings ||
+                previous.wallets != current.wallets,
+            listener: (context, state) {
+              if (!_hasShownAutoSwapWarning &&
+                  state.showAutoSwapDefaultEnabledWarning()) {
+                _hasShownAutoSwapWarning = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  AutoSwapWarningBottomSheet.show(context);
+                });
+              }
+            },
+          ),
+        ],
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {},
+          child: Stack(
+            children: [
+              // Black background visible only during iOS top overscroll
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: ColoredBox(
+                  color: AppColors.dark.background,
+                  child: const SizedBox(height: 300),
                 ),
               ),
-            ),
-          ],
+              BBPullableBody(
+                indicatorKey: _indicatorKey,
+                onRefresh: () => context.read<WalletBloc>().refresh(),
+                slivers: [
+                  const SliverToBoxAdapter(child: WalletHomeTopSection()),
+                  const SliverToBoxAdapter(child: AnnouncementCarousel()),
+                  const SliverToBoxAdapter(child: HomeWarnings()),
+                  const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
+                  const SliverToBoxAdapter(child: HomeConsolidationBanner()),
+                  SliverToBoxAdapter(
+                    child: WalletCards(
+                      onTap: (w) {
+                        context.pushNamed(
+                          WalletRoute.walletDetail.name,
+                          pathParameters: {'walletId': w.id},
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13.0,
+                      vertical: 16.0,
+                    ),
+                    child: WalletBottomButtons(),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  void _showExchangeUnavailablePrompt(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.loc.autoswapExchangeUnavailableTitle),
+        content: Text(context.loc.autoswapExchangeUnavailableBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.loc.autoswapExchangeUnavailableLater),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              AutoSwapSettingsBottomSheet.showBottomSheet(context);
+            },
+            child: Text(context.loc.autoswapExchangeUnavailableConfigure),
+          ),
+        ],
       ),
     );
   }
