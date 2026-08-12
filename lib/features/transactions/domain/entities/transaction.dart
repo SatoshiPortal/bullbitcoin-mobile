@@ -53,6 +53,10 @@ sealed class Transaction with _$Transaction {
       order?.isLiquid ??
       false;
   String? get toAddress => walletTransaction?.toAddress ?? order?.toAddress;
+  String? get orderSwapDestinationAddress =>
+      orderSwap?.outNetwork == OrderSwapNetwork.lightning
+      ? null
+      : orderSwap?.destination;
 
   bool get isBroadcasted => walletTransaction != null;
   bool get isSwap => swap != null || orderSwap != null;
@@ -175,6 +179,20 @@ sealed class Transaction with _$Transaction {
       swap?.type == SwapType.liquidToBitcoin ||
       (orderSwap?.inNetwork == OrderSwapNetwork.liquid &&
           orderSwap?.outNetwork == OrderSwapNetwork.bitcoin);
+
+  // Internal swaps are outgoing from one wallet and incoming to the other.
+  bool isIncomingWallet(String? walletId) {
+    final orderSwap = this.orderSwap;
+    if (walletId != null && orderSwap != null) {
+      return orderSwap.destinationWalletId == walletId &&
+          orderSwap.sourceWalletId != walletId;
+    }
+    final swap = this.swap;
+    if (walletId != null && swap is ChainSwap) {
+      return swap.receiveWalletId == walletId && swap.sendWalletId != walletId;
+    }
+    return isIncoming;
+  }
 
   DateTime? get timestamp =>
       // Completed swaps are displayed (and should sort) by when they finished,

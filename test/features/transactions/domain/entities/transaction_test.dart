@@ -43,6 +43,51 @@ PayjoinSession _senderPayjoin({
 );
 
 void main() {
+  group('Transaction swap wallet direction', () {
+    test('identifies Bitcoin to Liquid transfer wallets', () {
+      final transaction = Transaction(
+        orderSwap: _transferOrderSwap(
+          inNetwork: OrderSwapNetwork.bitcoin,
+          outNetwork: OrderSwapNetwork.liquid,
+        ),
+      );
+
+      expect(transaction.isIncomingWallet('bitcoin-wallet'), isFalse);
+      expect(transaction.isIncomingWallet('liquid-wallet'), isTrue);
+    });
+
+    test('identifies Liquid to Bitcoin transfer wallets', () {
+      final transaction = Transaction(
+        orderSwap: _transferOrderSwap(
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+        ),
+      );
+
+      expect(transaction.isIncomingWallet('liquid-wallet'), isFalse);
+      expect(transaction.isIncomingWallet('bitcoin-wallet'), isTrue);
+    });
+  });
+
+  test('exposes only on-chain order swap destinations as addresses', () {
+    final onChain = Transaction(
+      orderSwap: _transferOrderSwap(
+        inNetwork: OrderSwapNetwork.bitcoin,
+        outNetwork: OrderSwapNetwork.liquid,
+      ),
+    );
+    final lightning = Transaction(
+      orderSwap: _transferOrderSwap(
+        inNetwork: OrderSwapNetwork.bitcoin,
+        outNetwork: OrderSwapNetwork.lightning,
+      ),
+    );
+
+    expect(onChain.orderSwapDestinationAddress, 'destination');
+    expect(lightning.orderSwapDestinationAddress, isNull);
+    expect(onChain.toAddress, isNull);
+  });
+
   group('Transaction Payjoin sender amounts', () {
     test(
       'displays the negotiated amount instead of BDK receiver-net amount',
@@ -391,6 +436,29 @@ void main() {
     });
   });
 }
+
+OrderSwapRecord _transferOrderSwap({
+  required OrderSwapNetwork inNetwork,
+  required OrderSwapNetwork outNetwork,
+}) => OrderSwapRecord(
+  localId: 'local-id',
+  purpose: OrderSwapPurpose.transfer,
+  environment: OrderSwapEnvironment.mainnet,
+  inNetwork: inNetwork,
+  outNetwork: outNetwork,
+  isInAmountFixed: true,
+  requestedAmountSat: BigInt.from(1000),
+  sourceWalletId: inNetwork == OrderSwapNetwork.bitcoin
+      ? 'bitcoin-wallet'
+      : 'liquid-wallet',
+  destinationWalletId: outNetwork == OrderSwapNetwork.bitcoin
+      ? 'bitcoin-wallet'
+      : 'liquid-wallet',
+  destination: 'destination',
+  fallback: 'fallback',
+  createdAt: DateTime.utc(2026),
+  localStatus: OrderSwapLocalStatus.creating,
+);
 
 OrderSwapRecord _receiveOrderSwap() {
   final createdAt = DateTime.utc(2026, 8, 6);
