@@ -41,6 +41,11 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
+        BBText(
+          'Network: ${entity.network.name}',
+          style: context.font.bodyMedium,
+        ),
+        const Gap(24),
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
           value: entity.descriptor.combined,

@@ -81,6 +81,19 @@ void main() {
       settingsRepository: settingsRepository,
       walletRepository: walletRepository,
     );
+    // Used by the orphaned-seed cleanup path on import failure (#2634).
+    when(
+      () => seedRepository.fingerprintFor(
+        mnemonicWords: any(named: 'mnemonicWords'),
+        passphrase: any(named: 'passphrase'),
+      ),
+    ).thenReturn('aabbccdd');
+    when(
+      () => seedRepository.delete(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    // No seed for this mnemonic yet: this import is the one creating it, so
+    // the cleanup path owns it.
+    when(() => seedRepository.exists(any())).thenAnswer((_) async => false);
   });
 
   group('ImportWalletUsecase', () {
