@@ -255,7 +255,7 @@ class BoltzDatasource {
     boltzUrl: _httpsUrl,
   );
 
-  Future<List<BtcLnSwap>> restoreBtcLnSwaps({
+  Future<RestoredBtcLnSwaps> restoreBtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
   }) => boltz.restoreLnBtcSwaps(
@@ -264,7 +264,7 @@ class BoltzDatasource {
     boltzUrl: _httpsUrl,
   );
 
-  Future<List<LbtcLnSwap>> restoreLbtcLnSwaps({
+  Future<RestoredLbtcLnSwaps> restoreLbtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
   }) => boltz.restoreLnLbtcSwaps(
@@ -273,7 +273,7 @@ class BoltzDatasource {
     boltzUrl: _httpsUrl,
   );
 
-  Future<List<ChainSwap>> restoreChainSwaps({
+  Future<RestoredChainSwaps> restoreChainSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,

@@ -870,14 +870,14 @@ class BoltzSwapRepository {
     switch (restored.kind) {
       case RestoredSwapKind.lightningReceive:
         if (isLiquid) {
-          final swaps = await _boltz.restoreLbtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreLbtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: lbtcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeLbtcLnSwap(obj);
           model = SwapModel.lnReceive(
@@ -896,14 +896,14 @@ class BoltzSwapRepository {
             invoice: obj.invoice,
           );
         } else {
-          final swaps = await _boltz.restoreBtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreBtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: btcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeBtcLnSwap(obj);
           model = SwapModel.lnReceive(
@@ -924,14 +924,14 @@ class BoltzSwapRepository {
         }
       case RestoredSwapKind.lightningSend:
         if (isLiquid) {
-          final swaps = await _boltz.restoreLbtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreLbtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: lbtcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeLbtcLnSwap(obj);
           model = SwapModel.lnSend(
@@ -952,14 +952,14 @@ class BoltzSwapRepository {
             paymentAmount: obj.outAmount.toInt(),
           );
         } else {
-          final swaps = await _boltz.restoreBtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreBtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: btcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeBtcLnSwap(obj);
           model = SwapModel.lnSend(
@@ -981,15 +981,15 @@ class BoltzSwapRepository {
           );
         }
       case RestoredSwapKind.crossChain:
-        final swaps = await _boltz.restoreChainSwaps(
+        final restoredSwaps = await _boltz.restoreChainSwaps(
           swapMasterKey: swapMasterKey,
           btcElectrumUrl: btcElectrumUrl,
           lbtcElectrumUrl: lbtcElectrumUrl,
         );
-        final obj = swaps.firstWhere(
+        _logSkippedRestores(restoredSwaps.skipped);
+        final obj = restoredSwaps.swaps.firstWhere(
           (s) => s.id == id,
-          orElse: () =>
-              throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+          orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
         );
         await _boltz.storage.storeChainSwap(obj);
         final lockupTxid = await _boltz.chainSwapUserLockupTxid(obj);
@@ -1029,6 +1029,27 @@ class BoltzSwapRepository {
   /// network fees are NOT recomputed here — they're derived in the UI from the
   /// actual on-chain sent/received amounts. Returns null if the rate is
   /// unavailable (the swap is still rescued; the fee row is just hidden).
+  void _logSkippedRestores(List<boltz.SkippedRestoreSwap> skipped) {
+    for (final s in skipped) {
+      log.warning(
+        'SWAP_RESTORE: swap ${s.id} returned by scan but not rebuildable: '
+        '${s.error}',
+      );
+    }
+  }
+
+  Never _missingFromRestore(
+    String id,
+    List<boltz.SkippedRestoreSwap> skipped,
+  ) {
+    for (final s in skipped) {
+      if (s.id == id) {
+        throw 'swap $id could not be rebuilt from restore: ${s.error}';
+      }
+    }
+    throw 'swap $id not returned by boltz restore (possibly beyond gap limit)';
+  }
+
   Future<int?> _recoveredBoltzFee(SwapType type, int amount) async {
     try {
       final fees = await _boltz.getSwapFees(type);
