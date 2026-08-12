@@ -43,8 +43,14 @@ class RecoverBullRepository {
       mapBackup['path'] = derivationPath;
       return Ok(EncryptedVault(file: json.encode(mapBackup)));
     } catch (e, st) {
-      log.severe(message: 'createVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'createVault failed',
+        error: 'Vault processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
+      );
     }
   }
 
@@ -63,8 +69,14 @@ class RecoverBullRepository {
       final decoded = json.decode(plaintext) as Map<String, dynamic>;
       return Ok(DecryptedVault.fromJson(decoded));
     } catch (e, st) {
-      log.severe(message: 'restoreVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'restoreVault failed',
+        error: 'Vault processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
+      );
     }
   }
 
@@ -85,11 +97,21 @@ class RecoverBullRepository {
       );
       return const Ok(null);
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(message: 'storeVaultKey failed', error: e, trace: st);
+      log.severe(
+        message: 'storeVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(message: 'storeVaultKey failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'storeVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
     }
   }
 
@@ -108,11 +130,21 @@ class RecoverBullRepository {
       );
       return Ok(convert.hex.encode(vaultKey));
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(message: 'fetchVaultKey failed', error: e, trace: st);
+      log.severe(
+        message: 'fetchVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(message: 'fetchVaultKey failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'fetchVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
     }
   }
 
