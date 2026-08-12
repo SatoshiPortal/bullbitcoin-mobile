@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_w
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -29,6 +30,7 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
@@ -37,6 +39,7 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 

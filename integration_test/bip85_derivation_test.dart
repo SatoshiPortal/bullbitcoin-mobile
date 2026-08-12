@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -50,6 +51,7 @@ Future<void> main({bool isInitialized = false}) async {
     bip85Repository: bip85Repository,
     walletRepository: walletRepository,
     seedRepository: seedRepository,
+    settingsRepository: locator<SettingsRepository>(),
   );
 
   setUpAll(() async {

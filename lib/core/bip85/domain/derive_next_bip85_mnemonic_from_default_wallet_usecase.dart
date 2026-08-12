@@ -8,16 +8,19 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
   final WalletRepository _walletRepository;
   final SeedRepository _seedRepository;
+  final SettingsRepository _settingsRepository;
 
   DeriveNextBip85MnemonicFromDefaultWalletUsecase({
     required this._bip85Repository,
     required this._walletRepository,
     required this._seedRepository,
+    required this._settingsRepository,
   });
 
   @useResult
@@ -27,9 +30,13 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
     String? alias,
   }) async {
     try {
+      // Derive from the default wallet of the environment the app is actually
+      // running in: a hardcoded mainnet lookup finds no wallet on testnet.
+      final settings = await _settingsRepository.fetch();
       final wallets = await _walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
+        environment: settings.environment,
       );
       if (wallets.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
       final defaultWallet = wallets.first;
