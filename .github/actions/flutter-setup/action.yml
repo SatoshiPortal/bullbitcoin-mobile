@@ -51,7 +51,28 @@ runs:
     - name: Install FVM
       shell: bash
       run: |
-        curl -fsSL https://fvm.app/install.sh | bash -s -- 4.1.2
+        case "$(uname -m)" in
+          x86_64) fvm_arch=x64 ;;
+          aarch64|arm64) fvm_arch=arm64 ;;
+          *) echo "Unsupported FVM architecture: $(uname -m)" >&2; exit 1 ;;
+        esac
+        archive="$RUNNER_TEMP/fvm-4.1.2-linux-${fvm_arch}.tar.gz"
+        curl --retry 5 --retry-all-errors -fL \
+          "https://github.com/conceptadev/fvm/releases/download/4.1.2/fvm-4.1.2-linux-${fvm_arch}.tar.gz" \
+          -o "$archive"
+        mkdir -p "$HOME/fvm/bin"
+        # Extract the whole tree, not just `fvm/fvm`: the two release archives
+        # have different layouts. x64 ships a self-contained binary, arm64 a
+        # launcher script that execs `src/dart` relative to its own directory —
+        # unpacking the launcher alone yields `exec: .../src/dart: not found`
+        # on every fvm invocation.
+        tar -xzf "$archive" -C "$HOME/fvm/bin" --strip-components=1
+        chmod +x "$HOME/fvm/bin/fvm"
+        if [ -f "$HOME/fvm/bin/src/dart" ]; then
+          chmod +x "$HOME/fvm/bin/src/dart"
+        fi
+        # Prove the launcher actually runs before anything depends on it.
+        "$HOME/fvm/bin/fvm" --version
         echo "$HOME/fvm/bin" >> $GITHUB_PATH
 
     - name: Check Flutter version
