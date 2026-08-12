@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 
 sealed class AutoswapFailure extends Failure {
   const AutoswapFailure([super.logMessage]);
@@ -49,4 +50,43 @@ final class AutoswapFeeThresholdTooHighFailure extends AutoswapFailure {
 /// The Boltz fallback server URL is not a valid absolute HTTPS URL.
 final class AutoswapInvalidBoltzServerUrlFailure extends AutoswapFailure {
   const AutoswapInvalidBoltzServerUrlFailure();
+}
+
+/// Autoswap is disabled or the user has not acknowledged the warning yet.
+final class AutoswapDisabledFailure extends AutoswapFailure {
+  const AutoswapDisabledFailure([super.logMessage]);
+}
+
+/// The persisted settings break a validation rule.
+final class AutoswapInvalidSettingsFailure extends AutoswapFailure {
+  final AutoSwapSettingsViolation violation;
+
+  const AutoswapInvalidSettingsFailure(this.violation, [super.logMessage]);
+}
+
+/// No default Bitcoin or Liquid wallet exists.
+final class AutoswapNoDefaultWalletFailure extends AutoswapFailure {
+  const AutoswapNoDefaultWalletFailure([super.logMessage]);
+}
+
+/// The Liquid balance is below the trigger threshold.
+final class AutoswapInsufficientBalanceFailure extends AutoswapFailure {
+  final int currentBalanceSats;
+  final int requiredThresholdSats;
+
+  const AutoswapInsufficientBalanceFailure({
+    required this.currentBalanceSats,
+    required this.requiredThresholdSats,
+    String? logMessage,
+  }) : super(logMessage);
+}
+
+/// The swap execution itself failed (build, sign, broadcast, or provider call).
+final class AutoswapExecutionFailure extends AutoswapFailure {
+  const AutoswapExecutionFailure([super.logMessage]);
+}
+
+/// A Boltz fallback was requested but no Boltz server URL is configured.
+final class AutoswapBoltzServerRequiredFailure extends AutoswapFailure {
+  const AutoswapBoltzServerRequiredFailure([super.logMessage]);
 }

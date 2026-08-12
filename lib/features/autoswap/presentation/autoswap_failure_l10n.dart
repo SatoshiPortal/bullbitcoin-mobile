@@ -25,5 +25,12 @@ extension AutoswapFailureL10n on AutoswapFailure {
           context.loc.autoswapMaximumFeeError('$maximumPercent'),
         AutoswapInvalidBoltzServerUrlFailure() =>
           context.loc.autoswapInvalidBoltzServerUrlError,
+        AutoswapDisabledFailure() ||
+        AutoswapInvalidSettingsFailure() ||
+        AutoswapNoDefaultWalletFailure() ||
+        AutoswapInsufficientBalanceFailure() ||
+        AutoswapExecutionFailure() ||
+        AutoswapBoltzServerRequiredFailure() =>
+          context.loc.oopsSomethingWentWrong,
       };
 }
