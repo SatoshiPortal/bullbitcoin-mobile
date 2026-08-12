@@ -183,7 +183,16 @@ jobs:
         working-directory: ios
         run: |
           test -f Podfile.lock
-          pod install --deployment
+          # The image's CocoaPods floats (1.16 -> 1.17 changed podspec checksums,
+          # which `--deployment` rejects). Pin to whatever generated Podfile.lock
+          # so the lockfile stays the single source of truth across image bumps.
+          locked_version="$(awk '/^COCOAPODS:/ { print $2; exit }' Podfile.lock)"
+          test -n "$locked_version"
+          if [ "$(pod --version)" != "$locked_version" ]; then
+            sudo gem install cocoapods -v "$locked_version" --no-document
+          fi
+          test "$(pod "_${locked_version}_" --version)" = "$locked_version"
+          pod "_${locked_version}_" install --deployment
 
       - name: Import App Store distribution certificate
         uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466 # v7.0.0
