@@ -41,6 +41,8 @@ class CreateSendSwapUsecase {
 
       final existingSwap = await _swapRepository.getSendSwapByInvoice(
         invoice: finalInvoice,
+        walletId: walletId,
+        type: type,
       );
       if (existingSwap != null) return existingSwap;
 

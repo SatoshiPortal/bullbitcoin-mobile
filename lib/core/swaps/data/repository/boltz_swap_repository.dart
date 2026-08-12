@@ -1095,8 +1095,12 @@ class BoltzSwapRepository
     );
   }
 
-  Future<LnSendSwap?> getSendSwapByInvoice({required String invoice}) async {
-    final allSwaps = await _boltz.storage.fetchAll();
+  Future<LnSendSwap?> getSendSwapByInvoice({
+    required String invoice,
+    required String walletId,
+    required SwapType type,
+  }) async {
+    final allSwaps = await _boltz.storage.fetchAll(walletId: walletId);
     for (final swapModel in allSwaps) {
       final swap = swapModel.toEntity();
       if (swap.type == SwapType.lightningToBitcoin ||
@@ -1105,7 +1109,9 @@ class BoltzSwapRepository
       }
       if (swap is LnSendSwap &&
           swap.invoice.toLowerCase() == invoice.toLowerCase() &&
-          (swap.status == SwapStatus.pending)) {
+          swap.status == SwapStatus.pending &&
+          swap.walletId == walletId &&
+          swap.type == type) {
         return swap;
       }
     }
