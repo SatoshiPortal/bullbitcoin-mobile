@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -231,6 +233,44 @@ void main() {
       expect(states.any((state) => state.txId == 'txid-1'), isTrue);
     },
   );
+
+  test('emits the transaction id before wallet sync completes', () async {
+    final syncCompleter = Completer<Wallet>();
+    final broadcasting = _prepared(
+      status: OrderSwapLocalStatus.broadcastUnknown,
+    );
+    final broadcasted = _prepared(
+      status: OrderSwapLocalStatus.payinBroadcast,
+      transactionId: 'txid-1',
+    );
+    when(
+      () => getWallet.execute('wallet-1', sync: true),
+    ).thenAnswer((_) => syncCompleter.future);
+    when(
+      () => markUnknown.execute('local-1'),
+    ).thenAnswer((_) async => Ok(broadcasting));
+    when(
+      () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+    ).thenAnswer((_) async => 'txid-1');
+    when(
+      () => markBroadcast.execute(localId: 'local-1', transactionId: 'txid-1'),
+    ).thenAnswer((_) async => Ok(broadcasted));
+    bloc.emit(
+      TransferState(
+        orderSwap: prepared,
+        signedPsbt: 'signed-psbt',
+        fromWallet: _wallet(),
+        swap: _swap(),
+      ),
+    );
+
+    bloc.add(const TransferEvent.confirmed());
+    await bloc.stream.firstWhere((state) => state.txId == 'txid-1');
+
+    expect(syncCompleter.isCompleted, isFalse);
+    expect(bloc.state.orderSwap, broadcasted);
+    syncCompleter.complete(_wallet());
+  });
 
   test('resumes a stored prepared transfer on start', () async {
     final settings = SettingsEntity(

@@ -1520,19 +1520,21 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           state.copyWith(
             orderSwap: broadcast,
             swap: displaySwap.copyWith(status: SwapStatus.paid, sendTxid: txId),
+            txId: txId,
           ),
         );
-        await _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
+        unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
+        return;
       } else if (state.isSameChainTransfer) {
         txId = await _broadcastBitcoinTxUsecase.execute(
           signedPsbt,
           isPsbt: true,
         );
         if (state.fromWallet != null) {
-          await _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
+          unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
         }
         if (state.toWallet != null) {
-          await _getWalletUsecase.execute(state.toWallet!.id, sync: true);
+          unawaited(_syncWalletAfterBroadcast(state.toWallet!.id));
         }
       } else {
         return;
@@ -1547,6 +1549,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       );
     } finally {
       emit(state.copyWith(isConfirming: false));
+    }
+  }
+
+  Future<void> _syncWalletAfterBroadcast(String walletId) async {
+    try {
+      await _getWalletUsecase.execute(walletId, sync: true);
+    } catch (error, stackTrace) {
+      log.warning(
+        'Failed to sync wallet after transfer broadcast',
+        error: error,
+        trace: stackTrace,
+      );
     }
   }
 
@@ -1647,10 +1661,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       ),
     );
     if (orderSwap.localStatus.isTerminal) {
-      unawaited(_getWalletUsecase.execute(state.fromWallet!.id, sync: true));
+      unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
       final destinationWalletId = orderSwap.destinationWalletId;
       if (destinationWalletId != null) {
-        unawaited(_getWalletUsecase.execute(destinationWalletId, sync: true));
+        unawaited(_syncWalletAfterBroadcast(destinationWalletId));
       }
     }
   }
