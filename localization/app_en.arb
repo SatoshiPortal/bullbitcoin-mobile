@@ -14474,5 +14474,9 @@
   "sendUnconfidentialLiquidWarningDescription": "This Liquid address does not support Confidential Transactions. The amount you send will be publicly visible on the blockchain.",
   "@sendUnconfidentialLiquidWarningDescription": {
     "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
+  },
+  "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
+  "@mempoolErrorNetworkMismatch": {
+    "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
   }
 }

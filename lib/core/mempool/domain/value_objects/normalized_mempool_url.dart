@@ -9,7 +9,12 @@ class NormalizedMempoolUrl {
   final bool _enableSsl;
 
   NormalizedMempoolUrl(String url, {this._enableSsl = true})
-    : _normalized = url.isEmpty ? '' : MempoolUrlParser.normalizeUrl(url);
+    : _normalized = url.isEmpty ? '' : _normalize(url);
+
+  static String _normalize(String url) {
+    return MempoolUrlParser.tryParse(url)?.cleanUrl ??
+        url.trim().toLowerCase().replaceFirst(RegExp(r'\.$'), '');
+  }
 
   /// create from an already normalized URL (e.g., from database)
   NormalizedMempoolUrl.fromNormalized(

@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempoo
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 
 class MempoolLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -46,7 +47,7 @@ class MempoolLocator {
 
   static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<MempoolServerValidatorPort>(
-      () => HttpMempoolServerValidator(),
+      () => HttpMempoolServerValidator(torDatasource: locator<TorDatasource>()),
     );
 
     locator.registerLazySingleton<MempoolEnvironmentPort>(
