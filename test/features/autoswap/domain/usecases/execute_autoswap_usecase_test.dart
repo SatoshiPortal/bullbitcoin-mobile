@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
@@ -19,6 +20,9 @@ import 'package:mocktail/mocktail.dart';
 
 class MockGetAutoSwapSettingsUsecase extends Mock
     implements GetAutoSwapSettingsUsecase {}
+
+class MockEnsureSwapMasterKeyUsecase extends Mock
+    implements EnsureSwapMasterKeyUsecase {}
 
 class MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -72,6 +76,7 @@ void main() {
   late MockGetReceiveAddressUsecase getReceiveAddress;
   late MockSwapFacade swapFacade;
   late MockBoltzSwapRepository boltzRepository;
+  late MockEnsureSwapMasterKeyUsecase ensureSwapMasterKey;
   late MockLabelsFacade labelsFacade;
 
   setUpAll(() {
@@ -94,7 +99,10 @@ void main() {
     getReceiveAddress = MockGetReceiveAddressUsecase();
     swapFacade = MockSwapFacade();
     boltzRepository = MockBoltzSwapRepository();
+    ensureSwapMasterKey = MockEnsureSwapMasterKeyUsecase();
     labelsFacade = MockLabelsFacade();
+
+    when(() => ensureSwapMasterKey.execute()).thenAnswer((_) async {});
 
     when(() => labelsFacade.store(any())).thenAnswer(
       (_) async => Ok(
@@ -116,6 +124,7 @@ void main() {
     getReceiveAddress: getReceiveAddress,
     swapFacade: swapFacade,
     boltzRepositoryFactory: (_) => boltzRepository,
+    ensureSwapMasterKey: ensureSwapMasterKey,
     labelsFacade: labelsFacade,
   );
 
@@ -292,6 +301,12 @@ void main() {
       ).thenAnswer((_) async => 'pset');
 
       when(
+        () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(
+          pset: any(named: 'pset'),
+        ),
+      ).thenAnswer((_) async => (250, 500));
+
+      when(
         () => liquidWalletRepository.signPset(
           walletId: any(named: 'walletId'),
           pset: any(named: 'pset'),
@@ -381,7 +396,8 @@ class _MockOrderSwapRecord extends Mock implements OrderSwapRecord {
 
 class _MockOrderSwap extends Mock implements OrderSwap {
   @override
-  String get payinAddress => 'tlq1payin';
+  String get payinAddress =>
+      'tlq1qqw3cs90ck0nqjs6v0h3w8z4k2d3y0v8y0v8y0v8y0v8y0v8y0v8';
 
   @override
   BigInt get payinAmountSat => BigInt.from(2000000);

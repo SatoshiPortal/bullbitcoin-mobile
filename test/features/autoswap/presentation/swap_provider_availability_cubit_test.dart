@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/boltz_server_url.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -11,10 +13,13 @@ import 'package:mocktail/mocktail.dart';
 class MockGetAutoSwapSettingsUsecase extends Mock
     implements GetAutoSwapSettingsUsecase {}
 
+class MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+
 class MockSwapFacade extends Mock implements SwapFacade {}
 
 void main() {
   late MockGetAutoSwapSettingsUsecase getSettings;
+  late MockGetSettingsUsecase getAppSettings;
   late MockSwapFacade swapFacade;
 
   setUpAll(() {
@@ -26,12 +31,21 @@ void main() {
 
   setUp(() {
     getSettings = MockGetAutoSwapSettingsUsecase();
+    getAppSettings = MockGetSettingsUsecase();
     swapFacade = MockSwapFacade();
+    when(() => getAppSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
   });
 
   SwapProviderAvailabilityCubit buildCubit() =>
       SwapProviderAvailabilityCubit(
         getAutoSwapSettingsUsecase: getSettings,
+        getSettingsUsecase: getAppSettings,
         swapFacade: swapFacade,
       );
 

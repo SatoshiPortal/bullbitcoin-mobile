@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
@@ -51,6 +52,7 @@ class AutoSwapLocator {
           ),
           isTestnet: false,
         ),
+        ensureSwapMasterKey: locator<EnsureSwapMasterKeyUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
@@ -66,6 +68,7 @@ class AutoSwapLocator {
     locator.registerFactory<SwapProviderAvailabilityCubit>(
       () => SwapProviderAvailabilityCubit(
         getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
         swapFacade: locator<SwapFacade>(),
       ),
     );

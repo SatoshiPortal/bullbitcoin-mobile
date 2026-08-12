@@ -90,3 +90,20 @@ final class AutoswapExecutionFailure extends AutoswapFailure {
 final class AutoswapBoltzServerRequiredFailure extends AutoswapFailure {
   const AutoswapBoltzServerRequiredFailure([super.logMessage]);
 }
+
+/// The absolute fee exceeds the user's configured percentage threshold.
+final class AutoswapFeeLimitExceededFailure extends AutoswapFailure {
+  final double feePercent;
+  final double thresholdPercent;
+
+  const AutoswapFeeLimitExceededFailure({
+    required this.feePercent,
+    required this.thresholdPercent,
+    String? logMessage,
+  }) : super(logMessage);
+}
+
+/// The server-provided payin address failed client-side validation.
+final class AutoswapInvalidPayinAddressFailure extends AutoswapFailure {
+  const AutoswapInvalidPayinAddressFailure([super.logMessage]);
+}

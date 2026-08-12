@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/autoswap/domain/swap_provider_mode.dart';
@@ -17,10 +19,12 @@ part 'swap_provider_availability_state.dart';
 class SwapProviderAvailabilityCubit
     extends Cubit<SwapProviderAvailabilityState> {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
   final SwapFacade _swapFacade;
 
   SwapProviderAvailabilityCubit({
     required this._getAutoSwapSettingsUsecase,
+    required this._getSettingsUsecase,
     required this._swapFacade,
   }) : super(const SwapProviderAvailabilityState());
 
@@ -33,6 +37,11 @@ class SwapProviderAvailabilityCubit
       emit(state.copyWith(mode: SwapProviderMode.boltz));
       return;
     }
+
+    // Autoswap is mainnet-only — don't probe on testnet.
+    final appSettings = await _getSettingsUsecase.execute();
+    if (isClosed) return;
+    if (appSettings.environment != Environment.mainnet) return;
 
     emit(state.copyWith(mode: SwapProviderMode.exchange, checking: true));
 

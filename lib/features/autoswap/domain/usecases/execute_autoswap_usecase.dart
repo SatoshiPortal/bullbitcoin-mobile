@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -37,6 +38,7 @@ class ExecuteAutoswapUsecase {
   final GetReceiveAddressUsecase _getReceiveAddress;
   final SwapFacade _swapFacade;
   final BoltzSwapRepositoryFactory _boltzRepositoryFactory;
+  final EnsureSwapMasterKeyUsecase _ensureSwapMasterKey;
   final LabelsFacade _labelsFacade;
 
   ExecuteAutoswapUsecase({
@@ -47,6 +49,7 @@ class ExecuteAutoswapUsecase {
     required this._getReceiveAddress,
     required this._swapFacade,
     required this._boltzRepositoryFactory,
+    required this._ensureSwapMasterKey,
     required this._labelsFacade,
   });
 
@@ -158,28 +161,52 @@ class ExecuteAutoswapUsecase {
     final record = (orderResult as Ok<OrderSwapRecord, SwapFailure>).value;
     final order = record.order!;
 
-    // 4. Build + sign + broadcast
-    final txResult = await _buildSignBroadcast(
+    // 4. Validate the server-provided payin address before signing.
+    final addressError = _validatePayinAddress(order.payinAddress);
+    if (addressError != null) return Err(addressError);
+
+    // 5. Build + sign (no broadcast yet)
+    final buildResult = await _buildAndSign(
       liquidWallet: liquidWallet,
       address: order.payinAddress,
       amountSat: order.payinAmountSat.toInt(),
+      feeThresholdPercent: settings.feeThresholdPercent,
     );
-    if (txResult case Err(:final failure)) {
+    if (buildResult case Err(:final failure)) {
       return Err(failure);
     }
-    final (signedPset, txid) = (txResult as Ok<(String, String), AutoswapFailure>).value;
+    final signedPset = (buildResult as Ok<String, AutoswapFailure>).value;
 
-    // 5. Persist state transitions
-    await _swapFacade.savePreparedPayin(
+    // 6. Persist BEFORE broadcast (crash-safe ordering)
+    final preparedResult = await _swapFacade.savePreparedPayin(
       localId: record.localId,
       signedTransaction: signedPset,
       isPsbt: true,
     );
-    await _swapFacade.markBroadcastUnknown(record.localId);
-    await _swapFacade.markPayinBroadcast(
+    if (preparedResult case Err(:final failure)) {
+      return Err(AutoswapExecutionFailure(failure.logMessage));
+    }
+    final broadcastUnknownResult = await _swapFacade.markBroadcastUnknown(
+      record.localId,
+    );
+    if (broadcastUnknownResult case Err(:final failure)) {
+      return Err(AutoswapExecutionFailure(failure.logMessage));
+    }
+
+    // 7. Broadcast
+    final txid = await _broadcast(
+      signedPset: signedPset,
+      isTestnet: liquidWallet.isTestnet,
+    );
+
+    // 8. Mark paid
+    final paidResult = await _swapFacade.markPayinBroadcast(
       localId: record.localId,
       transactionId: txid,
     );
+    if (paidResult case Err(:final failure)) {
+      return Err(AutoswapExecutionFailure(failure.logMessage));
+    }
 
     await _label(txid, liquidWallet.id);
     return Ok(record.localId);
@@ -199,6 +226,10 @@ class ExecuteAutoswapUsecase {
       return const Err(AutoswapBoltzServerRequiredFailure());
     }
 
+    // The swap master key is derived lazily on first Boltz use, not at
+    // startup — the derivation is deterministic so nothing is lost.
+    await _ensureSwapMasterKey.execute();
+
     // Create a Boltz repository with the user-configured server.
     final repository = _boltzRepositoryFactory(
       _stripScheme(boltzUrl.toString()),
@@ -213,18 +244,34 @@ class ExecuteAutoswapUsecase {
       receiveWalletId: recipientWalletId,
     );
 
-    // 2. Build + sign + broadcast
-    final txResult = await _buildSignBroadcast(
+    // 2. Validate the server-provided payment address before signing.
+    final addressError = _validatePayinAddress(swap.paymentAddress);
+    if (addressError != null) return Err(addressError);
+
+    // 3. Build + sign (no broadcast yet)
+    final buildResult = await _buildAndSign(
       liquidWallet: liquidWallet,
       address: swap.paymentAddress,
       amountSat: swap.paymentAmount,
+      feeThresholdPercent: settings.feeThresholdPercent,
     );
-    if (txResult case Err(:final failure)) {
+    if (buildResult case Err(:final failure)) {
       return Err(failure);
     }
-    final (signedPset, txid) = (txResult as Ok<(String, String), AutoswapFailure>).value;
+    final signedPset = (buildResult as Ok<String, AutoswapFailure>).value;
 
-    // 3. Mark paid
+    // 4. Broadcast
+    // NOTE: Boltz crash recovery depends on the swap being persisted in
+    // BoltzStorageDatasource at creation time (step 1). The paid-status
+    // update below is the only post-broadcast write; a crash between
+    // broadcast and updatePaidSendSwap leaves the swap in "pending" state,
+    // recoverable by a future Boltz watcher reconciling on-chain data.
+    final txid = await _broadcast(
+      signedPset: signedPset,
+      isTestnet: liquidWallet.isTestnet,
+    );
+
+    // 5. Mark paid
     final (_, absoluteFees) = await _liquidWalletRepository
         .getPsetSizeAndAbsoluteFees(pset: signedPset);
     await repository.updatePaidSendSwap(
@@ -239,10 +286,13 @@ class ExecuteAutoswapUsecase {
 
   // ── Shared helpers ─────────────────────────────────────────────────────
 
-  Future<Result<(String, String), AutoswapFailure>> _buildSignBroadcast({
+  /// Builds and signs a PSET, checking the absolute fee against the user's
+  /// configured threshold. Does NOT broadcast.
+  Future<Result<String, AutoswapFailure>> _buildAndSign({
     required Wallet liquidWallet,
     required String address,
     required int amountSat,
+    required double feeThresholdPercent,
   }) async {
     try {
       final pset = await _liquidWalletRepository.buildPset(
@@ -251,18 +301,48 @@ class ExecuteAutoswapUsecase {
         amountSat: amountSat,
         feeRate: const RelativeFee(25),
       );
+
+      // Fee cap: refuse if the absolute fee exceeds the configured
+      // percentage of the amount being swapped.
+      final (_, absoluteFees) = await _liquidWalletRepository
+          .getPsetSizeAndAbsoluteFees(pset: pset);
+      final feePercent = (absoluteFees / amountSat) * 100;
+      if (feePercent > feeThresholdPercent) {
+        return Err(
+          AutoswapFeeLimitExceededFailure(
+            feePercent: feePercent,
+            thresholdPercent: feeThresholdPercent,
+          ),
+        );
+      }
+
       final signedPset = await _liquidWalletRepository.signPset(
         walletId: liquidWallet.id,
         pset: pset,
       );
-      final txid = await _blockchainPort.broadcastLiquidTransaction(
-        signedPset: signedPset,
-        isTestnet: liquidWallet.isTestnet,
-      );
-      return Ok((signedPset, txid));
+      return Ok(signedPset);
     } catch (e) {
       return Err(AutoswapExecutionFailure(e.toString()));
     }
+  }
+
+  Future<String> _broadcast({
+    required String signedPset,
+    required bool isTestnet,
+  }) async {
+    return _blockchainPort.broadcastLiquidTransaction(
+      signedPset: signedPset,
+      isTestnet: isTestnet,
+    );
+  }
+
+  /// Minimal client-side validation of a server-provided payin address.
+  /// Returns a failure if the address is empty or implausibly short.
+  AutoswapFailure? _validatePayinAddress(String address) {
+    if (address.isEmpty || address.length < 20) {
+      return const AutoswapInvalidPayinAddressFailure();
+    }
+    return null;
   }
 
   Future<void> _label(String txid, String walletId) async {

@@ -30,7 +30,9 @@ extension AutoswapFailureL10n on AutoswapFailure {
         AutoswapNoDefaultWalletFailure() ||
         AutoswapInsufficientBalanceFailure() ||
         AutoswapExecutionFailure() ||
-        AutoswapBoltzServerRequiredFailure() =>
+        AutoswapBoltzServerRequiredFailure() ||
+        AutoswapFeeLimitExceededFailure() ||
+        AutoswapInvalidPayinAddressFailure() =>
           context.loc.oopsSomethingWentWrong,
       };
 }
