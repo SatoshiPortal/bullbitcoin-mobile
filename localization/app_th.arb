@@ -12561,5 +12561,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "หมดกำหนดชำระเงิน",
   "coreSwapsStatusScheduled": "กำหนดเวลาแล้ว",
   "coreSwapsStatusAwaitingClaim": "รอการรับ",
-  "coreSwapsStatusUnknown": "ไม่ทราบ"
+  "coreSwapsStatusUnknown": "ไม่ทราบ",
+  "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
+  "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ"
 }

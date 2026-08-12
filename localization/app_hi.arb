@@ -12747,5 +12747,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "भुगतान की समय-सीमा समाप्त",
   "coreSwapsStatusScheduled": "निर्धारित",
   "coreSwapsStatusAwaitingClaim": "दावे की प्रतीक्षा",
-  "coreSwapsStatusUnknown": "अज्ञात"
+  "coreSwapsStatusUnknown": "अज्ञात",
+  "sendSwapExpiredTitle": "ऑर्डर समाप्त हो गया",
+  "sendSwapExpiredMessage": "कोई भी राशि भेजे जाने से पहले ही यह ऑर्डर समाप्त हो गया। आपके वॉलेट से कुछ भी नहीं भेजा गया।"
 }

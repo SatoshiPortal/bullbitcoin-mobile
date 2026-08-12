@@ -12554,5 +12554,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Prazo de pagamento expirado",
   "coreSwapsStatusScheduled": "Agendado",
   "coreSwapsStatusAwaitingClaim": "Aguardando resgate",
-  "coreSwapsStatusUnknown": "Desconhecido"
+  "coreSwapsStatusUnknown": "Desconhecido",
+  "sendSwapExpiredTitle": "Ordem expirada",
+  "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira."
 }

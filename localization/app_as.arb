@@ -9627,5 +9627,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "পৰিশোধৰ সময়সীমা শেষ",
   "coreSwapsStatusScheduled": "নিৰ্ধাৰিত",
   "coreSwapsStatusAwaitingClaim": "দাবীৰ অপেক্ষাত",
-  "coreSwapsStatusUnknown": "অজ্ঞাত"
+  "coreSwapsStatusUnknown": "অজ্ঞাত",
+  "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
+  "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।"
 }

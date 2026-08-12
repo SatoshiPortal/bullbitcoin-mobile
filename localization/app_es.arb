@@ -4980,5 +4980,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Plazo de pago vencido",
   "coreSwapsStatusScheduled": "Programado",
   "coreSwapsStatusAwaitingClaim": "Esperando reclamación",
-  "coreSwapsStatusUnknown": "Desconocido"
+  "coreSwapsStatusUnknown": "Desconocido",
+  "sendSwapExpiredTitle": "Orden expirada",
+  "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera."
 }

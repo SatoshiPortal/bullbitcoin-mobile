@@ -3618,5 +3618,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Đã hết hạn thanh toán",
   "coreSwapsStatusScheduled": "Đã lên lịch",
   "coreSwapsStatusAwaitingClaim": "Đang chờ nhận",
-  "coreSwapsStatusUnknown": "Không xác định"
+  "coreSwapsStatusUnknown": "Không xác định",
+  "sendSwapExpiredTitle": "Đơn hàng đã hết hạn",
+  "sendSwapExpiredMessage": "Đơn hàng này đã hết hạn trước khi bất kỳ khoản tiền nào được gửi. Không có gì được gửi từ ví của bạn."
 }

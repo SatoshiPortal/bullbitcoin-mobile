@@ -10434,5 +10434,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Срокът за плащане изтече",
   "coreSwapsStatusScheduled": "Планирано",
   "coreSwapsStatusAwaitingClaim": "Очаква получаване",
-  "coreSwapsStatusUnknown": "Неизвестно"
+  "coreSwapsStatusUnknown": "Неизвестно",
+  "sendSwapExpiredTitle": "Поръчката изтече",
+  "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо."
 }

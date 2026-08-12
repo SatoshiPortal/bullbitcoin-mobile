@@ -4924,5 +4924,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Zahlungsfrist abgelaufen",
   "coreSwapsStatusScheduled": "Geplant",
   "coreSwapsStatusAwaitingClaim": "Warten auf Einlösung",
-  "coreSwapsStatusUnknown": "Unbekannt"
+  "coreSwapsStatusUnknown": "Unbekannt",
+  "sendSwapExpiredTitle": "Auftrag abgelaufen",
+  "sendSwapExpiredMessage": "Dieser Auftrag ist abgelaufen, bevor Mittel gesendet wurden. Es wurde nichts aus der Wallet gesendet."
 }

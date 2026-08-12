@@ -4972,5 +4972,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Maksun määräaika umpeutui",
   "coreSwapsStatusScheduled": "Ajoitettu",
   "coreSwapsStatusAwaitingClaim": "Odottaa lunastusta",
-  "coreSwapsStatusUnknown": "Tuntematon"
+  "coreSwapsStatusUnknown": "Tuntematon",
+  "sendSwapExpiredTitle": "Tilaus vanheni",
+  "sendSwapExpiredMessage": "Tämä tilaus vanheni ennen kuin varoja lähetettiin. Lompakostasi ei lähetetty mitään."
 }

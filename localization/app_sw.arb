@@ -3630,5 +3630,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Muda wa malipo umeisha",
   "coreSwapsStatusScheduled": "Imepangwa",
   "coreSwapsStatusAwaitingClaim": "Inasubiri kudai",
-  "coreSwapsStatusUnknown": "Haijulikani"
+  "coreSwapsStatusUnknown": "Haijulikani",
+  "sendSwapExpiredTitle": "Muda wa Oda Umeisha",
+  "sendSwapExpiredMessage": "Oda hii ilipitwa na wakati kabla ya fedha zozote kutumwa. Hakuna kilichotumwa kutoka kwenye pochi yako."
 }

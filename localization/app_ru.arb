@@ -4987,5 +4987,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Срок оплаты истёк",
   "coreSwapsStatusScheduled": "Запланировано",
   "coreSwapsStatusAwaitingClaim": "Ожидание получения",
-  "coreSwapsStatusUnknown": "Неизвестно"
+  "coreSwapsStatusUnknown": "Неизвестно",
+  "sendSwapExpiredTitle": "Заявка истекла",
+  "sendSwapExpiredMessage": "Срок этой заявки истёк до отправки средств. Из вашего кошелька ничего не отправлено."
 }

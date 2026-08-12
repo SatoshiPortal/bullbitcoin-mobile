@@ -12557,5 +12557,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Platební lhůta vypršela",
   "coreSwapsStatusScheduled": "Naplánováno",
   "coreSwapsStatusAwaitingClaim": "Čeká na vyzvednutí",
-  "coreSwapsStatusUnknown": "Neznámé"
+  "coreSwapsStatusUnknown": "Neznámé",
+  "sendSwapExpiredTitle": "Objednávka vypršela",
+  "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno."
 }

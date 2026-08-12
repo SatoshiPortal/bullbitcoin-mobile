@@ -4981,5 +4981,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "付款期限已过",
   "coreSwapsStatusScheduled": "已排定",
   "coreSwapsStatusAwaitingClaim": "等待领取",
-  "coreSwapsStatusUnknown": "未知"
+  "coreSwapsStatusUnknown": "未知",
+  "sendSwapExpiredTitle": "订单已过期",
+  "sendSwapExpiredMessage": "此订单在发送任何资金前已过期。您的钱包未发送任何资金。"
 }

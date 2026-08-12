@@ -3618,5 +3618,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Վճարման ժամկետը լրացել է",
   "coreSwapsStatusScheduled": "Պլանավորված",
   "coreSwapsStatusAwaitingClaim": "Սպասում է ստացման",
-  "coreSwapsStatusUnknown": "Անհայտ"
+  "coreSwapsStatusUnknown": "Անհայտ",
+  "sendSwapExpiredTitle": "Պատվերի ժամկետը լրացել է",
+  "sendSwapExpiredMessage": "Այս պատվերի ժամկետը լրացել է նախքան միջոցներ ուղարկելը։ Ձեր դրամապանակից ոչինչ չի ուղարկվել։"
 }

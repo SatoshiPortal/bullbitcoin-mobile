@@ -12557,5 +12557,7 @@
   "coreSwapsStatusPaymentDeadlineExpired": "Ödeme süresi doldu",
   "coreSwapsStatusScheduled": "Planlandı",
   "coreSwapsStatusAwaitingClaim": "Talep bekleniyor",
-  "coreSwapsStatusUnknown": "Bilinmiyor"
+  "coreSwapsStatusUnknown": "Bilinmiyor",
+  "sendSwapExpiredTitle": "Sipariş Süresi Doldu",
+  "sendSwapExpiredMessage": "Bu siparişin süresi, herhangi bir fon gönderilmeden önce doldu. Cüzdanınızdan hiçbir şey gönderilmedi."
 }
