@@ -10,4 +10,11 @@ abstract class WalletFreezePort {
   Future<void> freeze(
     List<({String? walletId, String txId, int vout})> outputs,
   );
+
+  /// Returns the outpoints currently owned by [walletId]. Imported freezes
+  /// are validated against this set so a labels file can never freeze coins
+  /// the wallet does not hold (issue #2605).
+  Future<List<({String txId, int vout})>> getOwnedOutpoints({
+    required String walletId,
+  });
 }
