@@ -6,10 +6,102 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
+---
+
+## [6.13.0] - 2026-08-13
+
+### New Features
+
+- **Temporary replacement for unavailable Boltz swaps**: Lightning sends, Lightning receives, Bitcoin ↔ Liquid transfers, and automatic Liquid-to-Bitcoin transfers now use a temporary replacement service so these flows remain available while Boltz is unavailable. Orders are persisted before funds move, interrupted broadcasts can resume safely, duplicate creations are prevented, and completed swaps appear in transaction history with their labels. ([#2563](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2563))
+- **Payjoin across wallet and Exchange flows**: Payjoin can be enabled for Bitcoin sends and receives, with configurable minimum amounts and session lifetimes. Supported Buy payouts and Sell/Pay payins can negotiate Payjoin, while recovery and fallback handling keep interrupted sessions safe. ([#2499](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2499), [#2509](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2509), [#2545](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2545))
+- **Liquid UTXO consolidation**: Liquid wallets approaching the confidential-transaction input limit now show a warning and offer a guided self-transfer that consolidates UTXOs before a normal send can fail. ([#2465](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2465))
+- **Checksum-aware recovery phrase entry**: The final BIP39 word now offers checksum-valid suggestions while preserving safe auto-completion behavior. Recovery entry also received better inline validation, lower rebuild cost, secret-safe errors, and screen-capture protection. ([#2551](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2551))
+- **BTC Map**: A themed BTC Map is available from Settings without requesting device location. Navigation is restricted to BTC Map hosts. ([#1461](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/1461), [#2411](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2411), [#2423](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2423))
+- **Home update warning**: The wallet now shows a dismissible warning on the home screen when the swap API reports that the app must be updated. ([#2563](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2563))
+- **Liquid risk information**: Liquid wallet and Liquid-backed Lightning receive screens now link to a clear disclosure covering custody, privacy, fees, and automatic transfers. ([#2253](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2253))
+
+### Security And Privacy
+
+- Hardened transaction review and broadcast so cached payloads are invalidated when payment details change, hardware-signed transactions are checked against the reviewed transaction, and replacement-service payins are verified against their pinned address and amount. ([#2578](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2578), [#2669](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2669))
+- Enforced PIN retry cooldowns across restarts and added PIN re-authentication before revealing all recovery phrases. ([#2578](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2578))
+- Added a warning before sending to an unconfidential Liquid address. ([#2578](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2578))
+- Strengthened wallet and label imports with private-key rejection, network and descriptor checks, duplicate detection, ownership validation, and orphan-seed cleanup. ([#2324](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2324), [#2325](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2325), [#2669](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2669))
+- Hardened Electrum, fee, and mempool connections with stricter certificate, URL, timeout, redirect, and Tor handling. ([#2557](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2557), [#2669](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2669))
+- Hardened QR, UR, BBQR, BIP21, PSBT, transaction-parent, and label parsing against malformed or mismatched input. ([#2669](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2669))
+- Reduced sensitive information in logs and error reporting, protected additional secret screens from capture, and sanitized Exchange support attachment filenames. ([#2578](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2578), [#2669](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2669))
+- Bounded unattended swap refund and Payjoin receiver fees. ([#2561](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2561))
+
+### Reliability And UX
+
+- Payjoin sessions now recover after restarts, serialize competing operations, expire cleanly, and avoid duplicate or conflicting broadcasts. Exchange-linked Payjoins retain accurate transaction amounts and labels.
+- Replacement-service swap records preserve their original payment contract through refreshes, funded failures remain visible and reconcilable, and transaction details update atomically.
+- Buy, Sell, and Pay flows received lifecycle, fee-selection, price-lock, and duplicate-settlement fixes.
+- Wallet deletion no longer leaves an orphaned seed that blocks importing the same recovery phrase again. ([#2324](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2324), [#2325](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2325))
+- Startup failures can share or export logs as a file. ([#2565](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2565))
+- Shorter Liquid and Lightning wallet labels reduce card overflow for large fiat values. ([#2292](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2292), [#2467](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2467))
+- Removed unsafe or broken external links from watch-only and Coldcard import screens. ([#2554](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2554))
+- Filled the translation backlog present at the time of the localization audit across all 26 non-English locales and repaired missing placeholders and untranslated copies. Newer strings may still use the normal English fallback until translated. ([#2463](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2463))
+
+### Important Upgrade Note
+
+- Android installations from the pre-v5 Hive-storage era no longer attempt the removed legacy migration. Before startup, the app shows a protected backup screen with every recoverable phrase and passphrase, then instructs the user to reinstall and recover. Current installations are unaffected. Do not uninstall before completing the displayed backup. ([#2559](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2559))
+
+### Under The Hood
+
+- Upgraded to Flutter 3.44.9 and Dart 3.12.2. ([#2670](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2670))
+- Extracted the Payjoin engine, persistence, and public contract into the `bull_payjoin` workspace package and added a shared `primitives` package. ([#2545](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2545))
+- Added database schema 14 for announcement dismissals and replacement-service swap orders. Payjoin sessions and policy use their own `payjoin.sqlite` database.
+- Removed the unreleased experimental Ark implementation and its dependency. No user migration is required. ([#2561](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2561))
+- Strengthened reproducible Android builds, dependency pinning, format enforcement, and CI verification. ([#2418](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2418), [#2419](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2419), [#2436](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2436))
+- Added a protected App Store Connect build/upload pipeline and aligned Android and iOS on version `6.13.0+213`. ([#2591](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2591), [#2674](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2674))
+
+---
+
+## [6.12.6] - 2026-08-13
+
+_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
+
 ### Bug Fixes
 
-#### Swaps
-- Suspended unavailable Boltz network processing while preserving legacy swap history, and migrated Lightning sends, receives, and cross-chain transfers to the public swap API with crash-safe transaction recovery, serialized polling, duplicate-order protection, and labels applied only after swap completion and on-chain confirmation.
+- Hardened Boltz restore handling so skipped swaps are reported for support-assisted rescue. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.12.6))
+
+---
+
+## [6.12.5] - 2026-08-05
+
+_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
+
+### Bug Fixes
+
+- Added swap-pipeline diagnostics for support-assisted investigation of unclaimed swaps. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.12.5))
+
+---
+
+## [6.12.4] - 2026-07-24
+
+### Bug Fixes
+
+- Fixed an iOS startup failure when the app was opened before the device had been unlocked after a restart. The app now waits and retries after unlock instead of remaining on the startup error screen. ([#2503](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2503))
+- Startup failures are now recorded in app logs for easier diagnosis. ([#2503](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2503))
+
+---
+
+## [6.12.3] - 2026-07-21
+
+_Internal diagnostic prerelease._
+
+### Bug Fixes
+
+- Added file export to the startup error screen so support logs can be recovered when normal app startup is unavailable. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.12.3))
+
+---
+
+## [6.12.2] - 2026-07-08
+
+### Bug Fixes
+
+- Fixed Liquid wallet cache cleanup treating the wallet cache directory as a file, which could leave stale LWK state behind. ([#2444](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2444))
+- Added the iOS location usage description required when a website opened in the in-app browser requests geolocation; the app itself does not collect location. ([#2415](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2415))
 
 ---
 
