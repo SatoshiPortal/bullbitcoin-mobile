@@ -54,7 +54,10 @@ class TransactionDetailsTable extends StatelessWidget {
 
     final swap = transaction?.swap;
     final orderSwap = transaction?.orderSwap;
-    final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
+    final toAddress =
+        swap?.receiveAddress ??
+        transaction?.orderSwapDestinationAddress ??
+        transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = transaction?.payjoinSenderFeeSat ?? walletTransaction?.feeSat;
@@ -115,14 +118,19 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
-            label: transaction?.isIncoming == true
+            label: transaction?.isReceivingWallet(wallet?.id) == true
                 ? context.loc.transactionDetailLabelToWallet
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
         if (counterpartWalletLabel.isNotEmpty && !recovered)
           DetailsTableItem(
-            label: transaction?.isOutgoing == true
+            label:
+                transaction?.isReceivingWallet(
+                      counterpartWallet?.id,
+                      isCounterpart: true,
+                    ) ==
+                    true
                 ? context.loc.transactionDetailLabelToWallet
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: counterpartWalletLabel,
