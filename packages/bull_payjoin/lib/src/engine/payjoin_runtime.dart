@@ -329,7 +329,9 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       }
       final updated = await _engine.tryBroadcastOriginalTransaction(current);
       if (updated == null) {
-        return const Err(PayjoinBroadcastFailure('Broadcast failed'));
+        return const Err(
+          PayjoinFallbackUnavailableFailure('Fallback is no longer available'),
+        );
       }
       return Ok(_toSession(updated));
     } catch (_) {
