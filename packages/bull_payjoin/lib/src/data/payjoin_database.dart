@@ -16,9 +16,6 @@ class PayjoinSenders extends Table {
   IntColumn get amountSat => integer()();
   IntColumn get createdAt => integer()();
   IntColumn get expireAfterSec => integer()();
-  // Existing schema-v1 sessions have unknown origin. Fail closed during the
-  // migration so an old exchange payjoin never gains a manual fallback.
-  BoolColumn get isExchange => boolean().withDefault(const Constant(true))();
   TextColumn get proposalPsbt => text().nullable()();
   TextColumn get txId => text().nullable()();
   BoolColumn get isExpired => boolean()();
@@ -40,8 +37,6 @@ class PayjoinReceivers extends Table {
   Int64Column get maxFeeRateSatPerVb => int64()();
   IntColumn get createdAt => integer()();
   IntColumn get expireAfterSec => integer()();
-  // New sessions always persist an explicit value from their start request.
-  BoolColumn get isExchange => boolean().withDefault(const Constant(true))();
   BlobColumn get originalTxBytes => blob().nullable()();
   TextColumn get originalTxId => text().nullable()();
   IntColumn get amountSat => integer().nullable()();
@@ -88,7 +83,7 @@ class PayjoinMigrations extends Table {
   ],
 )
 final class PayjoinDatabase extends _$PayjoinDatabase {
-  static const schema = 2;
+  static const schema = 1;
 
   PayjoinDatabase._(super.executor);
 
@@ -110,15 +105,4 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   @override
   int get schemaVersion => schema;
-
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (migrator) => migrator.createAll(),
-    onUpgrade: (migrator, from, to) async {
-      if (from < 2) {
-        await migrator.addColumn(payjoinSenders, payjoinSenders.isExchange);
-        await migrator.addColumn(payjoinReceivers, payjoinReceivers.isExchange);
-      }
-    },
-  );
 }

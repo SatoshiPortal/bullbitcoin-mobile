@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bull_payjoin/src/domain/payjoin_failure.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -25,7 +26,6 @@ abstract class PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
-    bool isExchange = false,
   });
   Future<PayjoinSender> createPayjoinSender({
     required String walletId,
@@ -35,10 +35,11 @@ abstract class PayjoinRepository {
     required int amountSat,
     required double networkFeesSatPerVb,
     required int expireAfterSec,
-    bool isExchange = false,
   });
   Future<bool> canManuallyBroadcastOriginal(String payjoinId);
-  Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin);
+  Future<Result<Payjoin, PayjoinFailure>> tryBroadcastOriginalTransaction(
+    Payjoin payjoin,
+  );
 
   /// Abandons a single receiver session on the user's behalf, settling it the
   /// same way a global disable would.

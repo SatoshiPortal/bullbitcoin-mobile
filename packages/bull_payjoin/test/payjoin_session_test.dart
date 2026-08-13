@@ -69,22 +69,6 @@ void main() {
     expect(session.canManuallyBroadcastOriginal, isTrue);
   });
 
-  test('does not offer fallback for an exchange payjoin', () {
-    final session = PayjoinSenderSession(
-      status: PayjoinStatus.requested,
-      uri: 'bitcoin:address?pj=https://example.com',
-      network: BitcoinNetwork.mainnet,
-      walletId: 'wallet',
-      createdAt: createdAt,
-      expiresAt: createdAt.add(const Duration(hours: 1)),
-      amount: Sats.fromInt(10000),
-      originalTransactionId: 'original',
-      isExchange: true,
-    );
-
-    expect(session.canManuallyBroadcastOriginal, isFalse);
-  });
-
   test('does not offer fallback after it is marked aborted', () {
     final session = PayjoinSenderSession(
       status: PayjoinStatus.aborted,

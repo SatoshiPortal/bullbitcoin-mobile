@@ -877,6 +877,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       final updatedPayjoin = await _broadcastOriginalTransactionUsecase.execute(
         payjoin,
       );
+      if (isClosed) return;
       emit(
         state.copyWith(
           transaction: state.transaction?.copyWith(payjoin: updatedPayjoin),

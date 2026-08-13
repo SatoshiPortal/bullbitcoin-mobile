@@ -47,7 +47,7 @@ class _BroadcastPayjoinOriginalTxButtonState
     payjoin.txId,
     payjoin.originalTxId,
     payjoin.hasProposal,
-    payjoin.isExchange,
+    payjoin is PayjoinReceiverSession && payjoin.hasOriginalTransaction,
   );
 
   Future<void> _refreshVisibility() async {

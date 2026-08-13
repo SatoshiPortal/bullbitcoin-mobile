@@ -17,6 +17,7 @@ import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' as api;
 import 'package:primitives/primitives.dart' as primitives;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final LocalPayjoinDatasource _localPayjoinDatasource;
@@ -233,7 +234,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
-    bool isExchange = false,
   }) async {
     final initialPolicy = await _policy.load();
     if (!initialPolicy.enabled) {
@@ -247,7 +247,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       expireAfterSec: expireAfterSec,
       amountSat: amountSat,
-      isExchange: isExchange,
     );
 
     return _withSessionLock(model.id, () async {
@@ -289,7 +288,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
-    bool isExchange = false,
   }) => _withSessionLock(bip21, () async {
     // A sender id is the payment request itself. Reject a live or resolved
     // duplicate before posting another original proposal to the directory;
@@ -311,7 +309,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       originalPsbt: originalPsbt,
       networkFeesSatPerVb: networkFeesSatPerVb,
       amountSat: amountSat,
-      isExchange: isExchange,
       expireAfterSec: expireAfterSec,
       // Write-ahead: the datasource invokes this AFTER the session is built
       // but BEFORE the signed original is posted to the directory. A crash
@@ -384,7 +381,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   @override
-  Future<Payjoin?> tryBroadcastOriginalTransaction(
+  Future<Result<Payjoin, api.PayjoinFailure>> tryBroadcastOriginalTransaction(
     Payjoin payjoin,
   ) => _withSessionLock(payjoin.id, () async {
     // Idempotency/safety guard for MANUAL/external callers only (the
@@ -424,7 +421,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session not found locally',
       );
-      return null;
+      return const Err(
+        api.PayjoinFallbackUnavailableFailure('Session not found locally'),
+      );
     }
     final freshEntity = freshModel.toEntity();
     if (!await _canManuallyBroadcastOriginal(freshEntity)) {
@@ -432,7 +431,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session is unsafe to abort or a competing transaction is visible',
       );
-      return null;
+      return const Err(
+        api.PayjoinFallbackUnavailableFailure(
+          'Fallback is no longer available',
+        ),
+      );
     }
 
     // Broadcast the FRESH entity, not the caller's: after an expired-sender
@@ -450,8 +453,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     //  public, UI-triggered entry point has no caller downstream to do it.
     if (result != null) {
       _payjoinStreamController.add(result);
+      return Ok(result);
     }
-    return result;
+    return const Err(api.PayjoinBroadcastFailure('Broadcast failed'));
   });
 
   @override

@@ -268,7 +268,6 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         amountSat: request.amount.value.toInt(),
         networkFeesSatPerVb: request.feeRate.satsPerVbyte,
         expireAfterSec: lifetime.inSeconds,
-        isExchange: request.isExchange,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
     } catch (_) {
@@ -310,7 +309,6 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         ),
         expireAfterSec: lifetime.inSeconds,
         amountSat: request.amount?.value.toInt(),
-        isExchange: request.isExchange,
       );
       return Ok(_toSession(session) as PayjoinReceiverSession);
     } catch (_) {
@@ -327,13 +325,9 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       if (current == null) {
         return const Err(PayjoinSessionNotFoundFailure('Session not found'));
       }
-      final updated = await _engine.tryBroadcastOriginalTransaction(current);
-      if (updated == null) {
-        return const Err(
-          PayjoinFallbackUnavailableFailure('Fallback is no longer available'),
-        );
-      }
-      return Ok(_toSession(updated));
+      return (await _engine.tryBroadcastOriginalTransaction(
+        current,
+      )).map(_toSession);
     } catch (_) {
       return const Err(PayjoinBroadcastFailure('Broadcast failed'));
     }
@@ -661,7 +655,6 @@ PayjoinSession _toSession(engine.Payjoin value) {
       originalTransactionId: value.originalTxId,
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
-      isExchange: value.isExchange,
     ),
     engine.PayjoinReceiver() => PayjoinReceiverSession(
       status: status,
@@ -676,7 +669,6 @@ PayjoinSession _toSession(engine.Payjoin value) {
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
       hasOriginalTransaction: value.originalTxBytes != null,
-      isExchange: value.isExchange,
     ),
   };
 }

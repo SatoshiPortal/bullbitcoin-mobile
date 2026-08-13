@@ -26,7 +26,6 @@ sealed class Payjoin with _$Payjoin {
     required String pjUri,
     required DateTime createdAt,
     required DateTime expiresAt,
-    @Default(false) bool isExchange,
     Uint8List? originalTxBytes,
     String? originalTxId,
     int? amountSat,
@@ -43,7 +42,6 @@ sealed class Payjoin with _$Payjoin {
     required int amountSat,
     required DateTime createdAt,
     required DateTime expiresAt,
-    @Default(false) bool isExchange,
     String? proposalPsbt,
     String? txId,
   }) = PayjoinSender;
@@ -98,7 +96,7 @@ sealed class Payjoin with _$Payjoin {
   /// Availability based on local session data. The engine additionally checks
   /// that neither competing transaction is visible before broadcasting.
   bool get canManuallyBroadcastOriginal {
-    if (isCompleted || isAborted || isExchange) return false;
+    if (isCompleted || isAborted) return false;
     return switch (this) {
       PayjoinReceiver(:final originalTxBytes) => originalTxBytes != null,
       PayjoinSender() => true,

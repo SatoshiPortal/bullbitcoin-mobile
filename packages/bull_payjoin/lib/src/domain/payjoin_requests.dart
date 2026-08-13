@@ -8,7 +8,6 @@ final class StartPayjoinSender {
   final Sats amount;
   final FeeRate feeRate;
   final DateTime? expiresAt;
-  final bool isExchange;
 
   StartPayjoinSender({
     required this.walletId,
@@ -18,7 +17,6 @@ final class StartPayjoinSender {
     required this.amount,
     required this.feeRate,
     this.expiresAt,
-    this.isExchange = false,
   }) {
     _requireNotBlank(walletId, 'walletId');
     _requireSupportedNetwork(network);
@@ -36,7 +34,6 @@ final class StartPayjoinReceiver {
   final String address;
   final Sats? amount;
   final DateTime? expiresAt;
-  final bool isExchange;
 
   StartPayjoinReceiver({
     required this.walletId,
@@ -44,7 +41,6 @@ final class StartPayjoinReceiver {
     required this.address,
     this.amount,
     this.expiresAt,
-    this.isExchange = false,
   }) {
     _requireNotBlank(walletId, 'walletId');
     _requireSupportedNetwork(network);

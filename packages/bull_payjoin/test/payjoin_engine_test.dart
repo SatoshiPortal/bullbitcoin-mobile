@@ -47,7 +47,6 @@ void main() {
     String? originalTransactionId,
     String? proposalPsbt,
     String? transactionId,
-    bool isExchange = false,
   }) =>
       PayjoinModel.receiver(
             id: id,
@@ -64,7 +63,6 @@ void main() {
             amountSat: 50000,
             proposalPsbt: proposalPsbt,
             txId: transactionId,
-            isExchange: isExchange,
           )
           as PayjoinReceiverModel;
 
@@ -314,7 +312,11 @@ void main() {
       model.toEntity(),
     );
 
-    expect(result?.status, internal.PayjoinStatus.aborted);
+    expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
+    expect(
+      (result as Ok<internal.Payjoin, PayjoinFailure>).value.status,
+      internal.PayjoinStatus.aborted,
+    );
     verify(
       () => blockchain.broadcastTransaction(
         network: BitcoinNetwork.testnet,
@@ -340,7 +342,11 @@ void main() {
       model.toEntity(),
     );
 
-    expect(result?.status, internal.PayjoinStatus.aborted);
+    expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
+    expect(
+      (result as Ok<internal.Payjoin, PayjoinFailure>).value.status,
+      internal.PayjoinStatus.aborted,
+    );
     final persisted = await local.fetchReceiver(model.id);
     expect(persisted?.isAborted, isTrue);
     expect(persisted?.txId, isNull);
@@ -350,6 +356,32 @@ void main() {
         transactionId: any(named: 'transactionId'),
       ),
     );
+  });
+
+  test('manual fallback distinguishes a genuine broadcast failure', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+    );
+    await local.storeReceiver(model);
+    when(
+      () => blockchain.broadcastTransaction(
+        network: BitcoinNetwork.testnet,
+        transaction: any(named: 'transaction'),
+      ),
+    ).thenThrow(Exception('network unavailable'));
+
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
+
+    expect(result, isA<Err<internal.Payjoin, PayjoinFailure>>());
+    expect(
+      (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+      isA<PayjoinBroadcastFailure>(),
+    );
+    final persisted = await local.fetchReceiver(model.id);
+    expect(persisted?.isAborted, isFalse);
   });
 
   test('manual fallback is unavailable when the original is visible', () async {
@@ -371,29 +403,15 @@ void main() {
       model.toEntity(),
     );
 
-    expect(result, isNull);
+    expect(result, isA<Err<internal.Payjoin, PayjoinFailure>>());
+    expect(
+      (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+      isA<PayjoinFallbackUnavailableFailure>(),
+    );
     verifyNever(
       () => blockchain.broadcastTransaction(
         network: any(named: 'network'),
         transaction: any(named: 'transaction'),
-      ),
-    );
-  });
-
-  test('manual fallback is unavailable for an exchange payjoin', () async {
-    final model = receiver(
-      originalTransaction: Uint8List.fromList([1, 2, 3]),
-      originalTransactionId: 'original-tx',
-      isExchange: true,
-    );
-    await local.storeReceiver(model);
-
-    expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
-    verifyNever(
-      () => transactions.isTransactionVisible(
-        walletId: any(named: 'walletId'),
-        transactionId: any(named: 'transactionId'),
-        refresh: any(named: 'refresh'),
       ),
     );
   });

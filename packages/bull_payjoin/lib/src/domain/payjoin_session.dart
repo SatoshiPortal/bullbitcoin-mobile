@@ -16,7 +16,6 @@ sealed class PayjoinSession {
   final String? originalTransactionId;
   final String? transactionId;
   final bool hasProposal;
-  final bool isExchange;
 
   PayjoinSession({
     required this.status,
@@ -29,7 +28,6 @@ sealed class PayjoinSession {
     this.originalTransactionId,
     this.transactionId,
     this.hasProposal = false,
-    this.isExchange = false,
   }) {
     if (id.trim().isEmpty) {
       throw ArgumentError.value(id, 'id', 'must not be blank');
@@ -60,7 +58,7 @@ sealed class PayjoinSession {
   String? get txId => transactionId;
 
   bool get canManuallyBroadcastOriginal {
-    if (isCompleted || isAborted || isExchange) return false;
+    if (isCompleted || isAborted) return false;
     return switch (this) {
       PayjoinReceiverSession(:final hasOriginalTransaction) =>
         hasOriginalTransaction,
@@ -94,7 +92,6 @@ final class PayjoinReceiverSession extends PayjoinSession {
     super.originalTransactionId,
     super.transactionId,
     super.hasProposal,
-    super.isExchange,
   }) {
     if (payjoinUri.trim().isEmpty) {
       throw ArgumentError.value(payjoinUri, 'payjoinUri', 'must not be blank');
@@ -117,7 +114,6 @@ final class PayjoinSenderSession extends PayjoinSession {
     required super.originalTransactionId,
     super.transactionId,
     super.hasProposal,
-    super.isExchange,
   }) : super(id: uri);
 
   String get uri => id;
