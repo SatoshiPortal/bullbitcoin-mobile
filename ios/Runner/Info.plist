@@ -16,6 +16,8 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<key>CFBundleName</key>
 		<string>com.bullbitcoin.app</string>
 		<key>CFBundlePackageType</key>
