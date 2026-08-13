@@ -4,11 +4,6 @@ run-name: App Store Connect ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
-    inputs:
-      build_number:
-        description: Optional CFBundleVersion override (defaults to pubspec build + workflow run number)
-        required: false
-        type: string
 
 # Never cancel an upload already in progress, and serialize build-number use.
 concurrency:
@@ -62,8 +57,6 @@ jobs:
 
       - name: Resolve release metadata
         id: metadata
-        env:
-          BUILD_NUMBER_INPUT: ${{ inputs.build_number }}
         run: |
           version_line="$(awk '/^version:/ { print $2; exit }' pubspec.yaml)"
           base_build="${version_line##*+}"
@@ -73,15 +66,7 @@ jobs:
             exit 1
           fi
 
-          if [ -n "$BUILD_NUMBER_INPUT" ]; then
-            if ! [[ "$BUILD_NUMBER_INPUT" =~ ^[1-9][0-9]*$ ]]; then
-              echo "::error::build_number must be a positive integer."
-              exit 1
-            fi
-            build_number="$BUILD_NUMBER_INPUT"
-          else
-            build_number=$((base_build + GITHUB_RUN_NUMBER))
-          fi
+          build_number="$base_build"
 
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
           echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
