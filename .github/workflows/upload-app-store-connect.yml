@@ -168,9 +168,22 @@ jobs:
           #    atomic on HFS+/APFS and needs no extra tooling — macOS has no
           #    flock(1). The lock is bounded so a crashed holder cannot wedge
           #    the build, and released on every exit path.
-          rustup_path="$(command -v rustup)"
-          mv "$rustup_path" "$rustup_path.real"
-          cat > "$rustup_path" <<EOF
+          # The image ships two rustups — /opt/homebrew/bin and ~/.cargo/bin —
+          # and Xcode build phases resolve their own PATH. Wrapping only the
+          # first one on this step's PATH left cargokit reaching the other:
+          # `stable` stayed floating (it pulled 1.97.1) and the mutex was
+          # bypassed, which is why serializing appeared to change nothing.
+          # Collect the list before touching anything, since moving a binary
+          # changes what a later lookup resolves to.
+          rustup_paths="$(type -a -p rustup | sort -u)
+          $HOME/.cargo/bin/rustup"
+          wrapped=0
+          for rustup_path in $rustup_paths; do
+            case "$rustup_path" in *.real) continue;; esac
+            [ -x "$rustup_path" ] || continue
+            [ -e "$rustup_path.real" ] && continue
+            mv "$rustup_path" "$rustup_path.real"
+            cat > "$rustup_path" <<EOF
           #!/bin/bash
           args=()
           for arg in "\$@"; do
@@ -193,9 +206,21 @@ jobs:
 
           "\$(dirname "\$0")/rustup.real" "\${args[@]}"
           EOF
-          chmod +x "$rustup_path"
+            chmod +x "$rustup_path"
+            wrapped=$((wrapped + 1))
+          done
 
-          rustup run stable rustc --version | grep -F "rustc $RUST_VERSION"
+          if [ "$wrapped" -lt 2 ]; then
+            echo "::error::Wrapped $wrapped rustup binaries, expected at least 2. The runner image layout changed; check which rustup the Xcode build phases resolve before trusting the version pin."
+            exit 1
+          fi
+
+          # Assert the pin through every wrapper, not just the one on this PATH.
+          for rustup_path in $rustup_paths; do
+            case "$rustup_path" in *.real) continue;; esac
+            [ -x "$rustup_path" ] || continue
+            "$rustup_path" run stable rustc --version | grep -F "rustc $RUST_VERSION"
+          done
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"
 
           # TEMPORARY. The wrapper above only covers the rustup on this step's
