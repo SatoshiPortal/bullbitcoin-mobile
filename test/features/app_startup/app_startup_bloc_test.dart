@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -115,6 +116,27 @@ void main() {
       // The legacy check must not even run: current seeds are not
       // legacy-format and would be missing from the backup screen.
       verifyNever(() => checkLegacyInstall.execute());
+    },
+  );
+
+  test(
+    'stays on splash when the keychain is locked before first unlock',
+    () async {
+      when(() => checkDefaultWallets.execute()).thenAnswer((_) async => true);
+      when(
+        () => checkPinCodeExists.execute(),
+      ).thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const AppStartupStarted());
+      await bloc.stream.firstWhere(
+        (state) => state is AppStartupLoadingInProgress,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state, isA<AppStartupLoadingInProgress>());
+      verify(() => checkPinCodeExists.execute()).called(1);
     },
   );
 

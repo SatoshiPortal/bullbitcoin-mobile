@@ -55,4 +55,18 @@ void main() {
       expect(failure, isNot(isA<AppUnlockUnexpectedFailure>()));
     },
   );
+
+  test(
+    'maps a keychain-locked repository failure without losing its type',
+    () async {
+      when(
+        () => pinCodeRepository.isPinCodeSet(),
+      ).thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Err<bool, AppUnlockFailure>>());
+      expect((result as Err).failure, isA<AppUnlockKeychainLockedFailure>());
+    },
+  );
 }

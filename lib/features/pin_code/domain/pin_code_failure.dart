@@ -20,6 +20,10 @@ final class PinCodeNotSetFailure extends PinCodeFailure {
   const PinCodeNotSetFailure();
 }
 
+final class PinCodeKeychainLockedFailure extends PinCodeFailure {
+  const PinCodeKeychainLockedFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class PinCodeUnexpectedFailure extends PinCodeFailure {
