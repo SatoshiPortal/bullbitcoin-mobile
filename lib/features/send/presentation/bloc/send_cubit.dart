@@ -1948,12 +1948,21 @@ class SendCubit extends Cubit<SendState>
       final sendNeedsSignature = state.selectedWallet!.network.isLiquid
           ? state.signedLiquidTx == null
           : state.signedBitcoinTx == null && state.signedBitcoinPsbt == null;
-      if (orderNeedsPayin || sendNeedsSignature) {
+      final sendNeedsPayjoinStart =
+          state.willAttemptPayjoin && state.payjoinSender == null;
+      if (orderNeedsPayin || sendNeedsSignature || sendNeedsPayjoinStart) {
         if (orderNeedsPayin) {
           _invalidateSignedTransaction();
           clearBitcoinFeePreviews();
         }
-        await createTransaction();
+        // The regular Bitcoin build path may already have prepared and signed
+        // a PSBT for the confirmation screen. Payjoin still has to start from
+        // its unsigned original, but rebuilding it here would needlessly pick
+        // coins again. Reuse the existing unsigned PSBT when Payjoin startup is
+        // the only remaining work.
+        if (orderNeedsPayin || sendNeedsSignature) {
+          await createTransaction();
+        }
         if (state.failure is SendTransactionBuildFailure ||
             state.unsignedPsbt == null) {
           emit(state.copyWith(step: SendStep.confirm));

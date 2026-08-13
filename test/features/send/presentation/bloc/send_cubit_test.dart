@@ -458,6 +458,50 @@ void main() {
   }
 
   group('SendCubit._watchPayjoin', () {
+    test(
+      'confirm starts payjoin even when the regular PSBT was pre-signed',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.sending);
+        expect(cubit.state.payjoinSender?.status, PayjoinStatus.requested);
+        verify(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: 'w1',
+            isTestnet: false,
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: 'cHNidP8=',
+            amountSat: 50000,
+            networkFeesSatPerVb: 2,
+          ),
+        ).called(1);
+        verifyNever(
+          () => broadcastBitcoinTxUsecase.execute(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+          ),
+        );
+      },
+    );
+
     test('a completed PayjoinSender (real payjoin, txId set) resolves the flow '
         'to success with the payjoin txid, syncs the wallet and stores the '
         'user label on that final txid', () async {
