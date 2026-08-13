@@ -31,6 +31,13 @@ jobs:
       RUSTUP_AUTO_INSTALL: 0
       CARGO_NET_GIT_FETCH_WITH_CLI: true
       CARGO_INCREMENTAL: 0
+      # TEMPORARY, until the Rust build is proven — see "Build signed IPA".
+      # Documented rustup knobs (rustup book, Environment variables): DEBUG
+      # logging so the component installer explains itself, and single-threaded
+      # download/IO so rustup's own internal concurrency is out of the picture.
+      RUSTUP_LOG: rustup=DEBUG
+      RUSTUP_CONCURRENT_DOWNLOADS: 1
+      RUSTUP_IO_THREADS: 1
 
     steps:
       - name: Checkout selected branch
@@ -191,6 +198,21 @@ jobs:
           rustup run stable rustc --version | grep -F "rustc $RUST_VERSION"
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"
 
+          # TEMPORARY. The wrapper above only covers the rustup on this step's
+          # PATH; a second copy elsewhere on the image would bypass both the
+          # pin and the mutex, which would explain why serializing changed
+          # nothing. List every candidate, and record what is already installed
+          # so a later install attempt can be told apart from a missing target.
+          echo "::group::rustup binaries on PATH"
+          type -a rustup || true
+          ls -l "$(command -v rustup)" "$(command -v rustup).real" || true
+          echo "::endgroup::"
+          echo "::group::installed toolchains and targets"
+          rustup toolchain list
+          rustup target list --installed --toolchain "$RUST_VERSION"
+          rustup target list --installed --toolchain "$BDK_RUST_VERSION"
+          echo "::endgroup::"
+
       - name: Install Flutter and generate sources
         run: |
           make fvm-check
@@ -309,7 +331,18 @@ jobs:
           echo "EXPORT_OPTIONS_PLIST=$export_options" >> "$GITHUB_ENV"
 
       - name: Build signed IPA
-        run: make ios-release BUILD_NUMBER="$BUILD_NUMBER" EXPORT_OPTIONS_PLIST="$EXPORT_OPTIONS_PLIST"
+        run: |
+          # TEMPORARY --verbose: Flutter surfaces only SEVERE lines from
+          # xcodebuild, so the Rust build phase's own output — including
+          # rustup's explanation of the failing component install — never
+          # reaches the log. Drop this once the archive completes.
+          set -o pipefail
+          make ios-release \
+            BUILD_NUMBER="$BUILD_NUMBER" \
+            EXPORT_OPTIONS_PLIST="$EXPORT_OPTIONS_PLIST" \
+            FLUTTER_EXTRA_ARGS=--verbose
+          echo "disk after build:"; df -h /
+          echo "rustup downloads dir:"; ls -la "$HOME/.rustup/downloads" || true
 
       - name: Verify signed IPA
         id: ipa
