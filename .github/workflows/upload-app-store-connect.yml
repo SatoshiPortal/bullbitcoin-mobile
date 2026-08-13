@@ -436,11 +436,6 @@ jobs:
           api-private-key: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
           backend: appstore-api
           wait-for-processing: true
-          # Same export-compliance answer previously given by hand: the app's
-          # cryptography (signatures, standard protocols) is exempt. Read back
-          # from build 204's usesNonExemptEncryption via the ASC API. Declaring
-          # it here keeps builds out of the manual "Missing Compliance" gate.
-          uses-non-exempt-encryption: 'false'
 
       - name: Remove provisioning profile
         if: always()
