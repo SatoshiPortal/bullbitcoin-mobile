@@ -572,7 +572,6 @@
   "transactionNoteEditTitle": "Редагувати замітку",
   "transactionNoteHint": "Зареєструватися",
   "transactionNoteSaveButton": "Зберегти",
-  "transactionPayjoinNoProposal": "Чи не приймається пропозиція платника?",
   "transactionPayjoinSendWithout": "Відправлення без плати",
   "transactionSwapProgressInitiated": "Ініціюється",
   "transactionSwapProgressPaymentMade": "Оплата\nЗроблено",

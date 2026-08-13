@@ -67,8 +67,6 @@ sealed class Transaction with _$Transaction {
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>
       isOngoingPayjoin && payjoin is PayjoinReceiverSession;
-  bool get isOngoingPayjoinSender =>
-      isOngoingPayjoin && payjoin is PayjoinSenderSession;
 
   /// The payjoin status to DISPLAY, derived from what actually happened
   /// on-chain rather than from the session row alone. The session's

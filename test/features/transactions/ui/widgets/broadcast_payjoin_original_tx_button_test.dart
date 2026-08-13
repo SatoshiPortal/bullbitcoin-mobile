@@ -31,7 +31,7 @@ void main() {
     tester,
   ) async {
     final cubit = _MockTransactionDetailsCubit();
-    final updates = StreamController<TransactionDetailsState>();
+    final updates = StreamController<TransactionDetailsState>.broadcast();
     var state = TransactionDetailsState(
       transaction: Transaction(payjoin: _session(PayjoinStatus.requested)),
     );
@@ -40,7 +40,7 @@ void main() {
     when(() => cubit.canBroadcastPayjoinOriginalTx()).thenAnswer(
       (_) async => state.payjoin?.canManuallyBroadcastOriginal ?? false,
     );
-    when(() => cubit.broadcastPayjoinOriginalTx()).thenAnswer((_) async {});
+    when(() => cubit.broadcastPayjoinOriginalTx()).thenReturn(true);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -61,6 +61,13 @@ void main() {
     await tester.pump();
 
     expect(find.text('Send without payjoin'), findsOneWidget);
+    state = TransactionDetailsState(
+      transaction: Transaction(payjoin: _session(PayjoinStatus.requested)),
+    );
+    updates.add(state);
+    await tester.pump();
+    verify(() => cubit.canBroadcastPayjoinOriginalTx()).called(1);
+
     await tester.tap(find.text('Send without payjoin'));
     await tester.pump();
     expect(find.text('Processing as a regular transaction…'), findsOneWidget);
@@ -72,6 +79,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Send without payjoin'), findsNothing);
+    await tester.pump(const Duration(seconds: 3));
     await updates.close();
   });
 }

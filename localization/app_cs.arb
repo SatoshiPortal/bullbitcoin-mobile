@@ -4939,10 +4939,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Ne přijímání payjoin návrh z přijímače?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "Zvolte \"Připojit peněženku\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"

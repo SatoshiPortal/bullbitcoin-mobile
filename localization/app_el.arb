@@ -4118,10 +4118,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Δεν λαμβάνει πρόταση payjoin από τον παραλήπτη?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "Επιλέξτε \"Connect Wallet\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"

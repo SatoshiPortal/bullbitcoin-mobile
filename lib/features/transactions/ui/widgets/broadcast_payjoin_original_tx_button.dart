@@ -35,11 +35,20 @@ class _BroadcastPayjoinOriginalTxButtonState
   @override
   void didUpdateWidget(BroadcastPayjoinOriginalTxButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.payjoin != widget.payjoin) {
+    if (_visibilityKey(oldWidget.payjoin) != _visibilityKey(widget.payjoin)) {
       _isVisible = widget.payjoin.canManuallyBroadcastOriginal;
       _refreshVisibility();
     }
   }
+
+  Object _visibilityKey(PayjoinSession payjoin) => (
+    payjoin.id,
+    payjoin.status,
+    payjoin.txId,
+    payjoin.originalTxId,
+    payjoin.hasProposal,
+    payjoin.isExchange,
+  );
 
   Future<void> _refreshVisibility() async {
     final requestId = ++_requestId;
@@ -75,15 +84,17 @@ class _BroadcastPayjoinOriginalTxButtonState
               ? context.loc.transactionPayjoinSendWithout
               : context.loc.receivePaymentNormally,
           disabled: isBroadcastingPayjoinOriginalTx,
-          onPressed: () async {
-            SnackBarUtils.showSnackBar(
-              context,
-              context.loc.transactionPayjoinFallbackProcessing,
-            );
+          onPressed: () {
             log.info('Broadcast regular transaction after payjoin abort');
-            await context
+            final started = context
                 .read<TransactionDetailsCubit>()
                 .broadcastPayjoinOriginalTx();
+            if (started) {
+              SnackBarUtils.showSnackBar(
+                context,
+                context.loc.transactionPayjoinFallbackProcessing,
+              );
+            }
           },
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

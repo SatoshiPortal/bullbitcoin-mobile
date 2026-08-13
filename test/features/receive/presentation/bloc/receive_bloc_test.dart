@@ -311,9 +311,7 @@ void main() {
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
-    test('does NOT broadcast the original once a proposal has been sent: '
-        'the sender owns finalizing/broadcasting the payjoin tx, and a '
-        'manual lower-fee rebroadcast would race/replace it', () async {
+    test('allows the guarded fallback after a proposal has been sent', () async {
       // The session already sent a proposal (proposalPsbt != null).
       final proposedPayjoin = _receiver(
         status: PayjoinStatus.proposed,
@@ -326,6 +324,14 @@ void main() {
           address: any(named: 'address'),
         ),
       ).thenAnswer((_) async => proposedPayjoin);
+      final completedPayjoin = _receiver(
+        status: PayjoinStatus.aborted,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(
+        () => broadcastOriginalTransaction.execute(any()),
+      ).thenAnswer((_) async => completedPayjoin);
 
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -337,7 +343,10 @@ void main() {
       bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
       await Future<void>.delayed(Duration.zero);
 
-      verifyNever(() => broadcastOriginalTransaction.execute(any()));
+      verify(
+        () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
+      ).called(1);
+      expect(bloc.state.payjoin, completedPayjoin);
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
 

@@ -672,7 +672,6 @@
   "transactionNoteHint": "Muistiinpano",
   "transactionNoteSaveButton": "Tallenna",
   "transactionNoteUpdateButton": "Päivitä",
-  "transactionPayjoinNoProposal": "Etkö saanut payjoin-ehdotusta vastaanottajalta?",
   "transactionPayjoinSendWithout": "Lähetä ilman payjoinia",
   "transactionSwapProgressInitiated": "Aloitettu",
   "transactionSwapProgressPaymentMade": "Maksu\nSuoritettu",

@@ -18,6 +18,8 @@ class BroadcastOriginalTransactionUsecase {
     final result = await _sender.broadcastOriginal(payjoin.id);
     return switch (result) {
       Ok(:final value) => value,
+      Err(failure: PayjoinFallbackUnavailableFailure()) =>
+        throw BroadcastOriginalTransactionUnavailableException(),
       Err() => throw BroadcastOriginalTransactionException(
         'Failed to broadcast original transaction',
       ),
@@ -27,4 +29,9 @@ class BroadcastOriginalTransactionUsecase {
 
 class BroadcastOriginalTransactionException extends BullException {
   BroadcastOriginalTransactionException(super.message);
+}
+
+class BroadcastOriginalTransactionUnavailableException extends BullException {
+  BroadcastOriginalTransactionUnavailableException()
+    : super('Original transaction is no longer available for broadcast');
 }

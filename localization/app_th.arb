@@ -4867,10 +4867,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "ไม่มีข้อเสนอการชําระเงินจากผู้รับ?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "เลือก \"เชื่อมต่อกระเป๋าสตางค์\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"

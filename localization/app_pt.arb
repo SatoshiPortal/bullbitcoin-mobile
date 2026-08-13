@@ -1575,7 +1575,6 @@
   "bitboxScreenDefaultWalletLabel": "Carteira de BitBox",
   "replaceByFeeBroadcastButton": "Transmissão",
   "swapExternalTransferLabel": "Transferência Externa",
-  "transactionPayjoinNoProposal": "Não receber uma proposta payjoin do receptor?",
   "importQrDevicePassportStep4": "Selecione \"Carteira de contato\"",
   "payAddRecipient": "Adicionar comentário",
   "recoverbullVaultImportedSuccess": "Seu cofre foi importado com sucesso",

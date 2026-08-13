@@ -4867,10 +4867,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "प्राप्तकर्ता से Payjoin प्रस्ताव नहीं मिल रहा?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "\"कनेक्ट वॉलेट\" चुनें",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"

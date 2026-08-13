@@ -4576,10 +4576,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "ألا تتلقى اقتراحاً من المستلم؟?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "payAddRecipient": "مستفيد",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"

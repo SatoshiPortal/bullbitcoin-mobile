@@ -3058,10 +3058,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "Not receiving a payjoin proposal from the receiver?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "Send without payjoin",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"

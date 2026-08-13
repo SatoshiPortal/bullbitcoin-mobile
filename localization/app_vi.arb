@@ -1307,7 +1307,6 @@
   "transactionNoteHint": "Ghi chú",
   "transactionNoteSaveButton": "Lưu",
   "transactionNoteUpdateButton": "Cập nhật",
-  "transactionPayjoinNoProposal": "Không nhận được đề xuất payjoin từ người nhận?",
   "transactionPayjoinSendWithout": "Gửi không dùng payjoin",
   "transactionSwapProgressInitiated": "Đã khởi tạo",
   "transactionSwapProgressPaymentMade": "Đã thanh\ntoán",

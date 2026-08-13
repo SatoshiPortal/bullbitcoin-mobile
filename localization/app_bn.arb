@@ -11649,10 +11649,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "রিসিভার থেকে পেজয়েন প্রস্তাব পাচ্ছেন না?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "পেজয়েন ছাড়া পাঠান",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"

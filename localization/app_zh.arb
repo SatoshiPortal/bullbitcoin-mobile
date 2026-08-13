@@ -1579,7 +1579,6 @@
   "bitboxScreenDefaultWalletLabel": "BiBox Wallet",
   "replaceByFeeBroadcastButton": "广播",
   "swapExternalTransferLabel": "外部转移",
-  "transactionPayjoinNoProposal": "没有收到接收人提出的薪酬申请?",
   "importQrDevicePassportStep4": "选择“Connect Wallet”",
   "payAddRecipient": "加入",
   "recoverbullVaultImportedSuccess": "成功进口",

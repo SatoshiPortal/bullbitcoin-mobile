@@ -575,7 +575,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       // take tens of seconds, but an aborted/completed transition is already
       // authoritative enough to update the title, status and button now.
       if (isClosed) return;
-      emit(state.copyWith(transaction: Transaction(payjoin: payjoin)));
+      emit(
+        state.copyWith(
+          transaction:
+              state.transaction?.copyWith(payjoin: payjoin) ??
+              Transaction(payjoin: payjoin),
+        ),
+      );
 
       final wallet =
           state.wallet ?? await _getWalletUsecase.execute(payjoin.walletId);
@@ -589,6 +595,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       if (payjoin.txId != null) {
         final broadcast = await _syncBroadcastTransactionForPayjoin(payjoin);
         if (broadcast != null) {
+          await _stopPayjoinTransactionWatchers();
           await _showBroadcastTransaction(payjoin, broadcast);
           return;
         }
@@ -626,10 +633,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         // per-txid watchers a previous pass may have armed — otherwise they
         // keep watching the same txid as _walletTransactionSubscription and
         // double-reload once it lands.
-        _watchedPayjoinId = null;
-        await _payjoinSubscription?.cancel();
-        await _payjoinTxSubscription?.cancel();
-        await _payjoinOriginalTxSubscription?.cancel();
+        await _stopPayjoinTransactionWatchers();
         await initByWalletTxId(broadcastTxId, walletId: payjoin.walletId);
         return;
       }
@@ -775,6 +779,16 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         });
   }
 
+  Future<void> _stopPayjoinTransactionWatchers() async {
+    _watchedPayjoinId = null;
+    await _payjoinSubscription?.cancel();
+    await _payjoinTxSubscription?.cancel();
+    await _payjoinOriginalTxSubscription?.cancel();
+    _payjoinSubscription = null;
+    _payjoinTxSubscription = null;
+    _payjoinOriginalTxSubscription = null;
+  }
+
   Future<void> initByOrderId(String orderId) async {
     await _loadDetailsByOrderId(orderId);
 
@@ -848,16 +862,17 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     );
   }
 
-  Future<void> broadcastPayjoinOriginalTx() async {
+  bool broadcastPayjoinOriginalTx() {
+    if (state.isBroadcastingPayjoinOriginalTx) return false;
+    final payjoin = state.payjoin;
+    if (payjoin == null || !payjoin.canManuallyBroadcastOriginal) return false;
+    emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true, err: null));
+    unawaited(_broadcastPayjoinOriginalTx(payjoin));
+    return true;
+  }
+
+  Future<void> _broadcastPayjoinOriginalTx(PayjoinSession payjoin) async {
     try {
-      if (state.isBroadcastingPayjoinOriginalTx) return;
-      final payjoin = state.payjoin;
-      if (payjoin == null) return;
-      // Fast local guard for completed/exchange sessions and receivers that do
-      // not hold an original transaction. The engine performs the authoritative
-      // refreshed mempool/blockchain check under the session lock.
-      if (!payjoin.canManuallyBroadcastOriginal) return;
-      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true, err: null));
       final updatedPayjoin = await _broadcastOriginalTransactionUsecase.execute(
         payjoin,
       );
@@ -874,6 +889,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       // broadcast. The aborted session is already rendered above; enrich it
       // with full transaction details asynchronously.
       unawaited(_resolveBroadcastTransaction(updatedPayjoin));
+    } on BroadcastOriginalTransactionUnavailableException {
+      if (!isClosed) await _loadDetailsByPayjoinId(payjoin.id);
     } catch (e) {
       if (!isClosed) emit(state.copyWith(err: e));
     } finally {

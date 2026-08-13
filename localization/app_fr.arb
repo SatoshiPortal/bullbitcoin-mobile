@@ -710,7 +710,6 @@
   "transactionNoteHint": "Note",
   "transactionNoteSaveButton": "Enregistrer",
   "transactionNoteUpdateButton": "Mettre à jour",
-  "transactionPayjoinNoProposal": "Vous ne recevez pas de proposition de payjoin du destinataire ?",
   "transactionPayjoinSendWithout": "Envoyer sans payjoin",
   "transactionSwapProgressInitiated": "Initié",
   "transactionSwapProgressPaymentMade": "Paiement\nEffectué",
