@@ -43,6 +43,12 @@ class ElectrumRemoteDatasource {
     String txid,
   ) async {
     try {
+      final timeout = Duration(seconds: connection.timeout);
+      // This datasource has no SOCKS implementation. Never silently bypass
+      // Tor; the fallback runner will advance to the next server instead.
+      if (connection.socks5?.isNotEmpty == true) {
+        throw Exception('Proxy-aware Electrum transport unavailable');
+      }
       final socket = await _connect(connection);
 
       final request = {
@@ -54,7 +60,7 @@ class ElectrumRemoteDatasource {
       socket.writeln(json.encode(request));
 
       final lines = utf8.decoder.bind(socket).transform(const LineSplitter());
-      final firstLine = await lines.first;
+      final firstLine = await lines.first.timeout(timeout);
       await socket.close();
 
       return hex.decode(json.decode(firstLine)['result'] as String);

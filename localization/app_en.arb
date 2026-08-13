@@ -12668,7 +12668,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends minimized error reports containing app version, device and operating-system metadata, and a random installation identifier when something breaks. Wallet and transaction payloads are removed.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },
@@ -14474,5 +14474,9 @@
   "sendUnconfidentialLiquidWarningDescription": "This Liquid address does not support Confidential Transactions. The amount you send will be publicly visible on the blockchain.",
   "@sendUnconfidentialLiquidWarningDescription": {
     "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
+  },
+  "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
+  "@mempoolErrorNetworkMismatch": {
+    "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
   }
 }

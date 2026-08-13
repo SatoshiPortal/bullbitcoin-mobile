@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
@@ -91,6 +92,9 @@ class _MockPreviewBitcoinFeePresets extends Mock
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
+class _MockLabelCompletedSellOrderUsecase extends Mock
+    implements LabelCompletedSellOrderUsecase {}
+
 class _MockWallet extends Mock implements Wallet {}
 
 class _MockSellOrder extends Mock implements SellOrder {}
@@ -125,6 +129,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.getWalletUtxosUsecase,
     required super.getOrderUsecase,
     required super.labelsFacade,
+    required super.labelCompletedSellOrderUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
   });
@@ -171,6 +176,7 @@ void main() {
   late _MockGetPayjoin getPayjoin;
   late _MockRefreshSellOrder refreshSellOrder;
   late _MockLabelsFacade labelsFacade;
+  late _MockLabelCompletedSellOrderUsecase labelCompletedSellOrder;
   late _MockPreviewBitcoinFee previewBitcoinFee;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockSellOrder sellOrder;
@@ -207,6 +213,28 @@ void main() {
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
     registerFallbackValue(
+      Order.buy(
+        orderId: 'fallback',
+        orderType: OrderType.buy,
+        message: OrderMessage(code: '', message: ''),
+        orderNumber: 1,
+        payinAmount: 100,
+        payinCurrency: 'CAD',
+        payoutAmount: 0.001,
+        payoutCurrency: 'BTC',
+        payinMethod: OrderPaymentMethod.cadBalance,
+        payoutMethod: OrderPaymentMethod.bitcoin,
+        orderStatus: OrderStatus.completed,
+        payinStatus: OrderPayinStatus.completed,
+        payoutStatus: OrderPayoutStatus.completed,
+        confirmationDeadline: DateTime.utc(2026, 7, 29, 12, 5),
+        createdAt: DateTime.utc(2026, 7, 29, 12),
+        bitcoinAddress: 'bc1qbuy',
+        bitcoinTransactionId: 'buy-txid',
+        isTestnet: false,
+      ),
+    );
+    registerFallbackValue(
       FeeOptions(
         fastest: NetworkFee.relativeFromSatPerVbyte(1),
         economic: NetworkFee.relativeFromSatPerVbyte(1),
@@ -232,6 +260,10 @@ void main() {
     when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
     refreshSellOrder = _MockRefreshSellOrder();
     labelsFacade = _MockLabelsFacade();
+    labelCompletedSellOrder = _MockLabelCompletedSellOrderUsecase();
+    when(
+      () => labelCompletedSellOrder.execute(order: any(named: 'order')),
+    ).thenAnswer((_) async {});
     previewBitcoinFee = _MockPreviewBitcoinFee();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     sellOrder = _MockSellOrder();
@@ -310,6 +342,7 @@ void main() {
       getWalletUtxosUsecase: _MockGetWalletUtxos(),
       getOrderUsecase: getOrder,
       labelsFacade: labelsFacade,
+      labelCompletedSellOrderUsecase: labelCompletedSellOrder,
       previewBitcoinFeeUsecase: previewBitcoinFee,
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
     );

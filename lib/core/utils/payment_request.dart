@@ -69,9 +69,12 @@ sealed class PaymentRequest with _$PaymentRequest {
           trimmed.toLowerCase().startsWith('liquidtestnet:')) {
         final result = await _tryParseBip21(trimmed);
         if (result != null) return result;
+        // A recognized payment URI must not be reclassified as another
+        // payment type when its address or parameters fail validation.
+        throw 'Invalid payment URI';
       }
 
-      final re = RegExp(r'lnurl[0-9a-z]+', caseSensitive: false);
+      final re = RegExp(r'^lnurl[0-9a-z]+$', caseSensitive: false);
       final m = re.firstMatch(trimmed);
 
       if (m != null) {
@@ -80,7 +83,7 @@ sealed class PaymentRequest with _$PaymentRequest {
       }
 
       final lnAddressRe = RegExp(
-        r'[a-zA-Z0-9._%+\-]+(?:@|%40)[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}',
+        r'^[a-zA-Z0-9._%+\-]+(?:@|%40)[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$',
       );
       final lnAddressMatch = lnAddressRe.firstMatch(trimmed);
 
@@ -227,8 +230,8 @@ sealed class PaymentRequest with _$PaymentRequest {
         network: network,
         address: address,
         uri: uri.toString(),
-        label: uri.label ?? '',
-        message: uri.message ?? '',
+        label: sanitizePaymentLabel(uri.label ?? ''),
+        message: sanitizePaymentLabel(uri.message ?? ''),
         amountSat: amount != null ? ConvertAmount.btcToSats(amount) : null,
         lightning: uri.options['lightning'] as String? ?? '',
         pj: uri.options['pj'] as String? ?? '',
@@ -281,7 +284,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         invoice: data,
         amountSat: sats,
         paymentHash: invoice.preimageHash,
-        description: invoice.description,
+        description: sanitizePaymentLabel(invoice.description),
         expiresAt: invoice.expiresAt.toInt(),
         isTestnet: invoice.network != 'bitcoin',
       );
@@ -291,6 +294,16 @@ sealed class PaymentRequest with _$PaymentRequest {
 
     return null;
   }
+
+  /// Normalizes untrusted payment metadata before it reaches presentation or
+  /// transaction labeling. Keep this boundary shared by all payment parsers.
+  static String sanitizePaymentLabel(String value) =>
+      value.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '').trim().length > 256
+      ? value
+            .replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '')
+            .trim()
+            .substring(0, 256)
+      : value.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '').trim();
 
   static Future<PaymentRequest?> _tryParseLnAddress(String data) async {
     final bool isEmailStyle = data.contains('@');

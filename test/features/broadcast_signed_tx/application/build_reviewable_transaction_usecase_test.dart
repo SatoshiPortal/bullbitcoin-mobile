@@ -31,6 +31,7 @@ void main() {
     when(() => input.previousVout).thenReturn(vout);
     final tx = _MockTransaction();
     when(() => tx.inputs).thenReturn([input]);
+    when(() => tx.txid).thenReturn('spenttxid');
     return tx;
   }
 
@@ -65,6 +66,7 @@ void main() {
       () async {
         final tx = txSpending('parenttxid', 5);
         final parentTx = _MockTransaction();
+        when(() => parentTx.txid).thenReturn('parenttxid');
         when(() => parentTx.outputs).thenReturn(const []);
         when(
           () => port.fetch(txid: any(named: 'txid')),
@@ -86,6 +88,7 @@ void main() {
       when(() => parentOutput.valueSat).thenReturn(4200);
       when(() => parentOutput.address).thenReturn('bc1qexample');
       final parentTx = _MockTransaction();
+      when(() => parentTx.txid).thenReturn('parenttxid');
       when(() => parentTx.outputs).thenReturn([parentOutput]);
       when(
         () => port.fetch(txid: any(named: 'txid')),

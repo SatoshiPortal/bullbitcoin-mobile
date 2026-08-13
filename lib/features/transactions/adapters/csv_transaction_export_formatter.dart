@@ -120,11 +120,19 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         swap?.isLnSendSwap == true || swap?.isLnReceiveSwap == true;
     final isChainSwap = swap?.isChainSwap == true;
     final amountSat = tx.amountSat;
+    // Prefer the fee the wallet observed on-chain over the one the swap
+    // provider reports: an export is accounting data and must not carry a
+    // server-controlled figure when the real one is known locally. The
+    // provider value stays as the fallback for a leg whose miner fee the
+    // wallet never saw (0 = unknown here, a broadcast tx always pays a fee).
+    final onChainFeeSat = wt?.feeSat ?? 0;
     final feeSat = isChainSwap
         ? (wt?.isOutgoing == true
-              ? (swap?.fees?.lockupFee ?? wt?.feeSat ?? 0)
+              ? (onChainFeeSat > 0
+                    ? onChainFeeSat
+                    : (swap?.fees?.lockupFee ?? 0))
               : (swap?.fees?.claimFee ?? 0))
-        : (tx.isIncoming ? 0 : (wt?.feeSat ?? 0));
+        : (tx.isIncoming ? 0 : onChainFeeSat);
 
     final type = _resolveType(tx, swap, payjoin);
     final direction = _resolveDirection(tx, wt);
@@ -268,6 +276,11 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
   String _btc(int sats) => (sats / 100000000).toStringAsFixed(8);
 
   String _escape(String value) {
+    // Prefix formula-like cells so spreadsheet applications treat them as
+    // text. This applies even when the cell also needs CSV quoting.
+    if (value.isNotEmpty && '=+-@\t\r'.contains(value[0])) {
+      value = "'$value";
+    }
     if (value.contains(',') ||
         value.contains('"') ||
         value.contains('\n') ||

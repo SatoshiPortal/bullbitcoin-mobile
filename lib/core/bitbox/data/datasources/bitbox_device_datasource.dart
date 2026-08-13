@@ -113,11 +113,54 @@ class BitBoxDeviceDatasource {
 
   Future<List<BitBox02BleDevice>> _scanBleDevicesForDuration({
     Duration timeout = const Duration(seconds: 20),
+    Duration settle = const Duration(seconds: 2),
   }) async {
-    return await _bleConnector.scanDevices(
-      timeout: timeout,
-      settleDuration: const Duration(seconds: 2),
-    );
+    // The upstream connector anchors its settle timer to the first
+    // advertiser, so a genuine device appearing after a rogue one is never
+    // waited for. Track advertisers here and restart the settle window on
+    // every new device instead (issue #2652).
+    final devices = <BitBox02BleDevice>[];
+    final completer = Completer<List<BitBox02BleDevice>>();
+    Timer? settleTimer;
+    Timer? overallTimer;
+
+    StreamSubscription<BleDevice>? subscription;
+
+    // The subscription is created inside the try: opening it before the
+    // guarded block leaks it (and keeps the callback running) whenever
+    // startScan fails — a denied permission or a radio turned off mid-call.
+    try {
+      subscription = UniversalBle.scanStream.listen((device) {
+        if (completer.isCompleted) return;
+        final isNew = !devices.any((d) => d.deviceId == device.deviceId);
+        if (!isNew) return;
+        devices.add(
+          BitBox02BleDevice(deviceId: device.deviceId, name: device.name),
+        );
+        settleTimer?.cancel();
+        settleTimer = Timer(settle, () {
+          if (!completer.isCompleted) {
+            completer.complete(List.of(devices));
+          }
+        });
+      });
+
+      await UniversalBle.startScan(
+        scanFilter: ScanFilter(withServices: [bleServiceUuid]),
+      );
+      overallTimer = Timer(timeout, () {
+        if (!completer.isCompleted) {
+          completer.complete(List.of(devices));
+        }
+      });
+
+      return await completer.future;
+    } finally {
+      settleTimer?.cancel();
+      overallTimer?.cancel();
+      await subscription?.cancel();
+      await UniversalBle.stopScan();
+    }
   }
 
   Future<void> _ensureBleTransportReady() async {
@@ -328,7 +371,14 @@ class BitBoxDeviceDatasource {
     required bool isTestnet,
   }) async {
     try {
-      final xpubType = isTestnet ? 'tpub' : 'xpub';
+      // The extended-key version must match the account's script type:
+      // a BIP84 account requested as `xpub` is re-parsed by consumers as a
+      // legacy wallet (issue #2653).
+      final xpubType = switch (scriptType.purpose) {
+        49 => isTestnet ? 'upub' : 'ypub',
+        84 => isTestnet ? 'vpub' : 'zpub',
+        _ => isTestnet ? 'tpub' : 'xpub',
+      };
 
       final xpub = await bitbox.getBtcXpub(
         serialNumber: device.serialNumber,
@@ -399,37 +449,33 @@ class BitBoxDeviceDatasource {
         BitBoxUnexpectedFailure(error.toString());
   }
 
+  /// Error text patterns the bridge currently emits, mapped to typed
+  /// failures. Upstream should propagate typed Rust error variants — until
+  /// then every pattern lives here so wording changes are visible in one
+  /// place and device-side cancellation can never silently degrade to an
+  /// "unexpected" failure (issue #2650).
+  static const _errorPatterns = <(String, BitBoxFailure)>[
+    ('permission denied', PermissionDeniedBitBoxFailure()),
+    ('no devices found', NoDevicesFoundBitBoxFailure()),
+    ('device not found', DeviceNotFoundBitBoxFailure()),
+    ('not paired', DeviceNotPairedBitBoxFailure()),
+    ('handshake', HandshakeFailedBitBoxFailure()),
+    ('timeout', OperationTimeoutBitBoxFailure()),
+    ('connection failed', ConnectionFailedBitBoxFailure()),
+    ('invalid response', InvalidResponseBitBoxFailure()),
+    ('operation cancelled', OperationCancelledBitBoxFailure()),
+    ('operation canceled', OperationCancelledBitBoxFailure()),
+    ('user abort', OperationCancelledBitBoxFailure()),
+    ('cancelled by user', OperationCancelledBitBoxFailure()),
+    ('canceled by user', OperationCancelledBitBoxFailure()),
+    ('pairing rejected', OperationCancelledBitBoxFailure()),
+    ('rejected by user', OperationCancelledBitBoxFailure()),
+  ];
+
   BitBoxFailure? _interpretOperationError(String raw) {
     final normalized = raw.toLowerCase();
-
-    if (normalized.contains('permission denied')) {
-      return const PermissionDeniedBitBoxFailure();
-    }
-    if (normalized.contains('no devices found')) {
-      return const NoDevicesFoundBitBoxFailure();
-    }
-    if (normalized.contains('device not found')) {
-      return const DeviceNotFoundBitBoxFailure();
-    }
-    if (normalized.contains('device not paired') ||
-        normalized.contains('not paired')) {
-      return const DeviceNotPairedBitBoxFailure();
-    }
-    if (normalized.contains('handshake')) {
-      return const HandshakeFailedBitBoxFailure();
-    }
-    if (normalized.contains('timeout')) {
-      return const OperationTimeoutBitBoxFailure();
-    }
-    if (normalized.contains('connection failed')) {
-      return const ConnectionFailedBitBoxFailure();
-    }
-    if (normalized.contains('invalid response')) {
-      return const InvalidResponseBitBoxFailure();
-    }
-    if (normalized.contains('operation cancelled') ||
-        normalized.contains('operation canceled')) {
-      return const OperationCancelledBitBoxFailure();
+    for (final (pattern, failure) in _errorPatterns) {
+      if (normalized.contains(pattern)) return failure;
     }
     return null;
   }

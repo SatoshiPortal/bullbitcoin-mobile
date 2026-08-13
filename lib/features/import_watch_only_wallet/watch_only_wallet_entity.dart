@@ -55,7 +55,14 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     String value, {
     SignerDeviceEntity? signerDevice,
   }) async {
-    final satoshified = await satoshifier.Satoshifier.parse(value);
+    final privateVersion = RegExp(
+      r'(?<![A-Za-z0-9])(xprv|yprv|zprv|tprv|uprv|vprv)[1-9A-HJ-NP-Za-km-z]+',
+    );
+    if (privateVersion.hasMatch(value)) {
+      throw FormatException('Watch-only imports require public extended keys');
+    }
+    final normalized = value.trim().replaceFirst(RegExp(r'^\[[^\]]+\]'), '');
+    final satoshified = await satoshifier.Satoshifier.parse(normalized);
     if (satoshified is satoshifier.WatchOnlyDescriptor) {
       return WatchOnlyWalletEntity.descriptor(
         watchOnlyDescriptor: satoshified,

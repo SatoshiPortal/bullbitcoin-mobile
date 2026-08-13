@@ -14,6 +14,8 @@ class ConvertAmount {
   }
 
   static double fiatToBtc(double fiatValue, double exchangeRate) {
+    if (exchangeRate <= 0) return 0;
+
     final btcValue = fiatValue / exchangeRate;
     return double.parse(btcValue.toStringAsFixed(8));
   }

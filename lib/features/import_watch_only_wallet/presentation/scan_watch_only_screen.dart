@@ -55,7 +55,10 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                     context,
                     data,
                   );
-                  if (selectedDescriptor == null) return;
+                  if (selectedDescriptor == null) {
+                    _handled = false;
+                    return;
+                  }
                   signerData = selectedDescriptor;
                 }
                 final watchOnly = await WatchOnlyWalletEntity.parse(
@@ -63,7 +66,10 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   signerDevice: widget.signerDevice,
                 );
 
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  _handled = false;
+                  return;
+                }
                 context.replaceNamed(
                   ImportWatchOnlyWalletRoutes.import.name,
                   extra: watchOnly,

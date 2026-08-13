@@ -42,8 +42,14 @@ class RestoreVaultUsecase {
       log.fine('Vault restored');
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'restoreVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'restoreVault failed',
+        error: 'Vault restoration failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault restoration failed'),
+      );
     }
   }
 }

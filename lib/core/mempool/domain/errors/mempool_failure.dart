@@ -75,6 +75,10 @@ final class MempoolValidationInvalidResponseFailure extends MempoolFailure {
   const MempoolValidationInvalidResponseFailure([super.logMessage]);
 }
 
+final class MempoolValidationNetworkMismatchFailure extends MempoolFailure {
+  const MempoolValidationNetworkMismatchFailure([super.logMessage]);
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 
 /// Anything not otherwise modeled.
