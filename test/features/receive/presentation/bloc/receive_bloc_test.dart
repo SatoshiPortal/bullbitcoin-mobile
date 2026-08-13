@@ -311,44 +311,47 @@ void main() {
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
-    test('allows the guarded fallback after a proposal has been sent', () async {
-      // The session already sent a proposal (proposalPsbt != null).
-      final proposedPayjoin = _receiver(
-        status: PayjoinStatus.proposed,
-        originalTxBytes: Uint8List.fromList([1, 2, 3]),
-        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      );
-      when(
-        () => receiveWithPayjoin.execute(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-        ),
-      ).thenAnswer((_) async => proposedPayjoin);
-      final completedPayjoin = _receiver(
-        status: PayjoinStatus.aborted,
-        originalTxBytes: Uint8List.fromList([1, 2, 3]),
-        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      );
-      when(
-        () => broadcastOriginalTransaction.execute(any()),
-      ).thenAnswer((_) async => completedPayjoin);
+    test(
+      'allows the guarded fallback after a proposal has been sent',
+      () async {
+        // The session already sent a proposal (proposalPsbt != null).
+        final proposedPayjoin = _receiver(
+          status: PayjoinStatus.proposed,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => proposedPayjoin);
+        final completedPayjoin = _receiver(
+          status: PayjoinStatus.aborted,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => broadcastOriginalTransaction.execute(any()),
+        ).thenAnswer((_) async => completedPayjoin);
 
-      final bloc = buildBloc();
-      addTearDown(bloc.close);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
 
-      bloc.add(const ReceiveBitcoinStarted(null));
-      await Future<void>.delayed(Duration.zero);
-      expect(bloc.state.payjoin, proposedPayjoin);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state.payjoin, proposedPayjoin);
 
-      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
-      await Future<void>.delayed(Duration.zero);
+        bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+        await Future<void>.delayed(Duration.zero);
 
-      verify(
-        () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
-      ).called(1);
-      expect(bloc.state.payjoin, completedPayjoin);
-      expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
-    });
+        verify(
+          () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
+        ).called(1);
+        expect(bloc.state.payjoin, completedPayjoin);
+        expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+      },
+    );
 
     test('broadcasts the original when a request was received but no '
         'proposal went out yet (the legitimate manual fallback)', () async {
@@ -386,6 +389,37 @@ void main() {
       expect(bloc.state.payjoin, completedPayjoin);
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
+
+    test(
+      'does not surface an error when fallback becomes unavailable',
+      () async {
+        final proposedPayjoin = _receiver(
+          status: PayjoinStatus.proposed,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => proposedPayjoin);
+        when(
+          () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
+        ).thenThrow(BroadcastOriginalTransactionUnavailableException());
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+
+        bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.error, isNull);
+        expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+      },
+    );
   });
 
   group('payjoin gated on the global setting', () {

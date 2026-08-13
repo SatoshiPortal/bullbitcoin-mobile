@@ -595,7 +595,6 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       if (payjoin.txId != null) {
         final broadcast = await _syncBroadcastTransactionForPayjoin(payjoin);
         if (broadcast != null) {
-          await _stopPayjoinTransactionWatchers();
           await _showBroadcastTransaction(payjoin, broadcast);
           return;
         }
@@ -748,6 +747,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     PayjoinSession payjoin,
     ({String txId, WalletTransaction walletTransaction}) broadcast,
   ) async {
+    if (isClosed) return;
+    await _stopPayjoinTransactionWatchers();
     if (isClosed) return;
     final latestPayjoin = await _getPayjoinByIdUsecase.execute(payjoin.id);
     if (isClosed) return;
