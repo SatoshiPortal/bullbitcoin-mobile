@@ -146,10 +146,21 @@ jobs:
           rustup component add --toolchain "$BDK_RUST_VERSION" clippy rustfmt
           rustup target add --toolchain "$BDK_RUST_VERSION" aarch64-apple-ios
 
-          # Cargokit requests `rustup run stable` directly, which otherwise
-          # bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
-          # explicit 1.85.1 request passes through unchanged. The wrapper
-          # rewrites any bare `stable` argument, wherever it sits in argv.
+          # The wrapper does two things.
+          #
+          # 1. Cargokit requests `rustup run stable` directly, which otherwise
+          #    bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
+          #    explicit 1.85.1 request passes through unchanged. Any bare
+          #    `stable` argument is rewritten, wherever it sits in argv.
+          #
+          # 2. Concurrent rustup invocations corrupt each other's component
+          #    downloads (rust-lang/rustup#3690, #4910). The Xcode archive
+          #    builds several Rust crates at once, and the archive failed on
+          #    both symptoms: a half-renamed download, then a component
+          #    conflict. Serialize every invocation behind a mutex. `mkdir` is
+          #    atomic on HFS+/APFS and needs no extra tooling — macOS has no
+          #    flock(1). The lock is bounded so a crashed holder cannot wedge
+          #    the build, and released on every exit path.
           rustup_path="$(command -v rustup)"
           mv "$rustup_path" "$rustup_path.real"
           cat > "$rustup_path" <<EOF
@@ -159,7 +170,21 @@ jobs:
             [ "\$arg" = "stable" ] && arg="$RUST_VERSION"
             args+=("\$arg")
           done
-          exec "\$(dirname "\$0")/rustup.real" "\${args[@]}"
+
+          lock="\${RUSTUP_HOME:-\$HOME/.rustup}/.serialize.lock"
+          mkdir -p "\$(dirname "\$lock")"
+          waited=0
+          until mkdir "\$lock" 2>/dev/null; do
+            if [ "\$waited" -ge 900 ]; then
+              echo "rustup: stale lock at \$lock after \${waited}s, taking it" >&2
+              break
+            fi
+            sleep 1
+            waited=\$((waited + 1))
+          done
+          trap 'rmdir "\$lock" 2>/dev/null' EXIT INT TERM
+
+          "\$(dirname "\$0")/rustup.real" "\${args[@]}"
           EOF
           chmod +x "$rustup_path"
 
