@@ -233,6 +233,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isExchange = false,
   }) async {
     final initialPolicy = await _policy.load();
     if (!initialPolicy.enabled) {
@@ -246,6 +247,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       expireAfterSec: expireAfterSec,
       amountSat: amountSat,
+      isExchange: isExchange,
     );
 
     return _withSessionLock(model.id, () async {
@@ -287,6 +289,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
+    bool isExchange = false,
   }) => _withSessionLock(bip21, () async {
     // A sender id is the payment request itself. Reject a live or resolved
     // duplicate before posting another original proposal to the directory;
@@ -308,6 +311,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       originalPsbt: originalPsbt,
       networkFeesSatPerVb: networkFeesSatPerVb,
       amountSat: amountSat,
+      isExchange: isExchange,
       expireAfterSec: expireAfterSec,
       // Write-ahead: the datasource invokes this AFTER the session is built
       // but BEFORE the signed original is posted to the directory. A crash
@@ -349,6 +353,35 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
     return model.toEntity() as PayjoinSender;
   });
+
+  @override
+  Future<bool> canManuallyBroadcastOriginal(String payjoinId) async {
+    final freshModel =
+        await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
+        await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (freshModel == null) return false;
+    return _canManuallyBroadcastOriginal(freshModel.toEntity());
+  }
+
+  Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async {
+    if (!payjoin.canManuallyBroadcastOriginal) return false;
+
+    // A fresh wallet lookup covers both mempool and confirmed transactions.
+    // Check both competing spends: persisted status can lag a transaction that
+    // has just reached the network, and broadcasting the original in that gap
+    // could race a successfully negotiated payjoin.
+    for (final txId in [payjoin.originalTxId, payjoin.txId]) {
+      if (txId == null) continue;
+      if (await _transactions.isTransactionVisible(
+        walletId: payjoin.walletId,
+        transactionId: txId,
+        refresh: true,
+      )) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @override
   Future<Payjoin?> tryBroadcastOriginalTransaction(
@@ -394,12 +427,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       return null;
     }
     final freshEntity = freshModel.toEntity();
-    if (!freshEntity.canManuallyBroadcastOriginal) {
+    if (!await _canManuallyBroadcastOriginal(freshEntity)) {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
-        'already completed or a proposal is in flight',
+        'session is unsafe to abort or a competing transaction is visible',
       );
-      return freshEntity;
+      return null;
     }
 
     // Broadcast the FRESH entity, not the caller's: after an expired-sender
@@ -551,6 +584,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // in logs (user-shareable / pasted into issues).
       _log.info(
         'Original transaction broadcasted for payjoin ${payjoin.logRef}',
+        code: api.PayjoinLogCode.sessionAborted,
+        sessionRef: payjoin.logRef,
       );
 
       if (model == null) {

@@ -97,6 +97,7 @@ class CreateBuyOrderUsecase {
               // whose proposal PSBT is null, which is exactly a session no
               // sender ever contacted.
               expiresAt: DateTime.now().add(_payjoinPayoutWindow),
+              isExchange: true,
             ),
           );
           final receiver = switch (result) {

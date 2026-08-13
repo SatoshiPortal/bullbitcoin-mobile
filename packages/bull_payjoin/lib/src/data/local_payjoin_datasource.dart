@@ -61,6 +61,7 @@ class LocalPayjoinDatasource {
                 amountSat: Value(sender.amountSat),
                 createdAt: Value(sender.createdAt),
                 expireAfterSec: Value(sender.expireAfterSec),
+                isExchange: Value(sender.isExchange),
                 proposalPsbt: Value(sender.proposalPsbt),
                 txId: Value(sender.txId),
                 isExpired: Value(sender.isExpired),

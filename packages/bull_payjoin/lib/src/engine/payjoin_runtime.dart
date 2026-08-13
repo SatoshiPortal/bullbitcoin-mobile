@@ -196,6 +196,7 @@ abstract interface class _PayjoinRuntimeContract {
     StartPayjoinReceiver request,
   );
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id);
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id);
   Future<Result<void, PayjoinFailure>> cancel(String id);
   Future<Result<void, PayjoinFailure>> disableAll();
   Future<Result<PayjoinSession?, PayjoinFailure>> byId(String id);
@@ -267,6 +268,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         amountSat: request.amount.value.toInt(),
         networkFeesSatPerVb: request.feeRate.satsPerVbyte,
         expireAfterSec: lifetime.inSeconds,
+        isExchange: request.isExchange,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
     } catch (_) {
@@ -308,6 +310,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         ),
         expireAfterSec: lifetime.inSeconds,
         amountSat: request.amount?.value.toInt(),
+        isExchange: request.isExchange,
       );
       return Ok(_toSession(session) as PayjoinReceiverSession);
     } catch (_) {
@@ -331,6 +334,19 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       return Ok(_toSession(updated));
     } catch (_) {
       return const Err(PayjoinBroadcastFailure('Broadcast failed'));
+    }
+  }
+
+  @override
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(
+    String sessionId,
+  ) async {
+    try {
+      return Ok(await _engine.canManuallyBroadcastOriginal(sessionId));
+    } catch (_) {
+      return const Err(
+        PayjoinUnavailableFailure('Could not check fallback availability'),
+      );
     }
   }
 
@@ -538,6 +554,10 @@ final class _SenderRole implements PayjoinSender {
   @override
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id) =>
       _runtime.broadcastOriginal(id);
+
+  @override
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id) =>
+      _runtime.canBroadcastOriginal(id);
 }
 
 final class _ReceiverRole implements PayjoinReceiver {
@@ -639,6 +659,7 @@ PayjoinSession _toSession(engine.Payjoin value) {
       originalTransactionId: value.originalTxId,
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
+      isExchange: value.isExchange,
     ),
     engine.PayjoinReceiver() => PayjoinReceiverSession(
       status: status,
@@ -653,6 +674,7 @@ PayjoinSession _toSession(engine.Payjoin value) {
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
       hasOriginalTransaction: value.originalTxBytes != null,
+      isExchange: value.isExchange,
     ),
   };
 }

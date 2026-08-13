@@ -24,6 +24,7 @@ class SendWithPayjoinUsecase {
         unsignedOriginalPsbt: unsignedOriginalPsbt,
         amount: Sats.fromInt(amountSat),
         feeRate: FeeRate(networkFeesSatPerVb),
+        isExchange: true,
         expiresAt: expireAfterSec == null
             ? null
             : DateTime.now().add(Duration(seconds: expireAfterSec)),

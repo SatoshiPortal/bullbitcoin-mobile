@@ -22,6 +22,10 @@ void main() {
 
     await _expectFailure(payjoin.sender.start(senderRequest), failure);
     await _expectFailure(payjoin.sender.broadcastOriginal('session'), failure);
+    await _expectFailure(
+      payjoin.sender.canBroadcastOriginal('session'),
+      failure,
+    );
     await _expectFailure(payjoin.receiver.start(receiverRequest), failure);
     await _expectFailure(payjoin.receiver.cancel('session'), failure);
     await _expectFailure(payjoin.receiver.disableAll(), failure);

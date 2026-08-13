@@ -139,6 +139,7 @@ class PdkPayjoinDatasource {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isExchange = false,
   }) async {
     try {
       final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
@@ -182,6 +183,7 @@ class PdkPayjoinDatasource {
                 maxFeeRateSatPerVb: maxFeeRateSatPerVb,
                 createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                 expireAfterSec: expireAfterSec,
+                isExchange: isExchange,
               )
               as PayjoinReceiverModel;
 
@@ -208,6 +210,7 @@ class PdkPayjoinDatasource {
     required double networkFeesSatPerVb,
     required Future<void> Function(PayjoinSenderModel model) persistBeforePost,
     int? expireAfterSec,
+    bool isExchange = false,
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final senderLogRef = Payjoin.logRefForId(bip21);
@@ -247,6 +250,7 @@ class PdkPayjoinDatasource {
               amountSat: amountSat,
               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
               expireAfterSec: expirySec,
+              isExchange: isExchange,
             )
             as PayjoinSenderModel;
 

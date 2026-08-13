@@ -25,6 +25,7 @@ abstract class PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isExchange = false,
   });
   Future<PayjoinSender> createPayjoinSender({
     required String walletId,
@@ -34,7 +35,9 @@ abstract class PayjoinRepository {
     required int amountSat,
     required double networkFeesSatPerVb,
     required int expireAfterSec,
+    bool isExchange = false,
   });
+  Future<bool> canManuallyBroadcastOriginal(String payjoinId);
   Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin);
 
   /// Abandons a single receiver session on the user's behalf, settling it the

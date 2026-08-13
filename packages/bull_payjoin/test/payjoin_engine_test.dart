@@ -47,6 +47,7 @@ void main() {
     String? originalTransactionId,
     String? proposalPsbt,
     String? transactionId,
+    bool isExchange = false,
   }) =>
       PayjoinModel.receiver(
             id: id,
@@ -63,6 +64,7 @@ void main() {
             amountSat: 50000,
             proposalPsbt: proposalPsbt,
             txId: transactionId,
+            isExchange: isExchange,
           )
           as PayjoinReceiverModel;
 
@@ -294,30 +296,32 @@ void main() {
     verifyNever(() => pdk.startListeningForRequest(model));
   });
 
-  test(
-    'manual fallback cannot replace an already-published proposal',
-    () async {
-      final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
-        originalTransactionId: 'original-tx',
-        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-        transactionId: 'payjoin-tx',
-      );
-      await local.storeReceiver(model);
+  test('manual fallback can replace a proposal that is not visible', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      transactionId: 'payjoin-tx',
+    );
+    await local.storeReceiver(model);
+    when(
+      () => blockchain.broadcastTransaction(
+        network: BitcoinNetwork.testnet,
+        transaction: any(named: 'transaction'),
+      ),
+    ).thenAnswer((_) async {});
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
 
-      final result = await engine.tryBroadcastOriginalTransaction(
-        model.toEntity(),
-      );
-
-      expect(result?.status, internal.PayjoinStatus.proposed);
-      verifyNever(
-        () => blockchain.broadcastTransaction(
-          network: any(named: 'network'),
-          transaction: any(named: 'transaction'),
-        ),
-      );
-    },
-  );
+    expect(result?.status, internal.PayjoinStatus.aborted);
+    verify(
+      () => blockchain.broadcastTransaction(
+        network: BitcoinNetwork.testnet,
+        transaction: any(named: 'transaction'),
+      ),
+    ).called(1);
+  });
 
   test('manual fallback records the plain transaction as aborted', () async {
     final model = receiver(
@@ -346,6 +350,69 @@ void main() {
         transactionId: any(named: 'transactionId'),
       ),
     );
+  });
+
+  test('manual fallback is unavailable when the original is visible', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+    );
+    await local.storeReceiver(model);
+    when(
+      () => transactions.isTransactionVisible(
+        walletId: model.walletId,
+        transactionId: model.originalTxId!,
+        refresh: true,
+      ),
+    ).thenAnswer((_) async => true);
+
+    expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
+
+    expect(result, isNull);
+    verifyNever(
+      () => blockchain.broadcastTransaction(
+        network: any(named: 'network'),
+        transaction: any(named: 'transaction'),
+      ),
+    );
+  });
+
+  test('manual fallback is unavailable for an exchange payjoin', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+      isExchange: true,
+    );
+    await local.storeReceiver(model);
+
+    expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+    verifyNever(
+      () => transactions.isTransactionVisible(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+        refresh: any(named: 'refresh'),
+      ),
+    );
+  });
+
+  test('manual fallback is unavailable when the payjoin is visible', () async {
+    final model = expiredSender(
+      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      transactionId: 'payjoin-tx',
+    );
+    await local.storeSender(model.copyWith(isExpired: true));
+    when(
+      () => transactions.isTransactionVisible(
+        walletId: model.walletId,
+        transactionId: model.txId!,
+        refresh: true,
+      ),
+    ).thenAnswer((_) async => true);
+
+    expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
   });
 
   group('an expired sender is terminal from our side', () {
