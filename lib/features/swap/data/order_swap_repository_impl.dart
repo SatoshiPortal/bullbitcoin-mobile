@@ -170,11 +170,11 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
               order,
               status: OrderSwapLocalStatus.awaitingUserConfirmation,
             );
-            await _local.save(recovered.toCompanion());
+            await _saveRecordLocked(recovered);
             return Ok(recovered);
           } catch (error) {
             if (error is ArgumentError) {
-              await _local.save(matching.markFailed().toCompanion());
+              await _saveRecordLocked(matching.markFailed());
               return Err(_mapFailure(error));
             }
             return const Err(
@@ -191,13 +191,11 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
             matching.localStatus == OrderSwapLocalStatus.preparingPayin ||
             matching.localStatus == OrderSwapLocalStatus.readyToBroadcast;
         if (canExpireLocally && deadline != null && !deadline.isAfter(_now())) {
-          await _local.save(
-            matching
-                .withServerOrder(
-                  matching.order!,
-                  status: OrderSwapLocalStatus.expired,
-                )
-                .toCompanion(),
+          await _saveRecordLocked(
+            matching.withServerOrder(
+              matching.order!,
+              status: OrderSwapLocalStatus.expired,
+            ),
           );
         } else {
           return Ok(matching);
@@ -227,7 +225,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     );
 
     try {
-      await _local.save(record.toCompanion());
+      await _saveRecordLocked(record);
     } catch (error) {
       return Err(SwapStorageFailure(error.toString()));
     }
@@ -250,7 +248,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
         order,
         status: OrderSwapLocalStatus.awaitingUserConfirmation,
       );
-      await _local.save(created.toCompanion());
+      await _saveRecordLocked(created);
       log.info(
         '[OrderSwap] create success requestId=${created.requestId} '
         'orderNumber=${order.orderNumber} '
@@ -265,13 +263,13 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       );
       if (_createOutcomeIsUnknown(error)) {
         try {
-          await _local.save(record.markCreationUnknown().toCompanion());
+          await _saveRecordLocked(record.markCreationUnknown());
         } catch (storageError) {
           return Err(SwapStorageFailure(storageError.toString()));
         }
       } else if (error is ArgumentError) {
         try {
-          await _local.save(record.markFailed().toCompanion());
+          await _saveRecordLocked(record.markFailed());
         } catch (storageError) {
           return Err(SwapStorageFailure(storageError.toString()));
         }
@@ -334,7 +332,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
         final latest = latestRow.toEntity();
         final refreshed = latest.withServerOrder(
           order,
-          status: _updatedLocalStatus(latest.localStatus, order),
+          status: _updatedLocalStatus(latest, order),
           polledAt: _now(),
         );
         await _local.save(refreshed.toCompanion());
@@ -377,16 +375,43 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
           .where((status) => status.isTerminal)
           .map((status) => status.name)
           .toSet();
-      final pendingNames = OrderSwapLocalStatus.values
-          .map((status) => status.name)
-          .where((name) => !terminal.contains(name));
+      // Non-terminal statuses are always pollable. `failed` is terminal in
+      // general, but a failed order whose payin funds already moved must
+      // keep being polled until the server confirms a truthful refunded or
+      // completed outcome, so it is queried too and filtered by
+      // `isPollable` below.
+      final pendingNames = {
+        ...OrderSwapLocalStatus.values
+            .map((status) => status.name)
+            .where((name) => !terminal.contains(name)),
+        OrderSwapLocalStatus.failed.name,
+      };
       final records = <OrderSwapRecord>[];
       for (final row in await _local.getByLocalStatuses(pendingNames)) {
         var record = row.toEntity();
+        if (!record.isPollable) continue;
         if (record.localStatus == OrderSwapLocalStatus.creating &&
             _now().difference(record.createdAt) >= const Duration(minutes: 1)) {
-          record = record.markCreationUnknown();
-          await _local.save(record.toCompanion());
+          // `createOrder` may still be actively writing this very row (e.g.
+          // a slow server response). Take the same per-record lock it uses
+          // and re-read the row once inside it, so this mutation is
+          // conditional on the row still being `creating` at that point
+          // instead of blindly overwriting whatever `createOrder` just
+          // wrote (lost-update race between the periodic poller and an
+          // in-flight create).
+          final maybeUpdated = await _withRecordLock(record.localId, () async {
+            final latestRow = await _local.getByLocalId(record.localId);
+            final latest = latestRow?.toEntity();
+            if (latest == null ||
+                latest.localStatus != OrderSwapLocalStatus.creating) {
+              return latest;
+            }
+            final updated = latest.markCreationUnknown();
+            await _local.save(updated.toCompanion());
+            return updated;
+          });
+          if (maybeUpdated == null) continue;
+          record = maybeUpdated;
         }
         records.add(record);
       }
@@ -549,6 +574,12 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     }
   });
 
+  /// Persists [record] while holding its per-record lock, so this write can
+  /// never interleave with a concurrent [getPendingOrders] (or any other
+  /// locked mutation) racing on the same `localId`.
+  Future<void> _saveRecordLocked(OrderSwapRecord record) =>
+      _withRecordLock(record.localId, () => _local.save(record.toCompanion()));
+
   Future<T> _withRecordLock<T>(
     String localId,
     Future<T> Function() action,
@@ -579,10 +610,17 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       : _mainnetRemote;
 
   OrderSwapLocalStatus _updatedLocalStatus(
-    OrderSwapLocalStatus current,
+    OrderSwapRecord record,
     OrderSwap order,
   ) {
-    if (current.isTerminal) return current;
+    final current = record.localStatus;
+    // Terminal statuses stop being re-evaluated, except a `failed` order
+    // whose payin funds already moved: that failure may have been
+    // provisional, so it keeps being refreshed towards a truthful
+    // refunded/completed outcome instead of staying stuck as failed.
+    final canLeaveFailed =
+        current == OrderSwapLocalStatus.failed && record.hasFundsMoved;
+    if (current.isTerminal && !canLeaveFailed) return current;
     final orderStatus = order.orderStatus.trim().toLowerCase();
     final payoutStatus = order.payoutStatus.trim().toLowerCase();
     if (payoutStatus == 'completed') return OrderSwapLocalStatus.completed;

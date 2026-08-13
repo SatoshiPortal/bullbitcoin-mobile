@@ -49,6 +49,7 @@ graph TB
     CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View]
     APP_UNLOCK[App Unlock]
+    AUTOSWAP[Autoswap]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -64,6 +65,7 @@ graph TB
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
+    AUTOSWAP --> SWAPS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
@@ -73,6 +75,7 @@ graph TB
     BUY --> EXCHANGE
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
+    BUY --> TX_HISTORY
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS --> WALLETS
@@ -93,6 +96,7 @@ graph TB
     SECRETS --> CORE
     SELL --> EXCHANGE
     SELL --> BULL_PAYJOIN
+    SELL --> TX_HISTORY
     SEND --> CONSOLIDATION
     SEND --> FEES
     SEND --> NETWORK

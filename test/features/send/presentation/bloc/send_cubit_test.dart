@@ -39,6 +39,7 @@ import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecas
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
@@ -138,6 +139,9 @@ class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
 class _MockVerifyChainSwapAmountSendUsecase extends Mock
     implements VerifyChainSwapAmountSendUsecase {}
 
+class _MockVerifyExchangePayinUsecase extends Mock
+    implements VerifyExchangePayinUsecase {}
+
 class _MockPreviewBitcoinFeeUsecase extends Mock
     implements PreviewBitcoinFeeUsecase {}
 
@@ -195,6 +199,7 @@ class _TestableSendCubit extends SendCubit {
     required super.watchWalletTransactionByTxIdUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
     required super.verifyChainSwapAmountSendUsecase,
+    required super.verifyExchangePayinUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
@@ -280,6 +285,7 @@ void main() {
   late _MockCalculateBitcoinAbsoluteFeesUsecase
   calculateBitcoinAbsoluteFeesUsecase;
   late _MockVerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase;
+  late _MockVerifyExchangePayinUsecase verifyExchangePayinUsecase;
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
@@ -320,6 +326,7 @@ void main() {
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxIdUsecase,
     calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinAbsoluteFeesUsecase,
     verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
+    verifyExchangePayinUsecase: verifyExchangePayinUsecase,
     previewBitcoinFeeUsecase: previewBitcoinFeeUsecase,
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
@@ -388,6 +395,7 @@ void main() {
     calculateBitcoinAbsoluteFeesUsecase =
         _MockCalculateBitcoinAbsoluteFeesUsecase();
     verifyChainSwapAmountSendUsecase = _MockVerifyChainSwapAmountSendUsecase();
+    verifyExchangePayinUsecase = _MockVerifyExchangePayinUsecase();
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();

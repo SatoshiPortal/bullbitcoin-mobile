@@ -72,12 +72,17 @@ class OrderSwap {
       payinStatus.trim().toLowerCase() == 'under review';
 
   String get payinAddress =>
-      switch (inNetwork) {
-        OrderSwapNetwork.bitcoin => bitcoinAddress,
-        OrderSwapNetwork.liquid => liquidAddress,
-        OrderSwapNetwork.lightning => lightningInvoice,
-      } ??
+      payinAddressOrNull ??
       (throw StateError('Order has no payin address for ${inNetwork.name}'));
+
+  /// Same as [payinAddress] but returns null instead of throwing when the
+  /// address is not populated (e.g. legacy/partial server responses), so
+  /// callers that only need to compare addresses can do so safely.
+  String? get payinAddressOrNull => switch (inNetwork) {
+    OrderSwapNetwork.bitcoin => bitcoinAddress,
+    OrderSwapNetwork.liquid => liquidAddress,
+    OrderSwapNetwork.lightning => lightningInvoice,
+  };
 
   String? get payoutAddress => switch (outNetwork) {
     OrderSwapNetwork.bitcoin => bitcoinAddress,

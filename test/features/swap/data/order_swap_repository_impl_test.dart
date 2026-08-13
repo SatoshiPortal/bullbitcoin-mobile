@@ -1096,15 +1096,202 @@ void main() {
         sourceWalletId: 'wallet-1',
         quotedCounterpartAmountSat: BigInt.from(1010),
       );
-      when(
-        () => remote.getOrderSwapSummary('order-1'),
-      ).thenAnswer((_) async => _orderModel(payinAmount: '0.00010000'));
+      // A pinned identity field (the payin invoice) changes on refresh: this
+      // is a genuine entity invariant violation (not the creation-only quote
+      // tolerance) and must still be mapped to a typed failure rather than
+      // thrown.
+      when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+        (_) async => _orderModel(lightningInvoice: 'attacker-invoice'),
+      );
 
       final result = await repository.refreshOrder('local-1');
 
       expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+      expect(
+        (result as Err<OrderSwapRecord, SwapFailure>).failure,
+        isA<SwapOrderMismatchFailure>(),
+      );
     },
   );
+
+  test('refresh accepts a legitimate mutable settlement amount beyond the '
+      'creation-only quote tolerance (H4)', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+    await repository.createOrder(
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: false,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      destinationAddress: 'invoice',
+      fallbackAddress: 'fallback',
+      purpose: OrderSwapPurpose.sendLightning,
+      environment: OrderSwapEnvironment.testnet,
+      sourceWalletId: 'wallet-1',
+      quotedCounterpartAmountSat: BigInt.from(1010),
+    );
+    // The settled payin amount deviates far beyond the original quote
+    // tolerance (>1%), but this is a legitimate mutable settlement update
+    // reported on refresh, not a new quote to validate.
+    when(
+      () => remote.getOrderSwapSummary('order-1'),
+    ).thenAnswer((_) async => _orderModel(payinAmount: '0.00010000'));
+
+    final result = await repository.refreshOrder('local-1');
+
+    expect(result, isA<Ok<OrderSwapRecord, SwapFailure>>());
+    expect(
+      (result as Ok<OrderSwapRecord, SwapFailure>).value.order!.payinAmountSat,
+      BigInt.from(10000),
+    );
+  });
+
+  test(
+    'rejects a refreshed order that changes the pinned payin address (H3)',
+    () async {
+      when(
+        () => remote.createOrderSwap(
+          requestId: 'request-1',
+          amountSat: BigInt.from(1000),
+          isInAmountFixed: false,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.lightning,
+          destinationAddress: 'invoice',
+          fallbackAddress: 'fallback',
+        ),
+      ).thenAnswer((_) async => _orderModel());
+      await _create(repository);
+      when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+        (_) async => _orderModel(lightningInvoice: 'attacker-invoice'),
+      );
+
+      final result = await repository.refreshOrder('local-1');
+
+      expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+      expect(
+        (result as Err<OrderSwapRecord, SwapFailure>).failure,
+        isA<SwapOrderMismatchFailure>(),
+      );
+      // The local record must be preserved unchanged: the payin invoice on
+      // disk is still the original one, not the attacker-supplied one.
+      final row = await database.select(database.orderSwaps).getSingle();
+      expect(row.lightningInvoice, 'invoice');
+      expect(
+        row.localStatus,
+        OrderSwapLocalStatus.awaitingUserConfirmation.name,
+      );
+    },
+  );
+
+  test('refreshes a failed order with moved funds into a truthful refunded '
+      'state and keeps it pollable (H6)', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+    await _create(repository);
+    await repository.savePreparedPayin(
+      localId: 'local-1',
+      signedTransaction: 'signed-pset',
+      isPsbt: false,
+    );
+    await repository.markBroadcastUnknown('local-1');
+    await repository.markPayinBroadcast(
+      localId: 'local-1',
+      transactionId: 'txid-1',
+    );
+    // Simulate a provisional local `failed` status recorded while payin
+    // funds had already moved (localPayinTransactionId is preserved).
+    await (database.update(
+      database.orderSwaps,
+    )..where((table) => table.localId.equals('local-1'))).write(
+      OrderSwapsCompanion(localStatus: Value(OrderSwapLocalStatus.failed.name)),
+    );
+
+    final pending = await repository.getPendingOrders();
+    expect(
+      (pending as Ok<List<OrderSwapRecord>, SwapFailure>).value.map(
+        (record) => record.localId,
+      ),
+      contains('local-1'),
+    );
+
+    when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+      (_) async =>
+          _orderModel(orderStatus: 'In progress', payoutStatus: 'Refunded'),
+    );
+
+    final result = await repository.refreshOrder('local-1');
+
+    expect(
+      (result as Ok<OrderSwapRecord, SwapFailure>).value.localStatus,
+      OrderSwapLocalStatus.refunded,
+    );
+    final row = await database.select(database.orderSwaps).getSingle();
+    expect(row.localStatus, OrderSwapLocalStatus.refunded.name);
+  });
+
+  test('keeps an unfunded failed creation record terminal and non-pollable '
+      '(H6)', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: true,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel(payoutAmount: '0.00001000'));
+
+    // The server's payin amount (default 1010 sats) does not match the
+    // fixed requested amount (1000 sats), which is rejected as an
+    // ArgumentError and marks the record failed with no server order and
+    // no funds moved.
+    final result = await repository.createOrder(
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: true,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      destinationAddress: 'invoice',
+      fallbackAddress: 'fallback',
+      purpose: OrderSwapPurpose.transfer,
+      environment: OrderSwapEnvironment.testnet,
+    );
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    final row = await database.select(database.orderSwaps).getSingle();
+    expect(row.localStatus, OrderSwapLocalStatus.failed.name);
+    expect(row.orderId, isNull);
+    expect(row.localPayinTransactionId, isNull);
+
+    final pending = await repository.getPendingOrders();
+    expect((pending as Ok<List<OrderSwapRecord>, SwapFailure>).value, isEmpty);
+
+    final refreshed = await repository.refreshOrder('local-1');
+    expect(refreshed, isA<Err<OrderSwapRecord, SwapFailure>>());
+    expect(
+      (refreshed as Err<OrderSwapRecord, SwapFailure>).failure,
+      isA<SwapOrderNotFoundFailure>(),
+    );
+  });
 
   test('does not accept a response that changes the fixed output', () async {
     when(
@@ -1243,6 +1430,7 @@ OrderSwapModel _orderModel({
   String payinStatus = 'In progress',
   String payoutStatus = 'In progress',
   String lightningInvoice = 'invoice',
+  String liquidAddress = 'liquid-payin',
 }) => OrderSwapModel(
   orderId: 'order-1',
   orderNumber: 1,
@@ -1258,6 +1446,7 @@ OrderSwapModel _orderModel({
   payoutStatus: payoutStatus,
   messageCode: 'ORDER_CREATED',
   lightningInvoice: lightningInvoice,
+  liquidAddress: liquidAddress,
   createdAt: DateTime.utc(2026, 8, 5, 12),
   confirmationDeadline: DateTime.utc(2026, 8, 5, 12, 5),
 );

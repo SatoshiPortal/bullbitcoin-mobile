@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -76,6 +77,7 @@ enum SettingsRoute {
   bitcoinSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),
+  autoswapSettings('autoswap-settings'),
   appSettings('app-settings'),
   theme('theme'),
   swapRestore('swap-restore'),
@@ -188,6 +190,11 @@ class SettingsRouter {
         name: SettingsRoute.payjoinAdvancedSettings.name,
         path: SettingsRoute.payjoinAdvancedSettings.path,
         builder: (context, state) => const PayjoinAdvancedSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.autoswapSettings.name,
+        path: SettingsRoute.autoswapSettings.path,
+        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,

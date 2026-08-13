@@ -127,10 +127,9 @@ abstract class TransactionsState with _$TransactionsState {
                   SwapStatus.expired,
                   SwapStatus.failed,
                 ].contains(tx.swap?.status) ||
-                [
-                  OrderSwapLocalStatus.expired,
-                  OrderSwapLocalStatus.failed,
-                ].contains(tx.orderSwap?.localStatus));
+                tx.orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
+                (tx.orderSwap?.localStatus == OrderSwapLocalStatus.failed &&
+                    tx.orderSwap?.hasFundsMoved != true));
 
         // isExpired() covers both expiry statuses the server sends, so an
         // 'Expired' order isn't shown while its 'Payment deadline expired' twin

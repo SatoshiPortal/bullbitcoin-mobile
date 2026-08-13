@@ -41,6 +41,18 @@ void main() {
       transaction,
     ]);
   });
+
+  test('keeps a funded failed Exchange swap visible', () {
+    final transaction = Transaction(
+      orderSwap: _orderSwap(status: OrderSwapLocalStatus.failed),
+    );
+    final state = TransactionsState(transactions: [transaction]);
+
+    expect(state.ongoingSwaps, isEmpty);
+    expect(state.filteredTransactionsByDay!.values.expand((items) => items), [
+      transaction,
+    ]);
+  });
 }
 
 OrderSwapRecord _orderSwap({

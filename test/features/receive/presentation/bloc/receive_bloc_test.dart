@@ -713,6 +713,41 @@ void main() {
     expect(() => lateStream.emit(record), returnsNormally);
   });
 
+  test(
+    'ignores a second Lightning confirmation while creation is in flight',
+    () async {
+      final creation = Completer<Result<OrderSwapRecord, ReceiveFailure>>();
+      when(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).thenAnswer((_) => creation.future);
+      final bloc = buildBloc(
+        wallet: _testWallet(network: Network.liquidTestnet),
+      );
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveLightningStarted());
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+
+      verify(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).called(1);
+      creation.complete(const Err(ReceiveSwapUnavailableFailure()));
+    },
+  );
+
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
     // created once), so a receive entered from a liquid wallet must not

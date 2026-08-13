@@ -10,6 +10,8 @@ import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/announcements/announcements_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
+import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
+import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
@@ -60,6 +62,7 @@ class AppLocator {
     String? payjoinDatabasePath,
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
+    bool startAutoswapWatcher = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -139,12 +142,16 @@ class AppLocator {
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
+    AutoSwapLocator.setup(locator);
     AnnouncementsLocator.setup(locator);
     // Lifecycle side effect lives in the composition root, not in DI
     // registration: the background handler opts out via
     // [startOrderSwapWatcher] so polling only runs in the foreground app.
     if (startOrderSwapWatcher) {
       locator<OrderSwapWatcher>().start();
+    }
+    if (startAutoswapWatcher) {
+      locator<AutoswapWatcher>().start();
     }
 
     ExchangeLocator.setup(locator);

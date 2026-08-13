@@ -673,6 +673,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountConfirmed event,
     Emitter<ReceiveState> emit,
   ) async {
+    if (state.creatingSwap) return;
     final confirmedAmountSat = state.inputAmountSat;
 
     if (state.type != ReceiveType.lightning) {

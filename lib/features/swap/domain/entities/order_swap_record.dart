@@ -119,19 +119,6 @@ class OrderSwapRecord {
             : order!.payoutAmountSat != requestedAmountSat)) {
       throw ArgumentError('Server order does not preserve the fixed amount');
     }
-    if (order != null && quotedCounterpartAmountSat != null) {
-      final serverChosenAmount = isInAmountFixed
-          ? order!.payoutAmountSat
-          : order!.payinAmountSat;
-      final deviation = (serverChosenAmount - quotedCounterpartAmountSat!)
-          .abs();
-      if (deviation >
-          OrderSwapQuoteTolerance.forQuotedAmount(
-            quotedCounterpartAmountSat!,
-          )) {
-        throw ArgumentError('Server order deviates too far from the quote');
-      }
-    }
     if (order == null &&
         localStatus != OrderSwapLocalStatus.creating &&
         localStatus != OrderSwapLocalStatus.creationUnknown &&
@@ -153,6 +140,21 @@ class OrderSwapRecord {
   }
 
   String? get orderId => order?.orderId;
+
+  /// Whether payin funds are known to have left the source wallet
+  /// (a payin broadcast was recorded locally).
+  bool get hasFundsMoved => localPayinTransactionId != null;
+
+  /// Whether this record should still be polled for a server-side update.
+  ///
+  /// Most terminal statuses (completed, refunded, expired) are final and
+  /// stop polling. A `failed` order is also terminal *unless* funds were
+  /// already moved: in that case the failure may have been provisional and
+  /// the order must keep being refreshed until the server reports a
+  /// truthful outcome (refunded or completed).
+  bool get isPollable =>
+      !localStatus.isTerminal ||
+      (localStatus == OrderSwapLocalStatus.failed && hasFundsMoved);
 
   String? transactionIdForNetwork(OrderSwapNetwork network) =>
       switch (network) {
@@ -189,6 +191,62 @@ class OrderSwapRecord {
       signedPayinTransaction != null && payinIsPsbt != null;
 
   OrderSwapRecord withServerOrder(
+    OrderSwap serverOrder, {
+    required OrderSwapLocalStatus status,
+    DateTime? polledAt,
+  }) {
+    final previousOrder = order;
+    if (previousOrder == null) {
+      // First time a server order is attached to this record: this is the
+      // creation moment, so it is the only point where the order's chosen
+      // amount is checked against the original quote tolerance.
+      _assertMatchesQuote(serverOrder);
+    } else {
+      // A later refresh of an already-pinned order: the quote tolerance no
+      // longer applies (the server may legitimately settle at a slightly
+      // different mutable amount), but the immutable contract fields set at
+      // creation must never change underneath the local record.
+      _assertPinnedFieldsUnchanged(previousOrder, serverOrder);
+    }
+    return _withServerOrder(serverOrder, status: status, polledAt: polledAt);
+  }
+
+  void _assertMatchesQuote(OrderSwap serverOrder) {
+    if (quotedCounterpartAmountSat == null) return;
+    final serverChosenAmount = isInAmountFixed
+        ? serverOrder.payoutAmountSat
+        : serverOrder.payinAmountSat;
+    final deviation = (serverChosenAmount - quotedCounterpartAmountSat!).abs();
+    if (deviation >
+        OrderSwapQuoteTolerance.forQuotedAmount(quotedCounterpartAmountSat!)) {
+      throw ArgumentError('Server order deviates too far from the quote');
+    }
+  }
+
+  void _assertPinnedFieldsUnchanged(OrderSwap previous, OrderSwap next) {
+    if (previous.orderId != next.orderId) {
+      throw ArgumentError('Server order id must not change after creation');
+    }
+    if (previous.inNetwork != next.inNetwork ||
+        previous.outNetwork != next.outNetwork) {
+      throw ArgumentError(
+        'Server order networks must not change after creation',
+      );
+    }
+    if (previous.payinAddress != next.payinAddress) {
+      throw ArgumentError(
+        'Server payin address or invoice must not change after creation',
+      );
+    }
+    final previousPayout = previous.payoutAddress;
+    if (previousPayout != null && previousPayout != next.payoutAddress) {
+      throw ArgumentError(
+        'Server payout destination must not change after creation',
+      );
+    }
+  }
+
+  OrderSwapRecord _withServerOrder(
     OrderSwap serverOrder, {
     required OrderSwapLocalStatus status,
     DateTime? polledAt,

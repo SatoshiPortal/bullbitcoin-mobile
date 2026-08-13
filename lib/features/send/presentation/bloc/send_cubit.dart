@@ -45,6 +45,7 @@ import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_addres
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
@@ -96,6 +97,7 @@ class SendCubit extends Cubit<SendState>
     required this._watchWalletTransactionByTxIdUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._verifyChainSwapAmountSendUsecase,
+    required this._verifyExchangePayinUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
     required this._checkLiquidConsolidationUsecase,
@@ -148,6 +150,7 @@ class SendCubit extends Cubit<SendState>
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
+  final VerifyExchangePayinUsecase _verifyExchangePayinUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
@@ -1377,6 +1380,13 @@ class SendCubit extends Cubit<SendState>
           amountSat: amount,
           drain: drain,
         );
+        if (state.lightningOrder case final order?) {
+          await _verifyExchangePayinUsecase.execute(
+            psbtOrPset: pset,
+            record: order,
+            walletId: state.selectedWallet!.id,
+          );
+        }
         if (state.chainSwap != null) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
           // Confirms the built pset pays swap.paymentAmount to
@@ -1487,6 +1497,13 @@ class SendCubit extends Cubit<SendState>
         final builtFee = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: txPreparation.unsignedPsbt,
         );
+        if (state.lightningOrder case final order?) {
+          await _verifyExchangePayinUsecase.execute(
+            psbtOrPset: txPreparation.unsignedPsbt,
+            record: order,
+            walletId: state.selectedWallet!.id,
+          );
+        }
         log.info(
           '[create-tx] built vsize=${txPreparation.txSize} '
           'realFee=$builtFee sats '

@@ -4,6 +4,13 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/data/auto_swap_settings_repository_impl.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
@@ -33,6 +40,12 @@ class SwapsLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+    );
+    locator.registerLazySingleton<AutoSwapSettingsRepository>(
+      () => AutoSwapSettingsRepositoryImpl(
+        locator<SqliteDatabase>(),
+        locator<SettingsRepository>(),
+      ),
     );
   }
 
@@ -83,6 +96,31 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+      ),
+    );
+    locator.registerFactory<GetAutoSwapSettingsUsecase>(
+      () => GetAutoSwapSettingsUsecase(
+        repository: locator<AutoSwapSettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<SaveAutoSwapSettingsUsecase>(
+      () => SaveAutoSwapSettingsUsecase(
+        repository: locator<AutoSwapSettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchAutoSwapSettingsUsecase>(
+      () => WatchAutoSwapSettingsUsecase(
+        repository: locator<AutoSwapSettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<DisableAutoswapWarningUsecase>(
+      () => DisableAutoswapWarningUsecase(
+        repository: locator<AutoSwapSettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<DisableAutoswapUsecase>(
+      () => DisableAutoswapUsecase(
+        repository: locator<AutoSwapSettingsRepository>(),
       ),
     );
   }

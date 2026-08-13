@@ -100,31 +100,47 @@ class OrderSwapStatusDescription extends StatelessWidget {
   }
 
   String _description(BuildContext context, {required bool isChainSwap}) {
+    // For a non-chain (Lightning-involved) swap, the copy must reflect
+    //  whether the user is receiving or sending, since the two flows
+    //  describe different on-chain/Lightning legs at each step.
+    final isReceive = orderSwap.purpose == OrderSwapPurpose.receiveLightning;
     return switch (orderSwap.localStatus) {
       OrderSwapLocalStatus.completed =>
         isChainSwap
             ? context.loc.transactionSwapDescChainCompleted
+            : isReceive
+            ? context.loc.transactionSwapDescLnReceiveCompleted
             : context.loc.transactionSwapDescLnSendCompleted,
       OrderSwapLocalStatus.refunded =>
+        // No receive-specific refunded copy exists yet; fall back to the
+        //  send copy for any non-chain purpose until one is added.
         isChainSwap
             ? context.loc.coreSwapsChainCompletedRefunded
             : context.loc.coreSwapsLnSendCompletedRefunded,
       OrderSwapLocalStatus.failed =>
         isChainSwap
             ? context.loc.transactionSwapDescChainFailed
+            : isReceive
+            ? context.loc.transactionSwapDescLnReceiveFailed
             : context.loc.transactionSwapDescLnSendFailed,
       OrderSwapLocalStatus.expired =>
         isChainSwap
             ? context.loc.transactionSwapDescChainExpired
+            : isReceive
+            ? context.loc.transactionSwapDescLnReceiveExpired
             : context.loc.transactionSwapDescLnSendExpired,
       OrderSwapLocalStatus.payinBroadcast ||
       OrderSwapLocalStatus.payoutInProgress =>
         isChainSwap
             ? context.loc.transactionSwapDescChainPaid
+            : isReceive
+            ? context.loc.transactionSwapDescLnReceivePaid
             : context.loc.transactionSwapDescLnSendPaid,
       _ =>
         isChainSwap
             ? context.loc.transactionSwapDescChainPending
+            : isReceive
+            ? context.loc.transactionSwapDescLnReceivePending
             : context.loc.transactionSwapDescLnSendPending,
     };
   }

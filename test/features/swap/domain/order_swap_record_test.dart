@@ -139,6 +139,133 @@ void main() {
     },
   );
 
+  test('a refresh does not reapply the creation-only quote tolerance to a '
+      'legitimate mutable settlement update (H4)', () {
+    final quoted = _quotedRecord();
+    final created = quoted.withServerOrder(
+      _order(),
+      status: OrderSwapLocalStatus.awaitingUserConfirmation,
+    );
+
+    // The server settles at a payin amount far beyond the 1% quote
+    // tolerance checked at creation; this is a legitimate mutable
+    // settlement update reported on refresh, so it must be accepted.
+    expect(
+      () => created.withServerOrder(
+        _order(payinAmountSat: BigInt.from(50000)),
+        status: OrderSwapLocalStatus.payoutInProgress,
+      ),
+      returnsNormally,
+    );
+  });
+
+  test(
+    'a refresh rejects a changed pinned payin address after creation (H3)',
+    () {
+      final created = _quotedRecord().withServerOrder(
+        _order(),
+        status: OrderSwapLocalStatus.awaitingUserConfirmation,
+      );
+
+      expect(
+        () => created.withServerOrder(
+          _order(liquidAddress: 'attacker-address'),
+          status: OrderSwapLocalStatus.awaitingUserConfirmation,
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
+
+  test('a refresh rejects a changed pinned order id after creation (H3)', () {
+    final created = _quotedRecord().withServerOrder(
+      _order(),
+      status: OrderSwapLocalStatus.awaitingUserConfirmation,
+    );
+
+    expect(
+      () => created.withServerOrder(
+        _order(orderId: 'attacker-order'),
+        status: OrderSwapLocalStatus.awaitingUserConfirmation,
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('a failed order with moved funds remains pollable (H6)', () {
+    final createdAt = DateTime.utc(2026);
+    final funded = OrderSwapRecord(
+      localId: 'local-1',
+      purpose: OrderSwapPurpose.sendLightning,
+      environment: OrderSwapEnvironment.testnet,
+      inNetwork: OrderSwapNetwork.liquid,
+      outNetwork: OrderSwapNetwork.lightning,
+      isInAmountFixed: false,
+      requestedAmountSat: BigInt.from(1000),
+      destination: 'destination',
+      fallback: 'fallback',
+      order: _order(),
+      localPayinTransactionId: 'txid-1',
+      signedPayinTransaction: 'signed',
+      payinIsPsbt: false,
+      createdAt: createdAt,
+      localStatus: OrderSwapLocalStatus.failed,
+    );
+
+    expect(funded.hasFundsMoved, isTrue);
+    expect(funded.isPollable, isTrue);
+  });
+
+  test(
+    'an unfunded failed creation record is terminal and non-pollable (H6)',
+    () {
+      final unfunded = OrderSwapRecord(
+        localId: 'local-1',
+        purpose: OrderSwapPurpose.sendLightning,
+        environment: OrderSwapEnvironment.testnet,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        isInAmountFixed: false,
+        requestedAmountSat: BigInt.from(1000),
+        destination: 'destination',
+        fallback: 'fallback',
+        createdAt: DateTime.utc(2026),
+        localStatus: OrderSwapLocalStatus.failed,
+      );
+
+      expect(unfunded.hasFundsMoved, isFalse);
+      expect(unfunded.isPollable, isFalse);
+    },
+  );
+
+  test('completed and refunded orders never become pollable again', () {
+    for (final status in [
+      OrderSwapLocalStatus.completed,
+      OrderSwapLocalStatus.refunded,
+      OrderSwapLocalStatus.expired,
+    ]) {
+      final record = OrderSwapRecord(
+        localId: 'local-1',
+        purpose: OrderSwapPurpose.sendLightning,
+        environment: OrderSwapEnvironment.testnet,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        isInAmountFixed: false,
+        requestedAmountSat: BigInt.from(1000),
+        destination: 'destination',
+        fallback: 'fallback',
+        order: _order(),
+        localPayinTransactionId: 'txid-1',
+        signedPayinTransaction: 'signed',
+        payinIsPsbt: false,
+        createdAt: DateTime.utc(2026),
+        localStatus: status,
+      );
+
+      expect(record.isPollable, isFalse);
+    }
+  });
+
   test('uses the destination Liquid leg for a Lightning receive', () {
     final createdAt = DateTime.utc(2026);
     final record = OrderSwapRecord(
@@ -198,24 +325,28 @@ OrderSwapRecord _quotedRecord() => OrderSwapRecord(
   localStatus: OrderSwapLocalStatus.creating,
 );
 
-OrderSwap _order({BigInt? payinAmountSat, BigInt? payoutAmountSat}) =>
-    OrderSwap(
-      orderId: 'order-1',
-      orderNumber: 1,
-      inNetwork: OrderSwapNetwork.liquid,
-      outNetwork: OrderSwapNetwork.lightning,
-      payinAmountSat: payinAmountSat ?? BigInt.from(1010),
-      payoutAmountSat: payoutAmountSat ?? BigInt.from(1000),
-      payinCurrency: 'LBTC',
-      payoutCurrency: 'BTCLN',
-      payinMethod: 'Liquid',
-      payoutMethod: 'Lightning',
-      orderType: 'Swap',
-      orderStatus: 'Awaiting payment',
-      payinStatus: 'In progress',
-      payoutStatus: 'Not started',
-      messageCode: 'ORDER_CREATED',
-      liquidAddress: 'payin',
-      createdAt: DateTime.utc(2026),
-      confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
-    );
+OrderSwap _order({
+  BigInt? payinAmountSat,
+  BigInt? payoutAmountSat,
+  String? orderId,
+  String? liquidAddress,
+}) => OrderSwap(
+  orderId: orderId ?? 'order-1',
+  orderNumber: 1,
+  inNetwork: OrderSwapNetwork.liquid,
+  outNetwork: OrderSwapNetwork.lightning,
+  payinAmountSat: payinAmountSat ?? BigInt.from(100000),
+  payoutAmountSat: payoutAmountSat ?? BigInt.from(1000),
+  payinCurrency: 'LBTC',
+  payoutCurrency: 'BTCLN',
+  payinMethod: 'Liquid',
+  payoutMethod: 'Lightning',
+  orderType: 'Swap',
+  orderStatus: 'Awaiting payment',
+  payinStatus: 'In progress',
+  payoutStatus: 'Not started',
+  messageCode: 'ORDER_CREATED',
+  liquidAddress: liquidAddress ?? 'payin',
+  createdAt: DateTime.utc(2026),
+  confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
+);
