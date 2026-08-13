@@ -12,13 +12,8 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -39,9 +34,20 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dio/dio.dart';
 
 part 'transfer_event.dart';
 part 'transfer_state.dart';
@@ -53,23 +59,26 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   TransferBloc({
     required this._getSettingsUsecase,
     required this._getWalletsUsecase,
-    required this._getSwapLimitsUsecase,
     required this._getNetworkFeesUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._prepareLiquidSendUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
-    required this._createChainSwapUsecase,
-    required this._createChainSwapToExternalUsecase,
-    required this._watchSwapUsecase,
     required this._getWalletUsecase,
     required this._signBitcoinTxUsecase,
     required this._signLiquidTxUsecase,
     required this._broadcastBitcoinTxUsecase,
     required this._broadcastLiquidTxUsecase,
-    required this._updatePaidChainSwapUsecase,
-    required this._updateSendSwapLockupFeesUsecase,
     required this._verifyChainSwapAmountSendUsecase,
+    required this._getOrderSwapQuoteUsecase,
+    required this._getPendingOrderSwapsUsecase,
+    required this._createOrderSwapUsecase,
+    required this._savePreparedOrderSwapPayinUsecase,
+    required this._replacePreparedOrderSwapPayinUsecase,
+    required this._refreshOrderSwapUsecase,
+    required this._markOrderSwapBroadcastUnknownUsecase,
+    required this._markOrderSwapPayinBroadcastUsecase,
+    required this._watchOrderSwapUsecase,
     required this._detectBitcoinStringUsecase,
     required this._getReceiveAddressUsecase,
     required this._getWalletUtxosUsecase,
@@ -96,29 +105,36 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     on<TransferCustomFeeFinalized>(_onCustomFeeFinalized);
     on<TransferCustomFeePreviewRequested>(_onCustomFeePreviewRequested);
     on<TransferPresetFeesPreviewRequested>(_onPresetFeesPreviewRequested);
+    on<TransferOrderSwapUpdated>(_onOrderSwapUpdated);
   }
 
   final GetSettingsUsecase _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
-  final CreateChainSwapUsecase _createChainSwapUsecase;
-  final CreateChainSwapToExternalUsecase _createChainSwapToExternalUsecase;
-  final WatchSwapUsecase _watchSwapUsecase;
-  StreamSubscription<Swap>? _swapSubscription;
   final GetWalletUsecase _getWalletUsecase;
   final SignBitcoinTxUsecase _signBitcoinTxUsecase;
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
-  final UpdatePaidChainSwapUsecase _updatePaidChainSwapUsecase;
-  final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
+  final GetOrderSwapQuoteUsecase _getOrderSwapQuoteUsecase;
+  final GetPendingOrderSwapsUsecase _getPendingOrderSwapsUsecase;
+  final CreateOrderSwapUsecase _createOrderSwapUsecase;
+  final SavePreparedOrderSwapPayinUsecase _savePreparedOrderSwapPayinUsecase;
+  final ReplacePreparedOrderSwapPayinUsecase
+  _replacePreparedOrderSwapPayinUsecase;
+  final RefreshOrderSwapUsecase _refreshOrderSwapUsecase;
+  final MarkOrderSwapBroadcastUnknownUsecase
+  _markOrderSwapBroadcastUnknownUsecase;
+  final MarkOrderSwapPayinBroadcastUsecase _markOrderSwapPayinBroadcastUsecase;
+  final WatchOrderSwapUsecase _watchOrderSwapUsecase;
+  StreamSubscription<Result<OrderSwapRecord, SwapFailure>>?
+  _orderSwapSubscription;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
@@ -135,7 +151,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   @override
   Future<void> close() async {
-    await Future.wait([_swapSubscription?.cancel() ?? Future.value()]);
+    await Future.wait([_orderSwapSubscription?.cancel() ?? Future.value()]);
     return super.close();
   }
 
@@ -169,14 +185,30 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
           .toList();
 
-      final fromWallet = liquidWallets.isNotEmpty
+      var fromWallet = liquidWallets.isNotEmpty
           ? (liquidWallets.where((wallet) => wallet.isDefault).firstOrNull ??
                 liquidWallets.first)
           : null;
-      final toWallet = bitcoinWallets.isNotEmpty
+      var toWallet = bitcoinWallets.isNotEmpty
           ? (bitcoinWallets.where((wallet) => wallet.isDefault).firstOrNull ??
                 bitcoinWallets.first)
           : null;
+      final pendingResult = await _getPendingOrderSwapsUsecase.execute();
+      if (pendingResult case Ok(:final value)) {
+        final pendingTransfer = value
+            .where((order) => order.purpose == OrderSwapPurpose.transfer)
+            .firstOrNull;
+        if (pendingTransfer != null) {
+          fromWallet = wallets
+              .where((wallet) => wallet.id == pendingTransfer.sourceWalletId)
+              .firstOrNull;
+          toWallet = wallets
+              .where(
+                (wallet) => wallet.id == pendingTransfer.destinationWalletId,
+              )
+              .firstOrNull;
+        }
+      }
       // Set the bitcoin network fees and liquid network fees already here,
       //  since they are needed for the rest of the initialization steps, like
       //  calculating the max amount.
@@ -193,31 +225,104 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         ),
       );
 
-      final (
-        lbtcToBtcSwapLimitsAndFees,
-        btcToLbtcSwapLimitsAndFees,
-        maxAmountSat,
-      ) = await (
-        _getSwapLimitsUsecase.execute(type: SwapType.liquidToBitcoin),
-        _getSwapLimitsUsecase.execute(
-          type: SwapType.bitcoinToLiquid,
-          updateLimitsAndFees: false, // chain fees are already updated
-        ),
-        fromWallet != null ? getMaxAmountSat(fromWallet) : Future.value(null),
-      ).wait;
+      final maxAmountSat = fromWallet != null
+          ? await getMaxAmountSat(fromWallet)
+          : null;
 
-      emit(
-        state.copyWith(
-          maxAmountSat: maxAmountSat,
-          lbtcToBtcSwapLimitsAndFees: lbtcToBtcSwapLimitsAndFees,
-          btcToLbtcSwapLimitsAndFees: btcToLbtcSwapLimitsAndFees,
-        ),
-      );
+      emit(state.copyWith(maxAmountSat: maxAmountSat));
+      await _resumePendingTransfer(emit);
     } catch (e) {
       emit(state.copyWith(startError: Exception(e.toString())));
     } finally {
       emit(state.copyWith(isStarting: false));
     }
+  }
+
+  Future<void> _resumePendingTransfer(Emitter<TransferState> emit) async {
+    final fromWallet = state.fromWallet;
+    if (fromWallet == null) return;
+    final pendingResult = await _getPendingOrderSwapsUsecase.execute();
+    if (pendingResult case Err()) return;
+    final pending =
+        (pendingResult as Ok<List<OrderSwapRecord>, SwapFailure>).value;
+    final record = pending.where((candidate) {
+      final expectedEnvironment = fromWallet.network.isTestnet
+          ? OrderSwapEnvironment.testnet
+          : OrderSwapEnvironment.mainnet;
+      final expectedInNetwork = fromWallet.isLiquid
+          ? OrderSwapNetwork.liquid
+          : OrderSwapNetwork.bitcoin;
+      final expectedOutNetwork = state.toWallet?.isLiquid == true
+          ? OrderSwapNetwork.liquid
+          : OrderSwapNetwork.bitcoin;
+      final amountMatches =
+          state.amount.isEmpty ||
+          candidate.requestedAmountSat == BigInt.from(state.inputAmountSat);
+      return candidate.purpose == OrderSwapPurpose.transfer &&
+          candidate.environment == expectedEnvironment &&
+          candidate.inNetwork == expectedInNetwork &&
+          candidate.outNetwork == expectedOutNetwork &&
+          amountMatches &&
+          candidate.sourceWalletId == fromWallet.id &&
+          candidate.destinationWalletId == state.toWallet?.id;
+    }).firstOrNull;
+    if (record == null || record.order == null) return;
+
+    final order = record.order!;
+    final isExpired =
+        record.localStatus == OrderSwapLocalStatus.expired ||
+        !order.confirmationDeadline.isAfter(DateTime.now());
+    final displaySwap =
+        Swap.chain(
+              id: record.localId,
+              keyIndex: 0,
+              type: fromWallet.isLiquid
+                  ? SwapType.liquidToBitcoin
+                  : SwapType.bitcoinToLiquid,
+              status: isExpired
+                  ? SwapStatus.expired
+                  : transferSwapStatusForOrderSwap(record.localStatus),
+              environment: record.environment == OrderSwapEnvironment.testnet
+                  ? Environment.testnet
+                  : Environment.mainnet,
+              creationTime: record.createdAt,
+              sendWalletId: fromWallet.id,
+              paymentAddress: order.payinAddress,
+              paymentAmount: order.payinAmountSat.toInt(),
+              receiveWalletId: state.toWallet?.id,
+              receiveAddress: record.destination,
+              refundAddress: record.fallback,
+              fees: SwapFees(
+                boltzFee: (order.payinAmountSat - order.payoutAmountSat)
+                    .toInt(),
+              ),
+            )
+            as ChainSwap;
+
+    if (isExpired) {
+      emit(
+        state.copyWith(orderSwap: record, swap: displaySwap, signedPsbt: ''),
+      );
+      return;
+    }
+    final resumable =
+        record.localStatus == OrderSwapLocalStatus.readyToBroadcast ||
+        record.localStatus == OrderSwapLocalStatus.broadcastUnknown;
+    if (!resumable || !record.hasPreparedPayin) return;
+    emit(
+      state.copyWith(
+        orderSwap: record,
+        swap: displaySwap,
+        signedPsbt: record.signedPayinTransaction!,
+        amount: state.bitcoinUnit == BitcoinUnit.sats
+            ? record.requestedAmountSat.toString()
+            : ConvertAmount.satsToBtc(
+                record.requestedAmountSat.toInt(),
+              ).toString(),
+        receiveAddress: record.destination,
+      ),
+    );
+    _watchExchangeOrderSwap(record.localId);
   }
 
   Future<void> _onWalletsChanged(
@@ -287,7 +392,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         }
       }
     }
-
     final wasFromWalletChanged = newFromWallet != state.fromWallet;
     final hadExternalAddress = state.externalAddress.isNotEmpty;
     final externalAddressToRevalidate = state.externalAddress;
@@ -342,6 +446,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     var updated = state.copyWith(
       amount: event.amount,
       swapCreationException: null,
+      swapFailure: null,
     );
     // Sending the max drains the wallet, so an exact receivable amount can
     // not be honored — force the toggle off while max is selected. Editing
@@ -361,12 +466,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     emit(
       state.copyWith(
         swap: null,
+        orderSwap: null,
         signedPsbt: '',
         bitcoinAbsoluteFeesSat: null,
         liquidAbsoluteFeesSat: null,
         isCreatingSwap: true,
         continueClicked: true,
         swapCreationException: null,
+        swapFailure: null,
       ),
     );
     try {
@@ -381,333 +488,89 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         return;
       }
 
-      // For max send, paymentAmountSat = inputAmountSat = maxAmountSat
-      // (balance - estimatedFees), which is what we want to pass to newSwap
+      // A max transfer drains the selected wallet instead of fixing the payin.
       final isMaxSend =
           state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
 
-      int paymentAmountSat = inputAmountSat;
-      // Max drains the wallet, so the exact-receivable inflation can never
-      // apply: paying input + fees would exceed the balance and the drained
-      // lockup would mismatch the swap amount (lockupFailed). The UI forces
-      // the toggle off whenever the amount equals max; this is the backstop.
-      if (state.receiveExactAmount &&
-          !state.isSameChainTransfer &&
-          !isMaxSend) {
-        final swapFees = state.swapFees;
-        if (swapFees == null) {
-          emit(
-            state.copyWith(
-              swapCreationException: SwapCreationException(
-                'Swap fees not loaded',
-              ),
-            ),
-          );
-          return;
-        }
-        paymentAmountSat = swapFees.calculateSwapAmountFromReceivableAmount(
-          inputAmountSat,
+      if (!state.isSameChainTransfer) {
+        await _createExchangeChainTransfer(
+          emit,
+          inputAmountSat: inputAmountSat,
+          isMaxSend: isMaxSend,
         );
-        // Exact-receivable requires paying more than the requested amount —
-        // catch an over-balance payment before any swap is created.
-        if (paymentAmountSat > balanceSat) {
+        return;
+      }
+
+      final bitcoinWalletId = state.fromWallet!.id;
+      String receiveAddress = state.receiveAddress ?? '';
+      if (receiveAddress.isEmpty && state.toWallet != null) {
+        try {
+          final address = await _getReceiveAddressUsecase.execute(
+            walletId: state.toWallet!.id,
+          );
+          receiveAddress = address.address;
+        } catch (e) {
           emit(
             state.copyWith(
               swapCreationException: SwapCreationException(
-                'Insufficient balance to receive this exact amount. Lower '
-                'the amount or turn off receive exact amount.',
+                'receive_address_lookup_failed',
               ),
             ),
           );
           return;
         }
       }
-
-      ChainSwap swap;
-      String signedPsbt;
-      int? bitcoinAbsoluteFeesSat;
-      int? liquidAbsoluteFeesSat;
-
-      if (state.sendToExternal) {
-        if (state.externalAddress.isEmpty) {
-          emit(
-            state.copyWith(
-              swapCreationException: SwapCreationException(
-                'Enter an external address',
-              ),
-            ),
-          );
-          return;
-        }
-
-        final swapType = state.fromWallet!.isLiquid
-            ? SwapType.liquidToBitcoin
-            : SwapType.bitcoinToLiquid;
-
-        swap = await _createChainSwapToExternalUsecase.execute(
-          sendWalletId: state.fromWallet!.id,
-          receiveAddress: state.externalAddress,
-          type: swapType,
-          amountSat: paymentAmountSat,
-        );
-
-        if (state.fromWallet!.isLiquid) {
-          final liquidWalletId = state.fromWallet!.id;
-          final psbt = await _prepareLiquidSendUsecase.execute(
-            walletId: liquidWalletId,
-            address: swap.paymentAddress,
-            amountSat: isMaxSend ? null : swap.paymentAmount,
-            // FeeOptions.fastest is always RelativeFee — see fees_datasource.dart.
-            feeRate: state.liquidNetworkFees!.fastest as RelativeFee,
-            drain: isMaxSend,
-          );
-
-          await _verifyChainSwapAmountSendUsecase.execute(
-            psbtOrPset: psbt,
-            swap: swap,
-            walletId: liquidWalletId,
-          );
-
-          signedPsbt = await _signLiquidTxUsecase.execute(
-            walletId: liquidWalletId,
-            pset: psbt,
-          );
-          liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
-              .execute(pset: signedPsbt);
-          final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-            swapId: swap.id,
-            lockupFees: liquidAbsoluteFeesSat,
-          );
-          swap = updatedSwap as ChainSwap;
-          emit(
-            state.copyWith(
-              swap: swap,
-              signedPsbt: signedPsbt,
-              liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
-            ),
-          );
-        } else {
-          final bitcoinWalletId = state.fromWallet!.id;
-          final selectedFee =
-              state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
-          final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase
-              .execute(
-                walletId: bitcoinWalletId,
-                address: swap.paymentAddress,
-                amountSat: isMaxSend ? null : swap.paymentAmount,
-                networkFee: selectedFee,
-                drain: isMaxSend,
-                selectedInputs: state.selectedUtxos.isNotEmpty
-                    ? state.selectedUtxos
-                    : null,
-                replaceByFee: state.replaceByFee,
-              );
-
-          await _verifyChainSwapAmountSendUsecase.execute(
-            psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
-            swap: swap,
-            walletId: bitcoinWalletId,
-          );
-
-          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-            walletId: bitcoinWalletId,
-            psbt: unsignedPsbtAndTxSize.unsignedPsbt,
-          );
-
-          signedPsbt = signedPsbtAndTxSize.signedPsbt;
-          bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
-              .execute(psbt: signedPsbtAndTxSize.signedPsbt);
-          final bitcoinTxSize = signedPsbtAndTxSize.txSize;
-          final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-            swapId: swap.id,
-            lockupFees: bitcoinAbsoluteFeesSat,
-          );
-          swap = updatedSwap as ChainSwap;
-          emit(
-            state.copyWith(
-              swap: swap,
-              signedPsbt: signedPsbt,
-              bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
-              bitcoinTxSize: bitcoinTxSize,
-            ),
-          );
-        }
-      } else if (state.fromWallet?.isLiquid == false &&
-          state.toWallet?.isLiquid == true) {
-        final bitcoinWalletId = state.fromWallet!.id;
-        swap = await _createChainSwapUsecase.execute(
-          bitcoinWalletId: bitcoinWalletId,
-          liquidWalletId: state.toWallet!.id,
-          type: SwapType.bitcoinToLiquid,
-          amountSat: paymentAmountSat,
-        );
-        final selectedFee =
-            state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
-        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
-          walletId: bitcoinWalletId,
-          address: swap.paymentAddress,
-          amountSat: isMaxSend ? null : swap.paymentAmount,
-          networkFee: selectedFee,
-          drain: isMaxSend,
-          selectedInputs: state.selectedUtxos.isNotEmpty
-              ? state.selectedUtxos
-              : null,
-          replaceByFee: state.replaceByFee,
-        );
-
-        await _verifyChainSwapAmountSendUsecase.execute(
-          psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
-          swap: swap,
-          walletId: bitcoinWalletId,
-        );
-
-        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-          walletId: bitcoinWalletId,
-          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
-        );
-
-        signedPsbt = signedPsbtAndTxSize.signedPsbt;
-        bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(psbt: signedPsbtAndTxSize.signedPsbt);
-        final bitcoinTxSize = signedPsbtAndTxSize.txSize;
-        final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-          swapId: swap.id,
-          lockupFees: bitcoinAbsoluteFeesSat,
-        );
-        swap = updatedSwap as ChainSwap;
+      if (receiveAddress.isEmpty) {
         emit(
           state.copyWith(
-            swap: swap,
-            signedPsbt: signedPsbt,
-            bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
-            bitcoinTxSize: bitcoinTxSize,
-          ),
-        );
-      } else if (state.fromWallet?.isLiquid == true &&
-          state.toWallet?.isLiquid == false) {
-        final liquidWalletId = state.fromWallet!.id;
-        swap = await _createChainSwapUsecase.execute(
-          bitcoinWalletId: state.toWallet!.id,
-          liquidWalletId: liquidWalletId,
-          type: SwapType.liquidToBitcoin,
-          amountSat: paymentAmountSat,
-        );
-        final psbt = await _prepareLiquidSendUsecase.execute(
-          walletId: liquidWalletId,
-          address: swap.paymentAddress,
-          amountSat: isMaxSend ? null : swap.paymentAmount,
-          // FeeOptions.fastest is always RelativeFee — see fees_datasource.dart.
-          feeRate: state.liquidNetworkFees!.fastest as RelativeFee,
-          drain: isMaxSend,
-        );
-
-        await _verifyChainSwapAmountSendUsecase.execute(
-          psbtOrPset: psbt,
-          swap: swap,
-          walletId: liquidWalletId,
-        );
-
-        signedPsbt = await _signLiquidTxUsecase.execute(
-          walletId: liquidWalletId,
-          pset: psbt,
-        );
-        liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
-            .execute(pset: signedPsbt);
-        final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-          swapId: swap.id,
-          lockupFees: liquidAbsoluteFeesSat,
-        );
-        swap = updatedSwap as ChainSwap;
-        emit(
-          state.copyWith(
-            swap: swap,
-            signedPsbt: signedPsbt,
-            liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
-          ),
-        );
-      } else if (state.isSameChainTransfer) {
-        final bitcoinWalletId = state.fromWallet!.id;
-        String receiveAddress = state.receiveAddress ?? '';
-        if (receiveAddress.isEmpty && state.toWallet != null) {
-          try {
-            final address = await _getReceiveAddressUsecase.execute(
-              walletId: state.toWallet!.id,
-            );
-            receiveAddress = address.address;
-          } catch (e) {
-            emit(
-              state.copyWith(
-                swapCreationException: SwapCreationException(
-                  'Failed to get receive address: $e',
-                ),
-              ),
-            );
-            return;
-          }
-        }
-        if (receiveAddress.isEmpty) {
-          emit(
-            state.copyWith(
-              swapCreationException: SwapCreationException(
-                'Receive address not available',
-              ),
+            swapCreationException: SwapCreationException(
+              'receive_address_unavailable',
             ),
-          );
-          return;
-        }
-
-        final selectedFee =
-            state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
-        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
-          walletId: bitcoinWalletId,
-          address: receiveAddress,
-          amountSat: isMaxSend ? null : paymentAmountSat,
-          networkFee: selectedFee,
-          drain: isMaxSend,
-          selectedInputs: state.selectedUtxos.isNotEmpty
-              ? state.selectedUtxos
-              : null,
-          replaceByFee: state.replaceByFee,
-        );
-
-        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-          walletId: bitcoinWalletId,
-          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
-        );
-
-        signedPsbt = signedPsbtAndTxSize.signedPsbt;
-        bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(psbt: signedPsbtAndTxSize.signedPsbt);
-        final bitcoinTxSize = signedPsbtAndTxSize.txSize;
-
-        emit(
-          state.copyWith(
-            signedPsbt: signedPsbt,
-            bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
-            bitcoinTxSize: bitcoinTxSize,
-            receiveAddress: receiveAddress,
-            amount: event.amount,
           ),
         );
         return;
-      } else {
-        throw SwapCreationException(
-          'From and To wallets must be of different types',
-        );
       }
-      _watchChainSwap(swap.id);
+
+      final selectedFee =
+          state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
+      final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
+        walletId: bitcoinWalletId,
+        address: receiveAddress,
+        amountSat: isMaxSend ? null : inputAmountSat,
+        networkFee: selectedFee,
+        drain: isMaxSend,
+        selectedInputs: state.selectedUtxos.isNotEmpty
+            ? state.selectedUtxos
+            : null,
+        replaceByFee: state.replaceByFee,
+      );
+
+      final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+        walletId: bitcoinWalletId,
+        psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+      );
+
+      final signedPsbt = signedPsbtAndTxSize.signedPsbt;
+      final bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
+          .execute(psbt: signedPsbt);
+
       emit(
         state.copyWith(
-          swap: swap,
           signedPsbt: signedPsbt,
           bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
-          liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
+          bitcoinTxSize: signedPsbtAndTxSize.txSize,
+          receiveAddress: receiveAddress,
           amount: event.amount,
         ),
       );
     } on ConsolidationRequiredException {
       emit(state.copyWith(consolidationRequired: true));
     } catch (e) {
+      log.severe(
+        message: '[Transfer] swap creation failed (${e.runtimeType})',
+        error: e.runtimeType,
+        trace: StackTrace.current,
+      );
       final swapCreationException = _isInsufficientFundsException(e)
           ? InsufficientFundsSwapException()
           : SwapCreationException(e.toString());
@@ -715,6 +578,209 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } finally {
       emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
     }
+  }
+
+  Future<void> _createExchangeChainTransfer(
+    Emitter<TransferState> emit, {
+    required int inputAmountSat,
+    required bool isMaxSend,
+  }) async {
+    final fromWallet = state.fromWallet;
+    if (fromWallet == null) {
+      throw SwapCreationException('source_wallet_required');
+    }
+    if (fromWallet.isHardwareWallet) {
+      throw SwapCreationException('hardware_wallet_swap_unavailable');
+    }
+    final orderEnvironment = fromWallet.network.isTestnet
+        ? OrderSwapEnvironment.testnet
+        : OrderSwapEnvironment.mainnet;
+
+    final destinationWallet = state.sendToExternal ? null : state.toWallet;
+    if (!state.sendToExternal && destinationWallet == null) {
+      throw SwapCreationException('destination_wallet_required');
+    }
+    final inNetwork = fromWallet.isLiquid
+        ? OrderSwapNetwork.liquid
+        : OrderSwapNetwork.bitcoin;
+    final outNetwork = fromWallet.isLiquid
+        ? OrderSwapNetwork.bitcoin
+        : OrderSwapNetwork.liquid;
+    final destinationAddress = state.sendToExternal
+        ? state.externalAddress
+        : (await _getReceiveAddressUsecase.execute(
+            walletId: destinationWallet!.id,
+          )).address;
+    if (destinationAddress.isEmpty) {
+      throw SwapCreationException('destination_address_required');
+    }
+    final fallbackAddress = (await _getReceiveAddressUsecase.execute(
+      walletId: fromWallet.id,
+    )).address;
+    final isInAmountFixed = isMaxSend || !state.receiveExactAmount;
+
+    final quoteResult = await _getOrderSwapQuoteUsecase.execute(
+      environment: orderEnvironment,
+      amountSat: BigInt.from(inputAmountSat),
+      isInAmountFixed: isInAmountFixed,
+      inNetwork: inNetwork,
+      outNetwork: outNetwork,
+    );
+    if (quoteResult case Err(:final failure)) {
+      log.warning('[Transfer] quote failed (${failure.runtimeType})');
+      emit(state.copyWith(swapFailure: failure));
+      return;
+    }
+    final quote = (quoteResult as Ok<OrderSwapQuote, SwapFailure>).value;
+    final availableAmountSat = state.selectedUtxos.isEmpty
+        ? fromWallet.balanceSat
+        : BigInt.from(state.selectedUtxoTotalSat);
+    if (quote.inAmountSat > availableAmountSat) {
+      throw InsufficientFundsSwapException();
+    }
+
+    final createResult = await _createOrderSwapUsecase.execute(
+      amountSat: BigInt.from(inputAmountSat),
+      isInAmountFixed: isInAmountFixed,
+      inNetwork: inNetwork,
+      outNetwork: outNetwork,
+      destinationAddress: destinationAddress,
+      fallbackAddress: fallbackAddress,
+      purpose: OrderSwapPurpose.transfer,
+      environment: orderEnvironment,
+      sourceWalletId: fromWallet.id,
+      destinationWalletId: destinationWallet?.id,
+      quotedCounterpartAmountSat: isInAmountFixed
+          ? quote.outAmountSat
+          : quote.inAmountSat,
+    );
+    if (createResult case Err(:final failure)) {
+      log.warning('[Transfer] create failed (${failure.runtimeType})');
+      emit(state.copyWith(swapFailure: failure));
+      return;
+    }
+    final created = (createResult as Ok<OrderSwapRecord, SwapFailure>).value;
+    final order = created.order!;
+    final exchangeFeeSat = order.payinAmountSat - order.payoutAmountSat;
+    final displaySwap =
+        Swap.chain(
+              id: created.localId,
+              keyIndex: 0,
+              type: fromWallet.isLiquid
+                  ? SwapType.liquidToBitcoin
+                  : SwapType.bitcoinToLiquid,
+              status: SwapStatus.pending,
+              environment: fromWallet.network.isTestnet
+                  ? Environment.testnet
+                  : Environment.mainnet,
+              creationTime: created.createdAt,
+              sendWalletId: fromWallet.id,
+              paymentAddress: order.payinAddress,
+              paymentAmount: order.payinAmountSat.toInt(),
+              receiveWalletId: destinationWallet?.id,
+              receiveAddress: destinationAddress,
+              refundAddress: fallbackAddress,
+              fees: SwapFees(
+                boltzFee: exchangeFeeSat > BigInt.zero
+                    ? exchangeFeeSat.toInt()
+                    : 0,
+              ),
+            )
+            as ChainSwap;
+
+    final String signedPayin;
+    final bool isPsbt;
+    int? bitcoinAbsoluteFeesSat;
+    int? liquidAbsoluteFeesSat;
+    int? bitcoinTxSize;
+    if (fromWallet.isLiquid) {
+      final selectedFee = state.selectedFee ?? state.liquidNetworkFees!.fastest;
+      final unsignedPset = await _prepareLiquidSendUsecase.execute(
+        walletId: fromWallet.id,
+        address: order.payinAddress,
+        amountSat: isMaxSend ? null : order.payinAmountSat.toInt(),
+        feeRate: selectedFee as RelativeFee,
+        drain: isMaxSend,
+      );
+      await _verifyChainSwapAmountSendUsecase.execute(
+        psbtOrPset: unsignedPset,
+        swap: displaySwap,
+        walletId: fromWallet.id,
+      );
+      signedPayin = await _signLiquidTxUsecase.execute(
+        walletId: fromWallet.id,
+        pset: unsignedPset,
+      );
+      liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase.execute(
+        pset: signedPayin,
+      );
+      isPsbt = false;
+    } else {
+      final selectedFee =
+          state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
+      final unsigned = await _prepareBitcoinSendUsecase.execute(
+        walletId: fromWallet.id,
+        address: order.payinAddress,
+        amountSat: isMaxSend ? null : order.payinAmountSat.toInt(),
+        networkFee: selectedFee,
+        drain: isMaxSend,
+        selectedInputs: state.selectedUtxos.isEmpty
+            ? null
+            : state.selectedUtxos,
+        replaceByFee: state.replaceByFee,
+      );
+      await _verifyChainSwapAmountSendUsecase.execute(
+        psbtOrPset: unsigned.unsignedPsbt,
+        swap: displaySwap,
+        walletId: fromWallet.id,
+      );
+      final signed = await _signBitcoinTxUsecase.execute(
+        walletId: fromWallet.id,
+        psbt: unsigned.unsignedPsbt,
+      );
+      signedPayin = signed.signedPsbt;
+      bitcoinTxSize = signed.txSize;
+      bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
+          .execute(psbt: signedPayin);
+      if (!_builtFeeClearsRelay(
+        stateToUse: state,
+        builtFeeSat: bitcoinAbsoluteFeesSat,
+        txSize: bitcoinTxSize,
+      )) {
+        throw BuildTransactionException('built_fee_below_relay_floor');
+      }
+      isPsbt = true;
+    }
+
+    final prepareResult = await _savePreparedOrderSwapPayinUsecase.execute(
+      localId: created.localId,
+      signedTransaction: signedPayin,
+      isPsbt: isPsbt,
+    );
+    if (prepareResult case Err(:final failure)) {
+      log.warning(
+        '[Transfer] payin persistence failed (${failure.runtimeType})',
+      );
+      emit(state.copyWith(swapFailure: failure));
+      return;
+    }
+    final prepared = (prepareResult as Ok<OrderSwapRecord, SwapFailure>).value;
+    emit(
+      state.copyWith(
+        swap: displaySwap.copyWith(
+          fees: displaySwap.fees?.copyWith(
+            lockupFee: bitcoinAbsoluteFeesSat ?? liquidAbsoluteFeesSat,
+          ),
+        ),
+        orderSwap: prepared,
+        signedPsbt: signedPayin,
+        bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
+        liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
+        bitcoinTxSize: bitcoinTxSize,
+        receiveAddress: destinationAddress,
+      ),
+    );
+    _watchExchangeOrderSwap(prepared.localId);
   }
 
   Future<void> _onSendToExternalToggled(
@@ -948,7 +1014,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } catch (e) {
       log.severe(
         message: 'Error loading UTXOs',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
     }
@@ -1270,8 +1336,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             stateToUse.copyWith(
               signedPsbt: '',
               buildTransactionException: BuildTransactionException(
-                'Built fee $bitcoinAbsoluteFeesSat sats at '
-                '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+                'built_fee_below_relay_floor',
               ),
             ),
           );
@@ -1286,8 +1351,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             buildTransactionException: null,
           ),
         );
-      } else if (stateToUse.swap != null && stateToUse.swap is ChainSwap) {
+      } else if (stateToUse.orderSwap != null && stateToUse.swap is ChainSwap) {
         final swap = stateToUse.swap as ChainSwap;
+        final orderSwap = stateToUse.orderSwap!;
         final inputAmountSat = stateToUse.inputAmountSat;
         final isMaxSend =
             stateToUse.maxAmountSat != null &&
@@ -1342,22 +1408,32 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             stateToUse.copyWith(
               signedPsbt: '',
               buildTransactionException: BuildTransactionException(
-                'Built fee $bitcoinAbsoluteFeesSat sats at '
-                '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+                'built_fee_below_relay_floor',
               ),
             ),
           );
           return;
         }
 
-        final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
-          swapId: swap.id,
-          lockupFees: bitcoinAbsoluteFeesSat,
-        );
+        final replaceResult = await _replacePreparedOrderSwapPayinUsecase
+            .execute(
+              localId: orderSwap.localId,
+              signedTransaction: signedPsbtAndTxSize.signedPsbt,
+              isPsbt: true,
+            );
+        final prepared = switch (replaceResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw BuildTransactionException(
+            failure.logMessage ?? failure.runtimeType.toString(),
+          ),
+        };
 
         emit(
           stateToUse.copyWith(
-            swap: updatedSwap as ChainSwap,
+            swap: swap.copyWith(
+              fees: swap.fees?.copyWith(lockupFee: bitcoinAbsoluteFeesSat),
+            ),
+            orderSwap: prepared,
             signedPsbt: signedPsbtAndTxSize.signedPsbt,
             bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
             bitcoinTxSize: signedPsbtAndTxSize.txSize,
@@ -1368,7 +1444,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } catch (e) {
       log.severe(
         message: 'Error rebuilding transaction',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
     }
@@ -1387,6 +1463,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         txId: '',
         isConfirming: true,
         confirmTransactionException: null,
+        swapFailure: null,
       ),
     );
     try {
@@ -1394,55 +1471,80 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (signedPsbt.isEmpty) return;
 
       String txId;
-      if (state.isSameChainTransfer) {
+      final orderSwap = state.orderSwap;
+      if (orderSwap != null) {
+        if (orderSwap.localStatus == OrderSwapLocalStatus.broadcastUnknown) {
+          final refreshResult = await _refreshOrderSwapUsecase.execute(
+            orderSwap.localId,
+          );
+          if (refreshResult case Err(:final failure)) {
+            emit(state.copyWith(swapFailure: failure));
+            return;
+          }
+          final refreshed =
+              (refreshResult as Ok<OrderSwapRecord, SwapFailure>).value;
+          final payinStatus = refreshed.order?.payinStatus.trim().toLowerCase();
+          if (payinStatus == 'completed') {
+            emit(state.copyWith(orderSwap: refreshed));
+            return;
+          }
+        }
+        final broadcastStartResult = await _markOrderSwapBroadcastUnknownUsecase
+            .execute(orderSwap.localId);
+        if (broadcastStartResult case Err(:final failure)) {
+          emit(state.copyWith(swapFailure: failure));
+          return;
+        }
+        final broadcasting =
+            (broadcastStartResult as Ok<OrderSwapRecord, SwapFailure>).value;
+        if (state.fromWallet?.isLiquid == true) {
+          txId = await _broadcastLiquidTxUsecase.execute(
+            broadcasting.signedPayinTransaction!,
+          );
+        } else {
+          txId = await _broadcastBitcoinTxUsecase.execute(
+            broadcasting.signedPayinTransaction!,
+            isPsbt: broadcasting.payinIsPsbt!,
+          );
+        }
+        final broadcastResult = await _markOrderSwapPayinBroadcastUsecase
+            .execute(localId: orderSwap.localId, transactionId: txId);
+        if (broadcastResult case Err(:final failure)) {
+          emit(state.copyWith(swapFailure: failure, txId: txId));
+          return;
+        }
+        final broadcast =
+            (broadcastResult as Ok<OrderSwapRecord, SwapFailure>).value;
+        final displaySwap = state.swap as ChainSwap;
+        emit(
+          state.copyWith(
+            orderSwap: broadcast,
+            swap: displaySwap.copyWith(status: SwapStatus.paid, sendTxid: txId),
+            txId: txId,
+          ),
+        );
+        unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
+        return;
+      } else if (state.isSameChainTransfer) {
         txId = await _broadcastBitcoinTxUsecase.execute(
           signedPsbt,
           isPsbt: true,
         );
-        if (state.fromWallet != null) {
-          await _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
-        }
-        if (state.toWallet != null) {
-          await _getWalletUsecase.execute(state.toWallet!.id, sync: true);
-        }
+        unawaited(
+          _syncWalletsAfterBroadcast([
+            if (state.fromWallet != null) state.fromWallet!.id,
+            if (state.toWallet != null) state.toWallet!.id,
+          ]),
+        );
       } else {
-        final swap = state.swap;
-        if (swap == null) return;
-
-        if (state.fromWallet?.isLiquid == false) {
-          txId = await _broadcastBitcoinTxUsecase.execute(
-            signedPsbt,
-            isPsbt: true,
-          );
-          await _updatePaidChainSwapUsecase.execute(
-            txid: txId,
-            swapId: swap.id,
-          );
-        } else {
-          txId = await _broadcastLiquidTxUsecase.execute(signedPsbt);
-          await _updatePaidChainSwapUsecase.execute(
-            txid: txId,
-            swapId: swap.id,
-          );
-        }
+        return;
       }
       emit(state.copyWith(txId: txId));
     } catch (e) {
-      if (e is PrepareBitcoinSendException) {
-        emit(
-          state.copyWith(
-            confirmTransactionException: ConfirmTransactionException(
-              'Could not build transaction. Likely due to insufficient funds to cover fees and amount.',
-            ),
-          ),
-        );
-        return;
-      }
       emit(
         state.copyWith(
-          confirmTransactionException: ConfirmTransactionException(
-            e.toString(),
-          ),
+          confirmTransactionException: null,
+          swapFailure: _swapFailureFromException(e),
         ),
       );
     } finally {
@@ -1450,25 +1552,48 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
   }
 
+  Future<void> _syncWalletAfterBroadcast(String walletId) async {
+    try {
+      await _getWalletUsecase.execute(walletId, sync: true);
+    } catch (_) {
+      log.warning('Failed to sync wallet after transfer broadcast');
+    }
+  }
+
+  Future<void> _syncWalletsAfterBroadcast(List<String> walletIds) async {
+    for (final walletId in walletIds) {
+      await _syncWalletAfterBroadcast(walletId);
+    }
+  }
+
+  SwapFailure _swapFailureFromException(Object exception) {
+    if (exception is DioException) {
+      return switch (exception.type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout ||
+        DioExceptionType.receiveTimeout => const SwapTimeoutFailure(),
+        _ => const SwapNetworkFailure(),
+      };
+    }
+    return const SwapUnexpectedFailure();
+  }
+
   Future<int?> getMaxAmountSat(Wallet fromWallet) async {
     try {
+      if (fromWallet.balanceSat <= BigInt.zero) return 0;
       final networkFee = fromWallet.isLiquid
           ? state.liquidNetworkFees!.fastest
           : state.bitcoinNetworkFees!.fastest;
+      final receiveAddress = await _getReceiveAddressUsecase.execute(
+        walletId: fromWallet.id,
+      );
 
       // Create a dummy drain transaction to calculate the absolute fees
       int absoluteFees;
       if (!fromWallet.isLiquid) {
-        // we cannot use a wallet address for this
-        // the swap script address is larger than a wallet single sig (by ~12 vb)
-        // this leads to a fee estimation error by 1 sat
-        // additionally, we never sign this transaction
-        const String dummySwapAddress =
-            "bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4";
-
         final dummyDrainTxInfo = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
-          address: dummySwapAddress,
+          address: receiveAddress.address,
           networkFee: networkFee,
           drain: true,
         );
@@ -1479,16 +1604,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
         log.info("Absolute fees: $absoluteFees");
       } else {
-        // we cannot use a wallet address for this
-        // the swap script address is larger than a wallet single sig (by ~12 vb)
-        // this leads to a fee estimation error by 1 sat
-        // additionally, we never sign this transaction
-
-        const String dummySwapAddress =
-            "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
-          address: dummySwapAddress,
+          address: receiveAddress.address,
           // networkFee was selected from the Liquid FeeOptions, always RelativeFee.
           feeRate: networkFee as RelativeFee,
           drain: true,
@@ -1506,7 +1624,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } catch (e) {
       log.severe(
         message: 'Error getting max amount sat in transfer bloc',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
       return null;
@@ -1514,36 +1632,50 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   }
 
   bool _isInsufficientFundsException(Object e) {
-    return e.toString().contains('InsufficientFundsException');
+    return e is InsufficientFundsSwapException ||
+        e.toString().contains('InsufficientFundsException');
   }
 
-  void _watchChainSwap(String swapId) {
-    // Cancel the previous subscription if it exists
-    _swapSubscription?.cancel();
-    _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
-      log.info(
-        '[SwapCubit] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
-      );
-      if (updatedSwap is ChainSwap) {
-        // ignore: invalid_use_of_visible_for_testing_member
-        emit(state.copyWith(swap: updatedSwap));
-        if (updatedSwap.status == SwapStatus.completed ||
-            updatedSwap.status == SwapStatus.refunded) {
-          // Final outcome (success or refund): sync the affected wallets and
-          // stop watching. On refund the funds came back to the from-wallet.
-          _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
-          if (updatedSwap.status == SwapStatus.completed &&
-              !state.sendToExternal &&
-              state.toWallet != null) {
-            _getWalletUsecase.execute(state.toWallet!.id, sync: true);
-          }
-
-          // Cancel the subscription as we don't need to watch anymore
-          _swapSubscription?.cancel();
-          _swapSubscription = null;
-        }
+  Future<void> _onOrderSwapUpdated(
+    TransferOrderSwapUpdated event,
+    Emitter<TransferState> emit,
+  ) async {
+    if (event.result case Err(:final failure)) {
+      emit(state.copyWith(swapFailure: failure));
+      return;
+    }
+    final orderSwap = (event.result as Ok<OrderSwapRecord, SwapFailure>).value;
+    final currentSwap = state.swap;
+    if (currentSwap is! ChainSwap) return;
+    final status = transferSwapStatusForOrderSwap(orderSwap.localStatus);
+    emit(
+      state.copyWith(
+        orderSwap: orderSwap,
+        swap: currentSwap.copyWith(
+          status: status,
+          sendTxid: orderSwap.localPayinTransactionId,
+          receiveTxid: switch (orderSwap.outNetwork) {
+            OrderSwapNetwork.bitcoin => orderSwap.order?.bitcoinTransactionId,
+            OrderSwapNetwork.liquid => orderSwap.order?.liquidTransactionId,
+            OrderSwapNetwork.lightning => null,
+          },
+        ),
+      ),
+    );
+    if (orderSwap.localStatus.isTerminal) {
+      unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
+      final destinationWalletId = orderSwap.destinationWalletId;
+      if (destinationWalletId != null) {
+        unawaited(_syncWalletAfterBroadcast(destinationWalletId));
       }
-    });
+    }
+  }
+
+  void _watchExchangeOrderSwap(String localId) {
+    _orderSwapSubscription?.cancel();
+    _orderSwapSubscription = _watchOrderSwapUsecase
+        .execute(localId)
+        .listen((result) => add(TransferEvent.orderSwapUpdated(result)));
   }
 
   // ────── FeeModalViewState + FeeModalActions adoption ──────

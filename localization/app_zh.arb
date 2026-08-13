@@ -2395,7 +2395,6 @@
   "hwSeedSigner": "SeedSigner",
   "bitboxActionUnlockDeviceButton": "闭锁装置",
   "payNetworkError": "网络错误。 请再次审判",
-  "sendNetworkFeesLabel": "Send Network Fees",
   "electrumUnknownError": "发生错误",
   "payWhichWallet": "你们想要从哪条墙上花钱?",
   "autoswapBaseBalanceInfoText": "在自动换币后，您的即时支付钱包余额将恢复到该目标余额。",
@@ -4972,5 +4971,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
   "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。",
   "addressViewErrorWalletNotFound": "找不到此钱包。",
-  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。"
+  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。",
+  "coreSwapsStatusNotStarted": "未开始",
+  "coreSwapsStatusAwaitingPayment": "等待付款",
+  "coreSwapsStatusAwaitingConfirmation": "等待确认",
+  "coreSwapsStatusUnderReview": "审核中",
+  "coreSwapsStatusRejected": "已拒绝",
+  "coreSwapsStatusCanceled": "已取消",
+  "coreSwapsStatusPaymentDeadlineExpired": "付款期限已过",
+  "coreSwapsStatusScheduled": "已排定",
+  "coreSwapsStatusAwaitingClaim": "等待领取",
+  "coreSwapsStatusUnknown": "未知",
+  "sendSwapExpiredTitle": "订单已过期",
+  "sendSwapExpiredMessage": "此订单在发送任何资金前已过期。您的钱包未发送任何资金。"
 }

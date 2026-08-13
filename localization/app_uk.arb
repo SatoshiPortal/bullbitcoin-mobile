@@ -2795,7 +2795,6 @@
   "hwSeedSigner": "НасінняСинер",
   "bitboxActionUnlockDeviceButton": "Розблокувати пристрій",
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
-  "sendNetworkFeesLabel": "Відправка мереж",
   "electrumUnknownError": "Помилки",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
   "recoverbullSelectDecryptVault": "Розшифрування за замовчуванням",
@@ -4969,5 +4968,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin увімкнено, але в цьому гаманці ще немає коштів для участі. Він активується, щойно ви отримаєте кошти.",
   "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
   "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
-  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз."
+  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз.",
+  "coreSwapsStatusNotStarted": "Не розпочато",
+  "coreSwapsStatusAwaitingPayment": "Очікування оплати",
+  "coreSwapsStatusAwaitingConfirmation": "Очікування підтвердження",
+  "coreSwapsStatusUnderReview": "На розгляді",
+  "coreSwapsStatusRejected": "Відхилено",
+  "coreSwapsStatusCanceled": "Скасовано",
+  "coreSwapsStatusPaymentDeadlineExpired": "Термін оплати минув",
+  "coreSwapsStatusScheduled": "Заплановано",
+  "coreSwapsStatusAwaitingClaim": "Очікування отримання",
+  "coreSwapsStatusUnknown": "Невідомо",
+  "sendSwapExpiredTitle": "Термін заявки минув",
+  "sendSwapExpiredMessage": "Термін дії цієї заявки минув до відправлення коштів. З вашого гаманця нічого не відправлено."
 }

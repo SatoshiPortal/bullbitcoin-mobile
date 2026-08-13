@@ -2026,7 +2026,6 @@
   "totalFeeLabel": "Jumla ya Ada",
   "networkFeeLabel": "Ada ya Mtandao",
   "transferFeeLabel": "Ada ya Uhamisho",
-  "sendNetworkFeesLabel": "Ada za Mtandao za Kutuma",
   "confirmButtonLabel": "Thibitisha",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
@@ -3621,5 +3620,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin imewashwa, lakini pochi hii bado haina salio la kuchangia. Itaanza kufanya kazi mara tu utakapopokea fedha.",
   "announcementAutoswapDescription": "Liquid yako hubadilishwa kiotomatiki kuwa Bitcoin.",
   "addressViewErrorWalletNotFound": "Pochi hii haikupatikana.",
-  "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena."
+  "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
+  "coreSwapsStatusNotStarted": "Haijaanza",
+  "coreSwapsStatusAwaitingPayment": "Inasubiri malipo",
+  "coreSwapsStatusAwaitingConfirmation": "Inasubiri uthibitisho",
+  "coreSwapsStatusUnderReview": "Inakaguliwa",
+  "coreSwapsStatusRejected": "Imekataliwa",
+  "coreSwapsStatusCanceled": "Imeghairiwa",
+  "coreSwapsStatusPaymentDeadlineExpired": "Muda wa malipo umeisha",
+  "coreSwapsStatusScheduled": "Imepangwa",
+  "coreSwapsStatusAwaitingClaim": "Inasubiri kudai",
+  "coreSwapsStatusUnknown": "Haijulikani",
+  "sendSwapExpiredTitle": "Muda wa Oda Umeisha",
+  "sendSwapExpiredMessage": "Oda hii ilipitwa na wakati kabla ya fedha zozote kutumwa. Hakuna kilichotumwa kutoka kwenye pochi yako."
 }

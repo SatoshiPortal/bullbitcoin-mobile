@@ -6340,10 +6340,6 @@
   "@payOpenChannelRequired": {
     "description": "Message indicating a new Lightning channel is needed"
   },
-  "sendNetworkFeesLabel": "Enviar taxas de rede",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "sendErrorAmountExceedsMaximum": "O montante excede o montante máximo de swap",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
@@ -12548,5 +12544,17 @@
   "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Ele será ativado assim que você receber fundos.",
   "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
-  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente."
+  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
+  "coreSwapsStatusNotStarted": "Não iniciado",
+  "coreSwapsStatusAwaitingPayment": "Aguardando pagamento",
+  "coreSwapsStatusAwaitingConfirmation": "Aguardando confirmação",
+  "coreSwapsStatusUnderReview": "Em análise",
+  "coreSwapsStatusRejected": "Rejeitado",
+  "coreSwapsStatusCanceled": "Cancelado",
+  "coreSwapsStatusPaymentDeadlineExpired": "Prazo de pagamento expirado",
+  "coreSwapsStatusScheduled": "Agendado",
+  "coreSwapsStatusAwaitingClaim": "Aguardando resgate",
+  "coreSwapsStatusUnknown": "Desconhecido",
+  "sendSwapExpiredTitle": "Ordem expirada",
+  "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira."
 }

@@ -551,7 +551,7 @@ packages:
     source: hosted
     version: "0.7.13"
   decimal:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: decimal
       sha256: "2c3c8b74f2948066d3f42585477aec9cfc48fefd7a723a4d4274a6c71a5c0df7"

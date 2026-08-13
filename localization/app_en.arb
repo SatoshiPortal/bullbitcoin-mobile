@@ -6176,10 +6176,6 @@
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
   },
-  "sendNetworkFeesLabel": "Send Network Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "confirmButtonLabel": "Confirm",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
@@ -14474,6 +14470,98 @@
   "sendUnconfidentialLiquidWarningDescription": "This Liquid address does not support Confidential Transactions. The amount you send will be publicly visible on the blockchain.",
   "@sendUnconfidentialLiquidWarningDescription": {
     "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
+  },
+  "swapUnderReviewTitle": "Transfer under review",
+  "@swapUnderReviewTitle": {
+    "description": "Title shown when a swap payin requires manual review"
+  },
+  "swapUnderReviewDescription": "This transfer requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
+  "@swapUnderReviewDescription": {
+    "description": "Explanation and no-KYC guidance for a swap under review"
+  },
+  "swapUnderReviewContactSupport": "Contact support",
+  "@swapUnderReviewContactSupport": {
+    "description": "Button opening support for a swap under review"
+  },
+  "swapUnderReviewSupportMessage": "Transfer under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "@swapUnderReviewSupportMessage": {
+    "description": "Prefilled support message containing swap identifiers",
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      },
+      "requestId": {
+        "type": "String"
+      },
+      "orderNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "swapErrorRateLimited": "Too many requests. Please wait {seconds} seconds and try again.",
+  "@swapErrorRateLimited": {
+    "description": "Error shown when the swap provider rate limits a request",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "coreSwapsStatusNotStarted": "Not started",
+  "@coreSwapsStatusNotStarted": {
+    "description": "Order status label: the payin or payout has not begun."
+  },
+  "coreSwapsStatusAwaitingPayment": "Awaiting payment",
+  "@coreSwapsStatusAwaitingPayment": {
+    "description": "Order status label: waiting for the user to pay."
+  },
+  "coreSwapsStatusAwaitingConfirmation": "Awaiting confirmation",
+  "@coreSwapsStatusAwaitingConfirmation": {
+    "description": "Order status label: waiting for confirmation."
+  },
+  "coreSwapsStatusUnderReview": "Under review",
+  "@coreSwapsStatusUnderReview": {
+    "description": "Order status label: the payment is being reviewed."
+  },
+  "coreSwapsStatusRejected": "Rejected",
+  "@coreSwapsStatusRejected": {
+    "description": "Order status label: the order was rejected."
+  },
+  "coreSwapsStatusCanceled": "Canceled",
+  "@coreSwapsStatusCanceled": {
+    "description": "Order status label: the order was canceled."
+  },
+  "coreSwapsStatusPaymentDeadlineExpired": "Payment deadline expired",
+  "@coreSwapsStatusPaymentDeadlineExpired": {
+    "description": "Order status label: the pay-in deadline lapsed."
+  },
+  "coreSwapsStatusScheduled": "Scheduled",
+  "@coreSwapsStatusScheduled": {
+    "description": "Order status label: the payout is scheduled."
+  },
+  "coreSwapsStatusAwaitingClaim": "Awaiting claim",
+  "@coreSwapsStatusAwaitingClaim": {
+    "description": "Order status label: the payout is waiting to be claimed."
+  },
+  "coreSwapsStatusUnknown": "Unknown",
+  "@coreSwapsStatusUnknown": {
+    "description": "Order status label: status not recognized."
+  },
+  "sendSwapExpiredTitle": "Order Expired",
+  "@sendSwapExpiredTitle": {
+    "description": "Title on the send result screen when a swap order expired before any funds were sent."
+  },
+  "sendSwapExpiredMessage": "This order expired before any funds were sent. Nothing was sent from your wallet.",
+  "@sendSwapExpiredMessage": {
+    "description": "Message on the send result screen when a swap order expired before any funds were sent, so there is nothing to refund."
+  },
+  "announcementAppUpdateRequiredTitle": "Update BULL",
+  "@announcementAppUpdateRequiredTitle": {
+    "description": "Title for the wallet home announcement shown when swap services require an app update"
+  },
+  "announcementAppUpdateRequiredDescription": "To use the Lightning payment and swap service, please update the BULL mobile app with the new version.",
+  "@announcementAppUpdateRequiredDescription": {
+    "description": "Description shown after the swap API reports that this app version is no longer supported"
   },
   "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
   "@mempoolErrorNetworkMismatch": {

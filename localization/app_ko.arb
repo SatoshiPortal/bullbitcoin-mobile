@@ -7374,10 +7374,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "네트워크 수수료",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "오류가 발생했습니다",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -12551,5 +12547,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
   "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다.",
   "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
-  "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요."
+  "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "coreSwapsStatusNotStarted": "시작되지 않음",
+  "coreSwapsStatusAwaitingPayment": "결제 대기 중",
+  "coreSwapsStatusAwaitingConfirmation": "확인 대기 중",
+  "coreSwapsStatusUnderReview": "검토 중",
+  "coreSwapsStatusRejected": "거부됨",
+  "coreSwapsStatusCanceled": "취소됨",
+  "coreSwapsStatusPaymentDeadlineExpired": "결제 기한 만료",
+  "coreSwapsStatusScheduled": "예약됨",
+  "coreSwapsStatusAwaitingClaim": "수령 대기 중",
+  "coreSwapsStatusUnknown": "알 수 없음",
+  "sendSwapExpiredTitle": "주문 만료",
+  "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다."
 }

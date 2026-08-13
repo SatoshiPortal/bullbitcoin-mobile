@@ -8163,6 +8163,1970 @@ class DismissedAnnouncementsCompanion
   }
 }
 
+class OrderSwaps extends Table with TableInfo<OrderSwaps, OrderSwapsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  OrderSwaps(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> localId = GeneratedColumn<String>(
+    'local_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> requestId = GeneratedColumn<String>(
+    'request_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> orderId = GeneratedColumn<String>(
+    'order_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL UNIQUE',
+  );
+  late final GeneratedColumn<String> purpose = GeneratedColumn<String>(
+    'purpose',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> environment = GeneratedColumn<String>(
+    'environment',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> inNetwork = GeneratedColumn<String>(
+    'in_network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> outNetwork = GeneratedColumn<String>(
+    'out_network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> isInAmountFixed = GeneratedColumn<int>(
+    'is_in_amount_fixed',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (is_in_amount_fixed IN (0, 1))',
+  );
+  late final GeneratedColumn<int> requestedAmountSat = GeneratedColumn<int>(
+    'requested_amount_sat',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> quotedAmountSat = GeneratedColumn<int>(
+    'quoted_amount_sat',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> sourceWalletId = GeneratedColumn<String>(
+    'source_wallet_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> destinationWalletId =
+      GeneratedColumn<String>(
+        'destination_wallet_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> destination = GeneratedColumn<String>(
+    'destination',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> fallback = GeneratedColumn<String>(
+    'fallback',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> bitcoinAddress = GeneratedColumn<String>(
+    'bitcoin_address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> liquidAddress = GeneratedColumn<String>(
+    'liquid_address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> lightningInvoice = GeneratedColumn<String>(
+    'lightning_invoice',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> payinAmountSat = GeneratedColumn<int>(
+    'payin_amount_sat',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> payoutAmountSat = GeneratedColumn<int>(
+    'payout_amount_sat',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> payinCurrency = GeneratedColumn<String>(
+    'payin_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> payoutCurrency = GeneratedColumn<String>(
+    'payout_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> payinMethod = GeneratedColumn<String>(
+    'payin_method',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> payoutMethod = GeneratedColumn<String>(
+    'payout_method',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> orderType = GeneratedColumn<String>(
+    'order_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> orderStatus = GeneratedColumn<String>(
+    'order_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> payinStatus = GeneratedColumn<String>(
+    'payin_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> payoutStatus = GeneratedColumn<String>(
+    'payout_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> messageCode = GeneratedColumn<String>(
+    'message_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> bitcoinTransactionId =
+      GeneratedColumn<String>(
+        'bitcoin_transaction_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> liquidTransactionId =
+      GeneratedColumn<String>(
+        'liquid_transaction_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> localPayinTransactionId =
+      GeneratedColumn<String>(
+        'local_payin_transaction_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> signedPayinTransaction =
+      GeneratedColumn<String>(
+        'signed_payin_transaction',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<int> payinIsPsbt = GeneratedColumn<int>(
+    'payin_is_psbt',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (payin_is_psbt IN (0, 1))',
+  );
+  late final GeneratedColumn<int> orderNumber = GeneratedColumn<int>(
+    'order_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> serverCreatedAt = GeneratedColumn<String>(
+    'server_created_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> confirmationDeadline =
+      GeneratedColumn<String>(
+        'confirmation_deadline',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> sentAt = GeneratedColumn<String>(
+    'sent_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> localStatus = GeneratedColumn<String>(
+    'local_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> lastPolledAt = GeneratedColumn<String>(
+    'last_polled_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> serverCompletedAt =
+      GeneratedColumn<String>(
+        'server_completed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> labelsAppliedAt = GeneratedColumn<String>(
+    'labels_applied_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    localId,
+    requestId,
+    orderId,
+    purpose,
+    environment,
+    inNetwork,
+    outNetwork,
+    isInAmountFixed,
+    requestedAmountSat,
+    quotedAmountSat,
+    sourceWalletId,
+    destinationWalletId,
+    destination,
+    fallback,
+    bitcoinAddress,
+    liquidAddress,
+    lightningInvoice,
+    payinAmountSat,
+    payoutAmountSat,
+    payinCurrency,
+    payoutCurrency,
+    payinMethod,
+    payoutMethod,
+    orderType,
+    orderStatus,
+    payinStatus,
+    payoutStatus,
+    messageCode,
+    bitcoinTransactionId,
+    liquidTransactionId,
+    localPayinTransactionId,
+    signedPayinTransaction,
+    payinIsPsbt,
+    orderNumber,
+    createdAt,
+    serverCreatedAt,
+    confirmationDeadline,
+    sentAt,
+    localStatus,
+    lastPolledAt,
+    note,
+    serverCompletedAt,
+    labelsAppliedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'order_swaps';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {localId};
+  @override
+  OrderSwapsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OrderSwapsData(
+      localId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_id'],
+      )!,
+      requestId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}request_id'],
+      ),
+      orderId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}order_id'],
+      ),
+      purpose: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}purpose'],
+      )!,
+      environment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}environment'],
+      )!,
+      inNetwork: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}in_network'],
+      )!,
+      outNetwork: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}out_network'],
+      )!,
+      isInAmountFixed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_in_amount_fixed'],
+      )!,
+      requestedAmountSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}requested_amount_sat'],
+      )!,
+      quotedAmountSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quoted_amount_sat'],
+      ),
+      sourceWalletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_wallet_id'],
+      ),
+      destinationWalletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_wallet_id'],
+      ),
+      destination: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination'],
+      )!,
+      fallback: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fallback'],
+      )!,
+      bitcoinAddress: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bitcoin_address'],
+      ),
+      liquidAddress: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}liquid_address'],
+      ),
+      lightningInvoice: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lightning_invoice'],
+      ),
+      payinAmountSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payin_amount_sat'],
+      ),
+      payoutAmountSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payout_amount_sat'],
+      ),
+      payinCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payin_currency'],
+      ),
+      payoutCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payout_currency'],
+      ),
+      payinMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payin_method'],
+      ),
+      payoutMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payout_method'],
+      ),
+      orderType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}order_type'],
+      ),
+      orderStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}order_status'],
+      ),
+      payinStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payin_status'],
+      ),
+      payoutStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payout_status'],
+      ),
+      messageCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message_code'],
+      ),
+      bitcoinTransactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bitcoin_transaction_id'],
+      ),
+      liquidTransactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}liquid_transaction_id'],
+      ),
+      localPayinTransactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_payin_transaction_id'],
+      ),
+      signedPayinTransaction: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}signed_payin_transaction'],
+      ),
+      payinIsPsbt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payin_is_psbt'],
+      ),
+      orderNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}order_number'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      serverCreatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_created_at'],
+      ),
+      confirmationDeadline: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}confirmation_deadline'],
+      ),
+      sentAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sent_at'],
+      ),
+      localStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_status'],
+      )!,
+      lastPolledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_polled_at'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      serverCompletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_completed_at'],
+      ),
+      labelsAppliedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}labels_applied_at'],
+      ),
+    );
+  }
+
+  @override
+  OrderSwaps createAlias(String alias) {
+    return OrderSwaps(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(local_id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class OrderSwapsData extends DataClass implements Insertable<OrderSwapsData> {
+  final String localId;
+  final String? requestId;
+  final String? orderId;
+  final String purpose;
+  final String environment;
+  final String inNetwork;
+  final String outNetwork;
+  final int isInAmountFixed;
+  final int requestedAmountSat;
+  final int? quotedAmountSat;
+  final String? sourceWalletId;
+  final String? destinationWalletId;
+  final String destination;
+  final String fallback;
+  final String? bitcoinAddress;
+  final String? liquidAddress;
+  final String? lightningInvoice;
+  final int? payinAmountSat;
+  final int? payoutAmountSat;
+  final String? payinCurrency;
+  final String? payoutCurrency;
+  final String? payinMethod;
+  final String? payoutMethod;
+  final String? orderType;
+  final String? orderStatus;
+  final String? payinStatus;
+  final String? payoutStatus;
+  final String? messageCode;
+  final String? bitcoinTransactionId;
+  final String? liquidTransactionId;
+  final String? localPayinTransactionId;
+  final String? signedPayinTransaction;
+  final int? payinIsPsbt;
+  final int? orderNumber;
+  final String createdAt;
+  final String? serverCreatedAt;
+  final String? confirmationDeadline;
+  final String? sentAt;
+  final String localStatus;
+  final String? lastPolledAt;
+  final String? note;
+  final String? serverCompletedAt;
+  final String? labelsAppliedAt;
+  const OrderSwapsData({
+    required this.localId,
+    this.requestId,
+    this.orderId,
+    required this.purpose,
+    required this.environment,
+    required this.inNetwork,
+    required this.outNetwork,
+    required this.isInAmountFixed,
+    required this.requestedAmountSat,
+    this.quotedAmountSat,
+    this.sourceWalletId,
+    this.destinationWalletId,
+    required this.destination,
+    required this.fallback,
+    this.bitcoinAddress,
+    this.liquidAddress,
+    this.lightningInvoice,
+    this.payinAmountSat,
+    this.payoutAmountSat,
+    this.payinCurrency,
+    this.payoutCurrency,
+    this.payinMethod,
+    this.payoutMethod,
+    this.orderType,
+    this.orderStatus,
+    this.payinStatus,
+    this.payoutStatus,
+    this.messageCode,
+    this.bitcoinTransactionId,
+    this.liquidTransactionId,
+    this.localPayinTransactionId,
+    this.signedPayinTransaction,
+    this.payinIsPsbt,
+    this.orderNumber,
+    required this.createdAt,
+    this.serverCreatedAt,
+    this.confirmationDeadline,
+    this.sentAt,
+    required this.localStatus,
+    this.lastPolledAt,
+    this.note,
+    this.serverCompletedAt,
+    this.labelsAppliedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['local_id'] = Variable<String>(localId);
+    if (!nullToAbsent || requestId != null) {
+      map['request_id'] = Variable<String>(requestId);
+    }
+    if (!nullToAbsent || orderId != null) {
+      map['order_id'] = Variable<String>(orderId);
+    }
+    map['purpose'] = Variable<String>(purpose);
+    map['environment'] = Variable<String>(environment);
+    map['in_network'] = Variable<String>(inNetwork);
+    map['out_network'] = Variable<String>(outNetwork);
+    map['is_in_amount_fixed'] = Variable<int>(isInAmountFixed);
+    map['requested_amount_sat'] = Variable<int>(requestedAmountSat);
+    if (!nullToAbsent || quotedAmountSat != null) {
+      map['quoted_amount_sat'] = Variable<int>(quotedAmountSat);
+    }
+    if (!nullToAbsent || sourceWalletId != null) {
+      map['source_wallet_id'] = Variable<String>(sourceWalletId);
+    }
+    if (!nullToAbsent || destinationWalletId != null) {
+      map['destination_wallet_id'] = Variable<String>(destinationWalletId);
+    }
+    map['destination'] = Variable<String>(destination);
+    map['fallback'] = Variable<String>(fallback);
+    if (!nullToAbsent || bitcoinAddress != null) {
+      map['bitcoin_address'] = Variable<String>(bitcoinAddress);
+    }
+    if (!nullToAbsent || liquidAddress != null) {
+      map['liquid_address'] = Variable<String>(liquidAddress);
+    }
+    if (!nullToAbsent || lightningInvoice != null) {
+      map['lightning_invoice'] = Variable<String>(lightningInvoice);
+    }
+    if (!nullToAbsent || payinAmountSat != null) {
+      map['payin_amount_sat'] = Variable<int>(payinAmountSat);
+    }
+    if (!nullToAbsent || payoutAmountSat != null) {
+      map['payout_amount_sat'] = Variable<int>(payoutAmountSat);
+    }
+    if (!nullToAbsent || payinCurrency != null) {
+      map['payin_currency'] = Variable<String>(payinCurrency);
+    }
+    if (!nullToAbsent || payoutCurrency != null) {
+      map['payout_currency'] = Variable<String>(payoutCurrency);
+    }
+    if (!nullToAbsent || payinMethod != null) {
+      map['payin_method'] = Variable<String>(payinMethod);
+    }
+    if (!nullToAbsent || payoutMethod != null) {
+      map['payout_method'] = Variable<String>(payoutMethod);
+    }
+    if (!nullToAbsent || orderType != null) {
+      map['order_type'] = Variable<String>(orderType);
+    }
+    if (!nullToAbsent || orderStatus != null) {
+      map['order_status'] = Variable<String>(orderStatus);
+    }
+    if (!nullToAbsent || payinStatus != null) {
+      map['payin_status'] = Variable<String>(payinStatus);
+    }
+    if (!nullToAbsent || payoutStatus != null) {
+      map['payout_status'] = Variable<String>(payoutStatus);
+    }
+    if (!nullToAbsent || messageCode != null) {
+      map['message_code'] = Variable<String>(messageCode);
+    }
+    if (!nullToAbsent || bitcoinTransactionId != null) {
+      map['bitcoin_transaction_id'] = Variable<String>(bitcoinTransactionId);
+    }
+    if (!nullToAbsent || liquidTransactionId != null) {
+      map['liquid_transaction_id'] = Variable<String>(liquidTransactionId);
+    }
+    if (!nullToAbsent || localPayinTransactionId != null) {
+      map['local_payin_transaction_id'] = Variable<String>(
+        localPayinTransactionId,
+      );
+    }
+    if (!nullToAbsent || signedPayinTransaction != null) {
+      map['signed_payin_transaction'] = Variable<String>(
+        signedPayinTransaction,
+      );
+    }
+    if (!nullToAbsent || payinIsPsbt != null) {
+      map['payin_is_psbt'] = Variable<int>(payinIsPsbt);
+    }
+    if (!nullToAbsent || orderNumber != null) {
+      map['order_number'] = Variable<int>(orderNumber);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    if (!nullToAbsent || serverCreatedAt != null) {
+      map['server_created_at'] = Variable<String>(serverCreatedAt);
+    }
+    if (!nullToAbsent || confirmationDeadline != null) {
+      map['confirmation_deadline'] = Variable<String>(confirmationDeadline);
+    }
+    if (!nullToAbsent || sentAt != null) {
+      map['sent_at'] = Variable<String>(sentAt);
+    }
+    map['local_status'] = Variable<String>(localStatus);
+    if (!nullToAbsent || lastPolledAt != null) {
+      map['last_polled_at'] = Variable<String>(lastPolledAt);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    if (!nullToAbsent || serverCompletedAt != null) {
+      map['server_completed_at'] = Variable<String>(serverCompletedAt);
+    }
+    if (!nullToAbsent || labelsAppliedAt != null) {
+      map['labels_applied_at'] = Variable<String>(labelsAppliedAt);
+    }
+    return map;
+  }
+
+  OrderSwapsCompanion toCompanion(bool nullToAbsent) {
+    return OrderSwapsCompanion(
+      localId: Value(localId),
+      requestId: requestId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(requestId),
+      orderId: orderId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(orderId),
+      purpose: Value(purpose),
+      environment: Value(environment),
+      inNetwork: Value(inNetwork),
+      outNetwork: Value(outNetwork),
+      isInAmountFixed: Value(isInAmountFixed),
+      requestedAmountSat: Value(requestedAmountSat),
+      quotedAmountSat: quotedAmountSat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quotedAmountSat),
+      sourceWalletId: sourceWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceWalletId),
+      destinationWalletId: destinationWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationWalletId),
+      destination: Value(destination),
+      fallback: Value(fallback),
+      bitcoinAddress: bitcoinAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bitcoinAddress),
+      liquidAddress: liquidAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liquidAddress),
+      lightningInvoice: lightningInvoice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lightningInvoice),
+      payinAmountSat: payinAmountSat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payinAmountSat),
+      payoutAmountSat: payoutAmountSat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payoutAmountSat),
+      payinCurrency: payinCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payinCurrency),
+      payoutCurrency: payoutCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payoutCurrency),
+      payinMethod: payinMethod == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payinMethod),
+      payoutMethod: payoutMethod == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payoutMethod),
+      orderType: orderType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(orderType),
+      orderStatus: orderStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(orderStatus),
+      payinStatus: payinStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payinStatus),
+      payoutStatus: payoutStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payoutStatus),
+      messageCode: messageCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(messageCode),
+      bitcoinTransactionId: bitcoinTransactionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bitcoinTransactionId),
+      liquidTransactionId: liquidTransactionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liquidTransactionId),
+      localPayinTransactionId: localPayinTransactionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localPayinTransactionId),
+      signedPayinTransaction: signedPayinTransaction == null && nullToAbsent
+          ? const Value.absent()
+          : Value(signedPayinTransaction),
+      payinIsPsbt: payinIsPsbt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payinIsPsbt),
+      orderNumber: orderNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(orderNumber),
+      createdAt: Value(createdAt),
+      serverCreatedAt: serverCreatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverCreatedAt),
+      confirmationDeadline: confirmationDeadline == null && nullToAbsent
+          ? const Value.absent()
+          : Value(confirmationDeadline),
+      sentAt: sentAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sentAt),
+      localStatus: Value(localStatus),
+      lastPolledAt: lastPolledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPolledAt),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      serverCompletedAt: serverCompletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverCompletedAt),
+      labelsAppliedAt: labelsAppliedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(labelsAppliedAt),
+    );
+  }
+
+  factory OrderSwapsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OrderSwapsData(
+      localId: serializer.fromJson<String>(json['localId']),
+      requestId: serializer.fromJson<String?>(json['requestId']),
+      orderId: serializer.fromJson<String?>(json['orderId']),
+      purpose: serializer.fromJson<String>(json['purpose']),
+      environment: serializer.fromJson<String>(json['environment']),
+      inNetwork: serializer.fromJson<String>(json['inNetwork']),
+      outNetwork: serializer.fromJson<String>(json['outNetwork']),
+      isInAmountFixed: serializer.fromJson<int>(json['isInAmountFixed']),
+      requestedAmountSat: serializer.fromJson<int>(json['requestedAmountSat']),
+      quotedAmountSat: serializer.fromJson<int?>(json['quotedAmountSat']),
+      sourceWalletId: serializer.fromJson<String?>(json['sourceWalletId']),
+      destinationWalletId: serializer.fromJson<String?>(
+        json['destinationWalletId'],
+      ),
+      destination: serializer.fromJson<String>(json['destination']),
+      fallback: serializer.fromJson<String>(json['fallback']),
+      bitcoinAddress: serializer.fromJson<String?>(json['bitcoinAddress']),
+      liquidAddress: serializer.fromJson<String?>(json['liquidAddress']),
+      lightningInvoice: serializer.fromJson<String?>(json['lightningInvoice']),
+      payinAmountSat: serializer.fromJson<int?>(json['payinAmountSat']),
+      payoutAmountSat: serializer.fromJson<int?>(json['payoutAmountSat']),
+      payinCurrency: serializer.fromJson<String?>(json['payinCurrency']),
+      payoutCurrency: serializer.fromJson<String?>(json['payoutCurrency']),
+      payinMethod: serializer.fromJson<String?>(json['payinMethod']),
+      payoutMethod: serializer.fromJson<String?>(json['payoutMethod']),
+      orderType: serializer.fromJson<String?>(json['orderType']),
+      orderStatus: serializer.fromJson<String?>(json['orderStatus']),
+      payinStatus: serializer.fromJson<String?>(json['payinStatus']),
+      payoutStatus: serializer.fromJson<String?>(json['payoutStatus']),
+      messageCode: serializer.fromJson<String?>(json['messageCode']),
+      bitcoinTransactionId: serializer.fromJson<String?>(
+        json['bitcoinTransactionId'],
+      ),
+      liquidTransactionId: serializer.fromJson<String?>(
+        json['liquidTransactionId'],
+      ),
+      localPayinTransactionId: serializer.fromJson<String?>(
+        json['localPayinTransactionId'],
+      ),
+      signedPayinTransaction: serializer.fromJson<String?>(
+        json['signedPayinTransaction'],
+      ),
+      payinIsPsbt: serializer.fromJson<int?>(json['payinIsPsbt']),
+      orderNumber: serializer.fromJson<int?>(json['orderNumber']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      serverCreatedAt: serializer.fromJson<String?>(json['serverCreatedAt']),
+      confirmationDeadline: serializer.fromJson<String?>(
+        json['confirmationDeadline'],
+      ),
+      sentAt: serializer.fromJson<String?>(json['sentAt']),
+      localStatus: serializer.fromJson<String>(json['localStatus']),
+      lastPolledAt: serializer.fromJson<String?>(json['lastPolledAt']),
+      note: serializer.fromJson<String?>(json['note']),
+      serverCompletedAt: serializer.fromJson<String?>(
+        json['serverCompletedAt'],
+      ),
+      labelsAppliedAt: serializer.fromJson<String?>(json['labelsAppliedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'localId': serializer.toJson<String>(localId),
+      'requestId': serializer.toJson<String?>(requestId),
+      'orderId': serializer.toJson<String?>(orderId),
+      'purpose': serializer.toJson<String>(purpose),
+      'environment': serializer.toJson<String>(environment),
+      'inNetwork': serializer.toJson<String>(inNetwork),
+      'outNetwork': serializer.toJson<String>(outNetwork),
+      'isInAmountFixed': serializer.toJson<int>(isInAmountFixed),
+      'requestedAmountSat': serializer.toJson<int>(requestedAmountSat),
+      'quotedAmountSat': serializer.toJson<int?>(quotedAmountSat),
+      'sourceWalletId': serializer.toJson<String?>(sourceWalletId),
+      'destinationWalletId': serializer.toJson<String?>(destinationWalletId),
+      'destination': serializer.toJson<String>(destination),
+      'fallback': serializer.toJson<String>(fallback),
+      'bitcoinAddress': serializer.toJson<String?>(bitcoinAddress),
+      'liquidAddress': serializer.toJson<String?>(liquidAddress),
+      'lightningInvoice': serializer.toJson<String?>(lightningInvoice),
+      'payinAmountSat': serializer.toJson<int?>(payinAmountSat),
+      'payoutAmountSat': serializer.toJson<int?>(payoutAmountSat),
+      'payinCurrency': serializer.toJson<String?>(payinCurrency),
+      'payoutCurrency': serializer.toJson<String?>(payoutCurrency),
+      'payinMethod': serializer.toJson<String?>(payinMethod),
+      'payoutMethod': serializer.toJson<String?>(payoutMethod),
+      'orderType': serializer.toJson<String?>(orderType),
+      'orderStatus': serializer.toJson<String?>(orderStatus),
+      'payinStatus': serializer.toJson<String?>(payinStatus),
+      'payoutStatus': serializer.toJson<String?>(payoutStatus),
+      'messageCode': serializer.toJson<String?>(messageCode),
+      'bitcoinTransactionId': serializer.toJson<String?>(bitcoinTransactionId),
+      'liquidTransactionId': serializer.toJson<String?>(liquidTransactionId),
+      'localPayinTransactionId': serializer.toJson<String?>(
+        localPayinTransactionId,
+      ),
+      'signedPayinTransaction': serializer.toJson<String?>(
+        signedPayinTransaction,
+      ),
+      'payinIsPsbt': serializer.toJson<int?>(payinIsPsbt),
+      'orderNumber': serializer.toJson<int?>(orderNumber),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'serverCreatedAt': serializer.toJson<String?>(serverCreatedAt),
+      'confirmationDeadline': serializer.toJson<String?>(confirmationDeadline),
+      'sentAt': serializer.toJson<String?>(sentAt),
+      'localStatus': serializer.toJson<String>(localStatus),
+      'lastPolledAt': serializer.toJson<String?>(lastPolledAt),
+      'note': serializer.toJson<String?>(note),
+      'serverCompletedAt': serializer.toJson<String?>(serverCompletedAt),
+      'labelsAppliedAt': serializer.toJson<String?>(labelsAppliedAt),
+    };
+  }
+
+  OrderSwapsData copyWith({
+    String? localId,
+    Value<String?> requestId = const Value.absent(),
+    Value<String?> orderId = const Value.absent(),
+    String? purpose,
+    String? environment,
+    String? inNetwork,
+    String? outNetwork,
+    int? isInAmountFixed,
+    int? requestedAmountSat,
+    Value<int?> quotedAmountSat = const Value.absent(),
+    Value<String?> sourceWalletId = const Value.absent(),
+    Value<String?> destinationWalletId = const Value.absent(),
+    String? destination,
+    String? fallback,
+    Value<String?> bitcoinAddress = const Value.absent(),
+    Value<String?> liquidAddress = const Value.absent(),
+    Value<String?> lightningInvoice = const Value.absent(),
+    Value<int?> payinAmountSat = const Value.absent(),
+    Value<int?> payoutAmountSat = const Value.absent(),
+    Value<String?> payinCurrency = const Value.absent(),
+    Value<String?> payoutCurrency = const Value.absent(),
+    Value<String?> payinMethod = const Value.absent(),
+    Value<String?> payoutMethod = const Value.absent(),
+    Value<String?> orderType = const Value.absent(),
+    Value<String?> orderStatus = const Value.absent(),
+    Value<String?> payinStatus = const Value.absent(),
+    Value<String?> payoutStatus = const Value.absent(),
+    Value<String?> messageCode = const Value.absent(),
+    Value<String?> bitcoinTransactionId = const Value.absent(),
+    Value<String?> liquidTransactionId = const Value.absent(),
+    Value<String?> localPayinTransactionId = const Value.absent(),
+    Value<String?> signedPayinTransaction = const Value.absent(),
+    Value<int?> payinIsPsbt = const Value.absent(),
+    Value<int?> orderNumber = const Value.absent(),
+    String? createdAt,
+    Value<String?> serverCreatedAt = const Value.absent(),
+    Value<String?> confirmationDeadline = const Value.absent(),
+    Value<String?> sentAt = const Value.absent(),
+    String? localStatus,
+    Value<String?> lastPolledAt = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+    Value<String?> serverCompletedAt = const Value.absent(),
+    Value<String?> labelsAppliedAt = const Value.absent(),
+  }) => OrderSwapsData(
+    localId: localId ?? this.localId,
+    requestId: requestId.present ? requestId.value : this.requestId,
+    orderId: orderId.present ? orderId.value : this.orderId,
+    purpose: purpose ?? this.purpose,
+    environment: environment ?? this.environment,
+    inNetwork: inNetwork ?? this.inNetwork,
+    outNetwork: outNetwork ?? this.outNetwork,
+    isInAmountFixed: isInAmountFixed ?? this.isInAmountFixed,
+    requestedAmountSat: requestedAmountSat ?? this.requestedAmountSat,
+    quotedAmountSat: quotedAmountSat.present
+        ? quotedAmountSat.value
+        : this.quotedAmountSat,
+    sourceWalletId: sourceWalletId.present
+        ? sourceWalletId.value
+        : this.sourceWalletId,
+    destinationWalletId: destinationWalletId.present
+        ? destinationWalletId.value
+        : this.destinationWalletId,
+    destination: destination ?? this.destination,
+    fallback: fallback ?? this.fallback,
+    bitcoinAddress: bitcoinAddress.present
+        ? bitcoinAddress.value
+        : this.bitcoinAddress,
+    liquidAddress: liquidAddress.present
+        ? liquidAddress.value
+        : this.liquidAddress,
+    lightningInvoice: lightningInvoice.present
+        ? lightningInvoice.value
+        : this.lightningInvoice,
+    payinAmountSat: payinAmountSat.present
+        ? payinAmountSat.value
+        : this.payinAmountSat,
+    payoutAmountSat: payoutAmountSat.present
+        ? payoutAmountSat.value
+        : this.payoutAmountSat,
+    payinCurrency: payinCurrency.present
+        ? payinCurrency.value
+        : this.payinCurrency,
+    payoutCurrency: payoutCurrency.present
+        ? payoutCurrency.value
+        : this.payoutCurrency,
+    payinMethod: payinMethod.present ? payinMethod.value : this.payinMethod,
+    payoutMethod: payoutMethod.present ? payoutMethod.value : this.payoutMethod,
+    orderType: orderType.present ? orderType.value : this.orderType,
+    orderStatus: orderStatus.present ? orderStatus.value : this.orderStatus,
+    payinStatus: payinStatus.present ? payinStatus.value : this.payinStatus,
+    payoutStatus: payoutStatus.present ? payoutStatus.value : this.payoutStatus,
+    messageCode: messageCode.present ? messageCode.value : this.messageCode,
+    bitcoinTransactionId: bitcoinTransactionId.present
+        ? bitcoinTransactionId.value
+        : this.bitcoinTransactionId,
+    liquidTransactionId: liquidTransactionId.present
+        ? liquidTransactionId.value
+        : this.liquidTransactionId,
+    localPayinTransactionId: localPayinTransactionId.present
+        ? localPayinTransactionId.value
+        : this.localPayinTransactionId,
+    signedPayinTransaction: signedPayinTransaction.present
+        ? signedPayinTransaction.value
+        : this.signedPayinTransaction,
+    payinIsPsbt: payinIsPsbt.present ? payinIsPsbt.value : this.payinIsPsbt,
+    orderNumber: orderNumber.present ? orderNumber.value : this.orderNumber,
+    createdAt: createdAt ?? this.createdAt,
+    serverCreatedAt: serverCreatedAt.present
+        ? serverCreatedAt.value
+        : this.serverCreatedAt,
+    confirmationDeadline: confirmationDeadline.present
+        ? confirmationDeadline.value
+        : this.confirmationDeadline,
+    sentAt: sentAt.present ? sentAt.value : this.sentAt,
+    localStatus: localStatus ?? this.localStatus,
+    lastPolledAt: lastPolledAt.present ? lastPolledAt.value : this.lastPolledAt,
+    note: note.present ? note.value : this.note,
+    serverCompletedAt: serverCompletedAt.present
+        ? serverCompletedAt.value
+        : this.serverCompletedAt,
+    labelsAppliedAt: labelsAppliedAt.present
+        ? labelsAppliedAt.value
+        : this.labelsAppliedAt,
+  );
+  OrderSwapsData copyWithCompanion(OrderSwapsCompanion data) {
+    return OrderSwapsData(
+      localId: data.localId.present ? data.localId.value : this.localId,
+      requestId: data.requestId.present ? data.requestId.value : this.requestId,
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      purpose: data.purpose.present ? data.purpose.value : this.purpose,
+      environment: data.environment.present
+          ? data.environment.value
+          : this.environment,
+      inNetwork: data.inNetwork.present ? data.inNetwork.value : this.inNetwork,
+      outNetwork: data.outNetwork.present
+          ? data.outNetwork.value
+          : this.outNetwork,
+      isInAmountFixed: data.isInAmountFixed.present
+          ? data.isInAmountFixed.value
+          : this.isInAmountFixed,
+      requestedAmountSat: data.requestedAmountSat.present
+          ? data.requestedAmountSat.value
+          : this.requestedAmountSat,
+      quotedAmountSat: data.quotedAmountSat.present
+          ? data.quotedAmountSat.value
+          : this.quotedAmountSat,
+      sourceWalletId: data.sourceWalletId.present
+          ? data.sourceWalletId.value
+          : this.sourceWalletId,
+      destinationWalletId: data.destinationWalletId.present
+          ? data.destinationWalletId.value
+          : this.destinationWalletId,
+      destination: data.destination.present
+          ? data.destination.value
+          : this.destination,
+      fallback: data.fallback.present ? data.fallback.value : this.fallback,
+      bitcoinAddress: data.bitcoinAddress.present
+          ? data.bitcoinAddress.value
+          : this.bitcoinAddress,
+      liquidAddress: data.liquidAddress.present
+          ? data.liquidAddress.value
+          : this.liquidAddress,
+      lightningInvoice: data.lightningInvoice.present
+          ? data.lightningInvoice.value
+          : this.lightningInvoice,
+      payinAmountSat: data.payinAmountSat.present
+          ? data.payinAmountSat.value
+          : this.payinAmountSat,
+      payoutAmountSat: data.payoutAmountSat.present
+          ? data.payoutAmountSat.value
+          : this.payoutAmountSat,
+      payinCurrency: data.payinCurrency.present
+          ? data.payinCurrency.value
+          : this.payinCurrency,
+      payoutCurrency: data.payoutCurrency.present
+          ? data.payoutCurrency.value
+          : this.payoutCurrency,
+      payinMethod: data.payinMethod.present
+          ? data.payinMethod.value
+          : this.payinMethod,
+      payoutMethod: data.payoutMethod.present
+          ? data.payoutMethod.value
+          : this.payoutMethod,
+      orderType: data.orderType.present ? data.orderType.value : this.orderType,
+      orderStatus: data.orderStatus.present
+          ? data.orderStatus.value
+          : this.orderStatus,
+      payinStatus: data.payinStatus.present
+          ? data.payinStatus.value
+          : this.payinStatus,
+      payoutStatus: data.payoutStatus.present
+          ? data.payoutStatus.value
+          : this.payoutStatus,
+      messageCode: data.messageCode.present
+          ? data.messageCode.value
+          : this.messageCode,
+      bitcoinTransactionId: data.bitcoinTransactionId.present
+          ? data.bitcoinTransactionId.value
+          : this.bitcoinTransactionId,
+      liquidTransactionId: data.liquidTransactionId.present
+          ? data.liquidTransactionId.value
+          : this.liquidTransactionId,
+      localPayinTransactionId: data.localPayinTransactionId.present
+          ? data.localPayinTransactionId.value
+          : this.localPayinTransactionId,
+      signedPayinTransaction: data.signedPayinTransaction.present
+          ? data.signedPayinTransaction.value
+          : this.signedPayinTransaction,
+      payinIsPsbt: data.payinIsPsbt.present
+          ? data.payinIsPsbt.value
+          : this.payinIsPsbt,
+      orderNumber: data.orderNumber.present
+          ? data.orderNumber.value
+          : this.orderNumber,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      serverCreatedAt: data.serverCreatedAt.present
+          ? data.serverCreatedAt.value
+          : this.serverCreatedAt,
+      confirmationDeadline: data.confirmationDeadline.present
+          ? data.confirmationDeadline.value
+          : this.confirmationDeadline,
+      sentAt: data.sentAt.present ? data.sentAt.value : this.sentAt,
+      localStatus: data.localStatus.present
+          ? data.localStatus.value
+          : this.localStatus,
+      lastPolledAt: data.lastPolledAt.present
+          ? data.lastPolledAt.value
+          : this.lastPolledAt,
+      note: data.note.present ? data.note.value : this.note,
+      serverCompletedAt: data.serverCompletedAt.present
+          ? data.serverCompletedAt.value
+          : this.serverCompletedAt,
+      labelsAppliedAt: data.labelsAppliedAt.present
+          ? data.labelsAppliedAt.value
+          : this.labelsAppliedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderSwapsData(')
+          ..write('localId: $localId, ')
+          ..write('requestId: $requestId, ')
+          ..write('orderId: $orderId, ')
+          ..write('purpose: $purpose, ')
+          ..write('environment: $environment, ')
+          ..write('inNetwork: $inNetwork, ')
+          ..write('outNetwork: $outNetwork, ')
+          ..write('isInAmountFixed: $isInAmountFixed, ')
+          ..write('requestedAmountSat: $requestedAmountSat, ')
+          ..write('quotedAmountSat: $quotedAmountSat, ')
+          ..write('sourceWalletId: $sourceWalletId, ')
+          ..write('destinationWalletId: $destinationWalletId, ')
+          ..write('destination: $destination, ')
+          ..write('fallback: $fallback, ')
+          ..write('bitcoinAddress: $bitcoinAddress, ')
+          ..write('liquidAddress: $liquidAddress, ')
+          ..write('lightningInvoice: $lightningInvoice, ')
+          ..write('payinAmountSat: $payinAmountSat, ')
+          ..write('payoutAmountSat: $payoutAmountSat, ')
+          ..write('payinCurrency: $payinCurrency, ')
+          ..write('payoutCurrency: $payoutCurrency, ')
+          ..write('payinMethod: $payinMethod, ')
+          ..write('payoutMethod: $payoutMethod, ')
+          ..write('orderType: $orderType, ')
+          ..write('orderStatus: $orderStatus, ')
+          ..write('payinStatus: $payinStatus, ')
+          ..write('payoutStatus: $payoutStatus, ')
+          ..write('messageCode: $messageCode, ')
+          ..write('bitcoinTransactionId: $bitcoinTransactionId, ')
+          ..write('liquidTransactionId: $liquidTransactionId, ')
+          ..write('localPayinTransactionId: $localPayinTransactionId, ')
+          ..write('signedPayinTransaction: $signedPayinTransaction, ')
+          ..write('payinIsPsbt: $payinIsPsbt, ')
+          ..write('orderNumber: $orderNumber, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('serverCreatedAt: $serverCreatedAt, ')
+          ..write('confirmationDeadline: $confirmationDeadline, ')
+          ..write('sentAt: $sentAt, ')
+          ..write('localStatus: $localStatus, ')
+          ..write('lastPolledAt: $lastPolledAt, ')
+          ..write('note: $note, ')
+          ..write('serverCompletedAt: $serverCompletedAt, ')
+          ..write('labelsAppliedAt: $labelsAppliedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    localId,
+    requestId,
+    orderId,
+    purpose,
+    environment,
+    inNetwork,
+    outNetwork,
+    isInAmountFixed,
+    requestedAmountSat,
+    quotedAmountSat,
+    sourceWalletId,
+    destinationWalletId,
+    destination,
+    fallback,
+    bitcoinAddress,
+    liquidAddress,
+    lightningInvoice,
+    payinAmountSat,
+    payoutAmountSat,
+    payinCurrency,
+    payoutCurrency,
+    payinMethod,
+    payoutMethod,
+    orderType,
+    orderStatus,
+    payinStatus,
+    payoutStatus,
+    messageCode,
+    bitcoinTransactionId,
+    liquidTransactionId,
+    localPayinTransactionId,
+    signedPayinTransaction,
+    payinIsPsbt,
+    orderNumber,
+    createdAt,
+    serverCreatedAt,
+    confirmationDeadline,
+    sentAt,
+    localStatus,
+    lastPolledAt,
+    note,
+    serverCompletedAt,
+    labelsAppliedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OrderSwapsData &&
+          other.localId == this.localId &&
+          other.requestId == this.requestId &&
+          other.orderId == this.orderId &&
+          other.purpose == this.purpose &&
+          other.environment == this.environment &&
+          other.inNetwork == this.inNetwork &&
+          other.outNetwork == this.outNetwork &&
+          other.isInAmountFixed == this.isInAmountFixed &&
+          other.requestedAmountSat == this.requestedAmountSat &&
+          other.quotedAmountSat == this.quotedAmountSat &&
+          other.sourceWalletId == this.sourceWalletId &&
+          other.destinationWalletId == this.destinationWalletId &&
+          other.destination == this.destination &&
+          other.fallback == this.fallback &&
+          other.bitcoinAddress == this.bitcoinAddress &&
+          other.liquidAddress == this.liquidAddress &&
+          other.lightningInvoice == this.lightningInvoice &&
+          other.payinAmountSat == this.payinAmountSat &&
+          other.payoutAmountSat == this.payoutAmountSat &&
+          other.payinCurrency == this.payinCurrency &&
+          other.payoutCurrency == this.payoutCurrency &&
+          other.payinMethod == this.payinMethod &&
+          other.payoutMethod == this.payoutMethod &&
+          other.orderType == this.orderType &&
+          other.orderStatus == this.orderStatus &&
+          other.payinStatus == this.payinStatus &&
+          other.payoutStatus == this.payoutStatus &&
+          other.messageCode == this.messageCode &&
+          other.bitcoinTransactionId == this.bitcoinTransactionId &&
+          other.liquidTransactionId == this.liquidTransactionId &&
+          other.localPayinTransactionId == this.localPayinTransactionId &&
+          other.signedPayinTransaction == this.signedPayinTransaction &&
+          other.payinIsPsbt == this.payinIsPsbt &&
+          other.orderNumber == this.orderNumber &&
+          other.createdAt == this.createdAt &&
+          other.serverCreatedAt == this.serverCreatedAt &&
+          other.confirmationDeadline == this.confirmationDeadline &&
+          other.sentAt == this.sentAt &&
+          other.localStatus == this.localStatus &&
+          other.lastPolledAt == this.lastPolledAt &&
+          other.note == this.note &&
+          other.serverCompletedAt == this.serverCompletedAt &&
+          other.labelsAppliedAt == this.labelsAppliedAt);
+}
+
+class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
+  final Value<String> localId;
+  final Value<String?> requestId;
+  final Value<String?> orderId;
+  final Value<String> purpose;
+  final Value<String> environment;
+  final Value<String> inNetwork;
+  final Value<String> outNetwork;
+  final Value<int> isInAmountFixed;
+  final Value<int> requestedAmountSat;
+  final Value<int?> quotedAmountSat;
+  final Value<String?> sourceWalletId;
+  final Value<String?> destinationWalletId;
+  final Value<String> destination;
+  final Value<String> fallback;
+  final Value<String?> bitcoinAddress;
+  final Value<String?> liquidAddress;
+  final Value<String?> lightningInvoice;
+  final Value<int?> payinAmountSat;
+  final Value<int?> payoutAmountSat;
+  final Value<String?> payinCurrency;
+  final Value<String?> payoutCurrency;
+  final Value<String?> payinMethod;
+  final Value<String?> payoutMethod;
+  final Value<String?> orderType;
+  final Value<String?> orderStatus;
+  final Value<String?> payinStatus;
+  final Value<String?> payoutStatus;
+  final Value<String?> messageCode;
+  final Value<String?> bitcoinTransactionId;
+  final Value<String?> liquidTransactionId;
+  final Value<String?> localPayinTransactionId;
+  final Value<String?> signedPayinTransaction;
+  final Value<int?> payinIsPsbt;
+  final Value<int?> orderNumber;
+  final Value<String> createdAt;
+  final Value<String?> serverCreatedAt;
+  final Value<String?> confirmationDeadline;
+  final Value<String?> sentAt;
+  final Value<String> localStatus;
+  final Value<String?> lastPolledAt;
+  final Value<String?> note;
+  final Value<String?> serverCompletedAt;
+  final Value<String?> labelsAppliedAt;
+  final Value<int> rowid;
+  const OrderSwapsCompanion({
+    this.localId = const Value.absent(),
+    this.requestId = const Value.absent(),
+    this.orderId = const Value.absent(),
+    this.purpose = const Value.absent(),
+    this.environment = const Value.absent(),
+    this.inNetwork = const Value.absent(),
+    this.outNetwork = const Value.absent(),
+    this.isInAmountFixed = const Value.absent(),
+    this.requestedAmountSat = const Value.absent(),
+    this.quotedAmountSat = const Value.absent(),
+    this.sourceWalletId = const Value.absent(),
+    this.destinationWalletId = const Value.absent(),
+    this.destination = const Value.absent(),
+    this.fallback = const Value.absent(),
+    this.bitcoinAddress = const Value.absent(),
+    this.liquidAddress = const Value.absent(),
+    this.lightningInvoice = const Value.absent(),
+    this.payinAmountSat = const Value.absent(),
+    this.payoutAmountSat = const Value.absent(),
+    this.payinCurrency = const Value.absent(),
+    this.payoutCurrency = const Value.absent(),
+    this.payinMethod = const Value.absent(),
+    this.payoutMethod = const Value.absent(),
+    this.orderType = const Value.absent(),
+    this.orderStatus = const Value.absent(),
+    this.payinStatus = const Value.absent(),
+    this.payoutStatus = const Value.absent(),
+    this.messageCode = const Value.absent(),
+    this.bitcoinTransactionId = const Value.absent(),
+    this.liquidTransactionId = const Value.absent(),
+    this.localPayinTransactionId = const Value.absent(),
+    this.signedPayinTransaction = const Value.absent(),
+    this.payinIsPsbt = const Value.absent(),
+    this.orderNumber = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.serverCreatedAt = const Value.absent(),
+    this.confirmationDeadline = const Value.absent(),
+    this.sentAt = const Value.absent(),
+    this.localStatus = const Value.absent(),
+    this.lastPolledAt = const Value.absent(),
+    this.note = const Value.absent(),
+    this.serverCompletedAt = const Value.absent(),
+    this.labelsAppliedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OrderSwapsCompanion.insert({
+    required String localId,
+    this.requestId = const Value.absent(),
+    this.orderId = const Value.absent(),
+    required String purpose,
+    required String environment,
+    required String inNetwork,
+    required String outNetwork,
+    required int isInAmountFixed,
+    required int requestedAmountSat,
+    this.quotedAmountSat = const Value.absent(),
+    this.sourceWalletId = const Value.absent(),
+    this.destinationWalletId = const Value.absent(),
+    required String destination,
+    required String fallback,
+    this.bitcoinAddress = const Value.absent(),
+    this.liquidAddress = const Value.absent(),
+    this.lightningInvoice = const Value.absent(),
+    this.payinAmountSat = const Value.absent(),
+    this.payoutAmountSat = const Value.absent(),
+    this.payinCurrency = const Value.absent(),
+    this.payoutCurrency = const Value.absent(),
+    this.payinMethod = const Value.absent(),
+    this.payoutMethod = const Value.absent(),
+    this.orderType = const Value.absent(),
+    this.orderStatus = const Value.absent(),
+    this.payinStatus = const Value.absent(),
+    this.payoutStatus = const Value.absent(),
+    this.messageCode = const Value.absent(),
+    this.bitcoinTransactionId = const Value.absent(),
+    this.liquidTransactionId = const Value.absent(),
+    this.localPayinTransactionId = const Value.absent(),
+    this.signedPayinTransaction = const Value.absent(),
+    this.payinIsPsbt = const Value.absent(),
+    this.orderNumber = const Value.absent(),
+    required String createdAt,
+    this.serverCreatedAt = const Value.absent(),
+    this.confirmationDeadline = const Value.absent(),
+    this.sentAt = const Value.absent(),
+    required String localStatus,
+    this.lastPolledAt = const Value.absent(),
+    this.note = const Value.absent(),
+    this.serverCompletedAt = const Value.absent(),
+    this.labelsAppliedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : localId = Value(localId),
+       purpose = Value(purpose),
+       environment = Value(environment),
+       inNetwork = Value(inNetwork),
+       outNetwork = Value(outNetwork),
+       isInAmountFixed = Value(isInAmountFixed),
+       requestedAmountSat = Value(requestedAmountSat),
+       destination = Value(destination),
+       fallback = Value(fallback),
+       createdAt = Value(createdAt),
+       localStatus = Value(localStatus);
+  static Insertable<OrderSwapsData> custom({
+    Expression<String>? localId,
+    Expression<String>? requestId,
+    Expression<String>? orderId,
+    Expression<String>? purpose,
+    Expression<String>? environment,
+    Expression<String>? inNetwork,
+    Expression<String>? outNetwork,
+    Expression<int>? isInAmountFixed,
+    Expression<int>? requestedAmountSat,
+    Expression<int>? quotedAmountSat,
+    Expression<String>? sourceWalletId,
+    Expression<String>? destinationWalletId,
+    Expression<String>? destination,
+    Expression<String>? fallback,
+    Expression<String>? bitcoinAddress,
+    Expression<String>? liquidAddress,
+    Expression<String>? lightningInvoice,
+    Expression<int>? payinAmountSat,
+    Expression<int>? payoutAmountSat,
+    Expression<String>? payinCurrency,
+    Expression<String>? payoutCurrency,
+    Expression<String>? payinMethod,
+    Expression<String>? payoutMethod,
+    Expression<String>? orderType,
+    Expression<String>? orderStatus,
+    Expression<String>? payinStatus,
+    Expression<String>? payoutStatus,
+    Expression<String>? messageCode,
+    Expression<String>? bitcoinTransactionId,
+    Expression<String>? liquidTransactionId,
+    Expression<String>? localPayinTransactionId,
+    Expression<String>? signedPayinTransaction,
+    Expression<int>? payinIsPsbt,
+    Expression<int>? orderNumber,
+    Expression<String>? createdAt,
+    Expression<String>? serverCreatedAt,
+    Expression<String>? confirmationDeadline,
+    Expression<String>? sentAt,
+    Expression<String>? localStatus,
+    Expression<String>? lastPolledAt,
+    Expression<String>? note,
+    Expression<String>? serverCompletedAt,
+    Expression<String>? labelsAppliedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (localId != null) 'local_id': localId,
+      if (requestId != null) 'request_id': requestId,
+      if (orderId != null) 'order_id': orderId,
+      if (purpose != null) 'purpose': purpose,
+      if (environment != null) 'environment': environment,
+      if (inNetwork != null) 'in_network': inNetwork,
+      if (outNetwork != null) 'out_network': outNetwork,
+      if (isInAmountFixed != null) 'is_in_amount_fixed': isInAmountFixed,
+      if (requestedAmountSat != null)
+        'requested_amount_sat': requestedAmountSat,
+      if (quotedAmountSat != null) 'quoted_amount_sat': quotedAmountSat,
+      if (sourceWalletId != null) 'source_wallet_id': sourceWalletId,
+      if (destinationWalletId != null)
+        'destination_wallet_id': destinationWalletId,
+      if (destination != null) 'destination': destination,
+      if (fallback != null) 'fallback': fallback,
+      if (bitcoinAddress != null) 'bitcoin_address': bitcoinAddress,
+      if (liquidAddress != null) 'liquid_address': liquidAddress,
+      if (lightningInvoice != null) 'lightning_invoice': lightningInvoice,
+      if (payinAmountSat != null) 'payin_amount_sat': payinAmountSat,
+      if (payoutAmountSat != null) 'payout_amount_sat': payoutAmountSat,
+      if (payinCurrency != null) 'payin_currency': payinCurrency,
+      if (payoutCurrency != null) 'payout_currency': payoutCurrency,
+      if (payinMethod != null) 'payin_method': payinMethod,
+      if (payoutMethod != null) 'payout_method': payoutMethod,
+      if (orderType != null) 'order_type': orderType,
+      if (orderStatus != null) 'order_status': orderStatus,
+      if (payinStatus != null) 'payin_status': payinStatus,
+      if (payoutStatus != null) 'payout_status': payoutStatus,
+      if (messageCode != null) 'message_code': messageCode,
+      if (bitcoinTransactionId != null)
+        'bitcoin_transaction_id': bitcoinTransactionId,
+      if (liquidTransactionId != null)
+        'liquid_transaction_id': liquidTransactionId,
+      if (localPayinTransactionId != null)
+        'local_payin_transaction_id': localPayinTransactionId,
+      if (signedPayinTransaction != null)
+        'signed_payin_transaction': signedPayinTransaction,
+      if (payinIsPsbt != null) 'payin_is_psbt': payinIsPsbt,
+      if (orderNumber != null) 'order_number': orderNumber,
+      if (createdAt != null) 'created_at': createdAt,
+      if (serverCreatedAt != null) 'server_created_at': serverCreatedAt,
+      if (confirmationDeadline != null)
+        'confirmation_deadline': confirmationDeadline,
+      if (sentAt != null) 'sent_at': sentAt,
+      if (localStatus != null) 'local_status': localStatus,
+      if (lastPolledAt != null) 'last_polled_at': lastPolledAt,
+      if (note != null) 'note': note,
+      if (serverCompletedAt != null) 'server_completed_at': serverCompletedAt,
+      if (labelsAppliedAt != null) 'labels_applied_at': labelsAppliedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OrderSwapsCompanion copyWith({
+    Value<String>? localId,
+    Value<String?>? requestId,
+    Value<String?>? orderId,
+    Value<String>? purpose,
+    Value<String>? environment,
+    Value<String>? inNetwork,
+    Value<String>? outNetwork,
+    Value<int>? isInAmountFixed,
+    Value<int>? requestedAmountSat,
+    Value<int?>? quotedAmountSat,
+    Value<String?>? sourceWalletId,
+    Value<String?>? destinationWalletId,
+    Value<String>? destination,
+    Value<String>? fallback,
+    Value<String?>? bitcoinAddress,
+    Value<String?>? liquidAddress,
+    Value<String?>? lightningInvoice,
+    Value<int?>? payinAmountSat,
+    Value<int?>? payoutAmountSat,
+    Value<String?>? payinCurrency,
+    Value<String?>? payoutCurrency,
+    Value<String?>? payinMethod,
+    Value<String?>? payoutMethod,
+    Value<String?>? orderType,
+    Value<String?>? orderStatus,
+    Value<String?>? payinStatus,
+    Value<String?>? payoutStatus,
+    Value<String?>? messageCode,
+    Value<String?>? bitcoinTransactionId,
+    Value<String?>? liquidTransactionId,
+    Value<String?>? localPayinTransactionId,
+    Value<String?>? signedPayinTransaction,
+    Value<int?>? payinIsPsbt,
+    Value<int?>? orderNumber,
+    Value<String>? createdAt,
+    Value<String?>? serverCreatedAt,
+    Value<String?>? confirmationDeadline,
+    Value<String?>? sentAt,
+    Value<String>? localStatus,
+    Value<String?>? lastPolledAt,
+    Value<String?>? note,
+    Value<String?>? serverCompletedAt,
+    Value<String?>? labelsAppliedAt,
+    Value<int>? rowid,
+  }) {
+    return OrderSwapsCompanion(
+      localId: localId ?? this.localId,
+      requestId: requestId ?? this.requestId,
+      orderId: orderId ?? this.orderId,
+      purpose: purpose ?? this.purpose,
+      environment: environment ?? this.environment,
+      inNetwork: inNetwork ?? this.inNetwork,
+      outNetwork: outNetwork ?? this.outNetwork,
+      isInAmountFixed: isInAmountFixed ?? this.isInAmountFixed,
+      requestedAmountSat: requestedAmountSat ?? this.requestedAmountSat,
+      quotedAmountSat: quotedAmountSat ?? this.quotedAmountSat,
+      sourceWalletId: sourceWalletId ?? this.sourceWalletId,
+      destinationWalletId: destinationWalletId ?? this.destinationWalletId,
+      destination: destination ?? this.destination,
+      fallback: fallback ?? this.fallback,
+      bitcoinAddress: bitcoinAddress ?? this.bitcoinAddress,
+      liquidAddress: liquidAddress ?? this.liquidAddress,
+      lightningInvoice: lightningInvoice ?? this.lightningInvoice,
+      payinAmountSat: payinAmountSat ?? this.payinAmountSat,
+      payoutAmountSat: payoutAmountSat ?? this.payoutAmountSat,
+      payinCurrency: payinCurrency ?? this.payinCurrency,
+      payoutCurrency: payoutCurrency ?? this.payoutCurrency,
+      payinMethod: payinMethod ?? this.payinMethod,
+      payoutMethod: payoutMethod ?? this.payoutMethod,
+      orderType: orderType ?? this.orderType,
+      orderStatus: orderStatus ?? this.orderStatus,
+      payinStatus: payinStatus ?? this.payinStatus,
+      payoutStatus: payoutStatus ?? this.payoutStatus,
+      messageCode: messageCode ?? this.messageCode,
+      bitcoinTransactionId: bitcoinTransactionId ?? this.bitcoinTransactionId,
+      liquidTransactionId: liquidTransactionId ?? this.liquidTransactionId,
+      localPayinTransactionId:
+          localPayinTransactionId ?? this.localPayinTransactionId,
+      signedPayinTransaction:
+          signedPayinTransaction ?? this.signedPayinTransaction,
+      payinIsPsbt: payinIsPsbt ?? this.payinIsPsbt,
+      orderNumber: orderNumber ?? this.orderNumber,
+      createdAt: createdAt ?? this.createdAt,
+      serverCreatedAt: serverCreatedAt ?? this.serverCreatedAt,
+      confirmationDeadline: confirmationDeadline ?? this.confirmationDeadline,
+      sentAt: sentAt ?? this.sentAt,
+      localStatus: localStatus ?? this.localStatus,
+      lastPolledAt: lastPolledAt ?? this.lastPolledAt,
+      note: note ?? this.note,
+      serverCompletedAt: serverCompletedAt ?? this.serverCompletedAt,
+      labelsAppliedAt: labelsAppliedAt ?? this.labelsAppliedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (localId.present) {
+      map['local_id'] = Variable<String>(localId.value);
+    }
+    if (requestId.present) {
+      map['request_id'] = Variable<String>(requestId.value);
+    }
+    if (orderId.present) {
+      map['order_id'] = Variable<String>(orderId.value);
+    }
+    if (purpose.present) {
+      map['purpose'] = Variable<String>(purpose.value);
+    }
+    if (environment.present) {
+      map['environment'] = Variable<String>(environment.value);
+    }
+    if (inNetwork.present) {
+      map['in_network'] = Variable<String>(inNetwork.value);
+    }
+    if (outNetwork.present) {
+      map['out_network'] = Variable<String>(outNetwork.value);
+    }
+    if (isInAmountFixed.present) {
+      map['is_in_amount_fixed'] = Variable<int>(isInAmountFixed.value);
+    }
+    if (requestedAmountSat.present) {
+      map['requested_amount_sat'] = Variable<int>(requestedAmountSat.value);
+    }
+    if (quotedAmountSat.present) {
+      map['quoted_amount_sat'] = Variable<int>(quotedAmountSat.value);
+    }
+    if (sourceWalletId.present) {
+      map['source_wallet_id'] = Variable<String>(sourceWalletId.value);
+    }
+    if (destinationWalletId.present) {
+      map['destination_wallet_id'] = Variable<String>(
+        destinationWalletId.value,
+      );
+    }
+    if (destination.present) {
+      map['destination'] = Variable<String>(destination.value);
+    }
+    if (fallback.present) {
+      map['fallback'] = Variable<String>(fallback.value);
+    }
+    if (bitcoinAddress.present) {
+      map['bitcoin_address'] = Variable<String>(bitcoinAddress.value);
+    }
+    if (liquidAddress.present) {
+      map['liquid_address'] = Variable<String>(liquidAddress.value);
+    }
+    if (lightningInvoice.present) {
+      map['lightning_invoice'] = Variable<String>(lightningInvoice.value);
+    }
+    if (payinAmountSat.present) {
+      map['payin_amount_sat'] = Variable<int>(payinAmountSat.value);
+    }
+    if (payoutAmountSat.present) {
+      map['payout_amount_sat'] = Variable<int>(payoutAmountSat.value);
+    }
+    if (payinCurrency.present) {
+      map['payin_currency'] = Variable<String>(payinCurrency.value);
+    }
+    if (payoutCurrency.present) {
+      map['payout_currency'] = Variable<String>(payoutCurrency.value);
+    }
+    if (payinMethod.present) {
+      map['payin_method'] = Variable<String>(payinMethod.value);
+    }
+    if (payoutMethod.present) {
+      map['payout_method'] = Variable<String>(payoutMethod.value);
+    }
+    if (orderType.present) {
+      map['order_type'] = Variable<String>(orderType.value);
+    }
+    if (orderStatus.present) {
+      map['order_status'] = Variable<String>(orderStatus.value);
+    }
+    if (payinStatus.present) {
+      map['payin_status'] = Variable<String>(payinStatus.value);
+    }
+    if (payoutStatus.present) {
+      map['payout_status'] = Variable<String>(payoutStatus.value);
+    }
+    if (messageCode.present) {
+      map['message_code'] = Variable<String>(messageCode.value);
+    }
+    if (bitcoinTransactionId.present) {
+      map['bitcoin_transaction_id'] = Variable<String>(
+        bitcoinTransactionId.value,
+      );
+    }
+    if (liquidTransactionId.present) {
+      map['liquid_transaction_id'] = Variable<String>(
+        liquidTransactionId.value,
+      );
+    }
+    if (localPayinTransactionId.present) {
+      map['local_payin_transaction_id'] = Variable<String>(
+        localPayinTransactionId.value,
+      );
+    }
+    if (signedPayinTransaction.present) {
+      map['signed_payin_transaction'] = Variable<String>(
+        signedPayinTransaction.value,
+      );
+    }
+    if (payinIsPsbt.present) {
+      map['payin_is_psbt'] = Variable<int>(payinIsPsbt.value);
+    }
+    if (orderNumber.present) {
+      map['order_number'] = Variable<int>(orderNumber.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (serverCreatedAt.present) {
+      map['server_created_at'] = Variable<String>(serverCreatedAt.value);
+    }
+    if (confirmationDeadline.present) {
+      map['confirmation_deadline'] = Variable<String>(
+        confirmationDeadline.value,
+      );
+    }
+    if (sentAt.present) {
+      map['sent_at'] = Variable<String>(sentAt.value);
+    }
+    if (localStatus.present) {
+      map['local_status'] = Variable<String>(localStatus.value);
+    }
+    if (lastPolledAt.present) {
+      map['last_polled_at'] = Variable<String>(lastPolledAt.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (serverCompletedAt.present) {
+      map['server_completed_at'] = Variable<String>(serverCompletedAt.value);
+    }
+    if (labelsAppliedAt.present) {
+      map['labels_applied_at'] = Variable<String>(labelsAppliedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderSwapsCompanion(')
+          ..write('localId: $localId, ')
+          ..write('requestId: $requestId, ')
+          ..write('orderId: $orderId, ')
+          ..write('purpose: $purpose, ')
+          ..write('environment: $environment, ')
+          ..write('inNetwork: $inNetwork, ')
+          ..write('outNetwork: $outNetwork, ')
+          ..write('isInAmountFixed: $isInAmountFixed, ')
+          ..write('requestedAmountSat: $requestedAmountSat, ')
+          ..write('quotedAmountSat: $quotedAmountSat, ')
+          ..write('sourceWalletId: $sourceWalletId, ')
+          ..write('destinationWalletId: $destinationWalletId, ')
+          ..write('destination: $destination, ')
+          ..write('fallback: $fallback, ')
+          ..write('bitcoinAddress: $bitcoinAddress, ')
+          ..write('liquidAddress: $liquidAddress, ')
+          ..write('lightningInvoice: $lightningInvoice, ')
+          ..write('payinAmountSat: $payinAmountSat, ')
+          ..write('payoutAmountSat: $payoutAmountSat, ')
+          ..write('payinCurrency: $payinCurrency, ')
+          ..write('payoutCurrency: $payoutCurrency, ')
+          ..write('payinMethod: $payinMethod, ')
+          ..write('payoutMethod: $payoutMethod, ')
+          ..write('orderType: $orderType, ')
+          ..write('orderStatus: $orderStatus, ')
+          ..write('payinStatus: $payinStatus, ')
+          ..write('payoutStatus: $payoutStatus, ')
+          ..write('messageCode: $messageCode, ')
+          ..write('bitcoinTransactionId: $bitcoinTransactionId, ')
+          ..write('liquidTransactionId: $liquidTransactionId, ')
+          ..write('localPayinTransactionId: $localPayinTransactionId, ')
+          ..write('signedPayinTransaction: $signedPayinTransaction, ')
+          ..write('payinIsPsbt: $payinIsPsbt, ')
+          ..write('orderNumber: $orderNumber, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('serverCreatedAt: $serverCreatedAt, ')
+          ..write('confirmationDeadline: $confirmationDeadline, ')
+          ..write('sentAt: $sentAt, ')
+          ..write('localStatus: $localStatus, ')
+          ..write('lastPolledAt: $lastPolledAt, ')
+          ..write('note: $note, ')
+          ..write('serverCompletedAt: $serverCompletedAt, ')
+          ..write('labelsAppliedAt: $labelsAppliedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV14 extends GeneratedDatabase {
   DatabaseAtV14(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -8183,6 +10147,35 @@ class DatabaseAtV14 extends GeneratedDatabase {
   late final FrozenUtxos frozenUtxos = FrozenUtxos(this);
   late final DismissedAnnouncements dismissedAnnouncements =
       DismissedAnnouncements(this);
+  late final OrderSwaps orderSwaps = OrderSwaps(this);
+  late final Index orderSwapsRequestId = Index(
+    'order_swaps_request_id',
+    'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
+  );
+  late final Index orderSwapsLocalStatus = Index(
+    'order_swaps_local_status',
+    'CREATE INDEX order_swaps_local_status ON order_swaps (local_status)',
+  );
+  late final Index orderSwapsSourceWallet = Index(
+    'order_swaps_source_wallet',
+    'CREATE INDEX order_swaps_source_wallet ON order_swaps (source_wallet_id)',
+  );
+  late final Index orderSwapsDestinationWallet = Index(
+    'order_swaps_destination_wallet',
+    'CREATE INDEX order_swaps_destination_wallet ON order_swaps (destination_wallet_id)',
+  );
+  late final Index orderSwapsBitcoinTxid = Index(
+    'order_swaps_bitcoin_txid',
+    'CREATE INDEX order_swaps_bitcoin_txid ON order_swaps (bitcoin_transaction_id)',
+  );
+  late final Index orderSwapsLiquidTxid = Index(
+    'order_swaps_liquid_txid',
+    'CREATE INDEX order_swaps_liquid_txid ON order_swaps (liquid_transaction_id)',
+  );
+  late final Index orderSwapsLocalPayinTxid = Index(
+    'order_swaps_local_payin_txid',
+    'CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8205,6 +10198,14 @@ class DatabaseAtV14 extends GeneratedDatabase {
     prices,
     frozenUtxos,
     dismissedAnnouncements,
+    orderSwaps,
+    orderSwapsRequestId,
+    orderSwapsLocalStatus,
+    orderSwapsSourceWallet,
+    orderSwapsDestinationWallet,
+    orderSwapsBitcoinTxid,
+    orderSwapsLiquidTxid,
+    orderSwapsLocalPayinTxid,
   ];
   @override
   int get schemaVersion => 14;

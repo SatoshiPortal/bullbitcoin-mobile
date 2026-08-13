@@ -2172,7 +2172,6 @@
   "totalFeeLabel": "ჯამური საკომისიო",
   "networkFeeLabel": "ქსელის საკომისიო",
   "transferFeeLabel": "გადარიცხვის საკომისიო",
-  "sendNetworkFeesLabel": "გაგზავნის ქსელის საკომისიო",
   "confirmButtonLabel": "დადასტურება",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
@@ -3759,5 +3758,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin ჩართულია, მაგრამ ამ საფულეს ჯერ არ აქვს ბალანსი მონაწილეობის მისაღებად. ის გააქტიურდება თანხის მიღებისთანავე.",
   "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში.",
   "addressViewErrorWalletNotFound": "ეს საფულე ვერ მოიძებნა.",
-  "addressViewErrorLoadFailed": "თქვენი მისამართების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა."
+  "addressViewErrorLoadFailed": "თქვენი მისამართების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "coreSwapsStatusNotStarted": "არ დაწყებულა",
+  "coreSwapsStatusAwaitingPayment": "ელოდება გადახდას",
+  "coreSwapsStatusAwaitingConfirmation": "ელოდება დადასტურებას",
+  "coreSwapsStatusUnderReview": "განიხილება",
+  "coreSwapsStatusRejected": "უარყოფილია",
+  "coreSwapsStatusCanceled": "გაუქმებულია",
+  "coreSwapsStatusPaymentDeadlineExpired": "გადახდის ვადა ამოიწურა",
+  "coreSwapsStatusScheduled": "დაგეგმილია",
+  "coreSwapsStatusAwaitingClaim": "ელოდება მიღებას",
+  "coreSwapsStatusUnknown": "უცნობი",
+  "sendSwapExpiredTitle": "შეკვეთის ვადა ამოიწურა",
+  "sendSwapExpiredMessage": "ამ შეკვეთის ვადა ამოიწურა თანხის გაგზავნამდე. თქვენი საფულიდან არაფერი გაიგზავნა."
 }

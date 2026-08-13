@@ -22,17 +22,29 @@ void main() {
       );
     });
 
-    test('send error state still accepts arbitrary raw error text', () {
-      final source = File(
+    test('raw diagnostics stay behind a generic localized failure', () {
+      final cubitSource = File(
         'lib/features/send/presentation/bloc/send_cubit.dart',
       ).readAsStringSync();
-      final load = source.substring(
-        source.indexOf('Future<void> loadWalletWithRatesAndFees()'),
-        source.indexOf('/// Called when a payment request'),
+      final l10nSource = File(
+        'lib/features/send/presentation/send_failure_l10n.dart',
+      ).readAsStringSync();
+      final load = cubitSource.substring(
+        cubitSource.indexOf('Future<void> loadWalletWithRatesAndFees()'),
+        cubitSource.indexOf('/// Called when a payment request'),
       );
       expect(load, isNot(contains('error: e.toString()')));
-      expect(load, contains('Something went wrong. Please try again.'));
-      expect(source, isNot(contains('SwapCreationException(e.toString())')));
+      expect(load, contains('SendUnexpectedFailure(e.toString())'));
+      expect(
+        l10nSource,
+        contains(
+          'SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong',
+        ),
+      );
+      expect(
+        cubitSource,
+        isNot(contains('SwapCreationException(e.toString())')),
+      );
     });
   });
 }

@@ -7329,10 +7329,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Odeslat poplatky",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "Došlo k chybě",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -12551,5 +12547,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
   "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
-  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu."
+  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
+  "coreSwapsStatusNotStarted": "Nezahájeno",
+  "coreSwapsStatusAwaitingPayment": "Čeká na platbu",
+  "coreSwapsStatusAwaitingConfirmation": "Čeká na potvrzení",
+  "coreSwapsStatusUnderReview": "Probíhá kontrola",
+  "coreSwapsStatusRejected": "Zamítnuto",
+  "coreSwapsStatusCanceled": "Zrušeno",
+  "coreSwapsStatusPaymentDeadlineExpired": "Platební lhůta vypršela",
+  "coreSwapsStatusScheduled": "Naplánováno",
+  "coreSwapsStatusAwaitingClaim": "Čeká na vyzvednutí",
+  "coreSwapsStatusUnknown": "Neznámé",
+  "sendSwapExpiredTitle": "Objednávka vypršela",
+  "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno."
 }

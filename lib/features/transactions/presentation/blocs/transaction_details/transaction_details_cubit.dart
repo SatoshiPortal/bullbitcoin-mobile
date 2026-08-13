@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -12,7 +11,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
@@ -21,6 +22,8 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -32,6 +35,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required this._getWalletUsecase,
     required this._getTransactionsByTxIdUsecase,
     required this._getWalletTransactionUsecase,
+    required this._getTransactionOrderSwapUsecase,
     required this._watchWalletTransactionByTxIdUsecase,
     required this._getSwapUsecase,
     required this._getPayjoinByIdUsecase,
@@ -39,14 +43,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required this._getOrderUsecase,
     required this._watchSwapUsecase,
     required this._watchPayjoinUsecase,
+    required this._watchTransactionOrderSwapUsecase,
     required this._labelsFacade,
     required this._broadcastOriginalTransactionUsecase,
-    required this._processSwapUsecase,
   }) : super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
   final GetTransactionsByTxIdUsecase _getTransactionsByTxIdUsecase;
   final GetWalletTransactionUsecase _getWalletTransactionUsecase;
+  final GetTransactionOrderSwapUsecase _getTransactionOrderSwapUsecase;
   final WatchWalletTransactionByTxIdUsecase
   _watchWalletTransactionByTxIdUsecase;
   final GetSwapUsecase _getSwapUsecase;
@@ -55,10 +60,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final GetOrderUsecase _getOrderUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final WatchTransactionOrderSwapUsecase _watchTransactionOrderSwapUsecase;
   final LabelsFacade _labelsFacade;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
-  final ProcessSwapUsecase _processSwapUsecase;
 
   /// The load that populated this cubit, so [refresh] can re-run it whichever
   /// init path the screen used. Orders only load once (they have no watcher),
@@ -70,6 +75,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   StreamSubscription? _payjoinSubscription;
   StreamSubscription? _payjoinTxSubscription;
   StreamSubscription? _payjoinOriginalTxSubscription;
+  StreamSubscription? _orderSwapSubscription;
+  String? _watchedOrderSwapTransactionId;
+  WalletTransaction? _pendingOrderSwapWalletTransaction;
+  int _orderSwapTransactionWatchGeneration = 0;
 
   // The payjoin id _payjoinSubscription is currently listening to on the
   // by-wallet-tx path, so reloads triggered by its own events don't
@@ -84,6 +93,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       _payjoinSubscription?.cancel() ?? Future.value(),
       _payjoinTxSubscription?.cancel() ?? Future.value(),
       _payjoinOriginalTxSubscription?.cancel() ?? Future.value(),
+      _orderSwapSubscription?.cancel() ?? Future.value(),
     ]);
     return super.close();
   }
@@ -118,6 +128,192 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
     // Load the initial details of the transaction.
     await _loadDetailsByWalletTxId(txId, walletId: walletId);
+    final orderSwap = state.transaction?.orderSwap;
+    if (orderSwap != null) {
+      _orderSwapSubscription = _watchTransactionOrderSwapUsecase
+          .execute(orderSwap.localId)
+          .listen(
+            (_) {
+              if (isClosed) return;
+              _loadDetailsByWalletTxId(txId, walletId: walletId);
+            },
+            onError: (Object error) {
+              if (isClosed) return;
+              emit(state.copyWith(err: error));
+            },
+          );
+    }
+  }
+
+  Future<void> initByOrderSwapLocalId(String localId) async {
+    _reload = () => _loadDetailsByOrderSwapLocalId(localId);
+    await _loadDetailsByOrderSwapLocalId(localId);
+    _orderSwapSubscription = _watchTransactionOrderSwapUsecase
+        .execute(localId)
+        .listen(
+          (orderSwap) {
+            unawaited(_handleOrderSwapUpdate(orderSwap));
+          },
+          onError: (Object error) {
+            if (isClosed) return;
+            emit(state.copyWith(err: error));
+          },
+        );
+  }
+
+  Future<void> _handleOrderSwapUpdate(OrderSwapRecord orderSwap) async {
+    if (isClosed) return;
+    final transaction = state.transaction;
+    if (transaction?.orderSwap?.localId != orderSwap.localId) {
+      await _loadDetailsByOrderSwapLocalId(orderSwap.localId);
+      await _watchOrderSwapWalletTransaction(state.transaction?.orderSwap);
+      return;
+    }
+    final walletTransaction = transaction?.walletTransaction;
+    final canonicalTransactionChanged =
+        walletTransaction != null &&
+        walletTransaction.txId != orderSwap.canonicalWalletTransactionId;
+    emit(
+      state.copyWith(
+        transaction: transaction!.copyWith(
+          walletTransaction: canonicalTransactionChanged
+              ? null
+              : walletTransaction,
+          orderSwap: orderSwap,
+        ),
+        swapCounterpartTxId: orderSwap.counterpartTransactionId,
+      ),
+    );
+    await _watchOrderSwapWalletTransaction(orderSwap);
+  }
+
+  Future<void> _watchOrderSwapWalletTransaction(
+    OrderSwapRecord? orderSwap,
+  ) async {
+    final transactionId = orderSwap?.canonicalWalletTransactionId;
+    final walletId = orderSwap?.canonicalWalletId;
+    if (transactionId == null || walletId == null) return;
+    if (_watchedOrderSwapTransactionId == transactionId) return;
+    final generation = ++_orderSwapTransactionWatchGeneration;
+    _pendingOrderSwapWalletTransaction = null;
+    await _walletTransactionSubscription?.cancel();
+    if (isClosed || generation != _orderSwapTransactionWatchGeneration) return;
+    try {
+      _walletTransactionSubscription = _watchWalletTransactionByTxIdUsecase
+          .execute(txId: transactionId, walletId: walletId)
+          .listen(
+            (walletTransaction) {
+              if (isClosed) return;
+              final latestOrderSwap = state.transaction?.orderSwap;
+              if (latestOrderSwap == null) {
+                _pendingOrderSwapWalletTransaction = walletTransaction;
+                return;
+              }
+              if (latestOrderSwap.canonicalWalletTransactionId !=
+                  transactionId) {
+                return;
+              }
+              emit(
+                state.copyWith(
+                  transaction: state.transaction?.copyWith(
+                    walletTransaction: walletTransaction,
+                  ),
+                ),
+              );
+            },
+            onError: (_) {
+              if (_watchedOrderSwapTransactionId == transactionId) {
+                _watchedOrderSwapTransactionId = null;
+              }
+              log.warning('Order swap wallet transaction watcher failed');
+            },
+          );
+      _watchedOrderSwapTransactionId = transactionId;
+    } catch (_) {
+      _watchedOrderSwapTransactionId = null;
+      log.warning('Order swap wallet transaction watcher failed');
+    }
+  }
+
+  Future<void> _loadDetailsByOrderSwapLocalId(String localId) async {
+    try {
+      final orderSwap = await _getTransactionOrderSwapUsecase.execute(localId);
+      await _watchOrderSwapWalletTransaction(orderSwap);
+      await _loadOrderSwapDetails(orderSwap);
+    } on ParallelWaitError catch (error) {
+      if (isClosed) return;
+      emit(state.copyWith(err: _firstParallelError(error)));
+    } on TransactionNotFoundError catch (error) {
+      if (isClosed) return;
+      emit(state.copyWith(notFoundError: error));
+    } catch (error) {
+      if (isClosed) return;
+      emit(state.copyWith(err: error));
+    }
+  }
+
+  Future<void> _loadOrderSwapDetails(OrderSwapRecord orderSwap) async {
+    final walletId = orderSwap.canonicalWalletId;
+    if (walletId == null) {
+      if (isClosed) return;
+      emit(state.copyWith(err: TransactionNotFoundError()));
+      return;
+    }
+    final counterpartWalletId = orderSwap.sourceWalletId == walletId
+        ? orderSwap.destinationWalletId
+        : orderSwap.sourceWalletId;
+    final transactionId = orderSwap.canonicalWalletTransactionId;
+    final (wallet, counterpartWallet, walletTransactionResult) = await (
+      _getWalletUsecase.execute(walletId),
+      counterpartWalletId == null
+          ? Future<Wallet?>.value()
+          : _getWalletUsecase.execute(counterpartWalletId),
+      transactionId == null
+          ? Future.value(
+              const Ok<WalletTransaction?, WalletTransactionLookupFailure>(
+                null,
+              ),
+            )
+          : _getWalletTransactionUsecase.execute(
+              txId: transactionId,
+              walletId: walletId,
+            ),
+    ).wait;
+    final loadedWalletTransaction = switch (walletTransactionResult) {
+      Ok(:final value) => value,
+      Err() => () {
+        log.warning('Order swap wallet transaction lookup failed');
+        return null;
+      }(),
+    };
+    final pendingWalletTransaction = _pendingOrderSwapWalletTransaction;
+    _pendingOrderSwapWalletTransaction = null;
+    final matchingPendingWalletTransaction =
+        pendingWalletTransaction?.txId == transactionId &&
+            pendingWalletTransaction?.walletId == walletId
+        ? pendingWalletTransaction
+        : null;
+    final walletTransaction =
+        matchingPendingWalletTransaction ?? loadedWalletTransaction;
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        transaction: Transaction(
+          walletTransaction: walletTransaction,
+          orderSwap: orderSwap,
+        ),
+        wallet: wallet,
+        counterpartWallet: counterpartWallet,
+        swapCounterpartTxId: orderSwap.counterpartTransactionId,
+        err: null,
+        notFoundError: null,
+      ),
+    );
+  }
+
+  Object _firstParallelError(ParallelWaitError error) {
+    final errors = error.errors as (AsyncError?, AsyncError?, AsyncError?);
+    return (errors.$1 ?? errors.$2 ?? errors.$3)?.error ?? error;
   }
 
   Future<void> _loadDetailsByWalletTxId(
@@ -649,12 +845,6 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
     // On Err the note is kept in state; the caller surfaces the failure.
     return result;
-  }
-
-  Future<void> processSwap(Swap swap) async {
-    emit(state.copyWith(retryingSwap: true));
-    await _processSwapUsecase.execute(swap);
-    emit(state.copyWith(retryingSwap: false));
   }
 
   Future<Set<String>> fetchDistinctLabels() async {

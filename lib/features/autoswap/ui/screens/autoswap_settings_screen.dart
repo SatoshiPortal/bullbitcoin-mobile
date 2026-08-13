@@ -83,8 +83,6 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
                                 _FeeThresholdField(focusNode: _feeNode),
                                 const Gap(16),
                                 _WalletSelectionDropdown(),
-                                const Gap(16),
-                                _AlwaysBlockToggle(),
                               ],
                             ],
                           ),
@@ -419,51 +417,6 @@ class _FeeThresholdField extends StatelessWidget {
         const Gap(4),
         BBText(
           context.loc.autoswapMaxFeeInfoText,
-          style: context.font.labelSmall?.copyWith(
-            color: context.appColors.textMuted,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AlwaysBlockToggle extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final alwaysBlock = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.alwaysBlock,
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            BBText(
-              context.loc.autoswapAlwaysBlockLabel,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.text,
-              ),
-            ),
-            BBSwitch(
-              value: alwaysBlock,
-              onChanged: (value) {
-                context
-                    .read<AutoSwapSettingsCubit>()
-                    .onAlwaysBlockToggleChanged(value);
-                // Auto-save when toggle changes
-                context.read<AutoSwapSettingsCubit>().updateSettings();
-              },
-            ),
-          ],
-        ),
-        const Gap(4),
-        BBText(
-          alwaysBlock
-              ? context.loc.autoswapAlwaysBlockInfoEnabled
-              : context.loc.autoswapAlwaysBlockInfoDisabled,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
           ),

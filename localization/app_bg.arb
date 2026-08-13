@@ -5648,10 +5648,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Изпрати мрежовите такси",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "payWhichWallet": "От кой портфейл искате да платите?",
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
@@ -10428,5 +10424,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
   "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
-  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново."
+  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
+  "coreSwapsStatusNotStarted": "Не е започнало",
+  "coreSwapsStatusAwaitingPayment": "Очаква плащане",
+  "coreSwapsStatusAwaitingConfirmation": "Очаква потвърждение",
+  "coreSwapsStatusUnderReview": "В процес на преглед",
+  "coreSwapsStatusRejected": "Отхвърлено",
+  "coreSwapsStatusCanceled": "Отменено",
+  "coreSwapsStatusPaymentDeadlineExpired": "Срокът за плащане изтече",
+  "coreSwapsStatusScheduled": "Планирано",
+  "coreSwapsStatusAwaitingClaim": "Очаква получаване",
+  "coreSwapsStatusUnknown": "Неизвестно",
+  "sendSwapExpiredTitle": "Поръчката изтече",
+  "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо."
 }

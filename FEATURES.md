@@ -40,7 +40,6 @@ graph TB
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
     BG_TASKS[Background Tasks]
-    AUTOSWAPS[AutoSwaps]
     DCA[DCA]
     SELL[Sell]
     PAY[Pay]
@@ -50,6 +49,7 @@ graph TB
     CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View]
     APP_UNLOCK[App Unlock]
+    AUTOSWAP[Autoswap]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -63,8 +63,9 @@ graph TB
     ADDRESS_MGMT --> LABELS
     ALL_SEED_VIEW --> APP_UNLOCK
     ANNOUNCEMENTS --> SETTINGS
+    ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
-    AUTOSWAPS --> TRANSFER
+    AUTOSWAP --> SWAPS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
@@ -108,12 +109,15 @@ graph TB
     SETTINGS --> BULL_PAYJOIN
     STATUS --> BULL_PAYJOIN
     SWAPS --> BULL_PAYJOIN
+    SWAPS --> EXCHANGE
+    SWAPS --> LABELS
     SWAPS --> UTXO_MGMT
     TOR --> CORE
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
+    TX_HISTORY --> SWAPS
     TX_HISTORY --> WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
@@ -123,6 +127,7 @@ graph TB
     WALLETS --> NETWORK
     WALLETS --> SECRETS
     WALLETS --> SETTINGS
+    WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
     %% Styling
@@ -132,7 +137,6 @@ graph TB
 
     class CORE coreStyle
     class PRIMITIVES,BULL_PAYJOIN packageStyle
-    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -200,7 +204,6 @@ graph TB
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **AutoSwaps**: Depends on Transfer
 - **Backups**: Depends on BIP85, Tor, Wallets
 
 ### Exchange-Related Features

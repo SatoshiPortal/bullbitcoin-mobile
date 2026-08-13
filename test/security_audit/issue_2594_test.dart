@@ -18,7 +18,12 @@ void main() {
       expect(requestHandlers, contains('paymentRequest: paymentRequest'));
       expect(requestHandlers, contains('sendMax: false'));
       expect(source, contains('drain: state.sendMax'));
-      expect(source, contains('paymentAmount = state.sendMax'));
+      expect(
+        source,
+        contains(
+          'final drain = state.lightningOrder != null ? false : state.sendMax;',
+        ),
+      );
     });
   });
 }

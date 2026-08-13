@@ -3,8 +3,6 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/autoswap_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
@@ -22,9 +20,6 @@ class WalletHomeScreen extends StatefulWidget {
 }
 
 class _WalletHomeScreenState extends State<WalletHomeScreen> {
-  bool _hasShownAutoSwapWarning = false;
-  // ensures that the warning is only showed once on app startup
-
   final GlobalKey<RefreshIndicatorState> _indicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
@@ -102,20 +97,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             });
           },
         ),
-        BlocListener<WalletBloc, WalletState>(
-          listenWhen: (previous, current) =>
-              previous.autoSwapSettings != current.autoSwapSettings ||
-              previous.wallets != current.wallets,
-          listener: (context, state) {
-            if (!_hasShownAutoSwapWarning &&
-                state.showAutoSwapDefaultEnabledWarning()) {
-              _hasShownAutoSwapWarning = true;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                AutoSwapWarningBottomSheet.show(context);
-              });
-            }
-          },
-        ),
       ],
       child: PopScope(
         canPop: false,
@@ -139,7 +120,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const SliverToBoxAdapter(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),
                 SliverToBoxAdapter(
                   child: WalletCards(

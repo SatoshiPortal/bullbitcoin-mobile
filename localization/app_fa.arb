@@ -7175,10 +7175,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "ارسال هزینه های شبکه",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "خطایی رخ داد",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -12551,5 +12547,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin فعال است، اما این کیف پول هنوز موجودی‌ای برای مشارکت ندارد. پس از دریافت وجه فعال خواهد شد.",
   "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود.",
   "addressViewErrorWalletNotFound": "این کیف پول پیدا نشد.",
-  "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید."
+  "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "coreSwapsStatusNotStarted": "شروع نشده",
+  "coreSwapsStatusAwaitingPayment": "در انتظار پرداخت",
+  "coreSwapsStatusAwaitingConfirmation": "در انتظار تأیید",
+  "coreSwapsStatusUnderReview": "در حال بررسی",
+  "coreSwapsStatusRejected": "رد شد",
+  "coreSwapsStatusCanceled": "لغو شد",
+  "coreSwapsStatusPaymentDeadlineExpired": "مهلت پرداخت به پایان رسید",
+  "coreSwapsStatusScheduled": "زمان‌بندی‌شده",
+  "coreSwapsStatusAwaitingClaim": "در انتظار دریافت",
+  "coreSwapsStatusUnknown": "نامشخص",
+  "sendSwapExpiredTitle": "سفارش منقضی شد",
+  "sendSwapExpiredMessage": "این سفارش پیش از ارسال هرگونه وجهی منقضی شد. هیچ مبلغی از کیف پول شما ارسال نشد."
 }

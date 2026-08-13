@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
+import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,10 +27,10 @@ class SwapConfirmPage extends StatelessWidget {
     );
     final formattedConfirmedAmountBitcoin = formattedInputAmount;
 
-    final confirmError = context.select(
-      (TransferBloc bloc) => bloc.state.confirmTransactionException,
+    final swapFailure = context.select(
+      (TransferBloc bloc) => bloc.state.swapFailure,
     );
-    final buildError = context.select(
+    final buildTransactionException = context.select(
       (TransferBloc bloc) => bloc.state.buildTransactionException,
     );
     final absoluteFeesFormatted = context.select(
@@ -57,143 +59,127 @@ class SwapConfirmPage extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      const Gap(8),
-                      CommonSendConfirmTopArea(
-                        formattedConfirmedAmountBitcoin:
-                            formattedConfirmedAmountBitcoin,
-                        sendType: SendType.swap,
-                        sendToExternal: sendToExternal,
-                      ),
-                      const Gap(40),
-                      BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.isSameChainTransfer,
-                        builder: (context, isSameChainTransfer) {
-                          if (isSameChainTransfer) {
-                            final formattedFiatEquivalent = context.select((
-                              TransferBloc bloc,
-                            ) {
-                              final amount = bloc.state.inputAmountSat;
-                              final rate = bloc.state.exchangeRate ?? 0.0;
-                              final currency =
-                                  bloc.state.fiatCurrencyCode ?? 'CAD';
-                              if (rate == 0.0) return '';
-                              final fiatAmount = amount * rate / 100000000;
-                              return '${fiatAmount.toStringAsFixed(2)} $currency';
-                            });
-                            final selectedFeeOptionTitle = context.select(
-                              (TransferBloc bloc) =>
-                                  bloc.state.selectedFeeOption.title(),
-                            );
-                            final toWalletLabel = context.select(
-                              (TransferBloc bloc) =>
-                                  bloc.state.toWallet?.displayLabel(context) ??
-                                  '',
-                            );
-                            return CommonOnchainSendInfoSection(
-                              sendWalletLabel: fromWallet!.displayLabel(
-                                context,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+            child: Column(
+              crossAxisAlignment: .stretch,
+              children: [
+                const Gap(8),
+                CommonSendConfirmTopArea(
+                  formattedConfirmedAmountBitcoin:
+                      formattedConfirmedAmountBitcoin,
+                  sendType: SendType.swap,
+                  sendToExternal: sendToExternal,
+                ),
+                const Gap(40),
+                BlocSelector<TransferBloc, TransferState, bool>(
+                  selector: (state) => state.isSameChainTransfer,
+                  builder: (context, isSameChainTransfer) {
+                    if (isSameChainTransfer) {
+                      final formattedFiatEquivalent = context.select((
+                        TransferBloc bloc,
+                      ) {
+                        final amount = bloc.state.inputAmountSat;
+                        final rate = bloc.state.exchangeRate ?? 0.0;
+                        final currency = bloc.state.fiatCurrencyCode ?? 'CAD';
+                        if (rate == 0.0) return '';
+                        final fiatAmount = amount * rate / 100000000;
+                        return '${fiatAmount.toStringAsFixed(2)} $currency';
+                      });
+                      final selectedFeeOptionTitle = context.select(
+                        (TransferBloc bloc) =>
+                            bloc.state.selectedFeeOption.title(),
+                      );
+                      final toWalletLabel = context.select(
+                        (TransferBloc bloc) =>
+                            bloc.state.toWallet?.displayLabel(context) ?? '',
+                      );
+                      return CommonOnchainSendInfoSection(
+                        sendWalletLabel: fromWallet!.displayLabel(context),
+                        receiveWalletLabel: toWalletLabel,
+                        formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
+                        formattedFiatEquivalent: formattedFiatEquivalent,
+                        absoluteFees: absoluteFeesFormatted,
+                        selectedFeeOptionTitle: selectedFeeOptionTitle,
+                        onFeePriorityTap: () {
+                          final bloc = context.read<TransferBloc>();
+                          BlurredBottomSheet.show(
+                            context: context,
+                            child: FeeOptionsModal(
+                              viewState: bloc,
+                              actions: bloc,
+                              defaultAbsoluteCustomFee: true,
+                              customFeeColors: FeeModalCustomFeeColors(
+                                tile: context.appColors.onSecondary,
+                                shadow: context.appColors.secondary,
+                                unselectedIcon: context.appColors.surface,
                               ),
-                              receiveWalletLabel: toWalletLabel,
-                              formattedBitcoinAmount:
-                                  formattedConfirmedAmountBitcoin,
-                              formattedFiatEquivalent: formattedFiatEquivalent,
-                              absoluteFees: absoluteFeesFormatted,
-                              selectedFeeOptionTitle: selectedFeeOptionTitle,
-                              onFeePriorityTap: () {
-                                final bloc = context.read<TransferBloc>();
-                                BlurredBottomSheet.show(
-                                  context: context,
-                                  child: FeeOptionsModal(
-                                    viewState: bloc,
-                                    actions: bloc,
-                                    defaultAbsoluteCustomFee: true,
-                                    customFeeColors: FeeModalCustomFeeColors(
-                                      tile: context.appColors.onSecondary,
-                                      shadow: context.appColors.secondary,
-                                      unselectedIcon: context.appColors.surface,
-                                    ),
-                                  ),
-                                ).then((selected) {
-                                  if (!context.mounted) return;
-                                  final bloc = context.read<TransferBloc>();
-                                  if (selected != null) {
-                                    // Preset picked — commit it. The
-                                    // event handler clears any in-flight
-                                    // arm from custom typing.
-                                    try {
-                                      final fee = FeeSelectionName.fromString(
-                                        selected,
-                                      );
-                                      bloc.add(
-                                        TransferEvent.feeOptionSelected(fee),
-                                      );
-                                    } catch (e) {
-                                      // Ignore invalid fee selection
-                                    }
-                                  } else {
-                                    // User dismissed the modal (tap
-                                    // outside, back, swipe). Finalize the
-                                    // typed custom rate if any. Replaces
-                                    // the old "Confirm Custom Fee" button.
-                                    bloc.add(
-                                      const TransferEvent.customFeeFinalized(),
-                                    );
-                                  }
-                                });
-                              },
-                            );
-                          } else {
-                            final receiveWalletLabel = sendToExternal
-                                ? null
-                                : toWallet?.displayLabel(context);
-                            return CommonChainSwapSendInfoSection(
-                              sendWalletLabel: fromWallet!.displayLabel(
-                                context,
-                              ),
-                              receiveWalletLabel: receiveWalletLabel,
-                              formattedBitcoinAmount:
-                                  formattedConfirmedAmountBitcoin,
-                              swap: swap!,
-                              absoluteFeesFormatted: absoluteFeesFormatted,
-                              absoluteFees: absoluteFees,
-                            );
-                          }
+                            ),
+                          ).then((selected) {
+                            if (!context.mounted) return;
+                            final bloc = context.read<TransferBloc>();
+                            if (selected != null) {
+                              // Preset picked — commit it. The
+                              // event handler clears any in-flight
+                              // arm from custom typing.
+                              try {
+                                final fee = FeeSelectionName.fromString(
+                                  selected,
+                                );
+                                bloc.add(TransferEvent.feeOptionSelected(fee));
+                              } catch (e) {
+                                // Ignore invalid fee selection
+                              }
+                            } else {
+                              // User dismissed the modal (tap
+                              // outside, back, swipe). Finalize the
+                              // typed custom rate if any. Replaces
+                              // the old "Confirm Custom Fee" button.
+                              bloc.add(
+                                const TransferEvent.customFeeFinalized(),
+                              );
+                            }
+                          });
                         },
-                      ),
-                      const Gap(24),
-                      CommonConfirmSendErrorSection(
-                        confirmError: confirmError,
-                        buildError: buildError,
-                      ),
-                    ],
+                      );
+                    } else {
+                      final receiveWalletLabel = sendToExternal
+                          ? null
+                          : toWallet?.displayLabel(context);
+                      return CommonChainSwapSendInfoSection(
+                        sendWalletLabel: fromWallet!.displayLabel(context),
+                        receiveWalletLabel: receiveWalletLabel,
+                        formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
+                        swap: swap!,
+                        absoluteFeesFormatted: absoluteFeesFormatted,
+                        absoluteFees: absoluteFees,
+                      );
+                    }
+                  },
+                ),
+                const Gap(24),
+                CommonConfirmSendErrorSection(
+                  errorMessage: transferConfirmErrorMessage(
+                    buildTransactionException: buildTransactionException,
+                    swapFailureMessage: swapFailure?.toTranslated(context),
+                    buildFailureMessage: context.loc.sendErrorBuildFailed,
                   ),
                 ),
-              ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: CommonSendBottomButtons(
-                onSendPressed: () {
-                  context.read<TransferBloc>().add(
-                    const TransferEvent.confirmed(),
-                  );
-                },
-                disableSendButton: isConfirming,
-              ),
-            ),
-          ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: CommonConfirmSendButton(
+            disableSendButton: isConfirming,
+            onPressed: () {
+              context.read<TransferBloc>().add(const TransferEvent.confirmed());
+            },
+          ),
         ),
       ),
     );

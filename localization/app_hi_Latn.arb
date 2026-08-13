@@ -4997,10 +4997,6 @@
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
   },
-  "sendNetworkFeesLabel": "Bhejne ki Network Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "confirmButtonLabel": "Confirm Karo",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
@@ -12942,5 +12938,17 @@
   "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
   "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
-  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein."
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
+  "coreSwapsStatusNotStarted": "Shuru nahi hua",
+  "coreSwapsStatusAwaitingPayment": "Bhugtan ka intezaar",
+  "coreSwapsStatusAwaitingConfirmation": "Pushti ka intezaar",
+  "coreSwapsStatusUnderReview": "Samiksha mein",
+  "coreSwapsStatusRejected": "Asvikrit",
+  "coreSwapsStatusCanceled": "Radd",
+  "coreSwapsStatusPaymentDeadlineExpired": "Bhugtan ki samay-seema samapt",
+  "coreSwapsStatusScheduled": "Nirdharit",
+  "coreSwapsStatusAwaitingClaim": "Dawe ka intezaar",
+  "coreSwapsStatusUnknown": "Agyaat",
+  "sendSwapExpiredTitle": "Order Khatam Ho Gaya",
+  "sendSwapExpiredMessage": "Koi bhi rashi bheje jaane se pehle hi yeh order khatam ho gaya. Aapke wallet se kuch bhi nahi bheja gaya."
 }

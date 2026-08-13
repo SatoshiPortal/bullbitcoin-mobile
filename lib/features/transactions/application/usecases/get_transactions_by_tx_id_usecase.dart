@@ -3,8 +3,11 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/order_swap_transaction_match.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -23,6 +26,7 @@ class GetTransactionsByTxIdUsecase {
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final GetTransactionOrderSwapsUsecase _getTransactionOrderSwapsUsecase;
 
   GetTransactionsByTxIdUsecase({
     required this._settingsRepository,
@@ -31,6 +35,7 @@ class GetTransactionsByTxIdUsecase {
     required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
+    required this._getTransactionOrderSwapsUsecase,
   });
 
   Future<List<Transaction>> execute(String txId) async {
@@ -41,16 +46,31 @@ class GetTransactionsByTxIdUsecase {
           : _mainnetExchangeOrderRepository;
 
       // Fetch wallet transactions, swap and payjoins by txId
-      final (walletTransactions, swap, payjoinResult, order) = await (
+      final (
+        walletTransactions,
+        swap,
+        payjoinResult,
+        order,
+        orderSwaps,
+      ) = await (
         _walletTransactionRepository.getWalletTransactions(txId: txId),
         _boltzSwapRepository.getSwapByTxId(txId),
         _payjoinSessions.byTransactionId(txId),
         orderRepository.getOrderByTxId(txId),
+        _getTransactionOrderSwapsUsecase.execute(),
       ).wait;
       final payjoins = switch (payjoinResult) {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
       };
+      OrderSwapRecord? orderSwap;
+      try {
+        orderSwap = orderSwaps.firstWhere(
+          (candidate) => orderSwapReferencesTransaction(candidate, txId),
+        );
+      } catch (_) {
+        orderSwap = null;
+      }
 
       if (walletTransactions.isNotEmpty) {
         return walletTransactions.map((walletTransaction) {
@@ -69,12 +89,15 @@ class GetTransactionsByTxIdUsecase {
           return Transaction(
             walletTransaction: walletTransaction,
             swap: swap,
+            orderSwap: orderSwap,
             payjoin: payjoin,
             order: order,
           );
         }).toList();
       } else if (swap != null) {
         return [Transaction(swap: swap)];
+      } else if (orderSwap != null) {
+        return [Transaction(orderSwap: orderSwap)];
       } else if (payjoins.isNotEmpty) {
         return payjoins.map((pj) => Transaction(payjoin: pj)).toList();
       } else if (order != null) {

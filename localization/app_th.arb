@@ -7378,10 +7378,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "ค่าธรรมเนียมเครือข่าย",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "ข้อผิดพลาดเกิดขึ้น",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -12555,5 +12551,17 @@
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
   "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
-  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง"
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "coreSwapsStatusNotStarted": "ยังไม่เริ่ม",
+  "coreSwapsStatusAwaitingPayment": "รอการชำระเงิน",
+  "coreSwapsStatusAwaitingConfirmation": "รอการยืนยัน",
+  "coreSwapsStatusUnderReview": "อยู่ระหว่างตรวจสอบ",
+  "coreSwapsStatusRejected": "ถูกปฏิเสธ",
+  "coreSwapsStatusCanceled": "ยกเลิกแล้ว",
+  "coreSwapsStatusPaymentDeadlineExpired": "หมดกำหนดชำระเงิน",
+  "coreSwapsStatusScheduled": "กำหนดเวลาแล้ว",
+  "coreSwapsStatusAwaitingClaim": "รอการรับ",
+  "coreSwapsStatusUnknown": "ไม่ทราบ",
+  "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
+  "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ"
 }

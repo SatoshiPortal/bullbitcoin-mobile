@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repositor
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -16,8 +15,6 @@ import 'package:primitives/primitives.dart' show Ok;
 
 class _MockElectrumConnectivityPort extends Mock
     implements ElectrumConnectivityPort {}
-
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 
 class _MockExchangeRateRepository extends Mock
     implements ExchangeRateRepository {}
@@ -48,7 +45,6 @@ void main() {
     ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: _MockElectrumConnectivityPort(),
-      boltzSwapRepository: _MockBoltzSwapRepository(),
       exchangeRateRepository: _MockExchangeRateRepository(),
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: payjoinDiagnostics,

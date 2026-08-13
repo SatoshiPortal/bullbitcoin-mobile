@@ -79,9 +79,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         feeThresholdPercent: _toFeePercent(state.feeThresholdInput ?? ''),
         alwaysBlock: state.alwaysBlock,
         recipientWalletId: state.selectedBitcoinWalletId,
-        // Keep the warning pending only while auto swap stays on; disabling
-        // clears it so re-enabling shows it again.
-        showWarning: enabled ? state.settings?.showWarning ?? true : false,
+        // Saving enabled settings is the user's explicit consent to run.
+        showWarning: false,
       ),
     );
     if (isClosed) return;

@@ -63,40 +63,49 @@ class WalletDetailScreen extends StatelessWidget {
           : BlocProvider<TransactionsCubit>(
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
-              child: BBPullableBody(
-                onRefresh: () => context.read<WalletBloc>().refresh(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: WalletDetailBalanceCard(
-                      balanceSat: wallet.balanceSat.toInt(),
-                      isLiquid: wallet.isLiquid,
-                      signer: wallet.signer,
-                    ),
-                  ),
-                  if (wallet.isLiquid)
+              child: Builder(
+                builder: (context) => BBPullableBody(
+                  onRefresh: () async {
+                    await context.read<WalletBloc>().refresh();
+                    if (context.mounted) {
+                      await context.read<TransactionsCubit>().loadTxs();
+                    }
+                  },
+                  slivers: [
                     SliverToBoxAdapter(
-                      child: ConsolidationBanner(wallet: wallet),
-                    ),
-                  if (wallet.isBitcoin) ...[
-                    const SliverToBoxAdapter(child: Gap(8)),
-                    SliverToBoxAdapter(child: _CoinsEntryTile(wallet: wallet)),
-                  ],
-                  if (wallet.isLiquid)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                        child: DisclosureLink(
-                          label: context.loc.walletLiquidRiskDisclosureLabel,
-                          semanticLabel:
-                              context.loc.liquidRiskDisclosureSemanticLabel,
-                          title: context.loc.liquidRiskDisclosureTitle,
-                          body: context.loc.liquidRiskDisclosureBody,
-                        ),
+                      child: WalletDetailBalanceCard(
+                        balanceSat: wallet.balanceSat.toInt(),
+                        isLiquid: wallet.isLiquid,
+                        signer: wallet.signer,
                       ),
                     ),
-                  const SliverToBoxAdapter(child: Gap(16)),
-                  const WalletDetailTxsList(sliver: true),
-                ],
+                    if (wallet.isLiquid)
+                      SliverToBoxAdapter(
+                        child: ConsolidationBanner(wallet: wallet),
+                      ),
+                    if (wallet.isBitcoin) ...[
+                      const SliverToBoxAdapter(child: Gap(8)),
+                      SliverToBoxAdapter(
+                        child: _CoinsEntryTile(wallet: wallet),
+                      ),
+                    ],
+                    if (wallet.isLiquid)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: DisclosureLink(
+                            label: context.loc.walletLiquidRiskDisclosureLabel,
+                            semanticLabel:
+                                context.loc.liquidRiskDisclosureSemanticLabel,
+                            title: context.loc.liquidRiskDisclosureTitle,
+                            body: context.loc.liquidRiskDisclosureBody,
+                          ),
+                        ),
+                      ),
+                    const SliverToBoxAdapter(child: Gap(16)),
+                    const WalletDetailTxsList(sliver: true),
+                  ],
+                ),
               ),
             ),
       bottomNavigationBar: SafeArea(

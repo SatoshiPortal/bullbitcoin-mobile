@@ -14,10 +14,7 @@ enum AnnouncementId {
   /// Shown once the wallet has transaction history and payjoin is disabled,
   /// inviting the user to enable payjoin for better on-chain privacy.
   payjoinPrivacy,
-
-  /// Shown while autoswap is enabled, so the user is aware it's active and can
-  /// learn what it does.
-  autoswapActive,
+  appUpdateRequired,
 }
 
 /// Visual/semantic tone of an announcement, mapped to theme colors in the UI.
@@ -33,6 +30,10 @@ sealed class AnnouncementAction {
 /// [Announcement]'s id, so `domain/` never imports another feature's router.
 final class NavigateAction extends AnnouncementAction {
   const NavigateAction();
+}
+
+final class NoAction extends AnnouncementAction {
+  const NoAction();
 }
 
 /// How re-display works after the user dismisses an announcement.

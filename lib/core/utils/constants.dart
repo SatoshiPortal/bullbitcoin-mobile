@@ -105,6 +105,8 @@ class ApiServiceConstants {
   static const String bbAppUrl = 'https://app.bullbitcoin.com';
   static const String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
   static const String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
+  static const String swapApiStagingUrl = 'https://staging.boltzbackup.com';
+  static const String swapApiMainnetUrl = 'https://api.boltzbackup.com';
   static const String googleDriveClientId =
       '97584343569-0mc4e5q9q1qino4vvo97mqomdi89sae5.apps.googleusercontent.com';
 
@@ -118,7 +120,6 @@ class LocatorInstanceNameConstants {
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
-  static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
   static const String labelsHiveStorageDatasourceInstanceName =
       'labelsHiveStorageDatasource';

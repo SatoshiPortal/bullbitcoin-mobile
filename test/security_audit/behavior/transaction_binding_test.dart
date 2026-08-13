@@ -19,6 +19,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,6 +37,12 @@ class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
+
+class _MockLabelExchangeOrdersUsecase extends Mock
+    implements LabelExchangeOrdersUsecase {}
+
+class _MockGetTransactionOrderSwapsUsecase extends Mock
+    implements GetTransactionOrderSwapsUsecase {}
 
 WalletTransaction _walletTransaction({
   required String txId,
@@ -70,6 +78,8 @@ void main() {
   late _MockBoltzSwapRepository boltzSwapRepository;
   late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository orderRepository;
+  late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
+  late _MockGetTransactionOrderSwapsUsecase getTransactionOrderSwapsUsecase;
   late GetTransactionsUsecase usecase;
 
   setUpAll(() {
@@ -82,6 +92,8 @@ void main() {
     boltzSwapRepository = _MockBoltzSwapRepository();
     payjoinSessions = _MockPayjoinSessions();
     orderRepository = _MockExchangeOrderRepository();
+    labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
+    getTransactionOrderSwapsUsecase = _MockGetTransactionOrderSwapsUsecase();
 
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
@@ -97,6 +109,14 @@ void main() {
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
     when(() => orderRepository.getOrders()).thenAnswer((_) async => <Order>[]);
+    when(
+      () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+    ).thenAnswer((_) async {});
+    when(
+      () => getTransactionOrderSwapsUsecase.execute(
+        walletId: any(named: 'walletId'),
+      ),
+    ).thenAnswer((_) async => []);
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -105,6 +125,8 @@ void main() {
       payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: orderRepository,
       testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
+      labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
+      getTransactionOrderSwapsUsecase: getTransactionOrderSwapsUsecase,
     );
   });
 

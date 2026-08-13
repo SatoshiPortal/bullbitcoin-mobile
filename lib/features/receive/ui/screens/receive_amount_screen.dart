@@ -7,6 +7,9 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,6 +63,7 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
               ReceiveAmountInput(focusNode: _amountNode),
               const Gap(24),
               const _MessageForSenderTile(),
+              const _ReceiveFailureMessage(),
               const Spacer(flex: 2),
               ReceiveAmountContinueButton(
                 onContinueNavigation: widget.onContinueNavigation,
@@ -138,6 +142,28 @@ class _MessageForSenderTile extends StatelessWidget {
   }
 }
 
+class _ReceiveFailureMessage extends StatelessWidget {
+  const _ReceiveFailureMessage();
+
+  @override
+  Widget build(BuildContext context) {
+    final failure = context.select<ReceiveBloc, ReceiveFailure?>(
+      (bloc) => bloc.state.failure,
+    );
+    if (failure == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BBText(
+        failure.toTranslated(context),
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
 class ReceiveAmountContinueButton extends StatelessWidget {
   const ReceiveAmountContinueButton({super.key, this.onContinueNavigation});
 
@@ -164,10 +190,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         label: context.loc.receiveContinue,
         onPressed: () {
           final bloc = context.read<ReceiveBloc>();
-          final inputAmountSat = bloc.state.inputAmountSat;
-          final confirmedAmountSat = bloc.state.confirmedAmountSat;
-          if (confirmedAmountSat != null &&
-              inputAmountSat == confirmedAmountSat) {
+          if (canReuseConfirmedReceiveDetails(bloc.state)) {
             // If an amount was already confirmed previously and the user didn't
             // change it, we don't need to confirm it again.
             onContinueNavigation?.call() ?? context.pop();

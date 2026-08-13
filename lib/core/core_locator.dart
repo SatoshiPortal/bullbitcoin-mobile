@@ -43,7 +43,6 @@ class CoreLocator {
   static void registerPorts(GetIt locator) {
     ElectrumLocator.registerPorts(locator);
     MempoolLocator.registerPorts(locator);
-    SwapsLocator.registerPorts(locator);
     LabelsLocator.registerPorts(locator);
   }
 
@@ -68,7 +67,6 @@ class CoreLocator {
     ExchangeLocator.registerServices(locator);
     MempoolLocator.registerServices(locator);
     SeedLocator.registerServices(locator);
-    SwapsLocator.registerServices(locator);
   }
 
   static void registerUsecases(GetIt locator) {
