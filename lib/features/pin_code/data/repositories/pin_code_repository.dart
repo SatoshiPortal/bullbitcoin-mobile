@@ -17,7 +17,7 @@ class PinCodeRepository {
       final pin = await _storage.getValue(_key);
       return Ok(pin != null);
     } on KeychainLockedException {
-      return const Err(PinCodeUnexpectedFailure('Keychain locked'));
+      return const Err(PinCodeKeychainLockedFailure());
     } catch (e, st) {
       log.severe(
         message: 'Unexpected failure checking PIN code status',

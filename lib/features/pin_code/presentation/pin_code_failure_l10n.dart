@@ -9,6 +9,7 @@ extension PinCodeFailureL10n on PinCodeFailure {
     PinCodeSaveFailure() => context.loc.pinCodeSaveError,
     PinCodeDeleteFailure() => context.loc.pinCodeDeleteError,
     PinCodeNotSetFailure() => context.loc.pinCodeNotSetError,
+    PinCodeKeychainLockedFailure() => context.loc.oopsSomethingWentWrong,
     PinCodeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

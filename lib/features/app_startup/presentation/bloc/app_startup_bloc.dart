@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
+import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -98,10 +99,15 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
-        isPinCodeSet = switch (await _checkPinCodeExistsUsecase.execute()) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
+        switch (await _checkPinCodeExistsUsecase.execute()) {
+          case Ok(:final value):
+            isPinCodeSet = value;
+          case Err(failure: AppUnlockKeychainLockedFailure()):
+            _waitForKeychainUnlock();
+            return;
+          case Err(:final failure):
+            throw failure;
+        }
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
         // This is a fresh install, so reset the app data that might still be
@@ -140,12 +146,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       // and arm `_awaitingKeychainUnlock`; `didChangeAppLifecycleState`
       // re-dispatches `AppStartupStarted` on `resumed`, which only
       // fires after the user has unlocked the device since boot.
-      _awaitingKeychainUnlock = true;
-      log.warning(
-        'App startup blocked on keychain (device not unlocked since '
-        'boot) — staying on splash, will retry on lifecycle resumed',
-      );
-    } catch (e) {
+      _waitForKeychainUnlock();
+    } catch (e, st) {
+      log.severe(message: 'App startup failed', error: e, trace: st);
+
       bool hasBackup;
       try {
         // Check if there is a backup available
@@ -160,5 +164,13 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       }
       emit(AppStartupState.failure(e, hasBackup: hasBackup));
     }
+  }
+
+  void _waitForKeychainUnlock() {
+    _awaitingKeychainUnlock = true;
+    log.warning(
+      'App startup blocked on keychain (device not unlocked since '
+      'boot) — staying on splash, will retry on lifecycle resumed',
+    );
   }
 }

@@ -8,6 +8,10 @@ final class AppUnlockPinCheckFailure extends AppUnlockFailure {
   const AppUnlockPinCheckFailure([super.logMessage]);
 }
 
+final class AppUnlockKeychainLockedFailure extends AppUnlockFailure {
+  const AppUnlockKeychainLockedFailure();
+}
+
 final class AppUnlockPinVerifyFailure extends AppUnlockFailure {
   const AppUnlockPinVerifyFailure([super.logMessage]);
 }
