@@ -3058,10 +3058,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "Not receiving a payjoin proposal from the receiver?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "Send without payjoin",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"
@@ -14566,5 +14562,9 @@
   "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
   "@mempoolErrorNetworkMismatch": {
     "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
+  },
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
+  "@transactionPayjoinFallbackProcessing": {
+    "description": "Status shown while broadcasting a payjoin fallback transaction"
   }
 }

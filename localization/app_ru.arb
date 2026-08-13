@@ -1576,7 +1576,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "replaceByFeeBroadcastButton": "Broadcast",
   "swapExternalTransferLabel": "Внешняя передача",
-  "transactionPayjoinNoProposal": "Не получив предложение от получателя?",
   "importQrDevicePassportStep4": "Выберите \"Connect Wallet\"",
   "payAddRecipient": "Добавить получателя",
   "recoverbullVaultImportedSuccess": "Ваше хранилище было успешно импортировано",

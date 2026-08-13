@@ -50,10 +50,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "არ მიგიღიათ payjoin შეთავაზება მიმღებისგან?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "გაგზავნა payjoin-ის გარეშე",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"

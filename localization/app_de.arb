@@ -1542,7 +1542,6 @@
   "bitboxScreenDefaultWalletLabel": "BitBox-Wallet",
   "replaceByFeeBroadcastButton": "Senden",
   "swapExternalTransferLabel": "Externer Transfer",
-  "transactionPayjoinNoProposal": "Sie erhalten keinen Payjoin-Vorschlag vom Empfänger?",
   "importQrDevicePassportStep4": "Wählen Sie „Wallet verbinden“",
   "payAddRecipient": "Empfänger hinzufügen",
   "recoverbullVaultImportedSuccess": "Ihr Tresor wurde erfolgreich importiert",

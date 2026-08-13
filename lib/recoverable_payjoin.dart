@@ -157,6 +157,14 @@ final class _RecoverablePayjoinSender implements PayjoinSender {
     await _owner._readyForRoleCall();
     return _owner._delegate.sender.broadcastOriginal(sessionId);
   }
+
+  @override
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(
+    String sessionId,
+  ) async {
+    await _owner._readyForRoleCall();
+    return _owner._delegate.sender.canBroadcastOriginal(sessionId);
+  }
 }
 
 final class _RecoverablePayjoinReceiver implements PayjoinReceiver {

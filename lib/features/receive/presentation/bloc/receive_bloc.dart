@@ -1032,6 +1032,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
                 as PayjoinReceiverSession;
 
         emit(state.copyWith(payjoin: updatedPayjoin));
+      } on BroadcastOriginalTransactionUnavailableException {
+        // A competing transaction became visible after the button was shown.
+        // Existing Payjoin and wallet watchers will converge the screen.
+        emit(state.copyWith(error: null));
       } catch (e) {
         emit(state.copyWith(error: e));
       } finally {

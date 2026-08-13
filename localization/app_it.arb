@@ -1578,7 +1578,6 @@
   "bitboxScreenDefaultWalletLabel": "Portafoglio BitBox",
   "replaceByFeeBroadcastButton": "Trasmissione",
   "swapExternalTransferLabel": "Trasferimento esterno",
-  "transactionPayjoinNoProposal": "Non riceve una proposta payjoin dal ricevitore?",
   "importQrDevicePassportStep4": "Selezionare \"Connect Wallet\"",
   "payAddRecipient": "Aggiungi Recipiente",
   "recoverbullVaultImportedSuccess": "La tua cassaforte e' stata importata con successo",

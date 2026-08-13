@@ -15,6 +15,7 @@ export 'src/domain/payjoin_failure.dart'
         PayjoinMigrationFailure,
         PayjoinSigningFailure,
         PayjoinBroadcastFailure,
+        PayjoinFallbackUnavailableFailure,
         PayjoinUnexpectedFailure;
 export 'src/domain/payjoin_policy.dart' show PayjoinPolicy, PayjoinRelayHealth;
 export 'src/domain/payjoin_ports.dart'

@@ -1019,7 +1019,6 @@
   "transactionNoteHint": "টোকা",
   "transactionNoteSaveButton": "সংৰক্ষণ কৰক",
   "transactionNoteUpdateButton": "আপডেট কৰক",
-  "transactionPayjoinNoProposal": "প্ৰাপকৰ পৰা payjoin প্ৰস্তাৱ পোৱা নাই?",
   "transactionPayjoinSendWithout": "Payjoin অবিহনে প্ৰেৰণ কৰক",
   "transactionSwapProgressInitiated": "আৰম্ভ হৈছে",
   "transactionSwapProgressPaymentMade": "পৰিশোধ\nকৰা হৈছে",

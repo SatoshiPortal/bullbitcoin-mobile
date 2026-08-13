@@ -93,26 +93,13 @@ sealed class Payjoin with _$Payjoin {
   /// a stale-looking sender button re-broadcast an already-completed
   /// session).
   ///
-  /// Role-specific, not just `proposalPsbt == null` (which stays true
-  /// forever once a proposal is sent, even past a terminal state):
-  /// - Receiver: once a proposal is SENT, the SENDER owns finalizing it for
-  ///   as long as that takes — there is no dead-end here that would ever
-  ///   need a manual retry.
-  /// - Sender: once a proposal is RECEIVED, the repository's own handler
-  ///   owns signing/broadcasting it, but if that AND its own internal
-  ///   fallback both fail, the session ends up isExpired with proposalPsbt
-  ///   still set and nothing left to retry it automatically — a manual
-  ///   retry must still be possible there.
+  /// Availability based on local session data. The engine additionally checks
+  /// that neither competing transaction is visible before broadcasting.
   bool get canManuallyBroadcastOriginal {
     if (isCompleted || isAborted) return false;
     return switch (this) {
-      // originalTxBytes != null: a receiver still in `started` (no request
-      //  received yet) has nothing to broadcast — broadcasting would hit a
-      //  null originalTxBytes. The button only makes sense once the sender's
-      //  original transaction is in hand.
-      PayjoinReceiver(:final originalTxBytes) =>
-        originalTxBytes != null && proposalPsbt == null,
-      PayjoinSender() => proposalPsbt == null || isExpired,
+      PayjoinReceiver(:final originalTxBytes) => originalTxBytes != null,
+      PayjoinSender() => true,
     };
   }
 

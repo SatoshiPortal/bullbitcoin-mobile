@@ -1307,7 +1307,6 @@
   "transactionNoteHint": "Նշում",
   "transactionNoteSaveButton": "Պահպանել",
   "transactionNoteUpdateButton": "Թարմացնել",
-  "transactionPayjoinNoProposal": "Ստացողից payjoin առաջարկություն չե՞ք ստանում",
   "transactionPayjoinSendWithout": "Ուղարկել առանց payjoin-ի",
   "transactionSwapProgressInitiated": "Սկսված է",
   "transactionSwapProgressPaymentMade": "Վճարումը\nկատարված է",

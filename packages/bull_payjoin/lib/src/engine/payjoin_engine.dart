@@ -17,6 +17,7 @@ import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' as api;
 import 'package:primitives/primitives.dart' as primitives;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final LocalPayjoinDatasource _localPayjoinDatasource;
@@ -351,7 +352,36 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   });
 
   @override
-  Future<Payjoin?> tryBroadcastOriginalTransaction(
+  Future<bool> canManuallyBroadcastOriginal(String payjoinId) async {
+    final freshModel =
+        await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
+        await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (freshModel == null) return false;
+    return _canManuallyBroadcastOriginal(freshModel.toEntity());
+  }
+
+  Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async {
+    if (!payjoin.canManuallyBroadcastOriginal) return false;
+
+    // A fresh wallet lookup covers both mempool and confirmed transactions.
+    // Check both competing spends: persisted status can lag a transaction that
+    // has just reached the network, and broadcasting the original in that gap
+    // could race a successfully negotiated payjoin.
+    for (final txId in [payjoin.originalTxId, payjoin.txId]) {
+      if (txId == null) continue;
+      if (await _transactions.isTransactionVisible(
+        walletId: payjoin.walletId,
+        transactionId: txId,
+        refresh: true,
+      )) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @override
+  Future<Result<Payjoin, api.PayjoinFailure>> tryBroadcastOriginalTransaction(
     Payjoin payjoin,
   ) => _withSessionLock(payjoin.id, () async {
     // Idempotency/safety guard for MANUAL/external callers only (the
@@ -391,15 +421,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session not found locally',
       );
-      return null;
+      return const Err(
+        api.PayjoinFallbackUnavailableFailure('Session not found locally'),
+      );
     }
     final freshEntity = freshModel.toEntity();
-    if (!freshEntity.canManuallyBroadcastOriginal) {
+    if (!await _canManuallyBroadcastOriginal(freshEntity)) {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
-        'already completed or a proposal is in flight',
+        'session is unsafe to abort or a competing transaction is visible',
       );
-      return freshEntity;
+      return const Err(
+        api.PayjoinFallbackUnavailableFailure(
+          'Fallback is no longer available',
+        ),
+      );
     }
 
     // Broadcast the FRESH entity, not the caller's: after an expired-sender
@@ -417,8 +453,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     //  public, UI-triggered entry point has no caller downstream to do it.
     if (result != null) {
       _payjoinStreamController.add(result);
+      return Ok(result);
     }
-    return result;
+    return const Err(api.PayjoinBroadcastFailure('Broadcast failed'));
   });
 
   @override
@@ -551,6 +588,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // in logs (user-shareable / pasted into issues).
       _log.info(
         'Original transaction broadcasted for payjoin ${payjoin.logRef}',
+        code: api.PayjoinLogCode.sessionAborted,
+        sessionRef: payjoin.logRef,
       );
 
       if (model == null) {

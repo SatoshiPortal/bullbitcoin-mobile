@@ -4867,10 +4867,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "수신기에서 payjoin 제안을받지 않습니까?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "\"Connect Wallet\" 선택",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"

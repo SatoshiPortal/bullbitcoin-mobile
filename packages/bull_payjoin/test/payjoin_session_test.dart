@@ -37,7 +37,7 @@ void main() {
     expect(session.canManuallyBroadcastOriginal, isTrue);
   });
 
-  test('does not offer receiver fallback after publishing a proposal', () {
+  test('offers receiver fallback after publishing a proposal', () {
     final session = PayjoinReceiverSession(
       status: PayjoinStatus.proposed,
       id: '0123456789abcdef',
@@ -50,7 +50,7 @@ void main() {
       hasProposal: true,
     );
 
-    expect(session.canManuallyBroadcastOriginal, isFalse);
+    expect(session.canManuallyBroadcastOriginal, isTrue);
   });
 
   test('keeps sender fallback available after proposal expiry', () {
@@ -67,6 +67,21 @@ void main() {
     );
 
     expect(session.canManuallyBroadcastOriginal, isTrue);
+  });
+
+  test('does not offer fallback after it is marked aborted', () {
+    final session = PayjoinSenderSession(
+      status: PayjoinStatus.aborted,
+      uri: 'bitcoin:address?pj=https://example.com',
+      network: BitcoinNetwork.mainnet,
+      walletId: 'wallet',
+      createdAt: createdAt,
+      expiresAt: createdAt.add(const Duration(hours: 1)),
+      amount: Sats.fromInt(10000),
+      originalTransactionId: 'original',
+    );
+
+    expect(session.canManuallyBroadcastOriginal, isFalse);
   });
 
   test('rejects an invalid session window', () {

@@ -4847,10 +4847,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Alıcıdan bir payjoin teklifi almamak değil mi?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "\"Connect Wallet\" seçin",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"

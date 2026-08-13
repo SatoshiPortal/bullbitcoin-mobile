@@ -2436,10 +2436,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "Receiver se payjoin proposal nahi aa raha?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "Payjoin ke bina bhejo",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"

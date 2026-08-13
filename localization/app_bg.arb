@@ -9635,7 +9635,6 @@
   "transactionFilterBalanceAdjustment": "Корекция",
   "transactionNoteSaveButton": "Запази",
   "transactionNoteUpdateButton": "Актуализирай",
-  "transactionPayjoinNoProposal": "Не получавате предложение за payjoin от получателя?",
   "transactionPayjoinSendWithout": "Изпрати без payjoin",
   "transactionSwapProgressInitiated": "Инициирано",
   "transactionSwapProgressPaymentMade": "Плащането\nизвършено",

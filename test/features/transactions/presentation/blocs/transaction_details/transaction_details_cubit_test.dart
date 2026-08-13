@@ -116,6 +116,24 @@ PayjoinSenderSession _sender({
   hasProposal: proposalPsbt != null,
 );
 
+PayjoinReceiverSession _receiver({
+  PayjoinStatus status = PayjoinStatus.requested,
+  String? txId,
+  bool hasProposal = false,
+}) => PayjoinReceiverSession(
+  status: status,
+  id: 'receiver-session',
+  network: BitcoinNetwork.testnet,
+  walletId: 'w1',
+  payjoinUri: 'bitcoin:tb1qreceiver?pj=https://payjo.in/receiver-session',
+  createdAt: DateTime(2026),
+  expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+  originalTransactionId: 'receiver-orig-txid',
+  hasOriginalTransaction: true,
+  transactionId: txId,
+  hasProposal: hasProposal,
+);
+
 void main() {
   late _MockGetWalletUsecase getWallet;
   late _MockGetTransactionsByTxIdUsecase getTransactionsByTxId;
@@ -160,6 +178,13 @@ void main() {
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
     getTransactionOrderSwap = _MockGetTransactionOrderSwapUsecase();
     watchTransactionOrderSwap = _MockWatchTransactionOrderSwapUsecase();
+
+    when(() => broadcastOriginalTransaction.canExecute(any())).thenAnswer((
+      invocation,
+    ) async {
+      final payjoin = invocation.positionalArguments.single as PayjoinSession;
+      return payjoin.canManuallyBroadcastOriginal;
+    });
 
     when(
       () => getWallet.execute(any(), sync: any(named: 'sync')),
@@ -689,16 +714,16 @@ void main() {
         addTearDown(cubit.close);
         await cubit.initByPayjoinId(payjoin.uri);
 
-        await cubit.broadcastPayjoinOriginalTx();
+        expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+
+        expect(cubit.broadcastPayjoinOriginalTx(), isFalse);
 
         verifyNever(() => broadcastOriginalTransaction.execute(any()));
         expect(cubit.state.isBroadcastingPayjoinOriginalTx, isFalse);
       },
     );
 
-    test('does NOT broadcast once already completed via the plain-'
-        'broadcast fallback (PayjoinStatus.aborted — same isCompleted as a '
-        'real payjoin, nothing left to do)', () async {
+    test('does not broadcast once marked aborted', () async {
       final payjoin = _sender(status: PayjoinStatus.aborted);
       when(
         () => getPayjoinById.execute(payjoin.uri),
@@ -708,13 +733,14 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      await cubit.broadcastPayjoinOriginalTx();
+      expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+
+      expect(cubit.broadcastPayjoinOriginalTx(), isFalse);
 
       verifyNever(() => broadcastOriginalTransaction.execute(any()));
     });
 
-    test('does NOT broadcast while a proposal is still being actively '
-        'processed (received, not yet completed or expired)', () async {
+    test('broadcasts while a proposal is not yet visible', () async {
       final payjoin = _sender(
         status: PayjoinStatus.proposed,
         proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
@@ -727,9 +753,18 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      await cubit.broadcastPayjoinOriginalTx();
+      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
 
-      verifyNever(() => broadcastOriginalTransaction.execute(any()));
+      final completed = _sender(status: PayjoinStatus.aborted);
+      when(
+        () => broadcastOriginalTransaction.execute(any()),
+      ).thenAnswer((_) async => completed);
+
+      expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
+      await pumpEventQueue();
+
+      verify(() => broadcastOriginalTransaction.execute(payjoin)).called(1);
+      expect(cubit.state.payjoin, completed);
     });
 
     test('broadcasts while waiting for a proposal (the legitimate manual '
@@ -747,11 +782,127 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      await cubit.broadcastPayjoinOriginalTx();
+      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+
+      expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
+      await pumpEventQueue();
 
       verify(() => broadcastOriginalTransaction.execute(payjoin)).called(1);
       expect(cubit.state.payjoin, completed);
     });
+
+    test(
+      'loads full wallet transaction details after fallback broadcast',
+      () async {
+        final payjoin = _sender(status: PayjoinStatus.requested);
+        final completed = _sender(status: PayjoinStatus.aborted);
+        final walletTx = _walletTx(txId: completed.originalTxId);
+        var broadcasted = false;
+        when(
+          () => getPayjoinById.execute(payjoin.uri),
+        ).thenAnswer((_) async => broadcasted ? completed : payjoin);
+        when(() => broadcastOriginalTransaction.execute(payjoin)).thenAnswer((
+          _,
+        ) async {
+          broadcasted = true;
+          return completed;
+        });
+        when(
+          () => getWalletTransaction.execute(
+            txId: completed.originalTxId,
+            walletId: completed.walletId,
+            sync: true,
+          ),
+        ).thenAnswer(
+          (_) async =>
+              Ok<WalletTransaction?, WalletTransactionLookupFailure>(walletTx),
+        );
+        when(
+          () => getTransactionsByTxId.execute(completed.originalTxId),
+        ).thenAnswer(
+          (_) async => broadcasted
+              ? [Transaction(walletTransaction: walletTx, payjoin: completed)]
+              : [Transaction(payjoin: payjoin)],
+        );
+
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        await cubit.initByPayjoinId(payjoin.uri);
+
+        expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
+        await pumpEventQueue();
+
+        expect(cubit.state.walletTransaction, walletTx);
+        expect(cubit.state.payjoin, completed);
+        expect(cubit.state.payjoin?.isAborted, isTrue);
+      },
+    );
+
+    test('broadcasts the receiver fallback when it is available', () async {
+      final payjoin = _receiver();
+      when(
+        () => getPayjoinById.execute(payjoin.id),
+      ).thenAnswer((_) async => payjoin);
+      final completed = _receiver(status: PayjoinStatus.aborted);
+      when(
+        () => broadcastOriginalTransaction.execute(any()),
+      ).thenAnswer((_) async => completed);
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByPayjoinId(payjoin.id);
+
+      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
+      await pumpEventQueue();
+
+      verify(() => broadcastOriginalTransaction.execute(payjoin)).called(1);
+      expect(cubit.state.payjoin, completed);
+    });
+
+    test(
+      'reloads without an error when fallback becomes unavailable',
+      () async {
+        final payjoin = _sender(status: PayjoinStatus.requested);
+        final completed = _sender(
+          status: PayjoinStatus.completed,
+          txId: 'payjoin-txid',
+        );
+        var fetches = 0;
+        when(
+          () => getPayjoinById.execute(payjoin.id),
+        ).thenAnswer((_) async => fetches++ == 0 ? payjoin : completed);
+        when(
+          () => broadcastOriginalTransaction.execute(payjoin),
+        ).thenThrow(BroadcastOriginalTransactionUnavailableException());
+        when(
+          () => getWalletTransaction.execute(
+            txId: completed.txId!,
+            walletId: completed.walletId,
+            sync: true,
+          ),
+        ).thenAnswer(
+          (_) async =>
+              const Ok<WalletTransaction?, WalletTransactionLookupFailure>(
+                null,
+              ),
+        );
+        when(
+          () => getTransactionsByTxId.execute(any()),
+        ).thenAnswer((_) async => [Transaction(payjoin: completed)]);
+
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        await cubit.initByPayjoinId(payjoin.id);
+
+        expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
+        await pumpEventQueue();
+
+        expect(cubit.state.payjoin, completed);
+        expect(cubit.state.err, isNull);
+        expect(cubit.state.isBroadcastingPayjoinOriginalTx, isFalse);
+      },
+    );
 
     test('allows a manual retry once the repository\'s own internal '
         'fallback also gave up (expired, proposalPsbt still set)', () async {
@@ -771,7 +922,8 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      await cubit.broadcastPayjoinOriginalTx();
+      expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
+      await pumpEventQueue();
 
       verify(() => broadcastOriginalTransaction.execute(payjoin)).called(1);
     });
@@ -880,6 +1032,64 @@ void main() {
         cubit.state.transaction?.displayPayjoinStatus,
         PayjoinStatus.completed,
       );
+    });
+
+    test('receiver with a published proposal syncs the negotiated transaction '
+        'and converges from in progress to completed', () async {
+      final payjoin = _receiver(
+        status: PayjoinStatus.proposed,
+        txId: 'receiver-payjoin-txid',
+        hasProposal: true,
+      );
+      final completed = _receiver(
+        status: PayjoinStatus.completed,
+        txId: 'receiver-payjoin-txid',
+        hasProposal: true,
+      );
+      var visible = false;
+      when(
+        () => getPayjoinById.execute(payjoin.id),
+      ).thenAnswer((_) async => visible ? completed : payjoin);
+      when(
+        () => getTransactionsByTxId.execute('receiver-payjoin-txid'),
+      ).thenAnswer(
+        (_) async => [
+          if (visible)
+            Transaction(
+              walletTransaction: _walletTx(txId: 'receiver-payjoin-txid'),
+              payjoin: payjoin,
+            )
+          else
+            Transaction(payjoin: payjoin),
+        ],
+      );
+      when(
+        () => getTransactionsByTxId.execute('receiver-orig-txid'),
+      ).thenAnswer((_) async => [Transaction(payjoin: payjoin)]);
+      when(
+        () => getWalletTransaction.execute(
+          txId: 'receiver-payjoin-txid',
+          walletId: 'w1',
+          sync: true,
+        ),
+      ).thenAnswer((_) async {
+        visible = true;
+        return Ok<WalletTransaction?, WalletTransactionLookupFailure>(
+          _walletTx(txId: 'receiver-payjoin-txid'),
+        );
+      });
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByPayjoinId(payjoin.id);
+
+      expect(cubit.state.walletTransaction?.txId, 'receiver-payjoin-txid');
+      expect(
+        cubit.state.transaction?.displayPayjoinStatus,
+        PayjoinStatus.completed,
+      );
+      expect(cubit.state.payjoin, completed);
+      expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
     });
 
     test('stays on payjoin-session data while nothing is broadcast, without '
@@ -1025,17 +1235,18 @@ void main() {
         await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
 
         expect(cubit.state.payjoin?.canManuallyBroadcastOriginal, isTrue);
+        when(
+          () => broadcastOriginalTransaction.canExecute(completedViaFallback),
+        ).thenAnswer((_) async => false);
 
         payjoinEvents.add(completedViaFallback);
         await pumpEventQueue();
 
-        // Work-tree divergence from payjoin-hardening: a fallback completion
-        // is an explicit `aborted` status here (not `isCompleted`), per the
-        // Payjoin entity's status semantics. Either way it is terminal, and
-        // the manual-broadcast guard flips shut.
+        // The aborted event hides the action immediately, without waiting for
+        // the fallback transaction to appear in the wallet transaction list.
         expect(cubit.state.payjoin?.isAborted, isTrue);
         expect(cubit.state.payjoin?.isOngoing, isFalse);
-        expect(cubit.state.payjoin?.canManuallyBroadcastOriginal, isFalse);
+        expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
       },
     );
 

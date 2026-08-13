@@ -11045,10 +11045,6 @@
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
   },
-  "transactionPayjoinNoProposal": "Não receber uma proposta payjoin do receptor?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "backupKeySeparationWarning": "É importante que você não salve a chave de backup no mesmo lugar onde você salva seu arquivo de backup. Sempre armazená-los em dispositivos separados ou provedores de nuvem separados.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"

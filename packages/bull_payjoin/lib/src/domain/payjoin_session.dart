@@ -61,8 +61,9 @@ sealed class PayjoinSession {
     if (isCompleted || isAborted) return false;
     return switch (this) {
       PayjoinReceiverSession(:final hasOriginalTransaction) =>
-        hasOriginalTransaction && !hasProposal,
-      PayjoinSenderSession() => !hasProposal || isExpired,
+        hasOriginalTransaction,
+      PayjoinSenderSession(:final originalTransactionId) =>
+        originalTransactionId != null,
     };
   }
 
