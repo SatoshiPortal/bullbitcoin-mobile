@@ -31,13 +31,6 @@ jobs:
       RUSTUP_AUTO_INSTALL: 0
       CARGO_NET_GIT_FETCH_WITH_CLI: true
       CARGO_INCREMENTAL: 0
-      # TEMPORARY, until the Rust build is proven — see "Build signed IPA".
-      # Documented rustup knobs (rustup book, Environment variables): DEBUG
-      # logging so the component installer explains itself, and single-threaded
-      # download/IO so rustup's own internal concurrency is out of the picture.
-      RUSTUP_LOG: rustup=DEBUG
-      RUSTUP_CONCURRENT_DOWNLOADS: 1
-      RUSTUP_IO_THREADS: 1
 
     steps:
       - name: Checkout selected branch
@@ -153,21 +146,10 @@ jobs:
           rustup component add --toolchain "$BDK_RUST_VERSION" clippy rustfmt
           rustup target add --toolchain "$BDK_RUST_VERSION" aarch64-apple-ios
 
-          # The wrapper does two things.
-          #
-          # 1. Cargokit requests `rustup run stable` directly, which otherwise
-          #    bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
-          #    explicit 1.85.1 request passes through unchanged. Any bare
-          #    `stable` argument is rewritten, wherever it sits in argv.
-          #
-          # 2. Concurrent rustup invocations corrupt each other's component
-          #    downloads (rust-lang/rustup#3690, #4910). The Xcode archive
-          #    builds several Rust crates at once, and the archive failed on
-          #    both symptoms: a half-renamed download, then a component
-          #    conflict. Serialize every invocation behind a mutex. `mkdir` is
-          #    atomic on HFS+/APFS and needs no extra tooling — macOS has no
-          #    flock(1). The lock is bounded so a crashed holder cannot wedge
-          #    the build, and released on every exit path.
+          # Cargokit requests `rustup run stable` directly, which otherwise
+          # bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
+          # explicit 1.85.1 request passes through unchanged. Any bare
+          # `stable` argument is rewritten, wherever it sits in argv.
           # The image ships two rustups — /opt/homebrew/bin and ~/.cargo/bin —
           # and Xcode build phases resolve their own PATH. Wrapping only the
           # first one on this step's PATH left cargokit reaching the other:
@@ -190,21 +172,7 @@ jobs:
             [ "\$arg" = "stable" ] && arg="$RUST_VERSION"
             args+=("\$arg")
           done
-
-          lock="\${RUSTUP_HOME:-\$HOME/.rustup}/.serialize.lock"
-          mkdir -p "\$(dirname "\$lock")"
-          waited=0
-          until mkdir "\$lock" 2>/dev/null; do
-            if [ "\$waited" -ge 900 ]; then
-              echo "rustup: stale lock at \$lock after \${waited}s, taking it" >&2
-              break
-            fi
-            sleep 1
-            waited=\$((waited + 1))
-          done
-          trap 'rmdir "\$lock" 2>/dev/null' EXIT INT TERM
-
-          "\$(dirname "\$0")/rustup.real" "\${args[@]}"
+          exec "\$(dirname "\$0")/rustup.real" "\${args[@]}"
           EOF
             chmod +x "$rustup_path"
             wrapped=$((wrapped + 1))
@@ -222,21 +190,6 @@ jobs:
             "$rustup_path" run stable rustc --version | grep -F "rustc $RUST_VERSION"
           done
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"
-
-          # TEMPORARY. The wrapper above only covers the rustup on this step's
-          # PATH; a second copy elsewhere on the image would bypass both the
-          # pin and the mutex, which would explain why serializing changed
-          # nothing. List every candidate, and record what is already installed
-          # so a later install attempt can be told apart from a missing target.
-          echo "::group::rustup binaries on PATH"
-          type -a rustup || true
-          ls -l "$(command -v rustup)" "$(command -v rustup).real" || true
-          echo "::endgroup::"
-          echo "::group::installed toolchains and targets"
-          rustup toolchain list
-          rustup target list --installed --toolchain "$RUST_VERSION"
-          rustup target list --installed --toolchain "$BDK_RUST_VERSION"
-          echo "::endgroup::"
 
       - name: Install Flutter and generate sources
         run: |
@@ -356,18 +309,7 @@ jobs:
           echo "EXPORT_OPTIONS_PLIST=$export_options" >> "$GITHUB_ENV"
 
       - name: Build signed IPA
-        run: |
-          # TEMPORARY --verbose: Flutter surfaces only SEVERE lines from
-          # xcodebuild, so the Rust build phase's own output — including
-          # rustup's explanation of the failing component install — never
-          # reaches the log. Drop this once the archive completes.
-          set -o pipefail
-          make ios-release \
-            BUILD_NUMBER="$BUILD_NUMBER" \
-            EXPORT_OPTIONS_PLIST="$EXPORT_OPTIONS_PLIST" \
-            FLUTTER_EXTRA_ARGS=--verbose
-          echo "disk after build:"; df -h /
-          echo "rustup downloads dir:"; ls -la "$HOME/.rustup/downloads" || true
+        run: make ios-release BUILD_NUMBER="$BUILD_NUMBER" EXPORT_OPTIONS_PLIST="$EXPORT_OPTIONS_PLIST"
 
       - name: Verify signed IPA
         id: ipa
@@ -391,8 +333,14 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "${apps[0]}"
           actual_build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "${apps[0]}/Info.plist")"
           actual_bundle="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "${apps[0]}/Info.plist")"
-          test "$actual_build" = "$BUILD_NUMBER"
-          test "$actual_bundle" = "com.bullbitcoin.app"
+          if [ "$actual_build" != "$BUILD_NUMBER" ]; then
+            echo "::error::IPA build number is $actual_build; expected $BUILD_NUMBER."
+            exit 1
+          fi
+          if [ "$actual_bundle" != "com.bullbitcoin.app" ]; then
+            echo "::error::IPA bundle identifier is $actual_bundle; expected com.bullbitcoin.app."
+            exit 1
+          fi
 
           dsyms=(build/ios/archive/*.xcarchive/dSYMs)
           if [ "${#dsyms[@]}" -ne 1 ] || [ ! -d "${dsyms[0]}" ]; then

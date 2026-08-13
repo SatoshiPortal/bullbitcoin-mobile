@@ -113,7 +113,7 @@ ios-release:
 	@backup="$$(mktemp)"; cp pubspec.yaml "$$backup" \
 	  && trap 'cp "$$backup" pubspec.yaml; rm -f "$$backup"' EXIT INT TERM \
 	  && grep -v '^[[:space:]]*default-flavor:' "$$backup" > pubspec.yaml \
-	  && fvm flutter build ipa --release --build-number "$(BUILD_NUMBER)" $(if $(EXPORT_OPTIONS_PLIST),--export-options-plist "$(EXPORT_OPTIONS_PLIST)") $(FLUTTER_EXTRA_ARGS)
+	  && fvm flutter build ipa --release --build-number "$(BUILD_NUMBER)" $(if $(EXPORT_OPTIONS_PLIST),--export-options-plist "$(EXPORT_OPTIONS_PLIST)")
 
 # Container runtime — default podman, override with CONTAINER=docker for
 # environments without podman.
