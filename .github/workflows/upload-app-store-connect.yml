@@ -4,11 +4,6 @@ run-name: App Store Connect ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
-    inputs:
-      build_number:
-        description: Optional CFBundleVersion override (defaults to pubspec build + workflow run number)
-        required: false
-        type: string
 
 # Never cancel an upload already in progress, and serialize build-number use.
 concurrency:
@@ -62,8 +57,6 @@ jobs:
 
       - name: Resolve release metadata
         id: metadata
-        env:
-          BUILD_NUMBER_INPUT: ${{ inputs.build_number }}
         run: |
           version_line="$(awk '/^version:/ { print $2; exit }' pubspec.yaml)"
           base_build="${version_line##*+}"
@@ -73,15 +66,7 @@ jobs:
             exit 1
           fi
 
-          if [ -n "$BUILD_NUMBER_INPUT" ]; then
-            if ! [[ "$BUILD_NUMBER_INPUT" =~ ^[1-9][0-9]*$ ]]; then
-              echo "::error::build_number must be a positive integer."
-              exit 1
-            fi
-            build_number="$BUILD_NUMBER_INPUT"
-          else
-            build_number=$((base_build + GITHUB_RUN_NUMBER))
-          fi
+          build_number="$base_build"
 
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
           echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
@@ -148,11 +133,24 @@ jobs:
 
           # Cargokit requests `rustup run stable` directly, which otherwise
           # bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
-          # explicit 1.85.1 request passes through unchanged. The wrapper
-          # rewrites any bare `stable` argument, wherever it sits in argv.
-          rustup_path="$(command -v rustup)"
-          mv "$rustup_path" "$rustup_path.real"
-          cat > "$rustup_path" <<EOF
+          # explicit 1.85.1 request passes through unchanged. Any bare
+          # `stable` argument is rewritten, wherever it sits in argv.
+          # The image ships two rustups — /opt/homebrew/bin and ~/.cargo/bin —
+          # and Xcode build phases resolve their own PATH. Wrapping only the
+          # first one on this step's PATH left cargokit reaching the other:
+          # `stable` stayed floating (it pulled 1.97.1) and the mutex was
+          # bypassed, which is why serializing appeared to change nothing.
+          # Collect the list before touching anything, since moving a binary
+          # changes what a later lookup resolves to.
+          rustup_paths="$(type -a -p rustup | sort -u)
+          $HOME/.cargo/bin/rustup"
+          wrapped=0
+          for rustup_path in $rustup_paths; do
+            case "$rustup_path" in *.real) continue;; esac
+            [ -x "$rustup_path" ] || continue
+            [ -e "$rustup_path.real" ] && continue
+            mv "$rustup_path" "$rustup_path.real"
+            cat > "$rustup_path" <<EOF
           #!/bin/bash
           args=()
           for arg in "\$@"; do
@@ -161,9 +159,21 @@ jobs:
           done
           exec "\$(dirname "\$0")/rustup.real" "\${args[@]}"
           EOF
-          chmod +x "$rustup_path"
+            chmod +x "$rustup_path"
+            wrapped=$((wrapped + 1))
+          done
 
-          rustup run stable rustc --version | grep -F "rustc $RUST_VERSION"
+          if [ "$wrapped" -lt 2 ]; then
+            echo "::error::Wrapped $wrapped rustup binaries, expected at least 2. The runner image layout changed; check which rustup the Xcode build phases resolve before trusting the version pin."
+            exit 1
+          fi
+
+          # Assert the pin through every wrapper, not just the one on this PATH.
+          for rustup_path in $rustup_paths; do
+            case "$rustup_path" in *.real) continue;; esac
+            [ -x "$rustup_path" ] || continue
+            "$rustup_path" run stable rustc --version | grep -F "rustc $RUST_VERSION"
+          done
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"
 
       - name: Install Flutter and generate sources
@@ -308,8 +318,14 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "${apps[0]}"
           actual_build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "${apps[0]}/Info.plist")"
           actual_bundle="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "${apps[0]}/Info.plist")"
-          test "$actual_build" = "$BUILD_NUMBER"
-          test "$actual_bundle" = "com.bullbitcoin.app"
+          if [ "$actual_build" != "$BUILD_NUMBER" ]; then
+            echo "::error::IPA build number is $actual_build; expected $BUILD_NUMBER."
+            exit 1
+          fi
+          if [ "$actual_bundle" != "com.bullbitcoin.app" ]; then
+            echo "::error::IPA bundle identifier is $actual_bundle; expected com.bullbitcoin.app."
+            exit 1
+          fi
 
           dsyms=(build/ios/archive/*.xcarchive/dSYMs)
           if [ "${#dsyms[@]}" -ne 1 ] || [ ! -d "${dsyms[0]}" ]; then
