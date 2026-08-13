@@ -213,6 +213,7 @@ class SendCubit extends Cubit<SendState>
   void clearFailure() => emit(state.copyWith(failure: null));
 
   void backClicked() {
+    _invalidateSignedTransaction();
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.amount) {
@@ -232,6 +233,7 @@ class SendCubit extends Cubit<SendState>
       await getExchangeRate();
       await loadFees();
     } catch (e) {
+      log.warning('Failed to load wallet rates and fees', error: e);
       emit(state.copyWith(failure: SendUnexpectedFailure(e.toString())));
     }
   }
@@ -242,6 +244,7 @@ class SendCubit extends Cubit<SendState>
     PaymentRequest? paymentRequest,
   ) async {
     clearFailure();
+    _invalidateSignedTransaction();
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
       RegExp(r'^["\"]+|["\"]+$'),
       '',
@@ -254,6 +257,7 @@ class SendCubit extends Cubit<SendState>
         scannedRawPaymentRequest: scannedRawPaymentRequest,
         copiedRawPaymentRequest: sanitizedText,
         paymentRequest: paymentRequest,
+        sendMax: false,
       ),
     );
     // Recipient is part of the cache fingerprint — a different address
@@ -268,6 +272,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> onChangedText(String text) async {
     try {
       clearFailure();
+      _invalidateSignedTransaction();
       final sanitizedText = text.trim().replaceAll(
         RegExp(r'^["\"]+|["\"]+$'),
         '',
@@ -280,6 +285,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: paymentRequest,
+          sendMax: false,
         ),
       );
       // Same invalidation reason as onScannedPaymentRequest — recipient
@@ -291,6 +297,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           copiedRawPaymentRequest: text,
           paymentRequest: null,
+          sendMax: false,
           // Don't show exception if text field is clear
           failure: text.isNotEmpty
               ? const SendInvalidPaymentRequestFailure()
@@ -697,6 +704,7 @@ class SendCubit extends Cubit<SendState>
       final amountChanged =
           state.amount != validatedAmount || state.sendMax != isMax;
       emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
+      _invalidateSignedTransaction();
       // Amount is part of the cache fingerprint — any change invalidates
       // every previously-built preview PSBT. Without this clear, the user
       // can open the fee modal at amount A, change the amount to B
@@ -957,6 +965,7 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(
           utxos: utxos,
+          selectedUtxos: state.selectedUtxos.where(utxos.contains).toList(),
           consolidationRequired: consolidationRequired,
         ),
       );
@@ -1407,9 +1416,11 @@ class SendCubit extends Cubit<SendState>
           );
         }
         if (state.sendMax) {
+          // Frozen coins are never spendable, so MAX is the spendable
+          // balance — using the full balance overstates it and confirms an
+          // amount the build can't cover.
           final maxAmountSat =
-              state.selectedWallet!.balanceSat.toInt() -
-              (state.absoluteFees ?? 0);
+              state.spendableBalanceSat - (state.absoluteFees ?? 0);
           // convert to btc or fiat based on selected currency
           final maxAmount = state.bitcoinUnit == BitcoinUnit.btc
               ? ConvertAmount.satsToBtc(maxAmountSat)
@@ -1419,7 +1430,7 @@ class SendCubit extends Cubit<SendState>
           emit(
             state.copyWith(
               amount: maxAmount.toString(),
-              confirmedAmountSat: state.inputAmountSat,
+              confirmedAmountSat: maxAmountSat,
             ),
           );
         }
@@ -1572,9 +1583,10 @@ class SendCubit extends Cubit<SendState>
           }
         }
         if (state.sendMax) {
+          // See above: MAX must be capped by the spendable balance, which
+          // excludes user-frozen coins.
           final maxAmountSat =
-              state.selectedWallet!.balanceSat.toInt() -
-              (state.absoluteFees ?? 0);
+              state.spendableBalanceSat - (state.absoluteFees ?? 0);
           final maxAmount =
               state.inputAmountCurrencyCode == BitcoinUnit.btc.code
               ? ConvertAmount.satsToBtc(maxAmountSat)
@@ -1584,7 +1596,7 @@ class SendCubit extends Cubit<SendState>
           emit(
             state.copyWith(
               amount: maxAmount.toString(),
-              confirmedAmountSat: state.inputAmountSat,
+              confirmedAmountSat: maxAmountSat,
             ),
           );
         }
@@ -1748,6 +1760,16 @@ class SendCubit extends Cubit<SendState>
         log.warning('Transaction already being broadcast or broadcasted');
         return;
       }
+      // Everything the post-broadcast bookkeeping needs is captured up front.
+      // Once the transaction is on the network the send MUST still be
+      // recorded even if the user left the screen: after `close()` the emits
+      // are skipped, but reading `state.txId` back would be null and the
+      // label, swap update and wallet sync would be lost to a null-check
+      // crash instead.
+      final wallet = state.selectedWallet!;
+      final label = state.label;
+      final chainSwap = state.chainSwap;
+
       emit(state.copyWith(broadcastingTransaction: true));
       final lightningOrder = state.lightningOrder;
       final persistedPayin = lightningOrder?.signedPayinTransaction;
@@ -1786,120 +1808,144 @@ class SendCubit extends Cubit<SendState>
         }
       }
 
-      if (state.selectedWallet!.network.isLiquid) {
-        final txId = await _broadcastLiquidTxUsecase.execute(
+      final String txId;
+      if (wallet.network.isLiquid) {
+        txId = await _broadcastLiquidTxUsecase.execute(
           persistedPayin ?? state.signedLiquidTx!,
         );
-        emit(state.copyWith(txId: txId));
       } else {
         // Payjoin sends are already broadcast asynchronously by the repository
         // and their state.txId is set in signTransaction, so the guard at the
         // top of this method returns before reaching here. Only plain Bitcoin
         // sends and Exchange payins broadcast at this point; a BIP21 `pj`
         // advertisement alone is not proof a payjoin was attempted.
-        final txId = await _broadcastBitcoinTxUsecase.execute(
+        txId = await _broadcastBitcoinTxUsecase.execute(
           persistedPayin ??
               (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
           isPsbt: persistedPayinIsPsbt ?? isPsbt,
         );
-        emit(state.copyWith(txId: txId));
       }
+      if (!isClosed) emit(state.copyWith(txId: txId));
 
       if (lightningOrder != null) {
         switch (await _updateSendSwapPayinUsecase.execute(
           localId: lightningOrder.localId,
           update: SendSwapPayinUpdate.broadcastSucceeded,
-          transactionId: state.txId!,
+          transactionId: txId,
         )) {
           case Ok(:final value):
-            emit(state.copyWith(lightningOrder: value));
+            if (!isClosed) emit(state.copyWith(lightningOrder: value));
           case Err(:final failure):
-            emit(
-              state.copyWith(
-                failure: failure,
-                broadcastingTransaction: false,
-                step: sendStepAfterBroadcastPersistenceFailure(
-                  current: state.step,
-                  transactionId: state.txId,
+            if (!isClosed) {
+              emit(
+                state.copyWith(
+                  failure: failure,
+                  broadcastingTransaction: false,
+                  step: sendStepAfterBroadcastPersistenceFailure(
+                    current: state.step,
+                    transactionId: txId,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
             return;
         }
       }
 
-      if (state.chainSwap != null) {
+      if (chainSwap != null) {
         // Don't pass absoluteFees: createTransaction already persisted the
         // real lockup fee. Passing a value here overwrites it (0 clobbered it).
         await _updatePaidSendSwapUsecase.execute(
-          txid: state.txId!,
-          swapId: state.chainSwap!.id,
+          txid: txId,
+          swapId: chainSwap.id,
         );
       }
 
-      if (lightningOrder == null && state.label.isNotEmpty) {
+      if (lightningOrder == null && label.isNotEmpty) {
         await _labelsFacade.store(
-          NewLabel.tx(
-            transactionId: state.txId!,
-            label: state.label,
-            origin: state.selectedWallet!.id,
+          NewLabel.tx(transactionId: txId, label: label, origin: wallet.id),
+        );
+      }
+
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            broadcastingTransaction: false,
+            step: SendStep.success,
           ),
         );
       }
-
-      emit(
-        state.copyWith(broadcastingTransaction: false, step: SendStep.success),
-      );
 
       unawaited(
-        _getWalletUsecase
-            .execute(state.selectedWallet!.id, sync: true)
-            .catchError((e) {
-              log.warning('Failed to sync wallet after broadcast: $e');
-              return null;
-            }),
+        _getWalletUsecase.execute(wallet.id, sync: true).catchError((e) {
+          log.warning('Failed to sync wallet after broadcast: $e');
+          return null;
+        }),
       );
     } on GetWalletException catch (e) {
-      emit(
-        state.copyWith(
-          failure: SendTransactionConfirmationFailure(logMessage: e.message),
-          broadcastingTransaction: false,
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            failure: SendTransactionConfirmationFailure(logMessage: e.message),
+            broadcastingTransaction: false,
+          ),
+        );
+      }
     } on BroadcastTransactionException catch (e) {
       log.warning('Failed to broadcast transaction: ${e.message}');
-      emit(
-        state.copyWith(
-          failure: const SendTransactionConfirmationFailure(
-            isBroadcastFailure: true,
-            logMessage: 'BroadcastTransactionException',
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionConfirmationFailure(
+              isBroadcastFailure: true,
+              logMessage: 'BroadcastTransactionException',
+            ),
+            broadcastingTransaction: false,
           ),
-          broadcastingTransaction: false,
-        ),
-      );
+        );
+      }
     } catch (e, st) {
       log.warning(
         'Unexpected broadcast transaction error',
         error: e,
         trace: st,
       );
-      emit(
-        state.copyWith(
-          failure: SendTransactionConfirmationFailure(logMessage: e.toString()),
-          broadcastingTransaction: false,
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            failure: SendTransactionConfirmationFailure(
+              logMessage: e.toString(),
+            ),
+            broadcastingTransaction: false,
+          ),
+        );
+      }
     }
   }
 
   Future<void> onConfirmTransactionClicked() async {
     try {
-      if (state.signedBitcoinTx == null &&
-          state.lightningOrder?.hasPreparedPayin != true) {
+      final orderNeedsPayin =
+          state.lightningOrder != null &&
+          state.lightningOrder?.hasPreparedPayin != true;
+      final sendNeedsSignature = state.selectedWallet!.network.isLiquid
+          ? state.signedLiquidTx == null
+          : state.signedBitcoinTx == null && state.signedBitcoinPsbt == null;
+      if (orderNeedsPayin || sendNeedsSignature) {
+        if (orderNeedsPayin) {
+          _invalidateSignedTransaction();
+          clearBitcoinFeePreviews();
+        }
         await createTransaction();
+        if (state.failure is SendTransactionBuildFailure ||
+            state.unsignedPsbt == null) {
+          emit(state.copyWith(step: SendStep.confirm));
+          return;
+        }
         await signTransaction();
-        // if (!state.isLightning) {
-        if (state.failure is! SendTransactionConfirmationFailure) {
+        if (state.failure is! SendTransactionConfirmationFailure &&
+            (!orderNeedsPayin ||
+                state.lightningOrder?.hasPreparedPayin == true)) {
           // _watchPayjoin (armed inside signTransaction's payjoin branch)
           //  can resolve the flow to success before this line, if a
           //  terminal payjoin event arrives in the gap between arming and
@@ -2213,6 +2259,31 @@ class SendCubit extends Cubit<SendState>
     }
     emit(state.copyWith(signedBitcoinTx: signedTx, failure: null));
     return true;
+  }
+
+  /// Drops every payload that was built or signed for the *previous* shape of
+  /// this payment. The BDK path stores its signed transaction in
+  /// [SendState.signedBitcoinPsbt] and the hardware path in
+  /// [SendState.signedBitcoinTx]; `onConfirmTransactionClicked` broadcasts
+  /// whichever is present, so clearing only one leaves an editable payment
+  /// with a broadcastable signature attached to the old recipient/amount.
+  /// The unsigned PSBT goes too: it is the reference
+  /// [updateSignedBitcoinTx] verifies a hardware signature against.
+  void _invalidateSignedTransaction() {
+    if (state.signedBitcoinTx == null &&
+        state.signedBitcoinPsbt == null &&
+        state.signedLiquidTx == null &&
+        state.unsignedPsbt == null) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        signedBitcoinTx: null,
+        signedBitcoinPsbt: null,
+        signedLiquidTx: null,
+        unsignedPsbt: null,
+      ),
+    );
   }
 
   Future<void> updateSelectedWallet(Wallet newWallet) =>

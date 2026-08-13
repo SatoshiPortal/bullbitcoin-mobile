@@ -61,10 +61,12 @@ class UpdateLatestEncryptedVaultTestUsecase {
     } catch (e, st) {
       log.severe(
         message: 'updateLatestEncryptedVault failed',
-        error: e,
+        error: 'Backup restoration failed',
         trace: st,
       );
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Backup restoration failed'),
+      );
     }
   }
 }

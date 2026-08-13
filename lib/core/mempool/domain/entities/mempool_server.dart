@@ -55,6 +55,7 @@ class MempoolServer {
   MempoolServerNetwork get network => _network;
   bool get isCustom => _isCustom;
   bool get enableSsl => _enableSsl;
+  bool get canUseForFeeEstimation => _enableSsl;
   String get fullUrl => _enableSsl ? 'https://$_url' : 'http://$_url';
 
   bool get isTestnet => _network.isTestnet;

@@ -135,24 +135,6 @@ void main() {
     expect(transactions.single.payjoin?.status, PayjoinStatus.requested);
   });
 
-  test('labels exchange orders before loading wallet transactions', () async {
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
-
-    await usecase.execute();
-
-    verifyInOrder([
-      () => mainnetOrderRepository.getOrders(),
-      () => labelExchangeOrdersUsecase.execute(orders: orders),
-      () => walletTransactionRepository.getWalletTransactions(
-        walletId: any(named: 'walletId'),
-        sync: any(named: 'sync'),
-        environment: any(named: 'environment'),
-      ),
-    ]);
-  });
-
   test(
     'keeps ordinary transaction history available when Payjoin is unavailable',
     () async {

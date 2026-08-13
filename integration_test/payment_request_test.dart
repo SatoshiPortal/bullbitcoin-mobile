@@ -46,20 +46,15 @@ Future<void> main({bool isInitialized = false}) async {
       expect(bip21.network, Network.bitcoinMainnet);
     });
 
-    test(
-      'HTTPS URL with percent-encoded LNAddress in lightning param',
-      () async {
-        const input =
-            'https://admin.bullbitcoin.com/abc'
-            '?lightning=ishi%40walletofsatoshi.com&label=pleasefundme';
-        final result = await PaymentRequest.parse(input);
-        expect(result, isA<LnAddressPaymentRequest>());
-        expect(
-          (result as LnAddressPaymentRequest).address,
-          'ishi@walletofsatoshi.com',
-        );
-      },
-    );
+    test('HTTPS URL with a percent-encoded LNAddress is rejected', () async {
+      const input =
+          'https://admin.bullbitcoin.com/abc'
+          '?lightning=ishi%40walletofsatoshi.com&label=pleasefundme';
+      expect(
+        () => PaymentRequest.parse(input),
+        throwsA('Invalid payment request'),
+      );
+    });
   });
 
   group('Liquid address confidentiality (security audit)', () {

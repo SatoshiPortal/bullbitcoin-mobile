@@ -12,11 +12,20 @@ class LabelEntity {
   LabelEntity({
     required this.id,
     required this.type,
-    required this.label,
+    required String label,
     required this.reference,
     this.origin,
-  }) {
+  }) : label = sanitizeLabel(label) {
     _validateReference();
+  }
+
+  static const maxLabelLength = 50;
+
+  static String sanitizeLabel(String value) {
+    final withoutControls = value.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '');
+    return withoutControls.trim().length > maxLabelLength
+        ? withoutControls.trim().substring(0, maxLabelLength)
+        : withoutControls.trim();
   }
 
   void _validateReference() {
@@ -104,12 +113,12 @@ class LabelEntity {
     }
   }
 
-  /// Validates extended public key reference by decoding base58 and checking length
-  /// Extended keys (xpub, ypub, zpub, tpub, etc.) are 78 bytes when decoded
+  /// Validates an extended public key and its known public SLIP-132 version.
   void _validateExtendedPublicKeyReference() {
     try {
       final decoded = base58.decode(reference);
-      if (decoded.length != 78) {
+      if (decoded.length != 78 ||
+          !_publicExtendedKeyVersions.contains(_u32(decoded))) {
         throw LabelValidationException(
           'Invalid extended public key reference: decoded length must be 78 bytes, got ${decoded.length}',
         );
@@ -121,6 +130,22 @@ class LabelEntity {
       );
     }
   }
+
+  static const _publicExtendedKeyVersions = {
+    0x0488b21e, // xpub
+    0x043587cf, // tpub
+    0x049d7cb2, // ypub
+    0x04b24746, // zpub
+    0x0295b43f, // Ypub
+    0x02aa7ed3, // Zpub
+    0x044a5262, // Upub
+    0x045f1cf6, // Vpub
+    0x024289ef, // Ypub testnet
+    0x02575483, // Zpub testnet
+  };
+
+  static int _u32(List<int> bytes) =>
+      (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
 }
 
 class LabelValidationException implements Exception {

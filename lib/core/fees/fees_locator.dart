@@ -13,6 +13,7 @@ class FeesLocator {
       () => FeesDatasource(
         getActiveMempoolServerUsecase: locator<GetActiveMempoolServerUsecase>(),
         mempoolSettingsRepository: locator<MempoolSettingsRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

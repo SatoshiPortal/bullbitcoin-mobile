@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -41,6 +42,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._getSettingsUsecase,
     required this._cancelAbandonedBuyPayjoinUsecase,
     required this._getBuyPayjoinEnabledUsecase,
+    required this._labelCompletedBuyOrderUsecase,
   }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -68,6 +70,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
   final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
+  final LabelCompletedBuyOrderUsecase _labelCompletedBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
@@ -301,6 +304,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           : refreshedOrder;
 
       if (order.isExpired()) await _cancelAbandonedPayjoin(order);
+
+      // The explicit order-completion event is the only legitimate writer
+      // of privileged exchange labels (issue #2624).
+      await _labelCompletedBuyOrderUsecase.execute(order: order);
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {

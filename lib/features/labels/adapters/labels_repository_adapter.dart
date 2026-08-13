@@ -27,7 +27,14 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
       origin: newLabel.origin,
     );
 
-    final companion = LabelMapper.newLabelEntityToCompanion(newLabel);
+    final normalized = NewLabel(
+      id: newLabel.id,
+      type: newLabel.type,
+      reference: newLabel.reference,
+      label: LabelEntity.sanitizeLabel(newLabel.label),
+      origin: newLabel.origin,
+    );
+    final companion = LabelMapper.newLabelEntityToCompanion(normalized);
     final id = await _database
         .into(_database.labels)
         .insert(
@@ -40,11 +47,20 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
 
     return LabelEntity(
       id: id,
-      type: newLabel.type,
-      label: newLabel.label,
-      reference: newLabel.reference,
-      origin: newLabel.origin,
+      type: normalized.type,
+      label: normalized.label,
+      reference: normalized.reference,
+      origin: normalized.origin,
     );
+  }
+
+  @override
+  Future<void> storeAll(List<NewLabel> newLabels) async {
+    await _database.transaction(() async {
+      for (final label in newLabels) {
+        await store(label);
+      }
+    });
   }
 
   @override

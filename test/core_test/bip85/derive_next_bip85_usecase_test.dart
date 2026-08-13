@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_ent
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -20,6 +22,8 @@ class _MockSeedRepository extends Mock implements SeedRepository {}
 
 class _MockGetDefaultSeedUsecase extends Mock
     implements GetDefaultSeedUsecase {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 final _fakeWallet = Wallet(
   origin: 'test-id',
@@ -42,12 +46,21 @@ void main() {
   late _MockWalletRepository walletRepository;
   late _MockSeedRepository seedRepository;
   late _MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late _MockSettingsRepository settingsRepository;
 
   setUp(() {
     bip85Repository = _MockBip85Repository();
     walletRepository = _MockWalletRepository();
     seedRepository = _MockSeedRepository();
     getDefaultSeedUsecase = _MockGetDefaultSeedUsecase();
+    settingsRepository = _MockSettingsRepository();
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
   });
 
   group('DeriveNextBip85MnemonicFromDefaultWalletUsecase', () {
@@ -58,6 +71,7 @@ void main() {
         bip85Repository: bip85Repository,
         walletRepository: walletRepository,
         seedRepository: seedRepository,
+        settingsRepository: settingsRepository,
       );
     });
 
@@ -68,6 +82,7 @@ void main() {
           () => walletRepository.getWallets(
             onlyDefaults: any(named: 'onlyDefaults'),
             onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
           ),
         ).thenAnswer((_) async => []);
 
@@ -87,6 +102,7 @@ void main() {
           () => walletRepository.getWallets(
             onlyDefaults: any(named: 'onlyDefaults'),
             onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
           ),
         ).thenThrow(Exception('internal db error with secret path /data/user'));
 
@@ -108,6 +124,7 @@ void main() {
         bip85Repository: bip85Repository,
         walletRepository: walletRepository,
         seedRepository: seedRepository,
+        settingsRepository: settingsRepository,
       );
     });
 
@@ -118,6 +135,7 @@ void main() {
           () => walletRepository.getWallets(
             onlyDefaults: any(named: 'onlyDefaults'),
             onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
           ),
         ).thenAnswer((_) async => []);
 
@@ -135,6 +153,7 @@ void main() {
           () => walletRepository.getWallets(
             onlyDefaults: any(named: 'onlyDefaults'),
             onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
           ),
         ).thenAnswer((_) async => [_fakeWallet]);
 
@@ -158,6 +177,7 @@ void main() {
           () => walletRepository.getWallets(
             onlyDefaults: any(named: 'onlyDefaults'),
             onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
           ),
         ).thenAnswer((_) async => [_fakeWallet]);
 

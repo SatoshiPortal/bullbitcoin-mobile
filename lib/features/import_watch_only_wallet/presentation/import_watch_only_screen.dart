@@ -35,6 +35,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             locator<ImportWatchOnlyDescriptorUsecase>(),
         importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
         parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
+        settingsRepository: locator(),
       )..init(),
       child: Scaffold(
         appBar: AppBar(

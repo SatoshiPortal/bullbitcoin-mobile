@@ -26,17 +26,22 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 class MempoolFeesMapper {
   const MempoolFeesMapper._();
 
+  static const maxSatPerVbyte = 1000.0;
+
   static FeeOptions toFeeOptions(MempoolFeesModel model) {
     final floorSatPerVbyte = max(
-      model.minimumFee,
+      min(model.minimumFee, maxSatPerVbyte),
       NetworkFeeRelayPolicy.minRelaySatPerVbyte,
     );
+    final slow = max(floorSatPerVbyte, min(model.economyFee, maxSatPerVbyte));
+    final economic = max(slow, min(model.hourFee, maxSatPerVbyte));
+    final fastest = max(economic, min(model.fastestFee, maxSatPerVbyte));
     RelativeFee tier(double satPerVbyte) =>
-        NetworkFee.relativeFromSatPerVbyte(max(satPerVbyte, floorSatPerVbyte));
+        NetworkFee.relativeFromSatPerVbyte(satPerVbyte);
     return FeeOptions(
-      fastest: tier(model.fastestFee),
-      economic: tier(model.hourFee),
-      slow: tier(model.economyFee),
+      fastest: tier(fastest),
+      economic: tier(economic),
+      slow: tier(slow),
       minRelay: NetworkFee.relativeFromSatPerVbyte(floorSatPerVbyte),
     );
   }

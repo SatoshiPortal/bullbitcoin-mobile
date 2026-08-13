@@ -4982,5 +4982,6 @@
   "coreSwapsStatusAwaitingClaim": "Esperando reclamación",
   "coreSwapsStatusUnknown": "Desconocido",
   "sendSwapExpiredTitle": "Orden expirada",
-  "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera."
+  "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera.",
+  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente."
 }

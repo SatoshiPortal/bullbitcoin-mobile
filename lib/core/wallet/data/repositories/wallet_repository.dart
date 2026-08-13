@@ -130,9 +130,11 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets(onlyDefaults: true);
+    final allWallets = await getWallets();
     for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) throw 'Wallet already exists';
+      if (wallet.id == metadata.id) {
+        throw WalletAlreadyExistsException(metadata.id);
+      }
     }
 
     await _walletMetadataDatasource.store(metadata);
@@ -176,9 +178,11 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets(onlyDefaults: true);
+    final allWallets = await getWallets();
     for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) throw 'Wallet already exists';
+      if (wallet.id == metadata.id) {
+        throw WalletAlreadyExistsException(metadata.id);
+      }
     }
 
     await _walletMetadataDatasource.store(metadata);

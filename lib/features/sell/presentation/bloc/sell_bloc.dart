@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
@@ -72,6 +73,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._getWalletUtxosUsecase,
     required this._getOrderUsecase,
     required this._labelsFacade,
+    required this._labelCompletedSellOrderUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
   }) : super(const SellState.initial()) {
@@ -121,6 +123,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetOrderUsecase _getOrderUsecase;
   final LabelsFacade _labelsFacade;
+  final LabelCompletedSellOrderUsecase _labelCompletedSellOrderUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   Timer? _pollingTimer;
@@ -923,6 +926,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
           return;
         }
         await _labelPayjoinSellTransaction(latestOrder, null);
+        // The explicit order-completion event is the only legitimate writer
+        // of privileged exchange labels (issue #2624).
+        await _labelCompletedSellOrderUsecase.execute(order: latestOrder);
         if (!latestOrder.payjoinOutcome.isOngoing) _stopPolling();
         emit(sellSuccessState.copyWith(sellOrder: latestOrder));
       } catch (e) {
