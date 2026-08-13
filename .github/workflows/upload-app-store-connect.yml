@@ -179,6 +179,33 @@ jobs:
             exit 1
           fi
 
+      # native_toolchain_rust runs `rustup show active-toolchain` inside each
+      # Rust crate, which makes rustup materialize everything that crate's
+      # rust-toolchain.toml declares — for bdk-dart, twelve targets, of which
+      # this job pre-installs one. The rest were being installed during the
+      # Xcode archive, concurrently with rust_lib_bull_sdk's own rustup calls,
+      # and concurrent rustup installs corrupt each other (rust-lang/rustup#3690,
+      # #4910): the archive failed either on a half-renamed download or on a
+      # component conflict. Replay the same call once, serially, before the
+      # build, so nothing is left to install while targets run in parallel.
+      # RUSTUP_TOOLCHAIN is unset for this call only: it would otherwise
+      # override the toml and defeat the whole point.
+      - name: Pre-install crate-declared Rust toolchains
+        run: |
+          found=0
+          for manifest in $(find "$HOME/.pub-cache/git" -maxdepth 4 -name rust-toolchain.toml 2>/dev/null); do
+            crate_dir="$(dirname "$manifest")"
+            echo "::group::$crate_dir"
+            cat "$manifest"
+            (cd "$crate_dir" && env -u RUSTUP_TOOLCHAIN rustup show active-toolchain)
+            echo "::endgroup::"
+            found=1
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "::error::No crate-declared rust-toolchain.toml found; the pub cache layout changed."
+            exit 1
+          fi
+
       - name: Install locked CocoaPods dependencies
         working-directory: ios
         run: |
