@@ -45,6 +45,7 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 ### Important Upgrade Note
 
 - Android installations from the pre-v5 Hive-storage era no longer attempt the removed legacy migration. Before startup, the app shows a protected backup screen with every recoverable phrase and passphrase, then instructs the user to reinstall and recover. Current installations are unaffected. Do not uninstall before completing the displayed backup. ([#2559](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2559))
+- After `6.13.0` opens and migrates wallet data, an in-place downgrade to `6.12.x` is not supported. If an urgent issue is discovered, update forward to a `6.13.x` hotfix instead of rolling back the installed app.
 
 ### Under The Hood
 
