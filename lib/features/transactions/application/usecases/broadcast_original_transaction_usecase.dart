@@ -7,6 +7,13 @@ class BroadcastOriginalTransactionUsecase {
 
   const BroadcastOriginalTransactionUsecase(this._sender);
 
+  Future<bool> canExecute(PayjoinSession payjoin) async {
+    return switch (await _sender.canBroadcastOriginal(payjoin.id)) {
+      Ok(:final value) => value,
+      Err() => false,
+    };
+  }
+
   Future<PayjoinSession> execute(PayjoinSession payjoin) async {
     final result = await _sender.broadcastOriginal(payjoin.id);
     return switch (result) {

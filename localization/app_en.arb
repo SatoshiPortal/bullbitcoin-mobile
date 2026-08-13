@@ -14566,5 +14566,9 @@
   "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
   "@mempoolErrorNetworkMismatch": {
     "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
+  },
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
+  "@transactionPayjoinFallbackProcessing": {
+    "description": "Status shown while broadcasting a payjoin fallback transaction"
   }
 }
