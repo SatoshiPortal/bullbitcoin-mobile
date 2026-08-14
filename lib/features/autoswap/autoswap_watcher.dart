@@ -28,15 +28,30 @@ class AutoswapWatcher {
 
   Future<void> _run() async {
     try {
-      final result = await _executeAutoswap.execute();
-      if (result case Err<String, AutoswapFailure>(:final failure)) {
-        if (failure is AutoswapExecutionFailure ||
-            failure is AutoswapProviderFailure) {
-          log.warning('Autoswap failed (${failure.runtimeType})');
-        }
+      switch (await _executeAutoswap.execute()) {
+        case Ok():
+          log.info('[Autoswap] transfer under way');
+        case Err(:final failure):
+          log.warning('[Autoswap] no transfer: ${_describe(failure)}');
       }
     } catch (error) {
-      log.warning('Autoswap watcher failed (${error.runtimeType})');
+      log.warning('[Autoswap] watcher failed (${error.runtimeType})');
     }
   }
+
+  String _describe(AutoswapFailure failure) => switch (failure) {
+    AutoswapFeeLimitExceededFailure(
+      :final feePercent,
+      :final thresholdPercent,
+    ) =>
+      'fee ${feePercent.toStringAsFixed(2)}% is above the '
+          '${thresholdPercent.toStringAsFixed(2)}% ceiling',
+    AutoswapInsufficientBalanceFailure(:final requiredThresholdSats) =>
+      'balance is below the trigger of $requiredThresholdSats sats',
+    AutoswapInvalidSettingsFailure(:final violation) =>
+      'invalid settings (${violation.name})',
+    AutoswapProviderFailure() || AutoswapExecutionFailure() =>
+      '${failure.runtimeType} (${failure.logMessage})',
+    _ => failure.runtimeType.toString(),
+  };
 }
