@@ -601,6 +601,39 @@ void main() {
       expect(delays, [const Duration(seconds: 5)]);
     });
 
+    /// `Retry-After` is server-controlled and unbounded. Sleeping on a long
+    /// one would park the watcher and stall its disposal, so the run gives up
+    /// and lets the next wallet sync try again.
+    test('a delay longer than the cap is not waited out', () async {
+      stubUpToCreate([
+        const Err(SwapRateLimitedFailure(retryAfter: Duration(minutes: 10))),
+      ]);
+
+      final result = await provider.execute(settings);
+
+      expect(delays, isEmpty);
+      expect(
+        (result as Err<String, AutoswapFailure>).failure,
+        isA<AutoswapProviderFailure>(),
+      );
+      verify(
+        () => swapFacade.createOrder(
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: true,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+          destinationAddress: any(named: 'destinationAddress'),
+          fallbackAddress: any(named: 'fallbackAddress'),
+          purpose: OrderSwapPurpose.autoswap,
+          environment: OrderSwapEnvironment.testnet,
+          sourceWalletId: 'liquid-wallet',
+          destinationWalletId: 'bitcoin-wallet',
+          note: 'Auto-Transfer',
+          quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
+        ),
+      ).called(1);
+    });
+
     test('other failures are not retried', () async {
       stubUpToCreate([const Err(SwapProviderFailure('nope'))]);
 

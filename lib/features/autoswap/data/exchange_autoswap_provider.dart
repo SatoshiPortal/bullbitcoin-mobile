@@ -16,6 +16,13 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   /// Fallback when the server sends no Retry-After.
   static const _createRetryDelay = Duration(seconds: 5);
 
+  /// Longest wait worth taking inline. `Retry-After` is server-controlled and
+  /// unbounded, and sleeping on it would park the watcher (its in-flight guard
+  /// drops every sync meanwhile) and stall `dispose`, which awaits the run.
+  /// Past this the quote is stale anyway, so the next sync retries instead.
+  /// Matches the spacing `RefreshOrderSwapsUsecase` uses on the same API.
+  static const _maxCreateRetryDelay = Duration(seconds: 30);
+
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
@@ -151,8 +158,11 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       if (createResult case Err(
         :final failure,
       ) when failure is SwapRateLimitedFailure) {
-        await _delay(failure.retryAfter ?? _createRetryDelay);
-        createResult = await create();
+        final wait = failure.retryAfter ?? _createRetryDelay;
+        if (wait <= _maxCreateRetryDelay) {
+          await _delay(wait);
+          createResult = await create();
+        }
       }
       if (createResult case Err(:final failure)) {
         return Err(AutoswapProviderFailure(failure.runtimeType.toString()));
