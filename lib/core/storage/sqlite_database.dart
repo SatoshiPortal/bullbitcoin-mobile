@@ -7,10 +7,12 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
+import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
@@ -49,6 +51,8 @@ part 'sqlite_database.g.dart';
     Recoverbull,
     Prices,
     FrozenUtxos,
+    DismissedAnnouncements,
+    OrderSwaps,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -98,7 +102,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 13;
+  static const int currentSchemaVersion = 14;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -154,6 +158,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
         from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
         from12To13: _reportingMigration('from12To13', Schema12To13.migrate),
+        from13To14: _reportingMigration('from13To14', Schema13To14.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

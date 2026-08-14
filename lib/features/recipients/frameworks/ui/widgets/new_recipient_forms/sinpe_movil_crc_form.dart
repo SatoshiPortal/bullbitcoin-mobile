@@ -10,7 +10,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 String? validateSinpeMovilPhone(String? value, AppLocalizations loc) {
   if (value == null || value.trim().isEmpty) {
@@ -140,10 +140,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                 controller: _ownerNameController,
                 disabled: true,
                 suffix: _ownerNameController.text.isNotEmpty
-                    ? Icon(
-                        Icons.check_circle,
-                        color: context.appColors.primary,
-                      )
+                    ? Icon(Icons.check_circle, color: context.appColors.primary)
                     : isChecking
                     ? SizedBox(
                         width: 20,

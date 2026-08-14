@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class CopyInput extends StatelessWidget {
   const CopyInput({
@@ -47,25 +47,23 @@ class CopyInput extends StatelessWidget {
           const Gap(15),
           Expanded(
             child: InkWell(
-              onTap:
-                  canShowValueModal
-                      ? () {
-                        _onShowValueModal(context, canCopy: canCopy);
-                      }
-                      : null,
+              onTap: canShowValueModal
+                  ? () {
+                      _onShowValueModal(context, canCopy: canCopy);
+                    }
+                  : null,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child:
-                    isValueLoading
-                        ? const LoadingLineContent()
-                        : Text(
-                          text,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.secondary,
-                          ),
-                          maxLines: maxLines,
-                          overflow: overflow,
+                child: isValueLoading
+                    ? const LoadingLineContent()
+                    : Text(
+                        text,
+                        style: context.font.bodyLarge?.copyWith(
+                          color: context.appColors.secondary,
                         ),
+                        maxLines: maxLines,
+                        overflow: overflow,
+                      ),
               ),
             ),
           ),
@@ -86,10 +84,7 @@ class CopyInput extends StatelessWidget {
             IconButton(
               visualDensity: VisualDensity.compact,
               iconSize: 20,
-              icon: Icon(
-                Icons.copy_sharp,
-                color: context.appColors.secondary,
-              ),
+              icon: Icon(Icons.copy_sharp, color: context.appColors.secondary),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: clipboardText ?? text));
                 SnackBarUtils.showCopiedSnackBar(context);
@@ -107,17 +102,16 @@ class CopyInput extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: context.appColors.surface,
-        title:
-            modalTitle != null
-                ? Text(
-                  modalTitle!,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontSize: 20,
-                    fontWeight: .w700,
-                  ),
-                  textAlign: .center,
-                )
-                : null,
+        title: modalTitle != null
+            ? Text(
+                modalTitle!,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontSize: 20,
+                  fontWeight: .w700,
+                ),
+                textAlign: .center,
+              )
+            : null,
 
         content: SingleChildScrollView(
           child: SelectableText(
@@ -133,9 +127,7 @@ class CopyInput extends StatelessWidget {
                 textStyle: theme.textTheme.bodyLarge,
               ),
               onPressed: () {
-                Clipboard.setData(
-                  ClipboardData(text: clipboardText ?? text),
-                );
+                Clipboard.setData(ClipboardData(text: clipboardText ?? text));
               },
               child: Text(
                 context.loc.copyDialogButton,

@@ -8,6 +8,8 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:meta/meta.dart';
+import 'package:convert/convert.dart';
+import 'package:bip32_keys/bip32_keys.dart' as bip32;
 
 class FetchAllBip85DerivationsWithEntropyUsecase {
   final Bip85Repository _bip85Repository;
@@ -37,13 +39,23 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
-          final derivationsWithEntropy = value.map((e) {
-            final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
-              xprvBase58: xprvBase58,
-              path: bip85.Bip85HardenedPath(e.path),
-            );
-            return (derivation: e, entropy: entropy);
-          }).toList();
+          final derivationsWithEntropy = value
+              .where((e) {
+                // A row is bound to the root key that created it.  If that key is
+                // no longer available, never show a value derived from another
+                // wallet in its place.
+                final key = bip32.Bip32Keys.fromBase58(xprvBase58);
+                return e.xprvFingerprint.toLowerCase() ==
+                    hex.encode(key.fingerprint).toLowerCase();
+              })
+              .map((e) {
+                final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
+                  xprvBase58: xprvBase58,
+                  path: bip85.Bip85HardenedPath(e.path),
+                );
+                return (derivation: e, entropy: entropy);
+              })
+              .toList();
           return Ok(derivationsWithEntropy);
       }
     } catch (e, st) {

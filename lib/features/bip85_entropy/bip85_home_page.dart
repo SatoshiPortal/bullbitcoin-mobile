@@ -10,10 +10,18 @@ import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
-class Bip85HomePage extends StatelessWidget {
+class Bip85HomePage extends StatefulWidget {
   const Bip85HomePage({super.key});
+
+  @override
+  State<Bip85HomePage> createState() => _Bip85HomePageState();
+}
+
+class _Bip85HomePageView extends StatelessWidget {
+  const _Bip85HomePageView();
 
   @override
   Widget build(BuildContext context) {
@@ -109,5 +117,22 @@ class Bip85HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _Bip85HomePageState extends State<Bip85HomePage> with PrivacyScreen {
+  @override
+  void initState() {
+    super.initState();
+    enableScreenPrivacy();
+  }
+
+  @override
+  Widget build(BuildContext context) => const _Bip85HomePageView();
+
+  @override
+  void dispose() {
+    disableScreenPrivacy();
+    super.dispose();
   }
 }

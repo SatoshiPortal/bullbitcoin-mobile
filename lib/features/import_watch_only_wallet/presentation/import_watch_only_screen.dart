@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
@@ -35,6 +35,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             locator<ImportWatchOnlyDescriptorUsecase>(),
         importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
         parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
+        settingsRepository: locator(),
       )..init(),
       child: Scaffold(
         appBar: AppBar(

@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bolt11_decoder/bolt11_decoder.dart';
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -315,9 +314,12 @@ sealed class Swap with _$Swap {
   static int _invoiceAmountSat(String invoice) {
     if (invoice.isEmpty) return 0;
     try {
-      return (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
+      // Exact conversion without package:decimal — the BTC amount as a
+      // rational, sats = numerator * 10^8 / denominator, truncated toward
+      // zero exactly like the previous Decimal.toBigInt() call.
+      final amount = Bolt11PaymentRequest(invoice).amount.toRational();
+      return ((amount.numerator * ConversionConstants.satsAmountOfOneBitcoin) ~/
+              amount.denominator)
           .toInt();
     } catch (_) {
       return 0;
@@ -366,14 +368,13 @@ sealed class Swap with _$Swap {
   bool get isChainSwapExternal =>
       this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
 
-  String swapAction(BuildContext context) =>
-      status == SwapStatus.claimable
-          ? context.loc.coreSwapsActionClaim
-          : status == SwapStatus.canCoop
-          ? context.loc.coreSwapsActionClose
-          : status == SwapStatus.refundable
-          ? context.loc.coreSwapsActionRefund
-          : '';
+  String swapAction(BuildContext context) => status == SwapStatus.claimable
+      ? context.loc.coreSwapsActionClaim
+      : status == SwapStatus.canCoop
+      ? context.loc.coreSwapsActionClose
+      : status == SwapStatus.refundable
+      ? context.loc.coreSwapsActionRefund
+      : '';
 
   bool get swapCompleted => status == SwapStatus.completed;
 

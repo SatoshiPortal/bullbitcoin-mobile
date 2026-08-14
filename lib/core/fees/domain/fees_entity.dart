@@ -82,8 +82,9 @@ sealed class NetworkFee with _$NetworkFee {
   /// rounded half-up for [RelativeFee].
   NetworkFee toAbsolute(int vsize) => switch (this) {
     AbsoluteFee() => this,
-    RelativeFee(:final satPerKwu) =>
-      NetworkFee.absolute((satPerKwu * vsize + 125) ~/ 250),
+    RelativeFee(:final satPerKwu) => NetworkFee.absolute(
+      (satPerKwu * vsize + 125) ~/ 250,
+    ),
   };
 }
 
@@ -124,7 +125,10 @@ extension NetworkFeeRelayPolicy on NetworkFee {
     return switch (this) {
       RelativeFee(:final satPerKwu) => satPerKwu >= floor,
       AbsoluteFee(:final sats) =>
-        txSize != null && txSize > 0 && (sats * 250) >= (floor * txSize),
+        txSize != null &&
+            txSize > 0 &&
+            (BigInt.from(sats) * BigInt.from(250)) >=
+                (BigInt.from(floor) * BigInt.from(txSize)),
     };
   }
 }
@@ -154,11 +158,10 @@ abstract class FeeOptions with _$FeeOptions {
 
   FeeOptions toRelative(int vsize) {
     NetworkFee asRelative(NetworkFee fee) => switch (fee) {
-      AbsoluteFee(:final sats) =>
-        NetworkFee.relativeFromAbsoluteAndVsize(
-          absoluteSats: sats,
-          vsize: vsize,
-        ),
+      AbsoluteFee(:final sats) => NetworkFee.relativeFromAbsoluteAndVsize(
+        absoluteSats: sats,
+        vsize: vsize,
+      ),
       RelativeFee() => fee,
     };
     return FeeOptions(
@@ -169,7 +172,6 @@ abstract class FeeOptions with _$FeeOptions {
     );
   }
 }
-
 
 enum FeeSelection { fastest, economic, slow, custom }
 

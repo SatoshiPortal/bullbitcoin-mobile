@@ -16,6 +16,8 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<key>CFBundleName</key>
 		<string>com.bullbitcoin.app</string>
 		<key>CFBundlePackageType</key>
@@ -89,7 +91,6 @@
 		<array>
 			<string>com.bullbitcoin.mobile.bitcoin-sync-id</string>
 			<string>com.bullbitcoin.mobile.liquid-sync-id</string>
-			<string>com.bullbitcoin.mobile.swaps-sync-id</string>
 			<string>com.bullbitcoin.mobile.logs-prune-id</string>
 			<string>com.bullbitcoin.mobile.services-check-id</string>
 		</array>

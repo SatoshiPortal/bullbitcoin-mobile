@@ -6,6 +6,6 @@ import 'package:flutter/widgets.dart';
 /// makes a missing message a compile error. Never returns the raw `logMessage`.
 extension LabelFailureL10n on LabelFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        LabelUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    LabelUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/mempool_settings/presentation/mempool_setting
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
@@ -118,7 +118,8 @@ class _SetCustomServerBottomSheetState
     } else {
       final failure = context.read<MempoolSettingsCubit>().state.failure;
       setState(() {
-        _errorMessage = failure?.toTranslated(context) ??
+        _errorMessage =
+            failure?.toTranslated(context) ??
             context.loc.mempoolCustomServerSaveFailed;
       });
       context.read<MempoolSettingsCubit>().clearError();
@@ -254,7 +255,10 @@ class _SetCustomServerBottomSheetState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(context.loc.mempoolCustomServerUseSsl, style: context.font.bodyMedium),
+                            Text(
+                              context.loc.mempoolCustomServerUseSsl,
+                              style: context.font.bodyMedium,
+                            ),
                             if (_sslAutoDetected) ...[
                               const Gap(2),
                               Text(

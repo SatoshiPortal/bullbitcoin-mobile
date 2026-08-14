@@ -13,4 +13,6 @@ abstract class LabelsRepositoryPort {
   Future<void> trash(int id);
 
   Future<List<LabelEntity>> fetchAll();
+
+  Future<void> storeAll(List<NewLabel> labels);
 }

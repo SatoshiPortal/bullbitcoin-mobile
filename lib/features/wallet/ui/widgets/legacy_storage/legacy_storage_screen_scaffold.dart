@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_badge.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class LegacyStorageScreenScaffold extends StatelessWidget {
   const LegacyStorageScreenScaffold({
@@ -66,10 +66,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
               const Gap(10),
               if (primaryButton != null) ...[primaryButton!, const Gap(8)],
               secondaryButton,
-              if (belowButtons != null) ...[
-                const Gap(10),
-                belowButtons!,
-              ],
+              if (belowButtons != null) ...[const Gap(10), belowButtons!],
               const Gap(10),
               WizardDots(count: dotCount, index: dotIndex),
             ],

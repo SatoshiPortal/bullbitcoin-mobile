@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -19,8 +18,9 @@ void main() {
   });
 
   test('returns Ok(true) when pin code is set', () async {
-    when(() => pinCodeRepository.isPinCodeSet())
-        .thenAnswer((_) async => const Ok(true));
+    when(
+      () => pinCodeRepository.isPinCodeSet(),
+    ).thenAnswer((_) async => const Ok(true));
 
     final result = await usecase.execute();
 
@@ -29,8 +29,9 @@ void main() {
   });
 
   test('returns Ok(false) when pin code is not set', () async {
-    when(() => pinCodeRepository.isPinCodeSet())
-        .thenAnswer((_) async => const Ok(false));
+    when(
+      () => pinCodeRepository.isPinCodeSet(),
+    ).thenAnswer((_) async => const Ok(false));
 
     final result = await usecase.execute();
 
@@ -56,17 +57,16 @@ void main() {
   );
 
   test(
-    'lets KeychainLockedException propagate uncaught — AppStartupBloc relies '
-    'on this to retry on resume instead of showing a permanent startup error',
+    'maps a keychain-locked repository failure without losing its type',
     () async {
       when(
         () => pinCodeRepository.isPinCodeSet(),
-      ).thenThrow(const KeychainLockedException());
+      ).thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
 
-      await expectLater(
-        () => usecase.execute(),
-        throwsA(isA<KeychainLockedException>()),
-      );
+      final result = await usecase.execute();
+
+      expect(result, isA<Err<bool, AppUnlockFailure>>());
+      expect((result as Err).failure, isA<AppUnlockKeychainLockedFailure>());
     },
   );
 }

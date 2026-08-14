@@ -3,7 +3,6 @@ import 'dart:collection';
 
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -12,14 +11,12 @@ import 'package:flutter/widgets.dart'
 
 /// Foreground sync orchestrator.
 ///
-/// Schedules per-kind sync work (bitcoin, liquid, swaps) so that:
+/// Schedules per-kind sync work (bitcoin and liquid) so that:
 ///  - the same kind is **never** run concurrently — duplicate requests are
 ///    dropped while one is queued or running;
 ///  - different kinds are **queued** and executed sequentially in FIFO order
 ///    (matching the [SyncKind] enum declaration), avoiding concurrent writes
-///    to the shared drift database (e.g. a wallet sync committing
-///    wallet_metadata while the swap watcher restart writes swaps_table)
-///    which were observed to cause "database is locked" errors;
+///    to the shared drift database, avoiding "database is locked" errors;
 ///  - sync requests issued while the app is not foreground-`resumed` (i.e.
 ///    `inactive`/`hidden`/`paused`/`detached`) are dropped — there is no point
 ///    burning bandwidth/CPU for a UI no-one is interacting with;
@@ -39,10 +36,10 @@ class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,
     required SyncWalletUsecase syncWalletUsecase,
-    required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
+    this._syncSwaps,
+    this._syncSwapsOutcome,
   }) : _getWallets = getWalletsUsecase,
-       _syncWallet = syncWalletUsecase,
-       _restartSwaps = restartSwapWatcherUsecase {
+       _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
     // Gate syncs to the foreground-resumed state only. Default to allowed for
     // the brief startup window before the first lifecycle event arrives
@@ -61,7 +58,10 @@ class SyncCoordinator {
 
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
-  final RestartSwapWatcherUsecase _restartSwaps;
+  final Future<void> Function()? _syncSwaps;
+  final Future<SyncOutcome> Function()? _syncSwapsOutcome;
+
+  SyncOutcome? lastSwapSyncOutcome;
 
   late final AppLifecycleListener _lifecycleListener;
   bool _isAppResumed = true;
@@ -91,7 +91,7 @@ class SyncCoordinator {
   /// every requested kind that actually runs has settled. Resolution tracks
   /// this call's own kinds (via per-kind completers), so it is correct even
   /// when those kinds are drained by a pass another caller started. Execution
-  /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps).
+  /// order follows the [SyncKind] enum declaration (bitcoin → liquid).
   ///
   /// Pass [SyncTrigger.user] to bypass the per-kind throttle — reserved for
   /// explicit user gestures (pull-to-refresh). Default callers (route-aware
@@ -105,8 +105,9 @@ class SyncCoordinator {
     Set<SyncKind>? only,
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
+    final requestedKinds = only ?? const {SyncKind.bitcoin, SyncKind.liquid};
     final requested = SyncKind.values
-        .where((k) => only?.contains(k) ?? true)
+        .where(requestedKinds.contains)
         .toList(growable: false);
     final started = DateTime.now();
     final dropped = <String>[];
@@ -233,7 +234,14 @@ class SyncCoordinator {
           await _syncWallet.execute(wallet);
         }
       case SyncKind.swaps:
-        await _restartSwaps.execute();
+        final outcomeCallback = _syncSwapsOutcome;
+        if (outcomeCallback != null) {
+          final outcome = await outcomeCallback();
+          lastSwapSyncOutcome = outcome;
+          if (outcome.failure != null) throw outcome.failure!;
+        } else {
+          await _syncSwaps!();
+        }
     }
   }
 
@@ -256,6 +264,25 @@ class SyncCoordinator {
   void dispose() {
     _lifecycleListener.dispose();
   }
+}
+
+enum SyncOutcomeKind { active, idle, rateLimited }
+
+class SyncOutcome {
+  const SyncOutcome._(this.kind, {this.retryAfter, this.failure});
+
+  const SyncOutcome.active() : this._(SyncOutcomeKind.active);
+  const SyncOutcome.idle() : this._(SyncOutcomeKind.idle);
+  const SyncOutcome.rateLimited({Duration? retryAfter, Object? failure})
+    : this._(
+        SyncOutcomeKind.rateLimited,
+        retryAfter: retryAfter,
+        failure: failure,
+      );
+
+  final SyncOutcomeKind kind;
+  final Duration? retryAfter;
+  final Object? failure;
 }
 
 /// Thrown by [SyncCoordinator.sync] when any of the requested kinds failed

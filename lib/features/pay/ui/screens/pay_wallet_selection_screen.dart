@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class PayWalletSelectionScreen extends StatelessWidget {
@@ -55,12 +55,11 @@ class PayWalletSelectionScreen extends StatelessWidget {
                   const Gap(24.0),
                   WalletCards(
                     padding: EdgeInsets.zero,
-                    onTap:
-                        isCreatingPayOrder
-                            ? null
-                            : (wallet) => context.read<PayBloc>().add(
-                              PayEvent.walletSelected(wallet: wallet),
-                            ),
+                    onTap: isCreatingPayOrder
+                        ? null
+                        : (wallet) => context.read<PayBloc>().add(
+                            PayEvent.walletSelected(wallet: wallet),
+                          ),
                     localSignersOnly: true,
                     fiatCurrency: currency.code,
                   ),
@@ -71,13 +70,12 @@ class PayWalletSelectionScreen extends StatelessWidget {
                     title: Text(context.loc.payExternalWallet),
                     subtitle: Text(context.loc.payExternalWalletDescription),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingPayOrder
-                            ? null
-                            : () => context.pushNamed(
-                              PayRoute.payExternalWalletNetworkSelection.name,
-                              extra: context.read<PayBloc>(),
-                            ),
+                    onTap: isCreatingPayOrder
+                        ? null
+                        : () => context.pushNamed(
+                            PayRoute.payExternalWalletNetworkSelection.name,
+                            extra: context.read<PayBloc>(),
+                          ),
                   ),
                   const Gap(24.0),
                   const _PayError(),
@@ -97,10 +95,9 @@ class _PayError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final payError = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayWalletSelectionState
-              ? (bloc.state as PayWalletSelectionState).error
-              : null,
+      (PayBloc bloc) => bloc.state is PayWalletSelectionState
+          ? (bloc.state as PayWalletSelectionState).error
+          : null,
     );
 
     if (payError == null) return const SizedBox.shrink();

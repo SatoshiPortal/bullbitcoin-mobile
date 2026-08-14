@@ -79,7 +79,6 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     try {
       log.info('Loading exchange user summary');
       final summary = await _getExchangeUserSummaryUsecase.execute();
-      log.fine('Loaded exchange user summary: $summary');
       final preferredCurrency = summary.currency;
 
       // Set default jurisdiction based on user summary

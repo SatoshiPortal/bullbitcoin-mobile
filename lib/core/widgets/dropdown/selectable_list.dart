@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SelectableListItem {
   final String? iconPath;
@@ -103,20 +103,16 @@ class _SelectableRow extends StatelessWidget {
                         padding: EdgeInsets.zero,
                       )
                     else
-                      BBText(
-                        item.subtitle2,
-                        style: context.font.labelMedium,
-                      ),
+                      BBText(item.subtitle2, style: context.font.labelMedium),
                   ],
                 ),
               ),
               const Gap(8),
               Icon(
                 Icons.radio_button_checked_outlined,
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.textMuted,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.textMuted,
               ),
             ],
           ),

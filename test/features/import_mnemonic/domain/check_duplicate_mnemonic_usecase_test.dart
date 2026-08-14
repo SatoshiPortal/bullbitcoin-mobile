@@ -11,8 +11,20 @@ void main() {
   late MockSeedRepository seedRepository;
   late CheckDuplicateMnemonicUsecase usecase;
 
-  const words = ['abandon', 'abandon', 'abandon', 'abandon', 'abandon',
-    'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about'];
+  const words = [
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'about',
+  ];
 
   setUp(() {
     seedRepository = MockSeedRepository();
@@ -21,10 +33,12 @@ void main() {
 
   group('CheckDuplicateMnemonicUsecase', () {
     test('returns Ok when mnemonic does not exist', () async {
-      when(() => seedRepository.fingerprintFor(
-        mnemonicWords: any(named: 'mnemonicWords'),
-        passphrase: any(named: 'passphrase'),
-      )).thenReturn('fp1');
+      when(
+        () => seedRepository.fingerprintFor(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenReturn('fp1');
       when(() => seedRepository.exists('fp1')).thenAnswer((_) async => false);
 
       final result = await usecase.execute(mnemonicWords: words);
@@ -35,31 +49,33 @@ void main() {
     test(
       'returns Err(ImportMnemonicDuplicateFailure) when mnemonic already exists — no raw leak',
       () async {
-        when(() => seedRepository.fingerprintFor(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        )).thenReturn('fp1');
+        when(
+          () => seedRepository.fingerprintFor(
+            mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenReturn('fp1');
         when(() => seedRepository.exists('fp1')).thenAnswer((_) async => true);
 
         final result = await usecase.execute(mnemonicWords: words);
 
         expect(result, isA<Err<void, ImportMnemonicFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ImportMnemonicDuplicateFailure>(),
-        );
+        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
       },
     );
 
     test(
       'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',
       () async {
-        when(() => seedRepository.fingerprintFor(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        )).thenReturn('fp1');
-        when(() => seedRepository.exists('fp1'))
-            .thenThrow(Exception('db error'));
+        when(
+          () => seedRepository.fingerprintFor(
+            mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenReturn('fp1');
+        when(
+          () => seedRepository.exists('fp1'),
+        ).thenThrow(Exception('db error'));
 
         final result = await usecase.execute(mnemonicWords: words);
 

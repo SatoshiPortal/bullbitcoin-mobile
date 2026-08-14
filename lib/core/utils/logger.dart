@@ -69,7 +69,7 @@ class Logger {
         }
 
         // Print the un-sanitized line so ANSI color codes survive to the terminal.
-        if (kDebugMode) debugPrint(content.join('\t'));
+        if (kDebugMode) debugPrint(content.map(_sanitize).join('\t'));
       } catch (e) {
         if (kDebugMode) debugPrint('[Logger listener failed] $e');
       } finally {
@@ -160,10 +160,8 @@ class Logger {
   /// Best-effort log loss is acceptable in isolation, but here it
   /// destroys the most recent (and most diagnostically useful) BG
   /// lines — the exact lines a user would share to support after a
-  /// crash. Each isolate prunes its own file: FG cold-start prunes
-  /// `bull_logs.tsv` via `Bull.initLogs`; BG `logs-prune` task fires
-  /// every 15 minutes (Android) / on iOS BGTaskScheduler windows and
-  /// prunes `bull_background_logs.tsv`.
+  /// crash. Each isolate must therefore prune its own file; foreground
+  /// cold-start pruning is triggered by `Bull.initLogs`.
   Future<void> prune() => _enqueue(() async {
     final sizeInKb = (await logsFile.stat()).size ~/ 1000;
     if (sizeInKb <= _maxLogSizeKb) return;
@@ -444,6 +442,23 @@ class Logger {
   String _sanitize(String input) {
     final colors = RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'); // ascii colors
     final tabNewLine = RegExp(r'[\t\n\r]');
-    return input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
+    var value = input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
+    // Defense in depth for secrets accidentally included in exception text.
+    value = value.replaceAll(
+      RegExp(r'\b(?:[0-9a-fA-F]{32,}|[A-Za-z0-9+/]{32,}={0,2})\b'),
+      '[REDACTED]',
+    );
+    value = value.replaceAll(
+      RegExp(r'\b(?:[a-z]+\s+){11,23}[a-z]+\b', caseSensitive: false),
+      '[REDACTED]',
+    );
+    value = value.replaceAll(
+      RegExp(
+        r'\b(?:api[_ -]?key|token|secret|x-api-key)\s*[:=]\s*[^,; ]+',
+        caseSensitive: false,
+      ),
+      '[REDACTED]',
+    );
+    return value;
   }
 }

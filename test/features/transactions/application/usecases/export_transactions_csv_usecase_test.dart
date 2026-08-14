@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -10,6 +9,8 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 class _MockGetTransactionsUsecase extends Mock
     implements GetTransactionsUsecase {}
@@ -535,13 +536,13 @@ void main() {
   });
 
   test('payjoin send row has correct type and bitcoin network', () async {
-    final payjoin = Payjoin.sender(
+    final payjoin = PayjoinSenderSession(
+      status: PayjoinStatus.requested,
       uri: 'pj://test',
-      isTestnet: false,
+      network: BitcoinNetwork.mainnet,
       walletId: 'w1',
-      originalPsbt: 'psbt_data',
-      originalTxId: 'pj_orig_txid',
-      amountSat: 75000,
+      originalTransactionId: 'pj_orig_txid',
+      amount: Sats.fromInt(75000),
       createdAt: DateTime.utc(2026, 4, 1, 9),
       expiresAt: DateTime.utc(2026, 4, 1, 10),
     );
@@ -554,14 +555,15 @@ void main() {
   });
 
   test('payjoin receive row has correct type', () async {
-    final payjoin = Payjoin.receiver(
+    final payjoin = PayjoinReceiverSession(
+      status: PayjoinStatus.started,
       id: 'pj_recv_id',
-      isTestnet: false,
+      network: BitcoinNetwork.mainnet,
       walletId: 'w1',
-      pjUri: 'pj://recv',
+      payjoinUri: 'pj://recv',
       createdAt: DateTime.utc(2026, 4, 2, 11),
       expiresAt: DateTime.utc(2026, 4, 2, 12),
-      amountSat: 60000,
+      amount: Sats.fromInt(60000),
     );
     stub([Transaction(payjoin: payjoin)]);
 

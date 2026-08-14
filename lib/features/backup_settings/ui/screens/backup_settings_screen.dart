@@ -14,7 +14,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -202,7 +202,6 @@ class _ViewVaultKeyButton extends StatelessWidget {
   }
 }
 
-
 class _TransactionHistoryButton extends StatelessWidget {
   const _TransactionHistoryButton();
 
@@ -211,8 +210,7 @@ class _TransactionHistoryButton extends StatelessWidget {
     return SettingsEntryItem(
       icon: Icons.file_download,
       title: context.loc.transactionHistoryTitle,
-      onTap: () =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
+      onTap: () => context.pushNamed(TransactionsRoute.exportTransactions.name),
     );
   }
 }

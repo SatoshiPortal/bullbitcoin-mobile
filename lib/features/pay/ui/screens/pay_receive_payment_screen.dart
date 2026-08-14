@@ -20,7 +20,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/mode
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
@@ -94,25 +94,25 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     style: context.font.bodyMedium,
                     color: context.appColors.outline,
                   ),
-                  Countdown(
-                    until: order.confirmationDeadline,
-                    onTimeout: () {
-                      context.read<PayBloc>().add(
-                        const PayEvent.orderRefreshTimePassed(),
-                      );
-                    },
-                  ),
+                  if (order.confirmationDeadline case final deadline?)
+                    Countdown(
+                      until: deadline,
+                      onTimeout: () {
+                        context.read<PayBloc>().add(
+                          const PayEvent.orderRefreshTimePassed(),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),
             const Gap(32),
             CopyInput(
-              text:
-                  bitcoinUnit == BitcoinUnit.btc
-                      ? FormatAmount.btc(order.payinAmount)
-                      : FormatAmount.sats(
-                        ConvertAmount.btcToSats(order.payinAmount),
-                      ),
+              text: bitcoinUnit == BitcoinUnit.btc
+                  ? FormatAmount.btc(order.payinAmount)
+                  : FormatAmount.sats(
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(32),
             _buildPaymentInput(context, order),
@@ -167,8 +167,8 @@ class PayReceivePaymentScreen extends StatelessWidget {
               bitcoinUnit == BitcoinUnit.btc
                   ? FormatAmount.btc(order.payinAmount)
                   : FormatAmount.sats(
-                    ConvertAmount.btcToSats(order.payinAmount),
-                  ),
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(8),
             _buildDetailRow(
@@ -264,7 +264,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.appColors.error : context.appColors.secondary,
+                      color: isError
+                          ? context.appColors.error
+                          : context.appColors.secondary,
                     ),
                   ),
                 ),

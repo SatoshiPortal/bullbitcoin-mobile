@@ -157,11 +157,39 @@ m.Widget bullScaffoldUseCase(m.BuildContext context) {
         const BullTopBar(title: 'Bull Scaffold'),
         m.Expanded(
           child: m.Center(
-            child: BullText('Body content', style: m.Theme.of(context).textTheme.bodyMedium),
+            child: BullText(
+              'Body content',
+              style: m.Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ),
       ],
     ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Default', type: BullSuccessScreen)
+m.Widget bullSuccessScreenUseCase(m.BuildContext context) {
+  return BullSuccessScreen(
+    title: context.knobs.string(label: 'title', initialValue: 'Sell'),
+    headline: context.knobs.string(
+      label: 'headline',
+      initialValue: 'Order completed',
+    ),
+    amountLine: context.knobs.string(
+      label: 'amount',
+      initialValue: '100 000 sats for \$50.00',
+    ),
+    message: const m.Text('Your payment was completed successfully.'),
+    onClose: () {},
+    actions: [
+      BullButton.big(
+        label: 'View details',
+        onPressed: () {},
+        bgColor: context.bull.secondary,
+        textColor: context.bull.onSecondary,
+      ),
+    ],
   );
 }
 
@@ -194,7 +222,11 @@ m.Widget bullSelectionActionBarUseCase(m.BuildContext context) {
           initialValue: '2 selected',
         ),
         actions: [
-          BullToolButton(label: 'Freeze', icon: BullIcons.acUnit, onPressed: () {}),
+          BullToolButton(
+            label: 'Freeze',
+            icon: BullIcons.acUnit,
+            onPressed: () {},
+          ),
           BullToolButton(label: 'Tag', icon: BullIcons.sell, onPressed: () {}),
         ],
       ),
@@ -274,10 +306,7 @@ m.Widget bullSwipeActionUseCase(m.BuildContext context) {
 
 @widgetbook.UseCase(name: 'On', type: BullSwitch)
 m.Widget bullSwitchOnUseCase(m.BuildContext context) {
-  return _frame(
-    context,
-    BullSwitch(value: true, onChanged: (_) {}),
-  );
+  return _frame(context, BullSwitch(value: true, onChanged: (_) {}));
 }
 
 @widgetbook.UseCase(name: 'Off', type: BullSwitch)
@@ -295,10 +324,7 @@ m.Widget bullSwitchOffUseCase(m.BuildContext context) {
 
 @widgetbook.UseCase(name: 'Checked', type: BullCheckbox)
 m.Widget bullCheckboxCheckedUseCase(m.BuildContext context) {
-  return _frame(
-    context,
-    BullCheckbox(checked: true, onChanged: (_) {}),
-  );
+  return _frame(context, BullCheckbox(checked: true, onChanged: (_) {}));
 }
 
 @widgetbook.UseCase(name: 'Unchecked', type: BullCheckbox)
@@ -444,8 +470,18 @@ m.Widget bullAddressTextUseCase(m.BuildContext context) {
     BullAddressText(
       address: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
       onCopied: () {},
-      head: context.knobs.int.slider(label: 'head', initialValue: 8, min: 4, max: 16),
-      tail: context.knobs.int.slider(label: 'tail', initialValue: 8, min: 4, max: 16),
+      head: context.knobs.int.slider(
+        label: 'head',
+        initialValue: 8,
+        min: 4,
+        max: 16,
+      ),
+      tail: context.knobs.int.slider(
+        label: 'tail',
+        initialValue: 8,
+        min: 4,
+        max: 16,
+      ),
     ),
   );
 }
@@ -458,7 +494,10 @@ m.Widget bullBackupOptionCardUseCase(m.BuildContext context) {
       width: 360,
       child: BullBackupOptionCard(
         icon: BullIcon(BullIcons.accountTree, color: context.bull.text),
-        title: context.knobs.string(label: 'title', initialValue: 'Recovery phrase'),
+        title: context.knobs.string(
+          label: 'title',
+          initialValue: 'Recovery phrase',
+        ),
         description: 'Write down 12 words and store them safely.',
         tag: context.knobs.boolean(label: 'with tag', initialValue: true)
             ? 'Recommended'
@@ -495,7 +534,11 @@ m.Widget bullBorderedTileUseCase(m.BuildContext context) {
         onTap: () {},
         child: m.Row(
           children: [
-            BullText('Setting row', style: m.Theme.of(context).textTheme.bodyMedium, color: context.bull.text),
+            BullText(
+              'Setting row',
+              style: m.Theme.of(context).textTheme.bodyMedium,
+              color: context.bull.text,
+            ),
             const m.Spacer(),
             BullIcon(BullIcons.chevronRight, color: context.bull.textMuted),
           ],
@@ -593,7 +636,10 @@ m.Widget bullPriceCardUseCase(m.BuildContext context) {
   return _frame(
     context,
     BullPriceCard(
-      text: context.knobs.string(label: 'text', initialValue: '1 BTC = \$98,420'),
+      text: context.knobs.string(
+        label: 'text',
+        initialValue: '1 BTC = \$98,420',
+      ),
     ),
   );
 }
@@ -606,7 +652,10 @@ m.Widget bullSettingsEntryItemUseCase(m.BuildContext context) {
       width: 360,
       child: BullSettingsEntryItem(
         icon: BullIcons.tune,
-        title: context.knobs.string(label: 'title', initialValue: 'Preferences'),
+        title: context.knobs.string(
+          label: 'title',
+          initialValue: 'Preferences',
+        ),
         isSuperUser: context.knobs.boolean(label: 'super user'),
         onTap: () {},
       ),
@@ -663,7 +712,10 @@ m.Widget bullCountdownUseCase(m.BuildContext context) {
     BullCountdown(
       until: DateTime.now().add(Duration(minutes: minutes)),
       onTimeout: () {},
-      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(fontFeatures: const [m.FontFeature.tabularFigures()], color: context.bull.text),
+      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
+        fontFeatures: const [m.FontFeature.tabularFigures()],
+        color: context.bull.text,
+      ),
     ),
   );
 }
@@ -675,7 +727,10 @@ m.Widget bullCountdownShortUseCase(m.BuildContext context) {
     BullCountdown(
       until: DateTime.now().add(const Duration(seconds: 30)),
       onTimeout: () {},
-      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(fontFeatures: const [m.FontFeature.tabularFigures()], color: context.bull.warning),
+      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
+        fontFeatures: const [m.FontFeature.tabularFigures()],
+        color: context.bull.warning,
+      ),
     ),
   );
 }
@@ -701,7 +756,10 @@ m.Widget bullRefreshIndicatorUseCase(m.BuildContext context) {
       children: [
         for (var i = 0; i < 12; i++)
           BullBorderedTile(
-            child: BullText('Pull to refresh — row $i', style: m.Theme.of(context).textTheme.bodyMedium),
+            child: BullText(
+              'Pull to refresh — row $i',
+              style: m.Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
       ],
     ),
@@ -734,7 +792,10 @@ m.Widget bullShimmerLineUseCase(m.BuildContext context) {
 
 @widgetbook.UseCase(name: 'Show (tap)', type: BullSnackBar)
 m.Widget bullSnackBarUseCase(m.BuildContext context) {
-  final withAction = context.knobs.boolean(label: 'with action', initialValue: true);
+  final withAction = context.knobs.boolean(
+    label: 'with action',
+    initialValue: true,
+  );
   return _frame(
     context,
     BullButton.big(
@@ -765,7 +826,10 @@ m.Widget bullScrollableColumnUseCase(m.BuildContext context) {
     children: [
       for (var i = 0; i < 8; i++)
         BullBorderedTile(
-          child: BullText('Scrollable row $i', style: m.Theme.of(context).textTheme.bodyMedium),
+          child: BullText(
+            'Scrollable row $i',
+            style: m.Theme.of(context).textTheme.bodyMedium,
+          ),
         ),
     ],
   );
@@ -781,7 +845,10 @@ m.Widget bullStackedPageUseCase(m.BuildContext context) {
       onPressed: () {},
     ),
     child: m.Center(
-      child: BullText('Scrolling content', style: m.Theme.of(context).textTheme.bodyMedium),
+      child: BullText(
+        'Scrolling content',
+        style: m.Theme.of(context).textTheme.bodyMedium,
+      ),
     ),
   );
 }
@@ -794,7 +861,10 @@ m.Widget bullPullableBodyUseCase(m.BuildContext context) {
       m.SliverList.builder(
         itemCount: 10,
         itemBuilder: (_, i) => BullBorderedTile(
-          child: BullText('Sliver row $i', style: m.Theme.of(context).textTheme.bodyMedium),
+          child: BullText(
+            'Sliver row $i',
+            style: m.Theme.of(context).textTheme.bodyMedium,
+          ),
         ),
       ),
     ],
@@ -813,9 +883,17 @@ m.Widget bullBottomSheetUseCase(m.BuildContext context) {
       child: m.Column(
         mainAxisSize: m.MainAxisSize.min,
         children: [
-          BullText('Bottom sheet title', style: m.Theme.of(context).textTheme.headlineMedium, color: context.bull.text),
+          BullText(
+            'Bottom sheet title',
+            style: m.Theme.of(context).textTheme.headlineMedium,
+            color: context.bull.text,
+          ),
           const Gap(12),
-          BullText('Sheet body content goes here.', style: m.Theme.of(context).textTheme.bodyMedium, color: context.bull.textMuted),
+          BullText(
+            'Sheet body content goes here.',
+            style: m.Theme.of(context).textTheme.bodyMedium,
+            color: context.bull.textMuted,
+          ),
         ],
       ),
     ),
@@ -830,7 +908,11 @@ m.Widget bullDialogUseCase(m.BuildContext context) {
       child: m.Column(
         mainAxisSize: m.MainAxisSize.min,
         children: [
-          BullText('Confirm action', style: m.Theme.of(context).textTheme.headlineMedium, color: context.bull.text),
+          BullText(
+            'Confirm action',
+            style: m.Theme.of(context).textTheme.headlineMedium,
+            color: context.bull.text,
+          ),
           const Gap(12),
           BullButton.small(
             label: 'OK',
@@ -849,7 +931,10 @@ m.Widget bullInstructionsSheetUseCase(m.BuildContext context) {
   return _frame(
     context,
     BullInstructionsSheet(
-      title: context.knobs.string(label: 'title', initialValue: 'Before you start'),
+      title: context.knobs.string(
+        label: 'title',
+        initialValue: 'Before you start',
+      ),
       subtitle: 'Follow these steps carefully.',
       instructions: const [
         'Write down your recovery phrase.',

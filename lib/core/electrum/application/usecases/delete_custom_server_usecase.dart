@@ -7,13 +7,10 @@ import 'package:meta/meta.dart';
 class DeleteCustomServerUsecase {
   final ElectrumServerRepository _electrumServerRepository;
 
-  DeleteCustomServerUsecase({
-    required this._electrumServerRepository,
-  });
+  DeleteCustomServerUsecase({required this._electrumServerRepository});
 
   @useResult
   Future<Result<void, ElectrumFailure>> execute(
     DeleteCustomServerRequest request,
-  ) =>
-      _electrumServerRepository.delete(url: request.url);
+  ) => _electrumServerRepository.delete(url: request.url);
 }

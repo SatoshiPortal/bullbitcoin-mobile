@@ -4,12 +4,15 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ExchangeSupportLoginScreen extends StatelessWidget {
-  const ExchangeSupportLoginScreen({super.key});
+  final ExchangeSupportChatDraft? draft;
+
+  const ExchangeSupportLoginScreen({super.key, this.draft});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,8 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         isUser: false,
                         widthFraction: 0.65,
                         height: 48,
-                        color: Color.lerp(
+                        color:
+                            Color.lerp(
                               context.appColors.primary,
                               context.appColors.secondaryFixed,
                               0.2,
@@ -57,7 +61,8 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         isUser: false,
                         widthFraction: 0.7,
                         height: 64,
-                        color: Color.lerp(
+                        color:
+                            Color.lerp(
                               context.appColors.primary,
                               context.appColors.secondaryFixed,
                               0.2,
@@ -86,8 +91,9 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                           color: context.appColors.surfaceContainer,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: context.appColors.outline
-                                .withValues(alpha: 0.3),
+                            color: context.appColors.outline.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                         ),
                         child: Column(
@@ -115,6 +121,7 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                                   context.goNamed(
                                     ExchangeRoute.exchangeAuth.name,
                                     queryParameters: {'from': 'support'},
+                                    extra: draft,
                                   );
                                 },
                                 bgColor: context.appColors.primary,
@@ -154,8 +161,9 @@ class _FakeMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-          isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isUser
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: [
         Container(
           width: MediaQuery.of(context).size.width * widthFraction,
@@ -178,12 +186,7 @@ class _DisabledMessageInput extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 8,
-          bottom: 24,
-        ),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 24),
         decoration: BoxDecoration(
           color: context.appColors.background,
           border: Border(

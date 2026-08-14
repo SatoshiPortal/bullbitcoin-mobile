@@ -1,16 +1,18 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
@@ -22,10 +24,6 @@ enum SendType {
 
   static SendType from(PaymentRequest paymentRequest) {
     switch (paymentRequest) {
-      case ArkPaymentRequest():
-        throw UnimplementedError(
-          'ARK payment requests are available from experimental Ark feature only.',
-        );
       case BitcoinPaymentRequest():
         return SendType.bitcoin;
       case LiquidPaymentRequest():
@@ -58,6 +56,35 @@ enum SendType {
 
 enum SendStep { address, amount, confirm, sending, success }
 
+SendStep sendStepForOrderSwapStatus(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.awaitingUserConfirmation ||
+      OrderSwapLocalStatus.preparingPayin ||
+      OrderSwapLocalStatus.readyToBroadcast ||
+      OrderSwapLocalStatus.broadcastUnknown => SendStep.confirm,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress ||
+      OrderSwapLocalStatus.completed ||
+      OrderSwapLocalStatus.refunded ||
+      OrderSwapLocalStatus.expired ||
+      OrderSwapLocalStatus.failed => SendStep.success,
+      OrderSwapLocalStatus.creating ||
+      OrderSwapLocalStatus.creationUnknown => SendStep.address,
+    };
+
+SendStep sendStepForWatchedOrderSwap(
+  SendStep current,
+  OrderSwapLocalStatus status,
+) {
+  if (current == SendStep.address || current == SendStep.amount) return current;
+  return sendStepForOrderSwapStatus(status);
+}
+
+SendStep sendStepAfterBroadcastPersistenceFailure({
+  required SendStep current,
+  required String? transactionId,
+}) => transactionId == null ? SendStep.confirm : SendStep.success;
+
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({
@@ -66,10 +93,19 @@ abstract class SendState with _$SendState {
     @Default('') String scannedRawPaymentRequest,
     @Default('') String copiedRawPaymentRequest,
     PaymentRequest? paymentRequest,
+    Bolt11PaymentRequest? lightningInvoice,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
+    // Fail-closed default: until getCurrencies()/onCurrencyChanged() have
+    // fetched settings at least once, no payjoin is attempted. Mirrors
+    // SettingsEntity.isPayjoinEnabled.
+    @Default(false) bool payjoinGloballyEnabled,
+    // The sender's per-send opt-out: payjoin can be available for this send
+    // (see [isPayjoinAvailable]) and still deliberately not attempted. Reset
+    // is not needed — the cubit lives per send flow.
+    @Default(false) bool payjoinOptedOut,
     @Default('') String amount,
     int? confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
@@ -81,7 +117,6 @@ abstract class SendState with _$SendState {
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(true) bool replaceByFee,
-    @Default(false) bool invoiceHasMrh,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
     NetworkFee? customFee,
@@ -125,13 +160,13 @@ abstract class SendState with _$SendState {
     String? signedBitcoinPsbt,
     String? signedBitcoinTx,
     String? signedLiquidTx,
-    LnSendSwap? lightningSwap,
+    OrderSwapRecord? lightningOrder,
+    OrderSwapQuote? lightningQuote,
     ChainSwap? chainSwap,
     // confirm
     String? txId,
-    PayjoinSender? payjoinSender,
+    PayjoinSenderSession? payjoinSender,
     WalletTransaction? walletTransaction,
-    Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
@@ -140,25 +175,10 @@ abstract class SendState with _$SendState {
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
     @Default('') String balanceApproximatedAmount,
-    SwapCreationException? swapCreationException,
-    InsufficientBalanceException? insufficientBalanceException,
-    InvalidBitcoinStringException? invalidBitcoinStringException,
-    SwapLimitsException? swapLimitsException,
-    BuildTransactionException? buildTransactionException,
-    ConfirmTransactionException? confirmTransactionException,
-
-    // swapLimits
-    SwapLimits? bitcoinLnSwapLimits,
-    SwapLimits? liquidLnSwapLimits,
-    SwapLimits? btcToLbtcChainSwapLimits,
-    SwapLimits? lbtcToBtcChainSwapLimits,
-    SwapLimits? selectedSwapLimits,
-
-    SwapFees? bitcoinLnSwapFees,
-    SwapFees? liquidLnSwapFees,
-    SwapFees? btcToLbtcChainSwapFees,
-    SwapFees? lbtcToBtcChainSwapFees,
-    SwapFees? selectedSwapFees,
+    // Set when a Liquid build fails because the wallet has too many UTXOs to
+    // spend in a single transaction and needs consolidating first.
+    @Default(false) bool consolidationRequired,
+    SendFailure? failure,
   }) = _SendState;
   const SendState._();
 
@@ -169,6 +189,30 @@ abstract class SendState with _$SendState {
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
 
+  /// Whether a payjoin is structurally possible for this send: the setting
+  /// is on, the wallet signs locally, and the recipient's BIP21 advertises a
+  /// pj= endpoint. Drives whether the confirm screen offers the payjoin
+  /// toggle at all — [willAttemptPayjoin] adds the sender's choice on top.
+  ///
+  /// Gated on [Wallet.signsLocally]: a hardware/remote-signer wallet
+  /// (Ledger/BitBox) never reaches `signTransaction`'s payjoin branch (the
+  /// confirm screen swaps in a device-specific sign button for those
+  /// wallets instead), so without this check the toggle could promise a
+  /// payjoin that structurally can never happen for that wallet class.
+  bool get isPayjoinAvailable =>
+      payjoinGloballyEnabled &&
+      (selectedWallet?.signsLocally ?? false) &&
+      isToSelf != true &&
+      paymentRequest is Bip21PaymentRequest &&
+      (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
+
+  /// Single source of truth for whether a payjoin will actually be attempted
+  /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],
+  /// which unifies a control's state and its action guard. Used BOTH to
+  /// gate `signTransaction`'s payjoin branch and as the confirm screen's
+  /// toggle value, so the two can never disagree.
+  bool get willAttemptPayjoin => isPayjoinAvailable && !payjoinOptedOut;
+
   String get paymentRequestAddress {
     if (paymentRequest == null) {
       return copiedRawPaymentRequest.isNotEmpty
@@ -177,12 +221,6 @@ abstract class SendState with _$SendState {
     }
 
     if (paymentRequest!.isBip21) {
-      if (invoiceHasMrh) {
-        // Return the raw string instead of the payment request
-        return copiedRawPaymentRequest.isNotEmpty
-            ? copiedRawPaymentRequest
-            : scannedRawPaymentRequest;
-      }
       final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
       return bip21PaymentRequest.address;
     }
@@ -208,10 +246,27 @@ abstract class SendState with _$SendState {
         : scannedRawPaymentRequest;
   }
 
-  bool get isInputAmountFiat => ![
-    BitcoinUnit.btc.code,
-    BitcoinUnit.sats.code,
-  ].contains(inputAmountCurrencyCode);
+  /// True when the destination is a Liquid address that does not support
+  /// Confidential Transactions: the amount sent to it will be publicly
+  /// visible on-chain. The confirm screen warns before building such a
+  /// payment — Liquid's privacy promise makes the silent case dangerous.
+  bool get isUnconfidentialLiquidDestination {
+    if (sendType != SendType.liquid) return false;
+    final address = switch (paymentRequest) {
+      LiquidPaymentRequest(:final address) => address,
+      Bip21PaymentRequest(:final address) => address,
+      _ => null,
+    };
+    if (address == null || address.isEmpty) return false;
+    return !isConfidentialLiquidAddress(address);
+  }
+
+  bool get isInputAmountFiat =>
+      ![
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ].contains(inputAmountCurrencyCode) &&
+      exchangeRate > 0;
 
   int get inputAmountSat {
     int amountSat = 0;
@@ -249,9 +304,12 @@ abstract class SendState with _$SendState {
     return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
   }
 
-  double get confirmedSwapAmountBtc => lightningSwap != null
-      ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
-      : 0;
+  int? get lightningPayinAmountSat =>
+      lightningOrder?.order?.payinAmountSat.toInt() ??
+      lightningQuote?.inAmountSat.toInt();
+
+  double get confirmedSwapAmountBtc =>
+      ConvertAmount.satsToBtc(lightningPayinAmountSat ?? 0);
 
   String get formattedConfirmedAmountBitcoin {
     if (bitcoinUnit == null) {
@@ -264,10 +322,11 @@ abstract class SendState with _$SendState {
   }
 
   String get formattedSwapAmountBitcoin {
-    if (bitcoinUnit == null || lightningSwap == null) return '';
+    final payinAmount = lightningPayinAmountSat;
+    if (bitcoinUnit == null || payinAmount == null) return '';
 
     if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.sats(lightningSwap!.paymentAmount);
+      return FormatAmount.sats(payinAmount);
     } else {
       return FormatAmount.btc(confirmedSwapAmountBtc);
     }
@@ -382,7 +441,7 @@ abstract class SendState with _$SendState {
       case SendType.bitcoin:
         return 'Send';
       case SendType.lightning:
-        return 'Swap';
+        return 'Transfer';
       case SendType.liquid:
         return 'Send';
     }
@@ -392,67 +451,25 @@ abstract class SendState with _$SendState {
   bool get isLightningBitcoinSwap =>
       isLightning && selectedWallet!.network.isBitcoin;
 
-  bool get swapAmountBelowLimit {
-    final amount = effectiveAmountSat;
-    if (isLightning && amount != 0) {
-      if (selectedSwapLimits == null) return false;
-      // Allow 100 sats minimum for Liquid to Lightning swaps
-      final isLiquidToLightning =
-          selectedWallet != null && selectedWallet!.isLiquid;
-      final minLimit = isLiquidToLightning ? 100 : selectedSwapLimits!.min;
-      return amount < minLimit;
-    }
-    if (requireChainSwap && amount != 0) {
-      return selectedSwapLimits != null && amount < selectedSwapLimits!.min;
-    }
-    return false;
-  }
-
-  int get swapMinimum {
-    final min = selectedSwapLimits?.min ?? 0;
-    if (min != 0) return min;
-    return selectedWallet?.isLiquid == true ? 100 : 25000;
-  }
-
-  bool get swapAmountAboveLimit {
-    final amount = effectiveAmountSat;
-    if (isLightning) {
-      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
-    }
-    if (requireChainSwap && amount != 0) {
-      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
-    }
-    return false;
-  }
-
-  bool get isSwapAmountValid =>
-      isLightning ||
-      requireChainSwap &&
-          (selectedSwapLimits == null ||
-              inputAmountSat == 0 ||
-              swapAmountBelowLimit ||
-              swapAmountAboveLimit);
-
   bool get isLnInvoicePaid {
-    return lightningSwap != null && lightningSwap!.status == SwapStatus.canCoop;
+    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed;
   }
 
   bool get isSwapCompleted {
-    return lightningSwap != null &&
-        lightningSwap!.status == SwapStatus.completed;
+    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed;
   }
 
   bool get disableConfirmSend =>
       buildingTransaction || signingTransaction || broadcastingTransaction;
 
-  bool get blocksSwapDueToBitcoinHardwareWallet {
+  bool get blocksSwapDueToHardwareWallet {
     final wallet = selectedWallet;
     if (wallet == null) return false;
     final isSwap =
         sendType == SendType.lightning ||
         (sendType == SendType.liquid && !wallet.isLiquid) ||
         (sendType == SendType.bitcoin && wallet.isLiquid);
-    return isSwap && wallet.isBitcoinHardwareWallet;
+    return isSwap && wallet.isHardwareWallet;
   }
 
   bool get requireChainSwap {
@@ -506,8 +523,12 @@ abstract class SendState with _$SendState {
       : bitcoinAbsoluteFeesSat;
 
   int? get totalSwapFees {
-    if (lightningSwap == null) return null;
-    return lightningSwap!.fees?.totalFees(lightningSwap!.paymentAmount) ?? 0;
+    final order = lightningOrder?.order;
+    final payin = order?.payinAmountSat ?? lightningQuote?.inAmountSat;
+    final payout = order?.payoutAmountSat ?? lightningQuote?.outAmountSat;
+    if (payin == null || payout == null) return null;
+    final serviceFee = payin - payout;
+    return serviceFee > BigInt.zero ? serviceFee.toInt() : 0;
   }
 
   bool get isSlowPayment =>
@@ -522,8 +543,12 @@ abstract class SendState with _$SendState {
 
 extension SendStateFeePercent on SendState {
   double getFeeAsPercentOfAmount() {
-    if (lightningSwap != null) {
-      return lightningSwap!.getFeeAsPercentOfAmount();
+    if (lightningPayinAmountSat != null) {
+      return calculatePercentage(
+        lightningOrder?.order?.payoutAmountSat.toInt() ??
+            lightningQuote!.outAmountSat.toInt(),
+        totalSwapFees ?? 0,
+      );
     }
     if (chainSwap != null) {
       return chainSwap!.getFeeAsPercentOfAmount();
@@ -535,71 +560,4 @@ extension SendStateFeePercent on SendState {
   }
 
   bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
-}
-
-class SwapCreationException extends BullException {
-  SwapCreationException(super.message);
-}
-
-class AmountlessInvoiceException extends SwapCreationException {
-  AmountlessInvoiceException(super.message);
-}
-
-class HardwareWalletSwapException extends SwapCreationException {
-  HardwareWalletSwapException()
-    : super('Hardware wallets cannot be used for swaps');
-}
-
-class ExpiredInvoiceException extends SwapCreationException {
-  ExpiredInvoiceException() : super('Expired invoice');
-}
-
-class InsufficientBalanceException extends BullException {
-  InsufficientBalanceException([
-    super.message = 'Not enough balance to cover this payment',
-  ]);
-}
-
-class InvalidBitcoinStringException extends BullException {
-  InvalidBitcoinStringException([
-    super.message = 'Invalid Bitcoin Payment Address or Invoice',
-  ]);
-}
-
-class UnsupportedQrFormatException extends InvalidBitcoinStringException {}
-
-/// Exception for swap limit violations.
-/// Stored in SendState with min/max limit values for localized error messages.
-/// UI displays context-specific messages using sendErrorAmountBelowMinimum,
-/// sendErrorAmountAboveMaximum, sendErrorBalanceTooLowForMinimum, etc.
-class SwapLimitsException extends BullException {
-  SwapLimitsException(
-    super.message, {
-    this.minLimit,
-    this.maxLimit,
-    this.suggestInstantPayments = false,
-  });
-
-  final int? minLimit;
-  final int? maxLimit;
-  final bool suggestInstantPayments;
-
-  bool get isBelowMinimum => minLimit != null;
-  bool get isAboveMaximum => maxLimit != null;
-}
-
-/// Exception for transaction build failures.
-/// Stored in SendState and displayed by UI using sendErrorBuildFailed.
-/// The message parameter is for debugging/logging only.
-class BuildTransactionException extends BullException {
-  BuildTransactionException(super.message);
-}
-
-/// Exception for transaction confirmation failures.
-/// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
-/// The message parameter is for debugging/logging only.
-class ConfirmTransactionException extends BullException {
-  ConfirmTransactionException(super.message, {this.isBroadcastFailure = false});
-
-  final bool isBroadcastFailure;
 }

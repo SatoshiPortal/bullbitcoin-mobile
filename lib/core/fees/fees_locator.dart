@@ -11,9 +11,9 @@ class FeesLocator {
   static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<FeesDatasource>(
       () => FeesDatasource(
-        getActiveMempoolServerUsecase:
-            locator<GetActiveMempoolServerUsecase>(),
+        getActiveMempoolServerUsecase: locator<GetActiveMempoolServerUsecase>(),
         mempoolSettingsRepository: locator<MempoolSettingsRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

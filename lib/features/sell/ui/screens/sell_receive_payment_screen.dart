@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
@@ -26,10 +26,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).sellOrder
-              : null,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).sellOrder
+          : null,
     );
     final bitcoinUnit = context.select((SellBloc bloc) {
       final state = bloc.state;
@@ -37,10 +36,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
       return BitcoinUnit.btc;
     });
     final bip21InvoiceData = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).bip21InvoiceData
-              : '',
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).bip21InvoiceData
+          : '',
     );
 
     return Scaffold(
@@ -76,9 +74,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     style: context.font.bodyMedium,
                     color: context.appColors.outline,
                   ),
-                  if (order != null)
+                  if (order?.confirmationDeadline case final deadline?)
                     Countdown(
-                      until: order.confirmationDeadline,
+                      until: deadline,
                       onTimeout: () {
                         context.read<SellBloc>().add(
                           const SellEvent.orderRefreshTimePassed(),
@@ -93,12 +91,11 @@ class SellReceivePaymentScreen extends StatelessWidget {
               const LoadingLineContent()
             else
               CopyInput(
-                text:
-                    bitcoinUnit == BitcoinUnit.btc
-                        ? FormatAmount.btc(order.payinAmount)
-                        : FormatAmount.sats(
-                          ConvertAmount.btcToSats(order.payinAmount),
-                        ),
+                text: bitcoinUnit == BitcoinUnit.btc
+                    ? FormatAmount.btc(order.payinAmount)
+                    : FormatAmount.sats(
+                        ConvertAmount.btcToSats(order.payinAmount),
+                      ),
               ),
             const Gap(32),
             if (order == null)
@@ -118,15 +115,22 @@ class SellReceivePaymentScreen extends StatelessWidget {
               order == null
                   ? context.loc.sellLoadingGeneric
                   : switch (order.payoutMethod) {
-                    OrderPaymentMethod.cadBalance => context.loc.sellCadBalance,
-                    OrderPaymentMethod.crcBalance => context.loc.sellCrcBalance,
-                    OrderPaymentMethod.eurBalance => context.loc.sellEurBalance,
-                    OrderPaymentMethod.usdBalance => context.loc.sellUsdBalance,
-                    OrderPaymentMethod.mxnBalance => context.loc.sellMxnBalance,
-                    OrderPaymentMethod.arsBalance => context.loc.sellArsBalance,
-                    OrderPaymentMethod.copBalance => context.loc.sellCopBalance,
-                    _ => order.payoutMethod.name,
-                  },
+                      OrderPaymentMethod.cadBalance =>
+                        context.loc.sellCadBalance,
+                      OrderPaymentMethod.crcBalance =>
+                        context.loc.sellCrcBalance,
+                      OrderPaymentMethod.eurBalance =>
+                        context.loc.sellEurBalance,
+                      OrderPaymentMethod.usdBalance =>
+                        context.loc.sellUsdBalance,
+                      OrderPaymentMethod.mxnBalance =>
+                        context.loc.sellMxnBalance,
+                      OrderPaymentMethod.arsBalance =>
+                        context.loc.sellArsBalance,
+                      OrderPaymentMethod.copBalance =>
+                        context.loc.sellCopBalance,
+                      _ => order.payoutMethod.name,
+                    },
             ),
             const Gap(8),
             _buildDetailRow(
@@ -137,8 +141,8 @@ class SellReceivePaymentScreen extends StatelessWidget {
                   : bitcoinUnit == BitcoinUnit.btc
                   ? FormatAmount.btc(order.payinAmount)
                   : FormatAmount.sats(
-                    ConvertAmount.btcToSats(order.payinAmount),
-                  ),
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(8),
             _buildDetailRow(
@@ -155,10 +159,10 @@ class SellReceivePaymentScreen extends StatelessWidget {
               order == null
                   ? context.loc.sellLoadingGeneric
                   : FormatAmount.fiat(
-                    order.exchangeRateAmount ??
-                        order.payoutAmount / order.payinAmount,
-                    order.exchangeRateCurrency ?? order.payoutCurrency,
-                  ),
+                      order.exchangeRateAmount ??
+                          order.payoutAmount / order.payinAmount,
+                      order.exchangeRateCurrency ?? order.payoutCurrency,
+                    ),
             ),
             const Gap(8),
             _buildDetailRow(
@@ -238,7 +242,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.appColors.error : context.appColors.secondary,
+                      color: isError
+                          ? context.appColors.error
+                          : context.appColors.secondary,
                     ),
                   ),
                 ),

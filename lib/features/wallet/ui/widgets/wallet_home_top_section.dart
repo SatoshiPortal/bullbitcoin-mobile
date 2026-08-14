@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -140,7 +140,6 @@ class _BtcTotalAmt extends StatelessWidget {
     final showSkeleton =
         walletState.status == WalletStatus.initial ||
         walletState.status == WalletStatus.loading ||
-        walletState.isArkWalletLoading ||
         bitcoinUnit == null;
 
     if (showSkeleton) {
@@ -166,8 +165,7 @@ class _FiatAmt extends StatelessWidget {
     final walletState = context.select((WalletBloc bloc) => bloc.state);
     final showBalanceLoading =
         walletState.status == WalletStatus.initial ||
-        walletState.status == WalletStatus.loading ||
-        walletState.isArkWalletLoading;
+        walletState.status == WalletStatus.loading;
 
     return HomeFiatBalance(
       balanceSat: walletState.totalBalance(),

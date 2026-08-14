@@ -30,53 +30,67 @@ void main() {
   });
 
   group('DeleteSeedUsecase', () {
-    test('returns Ok on successful delete when no wallet uses the seed', () async {
-      when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
-      when(() => seedRepository.delete(fingerprint)).thenAnswer(
-        (_) async => const Ok(null),
-      );
+    test(
+      'returns Ok on successful delete when no wallet uses the seed',
+      () async {
+        when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+        when(
+          () => seedRepository.delete(fingerprint),
+        ).thenAnswer((_) async => const Ok(null));
 
-      final result = await usecase.execute(fingerprint);
+        final result = await usecase.execute(fingerprint);
 
-      expect(result, isA<Ok>());
-    });
+        expect(result, isA<Ok>());
+      },
+    );
 
-    test('returns SeedDeleteFailure when a wallet still uses the seed — guard', () async {
-      final wallet = _MockWallet();
-      when(() => wallet.masterFingerprint).thenReturn(fingerprint);
-      when(() => walletRepository.getWallets()).thenAnswer((_) async => [wallet]);
+    test(
+      'returns SeedDeleteFailure when a wallet still uses the seed — guard',
+      () async {
+        final wallet = _MockWallet();
+        when(() => wallet.masterFingerprint).thenReturn(fingerprint);
+        when(
+          () => walletRepository.getWallets(),
+        ).thenAnswer((_) async => [wallet]);
 
-      final result = await usecase.execute(fingerprint);
+        final result = await usecase.execute(fingerprint);
 
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<SeedDeleteFailure>());
-      // The blocked seed is never handed to the repository for deletion.
-      verifyNever(() => seedRepository.delete(any()));
-    });
+        expect(result, isA<Err>());
+        expect((result as Err).failure, isA<SeedDeleteFailure>());
+        // The blocked seed is never handed to the repository for deletion.
+        verifyNever(() => seedRepository.delete(any()));
+      },
+    );
 
-    test('returns SeedDeleteFailure on repository error — no raw leak', () async {
-      when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
-      when(() => seedRepository.delete(fingerprint)).thenAnswer(
-        (_) async => const Err(SeedDeleteFailure('raw storage error')),
-      );
+    test(
+      'returns SeedDeleteFailure on repository error — no raw leak',
+      () async {
+        when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+        when(() => seedRepository.delete(fingerprint)).thenAnswer(
+          (_) async => const Err(SeedDeleteFailure('raw storage error')),
+        );
 
-      final result = await usecase.execute(fingerprint);
+        final result = await usecase.execute(fingerprint);
 
-      expect(result, isA<Err>());
-      final failure = (result as Err).failure;
-      expect(failure, isA<SeedDeleteFailure>());
-      // logMessage carries the raw reason for logs — never exposed to the UI.
-      expect((failure as SeedDeleteFailure).logMessage, isNotNull);
-    });
+        expect(result, isA<Err>());
+        final failure = (result as Err).failure;
+        expect(failure, isA<SeedDeleteFailure>());
+        // logMessage carries the raw reason for logs — never exposed to the UI.
+        expect((failure as SeedDeleteFailure).logMessage, isNotNull);
+      },
+    );
 
-    test('returns SeedDeleteFailure when wallet lookup throws — no raw leak', () async {
-      when(() => walletRepository.getWallets()).thenThrow(Exception('boom'));
+    test(
+      'returns SeedDeleteFailure when wallet lookup throws — no raw leak',
+      () async {
+        when(() => walletRepository.getWallets()).thenThrow(Exception('boom'));
 
-      final result = await usecase.execute(fingerprint);
+        final result = await usecase.execute(fingerprint);
 
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<SeedDeleteFailure>());
-      verifyNever(() => seedRepository.delete(any()));
-    });
+        expect(result, isA<Err>());
+        expect((result as Err).failure, isA<SeedDeleteFailure>());
+        verifyNever(() => seedRepository.delete(any()));
+      },
+    );
   });
 }

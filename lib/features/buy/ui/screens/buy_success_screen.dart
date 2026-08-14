@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -11,13 +14,39 @@ import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_ti
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart';
 
-class BuySuccessScreen extends StatelessWidget {
+class BuySuccessScreen extends StatefulWidget {
   const BuySuccessScreen({super.key});
+
+  @override
+  State<BuySuccessScreen> createState() => _BuySuccessScreenState();
+}
+
+class _BuySuccessScreenState extends State<BuySuccessScreen> {
+  Timer? _payjoinRefreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _payjoinRefreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final bloc = context.read<BuyBloc>();
+      final state = bloc.state;
+      if (state.buyOrder?.payjoinOutcome.isOngoing != true) {
+        _payjoinRefreshTimer?.cancel();
+        return;
+      }
+      if (!state.isRefreshingOrder) bloc.add(const BuyEvent.refreshOrder());
+    });
+  }
+
+  @override
+  void dispose() {
+    _payjoinRefreshTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,104 +61,92 @@ class BuySuccessScreen extends StatelessWidget {
     final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(payoutAmountSat)
         : FormatAmount.btc(buyOrder.payoutAmount);
+    final formattedPayInAmount = FormatAmount.fiat(
+      buyOrder.payinAmount,
+      buyOrder.payinCurrency,
+    );
     final payoutTime = buyOrder.scheduledPayoutTime;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return; // Don't allow back navigation
-
-        // Navigate to the wallet home screen when the user wants to exit the
-        // buy success screen.
-        context.goNamed(WalletRoute.walletHome.name);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.buyConfirmTitle),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () =>
-                  context.goNamed(WalletRoute.walletHome.name),
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: Center(
-            child: Column(
+    return BullSuccessScreen(
+      title: context.loc.buyConfirmTitle,
+      headline: context.loc.buyYouBought(
+        formattedPayOutAmount,
+        formattedPayInAmount,
+      ),
+      onClose: () => context.goNamed(WalletRoute.walletHome.name),
+      message: Column(
+        mainAxisSize: .min,
+        children: [
+          // The payout may still be negotiating a payjoin. Keep the outcome
+          // visible without requiring the customer to open transaction details.
+          BullAsyncStatus(
+            state: switch (buyOrder.payjoinOutcome) {
+              OrderPayjoinOutcome.none => BullAsyncStatusState.hidden,
+              OrderPayjoinOutcome.inProgress => BullAsyncStatusState.inProgress,
+              OrderPayjoinOutcome.succeeded => BullAsyncStatusState.succeeded,
+              OrderPayjoinOutcome.plainSend => BullAsyncStatusState.fallback,
+            },
+            inProgressLabel: context.loc.payjoinInProgress,
+            succeededLabel: context.loc.payjoinSucceeded,
+            fallbackLabel: context.loc.payjoinBuyRegularSend,
+            inProgressColor: context.appColors.secondary,
+            successColor: context.appColors.success,
+            textStyle: context.font.bodyMedium,
+          ),
+          if (payoutTime != null)
+            Row(
               mainAxisAlignment: .center,
               children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 100,
-                  color: context.appColors.success,
-                ),
-                const SizedBox(height: 20),
                 Text(
-                  context.loc.buyYouBought(formattedPayOutAmount),
-                  style: context.font.titleLarge,
+                  context.loc.buyPayoutWillBeSentIn,
+                  style: context.font.bodyMedium,
+                  textAlign: .center,
                 ),
-                const SizedBox(height: 10),
-                if (payoutTime != null)
-                  Row(
-                    mainAxisAlignment: .center,
-                    children: [
-                      Text(
-                        context.loc.buyPayoutWillBeSentIn,
-                        style: context.font.bodyMedium,
-                        textAlign: .center,
-                      ),
-                      const Gap(4),
-                      Countdown(
-                        until: payoutTime,
-                        onTimeout: () {
-                          // TODO: Maybe fetch the order again or notify the user
-                        },
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: .min,
-              children: [
-                // Only show transaction acceleration option for Bitcoin on-chain
-                // orders by checking if the order has a bitcoin address. And only
-                // show it if the payout time is not yet scheduled.
-                if (buyOrder.bitcoinAddress != null &&
-                    buyOrder.transactionId == null)
-                  AccelerateTransactionListTile(
-                    orderId: buyOrder.orderId,
-                    onTap: () {
-                      context.pushNamed(
-                        BuyRoute.buyAccelerate.name,
-                        pathParameters: {'orderId': buyOrder.orderId},
-                      );
-                    },
-                  ),
-                const Gap(16),
-                BBButton.big(
-                  label: context.loc.buyViewDetails,
-                  onPressed: () {
-                    context.pushNamed(
-                      TransactionsRoute.orderTransactionDetails.name,
-                      pathParameters: {'orderId': buyOrder.orderId},
-                    );
+                const Gap(4),
+                Countdown(
+                  until: payoutTime,
+                  onTimeout: () {
+                    // TODO: Maybe fetch the order again or notify the user
                   },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),
-          ),
-        ),
+        ],
       ),
+      actions: [
+        // Only Bitcoin on-chain orders without a scheduled payout can be
+        // accelerated.
+        if (buyOrder.bitcoinAddress != null && buyOrder.transactionId == null)
+          AccelerateTransactionListTile(
+            orderId: buyOrder.orderId,
+            onTap: () {
+              context.pushNamed(
+                BuyRoute.buyAccelerate.name,
+                pathParameters: {'orderId': buyOrder.orderId},
+              );
+            },
+          ),
+        const Gap(16),
+        BBButton.big(
+          label: context.loc.buyViewDetails,
+          onPressed: () {
+            final txId = buyOrder.payjoin?.txid;
+            if (txId != null) {
+              context.pushNamed(
+                TransactionsRoute.payjoinTransactionDetailsByTxId.name,
+                pathParameters: {'txId': txId},
+              );
+            } else {
+              context.pushNamed(
+                TransactionsRoute.orderTransactionDetails.name,
+                pathParameters: {'orderId': buyOrder.orderId},
+              );
+            }
+          },
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+        ),
+      ],
     );
   }
 }

@@ -4,8 +4,7 @@ part 'institution_account_type_model.freezed.dart';
 part 'institution_account_type_model.g.dart';
 
 @freezed
-sealed class InstitutionAccountTypeModel
-    with _$InstitutionAccountTypeModel {
+sealed class InstitutionAccountTypeModel with _$InstitutionAccountTypeModel {
   const factory InstitutionAccountTypeModel({
     required String code,
     required String name,
@@ -13,9 +12,8 @@ sealed class InstitutionAccountTypeModel
     required int maxAddressLength,
   }) = _InstitutionAccountTypeModel;
 
-  factory InstitutionAccountTypeModel.fromJson(
-    Map<String, dynamic> json,
-  ) => _$InstitutionAccountTypeModelFromJson(json);
+  factory InstitutionAccountTypeModel.fromJson(Map<String, dynamic> json) =>
+      _$InstitutionAccountTypeModelFromJson(json);
 
   const InstitutionAccountTypeModel._();
 }

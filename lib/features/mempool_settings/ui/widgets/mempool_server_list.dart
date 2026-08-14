@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_it
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class MempoolServerList extends StatelessWidget {
   const MempoolServerList({super.key});
@@ -58,7 +58,8 @@ class MempoolServerList extends StatelessWidget {
               MempoolServerItem(
                 server: customServer,
                 isCustom: true,
-                useForFeeEstimation: state.settings?.useForFeeEstimation ?? true,
+                useForFeeEstimation:
+                    state.settings?.useForFeeEstimation ?? true,
                 isProcessing: isProcessing,
                 onFeeEstimationChanged: (value) {
                   context
@@ -66,7 +67,11 @@ class MempoolServerList extends StatelessWidget {
                       .updateUseForFeeEstimation(value);
                 },
                 onDelete: () => _showDeleteConfirmation(context),
-                onEdit: () => _showEditServerSheet(context, customServer.url, customServer.enableSsl),
+                onEdit: () => _showEditServerSheet(
+                  context,
+                  customServer.url,
+                  customServer.enableSsl,
+                ),
               ),
             ],
             const Gap(16),
@@ -96,7 +101,11 @@ class MempoolServerList extends StatelessWidget {
     SetCustomServerBottomSheet.show(context);
   }
 
-  void _showEditServerSheet(BuildContext context, String currentUrl, bool enableSsl) {
+  void _showEditServerSheet(
+    BuildContext context,
+    String currentUrl,
+    bool enableSsl,
+  ) {
     SetCustomServerBottomSheet.show(
       context,
       initialUrl: currentUrl,

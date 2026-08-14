@@ -2,16 +2,18 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/autoswap/presentation/autoswap_failure_l10n.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class AutoSwapSettingsScreen extends StatefulWidget {
   const AutoSwapSettingsScreen({super.key});
@@ -64,6 +66,14 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
                             children: [
                               const Gap(16),
                               _EnabledToggle(),
+                              if (state.failure case final failure?) ...[
+                                const Gap(16),
+                                InfoCard(
+                                  description: failure.toTranslated(context),
+                                  tagColor: context.appColors.error,
+                                  bgColor: context.appColors.errorContainer,
+                                ),
+                              ],
                               if (enabled) ...[
                                 const Gap(16),
                                 _AmountThresholdField(focusNode: _amountNode),
@@ -73,8 +83,6 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
                                 _FeeThresholdField(focusNode: _feeNode),
                                 const Gap(16),
                                 _WalletSelectionDropdown(),
-                                const Gap(16),
-                                _AlwaysBlockToggle(),
                               ],
                             ],
                           ),
@@ -140,8 +148,8 @@ class _AmountThresholdField extends StatelessWidget {
     final bitcoinUnit = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
-    final amountThresholdError = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
+    final amountThresholdFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdFailure,
     );
     final enabled = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
@@ -194,36 +202,27 @@ class _AmountThresholdField extends StatelessWidget {
                     ? (value) {
                         context
                             .read<AutoSwapSettingsCubit>()
-                            .onAmountThresholdChanged(value)
-                            .then((_) {
-                              // Auto-save after a short delay to debounce rapid changes
-                              // Only save if there's no validation error
-                              Future.delayed(
-                                const Duration(milliseconds: 500),
-                                () {
-                                  if (context.mounted) {
-                                    final state = context
-                                        .read<AutoSwapSettingsCubit>()
-                                        .state;
-                                    if (state.amountThresholdError == null) {
-                                      context
-                                          .read<AutoSwapSettingsCubit>()
-                                          .updateSettings();
-                                    }
-                                  }
-                                },
-                              );
-                            });
+                            .onAmountThresholdChanged(value);
+                        // Auto-save after a short delay to debounce rapid changes
+                        // Only save if there's no validation error
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          if (context.mounted) {
+                            final cubit = context.read<AutoSwapSettingsCubit>();
+                            if (cubit.state.amountThresholdFailure == null) {
+                              cubit.updateSettings();
+                            }
+                          }
+                        });
                       }
                     : (_) {},
               ),
             ),
           ],
         ),
-        if (amountThresholdError != null) ...[
+        if (amountThresholdFailure != null) ...[
           const Gap(8),
           BBText(
-            amountThresholdError.displayMessage(context.loc),
+            amountThresholdFailure.toTranslated(context, unit: bitcoinUnit),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -254,8 +253,8 @@ class _TriggerBalanceField extends StatelessWidget {
     final bitcoinUnit = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
-    final error = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.error,
+    final triggerBalanceFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceFailure,
     );
     final enabled = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
@@ -307,29 +306,24 @@ class _TriggerBalanceField extends StatelessWidget {
                     ? (value) {
                         context
                             .read<AutoSwapSettingsCubit>()
-                            .onTriggerBalanceChanged(value)
-                            .then((_) {
-                              Future.delayed(
-                                const Duration(milliseconds: 500),
-                                () {
-                                  if (context.mounted) {
-                                    context
-                                        .read<AutoSwapSettingsCubit>()
-                                        .updateSettings();
-                                  }
-                                },
-                              );
-                            });
+                            .onTriggerBalanceChanged(value);
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          if (context.mounted) {
+                            context
+                                .read<AutoSwapSettingsCubit>()
+                                .updateSettings();
+                          }
+                        });
                       }
                     : (_) {},
               ),
             ),
           ],
         ),
-        if (error == 'autoswapTriggerBalanceError') ...[
+        if (triggerBalanceFailure != null) ...[
           const Gap(8),
           BBText(
-            context.loc.autoswapTriggerBalanceError,
+            triggerBalanceFailure.toTranslated(context, unit: bitcoinUnit),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -357,8 +351,8 @@ class _FeeThresholdField extends StatelessWidget {
     final feeThresholdInput = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdInput,
     );
-    final feeThresholdError = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdError,
+    final feeThresholdFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdFailure,
     );
     final enabled = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
@@ -411,10 +405,10 @@ class _FeeThresholdField extends StatelessWidget {
             ),
           ],
         ),
-        if (feeThresholdError != null) ...[
+        if (feeThresholdFailure != null) ...[
           const Gap(8),
           BBText(
-            feeThresholdError.displayMessage(context.loc),
+            feeThresholdFailure.toTranslated(context),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -423,51 +417,6 @@ class _FeeThresholdField extends StatelessWidget {
         const Gap(4),
         BBText(
           context.loc.autoswapMaxFeeInfoText,
-          style: context.font.labelSmall?.copyWith(
-            color: context.appColors.textMuted,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AlwaysBlockToggle extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final alwaysBlock = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.alwaysBlock,
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            BBText(
-              context.loc.autoswapAlwaysBlockLabel,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.text,
-              ),
-            ),
-            BBSwitch(
-              value: alwaysBlock,
-              onChanged: (value) {
-                context
-                    .read<AutoSwapSettingsCubit>()
-                    .onAlwaysBlockToggleChanged(value);
-                // Auto-save when toggle changes
-                context.read<AutoSwapSettingsCubit>().updateSettings();
-              },
-            ),
-          ],
-        ),
-        const Gap(4),
-        BBText(
-          alwaysBlock
-              ? context.loc.autoswapAlwaysBlockInfoEnabled
-              : context.loc.autoswapAlwaysBlockInfoDisabled,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
           ),

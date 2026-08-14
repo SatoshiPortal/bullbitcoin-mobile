@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
-import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
+import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitbox_operation_state.freezed.dart';
@@ -21,7 +21,7 @@ sealed class BitBoxOperationState with _$BitBoxOperationState {
   const factory BitBoxOperationState({
     @Default(BitBoxOperationStatus.initial) BitBoxOperationStatus status,
     BitBoxDeviceEntity? connectedDevice,
-    BitBoxError? error,
+    BitBoxFailure? failure,
     dynamic result,
   }) = _BitBoxOperationState;
 
@@ -31,9 +31,12 @@ sealed class BitBoxOperationState with _$BitBoxOperationState {
   bool get isScanning => status == BitBoxOperationStatus.scanning;
   bool get isConnecting => status == BitBoxOperationStatus.connecting;
   bool get isProcessing => status == BitBoxOperationStatus.processing;
-  bool get isShowingPairingCode => status == BitBoxOperationStatus.showingPairingCode;
-  bool get isWaitingForPassword => status == BitBoxOperationStatus.waitingForPassword;
-  bool get isShowingAddressVerification => status == BitBoxOperationStatus.showingAddressVerification;
+  bool get isShowingPairingCode =>
+      status == BitBoxOperationStatus.showingPairingCode;
+  bool get isWaitingForPassword =>
+      status == BitBoxOperationStatus.waitingForPassword;
+  bool get isShowingAddressVerification =>
+      status == BitBoxOperationStatus.showingAddressVerification;
   bool get isSuccess => status == BitBoxOperationStatus.success;
   bool get isError => status == BitBoxOperationStatus.error;
 }

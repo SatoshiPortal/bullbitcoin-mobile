@@ -17,7 +17,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class Bip329LabelsPage extends StatelessWidget {
@@ -118,6 +118,7 @@ class Bip329LabelsPage extends StatelessWidget {
 
                         if (result != null && result.files.isNotEmpty) {
                           final file = File(result.files.first.path!);
+                          if (file.lengthSync() > 1024 * 1024) return;
                           final data = await file.readAsString();
                           await cubit.importLabels(
                             format: LabelFormat.bip329,

@@ -15,9 +15,11 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -141,6 +143,67 @@ class BdkWalletDatasource {
   }) async {
     final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
     return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
+  }
+
+  /// Returns a synchronous `isMine` check bound to a pre-loaded bdk wallet.
+  Future<bool Function(Uint8List)> createIsMineChecker({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    return (Uint8List scriptBytes) =>
+        bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
+  }
+
+  /// Returns a synchronous outpoint-ownership check bound to a pre-loaded bdk
+  /// wallet.
+  ///
+  /// Built from `listOutput()`, not `listUnspent()` or `getUtxo()`: those only
+  /// know the wallet's *unspent* outputs, so an output we owned and already
+  /// spent would answer "not mine". Answering over the full set leaves the
+  /// caller no gap to reason about. The set is a snapshot of the local index at
+  /// creation time — cheap, no network — so bind it per operation rather than
+  /// caching it across syncs.
+  Future<bool Function(Outpoint)> createOutpointIsMineChecker({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final owned = <Outpoint>{
+      for (final output in bdkWallet.listOutput())
+        (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
+    };
+    return owned.contains;
+  }
+
+  /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
+  /// wallet. Uses the same sign options as [signPsbt] — in particular
+  /// `allowAllSighashes: false`, since this signs the wallet's contribution
+  /// to an externally-supplied transaction (a payjoin proposal).
+  Future<String Function(String)> createPsbtSigner({
+    required PrivateBdkWalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+    return (String psbtBase64) {
+      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+      // Unlike signPsbt (the sender signing a complete transaction, where a
+      // non-finalized result is a genuine anomaly), this signs only the
+      // receiver's own contributed input into a multi-party payjoin
+      // proposal — the sender's inputs are still unsigned at this point by
+      // protocol design, so bdk's whole-PSBT finalization check is always
+      // false here. Don't log it: it isn't an error, and logging it on every
+      // successful payjoin would read like one.
+      bdkWallet.sign(
+        psbt: psbt,
+        signOptions: bdk.SignOptions(
+          trustWitnessUtxo: true,
+          assumeHeight: null,
+          allowAllSighashes: false,
+          tryFinalize: true,
+          signWithTapInternalKey: false,
+          allowGrinding: true,
+        ),
+      );
+      return psbt.serialize();
+    };
   }
 
   Future<bool> isAddressMine(
@@ -750,13 +813,11 @@ Future<void> _performFullScan(_SyncParams params) async {
   );
 
   final bdkWallet = await BdkFacade.createWallet(wallet);
-  final blockchain = bdk.ElectrumClient(
+  final blockchain = _createElectrumClient(
     url: params.electrumUrl,
-    socks5: params.electrumSocks5?.isNotEmpty == true
-        ? params.electrumSocks5
-        : null,
-    timeout: params.electrumTimeout.clamp(0, 255),
-    retry: params.electrumRetry.clamp(0, 255),
+    socks5: params.electrumSocks5,
+    timeout: params.electrumTimeout,
+    retry: params.electrumRetry,
     validateDomain: params.electrumValidateDomain,
   );
   try {
@@ -785,10 +846,6 @@ class FailedToSignPsbtException extends BullException {
 
 class UnsupportedBdkNetworkException extends BullException {
   UnsupportedBdkNetworkException(super.message);
-}
-
-class NoSpendableUtxoException extends BullException {
-  NoSpendableUtxoException(super.message);
 }
 
 /// Confirmation count for an output confirmed at [height], given the current
@@ -896,13 +953,11 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
     lookahead: 0,
   );
 
-  final blockchain = bdk.ElectrumClient(
+  final blockchain = _createElectrumClient(
     url: params.electrumUrl,
-    socks5: params.electrumSocks5?.isNotEmpty == true
-        ? params.electrumSocks5
-        : null,
-    timeout: params.electrumTimeout.clamp(0, 255),
-    retry: params.electrumRetry.clamp(0, 255),
+    socks5: params.electrumSocks5,
+    timeout: params.electrumTimeout,
+    retry: params.electrumRetry,
     validateDomain: params.electrumValidateDomain,
   );
 
@@ -930,3 +985,32 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
 }
 
 int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);
+
+/// Creates a [bdk.ElectrumClient], retrying once on the rustls CryptoProvider
+/// install race across concurrent isolates (full scan, dry scan, sync).
+/// electrum-client's install_default check+install is not atomic, so two
+/// isolates can both see "not installed" and the loser fails. On retry the
+/// provider is already installed and the check short-circuits.
+bdk.ElectrumClient _createElectrumClient({
+  required String url,
+  required String? socks5,
+  required int timeout,
+  required int retry,
+  required bool validateDomain,
+}) {
+  bdk.ElectrumClient build() => bdk.ElectrumClient(
+    url: url,
+    socks5: socks5?.isNotEmpty == true ? socks5 : null,
+    timeout: timeout.clamp(0, 255),
+    retry: retry.clamp(0, 255),
+    validateDomain: validateDomain,
+  );
+  try {
+    return build();
+  } on bdk.CouldNotCreateConnectionElectrumException catch (e) {
+    if (e.errorMessage.contains('Failed to install CryptoProvider')) {
+      return build();
+    }
+    rethrow;
+  }
+}

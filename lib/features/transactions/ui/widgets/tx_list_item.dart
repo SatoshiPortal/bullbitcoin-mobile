@@ -1,14 +1,14 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -39,11 +39,11 @@ class TxListItem extends StatelessWidget {
         ? context.appColors.onTertiary
         : context.appColors.tertiary;
     final networkLabel = isOrderType
-        ? tx.order!.orderType.value
+        ? tx.order!.orderTypeLabel
         : isLnSwap
         ? context.loc.transactionNetworkLightning
         : isChainSwap
-        ? tx.swap!.type == SwapType.liquidToBitcoin
+        ? tx.isLiquidToBitcoinSwap
               ? context.loc.transactionSwapLiquidToBitcoin
               : context.loc.transactionSwapBitcoinToLiquid
         : tx.isBitcoin
@@ -54,8 +54,12 @@ class TxListItem extends StatelessWidget {
         : <Label>[];
     final date = tx.isSwap
         ? (!tx.isOngoingSwap
-              ? (tx.swap?.completionTime != null
-                    ? timeago.format(tx.swap!.completionTime!)
+              ? (tx.swap?.completionTime != null ||
+                        tx.orderSwap?.order?.completedAt != null
+                    ? timeago.format(
+                        tx.swap?.completionTime ??
+                            tx.orderSwap!.order!.completedAt!,
+                      )
                     : null)
               : null)
         : isOrderType
@@ -66,15 +70,16 @@ class TxListItem extends StatelessWidget {
         ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
         : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
-    final showOrderInFiat =
-        isOrderType &&
-        (tx.order is FiatPaymentOrder ||
-            tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder ||
-            tx.order is FundingOrder);
+    final showOrderInFiat = isOrderType && tx.order!.displaysFiatAmount;
     return InkWell(
       onTap: () {
-        if (tx.walletTransaction != null) {
+        if (tx.orderSwap != null) {
+          context.pushNamed(
+            TransactionsRoute.orderSwapTransactionDetails.name,
+            pathParameters: {'localId': tx.orderSwap!.localId},
+          );
+          return;
+        } else if (tx.walletTransaction != null) {
           context.pushNamed(
             TransactionsRoute.transactionDetails.name,
             pathParameters: {'txId': tx.walletTransaction!.txId},
@@ -209,7 +214,11 @@ class TxListItem extends StatelessWidget {
                   )
                 else if (tx.isSwap &&
                     (tx.swap?.completionTime != null ||
-                        tx.swap?.status == SwapStatus.completed))
+                        tx.swap?.status == SwapStatus.completed ||
+                        tx.orderSwap?.localStatus ==
+                            OrderSwapLocalStatus.completed ||
+                        tx.orderSwap?.localStatus ==
+                            OrderSwapLocalStatus.refunded))
                   Row(
                     children: [
                       BBText(

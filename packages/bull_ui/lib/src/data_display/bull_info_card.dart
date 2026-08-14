@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// A coloured info panel with a leading accent bar and info icon —
 /// duplicated from `core/widgets/cards/info_card.dart`.
@@ -75,21 +75,23 @@ class BullInfoCard extends StatelessWidget {
                             if (title != null && title!.isNotEmpty) ...[
                               Text(
                                 title!,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: tagColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: tagColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                               ),
                               const Gap(4),
                             ],
                             Text(
                               description,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: colors.onSurfaceVariant,
-                                fontWeight: boldDescription
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: colors.onSurfaceVariant,
+                                    fontWeight: boldDescription
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
                             ),
                           ],
                         ),

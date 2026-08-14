@@ -14,20 +14,13 @@ class GetSupportChatMessagesUsecase {
     required this._settingsRepository,
   });
 
-  Future<List<SupportChatMessage>> execute({
-    int? page,
-    int? pageSize,
-  }) async {
+  Future<List<SupportChatMessage>> execute({int? page, int? pageSize}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet ? _testnetRepository : _mainnetRepository;
+      final repo = isTestnet ? _testnetRepository : _mainnetRepository;
 
-      return await repo.getMessages(
-        page: page,
-        pageSize: pageSize,
-      );
+      return await repo.getMessages(page: page, pageSize: pageSize);
     } catch (e) {
       throw GetSupportChatMessagesException('$e');
     }
@@ -37,4 +30,3 @@ class GetSupportChatMessagesUsecase {
 class GetSupportChatMessagesException extends BullException {
   GetSupportChatMessagesException(super.message);
 }
-

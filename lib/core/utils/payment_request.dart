@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/msats.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -45,16 +46,12 @@ sealed class PaymentRequest with _$PaymentRequest {
     @Default('') String pjos,
   }) = Bip21PaymentRequest;
 
-  const factory PaymentRequest.ark({required String address}) =
-      ArkPaymentRequest;
-
   const factory PaymentRequest.psbt({required String psbt}) =
       PsbtPaymentRequest;
 
   const PaymentRequest._();
 
   int? get amountSat => switch (this) {
-    ArkPaymentRequest() => null,
     BitcoinPaymentRequest() => null,
     LiquidPaymentRequest() => null,
     LnAddressPaymentRequest() => null,
@@ -67,18 +64,17 @@ sealed class PaymentRequest with _$PaymentRequest {
     try {
       final String trimmed = data.trim();
 
-      if (trimmed.toLowerCase().startsWith('ark:')) {
-        return PaymentRequest.ark(address: trimmed);
-      }
-
       if (trimmed.toLowerCase().startsWith('bitcoin:') ||
           trimmed.toLowerCase().startsWith('liquidnetwork:') ||
           trimmed.toLowerCase().startsWith('liquidtestnet:')) {
         final result = await _tryParseBip21(trimmed);
         if (result != null) return result;
+        // A recognized payment URI must not be reclassified as another
+        // payment type when its address or parameters fail validation.
+        throw 'Invalid payment URI';
       }
 
-      final re = RegExp(r'lnurl[0-9a-z]+', caseSensitive: false);
+      final re = RegExp(r'^lnurl[0-9a-z]+$', caseSensitive: false);
       final m = re.firstMatch(trimmed);
 
       if (m != null) {
@@ -87,7 +83,7 @@ sealed class PaymentRequest with _$PaymentRequest {
       }
 
       final lnAddressRe = RegExp(
-        r'[a-zA-Z0-9._%+\-]+(?:@|%40)[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}',
+        r'^[a-zA-Z0-9._%+\-]+(?:@|%40)[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$',
       );
       final lnAddressMatch = lnAddressRe.firstMatch(trimmed);
 
@@ -234,8 +230,8 @@ sealed class PaymentRequest with _$PaymentRequest {
         network: network,
         address: address,
         uri: uri.toString(),
-        label: uri.label ?? '',
-        message: uri.message ?? '',
+        label: sanitizePaymentLabel(uri.label ?? ''),
+        message: sanitizePaymentLabel(uri.message ?? ''),
         amountSat: amount != null ? ConvertAmount.btcToSats(amount) : null,
         lightning: uri.options['lightning'] as String? ?? '',
         pj: uri.options['pj'] as String? ?? '',
@@ -282,13 +278,13 @@ sealed class PaymentRequest with _$PaymentRequest {
 
     try {
       final invoice = await boltz.DecodedInvoice.fromString(s: data);
-      final sats = invoice.msats.toInt() ~/ 1000;
+      final sats = msatsToSats(invoice.msats.toInt());
 
       return PaymentRequest.bolt11(
         invoice: data,
         amountSat: sats,
         paymentHash: invoice.preimageHash,
-        description: invoice.description,
+        description: sanitizePaymentLabel(invoice.description),
         expiresAt: invoice.expiresAt.toInt(),
         isTestnet: invoice.network != 'bitcoin',
       );
@@ -298,6 +294,16 @@ sealed class PaymentRequest with _$PaymentRequest {
 
     return null;
   }
+
+  /// Normalizes untrusted payment metadata before it reaches presentation or
+  /// transaction labeling. Keep this boundary shared by all payment parsers.
+  static String sanitizePaymentLabel(String value) =>
+      value.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '').trim().length > 256
+      ? value
+            .replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '')
+            .trim()
+            .substring(0, 256)
+      : value.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '').trim();
 
   static Future<PaymentRequest?> _tryParseLnAddress(String data) async {
     final bool isEmailStyle = data.contains('@');
@@ -340,7 +346,6 @@ sealed class PaymentRequest with _$PaymentRequest {
   bool get isPsbt => this is PsbtPaymentRequest;
 
   bool get isTestnet => switch (this) {
-    ArkPaymentRequest() => false,
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
@@ -350,7 +355,6 @@ sealed class PaymentRequest with _$PaymentRequest {
   };
 
   String get name => switch (this) {
-    ArkPaymentRequest() => 'ARK',
     BitcoinPaymentRequest() => 'Bitcoin Onchain',
     LiquidPaymentRequest() => 'Liquid Onchain',
     LnAddressPaymentRequest() => 'Lightning Address',

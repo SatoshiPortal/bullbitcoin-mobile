@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_converter_apadater.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
 import 'package:bb_mobile/features/labels/adapters/wallet_freeze_adapter.dart';
@@ -34,6 +35,7 @@ class LabelsLocator {
     locator.registerLazySingleton<WalletFreezePort>(
       () => WalletFreezeAdapter(
         datasource: locator<FrozenWalletUtxoDatasource>(),
+        walletUtxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
   }

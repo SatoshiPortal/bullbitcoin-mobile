@@ -2,7 +2,7 @@ import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// One row of a [BullSelectableList].
 class BullSelectableListItem {
@@ -106,14 +106,19 @@ class _BullSelectableRow extends StatelessWidget {
                   children: [
                     BullText(
                       item.title,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const Gap(4),
-                    BullText(item.subtitle1, style: Theme.of(context).textTheme.labelMedium),
+                    BullText(
+                      item.subtitle1,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
                     const Gap(2),
-                    BullText(item.subtitle2, style: Theme.of(context).textTheme.labelMedium),
+                    BullText(
+                      item.subtitle2,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
                   ],
                 ),
               ),

@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Sin una copia de seguridad, perderás el acceso a tus bitcoin si:",
   "backupWarningLoseReasonLostPhone": "Pierdes tu teléfono",
   "backupWarningLoseReasonDeletedApp": "Eliminas la aplicación",
@@ -127,7 +128,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Idioma",
   "settingsThemeTitle": "Tema",
-  "settingsArkTitle": "Ark",
   "settingsDevModeWarningTitle": "Modo desarrollador",
   "settingsDevModeWarningMessage": "Este modo es arriesgado. Al activarlo, reconoces que podrías perder dinero",
   "settingsDevModeUnderstandButton": "Entiendo",
@@ -172,7 +172,6 @@
   "mempoolSettingsUseForFeeEstimation": "Utilice para Estimación de Comisión",
   "mempoolSettingsUseForFeeEstimationDescription": "Cuando habilitado, este servidor será utilizado para estimación de comisión. Cuando inhabilitado, el servidor mempool de Bull Bitcoin será utilizado en su lugar.",
   "bitcoinSettingsAutoTransferTitle": "Transferencia automática",
-  "bitcoinSettingsLegacySeedsTitle": "Semillas heredadas",
   "bitcoinSettingsImportWalletTitle": "Importar billetera",
   "bitcoinSettingsBroadcastTransactionTitle": "Transmitir transacción",
   "bitcoinSettingsTestnetModeTitle": "Modo Testnet",
@@ -317,7 +316,6 @@
   "receivePayjoinActivated": "Payjoin activado",
   "receiveLightningInvoice": "Factura Lightning",
   "receiveAddress": "Dirección de Recepción",
-  "receiveAmount": "Cantidad (opcional)",
   "receiveNoteLabel": "Nota",
   "receiveEnterHere": "Ingrese aquí…",
   "receiveSwapID": "ID de intercambio",
@@ -348,7 +346,6 @@
     }
   },
   "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
-  "receiveNotePlaceholder": "Nota",
   "receiveReceiveAmount": "Monto a recibir",
   "receiveSendNetworkFee": "Comisión de red de envío",
   "receiveServerNetworkFees": "Comisiones de red del servidor",
@@ -385,7 +382,7 @@
   "buyPayoutMethod": "Método de pago",
   "buyAwaitingConfirmation": "Esperando confirmación ",
   "buyConfirmPurchase": "Confirmar compra",
-  "buyYouBought": "Ha comprado {amount}",
+  "buyYouBought": "Ha comprado {amount} por {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -715,7 +712,6 @@
   "transactionNoteHint": "Nota",
   "transactionNoteSaveButton": "Guardar",
   "transactionNoteUpdateButton": "Actualizar",
-  "transactionPayjoinNoProposal": "¿No recibe una propuesta de payjoin del receptor?",
   "transactionPayjoinSendWithout": "Enviar sin payjoin",
   "transactionSwapProgressInitiated": "Iniciado",
   "transactionSwapProgressPaymentMade": "Pago\nrealizado",
@@ -830,8 +826,6 @@
   "walletBalanceUnconfirmedIncoming": "En progreso",
   "walletButtonReceive": "Recibir",
   "walletButtonSend": "Enviar",
-  "walletArkInstantPayments": "Pagos instantáneos Ark",
-  "walletArkExperimental": "Experimental",
   "fundExchangeTitle": "Financiación",
   "fundExchangeAccountTitle": "Fondea tu cuenta",
   "fundExchangeAccountSubtitle": "Selecciona tu país y método de pago",
@@ -1090,11 +1084,6 @@
   "testCompletedSuccessTitle": "¡Prueba completada con éxito!",
   "testCompletedSuccessMessage": "Puedes recuperar el acceso a una billetera Bitcoin perdida",
   "gotItButton": "Entendido",
-  "legacySeedViewScreenTitle": "Semillas heredadas",
-  "legacySeedViewNoSeedsMessage": "No se encontraron semillas heredadas.",
-  "legacySeedViewMnemonicLabel": "Mnemónico",
-  "legacySeedViewPassphrasesLabel": "Frases de contraseña:",
-  "legacySeedViewEmptyPassphrase": "(vacía)",
   "enterBackupKeyManuallyTitle": "Ingresar clave de respaldo manualmente",
   "enterBackupKeyManuallyDescription": "Si has exportado tu clave de respaldo y la has guardado en una ubicación separada por ti mismo, puedes ingresarla manualmente aquí. De lo contrario, regresa a la pantalla anterior.",
   "enterBackupKeyLabel": "Ingresar clave de respaldo",
@@ -1491,14 +1480,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Cuando está habilitado, las transferencias automáticas con comisiones superiores al límite establecido siempre serán bloqueadas",
   "autoswapAlwaysBlockInfoDisabled": "Cuando está deshabilitado, se le dará la opción de permitir una transferencia automática que fue bloqueada debido a comisiones altas",
   "autoswapSaveButton": "Guardar",
-  "autoswapSaveErrorMessage": "Error al guardar la configuración: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapWarningCardTitle": "Autoswap está activado",
   "autoswapWarningCardSubtitle": "Se disparará un intercambio si el saldo de su billetera de pagos instantáneos supera 0'02 BTC.",
   "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
@@ -1510,7 +1491,6 @@
   "autoswapLoadSettingsError": "Error al cargar la configuración de intercambio automático",
   "autoswapUpdateSettingsError": "Error al actualizar la configuración de intercambio automático",
   "autoswapSelectWalletError": "Seleccione una billetera Bitcoin receptora",
-  "autoswapAutoSaveError": "Error al guardar la configuración",
   "autoswapMinimumThresholdErrorBtc": "El umbral mínimo de saldo es {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "placeholders": {
@@ -1536,158 +1516,11 @@
     }
   },
   "autoswapTriggerBalanceError": "El saldo máximo debe ser al menos 2 veces el saldo objetivo",
-  "arkNoTransactionsYet": "Aún no hay transacciones.",
-  "arkToday": "Hoy",
-  "arkYesterday": "Ayer",
-  "arkSettleTransactions": "Liquidar Transacciones",
-  "arkSettleDescription": "Finalice las transacciones pendientes e incluya vtxos recuperables si es necesario",
-  "arkIncludeRecoverableVtxos": "Incluir vtxos recuperables",
-  "arkCancelButton": "Cancelar",
-  "arkSettleButton": "Liquidar",
-  "arkReceiveTitle": "Recibir Ark",
-  "arkUnifiedAddressCopied": "Dirección unificada copiada",
-  "arkCopyAddress": "Copiar dirección",
-  "arkUnifiedAddressBip21": "Dirección unificada (BIP21)",
-  "arkBtcAddress": "Dirección BTC",
-  "arkArkAddress": "Dirección Ark",
-  "arkSendTitle": "Enviar",
-  "arkRecipientAddress": "Dirección del destinatario",
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkConfirmedBalance": "Saldo Confirmado",
-  "arkPendingBalance": "Saldo Pendiente",
-  "arkConfirmButton": "Confirmar",
-  "arkCollaborativeRedeem": "Redención Colaborativa",
-  "arkRecoverableVtxos": "Vtxos Recuperables",
-  "arkRedeemButton": "Redimir",
-  "arkInstantPayments": "Pagos Instantáneos Ark",
-  "arkSettleTransactionCount": "Liquidar {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
-  "arkTransaction": "transacción",
-  "arkTransactions": "transacciones",
-  "arkReceiveButton": "Recibir",
-  "arkSendButton": "Enviar",
-  "arkTxTypeBoarding": "Abordaje",
-  "arkTxTypeCommitment": "Compromiso",
-  "arkTxTypeRedeem": "Canjear",
-  "arkTransactionDetails": "Detalles de la transacción",
-  "arkStatusConfirmed": "Confirmado",
-  "arkStatusPending": "Pendiente",
-  "arkStatusSettled": "Liquidado",
-  "arkTransactionId": "ID de transacción",
-  "arkType": "Tipo",
-  "arkStatus": "Estado",
-  "arkAmount": "Monto",
-  "arkDate": "Fecha",
-  "arkBalanceBreakdown": "Desglose del saldo",
-  "arkConfirmed": "Confirmado",
-  "arkPending": "Pendiente",
-  "arkTotal": "Total",
-  "arkBalanceBreakdownTooltip": "Desglose del saldo",
-  "arkAboutTitle": "Acerca de",
-  "arkServerUrl": "URL del servidor",
-  "arkServerPubkey": "Clave pública del servidor",
-  "arkForfeitAddress": "Dirección de confiscación",
-  "arkNetwork": "Red",
-  "arkDust": "Polvo",
-  "arkSessionDuration": "Duración de la sesión",
-  "arkBoardingExitDelay": "Retraso de salida de abordaje",
-  "arkUnilateralExitDelay": "Retraso de salida unilateral",
-  "arkEsploraUrl": "URL de Esplora",
-  "arkDurationSeconds": "{seconds} segundos",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} minuto",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} minutos",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} hora",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationHours": "{hours} horas",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDay": "{days} día",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationDays": "{days} días",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Copiar",
-  "arkCopiedToClipboard": "{label} copiado al portapapeles",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendSuccessTitle": "Envío exitoso",
-  "arkSendSuccessMessage": "¡Tu transacción Ark fue exitosa!",
-  "arkBoardingUnconfirmed": "Embarque sin confirmar",
-  "arkBoardingConfirmed": "Embarque confirmado",
-  "arkPreconfirmed": "Preconfirmado",
-  "arkSettled": "Liquidado",
-  "arkAvailable": "Disponible",
-  "arkNoBalanceData": "No hay datos de saldo disponibles",
-  "arkTxPending": "Pendiente",
-  "arkTxBoarding": "Embarque",
-  "arkTxSettlement": "Liquidación",
-  "arkTxPayment": "Pago",
-  "arkSatsUnit": "sats",
   "bitboxErrorPermissionDenied": "Se requieren permisos USB para conectarse a dispositivos BitBox.",
   "bitboxErrorNoDevicesFound": "No se encontraron dispositivos BitBox. Asegúrese de que su dispositivo esté encendido y conectado por USB.",
   "bitboxErrorMultipleDevicesFound": "Se encontraron múltiples dispositivos BitBox. Asegúrese de que solo un dispositivo esté conectado.",
   "bitboxErrorDeviceNotFound": "Dispositivo BitBox no encontrado.",
   "bitboxErrorConnectionTypeNotInitialized": "Tipo de conexión no inicializado.",
-  "bitboxErrorNoActiveConnection": "No hay conexión activa con el dispositivo BitBox.",
-  "bitboxErrorDeviceMismatch": "Se detectó una incompatibilidad de dispositivo.",
-  "bitboxErrorInvalidMagicBytes": "Se detectó un formato PSBT inválido.",
   "bitboxErrorDeviceNotPaired": "Dispositivo no emparejado. Complete primero el proceso de emparejamiento.",
   "bitboxErrorHandshakeFailed": "Error al establecer conexión segura. Inténtelo de nuevo.",
   "bitboxErrorOperationTimeout": "La operación expiró. Inténtelo de nuevo.",
@@ -1763,14 +1596,6 @@
   "bitboxScreenManagePermissionsButton": "Gestionar permisos de la aplicación",
   "bitboxScreenNeedHelpButton": "¿Necesita ayuda?",
   "bitboxScreenDefaultWalletLabel": "Billetera BitBox",
-  "bitboxCubitPermissionDenied": "Permiso USB denegado. Por favor otorgue permiso para acceder a su dispositivo BitBox.",
-  "bitboxCubitDeviceNotFound": "No se encontró ningún dispositivo BitBox. Por favor conecte su dispositivo e inténtelo de nuevo.",
-  "bitboxCubitDeviceNotPaired": "Dispositivo no emparejado. Por favor complete primero el proceso de emparejamiento.",
-  "bitboxCubitHandshakeFailed": "Error al establecer conexión segura. Inténtelo de nuevo.",
-  "bitboxCubitOperationTimeout": "La operación expiró. Inténtelo de nuevo.",
-  "bitboxCubitConnectionFailed": "Error al conectar con el dispositivo BitBox. Por favor verifique su conexión.",
-  "bitboxCubitInvalidResponse": "Respuesta inválida del dispositivo BitBox. Inténtelo de nuevo.",
-  "bitboxCubitOperationCancelled": "La operación fue cancelada. Inténtelo de nuevo.",
   "advancedOptionsTitle": "Opciones avanzadas",
   "replaceByFeeActivatedLabel": "Reemplazo por tarifa activado",
   "replaceByFeeBroadcastButton": "Transmitir",
@@ -1868,7 +1693,6 @@
   "totalFeeLabel": "Tarifa total",
   "networkFeeLabel": "Tarifa de red",
   "transferFeeLabel": "Tarifa de transferencia",
-  "sendNetworkFeesLabel": "Tarifas de red de envío",
   "confirmButtonLabel": "Confirmar",
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
@@ -2172,7 +1996,6 @@
   },
   "sendEnterAbsoluteFee": "Ingrese la comisión absoluta en sats",
   "sendEnterRelativeFee": "Ingrese la comisión relativa en sats/vB",
-  "sendErrorArkExperimentalOnly": "Las solicitudes de pago ARK solo están disponibles desde la función experimental Ark.",
   "sendErrorSwapCreationFailed": "Error al crear el intercambio.",
   "sendErrorHardwareWalletCannotSwap": "Las billeteras hardware no pueden usarse para intercambios.",
   "sendErrorInvoiceMustContainAmount": "La factura debe contener un monto",
@@ -2362,7 +2185,6 @@
   "receiveBitcoinNetwork": "Bitcoin",
   "receiveLightningNetwork": "Lightning",
   "receiveLiquidNetwork": "Liquid",
-  "receiveArkNetwork": "Ark",
   "receiveInvoice": "Factura Lightning",
   "receiveFixedAmount": "Cantidad",
   "receiveDescription": "Descripción (opcional)",
@@ -3110,8 +2932,6 @@
   "importWatchOnlyDerivationPath": "Ruta de derivación",
   "importWatchOnlyImportButton": "Importar Billetera de Solo Lectura",
   "importWatchOnlyCancel": "Cancelar",
-  "importWatchOnlyBuyDevice": "Comprar un dispositivo",
-  "importWatchOnlyWalletGuides": "Guías de billetera",
   "importWatchOnlyCopiedToClipboard": "Copiado al portapapeles",
   "importWatchOnlySelectDerivation": "Seleccionar derivación",
   "importWatchOnlyType": "Tipo",
@@ -3146,7 +2966,7 @@
   "exportTransactionsButton": "Exportar CSV",
   "exportTransactionsSuccess": "Transacciones exportadas correctamente",
   "exportTransactionsEmpty": "No hay transacciones para exportar en el período seleccionado",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Error al exportar las transacciones",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -3305,7 +3125,6 @@
   "importColdcardDescription": "Importa el código QR descriptor de billetera de tu Coldcard Q",
   "importColdcardButtonOpenCamera": "Abrir la cámara",
   "importColdcardButtonInstructions": "Instrucciones",
-  "importColdcardButtonPurchase": "Comprar dispositivo",
   "importColdcardInstructionsTitle": "Instrucciones Coldcard Q",
   "importColdcardInstructionsStep1": "Inicia sesión en tu dispositivo Coldcard Q",
   "importColdcardInstructionsStep2": "Ingresa una frase de contraseña si corresponde",
@@ -3463,6 +3282,9 @@
   "buyConfirmYouPay": "Usted paga",
   "buyConfirmYouReceive": "Usted recibe",
   "buyConfirmBitcoinPrice": "Precio de Bitcoin",
+  "buyConfirmPayoutWallet": "Cartera de pago",
+  "buyPayoutMethodLiquid": "L-BTC en Liquid",
+  "buyPayoutMethodBitcoin": "BTC en la cadena de Bitcoin",
   "buyConfirmPayoutMethod": "Método de pago",
   "buyConfirmExternalWallet": "Billetera Bitcoin externo",
   "buyConfirmAwaitingConfirmation": "Esperando confirmación ",
@@ -3490,9 +3312,6 @@
   "sellSendPaymentAboveMax": "Está intentando vender por encima del monto máximo que se puede vender con esta billetera.",
   "sellSendPaymentBelowMin": "Está intentando vender por debajo del monto mínimo que se puede vender con esta billetera.",
   "sellSendPaymentInsufficientBalance": "Saldo insuficiente en la billetera seleccionada para completar esta orden de venta.",
-  "arkSetupTitle": "Configuración Ark",
-  "arkSetupExperimentalWarning": "Ark aún es experimental.\n\nSu billetera Ark se deriva de la frase semilla de su billetera principal. No se necesita respaldo adicional, su respaldo de billetera existente también restaura sus fondos Ark.\n\nAl continuar, usted reconoce la naturaleza experimental de Ark y el riesgo de perder fondos.\n\nNota del desarrollador: El secreto Ark se deriva de la semilla de la billetera principal utilizando una derivación BIP-85 arbitraria (índice 11811).",
-  "arkSetupEnable": "Activar Ark",
   "swapTitle": "Transferencia interna",
   "swapInfoBanner": "Transfiera Bitcoin sin problemas entre sus billeteras. Solo mantenga fondos en la Billetera de pago instantáneo para gastos del día a día.",
   "swapMax": "MÁX",
@@ -3524,14 +3343,6 @@
   "autoswapRecipientWalletInfo": "Elija cual billetera Bitcoin recibirá los fondos transferidos (obligatorio)",
   "autoswapDefaultWalletLabel": "Billetera Bitcoin",
   "autoswapSave": "Guardar",
-  "autoswapSaveError": "Error al guardar la configuración: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Configuración del servidor Electrum",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -3683,131 +3494,7 @@
   "electrumServerNotUsed": "No utilizado",
   "electrumServerOnline": "En línea",
   "electrumServerOffline": "Fuera de línea",
-  "arkSendRecipientLabel": "Dirección del destinatario",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
-  "arkSendConfirmedBalance": "Saldo confirmado",
-  "arkSendPendingBalance": "Saldo pendiente    ",
-  "arkSendConfirm": "Confirmar",
-  "arkReceiveCopyAddress": "Copiar dirección",
-  "arkReceiveUnifiedAddress": "Dirección unificada (BIP21)",
-  "arkReceiveBtcAddress": "Dirección BTC",
-  "arkReceiveArkAddress": "Dirección Ark",
-  "arkReceiveUnifiedCopied": "Dirección unificada copiada",
-  "arkSettleTitle": "Liquidar transacciones",
-  "arkSettleMessage": "Finalizar transacciones pendientes e incluir vtxos recuperables si es necesario",
-  "arkSettleIncludeRecoverable": "Incluir vtxos recuperables",
-  "arkSettleCancel": "Cancelar",
-  "arkAboutServerUrl": "URL del servidor",
-  "arkAboutServerPubkey": "Clave pública del servidor",
-  "arkAboutForfeitAddress": "Dirección de decomiso",
-  "arkAboutNetwork": "Red",
-  "arkAboutDust": "Polvo",
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutSessionDuration": "Duración de sesión",
-  "arkAboutBoardingExitDelay": "Retraso de salida de embarque",
-  "arkAboutUnilateralExitDelay": "Retraso de salida unilateral",
-  "arkAboutEsploraUrl": "URL Esplora",
-  "arkAboutCopy": "Copiar",
-  "arkAboutCopiedMessage": "{label} copiado al portapapeles",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkAboutDurationSeconds": "{seconds} segundos",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} minuto",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} minutos",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHour": "{hours} hora",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationHours": "{hours} horas",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDay": "{days} día",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationDays": "{days} días",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkSendRecipientTitle": "Enviar al destinatario",
-  "arkSendRecipientError": "Por favor ingrese un destinatario",
-  "arkSendAmountTitle": "Ingrese el monto",
-  "arkSendConfirmTitle": "Confirmar envío",
-  "arkSendConfirmMessage": "Por favor confirme los detalles de su transacción antes de enviar.",
-  "arkReceiveSegmentArk": "Ark",
-  "arkReceiveSegmentBoarding": "Embarque",
-  "arkReceiveBoardingAddress": "Dirección de embarque BTC",
-  "arkAboutSecretKey": "Clave secreta",
-  "arkAboutShow": "Mostrar",
-  "arkAboutHide": "Ocultar",
-  "arkContinueButton": "Continuar",
-  "addressViewErrorLoadingAddresses": "Error al cargar las direcciones: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "No se encontraron direcciones",
-  "addressViewErrorLoadingMoreAddresses": "Error al cargar más direcciones: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Exhiba direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
@@ -4109,6 +3796,7 @@
   "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
   "buyInsufficientFundsError": "Fondos insuficientes en su cuenta Bull Bitcoin para completar esta compra.",
   "buyOrderNotFoundError": "No se encontró la orden de compra. Por favor, inténtelo de nuevo.",
+  "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
   "buyOrderAlreadyConfirmedError": "Esta orden de compra ya ha sido confirmada.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",
@@ -4248,7 +3936,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Subir {count} {count, plural, =1{archivo} other{archivos}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4471,7 +4159,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Esto enviará una solicitud de eliminación de cuenta a nuestro equipo de soporte. Tu cuenta se eliminará dentro de los próximos 5 días hábiles.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -4483,11 +4171,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Eliminación de cuenta solicitada",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Se ha realizado tu solicitud de eliminación de cuenta. Se procesará dentro de los próximos 5 días hábiles.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -4609,7 +4297,7 @@
   "legacyStorageAcceptRisksCheckbox": "Acepto los riesgos de no hacer un respaldo",
   "legacyStorageHasBackupImportantBody": "Por favor, no omita este proceso a menos que necesite usar la billetera urgentemente o esté esperando a que se complete un intercambio.",
   "legacyStorageRiskAckButtonHasBackup": "Entiendo el riesgo",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "Algo salió mal al configurar tu billetera. Inténtalo de nuevo.",
   "importMnemonicDuplicateError": "Esta frase mnemónica ya existe",
   "coreScreensResolvingInputs": "Resolviendo entradas de la transacción...",
   "coreScreensFeeRateLabel": "Tasa de comisión",
@@ -5099,5 +4787,200 @@
   "logsShareOptionShare": "Compartir",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados correctamente",
-  "logsExportFailedMessage": "Error al exportar los registros"
+  "logsExportFailedMessage": "Error al exportar los registros",
+  "coreSwapsStatusRefunded": "Reembolsado",
+  "swapRestoreTitle": "Restaurar intercambios",
+  "swapRestoreActionable": "{count, plural, =0{No hay intercambios para recuperar} =1{Puede intentar recuperar 1 intercambio. Es posible que ya esté en un estado final.} other{Puede intentar recuperar {count} intercambios. Tenga en cuenta que algunos de ellos ya podrían estar en un estado final.}}",
+  "swapRestoreNoSwaps": "No se encontraron intercambios para restaurar",
+  "swapRestoreRecoverableSection": "Recuperables",
+  "swapRestoreAllSection": "Todos los intercambios",
+  "swapRestoreFailed": "No se pudieron restaurar los intercambios",
+  "swapRestoreKindLightningSend": "Envío Lightning",
+  "swapRestoreKindLightningReceive": "Recepción Lightning",
+  "swapRestoreKindCrossChain": "Entre cadenas",
+  "swapRescueTitle": "Rescatar intercambio",
+  "swapRescueTypeLabel": "Tipo",
+  "swapRescueStatusLabel": "Estado",
+  "swapRescueAmountLabel": "Cantidad",
+  "swapRescueRouteLabel": "Ruta",
+  "swapRescueCreatedLabel": "Creado",
+  "swapRescueIdLabel": "ID de intercambio",
+  "swapRescueWalletLabel": "Restaurar a la billetera",
+  "swapRescueWalletHint": "Seleccione una billetera",
+  "swapRescueButton": "Restaurar",
+  "swapRescueSuccess": "Intercambio restaurado — ahora se reanudará",
+  "receivePayjoinNoUtxos": "Reciba fondos primero para habilitarlo.\nSe requieren UTXOs para usar payjoin.",
+  "receiveLiquidRiskDisclosureLabel": "Los pagos se convertirán a Liquid L-BTC (no BTC). Más información.",
+  "transactionFilterWithdraw": "Retirar",
+  "transactionFilterPay": "Pagar",
+  "transactionFilterFunding": "Financiación",
+  "transactionFilterReward": "Recompensa",
+  "transactionFilterRefund": "Reembolso",
+  "transactionFilterBalanceAdjustment": "Ajuste",
+  "transactionListLoadingFailed": "No se pudieron cargar las transacciones.",
+  "transactionLabelNetworkFees": "Comisiones de red",
+  "walletLiquidRiskDisclosureLabel": "Estos fondos son Liquid L-BTC (no BTC). Más información.",
+  "liquidRiskDisclosureSemanticLabel": "Abrir la divulgación de riesgos de Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Divulgación de riesgos de Liquid Bitcoin de la Billetera de Pagos Instantáneos",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "nfcNotAvailable": "NFC no es compatible con este dispositivo",
+  "nfcDisabled": "NFC está deshabilitado. Actívelo en los ajustes.",
+  "nfcInvalidData": "No se encontraron datos NFC compatibles",
+  "nfcConnectionLost": "Se perdió la conexión NFC. Mantenga su dispositivo cerca de la etiqueta NFC e inténtelo de nuevo.",
+  "nfcWriteFailed": "La transferencia NFC falló. Inténtelo de nuevo.",
+  "nfcError": "Error NFC: {error}",
+  "sendCoordinatingPayjoinTransaction": "Coordinando una transacción Payjoin.",
+  "sendErrorInvoiceExpired": "Esta factura ha expirado. Solicite una nueva factura al destinatario.",
+  "psbtFlowSignViaNfc": "Firmar vía NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Toque su {deviceName} para enviar el PSBT vía NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Instrucciones para Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Instrucciones para Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Inicie sesión en su dispositivo Coldcard Q",
+  "psbtFlowColdcardQStep2": "Agregue una frase de contraseña si tiene una (opcional)",
+  "psbtFlowColdcardQStep3": "Elija su método de firma preferido:",
+  "psbtFlowColdcardQStep4": "Para código QR:",
+  "psbtFlowColdcardQStep5": "   - Seleccione \"Scan any QR code\" en su Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - Escanee el código QR que se muestra en la billetera Bull",
+  "psbtFlowColdcardQStep7": "   - Si tiene problemas para escanear:",
+  "psbtFlowColdcardQStep8": "     - Aumente el brillo de la pantalla en su dispositivo",
+  "psbtFlowColdcardQStep9": "     - Mueva el láser rojo hacia arriba y abajo sobre el código QR",
+  "psbtFlowColdcardQStep10": "     - Intente alejar un poco su dispositivo",
+  "psbtFlowColdcardQStep11": "Para NFC:",
+  "psbtFlowColdcardQStep12": "   - Seleccione \"Ready to Sign\" en su Coldcard Q y luego toque el botón NFC",
+  "psbtFlowColdcardQStep13": "   - Toque su teléfono contra la Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Espere a que se transfiera el PSBT",
+  "psbtFlowColdcardQStep15": "Una vez que la transacción se haya importado en su Coldcard Q, revise la dirección de destino y la cantidad.",
+  "psbtFlowColdcardQStep16": "Haga clic en los botones para firmar la transacción en su Coldcard Q.",
+  "psbtFlowColdcardQStep17": "La Coldcard Q mostrará entonces un código QR de la transacción firmada o preparará la transferencia por NFC.",
+  "psbtFlowColdcardQStep18": "Si firmó con QR, haga clic en \"Listo\" en la billetera Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "La billetera Bull Bitcoin le pedirá que escanee el código QR de la transacción firmada o use NFC para recibirla.",
+  "psbtFlowColdcardQStep20": "   - Para QR: escanee el código QR en la Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Para NFC: toque su teléfono contra la Coldcard Q",
+  "psbtFlowColdcardQStep22": "La transacción firmada se importará en la billetera Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Ya está lista para transmitirse. Tan pronto como haga clic en transmitir, la transacción se publicará en la red Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Inicie sesión en su dispositivo Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Agregue una frase de contraseña si tiene una (opcional)",
+  "psbtFlowColdcardMk4Step3": "Seleccione \"Ready to Sign\" en su Coldcard Mk4 y luego toque el botón número 3",
+  "psbtFlowColdcardMk4Step4": "Toque su teléfono contra la Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Espere a que se transfiera el PSBT",
+  "psbtFlowColdcardMk4Step6": "Una vez que la transacción se haya importado en su Coldcard Mk4, revise la dirección de destino y la cantidad.",
+  "psbtFlowColdcardMk4Step7": "Haga clic en los botones para firmar la transacción en su Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "La Coldcard Mk4 preparará entonces la transacción firmada para la transferencia por NFC.",
+  "psbtFlowColdcardMk4Step9": "En la billetera Bull Bitcoin, toque NFC en la pantalla de transmisión.",
+  "psbtFlowColdcardMk4Step10": "Toque su teléfono contra la Coldcard Mk4 para recibir la transacción firmada.",
+  "psbtFlowColdcardMk4Step11": "La transacción firmada se importará en la billetera Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Revise los detalles de la transacción en la billetera Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Ya está lista para transmitirse. Tan pronto como haga clic en transmitir, la transacción se publicará en la red Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Toque su Coldcard para recibir la transacción firmada vía NFC",
+  "importColdcardInvalidWalletData": "Datos de billetera Coldcard inválidos",
+  "importColdcardConnectTitle": "Conectar {deviceName}",
+  "importColdcardConnectDescription": "Importe el descriptor de billetera desde su {deviceName}",
+  "importColdcardScanNfcSheetTitle": "Toque su {deviceName} para importar el descriptor de billetera vía NFC",
+  "importColdcardQInstructionsTitle": "Instrucciones para Coldcard Q",
+  "importColdcardQStep1": "Inicie sesión en su dispositivo Coldcard Q",
+  "importColdcardQStep2": "Agregue una frase de contraseña si tiene una (opcional)",
+  "importColdcardQStep3": "Seleccione el menú de avanzado/ajustes",
+  "importColdcardQStep4": "Haga clic en \"exportar billetera\"",
+  "importColdcardQStep5": "Seleccione \"descriptor\" como tipo de exportación",
+  "importColdcardQStep6": "Presione \"Enter\" en la primera pantalla",
+  "importColdcardQStep7": "Presione \"Enter\" en la segunda pantalla",
+  "importColdcardQStep8": "Seleccione su tipo de dirección (use Segwit si no está seguro)",
+  "importColdcardQStep9": "Para QR, haga clic en el botón de código QR del dispositivo. Le mostrará un código QR en el dispositivo",
+  "importColdcardQStep10": "Para NFC, haga clic en el botón NFC del dispositivo",
+  "importColdcardQStep11": "Haga clic en el botón \"Abrir la cámara\" / \"Escanear NFC\"",
+  "importColdcardQStep12": "Escanee el código QR que ve en su dispositivo o coloque el NFC del teléfono encima del NFC de la Coldcard",
+  "importColdcardQStep13": "¡Eso es todo!",
+  "importColdcardMk4InstructionsTitle": "Instrucciones para Coldcard Mk4",
+  "importColdcardMk4Step1": "Inicie sesión en su dispositivo Coldcard Mk4",
+  "importColdcardMk4Step2": "Agregue una frase de contraseña si tiene una (opcional)",
+  "importColdcardMk4Step3": "Seleccione el menú de avanzado/ajustes",
+  "importColdcardMk4Step4": "Haga clic en \"exportar billetera\"",
+  "importColdcardMk4Step5": "Seleccione \"descriptor\" como tipo de exportación",
+  "importColdcardMk4Step6": "Presione \"Enter\" en la primera pantalla",
+  "importColdcardMk4Step7": "Presione \"Enter\" en la segunda pantalla",
+  "importColdcardMk4Step8": "Seleccione su tipo de dirección (use Segwit si no está seguro)",
+  "importColdcardMk4Step9": "Haga clic en el número 3 para iniciar el NFC de la Coldcard",
+  "importColdcardMk4Step10": "Haga clic en el botón \"Escanear NFC\"",
+  "importColdcardMk4Step11": "Coloque el NFC del teléfono encima del NFC de la Coldcard",
+  "importColdcardMk4Step12": "¡Eso es todo!",
+  "noteVisibleToSenderNotice": "Esta nota será visible para el destinatario de su código QR o factura.",
+  "viewerAddressTab": "Dirección",
+  "viewerPaymentUriTab": "URI de pago",
+  "transactionSwapOpenWithin24h": "Abra la aplicación dentro de las próximas 24 horas para completar su intercambio.",
+  "logsViewerDeleteTitle": "Eliminar registros",
+  "logsViewerDeleteConfirmation": "¿Está seguro de que desea eliminar todos los registros? Esta acción no se puede deshacer.",
+  "logsViewerDeleteButton": "Eliminar",
+  "logsViewerCancelButton": "Cancelar",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "sendSubSatVbyteWarning": "Las transacciones por debajo de 1 sat/vB pueden tardar más en confirmarse y podrían no propagarse a todos los nodos.",
+  "sendBelowMinFeeRateError": "La comisión debe ser de al menos 0.1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Se requiere el permiso de Bluetooth para conectarse a su BitBox02 Nova.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth no está disponible. Actívelo e inténtelo de nuevo.",
+  "bitboxErrorNoBleDevicesFound": "No se encontró ningún BitBox02 Nova cerca. Verifique el Bluetooth e inténtelo de nuevo.",
+  "bitboxErrorMultipleBleDevicesFound": "Se encontraron varios dispositivos BitBox02 Nova. Mantenga solo uno cerca e inténtelo de nuevo.",
+  "bitboxErrorOperationFailed": "La operación de BitBox falló. Inténtelo de nuevo.",
+  "bitboxScreenConnectSubtextBluetooth": "Asegúrese de que su BitBox02 Nova esté desbloqueado y que el Bluetooth esté activado.",
+  "bitboxScreenScanningSubtextBluetooth": "Buscando su BitBox02 Nova cerca...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Solución de problemas de BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Si su dispositivo aún no se conecta con la aplicación, intente lo siguiente:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Asegúrese de que el Bluetooth esté activado y permitido para esta aplicación.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Asegúrese de que el Bluetooth esté activado en su BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Reinicie su BitBox02 Nova e intente conectarse de nuevo.",
+  "sendErrorInsufficientBalanceFrozenHint": "Saldo disponible insuficiente — {amount} está congelado. Descongele monedas en Gestionar monedas para usarlo.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Listo",
+  "consolidationFailedBody": "Se produjo un error inesperado. Tus fondos están seguros: no se transmitió ninguna transacción. Inténtalo de nuevo.",
+  "consolidationFailedTitle": "Error de consolidación",
+  "consolidationInProgress": "Consolidando…",
+  "consolidationRequiredTitle": "Consolidar la billetera",
+  "consolidationRequiredTitleNamed": "Consolidar la billetera {walletName}",
+  "consolidationRowAmount": "Importe",
+  "consolidationRowNetworkFees": "Comisiones de red",
+  "consolidationRowOutputs": "Salidas",
+  "consolidationRowTransactions": "Transacciones",
+  "consolidationScreenDescription": "Demasiadas salidas pueden desestabilizar la billetera. Consolidarlas las combina en menos para que tu billetera funcione correctamente.",
+  "consolidationScreenTitle": "Consolidar",
+  "consolidationSuccessBody": "Tus monedas se están combinando. Se completará cuando la red lo confirme.",
+  "consolidationSuccessTitle": "Consolidación iniciada",
+  "transactionStatusPayjoinAborted": "Payjoin cancelado",
+  "transactionDetailLabelPayjoinAborted": "Cancelado",
+  "transactionDetailLabelPayjoinFeeContribution": "Contribución a la comisión de Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
+  "settingsPayjoinAdvancedTitle": "Ajustes avanzados de Payjoin",
+  "receiveAdditionalInformation": "Información adicional",
+  "receiveAdditionalInformationPlaceholder": "Añade un monto o un mensaje para el remitente",
+  "receiveMessageForSender": "Mensaje para el remitente",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin está activado, pero esta cartera todavía no tiene saldo para contribuir. Se activará cuando recibas fondos.",
+  "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin.",
+  "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
+  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
+  "legacyBackupTitle": "Copia de seguridad necesaria",
+  "legacyBackupWalletLabel": "Monedero",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupReinstallTitle": "Próximos pasos",
+  "legacyBackupMessage": "Esta versión de la aplicación es demasiado antigua para actualizarse automáticamente. Para conservar tus bitcoin, anota la(s) frase(s) de recuperación a continuación, luego elimina y reinstala la aplicación.",
+  "legacyBackupReinstallMessage": "Elimina esta aplicación y reinstálala desde la tienda. Durante la configuración, elige recuperar un monedero existente e introduce tu frase de recuperación.",
+  "legacyBackupConfirm": "He anotado todas las frases de recuperación y passphrases anteriores",
+  "legacyBackupNoSeedsMessage": "No se pudo leer ninguna frase de recuperación de esta instalación. NO elimines la aplicación — contacta primero con soporte.",
+  "coreSwapsStatusNotStarted": "No iniciado",
+  "coreSwapsStatusAwaitingPayment": "Esperando pago",
+  "coreSwapsStatusAwaitingConfirmation": "Esperando confirmación",
+  "coreSwapsStatusUnderReview": "En revisión",
+  "coreSwapsStatusRejected": "Rechazado",
+  "coreSwapsStatusCanceled": "Cancelado",
+  "coreSwapsStatusPaymentDeadlineExpired": "Plazo de pago vencido",
+  "coreSwapsStatusScheduled": "Programado",
+  "coreSwapsStatusAwaitingClaim": "Esperando reclamación",
+  "coreSwapsStatusUnknown": "Desconocido",
+  "sendSwapExpiredTitle": "Orden expirada",
+  "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera.",
+  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente."
 }

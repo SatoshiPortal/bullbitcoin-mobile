@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -32,12 +33,24 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   final GetSwapMasterKeyUsecase _getSwapMasterKeyUsecase;
   final DeleteSwapMasterKeyUsecase _deleteSwapMasterKeyUsecase;
 
+  /// Called once the user has re-confirmed the app PIN on this screen.
+  /// Seeds are only ever read from secure storage past this point.
+  Future<void> unlock(AppUnlockGrant grant) async {
+    if (state.isUnlocked) return;
+    emit(state.copyWith(isUnlocked: true));
+    await fetchAllSeeds();
+  }
+
   Future<void> fetchAllSeeds() async {
+    // The gate is enforced here, not only in the UI: no code path may pull
+    // raw seed phrases out of secure storage before re-authentication.
+    if (!state.isUnlocked) return;
     emit(state.copyWith(loading: true, failure: null));
 
     final List<MnemonicSeed> seeds;
-    switch ((await _getAllSeedsUsecase.execute())
-        .mapErr((f) => AllSeedViewFetchFailure(f.logMessage))) {
+    switch ((await _getAllSeedsUsecase.execute()).mapErr(
+      (f) => AllSeedViewFetchFailure(f.logMessage),
+    )) {
       case Ok(:final value):
         seeds = value;
       case Err(:final failure):
@@ -96,8 +109,9 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   void hideSeeds() => emit(state.copyWith(seedsVisible: false));
 
   Future<void> deleteSeed(String fingerprint) async {
-    switch ((await _deleteSeedUsecase.execute(fingerprint))
-        .mapErr((f) => AllSeedViewDeleteFailure(f.logMessage))) {
+    switch ((await _deleteSeedUsecase.execute(
+      fingerprint,
+    )).mapErr((f) => AllSeedViewDeleteFailure(f.logMessage))) {
       case Ok():
         emit(
           state.copyWith(

@@ -39,10 +39,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
     final settingsState = context.read<SettingsCubit>().state;
     final isTestnet = settingsState.environment == Environment.testnet;
-    _bbAuthUrl =
-        isTestnet
-            ? ApiServiceConstants.bbAuthTestUrl
-            : ApiServiceConstants.bbAuthUrl;
+    _bbAuthUrl = isTestnet
+        ? ApiServiceConstants.bbAuthTestUrl
+        : ApiServiceConstants.bbAuthUrl;
     if (isTestnet) {
       _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
       _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
@@ -126,7 +125,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             // stays open and the user can complete email verification. Once
             // done, the auth app navigates away and the API key is generated
             // on the next URL change.
-            if (url.contains('/registration') || url.contains('/verification')) {
+            if (url.contains('/registration') ||
+                url.contains('/verification')) {
               return;
             }
 
@@ -154,13 +154,19 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
               // Check if the API key was successfully stored
               if (!mounted) return;
-              final saveApiKeyException =
-                  context.read<ExchangeCubit>().state.saveApiKeyException;
+              final saveApiKeyException = context
+                  .read<ExchangeCubit>()
+                  .state
+                  .saveApiKeyException;
               if (saveApiKeyException != null) {
                 throw saveApiKeyException;
               }
             } catch (e) {
-              log.severe(message: 'Error generating or saving API key',error: e, trace: StackTrace.current);
+              log.severe(
+                message: 'Error generating or saving API key',
+                error: 'API key generation or storage failed',
+                trace: StackTrace.current,
+              );
               await _handleLoginError();
             } finally {
               // Reset the flag after the API key generation process is done
@@ -171,16 +177,35 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             }
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://accounts')) {
+            // Exact host matching — a startsWith('https://accounts') prefix
+            // check would also match lookalike hosts such as
+            // https://accounts.evil.com.
+            final uri = Uri.tryParse(request.url);
+            if (uri == null || uri.scheme != 'https') {
+              // Host only — never the full URL, whose query params may
+              // carry tokens.
+              log.warning(
+                'Blocked webview navigation: '
+                '${uri == null ? 'unparseable URL' : 'non-https host ${uri.host}'}',
+              );
+              return NavigationDecision.prevent;
+            }
+
+            final authHost = Uri.parse(_bbAuthUrl).host;
+            if (uri.host == authHost) {
               return NavigationDecision.navigate;
             }
 
-            if (request.url.startsWith('https://www.bullbitcoin.com') &&
+            if (uri.host == 'www.bullbitcoin.com' &&
                 (request.url.contains('terms') ||
                     request.url.contains('privacy'))) {
               return NavigationDecision.navigate;
             }
 
+            // Logged so a legitimate navigation blocked in the field (e.g.
+            // a cross-host redirect between auth instances) is diagnosable
+            // from user logs.
+            log.warning('Blocked webview navigation to host: ${uri.host}');
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
@@ -219,10 +244,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child:
-          _isGeneratingApiKey
-              ? const Center(child: CircularProgressIndicator())
-              : WebViewWidget(controller: _controller),
+      child: _isGeneratingApiKey
+          ? const Center(child: CircularProgressIndicator())
+          : WebViewWidget(controller: _controller),
     );
   }
 
@@ -289,9 +313,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.loc.exchangeAuthLoginFailedTitle),
-        content: Text(
-          context.loc.exchangeAuthLoginFailedMessage,
-        ),
+        content: Text(context.loc.exchangeAuthLoginFailedMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),

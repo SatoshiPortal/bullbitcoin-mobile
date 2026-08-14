@@ -6,9 +6,10 @@ import 'package:flutter/widgets.dart';
 /// makes a missing message a compile error. Never returns the raw `logMessage`.
 extension PinCodeFailureL10n on PinCodeFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        PinCodeSaveFailure() => context.loc.pinCodeSaveError,
-        PinCodeDeleteFailure() => context.loc.pinCodeDeleteError,
-        PinCodeNotSetFailure() => context.loc.pinCodeNotSetError,
-        PinCodeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    PinCodeSaveFailure() => context.loc.pinCodeSaveError,
+    PinCodeDeleteFailure() => context.loc.pinCodeDeleteError,
+    PinCodeNotSetFailure() => context.loc.pinCodeNotSetError,
+    PinCodeKeychainLockedFailure() => context.loc.oopsSomethingWentWrong,
+    PinCodeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
+  bool _derivationInProgress = false;
   final FetchAllBip85DerivationsWithEntropyUsecase
   _fetchAllBip85DerivationsWithEntropyUsecase;
   final DeriveNextBip85MnemonicFromDefaultWalletUsecase
@@ -48,39 +49,41 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   }
 
   Future<void> deriveNextMnemonic() async {
+    if (_derivationInProgress) return;
+    _derivationInProgress = true;
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (
-      await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()
-    ) {
+    switch (await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
         await fetchAllDerivations();
     }
+    _derivationInProgress = false;
   }
 
   Future<void> deriveNextHex() async {
+    if (_derivationInProgress) return;
+    _derivationInProgress = true;
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (
-      await _deriveNextBip85HexFromDefaultWalletUsecase.execute(length: 30)
-    ) {
+    switch (await _deriveNextBip85HexFromDefaultWalletUsecase.execute(
+      length: 30,
+    )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
         await fetchAllDerivations();
     }
+    _derivationInProgress = false;
   }
 
   Future<void> aliasDerivation(
     Bip85DerivationEntity derivation,
     String alias,
   ) async {
-    switch (
-      await _aliasBip85DerivationUsecase.execute(
-        derivation: derivation,
-        alias: alias,
-      )
-    ) {
+    switch (await _aliasBip85DerivationUsecase.execute(
+      derivation: derivation,
+      alias: alias,
+    )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
       case Ok():

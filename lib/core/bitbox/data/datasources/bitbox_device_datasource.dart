@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/bitbox/data/models/bitbox_device_model.dart';
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
-import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
+import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
@@ -30,8 +30,7 @@ class BitBoxDeviceDatasource {
           return await _scanBleDevices();
       }
     } catch (e) {
-      if (e is BitBoxError) rethrow;
-      throw BitBoxError.operationFailed(message: e.toString());
+      throw _mapOperationError(e);
     }
   }
 
@@ -46,7 +45,7 @@ class BitBoxDeviceDatasource {
 
     while (DateTime.now().isBefore(deadline)) {
       if (usbScanSessionId != _usbScanSessionId) {
-        throw const BitBoxError.operationCancelled();
+        throw const OperationCancelledBitBoxFailure();
       }
 
       var devices = <BitBox02Device>[];
@@ -59,7 +58,7 @@ class BitBoxDeviceDatasource {
       }
 
       if (usbScanSessionId != _usbScanSessionId) {
-        throw const BitBoxError.operationCancelled();
+        throw const OperationCancelledBitBoxFailure();
       }
       if (devices.isNotEmpty) {
         final deviceModels = devices.map((device) {
@@ -78,10 +77,10 @@ class BitBoxDeviceDatasource {
     }
 
     if (!scanSucceeded && lastScanError != null) {
-      throw BitBoxError.operationFailed(message: lastScanError.toString());
+      throw _mapOperationError(lastScanError);
     }
 
-    throw const BitBoxError.noDevicesFound();
+    throw const NoDevicesFoundBitBoxFailure();
   }
 
   Future<List<BitBoxDeviceModel>> _scanBleDevices() async {
@@ -92,10 +91,10 @@ class BitBoxDeviceDatasource {
       devices = await _scanBleDevicesForDuration();
     } on UniversalBleException catch (e) {
       if (_isBlePermissionError(e)) {
-        throw const BitBoxError.permissionDenied();
+        throw const PermissionDeniedBitBoxFailure();
       }
       if (_isBleUnavailableError(e)) {
-        throw const BitBoxError.bluetoothUnavailable();
+        throw const BluetoothUnavailableBitBoxFailure();
       }
       rethrow;
     }
@@ -114,32 +113,75 @@ class BitBoxDeviceDatasource {
 
   Future<List<BitBox02BleDevice>> _scanBleDevicesForDuration({
     Duration timeout = const Duration(seconds: 20),
+    Duration settle = const Duration(seconds: 2),
   }) async {
-    return await _bleConnector.scanDevices(
-      timeout: timeout,
-      settleDuration: const Duration(seconds: 2),
-    );
+    // The upstream connector anchors its settle timer to the first
+    // advertiser, so a genuine device appearing after a rogue one is never
+    // waited for. Track advertisers here and restart the settle window on
+    // every new device instead (issue #2652).
+    final devices = <BitBox02BleDevice>[];
+    final completer = Completer<List<BitBox02BleDevice>>();
+    Timer? settleTimer;
+    Timer? overallTimer;
+
+    StreamSubscription<BleDevice>? subscription;
+
+    // The subscription is created inside the try: opening it before the
+    // guarded block leaks it (and keeps the callback running) whenever
+    // startScan fails — a denied permission or a radio turned off mid-call.
+    try {
+      subscription = UniversalBle.scanStream.listen((device) {
+        if (completer.isCompleted) return;
+        final isNew = !devices.any((d) => d.deviceId == device.deviceId);
+        if (!isNew) return;
+        devices.add(
+          BitBox02BleDevice(deviceId: device.deviceId, name: device.name),
+        );
+        settleTimer?.cancel();
+        settleTimer = Timer(settle, () {
+          if (!completer.isCompleted) {
+            completer.complete(List.of(devices));
+          }
+        });
+      });
+
+      await UniversalBle.startScan(
+        scanFilter: ScanFilter(withServices: [bleServiceUuid]),
+      );
+      overallTimer = Timer(timeout, () {
+        if (!completer.isCompleted) {
+          completer.complete(List.of(devices));
+        }
+      });
+
+      return await completer.future;
+    } finally {
+      settleTimer?.cancel();
+      overallTimer?.cancel();
+      await subscription?.cancel();
+      await UniversalBle.stopScan();
+    }
   }
 
   Future<void> _ensureBleTransportReady() async {
     try {
       final bleState = await UniversalBle.getBluetoothAvailabilityState();
       if (bleState == AvailabilityState.unauthorized) {
-        throw const BitBoxError.permissionDenied();
+        throw const PermissionDeniedBitBoxFailure();
       }
       if (bleState == AvailabilityState.unsupported ||
           bleState == AvailabilityState.poweredOff) {
-        throw const BitBoxError.bluetoothUnavailable();
+        throw const BluetoothUnavailableBitBoxFailure();
       }
       if (bleState != AvailabilityState.poweredOn) {
         await _waitForBleTransportReady();
       }
     } on UniversalBleException catch (e) {
       if (_isBlePermissionError(e)) {
-        throw const BitBoxError.permissionDenied();
+        throw const PermissionDeniedBitBoxFailure();
       }
       if (_isBleUnavailableError(e)) {
-        throw const BitBoxError.bluetoothUnavailable();
+        throw const BluetoothUnavailableBitBoxFailure();
       }
       rethrow;
     }
@@ -165,9 +207,9 @@ class BitBoxDeviceDatasource {
 
     if (bleState == AvailabilityState.poweredOn) return;
     if (bleState == AvailabilityState.unauthorized) {
-      throw const BitBoxError.permissionDenied();
+      throw const PermissionDeniedBitBoxFailure();
     }
-    throw const BitBoxError.bluetoothUnavailable();
+    throw const BluetoothUnavailableBitBoxFailure();
   }
 
   bool _isBlePermissionError(UniversalBleException error) {
@@ -208,10 +250,10 @@ class BitBoxDeviceDatasource {
 
   List<BitBoxDeviceModel> _ensureSingleDevice(List<BitBoxDeviceModel> devices) {
     if (devices.isEmpty) {
-      throw const BitBoxError.noDevicesFound();
+      throw const NoDevicesFoundBitBoxFailure();
     }
     if (devices.length > 1) {
-      throw const BitBoxError.multipleDevicesFound();
+      throw const MultipleDevicesFoundBitBoxFailure();
     }
 
     return devices;
@@ -228,19 +270,18 @@ class BitBoxDeviceDatasource {
           return await _connectBleDevice(device);
       }
     } catch (e) {
-      if (e is BitBoxError) rethrow;
-      throw BitBoxError.operationFailed(message: e.toString());
+      throw _mapOperationError(e);
     }
   }
 
   Future<BitBoxDeviceModel> _connectUsbDevice(BitBoxDeviceModel device) async {
     if (_platformTransport != BitBoxConnectionType.usb) {
-      throw const BitBoxError.connectionTypeNotInitialized();
+      throw const ConnectionTypeNotInitializedBitBoxFailure();
     }
 
     final hasPermission = await BitBoxApi.requestPermission(device.deviceName);
     if (!hasPermission) {
-      throw const BitBoxError.permissionDenied();
+      throw const PermissionDeniedBitBoxFailure();
     }
 
     final opened = await BitBoxApi.openDevice(
@@ -248,7 +289,7 @@ class BitBoxDeviceDatasource {
       device.serialNumber,
     );
     if (!opened) {
-      throw const BitBoxError.connectionFailed();
+      throw const ConnectionFailedBitBoxFailure();
     }
 
     _connectedDevice = device;
@@ -257,7 +298,7 @@ class BitBoxDeviceDatasource {
 
   Future<BitBoxDeviceModel> _connectBleDevice(BitBoxDeviceModel device) async {
     if (_platformTransport != BitBoxConnectionType.ble) {
-      throw const BitBoxError.connectionTypeNotInitialized();
+      throw const ConnectionTypeNotInitializedBitBoxFailure();
     }
 
     await _ensureBleTransportReady();
@@ -269,24 +310,24 @@ class BitBoxDeviceDatasource {
         serialNumber: device.serialNumber,
       );
     } on TimeoutException {
-      throw const BitBoxError.operationTimeout();
+      throw const OperationTimeoutBitBoxFailure();
     } on UniversalBleException catch (e) {
       if (_isBlePermissionError(e)) {
-        throw const BitBoxError.permissionDenied();
+        throw const PermissionDeniedBitBoxFailure();
       }
       if (_isBleUnavailableError(e)) {
-        throw const BitBoxError.bluetoothUnavailable();
+        throw const BluetoothUnavailableBitBoxFailure();
       }
       if (_bleErrorCode(e) == UniversalBleErrorCode.connectionTimeout) {
-        throw const BitBoxError.operationTimeout();
+        throw const OperationTimeoutBitBoxFailure();
       }
       if (e is ConnectionException || _isBleConnectionError(e)) {
-        throw const BitBoxError.connectionFailed();
+        throw const ConnectionFailedBitBoxFailure();
       }
       rethrow;
     }
     if (!connected) {
-      throw const BitBoxError.connectionFailed();
+      throw const ConnectionFailedBitBoxFailure();
     }
 
     _connectedDevice = device;
@@ -314,7 +355,7 @@ class BitBoxDeviceDatasource {
       );
 
       if (!confirmed) {
-        throw const BitBoxError.operationCancelled();
+        throw const OperationCancelledBitBoxFailure();
       }
 
       return await getMasterFingerprint(device);
@@ -330,7 +371,14 @@ class BitBoxDeviceDatasource {
     required bool isTestnet,
   }) async {
     try {
-      final xpubType = isTestnet ? 'tpub' : 'xpub';
+      // The extended-key version must match the account's script type:
+      // a BIP84 account requested as `xpub` is re-parsed by consumers as a
+      // legacy wallet (issue #2653).
+      final xpubType = switch (scriptType.purpose) {
+        49 => isTestnet ? 'upub' : 'ypub',
+        84 => isTestnet ? 'vpub' : 'zpub',
+        _ => isTestnet ? 'tpub' : 'xpub',
+      };
 
       final xpub = await bitbox.getBtcXpub(
         serialNumber: device.serialNumber,
@@ -394,10 +442,42 @@ class BitBoxDeviceDatasource {
     }
   }
 
-  BitBoxError _mapOperationError(Object error) {
-    if (error is BitBoxError) return error;
+  BitBoxFailure _mapOperationError(Object error) {
+    if (error is BitBoxFailure) return error;
 
-    return BitBoxError.operationFailed(message: error.toString());
+    return _interpretOperationError(error.toString()) ??
+        BitBoxUnexpectedFailure(error.toString());
+  }
+
+  /// Error text patterns the bridge currently emits, mapped to typed
+  /// failures. Upstream should propagate typed Rust error variants — until
+  /// then every pattern lives here so wording changes are visible in one
+  /// place and device-side cancellation can never silently degrade to an
+  /// "unexpected" failure (issue #2650).
+  static const _errorPatterns = <(String, BitBoxFailure)>[
+    ('permission denied', PermissionDeniedBitBoxFailure()),
+    ('no devices found', NoDevicesFoundBitBoxFailure()),
+    ('device not found', DeviceNotFoundBitBoxFailure()),
+    ('not paired', DeviceNotPairedBitBoxFailure()),
+    ('handshake', HandshakeFailedBitBoxFailure()),
+    ('timeout', OperationTimeoutBitBoxFailure()),
+    ('connection failed', ConnectionFailedBitBoxFailure()),
+    ('invalid response', InvalidResponseBitBoxFailure()),
+    ('operation cancelled', OperationCancelledBitBoxFailure()),
+    ('operation canceled', OperationCancelledBitBoxFailure()),
+    ('user abort', OperationCancelledBitBoxFailure()),
+    ('cancelled by user', OperationCancelledBitBoxFailure()),
+    ('canceled by user', OperationCancelledBitBoxFailure()),
+    ('pairing rejected', OperationCancelledBitBoxFailure()),
+    ('rejected by user', OperationCancelledBitBoxFailure()),
+  ];
+
+  BitBoxFailure? _interpretOperationError(String raw) {
+    final normalized = raw.toLowerCase();
+    for (final (pattern, failure) in _errorPatterns) {
+      if (normalized.contains(pattern)) return failure;
+    }
+    return null;
   }
 
   Future<void> disconnectConnection(BitBoxDeviceModel device) async {

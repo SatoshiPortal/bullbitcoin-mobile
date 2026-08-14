@@ -28,10 +28,9 @@ class ServerListItem extends StatelessWidget {
           color: context.appColors.cardBackground,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color:
-                disabled
-                    ? context.appColors.border.withValues(alpha: 0.5)
-                    : context.appColors.border,
+            color: disabled
+                ? context.appColors.border.withValues(alpha: 0.5)
+                : context.appColors.border,
             width: 1,
           ),
         ),
@@ -59,10 +58,9 @@ class ServerListItem extends StatelessWidget {
                                 server.displayName,
                                 style: context.font.bodyMedium?.copyWith(
                                   color: context.appColors.onSurface,
-                                  decoration:
-                                      disabled
-                                          ? TextDecoration.lineThrough
-                                          : TextDecoration.none,
+                                  decoration: disabled
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
                                 ),
                               ),
                             ),
@@ -138,7 +136,9 @@ class ServerListItem extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             shape: .circle,
-            color: isOnline ? context.appColors.success : context.appColors.warning,
+            color: isOnline
+                ? context.appColors.success
+                : context.appColors.warning,
           ),
         ),
         const SizedBox(width: 8),

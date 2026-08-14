@@ -20,7 +20,6 @@ export 'package:bb_mobile/features/labels/router.dart';
 export 'package:bb_mobile/features/labels/locator.dart';
 export 'package:bb_mobile/features/labels/ui/page.dart';
 export 'package:bb_mobile/features/labels/ui/label_text.dart';
-export 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 export 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 
 /// Public contract of the labels feature.
@@ -49,8 +48,9 @@ class LabelsFacade {
     // Best-effort enrichment: a lookup failure is already logged at the
     // use-case boundary, so degrade to no labels rather than abort the caller.
     return result.fold(
-      (labels) =>
-          labels.map((label) => LabelMapper.applicationLabelToLabel(label)).toList(),
+      (labels) => labels
+          .map((label) => LabelMapper.applicationLabelToLabel(label))
+          .toList(),
       (_) => const <Label>[],
     );
   }
@@ -58,8 +58,9 @@ class LabelsFacade {
   Future<List<Label>> fetchAll() async {
     final result = await _fetchAllLabelsUsecase.execute();
     return result.fold(
-      (labels) =>
-          labels.map((label) => LabelMapper.applicationLabelToLabel(label)).toList(),
+      (labels) => labels
+          .map((label) => LabelMapper.applicationLabelToLabel(label))
+          .toList(),
       (_) => const <Label>[],
     );
   }

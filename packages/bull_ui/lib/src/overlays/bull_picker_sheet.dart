@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// Generic single-selection bottom-sheet picker — duplicated from
 /// `core/widgets/bottom_sheet/picker_sheet.dart` (`BBPickerSheet`).
@@ -52,7 +52,9 @@ class BullPickerSheet<T> extends StatelessWidget {
               const Spacer(),
               Text(
                 title,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: colors.onSurface),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(color: colors.onSurface),
               ),
               const Spacer(),
               IconButton(
@@ -84,12 +86,15 @@ class BullPickerSheet<T> extends StatelessWidget {
                         Expanded(
                           child: Text(
                             label(option),
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: selected ? colors.primary : colors.onSurface,
-                              fontWeight: selected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  color: selected
+                                      ? colors.primary
+                                      : colors.onSurface,
+                                  fontWeight: selected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
                           ),
                         ),
                         if (selected) Icon(Icons.check, color: colors.primary),

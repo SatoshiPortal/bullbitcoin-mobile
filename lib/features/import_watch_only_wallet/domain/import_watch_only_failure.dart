@@ -23,3 +23,7 @@ final class InvalidFormatFailure extends ImportWatchOnlyFailure {
 final class ImportFailedFailure extends ImportWatchOnlyFailure {
   const ImportFailedFailure();
 }
+
+final class NetworkMismatchFailure extends ImportWatchOnlyFailure {
+  const NetworkMismatchFailure();
+}

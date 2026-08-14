@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
-import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
-import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
+import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -29,15 +28,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._resetAppDataUsecase,
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
-    required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
-    required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
-    required this._requiresMigrationUsecase,
+    required this._checkLegacyInstallUsecase,
     required this._checkBackupUsecase,
     required this._isTorRequiredUsecase,
     required this._initTorUsecase,
-  }) : _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
-       _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
-       super(const AppStartupState.initial()) {
+  }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
   }
@@ -46,9 +41,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
-  final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
-  final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
-  final RequiresMigrationUsecase _requiresMigrationUsecase;
+  final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
@@ -87,60 +80,34 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
       );
 
-      // SQL Migrations
-      // emit(const AppStartupState.failure(null));
-      // return;
-      final migrationRequired = await _requiresMigrationUsecase.execute();
-      if (migrationRequired == null) {
-        emit(const AppStartupState.loadingInProgress());
-      } else {
-        emit(const AppStartupState.loadingInProgress(requiresMigration: true));
-
-        switch (migrationRequired) {
-          case MigrationRequired.v4:
-            await _migrateToV4LegacyUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
-          case MigrationRequired.v5:
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
-        }
-      }
-
-      // all here future migration calls
       final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
           .execute();
+
+      // Pre-v5 ("BULL") installs are no longer migrated: gate them behind a
+      // backup screen. Only when the new DB is empty — the legacy marker can
+      // survive a failed migration while the user has since set up working
+      // v5+ wallets, and those current seeds are not legacy-format: gating
+      // such an install would show a backup screen missing its live wallets
+      // and instruct deleting them.
+      if (!doDefaultWalletsExist &&
+          await _checkLegacyInstallUsecase.execute()) {
+        log.warning('Legacy (pre-v5) install detected — backup gate shown');
+        emit(const AppStartupState.legacyBackupRequired());
+        return;
+      }
+
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
-        isPinCodeSet = switch (await _checkPinCodeExistsUsecase.execute()) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
+        switch (await _checkPinCodeExistsUsecase.execute()) {
+          case Ok(:final value):
+            isPinCodeSet = value;
+          case Err(failure: AppUnlockKeychainLockedFailure()):
+            _waitForKeychainUnlock();
+            return;
+          case Err(:final failure):
+            throw failure;
+        }
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
         // This is a fresh install, so reset the app data that might still be
@@ -179,11 +146,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       // and arm `_awaitingKeychainUnlock`; `didChangeAppLifecycleState`
       // re-dispatches `AppStartupStarted` on `resumed`, which only
       // fires after the user has unlocked the device since boot.
-      _awaitingKeychainUnlock = true;
-      log.warning(
-        'App startup blocked on keychain (device not unlocked since '
-        'boot) — staying on splash, will retry on lifecycle resumed',
-      );
+      _waitForKeychainUnlock();
     } catch (e, st) {
       log.severe(message: 'App startup failed', error: e, trace: st);
 
@@ -201,5 +164,13 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       }
       emit(AppStartupState.failure(e, hasBackup: hasBackup));
     }
+  }
+
+  void _waitForKeychainUnlock() {
+    _awaitingKeychainUnlock = true;
+    log.warning(
+      'App startup blocked on keychain (device not unlocked since '
+      'boot) — staying on splash, will retry on lifecycle resumed',
+    );
   }
 }

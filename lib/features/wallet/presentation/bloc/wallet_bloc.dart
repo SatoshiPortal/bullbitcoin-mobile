@@ -1,18 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
-import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/errors/autoswap_errors.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
@@ -21,7 +10,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -31,7 +20,6 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -50,17 +38,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._initializeTorUsecase,
     required this._checkForTorInitializationOnStartupUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
-    required this._getAutoSwapSettingsUsecase,
-    required this._saveAutoSwapSettingsUsecase,
-    required this._disableAutoswapWarningUsecase,
-    required this._disableAutoswapUsecase,
-    required this._autoSwapExecutionUsecase,
     required this._deleteWalletUsecase,
-    required this._getArkWalletUsecase,
-    required this._checkArkWalletSetupUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
-    required this._ensureSwapMasterKeyUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
@@ -68,13 +48,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
     on<StartTorInitialization>(_onStartTorInitialization);
-    on<BlockAutoSwapUntilNextExecution>(_onBlockAutoSwapUntilNextExecution);
-    on<ExecuteAutoSwap>(_onExecuteAutoSwap);
-    on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
-    on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
-    on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
-    on<DisableAutoSwap>(_onDisableAutoSwap);
     on<DismissBackupWarning>(_onDismissBackupWarning);
     on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
@@ -90,22 +64,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
-  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
-  final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
-  final DisableAutoswapWarningUsecase _disableAutoswapWarningUsecase;
-  final DisableAutoswapUsecase _disableAutoswapUsecase;
-  final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final GetArkWalletUsecase _getArkWalletUsecase;
-  final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
-  final EnsureSwapMasterKeyUsecase _ensureSwapMasterKeyUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _electrumSyncResultsSubscription;
-  StreamSubscription? _autoSwapSubscription;
 
   bool? _lastBitcoinSyncSuccess;
   bool? _lastLiquidSyncSuccess;
@@ -115,7 +80,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _electrumSyncResultsSubscription?.cancel();
-    _autoSwapSubscription?.cancel();
     return super.close();
   }
 
@@ -148,21 +112,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           isOnLegacyStorage: isOnLegacyStorage,
         ),
       );
-
-      add(const RefreshArkWalletBalance());
-
-      // Derive + persist the swap master key from the default wallet seed now
-      // that wallets are ready, so swaps read it from storage and never derive
-      // it lazily. Best-effort: a failure here must not break wallet loading.
-      try {
-        await _ensureSwapMasterKeyUsecase.execute();
-      } catch (e, st) {
-        log.severe(
-          message: 'Failed to ensure swap master key',
-          error: e,
-          trace: st,
-        );
-      }
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
@@ -197,7 +146,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   /// refresh (so the data reload and `isRefreshing` transitions still happen)
   /// and awaits the [SyncCoordinator] directly, so the returned future — and
   /// therefore the RefreshIndicator spinner — resolves only once bitcoin,
-  /// liquid and swaps have all synced, rather than tracking the shared
+  /// liquid and Exchange orders have all synced, rather than tracking the shared
   /// `isRefreshing` flag (which a throttled background refresh can clear after
   /// bitcoin alone). Awaiting the coordinator also bypasses the `droppable()`
   /// event lane, so the gesture is never swallowed by an in-flight background
@@ -221,7 +170,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     emit(state.copyWith(isRefreshing: true));
     try {
-      // SyncCoordinator schedules bitcoin → liquid → swaps sequentially with
+      // SyncCoordinator schedules bitcoin → liquid sequentially with
       // per-kind dedup, throttling, and a lifecycle gate. A user-triggered
       // refresh (pull-to-refresh) bypasses the throttle; route-driven
       // navigation triggers use SyncTrigger.automatic.
@@ -230,21 +179,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final wallets = await _getWalletsUsecase.execute();
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
 
-      add(const RefreshArkWalletBalance());
-
-      final defaultLiquidWallet = wallets
-          .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
-          .firstOrNull;
-
-      AutoSwap? autoSwapSettings;
-      if (defaultLiquidWallet != null) {
-        try {
-          autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
-        } catch (e) {
-          log.fine('Failed to load autoswap settings: $e');
-        }
-      }
-
       emit(
         state.copyWith(
           status: WalletStatus.success,
@@ -252,7 +186,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           noWalletsFoundException: null,
           error: null,
           syncStatus: syncStatus,
-          autoSwapSettings: autoSwapSettings,
           isRefreshing: false,
         ),
       );
@@ -335,13 +268,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
-      if (event.wallet.isLiquid && !state.autoSwapExecuting) {
-        debugPrint(
-          'onWalletSyncFinished(Liquid): Starting Auto Swap Execution',
-        );
-        add(const ExecuteAutoSwap());
-      }
-
       // Set sync status to false for the wallet that finished syncing
       final newSyncStatus = Map<String, bool>.from(state.syncStatus);
       newSyncStatus[event.wallet.id] = false;
@@ -446,210 +372,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     if (isTorIniatizationEnabled) {
       await _initializeTorUsecase.execute();
-    }
-  }
-
-  Future<void> _onBlockAutoSwapUntilNextExecution(
-    BlockAutoSwapUntilNextExecution event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      final defaultLiquidWallet = state.defaultLiquidWallet();
-      if (defaultLiquidWallet == null) return;
-
-      final currentSettings = await _getAutoSwapSettingsUsecase.execute();
-
-      await _saveAutoSwapSettingsUsecase.execute(
-        currentSettings.copyWith(blockTillNextExecution: true),
-      );
-
-      // Update the state with the new settings
-      emit(
-        state.copyWith(
-          autoSwapSettings: currentSettings.copyWith(
-            blockTillNextExecution: true,
-          ),
-        ),
-      );
-    } catch (e) {
-      log.severe(
-        message: '[WalletBloc] Failed to block auto swap',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
-
-  Future<void> _onExecuteAutoSwap(
-    ExecuteAutoSwap event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(autoSwapExecuting: true));
-      final defaultLiquidWallet = state.defaultLiquidWallet();
-      if (defaultLiquidWallet == null) return;
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
-      emit(state.copyWith(autoSwapSettings: autoSwapSettings));
-      if (!autoSwapSettings.enabled) {
-        emit(state.copyWith(autoSwapExecuting: false));
-        return;
-      }
-      await _autoSwapExecutionUsecase.execute(feeBlock: true);
-
-      emit(
-        state.copyWith(
-          autoSwapFeeLimitExceeded: false,
-          autoSwapExecuting: false,
-        ),
-      );
-    } on BalanceThresholdException catch (e) {
-      debugPrint('[WalletBloc] Auto swap balance threshold not met: $e');
-      emit(state.copyWith(autoSwapExecuting: false));
-    } on FeeBlockException catch (e) {
-      debugPrint('[WalletBloc] Auto swap fee block exceeded: $e');
-      emit(
-        state.copyWith(
-          autoSwapFeeLimitExceeded: true,
-          currentSwapFeePercent: e.currentFeePercent,
-          autoSwapExecuting: false,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(autoSwapExecuting: false));
-      if (e is AutoSwapDisabledException) {
-        log.fine('[WalletBloc] Auto swap skipped: ${e.message}');
-      } else {
-        log.severe(
-          message: '[WalletBloc] Failed to execute auto swap',
-          error: e,
-          trace: StackTrace.current,
-        );
-      }
-    }
-  }
-
-  Future<void> _onExecuteAutoSwapFeeOverride(
-    ExecuteAutoSwapFeeOverride event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      emit(
-        state.copyWith(
-          autoSwapFeeLimitExceeded: false,
-          autoSwapExecuting: true,
-        ),
-      );
-
-      final defaultLiquidWallet = state.defaultLiquidWallet();
-      if (defaultLiquidWallet == null) return;
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
-      emit(state.copyWith(autoSwapSettings: autoSwapSettings));
-      if (!autoSwapSettings.enabled) {
-        emit(state.copyWith(autoSwapExecuting: false));
-        return;
-      }
-
-      await _autoSwapExecutionUsecase.execute(feeBlock: false);
-      emit(
-        state.copyWith(
-          autoSwapFeeLimitExceeded: false,
-          autoSwapExecuting: false,
-        ),
-      );
-    } on BalanceThresholdException catch (e) {
-      debugPrint('[WalletBloc] Auto swap balance threshold not met: $e');
-      emit(state.copyWith(autoSwapExecuting: false));
-    } on FeeBlockException catch (e) {
-      debugPrint('[WalletBloc] Auto swap fee block exceeded: $e');
-      emit(
-        state.copyWith(
-          autoSwapFeeLimitExceeded: true,
-          currentSwapFeePercent: e.currentFeePercent,
-          autoSwapExecuting: false,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(autoSwapExecuting: false));
-      log.severe(
-        message: '[WalletBloc] Failed to execute auto swap ',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
-
-  Future<void> _onRefreshArkWalletBalance(
-    RefreshArkWalletBalance event,
-    Emitter<WalletState> emit,
-  ) async {
-    if (event.amount != null) {
-      emit(state.copyWith(arkBalanceSat: event.amount!));
-      return;
-    } else {
-      // First check if Ark wallet is set up
-      final isArkWalletSetup = await _checkArkWalletSetupUsecase.execute();
-      emit(state.copyWith(isArkWalletSetup: isArkWalletSetup));
-
-      if (!isArkWalletSetup) {
-        return;
-      }
-
-      // If set up, show loading state and load the wallet
-      emit(state.copyWith(isArkWalletLoading: true));
-
-      try {
-        final arkWallet = await _getArkWalletUsecase.execute();
-        final arkBalance = await arkWallet?.balance;
-        emit(
-          state.copyWith(
-            arkWallet: arkWallet,
-            arkBalanceSat: arkBalance?.completeTotal ?? 0,
-            isArkWalletLoading: false,
-          ),
-        );
-      } catch (e) {
-        emit(state.copyWith(isArkWalletLoading: false));
-      }
-    }
-  }
-
-  Future<void> _onDismissAutoSwapWarning(
-    DismissAutoSwapWarning event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      final defaultLiquidWallet = state.defaultLiquidWallet();
-      if (defaultLiquidWallet == null) return;
-
-      final updatedSettings = await _disableAutoswapWarningUsecase.execute();
-
-      emit(state.copyWith(autoSwapSettings: updatedSettings));
-    } catch (e) {
-      log.severe(
-        message: '[WalletBloc] Failed to dismiss autoswap warning',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
-
-  Future<void> _onDisableAutoSwap(
-    DisableAutoSwap event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      final defaultLiquidWallet = state.defaultLiquidWallet();
-      if (defaultLiquidWallet == null) return;
-
-      final updatedSettings = await _disableAutoswapUsecase.execute();
-
-      emit(state.copyWith(autoSwapSettings: updatedSettings));
-    } catch (e) {
-      log.severe(
-        message: '[WalletBloc] Failed to disable autoswap',
-        error: e,
-        trace: StackTrace.current,
-      );
     }
   }
 

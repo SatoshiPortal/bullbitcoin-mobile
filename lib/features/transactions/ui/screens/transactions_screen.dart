@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -63,7 +63,10 @@ class _Screen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBText(
-                context.loc.transactionError(err.toString()),
+                // `err` is a domain failure whose `toString()` is the Dart
+                // default ("Instance of '…'"). Never interpolate it into a
+                // user-facing string; the raw reason belongs in the logs.
+                context.loc.oopsSomethingWentWrong,
                 style: context.font.bodyLarge,
                 color: context.appColors.error,
               ),

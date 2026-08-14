@@ -21,39 +21,38 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
       scrollDirection: .horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
-        children:
-            availableFilters.map((filter) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: TxsFilterItem(
-                  title: switch (filter) {
-                    TransactionsFilter.all => context.loc.transactionFilterAll,
-                    TransactionsFilter.send => context.loc.transactionFilterSend,
-                    TransactionsFilter.receive =>
-                      context.loc.transactionFilterReceive,
-                    TransactionsFilter.swap =>
-                      context.loc.transactionFilterTransfer,
-                    TransactionsFilter.payjoin =>
-                      context.loc.transactionFilterPayjoin,
-                    TransactionsFilter.sell => context.loc.transactionFilterSell,
-                    TransactionsFilter.buy => context.loc.transactionFilterBuy,
-                    TransactionsFilter.withdraw =>
-                      context.loc.transactionFilterWithdraw,
-                    TransactionsFilter.pay => context.loc.transactionFilterPay,
-                    TransactionsFilter.funding =>
-                      context.loc.transactionFilterFunding,
-                    TransactionsFilter.reward =>
-                      context.loc.transactionFilterReward,
-                    TransactionsFilter.refund =>
-                      context.loc.transactionFilterRefund,
-                  },
-                  isSelected: selectedFilter == filter,
-                  onTap: () {
-                    context.read<TransactionsCubit>().setFilter(filter);
-                  },
-                ),
-              );
-            }).toList(),
+        children: availableFilters.map((filter) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TxsFilterItem(
+              title: switch (filter) {
+                TransactionsFilter.all => context.loc.transactionFilterAll,
+                TransactionsFilter.send => context.loc.transactionFilterSend,
+                TransactionsFilter.receive =>
+                  context.loc.transactionFilterReceive,
+                TransactionsFilter.swap =>
+                  context.loc.transactionFilterTransfer,
+                TransactionsFilter.payjoin =>
+                  context.loc.transactionFilterPayjoin,
+                TransactionsFilter.sell => context.loc.transactionFilterSell,
+                TransactionsFilter.buy => context.loc.transactionFilterBuy,
+                TransactionsFilter.withdraw =>
+                  context.loc.transactionFilterWithdraw,
+                TransactionsFilter.pay => context.loc.transactionFilterPay,
+                TransactionsFilter.funding =>
+                  context.loc.transactionFilterFunding,
+                TransactionsFilter.reward =>
+                  context.loc.transactionFilterReward,
+                TransactionsFilter.refund =>
+                  context.loc.transactionFilterRefund,
+              },
+              isSelected: selectedFilter == filter,
+              onTap: () {
+                context.read<TransactionsCubit>().setFilter(filter);
+              },
+            ),
+          );
+        }).toList(),
       ),
     );
   }

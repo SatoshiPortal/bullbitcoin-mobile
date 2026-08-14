@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 extension AllSeedViewFailureL10n on AllSeedViewFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        AllSeedViewFetchFailure() => context.loc.allSeedViewErrorFetch,
-        AllSeedViewDeleteFailure() => context.loc.allSeedViewErrorDelete,
-      };
+    AllSeedViewFetchFailure() => context.loc.allSeedViewErrorFetch,
+    AllSeedViewDeleteFailure() => context.loc.allSeedViewErrorDelete,
+  };
 }

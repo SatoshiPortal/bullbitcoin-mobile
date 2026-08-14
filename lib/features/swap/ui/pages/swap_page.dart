@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -11,6 +14,8 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
@@ -19,7 +24,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart'
 import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
@@ -57,11 +62,6 @@ class SwapPageState extends State<SwapPage> {
             : ConvertAmount.btcToSats(
                 double.tryParse(_amountController.text) ?? 0,
               );
-        _amountSat = bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(_amountController.text) ?? 0
-            : ConvertAmount.btcToSats(
-                double.tryParse(_amountController.text) ?? 0,
-              );
       });
     });
   }
@@ -82,9 +82,6 @@ class SwapPageState extends State<SwapPage> {
           _amountController.text = state.amount;
           final bitcoinUnit = state.bitcoinUnit;
           setState(() {
-            _amountSat = bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(state.amount) ?? 0
-                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
             _amountSat = bitcoinUnit == BitcoinUnit.sats
                 ? int.tryParse(state.amount) ?? 0
                 : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
@@ -213,20 +210,50 @@ class SwapPageState extends State<SwapPage> {
                     const Gap(12),
                     SwapBalanceRow(amountController: _amountController),
                     const Gap(12),
+                    BlocSelector<TransferBloc, TransferState, bool>(
+                      selector: (state) => state.consolidationRequired,
+                      builder: (context, consolidationRequired) {
+                        if (!consolidationRequired) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: ConsolidationRequiredCard(
+                            title: context.loc.consolidationRequiredTitle,
+                            onTap: () {
+                              final walletId = context
+                                  .read<TransferBloc>()
+                                  .state
+                                  .fromWallet
+                                  ?.id;
+                              if (walletId != null) {
+                                context.pushNamed(
+                                  ConsolidationRoute.consolidation.name,
+                                  pathParameters: {'walletId': walletId},
+                                );
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
                     BlocSelector<
                       TransferBloc,
                       TransferState,
-                      SwapCreationException?
+                      (SwapCreationException?, SwapFailure?)
                     >(
-                      selector: (state) => state.swapCreationException,
-                      builder: (context, swapCreationError) {
-                        if (swapCreationError == null) {
+                      selector: (state) =>
+                          (state.swapCreationException, state.swapFailure),
+                      builder: (context, errors) {
+                        final (swapCreationError, swapFailure) = errors;
+                        if (swapCreationError == null && swapFailure == null) {
                           return const SizedBox.shrink();
                         }
                         final message =
-                            swapCreationError is InsufficientFundsSwapException
-                            ? context.loc.swapInsufficientFunds
-                            : swapCreationError.message;
+                            swapFailure?.toTranslated(context) ??
+                            (swapCreationError is InsufficientFundsSwapException
+                                ? context.loc.swapInsufficientFunds
+                                : context.loc.sendErrorSwapCreationFailed);
                         return Text(
                           message,
                           style: context.font.labelLarge?.copyWith(

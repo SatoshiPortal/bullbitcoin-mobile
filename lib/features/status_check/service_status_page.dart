@@ -55,7 +55,6 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.liquidElectrum),
                     const SizedBox(height: 12),
-                    _ServiceStatusItem(service: serviceStatus.boltz),
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.payjoin),
                     const SizedBox(height: 12),
@@ -67,7 +66,6 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.recoverbull),
                     const SizedBox(height: 12),
-                    _ServiceStatusItem(service: serviceStatus.ark),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: .center,
@@ -137,6 +135,7 @@ class _ServiceStatusItem extends StatelessWidget {
       case ServiceStatus.offline:
         return context.appColors.error;
       case ServiceStatus.unknown:
+      case ServiceStatus.disabled:
         return context.appColors.textMuted;
     }
   }
@@ -149,6 +148,8 @@ class _ServiceStatusItem extends StatelessWidget {
         return context.loc.statusCheckOffline;
       case ServiceStatus.unknown:
         return context.loc.statusCheckUnknown;
+      case ServiceStatus.disabled:
+        return context.loc.statusCheckDisabled;
     }
   }
 }

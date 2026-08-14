@@ -47,13 +47,12 @@ class FormatAmount {
     String currencyCode, {
     bool simpleFormat = false,
   }) {
-    final currencyFormatter =
-        simpleFormat
-            ? NumberFormat.simpleCurrency(name: currencyCode)
-            : NumberFormat.currency(
-              name: currencyCode,
-              customPattern: '#,##0.00 ¤',
-            );
+    final currencyFormatter = simpleFormat
+        ? NumberFormat.simpleCurrency(name: currencyCode)
+        : NumberFormat.currency(
+            name: currencyCode,
+            customPattern: '#,##0.00 ¤',
+          );
 
     return currencyFormatter.format(fiat);
   }

@@ -30,7 +30,7 @@ class CreateLogAttachmentUsecase {
       final logContent = logs.join('\n');
       final bytes = Uint8List.fromList(utf8.encode(logContent));
 
-      final random = Random();
+      final random = Random.secure();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
 
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

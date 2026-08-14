@@ -20,6 +20,9 @@ sealed class UserSummaryModel with _$UserSummaryModel {
     required UserDcaModel dca,
     required UserAutoBuyModel autoBuy,
     @Default(true) bool emailNotificationsEnabled,
+    // Defaults to false so a response without the field (older backend, or an
+    // account outside the pilot) disables payjoin — see UserSummary's field.
+    @Default(false) bool payjoinReceiveEnabled,
     UserKycDocumentStatusModel? kycDocumentStatus,
   }) = _UserSummaryModel;
 
@@ -41,6 +44,7 @@ sealed class UserSummaryModel with _$UserSummaryModel {
       dca: dca.toEntity(),
       autoBuy: autoBuy.toEntity(),
       emailNotificationsEnabled: emailNotificationsEnabled,
+      payjoinReceiveEnabled: payjoinReceiveEnabled,
       kycDocumentStatus: kycDocumentStatus?.toEntity(),
     );
   }
@@ -106,8 +110,11 @@ sealed class UserDcaModel with _$UserDcaModel {
         'monthly' => DcaBuyFrequency.monthly,
         _ => null,
       },
-      currency:
-          currencyCode != null ? FiatCurrency.fromCode(currencyCode!) : null,
+      // A DCA currency this build doesn't support must not fail the whole user
+      // summary parse (balances, stats and preferences come with it).
+      currency: currencyCode != null
+          ? FiatCurrency.tryFromCode(currencyCode!)
+          : null,
       amount: amount,
       network: switch (recipientType) {
         'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,

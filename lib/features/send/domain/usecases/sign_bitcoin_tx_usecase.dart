@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 class SignBitcoinTxUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
-  SignBitcoinTxUsecase({
-    required this._bitcoinWalletRepository,
-  });
+  SignBitcoinTxUsecase({required this._bitcoinWalletRepository});
   Future<({String signedPsbt, int txSize})> execute({
     required String psbt,
     required String walletId,

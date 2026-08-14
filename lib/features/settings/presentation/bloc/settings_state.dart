@@ -4,8 +4,8 @@ part of 'settings_cubit.dart';
 sealed class SettingsState with _$SettingsState {
   const factory SettingsState({
     SettingsEntity? storedSettings,
+    PayjoinPolicy? payjoinPolicy,
     String? appVersion,
-    bool? hasLegacySeeds,
   }) = _SettingsState;
   const SettingsState._();
 
@@ -22,4 +22,11 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.exchangeTestnetBasicAuthUsername;
   String? get exchangeTestnetBasicAuthPassword =>
       storedSettings?.exchangeTestnetBasicAuthPassword;
+  bool get isPayjoinEnabled => payjoinPolicy?.enabled ?? false;
+  int get payjoinMinAmountSat =>
+      payjoinPolicy?.minimumAmount.value.toInt() ??
+      PayjoinPolicy.defaults().minimumAmount.value.toInt();
+  int get payjoinExpireAfterSec =>
+      payjoinPolicy?.sessionLifetime.inSeconds ??
+      PayjoinPolicy.defaults().sessionLifetime.inSeconds;
 }

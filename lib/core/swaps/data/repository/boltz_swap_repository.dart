@@ -11,13 +11,18 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
+import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-class BoltzSwapRepository {
+class BoltzSwapRepository
+    implements AutoSwapSettingsRepository, SwapHistoryRepository {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
+  final StreamController<AutoSwap> _autoSwapSettingsController =
+      StreamController<AutoSwap>.broadcast();
 
   /// Serializes swap creation so two concurrent creations can never compute
   /// the same key index from a stale table scan.
@@ -517,9 +522,7 @@ class BoltzSwapRepository {
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: _isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
     // The index counter is keyed by the swap master key's OWN fingerprint —
     // NOT the default wallet's fingerprint (which keys the master key blob).
     // Both are 1:1 with the seed, so they stay consistent.
@@ -746,6 +749,7 @@ class BoltzSwapRepository {
         .toList();
   }
 
+  @override
   Future<List<Swap>> getAllSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(
       walletId: walletId,
@@ -761,9 +765,7 @@ class BoltzSwapRepository {
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
     log.info(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
@@ -846,9 +848,7 @@ class BoltzSwapRepository {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
   }) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(
-      isTestnet: _isTestnet,
-    );
+    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
     final creationTime = restored.createdAt.millisecondsSinceEpoch;
     // A refund-action swap with funds still locked on-chain is stored as
     // refundable (not the terminal failed/expired/refunded the restore status
@@ -1039,6 +1039,7 @@ class BoltzSwapRepository {
     }
   }
 
+  @override
   Future<Swap?> getSwapByTxId(String txId) async {
     final swapModel = await _boltz.storage.fetchByTxId(txId);
     if (swapModel == null) {
@@ -1081,8 +1082,9 @@ class BoltzSwapRepository {
   }
 
   Future<Invoice> decodeInvoice({required String invoice}) async {
-    final (sats, expired, bip21, description) =
-        await _boltz.decodeInvoice(invoice);
+    final (sats, expired, bip21, description) = await _boltz.decodeInvoice(
+      invoice,
+    );
     return Invoice(
       sats: sats,
       isExpired: expired,
@@ -1093,8 +1095,12 @@ class BoltzSwapRepository {
     );
   }
 
-  Future<LnSendSwap?> getSendSwapByInvoice({required String invoice}) async {
-    final allSwaps = await _boltz.storage.fetchAll();
+  Future<LnSendSwap?> getSendSwapByInvoice({
+    required String invoice,
+    required String walletId,
+    required SwapType type,
+  }) async {
+    final allSwaps = await _boltz.storage.fetchAll(walletId: walletId);
     for (final swapModel in allSwaps) {
       final swap = swapModel.toEntity();
       if (swap.type == SwapType.lightningToBitcoin ||
@@ -1103,7 +1109,9 @@ class BoltzSwapRepository {
       }
       if (swap is LnSendSwap &&
           swap.invoice.toLowerCase() == invoice.toLowerCase() &&
-          (swap.status == SwapStatus.pending)) {
+          swap.status == SwapStatus.pending &&
+          swap.walletId == walletId &&
+          swap.type == type) {
         return swap;
       }
     }
@@ -1234,6 +1242,7 @@ class BoltzSwapRepository {
     }
   }
 
+  @override
   Future<AutoSwap> getAutoSwapParams() async {
     final model = _isTestnet
         ? await _boltz.storage.getAutoSwapSettingsTestnet()
@@ -1241,6 +1250,7 @@ class BoltzSwapRepository {
     return model.toEntity();
   }
 
+  @override
   Future<void> updateAutoSwapParams(AutoSwap params) async {
     final model = AutoSwapModel.fromEntity(params);
     if (_isTestnet) {
@@ -1248,7 +1258,11 @@ class BoltzSwapRepository {
     } else {
       await _boltz.storage.storeAutoSwapSettings(model);
     }
+    _autoSwapSettingsController.add(params);
   }
+
+  @override
+  Stream<AutoSwap> watchAutoSwapParams() => _autoSwapSettingsController.stream;
 
   /// Checks the outspend status of a swap's lockup transaction
   Future<SwapTxOutspend> checkSwapLockupOutspend({

@@ -49,10 +49,9 @@ Future<void> main({bool isInitialized = false}) async {
       await sqlite.into(sqlite.walletMetadatas).insert(metadata.toSqlite());
 
       // Fetch one
-      final fetchedMetadata =
-          await sqlite.managers.walletMetadatas
-              .filter((e) => e.id(metadata.id))
-              .getSingleOrNull();
+      final fetchedMetadata = await sqlite.managers.walletMetadatas
+          .filter((e) => e.id(metadata.id))
+          .getSingleOrNull();
       expect(fetchedMetadata, isNotNull);
       expect(fetchedMetadata!.id, metadata.id);
 

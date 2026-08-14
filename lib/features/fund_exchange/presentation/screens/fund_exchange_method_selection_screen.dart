@@ -19,7 +19,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_restricted_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class FundExchangeMethodSelectionScreen extends StatefulWidget {
   const FundExchangeMethodSelectionScreen({super.key});
@@ -179,7 +179,8 @@ class _FundExchangeMethodSelectionScreenState
                       FundingJurisdiction.argentina =>
                         FundExchangeMethodListTile(
                           title: context.loc.fundExchangeBankTransfer,
-                          subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                          subtitle:
+                              context.loc.fundExchangeBankTransferSubtitle,
                           onTap: () {
                             context.read<FundExchangeBloc>().add(
                               const FundExchangeEvent.fundingDetailsRequested(
@@ -188,18 +189,17 @@ class _FundExchangeMethodSelectionScreenState
                             );
                           },
                         ),
-                      FundingJurisdiction.colombia =>
-                        FundExchangeMethodListTile(
-                          title: context.loc.fundExchangeBankTransfer,
-                          subtitle: context.loc.fundExchangeBankTransferSubtitle,
-                          onTap: () {
-                            context.read<FundExchangeBloc>().add(
-                              const FundExchangeEvent.fundingInstitutionsRequested(
-                                jurisdiction: FundingJurisdiction.colombia,
-                              ),
-                            );
-                          },
-                        ),
+                      FundingJurisdiction.colombia => FundExchangeMethodListTile(
+                        title: context.loc.fundExchangeBankTransfer,
+                        subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                        onTap: () {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.fundingInstitutionsRequested(
+                              jurisdiction: FundingJurisdiction.colombia,
+                            ),
+                          );
+                        },
+                      ),
                     },
                   if (_fundingDetailsError != null ||
                       _institutionsError != null) ...[

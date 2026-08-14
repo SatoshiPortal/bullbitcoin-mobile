@@ -18,11 +18,16 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
   }) = _TransactionDetailsState;
   const TransactionDetailsState._();
 
-  bool get isLoading => transaction == null;
+  /// The load failed and there is nothing to show. Without this, a failed load
+  /// left the screen on loading skeletons forever.
+  bool get hasLoadError =>
+      transaction == null && (err != null || notFoundError != null);
+
+  bool get isLoading => transaction == null && !hasLoadError;
 
   WalletTransaction? get walletTransaction => transaction?.walletTransaction;
   Swap? get swap => transaction?.swap;
-  Payjoin? get payjoin => transaction?.payjoin;
+  PayjoinSession? get payjoin => transaction?.payjoin;
 
   bool get isOngoingSwap => transaction?.isOngoingSwap == true;
 
@@ -68,6 +73,11 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     // counterpart leg (claim tx on a forward swap, refund tx on a refund).
     if (isRecoveredSwap && swapClaimedAmountSat != null) {
       return swapClaimedAmountSat!;
+    }
+    final orderSwap = transaction?.orderSwap;
+    if (orderSwap != null && transaction?.isIncoming == true) {
+      return orderSwap.order?.payoutAmountSat.toInt() ??
+          orderSwap.requestedAmountSat.toInt();
     }
     final amount = walletTransaction?.amountSat ?? 0;
     return amount;

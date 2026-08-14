@@ -3,7 +3,6 @@ import 'dart:io' show Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
-import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
@@ -38,9 +37,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:payjoin_flutter/common.dart';
-
 import 'package:workmanager/workmanager.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 /// Builds a [WizardRepository] without going through the locator. Used
 /// only in `main()` for the pre-init / pre-locator window: the wizard
@@ -52,8 +50,18 @@ import 'package:workmanager/workmanager.dart';
 WizardRepository _buildPreInitWizardRepository() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
 
+@visibleForTesting
+void resumePayjoinsOnAppResume(
+  AppLifecycleState state,
+  PayjoinLifecycle lifecycle,
+) {
+  if (state == AppLifecycleState.resumed) {
+    unawaited(lifecycle.resume());
+  }
+}
+
 class Bull {
-  static Future<void> init() async {
+  static Future<void> init({String? payjoinDatabasePath}) async {
     await initLogs();
     // The pre-init wizard writes consent to prefs via the bloc's
     // `SavePendingWizardChoicesUsecase` right before this runs. Pull
@@ -68,7 +76,7 @@ class Bull {
     await initFlutterRustBridgeDependencies();
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
-    await initLocator();
+    await initLocator(payjoinDatabasePath: payjoinDatabasePath);
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
@@ -92,7 +100,6 @@ class Bull {
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
       BullSdk.init(),
-      PConfig.initializeApp(),
       if (Platform.isAndroid) BitBoxApi.initialize(),
     ];
 
@@ -115,9 +122,9 @@ class Bull {
       // definition — cross-isolate truncation races with the other
       // isolate's open IOSink and can destroy recently-buffered
       // lines). FG file pruning therefore only happens here; the BG
-      // file is pruned by the `logs-prune` workmanager fire. Long
-      // FG-only sessions (rare cold restarts, no BG fires) can let
-      // the FG file grow past the cap until the next cold launch —
+      // file no longer grows because background tasks are disabled. Long
+      // FG-only sessions (rare cold restarts) can let the FG file grow past
+      // the cap until the next cold launch —
       // acceptable: worst case is a few hundred KB until the user
       // restarts.
       //
@@ -127,25 +134,21 @@ class Bull {
     }
   }
 
-  static Future<void> initLocator() async {
-    await AppLocator.setup(locator, SqliteDatabase());
+  static Future<void> initLocator({String? payjoinDatabasePath}) async {
+    await AppLocator.setup(
+      locator,
+      SqliteDatabase(),
+      payjoinDatabasePath: payjoinDatabasePath,
+    );
     Bloc.observer = AppBlocObserver();
   }
 
   static Future<void> initWorkmanager() async {
     await Workmanager().initialize(backgroundTasksHandler);
+    // Background execution is intentionally disabled. Cancel schedules left
+    // by previous releases, but keep initialization so upgrades reliably
+    // remove those persisted native tasks.
     await Workmanager().cancelAll();
-    await Workmanager().registerPeriodicTask(
-      BackgroundTask.logsPrune.id,
-      BackgroundTask.logsPrune.name,
-      frequency: const Duration(minutes: 15),
-      constraints: Constraints(
-        requiresBatteryNotLow: true,
-        requiresStorageNotLow: false,
-        requiresDeviceIdle: false,
-        requiresCharging: false,
-      ),
-    );
   }
 }
 
@@ -230,6 +233,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   void dispose() {
     // Do not forget to dispose the listener
     _listener.dispose();
+    if (locator.isRegistered<PayjoinLifecycle>()) {
+      unawaited(locator<PayjoinLifecycle>().dispose());
+    }
 
     super.dispose();
   }
@@ -238,6 +244,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
+    if (locator.isRegistered<PayjoinLifecycle>()) {
+      resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
+    }
     // iOS lifecycle is `active → inactive → hidden → paused`. The user can
     // force-quit from the app switcher during `inactive` and skip both the
     // `hidden` and `paused` flushes, so flush there too.

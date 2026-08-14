@@ -20,25 +20,38 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
-  const ExchangeSupportChatScreen({super.key, this.fromExchange = false});
+  const ExchangeSupportChatScreen({
+    super.key,
+    this.fromExchange = false,
+    this.initialMessage,
+  });
 
   final bool fromExchange;
+  final String? initialMessage;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ExchangeSupportChatCubit(
-        getMessagesUsecase: locator<GetSupportChatMessagesUsecase>(),
-        sendMessageUsecase: locator<SendSupportChatMessageUsecase>(),
-        getAttachmentUsecase: locator<GetSupportChatMessageAttachmentUsecase>(),
-        getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
-        exchangeNotificationService: locator<ExchangeNotificationService>(),
-      )..loadMessages(),
+      create: (context) {
+        final cubit = ExchangeSupportChatCubit(
+          getMessagesUsecase: locator<GetSupportChatMessagesUsecase>(),
+          sendMessageUsecase: locator<SendSupportChatMessageUsecase>(),
+          getAttachmentUsecase:
+              locator<GetSupportChatMessageAttachmentUsecase>(),
+          getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+          createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
+          exchangeNotificationService: locator<ExchangeNotificationService>(),
+        );
+        if (initialMessage case final message? when message.isNotEmpty) {
+          cubit.updateMessageText(message);
+        }
+        cubit.loadMessages();
+        return cubit;
+      },
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(

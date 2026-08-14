@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 class _ExportRow {
   const _ExportRow({
@@ -120,11 +120,19 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         swap?.isLnSendSwap == true || swap?.isLnReceiveSwap == true;
     final isChainSwap = swap?.isChainSwap == true;
     final amountSat = tx.amountSat;
+    // Prefer the fee the wallet observed on-chain over the one the swap
+    // provider reports: an export is accounting data and must not carry a
+    // server-controlled figure when the real one is known locally. The
+    // provider value stays as the fallback for a leg whose miner fee the
+    // wallet never saw (0 = unknown here, a broadcast tx always pays a fee).
+    final onChainFeeSat = wt?.feeSat ?? 0;
     final feeSat = isChainSwap
         ? (wt?.isOutgoing == true
-              ? (swap?.fees?.lockupFee ?? wt?.feeSat ?? 0)
+              ? (onChainFeeSat > 0
+                    ? onChainFeeSat
+                    : (swap?.fees?.lockupFee ?? 0))
               : (swap?.fees?.claimFee ?? 0))
-        : (tx.isIncoming ? 0 : (wt?.feeSat ?? 0));
+        : (tx.isIncoming ? 0 : onChainFeeSat);
 
     final type = _resolveType(tx, swap, payjoin);
     final direction = _resolveDirection(tx, wt);
@@ -168,9 +176,11 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     );
   }
 
-  String _resolveType(Transaction tx, Swap? swap, Payjoin? payjoin) {
+  String _resolveType(Transaction tx, Swap? swap, PayjoinSession? payjoin) {
     if (payjoin != null) {
-      return payjoin is PayjoinSender ? 'payjoin_send' : 'payjoin_receive';
+      return payjoin is PayjoinSenderSession
+          ? 'payjoin_send'
+          : 'payjoin_receive';
     }
     if (swap != null) {
       if (swap.isLnSendSwap) return 'lightning_send';
@@ -191,7 +201,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     Transaction tx,
     Swap? swap,
     WalletTransaction? wt,
-    Payjoin? payjoin,
+    PayjoinSession? payjoin,
   ) {
     if (swap != null) {
       return switch (swap.status) {
@@ -218,6 +228,9 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         PayjoinStatus.requested ||
         PayjoinStatus.proposed => 'pending',
         PayjoinStatus.completed => 'completed',
+        // The payment still landed, just as a plain broadcast rather than a
+        // real payjoin — distinct from 'expired' (nothing broadcast by us).
+        PayjoinStatus.aborted => 'aborted',
         PayjoinStatus.expired => 'expired',
       };
     }
@@ -263,6 +276,11 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
   String _btc(int sats) => (sats / 100000000).toStringAsFixed(8);
 
   String _escape(String value) {
+    // Prefix formula-like cells so spreadsheet applications treat them as
+    // text. This applies even when the cell also needs CSV quoting.
+    if (value.isNotEmpty && '=+-@\t\r'.contains(value[0])) {
+      value = "'$value";
+    }
     if (value.contains(',') ||
         value.contains('"') ||
         value.contains('\n') ||

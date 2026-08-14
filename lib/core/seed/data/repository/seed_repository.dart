@@ -102,7 +102,8 @@ class SeedRepository {
   }
 
   @useResult
-  Future<Result<List<MnemonicSeed>, SeedFetchFailure>> getAllMnemonicSeeds() async {
+  Future<Result<List<MnemonicSeed>, SeedFetchFailure>>
+  getAllMnemonicSeeds() async {
     try {
       final models = await _source.getAll();
       // Top-level function for isolate processing

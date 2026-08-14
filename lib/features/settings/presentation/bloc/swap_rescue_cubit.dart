@@ -42,10 +42,8 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
   final RescueSwapUsecase _rescueSwapUsecase;
   final RestoredSwap _restored;
 
-  SwapRescueCubit({
-    required this._rescueSwapUsecase,
-    required this._restored,
-  }) : super(const SwapRescueState()) {
+  SwapRescueCubit({required this._rescueSwapUsecase, required this._restored})
+    : super(const SwapRescueState()) {
     _loadWallets();
   }
 

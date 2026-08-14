@@ -24,6 +24,8 @@ sealed class BuyState with _$BuyState {
     @Default(false) bool isConfirmingOrder,
     ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
+    @Default(false) bool payjoinGloballyEnabled,
+    @Default(true) bool isPayjoinEnabled,
     FeeOptions? accelerationNetworkFees,
     GetNetworkFeesException? getNetworkFeesException,
     ConvertSatsToCurrencyAmountException? convertSatsToCurrencyAmountException,
@@ -56,41 +58,34 @@ sealed class BuyState with _$BuyState {
 
   double? get balance => balances[currencyInput];
 
-  int? get maxAmountSat =>
-      balance != null && exchangeRate > 0
-          ? ConvertAmount.btcToSats(balance! / exchangeRate)
-          : null;
+  int? get maxAmountSat => balance != null && exchangeRate > 0
+      ? ConvertAmount.btcToSats(balance! / exchangeRate)
+      : null;
 
-  double? get amount =>
-      isFiatCurrencyInput
-          ? _truncateToDecimals(
-            double.tryParse(amountInput.replaceAll(',', '.').trim()) ?? 0,
-            currency?.decimals ?? 2,
-          )
-          : amountBtc != null
-          ? _truncateToDecimals(
-            amountBtc! * exchangeRate,
-            currency?.decimals ?? 2,
-          )
-          : null;
+  double? get amount => isFiatCurrencyInput
+      ? _truncateToDecimals(
+          double.tryParse(amountInput.replaceAll(',', '.').trim()) ?? 0,
+          currency?.decimals ?? 2,
+        )
+      : amountBtc != null
+      ? _truncateToDecimals(amountBtc! * exchangeRate, currency?.decimals ?? 2)
+      : null;
 
-  double? get amountBtc =>
-      isFiatCurrencyInput
-          ? amount != null && exchangeRate > 0
-              ? amount! / exchangeRate
-              : null
-          : bitcoinUnit == BitcoinUnit.btc
-          ? double.tryParse(amountInput.replaceAll(',', '.').trim())
-          : amountSat != null
-          ? amountSat! * 1e-8
-          : null;
+  double? get amountBtc => isFiatCurrencyInput
+      ? amount != null && exchangeRate > 0
+            ? amount! / exchangeRate
+            : null
+      : bitcoinUnit == BitcoinUnit.btc
+      ? double.tryParse(amountInput.replaceAll(',', '.').trim())
+      : amountSat != null
+      ? amountSat! * 1e-8
+      : null;
 
-  int? get amountSat =>
-      !isFiatCurrencyInput && bitcoinUnit == BitcoinUnit.sats
-          ? int.tryParse(amountInput.trim())
-          : amountBtc != null
-          ? ConvertAmount.btcToSats(amountBtc!)
-          : null;
+  int? get amountSat => !isFiatCurrencyInput && bitcoinUnit == BitcoinUnit.sats
+      ? int.tryParse(amountInput.trim())
+      : amountBtc != null
+      ? ConvertAmount.btcToSats(amountBtc!)
+      : null;
 
   FiatCurrency? get currency =>
       currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;
@@ -110,6 +105,14 @@ sealed class BuyState with _$BuyState {
   bool get hasDestination {
     return selectedWallet != null || bitcoinAddressInput.isNotEmpty;
   }
+
+  bool get canOfferPayjoin =>
+      payjoinGloballyEnabled &&
+      userSummary?.payjoinReceiveEnabled == true &&
+      selectedWallet?.network.isBitcoin == true;
+
+  bool get shouldUsePayjoin =>
+      canOfferPayjoin && isPayjoinEnabled && amountSat != null;
 
   bool get canCreateOrder {
     return isPositiveAmount && hasDestination;

@@ -74,60 +74,49 @@ void main() {
   );
 
   group('CustomFeeListItem — initial input', () {
-    testWidgets(
-      'input is empty when no fee has been committed yet',
-      (tester) async {
-        await pumpTile(tester);
-        final field =
-            tester.widget<TextFormField>(find.byType(TextFormField));
-        expect(field.controller!.text, '');
-      },
-    );
+    testWidgets('input is empty when no fee has been committed yet', (
+      tester,
+    ) async {
+      await pumpTile(tester);
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '');
+    });
 
-    testWidgets(
-      'input prefills with the committed relative fee on reopen',
-      (tester) async {
-        // Reopening the modal must show the previously-committed value
-        // instead of an empty field — otherwise the user can't tell what
-        // they last picked. Round-trip on common rates is exact (0.5 ↔
-        // 125 sat/kwu).
-        await pumpTile(
-          tester,
-          initialFee: NetworkFee.relativeFromSatPerVbyte(0.5),
-        );
-        final field =
-            tester.widget<TextFormField>(find.byType(TextFormField));
-        expect(field.controller!.text, '0.5');
-      },
-    );
+    testWidgets('input prefills with the committed relative fee on reopen', (
+      tester,
+    ) async {
+      // Reopening the modal must show the previously-committed value
+      // instead of an empty field — otherwise the user can't tell what
+      // they last picked. Round-trip on common rates is exact (0.5 ↔
+      // 125 sat/kwu).
+      await pumpTile(
+        tester,
+        initialFee: NetworkFee.relativeFromSatPerVbyte(0.5),
+      );
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '0.5');
+    });
 
-    testWidgets(
-      'input prefills with the committed absolute fee on reopen',
-      (tester) async {
-        await pumpTile(
-          tester,
-          initialFee: const NetworkFee.absolute(1234),
-        );
-        final field =
-            tester.widget<TextFormField>(find.byType(TextFormField));
-        expect(field.controller!.text, '1234');
-      },
-    );
+    testWidgets('input prefills with the committed absolute fee on reopen', (
+      tester,
+    ) async {
+      await pumpTile(tester, initialFee: const NetworkFee.absolute(1234));
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '1234');
+    });
 
-    testWidgets(
-      'trailing zeros are trimmed when prefilling a relative fee',
-      (tester) async {
-        // 1.0 sat/vB should render as "1", not "1.00" — matches what the
-        // user would have typed.
-        await pumpTile(
-          tester,
-          initialFee: NetworkFee.relativeFromSatPerVbyte(1.0),
-        );
-        final field =
-            tester.widget<TextFormField>(find.byType(TextFormField));
-        expect(field.controller!.text, '1');
-      },
-    );
+    testWidgets('trailing zeros are trimmed when prefilling a relative fee', (
+      tester,
+    ) async {
+      // 1.0 sat/vB should render as "1", not "1.00" — matches what the
+      // user would have typed.
+      await pumpTile(
+        tester,
+        initialFee: NetworkFee.relativeFromSatPerVbyte(1.0),
+      );
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '1');
+    });
   });
 
   group('CustomFeeListItem — keystroke dispatch', () {
@@ -150,10 +139,7 @@ void main() {
 
         await tester.pump(const Duration(milliseconds: 400));
         expect(previewed, isA<NetworkFee>(), reason: 'debounce fired');
-        expect(
-          (previewed! as RelativeFee).satPerVbyte,
-          closeTo(0.5, 0.003),
-        );
+        expect((previewed! as RelativeFee).satPerVbyte, closeTo(0.5, 0.003));
       },
     );
 
@@ -178,10 +164,7 @@ void main() {
         expect(armed, isNull);
         expect(previewed, isNull);
         expect(committed, isA<NetworkFee>());
-        expect(
-          (committed! as RelativeFee).satPerVbyte,
-          closeTo(2.5, 0.003),
-        );
+        expect((committed! as RelativeFee).satPerVbyte, closeTo(2.5, 0.003));
       },
     );
 
@@ -225,7 +208,10 @@ void main() {
         await tester.enterText(find.byType(TextFormField), '2');
         await tester.pump();
         expect(committed, hasLength(1));
-        expect((committed.single as RelativeFee).satPerVbyte, closeTo(2, 0.003));
+        expect(
+          (committed.single as RelativeFee).satPerVbyte,
+          closeTo(2, 0.003),
+        );
         // …then lowering it below the floor must invalidate, not re-commit.
         await tester.enterText(find.byType(TextFormField), '0.05');
         await tester.pump();
@@ -234,93 +220,82 @@ void main() {
       },
     );
 
-    testWidgets(
-      'RBF mode emptying the field fires onInvalid',
-      (tester) async {
-        var invalidCount = 0;
-        await pumpTile(
-          tester,
-          commitOnChange: true,
-          onCommit: (_) async {},
-          onInvalid: () => invalidCount++,
-        );
-        await tester.enterText(find.byType(TextFormField), '2');
-        await tester.pump();
-        await tester.enterText(find.byType(TextFormField), '');
-        await tester.pump();
-        expect(invalidCount, 1);
-      },
-    );
+    testWidgets('RBF mode emptying the field fires onInvalid', (tester) async {
+      var invalidCount = 0;
+      await pumpTile(
+        tester,
+        commitOnChange: true,
+        onCommit: (_) async {},
+        onInvalid: () => invalidCount++,
+      );
+      await tester.enterText(find.byType(TextFormField), '2');
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField), '');
+      await tester.pump();
+      expect(invalidCount, 1);
+    });
 
-    testWidgets(
-      'fast typing only previews once after the user pauses',
-      (tester) async {
-        var previewCount = 0;
-        NetworkFee? lastPreviewed;
-        await pumpTile(
-          tester,
-          onPreview: (fee) {
-            previewCount++;
-            lastPreviewed = fee;
-          },
-        );
+    testWidgets('fast typing only previews once after the user pauses', (
+      tester,
+    ) async {
+      var previewCount = 0;
+      NetworkFee? lastPreviewed;
+      await pumpTile(
+        tester,
+        onPreview: (fee) {
+          previewCount++;
+          lastPreviewed = fee;
+        },
+      );
 
-        await tester.enterText(find.byType(TextFormField), '0.1');
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.enterText(find.byType(TextFormField), '0.5');
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.enterText(find.byType(TextFormField), '0.55');
-        await tester.pump(const Duration(milliseconds: 400));
+      await tester.enterText(find.byType(TextFormField), '0.1');
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.enterText(find.byType(TextFormField), '0.5');
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.enterText(find.byType(TextFormField), '0.55');
+      await tester.pump(const Duration(milliseconds: 400));
 
-        expect(previewCount, 1);
-        expect(
-          (lastPreviewed! as RelativeFee).satPerVbyte,
-          closeTo(0.55, 0.003),
-        );
-      },
-    );
+      expect(previewCount, 1);
+      expect((lastPreviewed! as RelativeFee).satPerVbyte, closeTo(0.55, 0.003));
+    });
 
-    testWidgets(
-      'unmount before the debounce fires cancels the preview',
-      (tester) async {
-        var previewCount = 0;
-        await pumpTile(tester, onPreview: (_) => previewCount++);
+    testWidgets('unmount before the debounce fires cancels the preview', (
+      tester,
+    ) async {
+      var previewCount = 0;
+      await pumpTile(tester, onPreview: (_) => previewCount++);
 
-        await tester.enterText(find.byType(TextFormField), '1.0');
-        await tester.pump(const Duration(milliseconds: 100));
+      await tester.enterText(find.byType(TextFormField), '1.0');
+      await tester.pump(const Duration(milliseconds: 100));
 
-        await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
-        await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
+      await tester.pump(const Duration(milliseconds: 400));
 
-        expect(previewCount, 0);
-      },
-    );
+      expect(previewCount, 0);
+    });
 
-    testWidgets(
-      'the sat/vByte rate field caps input at 2 decimals',
-      (tester) async {
-        // The field used to allow 8 decimals (BTC-derived): a user could type
-        // "0.12345678", the model snapped it to the nearest sat/kwu, and the
-        // prefill re-rendered it as "0.12" — typed ≠ stored ≠ shown. The
-        // 2-decimal cap keeps the field consistent with _formatForInput.
-        NetworkFee? armed;
-        await pumpTile(tester, onArm: (fee) => armed = fee);
+    testWidgets('the sat/vByte rate field caps input at 2 decimals', (
+      tester,
+    ) async {
+      // The field used to allow 8 decimals (BTC-derived): a user could type
+      // "0.12345678", the model snapped it to the nearest sat/kwu, and the
+      // prefill re-rendered it as "0.12" — typed ≠ stored ≠ shown. The
+      // 2-decimal cap keeps the field consistent with _formatForInput.
+      NetworkFee? armed;
+      await pumpTile(tester, onArm: (fee) => armed = fee);
 
-        await tester.enterText(find.byType(TextFormField), '0.12345678');
-        await tester.pump();
+      await tester.enterText(find.byType(TextFormField), '0.12345678');
+      await tester.pump();
 
-        final field = tester.widget<TextFormField>(find.byType(TextFormField));
-        expect(field.controller!.text, '0.12');
-        // What was armed matches what's shown — no hidden extra precision.
-        expect((armed! as RelativeFee).satPerVbyte, closeTo(0.12, 0.003));
-      },
-    );
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '0.12');
+      // What was armed matches what's shown — no hidden extra precision.
+      expect((armed! as RelativeFee).satPerVbyte, closeTo(0.12, 0.003));
+    });
   });
 
   group('CustomFeeListItem — preview line', () {
-    testWidgets('renders shimmer while previewLoading is true', (
-      tester,
-    ) async {
+    testWidgets('renders shimmer while previewLoading is true', (tester) async {
       // pumpTile uses pumpAndSettle internally, which never returns once
       // a Shimmer is alive (perpetual animation). Mount with no initial
       // fee so the preview row isn't rendered yet, then type — that
@@ -345,25 +320,30 @@ void main() {
       },
     );
 
-    testWidgets(
-      'renders only the rate when no preview yet and not loading',
-      (tester) async {
-        // Pre-debounce state: user just typed, no preview has been built.
-        // The widget never invents a sat count — only the rate is shown
-        // (in the preview row's BBText). Match the rate unit string to
-        // disambiguate from the TextFormField's EditableText also
-        // containing "0.5".
-        await pumpTile(tester);
-        await tester.enterText(find.byType(TextFormField), '0.5');
-        await tester.pump();
+    testWidgets('renders only the rate when no preview yet and not loading', (
+      tester,
+    ) async {
+      // Pre-debounce state: user just typed, no preview has been built.
+      // The widget never invents a sat count — only the rate is shown
+      // (in the preview row's BBText). Match the rate unit string to
+      // disambiguate from the TextFormField's EditableText also
+      // containing "0.5".
+      await pumpTile(tester);
+      await tester.enterText(find.byType(TextFormField), '0.5');
+      await tester.pump();
 
-        expect(find.byType(LoadingLineContent), findsNothing);
-        expect(find.textContaining(' ~ '), findsNothing,
-            reason: 'no sat-count rendered');
-        expect(find.textContaining('sats/vB'), findsAtLeastNWidgets(1),
-            reason: 'rate suffix is shown');
-      },
-    );
+      expect(find.byType(LoadingLineContent), findsNothing);
+      expect(
+        find.textContaining(' ~ '),
+        findsNothing,
+        reason: 'no sat-count rendered',
+      );
+      expect(
+        find.textContaining('sats/vB'),
+        findsAtLeastNWidgets(1),
+        reason: 'rate suffix is shown',
+      );
+    });
 
     testWidgets('preview row hidden entirely when nothing typed', (
       tester,
@@ -583,11 +563,7 @@ void main() {
 
     testWidgets('clearing the field disarms the parent', (tester) async {
       var disarmCount = 0;
-      await pumpTile(
-        tester,
-        onArm: (_) {},
-        onDisarm: () => disarmCount++,
-      );
+      await pumpTile(tester, onArm: (_) {}, onDisarm: () => disarmCount++);
       await tester.enterText(find.byType(TextFormField), '2');
       await tester.pump();
       expect(disarmCount, 0);

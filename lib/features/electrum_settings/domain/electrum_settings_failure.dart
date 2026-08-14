@@ -43,13 +43,15 @@ sealed class AdvancedOptionsFailure extends Failure {
   const AdvancedOptionsFailure([super.logMessage]);
 }
 
-final class AdvancedOptionsInvalidStopGapFailure extends AdvancedOptionsFailure {
+final class AdvancedOptionsInvalidStopGapFailure
+    extends AdvancedOptionsFailure {
   final String value;
 
   const AdvancedOptionsInvalidStopGapFailure(this.value, [super.logMessage]);
 }
 
-final class AdvancedOptionsInvalidTimeoutFailure extends AdvancedOptionsFailure {
+final class AdvancedOptionsInvalidTimeoutFailure
+    extends AdvancedOptionsFailure {
   final String value;
 
   const AdvancedOptionsInvalidTimeoutFailure(this.value, [super.logMessage]);

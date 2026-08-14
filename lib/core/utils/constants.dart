@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Device {
@@ -15,6 +14,7 @@ class SettingsConstants {
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
+  static const btcMapUrl = 'https://btcmap.org/map';
   static const recoverbullUrl =
       'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
@@ -32,16 +32,6 @@ class SecureStorageKeyPrefixConstants {
   // Fresh key (the old `swap_key_index_` was seeded high by a now-removed bug);
   // this resets the per-network swap index counter to 0.
   static const swapKeyIndex = 'swap_master_key_index_';
-}
-
-class HiveBoxNameConstants {
-  static const settings = 'settings';
-  static const electrumServers = 'electrumServers';
-  static const walletMetadata = 'walletMetadata';
-  static const pdkPayjoins = 'pdkPayjoins';
-  static const boltzSwaps = 'boltzSwaps';
-  static const labels = 'labels';
-  static const labelsByRef = 'labelsByRef';
 }
 
 class AssetConstants {
@@ -66,22 +56,6 @@ class CurrencyConstants {
     'ARS',
     'COP',
   ];
-}
-
-class PayjoinConstants {
-  static List<String> get ohttpRelayUrls {
-    final list = [
-      'https://ohttp.achow101.com',
-      'https://pj.bobspacebkk.com',
-      'https://ohttp.cakewallet.com',
-    ];
-    list.shuffle(Random.secure());
-    return list;
-  }
-
-  static const String directoryUrl = 'https://payjo.in';
-  static const directoryPollingInterval = 5;
-  static const defaultExpireAfterSec = 60 * 60 * 24; // 24 hours
 }
 
 class ApiServiceConstants {
@@ -131,6 +105,8 @@ class ApiServiceConstants {
   static const String bbAppUrl = 'https://app.bullbitcoin.com';
   static const String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
   static const String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
+  static const String swapApiStagingUrl = 'https://staging.boltzbackup.com';
+  static const String swapApiMainnetUrl = 'https://api.boltzbackup.com';
   static const String googleDriveClientId =
       '97584343569-0mc4e5q9q1qino4vvo97mqomdi89sae5.apps.googleusercontent.com';
 
@@ -144,7 +120,6 @@ class LocatorInstanceNameConstants {
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
-  static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
   static const String labelsHiveStorageDatasourceInstanceName =
       'labelsHiveStorageDatasource';

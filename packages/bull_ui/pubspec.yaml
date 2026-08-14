@@ -6,12 +6,11 @@ resolution: workspace
 
 environment:
   sdk: "3.12.2"
-  flutter: "3.44.2"
+  flutter: "3.44.9"
 
 dependencies:
   flutter:
     sdk: flutter
-  gap: ^3.0.1
   auto_size_text: ^3.0.0
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0

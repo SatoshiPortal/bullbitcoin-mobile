@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class WalletDetailBalanceCard extends StatelessWidget {
   const WalletDetailBalanceCard({
@@ -36,22 +36,17 @@ class WalletDetailBalanceCard extends StatelessWidget {
                 : Assets.backgrounds.bgSecureWallet.path,
           ),
           fit: .cover,
-          colorFilter:
-              signer == SignerEntity.none
-                  ? ColorFilter.mode(
-                    context.theme.secondaryHeaderColor,
-                    .color,
-                  )
-                  : null,
+          colorFilter: signer == SignerEntity.none
+              ? ColorFilter.mode(context.theme.secondaryHeaderColor, .color)
+              : null,
         ),
         border: Border(
           bottom: BorderSide(
-            color:
-                isLiquid && signer == SignerEntity.local
-                    ? context.appColors.tertiary
-                    : !isLiquid && signer == SignerEntity.local
-                    ? context.appColors.onTertiary
-                    : context.appColors.secondary,
+            color: isLiquid && signer == SignerEntity.local
+                ? context.appColors.tertiary
+                : !isLiquid && signer == SignerEntity.local
+                ? context.appColors.onTertiary
+                : context.appColors.secondary,
             width: 9,
           ),
         ),

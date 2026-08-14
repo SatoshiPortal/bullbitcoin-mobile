@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:bull_sdk/bbqr.dart' as bbqr;
 
@@ -44,11 +44,11 @@ class Bbqr {
       }
     } else {
       final scannedOptions = BbqrOptions.decode(payload);
-      if (options != null && scannedOptions.total != options!.total) {
-        // reset another state.bbqr
-        // and expect the next scan to be a new BBQR
-        parts.clear();
-        return (null, this);
+      if (options != null &&
+          (scannedOptions.total != options!.total ||
+              scannedOptions.encoding != options!.encoding ||
+              scannedOptions.type != options!.type)) {
+        _reset();
       }
 
       options = scannedOptions;
@@ -56,7 +56,13 @@ class Bbqr {
 
       if (options!.total == parts.length) {
         final bbqrParts = parts.values.toList();
-        final bbqrJoiner = await bbqr.Joined.tryFromParts(parts: bbqrParts);
+        late final bbqr.Joined bbqrJoiner;
+        try {
+          bbqrJoiner = await bbqr.Joined.tryFromParts(parts: bbqrParts);
+        } catch (_) {
+          _reset();
+          throw FailedToParseBbqr();
+        }
 
         try {
           final tx = await BitcoinTx.fromBytes(bbqrJoiner.data);
@@ -79,11 +85,17 @@ class Bbqr {
           );
         } catch (_) {}
 
+        _reset();
         throw FailedToParseBbqr();
       } else {
         return (null, this);
       }
     }
+  }
+
+  void _reset() {
+    parts.clear();
+    options = null;
   }
 
   static Future<List<String>> splitPsbt(String psbt) async {

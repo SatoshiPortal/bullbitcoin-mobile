@@ -1,5 +1,18 @@
 part of 'transfer_bloc.dart';
 
+enum AmountValidationError { minimum, maximum }
+
+SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.completed => SwapStatus.completed,
+      OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+      OrderSwapLocalStatus.expired => SwapStatus.expired,
+      OrderSwapLocalStatus.failed => SwapStatus.failed,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+      _ => SwapStatus.pending,
+    };
+
 @freezed
 sealed class TransferState with _$TransferState {
   const factory TransferState({
@@ -17,7 +30,12 @@ sealed class TransferState with _$TransferState {
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
+    // Set when the Liquid swap-funding build fails because the wallet has too
+    // many UTXOs to spend in a single transaction and needs consolidating.
+    @Default(false) bool consolidationRequired,
+    SwapFailure? swapFailure,
     ChainSwap? swap,
+    OrderSwapRecord? orderSwap,
     @Default('') String signedPsbt,
     int? bitcoinAbsoluteFeesSat,
     int? liquidAbsoluteFeesSat,
@@ -220,7 +238,7 @@ sealed class TransferState with _$TransferState {
     return amountValidationError != null || isInsufficientBalance;
   }
 
-  String? get amountValidationError {
+  AmountValidationError? get amountValidationError {
     if (amount.isEmpty) return null;
 
     if (inputAmountSat <= 0) return null;
@@ -232,17 +250,11 @@ sealed class TransferState with _$TransferState {
     if (limits == null) return null;
 
     if (limits.min > inputAmountSat) {
-      final minAmount = bitcoinUnit == BitcoinUnit.btc
-          ? ConvertAmount.satsToBtc(limits.min)
-          : limits.min;
-      return 'Minimum amount is ${minAmount.toString()} $displayFromCurrencyCode';
+      return AmountValidationError.minimum;
     }
 
     if (limits.max < inputAmountSat) {
-      final maxAmount = bitcoinUnit == BitcoinUnit.btc
-          ? ConvertAmount.satsToBtc(limits.max)
-          : limits.max;
-      return 'Maximum amount is ${maxAmount.toString()} $displayFromCurrencyCode';
+      return AmountValidationError.maximum;
     }
 
     return null;

@@ -25,8 +25,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_use
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -164,6 +166,7 @@ class WalletLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
     locator.registerFactory<GetAddressAtIndexUsecase>(
@@ -176,6 +179,11 @@ class WalletLocator {
         utxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
+    locator.registerLazySingleton<CheckLiquidConsolidationUsecase>(
+      () => CheckLiquidConsolidationUsecase(
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+      ),
+    );
     locator.registerFactory<GetReceiveAddressUsecase>(
       () => GetReceiveAddressUsecase(
         walletAddressRepository: locator<WalletAddressRepository>(),
@@ -184,6 +192,11 @@ class WalletLocator {
     locator.registerFactory<GetWalletTransactionsUsecase>(
       () => GetWalletTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+      ),
+    );
+    locator.registerFactory<GetWalletTransactionUsecase>(
+      () => GetWalletTransactionUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
       ),
     );

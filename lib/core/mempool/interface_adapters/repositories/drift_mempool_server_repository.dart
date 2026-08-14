@@ -68,7 +68,8 @@ class DriftMempoolServerRepository implements MempoolServerRepository {
     MempoolServerNetwork network,
   ) async {
     try {
-      await _datasource.deleteCustomServer(network);
+      final deleted = await _datasource.deleteCustomServer(network);
+      if (!deleted) return const Err(MempoolDeleteFailure('No row deleted'));
       return const Ok(null);
     } catch (e, st) {
       log.severe(

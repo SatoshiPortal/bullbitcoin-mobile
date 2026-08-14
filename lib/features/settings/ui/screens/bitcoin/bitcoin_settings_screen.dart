@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
-import 'package:bb_mobile/features/ark_setup/router.dart';
-// import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
@@ -21,9 +19,6 @@ class BitcoinSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-    final hasLegacySeeds = context.select(
-      (SettingsCubit cubit) => cubit.state.hasLegacySeeds ?? false,
     );
     final isDevModeEnabled = context.select(
       (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
@@ -54,25 +49,25 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   ),
                 ),
                 SettingsEntryItem(
-                  icon: Icons.swap_horiz,
-                  title: context.loc.bitcoinSettingsAutoTransferTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.autoswapSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.restore,
-                  title: context.loc.swapRestoreTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.swapRestore.name);
-                  },
-                ),
-                SettingsEntryItem(
                   icon: Icons.satellite_alt,
                   title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
                   onTap: () => context.pushNamed(
                     BroadcastSignedTxRoute.broadcastHome.name,
                   ),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.compare_arrows,
+                  title: context.loc.bitcoinSettingsPayjoinTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.payjoinSettings.name);
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.swap_vertical_circle,
+                  title: context.loc.autoswapSettingsTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.autoswapSettings.name);
+                  },
                 ),
                 SettingsEntryItem(
                   icon: Icons.hub,
@@ -90,14 +85,6 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     context.pushNamed(MempoolSettingsRoute.name);
                   },
                 ),
-                if (hasLegacySeeds)
-                  SettingsEntryItem(
-                    icon: Icons.vpn_key,
-                    title: context.loc.bitcoinSettingsLegacySeedsTitle,
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.legacySeeds.name);
-                    },
-                  ),
                 if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,
@@ -121,13 +108,6 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap: () =>
                         context.pushNamed(Bip85EntropyRoute.bip85Home.name),
-                  ),
-                if (isSuperuser && isDevModeEnabled)
-                  SettingsEntryItem(
-                    icon: Icons.science,
-                    title: context.loc.settingsArkTitle,
-                    isSuperUser: isSuperuser && isDevModeEnabled,
-                    onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
                   ),
               ],
             ),

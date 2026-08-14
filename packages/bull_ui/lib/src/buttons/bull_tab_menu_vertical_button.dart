@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 
 /// A bordered menu row with an optional leading icon and a title — duplicated
 /// from `core/widgets/navbar/tab_menu_vertical_button.dart`

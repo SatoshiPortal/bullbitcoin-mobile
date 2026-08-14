@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class InfoCard extends StatelessWidget {
   const InfoCard({
@@ -67,10 +67,7 @@ class InfoCard extends StatelessWidget {
                               description,
                               style: context.font.bodyMedium?.copyWith(
                                 color: context.appColors.onSurfaceVariant,
-                                fontWeight:
-                                    boldDescription
-                                        ? .bold
-                                        : .normal,
+                                fontWeight: boldDescription ? .bold : .normal,
                               ),
                             ),
                           ],

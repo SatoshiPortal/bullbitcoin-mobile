@@ -1,44 +1,36 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 
 class CheckAllServiceStatusUsecase {
   final ElectrumConnectivityPort _electrumConnectivityPort;
-  final BoltzSwapRepository _boltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
-  final PayjoinRepository _payjoinRepository;
+  final PayjoinPolicyAccess _payjoinPolicy;
+  final PayjoinDiagnostics _payjoinDiagnostics;
   final FeesRepository _feesRepository;
   final RecoverBullRepository _recoverBullRepository;
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
-  final FetchArkSecretUsecase _fetchArkSecretUsecase;
   final TorStatusUsecase _torStatusUsecase;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
-    required this._boltzSwapRepository,
     required this._exchangeRateRepository,
-    required this._payjoinRepository,
+    required this._payjoinPolicy,
+    required this._payjoinDiagnostics,
     required this._feesRepository,
     required this._recoverBullRepository,
     required this._walletRepository,
-    required this._settingsRepository,
-    required this._fetchArkSecretUsecase,
     required this._torStatusUsecase,
   });
 
@@ -50,26 +42,22 @@ class CheckAllServiceStatusUsecase {
         _checkInternetConnection(),
         _checkBitcoinElectrumServer(network),
         _checkLiquidElectrumServer(network),
-        _checkBoltzService(network),
         _checkPayjoinService(),
         _checkPricerService(network),
         _checkMempoolService(network),
         _checkTorConnection(),
         _checkRecoverbullConnection(),
-        _checkArkConnection(),
       ]);
 
       return AllServicesStatus(
         internetConnection: results[0],
         bitcoinElectrum: results[1],
         liquidElectrum: results[2],
-        boltz: results[3],
-        payjoin: results[4],
-        pricer: results[5],
-        mempool: results[6],
-        tor: results[7],
-        recoverbull: results[8],
-        ark: results[9],
+        payjoin: results[3],
+        pricer: results[4],
+        mempool: results[5],
+        tor: results[6],
+        recoverbull: results[7],
         lastChecked: now,
       );
     } catch (e) {
@@ -124,29 +112,37 @@ class CheckAllServiceStatusUsecase {
     }
   }
 
-  Future<ServiceStatusInfo> _checkBoltzService(Network network) async {
-    try {
-      await _boltzSwapRepository.updateSwapLimitsAndFees(
-        SwapType.bitcoinToLightning,
-      );
-
-      return ServiceStatusInfo(
-        status: ServiceStatus.online,
-        name: 'Boltz',
-        lastChecked: DateTime.now(),
-      );
-    } catch (e) {
-      return ServiceStatusInfo(
-        status: ServiceStatus.offline,
-        name: 'Boltz',
-        lastChecked: DateTime.now(),
-      );
-    }
-  }
-
   Future<ServiceStatusInfo> _checkPayjoinService() async {
     try {
-      final isHealthy = await _payjoinRepository.checkOhttpRelayHealth();
+      // Payjoin is opt-in: when it's disabled in settings the OHTTP relay is
+      //  not in use, so report `disabled` (not `offline`/red) — probing a
+      //  relay the user isn't relying on and painting the whole status page
+      //  red for it is misleading.
+      final policyResult = await _payjoinPolicy.load();
+      final policy = switch (policyResult) {
+        Ok(:final value) => value,
+        Err() => null,
+      };
+      if (policy == null) {
+        return ServiceStatusInfo(
+          status: ServiceStatus.offline,
+          name: 'Payjoin',
+          lastChecked: DateTime.now(),
+        );
+      }
+      if (!policy.enabled) {
+        return ServiceStatusInfo(
+          status: ServiceStatus.disabled,
+          name: 'Payjoin',
+          lastChecked: DateTime.now(),
+        );
+      }
+
+      final healthResult = await _payjoinDiagnostics.relayHealth();
+      final isHealthy = switch (healthResult) {
+        Ok(:final value) => value == PayjoinRelayHealth.available,
+        Err() => false,
+      };
 
       return ServiceStatusInfo(
         status: isHealthy ? ServiceStatus.online : ServiceStatus.offline,
@@ -265,30 +261,6 @@ class CheckAllServiceStatusUsecase {
     return status;
   }
 
-  Future<ServiceStatusInfo> _checkArkConnection() async {
-    var status = ServiceStatusInfo(
-      status: ServiceStatus.unknown,
-      name: 'Ark',
-      lastChecked: DateTime.now(),
-    );
-
-    try {
-      final settings = await _settingsRepository.fetch();
-      if (settings.isDevModeEnabled != true) return status;
-
-      final arkSecretKey = await _fetchArkSecretUsecase.execute();
-      if (arkSecretKey == null) return status;
-
-      await ArkWalletEntity.init(secretKey: arkSecretKey);
-
-      status = status.copyWith(status: ServiceStatus.online);
-    } catch (e) {
-      status = status.copyWith(status: ServiceStatus.offline);
-    }
-
-    return status;
-  }
-
   AllServicesStatus _createUnknownStatus(DateTime now) {
     return AllServicesStatus(
       internetConnection: ServiceStatusInfo(
@@ -304,11 +276,6 @@ class CheckAllServiceStatusUsecase {
       liquidElectrum: ServiceStatusInfo(
         status: ServiceStatus.unknown,
         name: 'Liquid Electrum',
-        lastChecked: now,
-      ),
-      boltz: ServiceStatusInfo(
-        status: ServiceStatus.unknown,
-        name: 'Boltz',
         lastChecked: now,
       ),
       payjoin: ServiceStatusInfo(

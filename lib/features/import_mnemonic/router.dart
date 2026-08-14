@@ -19,26 +19,23 @@ enum ImportMnemonicRoute {
 
 class ImportMnemonicRouter {
   static final route = ShellRoute(
-    builder:
-        (context, state, child) => BlocProvider<ImportMnemonicCubit>(
-          create: (_) => locator<ImportMnemonicCubit>(),
-          child: child,
-        ),
+    builder: (context, state, child) => BlocProvider<ImportMnemonicCubit>(
+      create: (_) => locator<ImportMnemonicCubit>(),
+      child: child,
+    ),
     routes: [
       GoRoute(
         name: ImportMnemonicRoute.importMnemonicHome.name,
         path: ImportMnemonicRoute.importMnemonicHome.path,
-        builder:
-            (context, state) =>
-                BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
-                  listenWhen:
-                      (previous, current) =>
-                          previous.mnemonic == null && current.mnemonic != null,
-                  listener: (context, state) {
-                    context.goNamed(ImportMnemonicRoute.selectScriptType.name);
-                  },
-                  child: const MnemonicPage(),
-                ),
+        builder: (context, state) =>
+            BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
+              listenWhen: (previous, current) =>
+                  previous.mnemonic == null && current.mnemonic != null,
+              listener: (context, state) {
+                context.goNamed(ImportMnemonicRoute.selectScriptType.name);
+              },
+              child: const MnemonicPage(),
+            ),
       ),
 
       GoRoute(
@@ -46,9 +43,8 @@ class ImportMnemonicRouter {
         path: ImportMnemonicRoute.selectScriptType.path,
         builder: (context, state) {
           return BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.wallet == null && current.wallet != null,
+            listenWhen: (previous, current) =>
+                previous.wallet == null && current.wallet != null,
             listener: (context, state) {
               // Trigger wallet refresh before navigating to home
               context.read<WalletBloc>().add(const WalletStarted());

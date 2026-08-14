@@ -74,6 +74,11 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockPinCodeNumberAdded event,
     Emitter<AppUnlockState> emit,
   ) async {
+    // During a cooldown the dial pad is disabled in the UI; ignore digits
+    // here too so no PIN accumulates through any other path.
+    if (state.timeoutSeconds > 0 || state.isVerifying) {
+      return;
+    }
     if (state.pinCode.length >= state.maxPinCodeLength) {
       return;
     }
@@ -90,7 +95,7 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockPinCodeNumberRemoved event,
     Emitter<AppUnlockState> emit,
   ) async {
-    if (state.pinCode.isEmpty) {
+    if (state.pinCode.isEmpty || state.isVerifying) {
       return;
     }
 
@@ -105,6 +110,11 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockSubmitted event,
     Emitter<AppUnlockState> emit,
   ) async {
+    // The usecase enforces the cooldown against the persisted wall clock;
+    // this gate only spares a pointless round-trip.
+    if (state.timeoutSeconds > 0 || state.isVerifying) {
+      return;
+    }
     emit(state.copyWith(isVerifying: true));
     switch (await _attemptUnlockWithPinCodeUsecase.execute(state.pinCode)) {
       case Err(:final failure):
@@ -118,10 +128,9 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
       case Ok(:final value):
         emit(
           state.copyWith(
-            status:
-                value.success
-                    ? AppUnlockStatus.success
-                    : AppUnlockStatus.inProgress,
+            status: value.success
+                ? AppUnlockStatus.success
+                : AppUnlockStatus.inProgress,
             isVerifying: false,
             failedAttempts: value.failedAttempts,
             timeoutSeconds: value.timeout,
@@ -136,7 +145,9 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockCountdownTick event,
     Emitter<AppUnlockState> emit,
   ) {
-    emit(state.copyWith(timeoutSeconds: state.timeoutSeconds - 1));
+    if (state.timeoutSeconds > 0) {
+      emit(state.copyWith(timeoutSeconds: state.timeoutSeconds - 1));
+    }
   }
 
   void _onPinCodeObscureToggled(

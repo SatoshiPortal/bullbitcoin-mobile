@@ -13,6 +13,5 @@ class AliasBip85DerivationUsecase {
   Future<Result<void, Bip85Failure>> execute({
     required Bip85DerivationEntity derivation,
     required String alias,
-  }) =>
-      _bip85Repository.alias(derivation, alias);
+  }) => _bip85Repository.alias(derivation, alias);
 }

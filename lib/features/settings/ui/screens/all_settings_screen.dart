@@ -6,16 +6,16 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gap/gap.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -42,9 +42,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     );
 
     final isSuperuser =
-        context.select(
-          (SettingsCubit cubit) => cubit.state.isSuperuser,
-        ) ??
+        context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
         false;
 
     final serviceStatusLoading = context.select(
@@ -71,8 +69,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   onTap: () {
                     if (Platform.isIOS) {
                       if (isSuperuser) {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -81,8 +81,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           );
                         }
                       } else {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -92,8 +94,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         }
                       }
                     } else {
-                      final notLoggedIn =
-                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      final notLoggedIn = context
+                          .read<ExchangeCubit>()
+                          .state
+                          .notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -124,6 +128,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
 
+                SettingsEntryItem(
+                  icon: Icons.map,
+                  title: context.loc.settingsBtcMapTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.btcMap.name);
+                  },
+                ),
                 SettingsEntryItem(
                   icon: Icons.description,
                   title: context.loc.settingsTermsOfServiceTitle,
@@ -189,7 +200,15 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                       child: Column(
                         mainAxisSize: .min,
                         children: [
-                          const FaIcon(FontAwesomeIcons.github),
+                          SvgPicture.asset(
+                            'assets/icons/github.svg',
+                            width: 24,
+                            height: 24,
+                            colorFilter: ColorFilter.mode(
+                              context.appColors.onSurface,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                           const Gap(8),
                           Text(
                             context.loc.settingsGithubLabel,
@@ -202,16 +221,16 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(
                             ExchangeRoute.exchangeLoginForSupport.name,
                           );
                         } else {
-                          context.goNamed(
-                            ExchangeSupportChatRoute.supportChat.name,
-                          );
+                          context.goNamed(ExchangeSupportChatFacade.routeName);
                         }
                       },
                       child: Column(

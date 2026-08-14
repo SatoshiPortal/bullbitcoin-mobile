@@ -23,11 +23,15 @@ class BbqrOptions {
   }
 
   factory BbqrOptions.decode(String code) {
-    if (code.length < 6) throw "Encoded string is too short";
+    if (code.length < 8) throw "Encoded string is too short";
     if (code.substring(0, 2) != "B\$") throw "Invalid header: expected 'B\$'";
 
     final totalQRCodes = int.parse(code.substring(4, 6), radix: 36);
     final sequenceNumber = int.parse(code.substring(6, 8), radix: 36);
+
+    if (totalQRCodes < 1 || sequenceNumber >= totalQRCodes) {
+      throw "Invalid BBQR sequence";
+    }
 
     return BbqrOptions(
       encoding: code[2],

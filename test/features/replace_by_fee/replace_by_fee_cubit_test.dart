@@ -40,9 +40,7 @@ void main() {
   late _MockBumpFeeUsecase bumpFee;
 
   Future<ReplaceByFeeCubit> buildCubit() async {
-    when(
-      () => bumpFee.getNetworkFees(),
-    ).thenAnswer((_) async => Ok(_fees()));
+    when(() => bumpFee.getNetworkFees()).thenAnswer((_) async => Ok(_fees()));
     final cubit = ReplaceByFeeCubit(
       originalTransaction: _tx(),
       bumpFeeUsecase: bumpFee,

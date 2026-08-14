@@ -7,10 +7,13 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatefulWidget {
@@ -51,11 +54,17 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
           disableScroll: true,
           focusNodes: [_amountNode],
           child: Column(
-            mainAxisAlignment: .spaceEvenly,
             crossAxisAlignment: .stretch,
             children: [
+              // Amount and message grouped together in the upper half, the
+              // button pinned to the bottom — spaceEvenly scattered the
+              // three elements across the full height with large voids.
+              const Spacer(),
               ReceiveAmountInput(focusNode: _amountNode),
-              const _NoteTile(),
+              const Gap(24),
+              const _MessageForSenderTile(),
+              const _ReceiveFailureMessage(),
+              const Spacer(flex: 2),
               ReceiveAmountContinueButton(
                 onContinueNavigation: widget.onContinueNavigation,
               ),
@@ -67,12 +76,22 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
   }
 }
 
-class _NoteTile extends StatelessWidget {
-  const _NoteTile();
+/// The counterparty-visible message: goes into the BIP21 `message=` (and the
+/// lightning swap description).
+class _MessageForSenderTile extends StatelessWidget {
+  const _MessageForSenderTile();
 
   @override
   Widget build(BuildContext context) {
     final note = context.select((ReceiveBloc bloc) => bloc.state.note);
+    // On lightning the value is the invoice description, not a BIP21
+    // message= — "Note" reads better there.
+    final isLightning = context.select(
+      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
+    );
+    final title = isLightning
+        ? context.loc.receiveNote
+        : context.loc.receiveMessageForSender;
     final hPad = Device.screen.width * 0.04;
 
     return Padding(
@@ -82,13 +101,17 @@ class _NoteTile extends StatelessWidget {
           final bloc = context.read<ReceiveBloc>();
           final saved = await LabelEntryBottomSheet.note(
             context,
-            title: context.loc.transactionNoteAddTitle,
+            title: title,
             initialValue: note.isEmpty ? null : note,
             hint: context.loc.transactionNoteHint,
             suggestionsFuture: bloc.fetchDistinctLabels(),
           );
           if (saved == null) return;
           bloc.add(ReceiveNoteChanged(saved));
+          // Persist as an address label too (same as the QR screen's note
+          // flow) — without this, notes set from this page ended up in the
+          // BIP21 string but never in the labels store.
+          bloc.add(const ReceiveNoteSaved());
         },
         child: Row(
           children: [
@@ -97,7 +120,7 @@ class _NoteTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
-                    '${context.loc.receiveNote} (optional)',
+                    title,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
                   ),
@@ -119,6 +142,28 @@ class _NoteTile extends StatelessWidget {
   }
 }
 
+class _ReceiveFailureMessage extends StatelessWidget {
+  const _ReceiveFailureMessage();
+
+  @override
+  Widget build(BuildContext context) {
+    final failure = context.select<ReceiveBloc, ReceiveFailure?>(
+      (bloc) => bloc.state.failure,
+    );
+    if (failure == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BBText(
+        failure.toTranslated(context),
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
 class ReceiveAmountContinueButton extends StatelessWidget {
   const ReceiveAmountContinueButton({super.key, this.onContinueNavigation});
 
@@ -130,15 +175,22 @@ class ReceiveAmountContinueButton extends StatelessWidget {
     final amountException = context.watch<ReceiveBloc>().state.amountException;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      // padding (not viewPadding): it is viewPadding minus the keyboard
+      // inset, so it keeps the button off the home indicator when the
+      // keyboard is closed and collapses to zero when the Scaffold has
+      // already resized around the open keyboard — viewPadding would add a
+      // second gap on top of the keyboard there.
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        16 + MediaQuery.of(context).padding.bottom,
+      ),
       child: BBButton.big(
         label: context.loc.receiveContinue,
         onPressed: () {
           final bloc = context.read<ReceiveBloc>();
-          final inputAmountSat = bloc.state.inputAmountSat;
-          final confirmedAmountSat = bloc.state.confirmedAmountSat;
-          if (confirmedAmountSat != null &&
-              inputAmountSat == confirmedAmountSat) {
+          if (canReuseConfirmedReceiveDetails(bloc.state)) {
             // If an amount was already confirmed previously and the user didn't
             // change it, we don't need to confirm it again.
             onContinueNavigation?.call() ?? context.pop();

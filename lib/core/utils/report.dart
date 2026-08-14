@@ -14,13 +14,6 @@ enum MigrationType { install, upgrade }
 /// for [Report.error] and `category=none` for [Report.shout].
 enum ReportCategory { migration, error }
 
-/// Breadcrumb categories whose `message`/`data` are considered safe to
-/// keep on the wire — neither carries wallet payloads nor user identity.
-/// Anything outside this set has its message + data stripped in
-/// `beforeSend`, so cubit-state breadcrumbs (which can hold addresses,
-/// balances, descriptors, txids) never leave the device.
-const _safeBreadcrumbCategories = <String>{'navigation', 'app.lifecycle'};
-
 class Report {
   static const _consentKey = 'error_reporting_consent';
   static const _lastVersionKey = 'last_seen_app_version';
@@ -160,6 +153,8 @@ class Report {
       options.enableAppLifecycleBreadcrumbs = consent;
       options.tracesSampleRate = consent ? 0.2 : 0.0; // 0.2 instead of 1.0
       options.anrEnabled = consent;
+      options.enableWatchdogTerminationTracking = consent;
+      options.enableAppHangTracking = consent;
 
       // ── Final scrub. No consent → no event, no exceptions (even
       //    install/upgrade milestones tagged `category=migration`).
@@ -182,30 +177,37 @@ class Report {
         event.user = uid == null ? null : SentryUser(id: uid);
         event.request = null;
 
-        for (final ex in event.exceptions ?? <SentryException>[]) {
-          ex.stackTrace?.frames.forEach((f) => f.vars.clear());
-        }
-
-        event.threads?.forEach((t) {
-          t.stacktrace?.frames.forEach((f) => f.vars.clear());
-        });
-
-        // Whitelisted categories keep their message + data so we can
-        // reproduce the user journey leading up to the crash. Everything
-        // else (notably `state` from the bloc integration, which mirrors
-        // cubit state and can contain wallet data) is stripped down to
-        // metadata only.
+        // Breadcrumbs are minimized first; route arguments and all other
+        // payloads are never safe to transmit.
         event.breadcrumbs = event.breadcrumbs?.map((b) {
-          final isSafe = _safeBreadcrumbCategories.contains(b.category);
           return Breadcrumb(
             category: b.category,
             level: b.level,
             timestamp: b.timestamp,
             type: b.type,
-            message: isSafe ? b.message : null,
-            data: isSafe ? b.data : null,
+            message: null,
+            data: null,
           );
         }).toList();
+
+        // Some SDK frame maps are unmodifiable. Failure to clear one must not
+        // prevent the already-minimized event from being sent.
+        try {
+          for (final ex in event.exceptions ?? <SentryException>[]) {
+            for (final f in ex.stackTrace?.frames ?? []) {
+              try {
+                f.vars.clear();
+              } catch (_) {}
+            }
+          }
+          for (final t in event.threads ?? <SentryThread>[]) {
+            for (final f in t.stacktrace?.frames ?? []) {
+              try {
+                f.vars.clear();
+              } catch (_) {}
+            }
+          }
+        } catch (_) {}
 
         return event;
       };

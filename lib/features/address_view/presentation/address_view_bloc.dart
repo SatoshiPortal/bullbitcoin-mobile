@@ -1,8 +1,8 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/check_wallet_is_liquid_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,13 +13,13 @@ part 'address_view_state.dart';
 class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
   final String _walletId;
   final int _limit;
-  final GetWalletUsecase _getWalletUseCase;
-  final GetAddressListUsecase _getAddressListUseCase;
+  final CheckWalletIsLiquidUsecase _checkWalletIsLiquidUsecase;
+  final GetAddressListUsecase _getAddressListUsecase;
 
   AddressViewBloc({
     required this._walletId,
-    required this._getWalletUseCase,
-    required this._getAddressListUseCase,
+    required this._checkWalletIsLiquidUsecase,
+    required this._getAddressListUsecase,
     int? limit,
   }) : _limit = limit ?? 20,
        super(const AddressViewState()) {
@@ -32,72 +32,60 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
     AddressViewInitialAddressesLoaded event,
     Emitter<AddressViewState> emit,
   ) async {
-    debugPrint('Loading initial addresses for wallet: $_walletId');
-    emit(state.copyWith(isLoading: true));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        receiveAddressesFailure: null,
+        changeAddressesFailure: null,
+      ),
+    );
 
-    try {
-      final wallet = await _getWalletUseCase.execute(_walletId);
+    // Fetch receive and change addresses independently so one failing doesn't
+    // prevent the other from loading.
+    final (isLiquid, receiveResult, changeResult) = await (
+      _checkWalletIsLiquidUsecase.execute(_walletId),
+      _getAddressListUsecase.execute(walletId: _walletId, limit: _limit),
+      _getAddressListUsecase.execute(
+        walletId: _walletId,
+        limit: _limit,
+        isChange: true,
+      ),
+    ).wait;
+    if (isClosed) return;
 
-      // Fetch initial receive and change addresses and handle errors separately
-      // so that one failing doesn't prevent the other from loading.
-      final (receiveAddresses, changeAddresses) = await (
-        () async {
-          try {
-            return _getAddressListUseCase.execute(
-              walletId: _walletId,
-              limit: _limit,
-            );
-          } catch (e) {
-            if (e is WalletError) {
-              emit(state.copyWith(receiveAddressesError: e));
-            }
-            return <WalletAddress>[];
-          }
-        }(),
-        () async {
-          try {
-            return _getAddressListUseCase.execute(
-              walletId: _walletId,
-              limit: _limit,
-              isChange: true,
-            );
-          } catch (e) {
-            if (e is WalletError) {
-              emit(state.copyWith(changeAddressesError: e));
-            }
-            return <WalletAddress>[];
-          }
-        }(),
-      ).wait;
-
-      emit(
-        state.copyWith(
-          isLiquid: wallet?.isLiquid ?? false,
-          receiveAddresses: receiveAddresses,
-          changeAddresses: changeAddresses,
-          hasReachedEndOfReceiveAddresses: receiveAddresses.length < _limit,
-          hasReachedEndOfChangeAddresses: changeAddresses.length < _limit,
-          isLoading: false,
-        ),
-      );
-    } on WalletError catch (error) {
-      emit(
-        state.copyWith(
-          receiveAddressesError: error,
-          changeAddressesError: error,
-          isLoading: false,
-        ),
-      );
-    } on GetWalletException catch (e) {
-      // No need to handle this here since the address loading functions already
-      // handle their own errors and we just need the wallet type to show
-      // "Coming Soon" for Liquid change addresses or not and the state already
-      // has a default value for it.
-      debugPrint('Error loading wallet: $e');
-      return;
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
+    emit(
+      state.copyWith(
+        isLiquid: switch (isLiquid) {
+          Ok(value: final liquid) => liquid,
+          Err() => state.isLiquid,
+        },
+        receiveAddresses: switch (receiveResult) {
+          Ok(value: final addresses) => addresses,
+          Err() => state.receiveAddresses,
+        },
+        receiveAddressesFailure: switch (receiveResult) {
+          Ok() => null,
+          Err(:final failure) => failure,
+        },
+        changeAddresses: switch (changeResult) {
+          Ok(value: final addresses) => addresses,
+          Err() => state.changeAddresses,
+        },
+        changeAddressesFailure: switch (changeResult) {
+          Ok() => null,
+          Err(:final failure) => failure,
+        },
+        hasReachedEndOfReceiveAddresses: switch (receiveResult) {
+          Ok(value: final addresses) => addresses.length < _limit,
+          Err() => state.hasReachedEndOfReceiveAddresses,
+        },
+        hasReachedEndOfChangeAddresses: switch (changeResult) {
+          Ok(value: final addresses) => addresses.length < _limit,
+          Err() => state.hasReachedEndOfChangeAddresses,
+        },
+        isLoading: false,
+      ),
+    );
   }
 
   Future<void> _onMoreReceiveAddressesLoaded(
@@ -108,28 +96,35 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
       return; // Prevent loading more if already loading or reached end
     }
 
-    try {
-      emit(state.copyWith(isLoading: true));
+    // Clearing the failure here keeps a stale error row from outliving the
+    // request that produced it.
+    emit(state.copyWith(isLoading: true, receiveAddressesFailure: null));
 
-      final moreReceiveAddresses = await _getAddressListUseCase.execute(
-        walletId: _walletId,
-        limit: _limit,
-        fromIndex: state.nextReceiveAddressIndexToLoad,
-      );
+    final result = await _getAddressListUsecase.execute(
+      walletId: _walletId,
+      limit: _limit,
+      fromIndex: state.nextReceiveAddressIndexToLoad,
+    );
+    if (isClosed) return;
 
-      emit(
-        state.copyWith(
-          receiveAddresses: List.from(state.receiveAddresses)
-            ..addAll(moreReceiveAddresses),
-          hasReachedEndOfReceiveAddresses:
-              moreReceiveAddresses.length < _limit ||
-              moreReceiveAddresses.lastOrNull?.index == 0,
-        ),
-      );
-    } on WalletError catch (error) {
-      emit(state.copyWith(receiveAddressesError: error));
-    } finally {
-      emit(state.copyWith(isLoading: false));
+    switch (result) {
+      case Ok(value: final moreReceiveAddresses):
+        emit(
+          state.copyWith(
+            receiveAddresses: [
+              ...state.receiveAddresses,
+              ...moreReceiveAddresses,
+            ],
+            hasReachedEndOfReceiveAddresses:
+                moreReceiveAddresses.length < _limit ||
+                moreReceiveAddresses.lastOrNull?.index == 0,
+            isLoading: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(receiveAddressesFailure: failure, isLoading: false),
+        );
     }
   }
 
@@ -141,29 +136,29 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
       return; // Prevent loading more if already loading or reached end
     }
 
-    try {
-      emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(isLoading: true, changeAddressesFailure: null));
 
-      final moreChangeAddresses = await _getAddressListUseCase.execute(
-        walletId: _walletId,
-        isChange: true,
-        limit: _limit,
-        fromIndex: state.nextChangeAddressIndexToLoad,
-      );
+    final result = await _getAddressListUsecase.execute(
+      walletId: _walletId,
+      isChange: true,
+      limit: _limit,
+      fromIndex: state.nextChangeAddressIndexToLoad,
+    );
+    if (isClosed) return;
 
-      emit(
-        state.copyWith(
-          changeAddresses: List.from(state.changeAddresses)
-            ..addAll(moreChangeAddresses),
-          hasReachedEndOfChangeAddresses:
-              moreChangeAddresses.length < _limit ||
-              moreChangeAddresses.lastOrNull?.index == 0,
-        ),
-      );
-    } on WalletError catch (error) {
-      emit(state.copyWith(changeAddressesError: error));
-    } finally {
-      emit(state.copyWith(isLoading: false));
+    switch (result) {
+      case Ok(value: final moreChangeAddresses):
+        emit(
+          state.copyWith(
+            changeAddresses: [...state.changeAddresses, ...moreChangeAddresses],
+            hasReachedEndOfChangeAddresses:
+                moreChangeAddresses.length < _limit ||
+                moreChangeAddresses.lastOrNull?.index == 0,
+            isLoading: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(changeAddressesFailure: failure, isLoading: false));
     }
   }
 }

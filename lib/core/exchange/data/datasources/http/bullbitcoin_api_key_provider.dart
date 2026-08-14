@@ -10,9 +10,7 @@ class BullbitcoinApiKeyProvider {
   static const String _apiKeyStorageKey = 'exchange_api_key';
   static const String _apiKeyTestnetStorageKey = 'exchange_api_key_testnet';
 
-  BullbitcoinApiKeyProvider({
-    required this._secureStorage,
-  });
+  BullbitcoinApiKeyProvider({required this._secureStorage});
 
   Future<String?> getApiKey({required bool isTestnet}) async {
     try {

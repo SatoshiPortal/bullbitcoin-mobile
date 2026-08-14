@@ -7,10 +7,11 @@ import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
+import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class RequestIdentifierScreen extends StatelessWidget {
@@ -136,13 +137,13 @@ class RequestErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final error = context.select(
-      (RequestIdentifierCubit cubit) => cubit.state.error,
+    final failure = context.select(
+      (RequestIdentifierCubit cubit) => cubit.state.failure,
     );
 
-    if (error.isNotEmpty) {
+    if (failure != null) {
       return BBText(
-        error,
+        failure.toTranslated(context),
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
@@ -162,7 +163,7 @@ class ContinueButtonWidget extends StatelessWidget {
       (RequestIdentifierCubit cubit) => cubit.state.rawRequest.isNotEmpty,
     );
     final hasError = context.select(
-      (RequestIdentifierCubit cubit) => cubit.state.error.isNotEmpty,
+      (RequestIdentifierCubit cubit) => cubit.state.failure != null,
     );
 
     final cubit = context.read<RequestIdentifierCubit>();

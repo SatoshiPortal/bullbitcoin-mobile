@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class BuyAccelerateScreen extends StatelessWidget {
   const BuyAccelerateScreen({super.key});
@@ -24,18 +24,18 @@ class BuyAccelerateScreen extends StatelessWidget {
       (BuyBloc bloc) => bloc.state.accelerationNetworkFees,
     );
     final relativeFee = fees?.fastest.value as double?;
-    final formattedRelativeFee =
-        relativeFee != null ? '${relativeFee.toStringAsFixed(2)} sat/vB' : null;
+    final formattedRelativeFee = relativeFee != null
+        ? '${relativeFee.toStringAsFixed(2)} sat/vB'
+        : null;
     final absoluteFee = fees?.toAbsolute(140).fastest.value as int?;
     final bitcoinUnit = context.select(
       (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
-    final formattedAbsoluteFee =
-        absoluteFee != null && bitcoinUnit != null
-            ? bitcoinUnit == BitcoinUnit.sats
-                ? FormatAmount.sats(absoluteFee)
-                : FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFee))
-            : null;
+    final formattedAbsoluteFee = absoluteFee != null && bitcoinUnit != null
+        ? bitcoinUnit == BitcoinUnit.sats
+              ? FormatAmount.sats(absoluteFee)
+              : FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFee))
+        : null;
 
     final currencyCode = context.select(
       (BuyBloc bloc) => bloc.state.buyOrder?.payinCurrency,
@@ -43,14 +43,13 @@ class BuyAccelerateScreen extends StatelessWidget {
     final exchangeRate = context.select(
       (BuyBloc bloc) => bloc.state.exchangeRate,
     );
-    final absoluteFeeFiatEstimate =
-        absoluteFee != null && exchangeRate > 0
-            ? ConvertAmount.satsToFiat(absoluteFee, exchangeRate)
-            : null;
+    final absoluteFeeFiatEstimate = absoluteFee != null && exchangeRate > 0
+        ? ConvertAmount.satsToFiat(absoluteFee, exchangeRate)
+        : null;
     final formattedFeeFiatEstimate =
         absoluteFeeFiatEstimate != null && currencyCode != null
-            ? FormatAmount.fiat(absoluteFeeFiatEstimate, currencyCode)
-            : null;
+        ? FormatAmount.fiat(absoluteFeeFiatEstimate, currencyCode)
+        : null;
 
     return PopScope(
       canPop: false,

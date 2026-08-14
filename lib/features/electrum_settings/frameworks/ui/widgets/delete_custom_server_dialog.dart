@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class DeleteCustomServerDialog {
   static Future<bool?> show(
@@ -14,49 +14,49 @@ class DeleteCustomServerDialog {
     return BlurredDialog.show<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-            backgroundColor: context.appColors.surfaceContainer,
-            title: Text(context.loc.electrumDeleteServerTitle),
-            content: Column(
-              mainAxisSize: .min,
-              children: [
-                if (isLastCustomServer)
-                  Text(
-                    context.loc.electrumDeletePrivacyNotice,
-                    style: context.font.bodyMedium,
-                  ),
-                Text(
-                  context.loc.electrumDeleteConfirmation(serverUrl),
-                  style: context.font.bodyMedium,
-                ),
-              ],
+        backgroundColor: context.appColors.surfaceContainer,
+        title: Text(context.loc.electrumDeleteServerTitle),
+        content: Column(
+          mainAxisSize: .min,
+          children: [
+            if (isLastCustomServer)
+              Text(
+                context.loc.electrumDeletePrivacyNotice,
+                style: context.font.bodyMedium,
+              ),
+            Text(
+              context.loc.electrumDeleteConfirmation(serverUrl),
+              style: context.font.bodyMedium,
             ),
-            actions: [
-              Row(
-                children: [
-                  Expanded(
-                    child: BBButton.small(
-                      label: context.loc.electrumCancel,
-                      onPressed: () => Navigator.of(dialogContext).pop(false),
-                      bgColor: context.appColors.transparent,
-                      outlined: true,
-                      textStyle: context.font.headlineLarge,
-                      textColor: context.appColors.secondary,
-                    ),
-                  ),
-                  const Gap(12),
-                  Expanded(
-                    child: BBButton.small(
-                      label: context.loc.electrumDelete,
-                      onPressed: () => Navigator.of(dialogContext).pop(true),
-                      bgColor: context.appColors.error,
-                      textStyle: context.font.headlineLarge,
-                      textColor: context.appColors.onPrimary,
-                    ),
-                  ),
-                ],
+          ],
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: BBButton.small(
+                  label: context.loc.electrumCancel,
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  bgColor: context.appColors.transparent,
+                  outlined: true,
+                  textStyle: context.font.headlineLarge,
+                  textColor: context.appColors.secondary,
+                ),
+              ),
+              const Gap(12),
+              Expanded(
+                child: BBButton.small(
+                  label: context.loc.electrumDelete,
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  bgColor: context.appColors.error,
+                  textStyle: context.font.headlineLarge,
+                  textColor: context.appColors.onPrimary,
+                ),
               ),
             ],
           ),
+        ],
+      ),
     );
   }
 }

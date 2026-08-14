@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:hex/hex.dart';
+import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 /// Data boundary for the RecoverBull key server and vault crypto. Catches the
@@ -37,14 +37,20 @@ class RecoverBullRepository {
     try {
       final encryptedBackup = RecoverBullDatasource.create(
         utf8.encode(plaintext),
-        HEX.decode(vaultKey),
+        convert.hex.decode(_normalizeHex(vaultKey)),
       );
       final mapBackup = json.decode(encryptedBackup) as Map<String, dynamic>;
       mapBackup['path'] = derivationPath;
       return Ok(EncryptedVault(file: json.encode(mapBackup)));
     } catch (e, st) {
-      log.severe(message: 'createVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'createVault failed',
+        error: 'Vault processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
+      );
     }
   }
 
@@ -57,14 +63,20 @@ class RecoverBullRepository {
     try {
       final decryptedBytes = RecoverBullDatasource.restore(
         vault.toFile(),
-        HEX.decode(vaultKey),
+        convert.hex.decode(_normalizeHex(vaultKey)),
       );
       final plaintext = utf8.decode(decryptedBytes);
       final decoded = json.decode(plaintext) as Map<String, dynamic>;
       return Ok(DecryptedVault.fromJson(decoded));
     } catch (e, st) {
-      log.severe(message: 'restoreVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'restoreVault failed',
+        error: 'Vault processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
+      );
     }
   }
 
@@ -77,19 +89,29 @@ class RecoverBullRepository {
     try {
       final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
       await remoteDatasource.store(
-        HEX.decode(identifier),
+        convert.hex.decode(_normalizeHex(identifier)),
         utf8.encode(password),
-        HEX.decode(salt),
-        HEX.decode(vaultKey),
+        convert.hex.decode(_normalizeHex(salt)),
+        convert.hex.decode(_normalizeHex(vaultKey)),
         externalProxy: externalProxy,
       );
       return const Ok(null);
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(message: 'storeVaultKey failed', error: e, trace: st);
+      log.severe(
+        message: 'storeVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(message: 'storeVaultKey failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'storeVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
     }
   }
 
@@ -101,18 +123,28 @@ class RecoverBullRepository {
     try {
       final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
       final vaultKey = await remoteDatasource.fetch(
-        HEX.decode(identifier),
+        convert.hex.decode(_normalizeHex(identifier)),
         utf8.encode(password),
-        HEX.decode(salt),
+        convert.hex.decode(_normalizeHex(salt)),
         externalProxy: externalProxy,
       );
-      return Ok(HEX.encode(vaultKey));
+      return Ok(convert.hex.encode(vaultKey));
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(message: 'fetchVaultKey failed', error: e, trace: st);
+      log.severe(
+        message: 'fetchVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(message: 'fetchVaultKey failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'fetchVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
     }
   }
 
@@ -123,9 +155,9 @@ class RecoverBullRepository {
   ) async {
     final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.trash(
-      HEX.decode(identifier),
+      convert.hex.decode(_normalizeHex(identifier)),
       utf8.encode(password),
-      HEX.decode(salt),
+      convert.hex.decode(_normalizeHex(salt)),
       externalProxy: externalProxy,
     );
   }
@@ -177,4 +209,10 @@ class RecoverBullRepository {
     }
     return KeyServerUnavailableFailure(e.toString());
   }
+
+  /// Vault keys and server identifiers reach us as raw user input (typed or
+  /// pasted — the recovery screen has no input formatter). Strip formatting
+  /// whitespace before decoding so a spaced or newline-terminated key (the
+  /// reveal screen shows the key in 4-char groups) still decodes.
+  String _normalizeHex(String input) => input.replaceAll(RegExp(r'\s'), '');
 }

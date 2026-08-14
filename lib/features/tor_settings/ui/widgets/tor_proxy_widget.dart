@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class TorProxyWidget extends StatelessWidget {
   const TorProxyWidget({super.key});

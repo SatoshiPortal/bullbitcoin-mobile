@@ -142,9 +142,7 @@ class FundExchangeRouter {
                   ).then((_) {
                     if (!(bloc.state.userSummary?.hasConsentedScamWarning ??
                         false)) {
-                      bloc.add(
-                        const FundExchangeEvent.scamWarningDismissed(),
-                      );
+                      bloc.add(const FundExchangeEvent.scamWarningDismissed());
                     }
                   });
                 },

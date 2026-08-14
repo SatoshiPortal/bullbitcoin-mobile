@@ -21,7 +21,11 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
       await _datasource.store(model);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'Failed to save electrum server', error: e, trace: st);
+      log.severe(
+        message: 'Failed to save electrum server',
+        error: e,
+        trace: st,
+      );
       return Err(ElectrumSaveFailure(e.toString()));
     }
   }

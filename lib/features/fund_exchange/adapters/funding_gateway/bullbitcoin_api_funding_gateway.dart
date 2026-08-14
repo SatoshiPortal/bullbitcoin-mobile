@@ -100,8 +100,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       final ppExtraData =
           (result['ppExtraData'] as Map<String, dynamic>?) ?? {};
       final merged = {...element, ...ppExtraData}.map(
-        (key, value) =>
-            MapEntry(key, value is num ? value.toString() : value),
+        (key, value) => MapEntry(key, value is num ? value.toString() : value),
       );
       merged['numTelefono'] ??=
           merged['NUM TELEFONO'] ??

@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Χάρτης",
   "backupWarningDescription": "Χωρίς αντίγραφο ασφαλείας, θα χάσετε την πρόσβαση στα bitcoin σας εάν:",
   "backupWarningLoseReasonLostPhone": "Χάσετε το τηλέφωνό σας",
   "backupWarningLoseReasonDeletedApp": "Διαγράψετε την εφαρμογή",
@@ -274,15 +275,6 @@
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "arkAboutDurationSeconds": "{seconds} δευτερόλεπτα",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "Το Invoice αντιγράφηκε στο clipboard",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -335,10 +327,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "arkReceiveBoardingAddress": "BTC Διοικητική Διεύθυνση",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "sellSendPaymentTitle": "Επιβεβαίωση πληρωμής",
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
@@ -371,21 +359,9 @@
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
-  "bitboxErrorDeviceMismatch": "Device mismatch εντοπίστηκε.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "arkReceiveBtcAddress": "BTC διεύθυνση διεύθυνση",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
-  },
   "exchangeLandingRecommendedExchange": "Προτεινόμενο Bitcoin Exchange",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "importWatchOnlyWalletGuides": "Wallet οδηγούς",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Επιβεβαίωση ... ({count}/{required})",
   "@receiveConfirming": {
@@ -454,10 +430,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "arkContinueButton": "Συνεχίστε να συνεχίζετε",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
-  },
   "ledgerImportButton": "Ξεκινήστε την εισαγωγή",
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
@@ -506,10 +478,6 @@
   "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
-  },
-  "arkAboutServerUrl": "Server URL",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
   },
   "fundExchangeLabelRecipientAddress": "Μαθητική διεύθυνση",
   "@fundExchangeLabelRecipientAddress": {
@@ -593,10 +561,6 @@
   "importQrDeviceJadeStep5": "Επιλέξτε \"Wallet\" από τη λίστα επιλογών",
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
-  },
-  "arkSettled": "Settled",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "transactionFilterBuy": "Αγοράστε αγορά αγορά",
   "@transactionFilterBuy": {
@@ -733,10 +697,6 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "arkReceiveSegmentBoarding": "Διοικητικό Συμβούλιο",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "exchangeLandingLoginToUseSupport": "Παρακαλούμε συνδεθείτε ή εγγραφείτε για να χρησιμοποιήσετε το chat υποστήριξης για θέματα που σχετίζονται με την ανταλλαγή.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -862,10 +822,6 @@
   "receiveShareAddress": "Κοινή διεύθυνση",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "Pending",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "Προσπαθείτε να πληρώσετε πάνω από το μέγιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
   "@payAboveMaxAmountError": {
@@ -998,10 +954,6 @@
   "exchangeAuthLoginFailed": "Εμπορία",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
-  },
-  "arkAvailable": "Διαθέσιμο διαθέσιμο διαθέσιμο διαθέσιμο",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
@@ -1160,6 +1112,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "Πορτοφόλι πληρωμής",
+  "buyPayoutMethodLiquid": "L-BTC στο Liquid",
+  "buyPayoutMethodBitcoin": "BTC στην αλυσίδα Bitcoin",
   "buyConfirmPayoutMethod": "Μέθοδος πληρωμής",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -1189,17 +1144,9 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "arkSettleCancel": "Ακύρωση",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "testBackupButton": "Backup Test Backup Test Backup",
   "@testBackupButton": {
     "description": "Button label to test backup"
-  },
-  "receiveNotePlaceholder": "Σημείωση",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
   },
   "sendChange": "Αλλαγή αλλαγής",
   "@sendChange": {
@@ -1306,10 +1253,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "arkStatusSettled": "Settled",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "Ελάχιστη 0,001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1390,10 +1333,6 @@
   "@sendErrorInsufficientFundsForPayment": {
     "description": "Error when insufficient funds available"
   },
-  "arkAboutShow": "Show",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
   "autoswapWarningOkButton": "ΕΝΤΆΞΕΙ",
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
@@ -1417,15 +1356,6 @@
   "receiveNote": "Σημείωση",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
-  },
-  "arkCopiedToClipboard": "{label} αντιγράφηκε στο clipboard",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "payLightningNetwork": "Δίκτυο Lightning Network",
   "@payLightningNetwork": {
@@ -1494,10 +1424,6 @@
   "sellKYCApproved": "KYC ενέκρινε",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "συναλλαγή συναλλαγής",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "buyKYCLevel": "KYC Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο",
   "@buyKYCLevel": {
@@ -1640,10 +1566,6 @@
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
-  "arkAboutNetwork": "Network",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
   "payLastName": "Τελευταίο Όνομα",
   "@payLastName": {
     "description": "Label for last name field"
@@ -1734,17 +1656,9 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "Διοικητικό Συμβούλιο",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "exchangeAmountInputValidationInsufficient": "Ανεπαρκή ισορροπία",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
-  },
-  "arkTransactions": "συναλλαγές συναλλαγών",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "broadcastSignedTxCameraButton": "Κάμερα",
   "@broadcastSignedTxCameraButton": {
@@ -1762,17 +1676,9 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "Καμία ενεργή σύνδεση με τη συσκευή BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "transactionFilterAll": "Όλα όλα",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
-  },
-  "bitboxCubitOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Η πληρωμή έλαβε!",
   "@receivePaymentReceived": {
@@ -1815,6 +1721,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "buyOrderAlreadyConfirmedError": "Αυτή η παραγγελία αγοράς έχει ήδη επιβεβαιωθεί.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -1883,10 +1790,6 @@
   "transactionLabelAmountSent": "Ποσό που αποστέλλεται",
   "@transactionLabelAmountSent": {
     "description": "Label for sent amount"
-  },
-  "arkSetupEnable": "Enable Ark",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "Δεν μπορείτε να διαγράψετε ένα προεπιλεγμένο πορτοφόλι.",
   "@walletDeletionErrorDefaultWallet": {
@@ -2361,10 +2264,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "Ark Instant πληρωμές",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "importQrDeviceError": "Αποζημιωμένος στο πορτοφόλι εισαγωγής",
   "@importQrDeviceError": {
     "description": "Error message when import fails"
@@ -2400,10 +2299,6 @@
   "payAddressRequired": "Η διεύθυνση απαιτείται",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "Στοιχεία συναλλαγής",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "Συνολικό ποσό",
   "@payTotalAmount": {
@@ -2497,10 +2392,6 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
-  "importColdcardButtonPurchase": "Εργαλείο αγοράς",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "jadeStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
@@ -2521,26 +2412,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "Preconfirmed",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "Αρχείο που δεν έχει επιλεγεί",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} ημέρα",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "Αποστολή αποστολής",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "buyInputContinue": "Συνεχίστε να συνεχίζετε",
   "@buyInputContinue": {
@@ -2674,10 +2548,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "Ποσο Ποσό Ποσο",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "Σας λένε να μην ανησυχείτε για αυτή την προειδοποίηση",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -2791,10 +2661,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "arkDate": "Date",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
-  },
   "psbtFlowInstructions": "Οδηγίες",
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
@@ -2888,7 +2754,7 @@
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
   },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
+  "electrumServerUrlHint": "Διεύθυνση URL διακομιστή {network} {environment}",
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
@@ -2932,7 +2798,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Αγοράσατε {amount}",
+  "buyYouBought": "Αγοράσατε {amount} με {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -2986,10 +2852,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "Experimental",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "importQrDeviceKeystoneStep5": "Επιλέξτε \"BULL\" από τη λίστα των πορτοφολών",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
@@ -3030,10 +2892,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "arkReceiveUnifiedCopied": "Ενοποιημένη διεύθυνση",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
-  },
   "importQrDeviceJadeStep9": "Βάλτε τον κωδικό QR που βλέπετε στη συσκευή σας.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
@@ -3065,10 +2923,6 @@
   "backupInstruction3": "Όποιος έχει πρόσβαση στο 12ο αντίγραφο ασφαλείας μπορεί να κλέψει τα bitcoins σας. Κρύψε το καλά.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "Redeem",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "Υποχρεωτική διεύθυνση",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -3270,10 +3124,6 @@
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
   },
-  "bitboxCubitHandshakeFailed": "Απέτυχε να δημιουργήσει ασφαλή σύνδεση. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Ποσό είναι πάνω από όρια ανταλλαγής",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3398,10 +3248,6 @@
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
   },
-  "arkInstantPayments": "Ark Instant Payments",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
-  },
   "sendEstimatedDelivery": "Εκτιμώμενη παράδοση - ",
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
@@ -3430,7 +3276,7 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "dcaBuyingMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
@@ -3523,10 +3369,6 @@
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
   },
-  "bitboxCubitPermissionDenied": "Η άδεια USB αρνήθηκε. Σας παρακαλούμε να δώσετε άδεια πρόσβασης στη συσκευή BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
   "swapTransferTo": "Μεταφορά",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
@@ -3595,10 +3437,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "arkSendRecipientTitle": "Αποστολή για Μαθητή",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "Εισαγόμενη εισαγωγή",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
@@ -3619,10 +3457,6 @@
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
-  "arkBoardingConfirmed": "Επιβεβαιώθηκε το Boarding",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
   "exchangeFileUploadInstructionsWithParams": "Ανεβαίνετε μέχρι {maxFiles} αρχεία. Επιτρέπονται μορφές: PDF, JPG, PNG, GIF, HEIC. Μέγιστη μέγεθος αρχείου: 10MB ανά αρχείο.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3635,10 +3469,6 @@
   "broadcastSignedTxTitle": "Broadcast Transaction",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
-  },
-  "arkSettleIncludeRecoverable": "Περιλαμβάνει ανακτήσιμο vtxos",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
   },
   "ledgerWalletTypeSegwitDescription": "Native SegWit - Προτεινόμενη",
   "@ledgerWalletTypeSegwitDescription": {
@@ -3691,10 +3521,6 @@
   "fiatCurrencySettingsLabel": "Fiat νόμισμα",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
-  },
-  "arkStatusConfirmed": "Επιβεβαιώθηκε",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
   },
   "withdrawConfirmAmount": "Ποσο Ποσό Ποσο",
   "@withdrawConfirmAmount": {
@@ -3775,10 +3601,6 @@
   "receiveWaitForSenderToFinish": "Περιμένετε τον αποστολέα να ολοκληρώσει τη συναλλαγή payjoin",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "Ark setup",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@seedsignerStep3": {
@@ -3970,15 +3792,11 @@
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
-  "arkNoBalanceData": "Δεν υπάρχουν διαθέσιμα δεδομένα ισορροπίας",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
-  },
   "coreSwapsChainCompletedSuccess": "Η μεταφορά ολοκληρώνεται με επιτυχία.",
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
-  "autoswapMaxBalance": "Max Instant Wallet Balance",
+  "autoswapMaxBalance": "Μέγιστο Υπόλοιπο Instant Wallet",
   "@autoswapMaxBalance": {
     "description": "Field label for max balance threshold"
   },
@@ -4055,7 +3873,7 @@
   "@settingsRecoverbullTitle": {
     "description": "Title for the Recoverbull backup section in app settings"
   },
-  "buyInputKycPending": "KYC ID Verification Pending",
+  "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
   },
@@ -4148,10 +3966,6 @@
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
-  "arkReceiveCopyAddress": "Διεύθυνση αντιγραφής διεύθυνση αντιγραφής",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
   "exchangeDcaNetworkLightning": "Δίκτυο Lightning Network",
   "@exchangeDcaNetworkLightning": {
     "description": "DCA network option: Lightning"
@@ -4164,10 +3978,6 @@
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
   },
-  "arkSendAmountTitle": "Εισάγετε το ποσό",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "translationWarningTitle": "AI-Generated Translations",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -4179,10 +3989,6 @@
   "payOnChainFee": "On-Chain Fee",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
-  },
-  "arkReceiveUnifiedAddress": "Ενοποιημένη διεύθυνση (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
   },
   "sellHowToPayInvoice": "Πώς θέλετε να πληρώσετε αυτό το τιμολόγιο?",
   "@sellHowToPayInvoice": {
@@ -4238,10 +4044,6 @@
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
-  },
-  "arkSendSuccessMessage": "Η συναλλαγή της Κιβωτού σας ήταν επιτυχής!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "καθόταν",
   "@sendSats": {
@@ -4316,10 +4118,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Δεν λαμβάνει πρόταση payjoin από τον παραλήπτη?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "Επιλέξτε \"Connect Wallet\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
@@ -4364,17 +4162,9 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkStatusPending": "Pending",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "arkType": "Τύπος τύπου Type Type",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "Χωρίς ένα αντίγραφο ασφαλείας, θα χάσετε τελικά την πρόσβαση στα χρήματά σας. Είναι εξαιρετικά σημαντικό να κάνετε ένα αντίγραφο ασφαλείας.",
   "@backupImportanceMessage": {
@@ -4403,10 +4193,6 @@
   "pinCodeConfirmTitle": "Επιβεβαίωση νέου pin",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "arkSetupExperimentalWarning": "Η Κιβωτός εξακολουθεί να είναι πειραματική.\n\nΤο πορτοφόλι της Κιβωτός σας προέρχεται από τη φράση σπόρων του κύριου πορτοφολιού σας. Δεν απαιτείται πρόσθετο αντίγραφο ασφαλείας, το υφιστάμενο αντίγραφο ασφαλείας του πορτοφολιού σας αποκαθιστά επίσης τα ταμεία σας.\n\nΣυνεχίζοντας, αναγνωρίζετε την πειραματική φύση της Κιβωτός και τον κίνδυνο απώλειας κεφαλαίων.\n\nΣημείωση προγραμματισμού: Το μυστικό της Ark προέρχεται από τον κύριο σπόρο του πορτοφολιού χρησιμοποιώντας μια αυθαίρετη BIP-85 έκπτωση (index 11811).",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
@@ -4711,7 +4497,7 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Electrum server (Bitcoin node)",
+  "electrumServerSettingsLabel": "Διακομιστής Electrum (κόμβος Bitcoin)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
   },
@@ -4793,15 +4579,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -4821,10 +4598,6 @@
   "recoverbullErrorServiceUnavailable": "Η υπηρεσία δεν είναι διαθέσιμη. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
-  },
-  "arkSettleTitle": "Διαχωριστικές συναλλαγές",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
   },
   "sendErrorInsufficientBalanceForSwap": "Όχι αρκετή ισορροπία για να πληρώσει αυτή την ανταλλαγή μέσω της Liquid και όχι εντός ορίων ανταλλαγής για να πληρώσει μέσω Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -4886,10 +4659,6 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "arkTxPayment": "Πληρωμή πληρωμής",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
-  },
   "importQrDeviceSeedsignerStep6": "Επιλέξτε \"Sparrow\" ως επιλογή εξαγωγής",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
@@ -4922,7 +4691,7 @@
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
   },
-  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
+  "walletAutoTransferBlockedMessage": "Προσπάθεια μεταφοράς {amount} BTC. Η τρέχουσα χρέωση είναι {currentFee}% του ποσού μεταφοράς και το όριο χρέωσης έχει οριστεί στο {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
     "description": "Message explaining why auto-transfer was blocked",
     "placeholders": {
@@ -5024,10 +4793,6 @@
   "exchangeFeatureSelfCustody": "• Αγοράστε Bitcoin απευθείας στην αυτο-κατηγορία",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "arkBoardingUnconfirmed": "Boarding Unconfirmed",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@fundExchangeLabelPaymentDescription": {
@@ -5142,10 +4907,6 @@
   "coldcardStep9": "Μόλις η συναλλαγή εισαγάγεται στο Coldcard σας, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "Τα αιτήματα πληρωμής ARK είναι διαθέσιμα μόνο από πειραματική λειτουργία Ark.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "Πλήρης σας KYC",
   "@exchangeKycComplete": {
@@ -5390,15 +5151,6 @@
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
   },
-  "arkAboutDurationDays": "{days} ημέρες",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "Λεπτομέρειες πληρωμής",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -5472,10 +5224,6 @@
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
   },
-  "arkAboutForfeitAddress": "Forfeit διεύθυνση",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "kruxStep13": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
@@ -5512,10 +5260,6 @@
   "@payRBFEnabled": {
     "description": "Status when RBF is enabled"
   },
-  "arkAboutDust": "Dust",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
-  },
   "ledgerSuccessVerifyDescription": "Η διεύθυνση έχει επαληθευτεί στη συσκευή Ledger σας.",
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
@@ -5548,10 +5292,6 @@
   "@buySelfie": {
     "description": "Type of document required"
   },
-  "arkAboutSecretKey": "Μυστικό κλειδί",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "sellMxnBalance": "MXN ισορροπία ισορροπία",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
@@ -5568,10 +5308,6 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "arkTxTypeRedeem": "Redeem",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
-  },
   "receiveVerifyAddressOnLedger": "Verify Address on Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
@@ -5587,10 +5323,6 @@
   "backupSettingsKeyWarningBold": "Προειδοποίηση: Να είστε προσεκτικοί όπου εξοικονομείτε το κλειδί ασφαλείας.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "settingsArkTitle": "Κιβωτός",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
   },
   "exchangeLandingConnectAccount": "Συνδεθείτε το λογαριασμό ανταλλαγής Bitcoin σας",
   "@exchangeLandingConnectAccount": {
@@ -5663,10 +5395,6 @@
   "mempoolCustomServerLabel": "CUSTOM",
   "@mempoolCustomServerLabel": {
     "description": "Label badge for custom server"
-  },
-  "arkAboutSessionDuration": "Διάρκεια συνεδρίας",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
   },
   "transferFeeLabel": "Μεταφορά",
   "@transferFeeLabel": {
@@ -5752,10 +5480,6 @@
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
-  "arkSendConfirm": "Επιβεβαίωση",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "rbfErrorFeeTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
@@ -5771,15 +5495,6 @@
   "jadeStep10": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Jade σας.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "arkAboutDurationHour": "{hours} ώρα",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenUnknownError": "Το άγνωστο λάθος συνέβη",
   "@bitboxScreenUnknownError": {
@@ -5805,17 +5520,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex02v6 ..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "Calculating...",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "Recoverable Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "translationWarningDismissButton": "Got It Got It",
   "@translationWarningDismissButton": {
@@ -5836,10 +5543,6 @@
   "kruxStep4": "Κάντε κλικ Φόρτρα από κάμερα",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Η μορφή Invalid PSBT εντοπίστηκε.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "Απέτυχε να υπολογίσει τα τέλη: {error}",
   "@sellErrorRecalculateFees": {
@@ -5953,7 +5656,7 @@
   "@bitboxScreenVerifyOnDevice": {
     "description": "Instruction to verify address on device"
   },
-  "ledgerConnectTitle": "Connect Your Ledger Device",
+  "ledgerConnectTitle": "Συνδέστε τη Συσκευή Ledger σας",
   "@ledgerConnectTitle": {
     "description": "Title for initial Ledger connection screen"
   },
@@ -6009,10 +5712,6 @@
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
   },
-  "arkTxSettlement": "Διακανονισμού",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
-  },
   "autoswapEnable": "Αποτελεσματικότητα αυτόματη μεταφορά",
   "@autoswapEnable": {
     "description": "Toggle label to enable auto transfer"
@@ -6041,7 +5740,7 @@
   "@transactionDetailLabelLiquidTxId": {
     "description": "Label for Liquid transaction ID"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Μεταφόρτωση {count} {count, plural, =1{αρχείου} other{αρχείων}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -6195,10 +5894,6 @@
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "arkAboutEsploraUrl": "Esplora URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
   "backupKeyExampleWarning": "Για παράδειγμα, εάν χρησιμοποιήσατε το Google Drive για το αρχείο αντιγράφων ασφαλείας σας, μην χρησιμοποιείτε το Google Drive για το εφεδρικό σας κλειδί.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -6271,10 +5966,6 @@
   "backupSettingsBackupKey": "Backup Key Backup",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "Σύνδεση ID",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "Το Invoice αντιγράφηκε στο clipboard",
   "@payInvoiceCopied": {
@@ -6421,10 +6112,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Αγοράστε μια συσκευή",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
-  },
   "sellMinimumAmount": "Ελάχιστη ποσότητα πώλησης: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -6475,7 +6162,7 @@
   "exportTransactionsButton": "Εξαγωγή CSV",
   "exportTransactionsSuccess": "Οι συναλλαγές εξήχθησαν με επιτυχία",
   "exportTransactionsEmpty": "Δεν υπάρχουν συναλλαγές προς εξαγωγή για την επιλεγμένη περίοδο",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Αποτυχία εξαγωγής συναλλαγών",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -6511,10 +6198,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Στείλε δίκτυο Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "Ένα λάθος συνέβη",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -6548,10 +6231,6 @@
         "format": "decimalPattern"
       }
     }
-  },
-  "arkSendConfirmedBalance": "Επιβεβαιωμένη ισορροπία",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
   },
   "sellFastest": "Πιο γρήγορα",
   "@sellFastest": {
@@ -6810,15 +6489,6 @@
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
   },
-  "arkAboutDurationDay": "{days} ημέρα",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "buyConfirmYouPay": "Πληρώνετε",
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
@@ -6850,10 +6520,6 @@
   "settingsSuperuserModeDisabledMessage": "Superuser mode με αναπηρία.",
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
-  },
-  "bitboxCubitConnectionFailed": "Επιθυμήθηκε να συνδεθεί με τη συσκευή BitBox. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
   },
   "settingsTermsOfServiceTitle": "Όροι Υπηρεσίας",
   "@settingsTermsOfServiceTitle": {
@@ -6936,10 +6602,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Συσκευή που δεν συνδυάζονται. Παρακαλούμε να ολοκληρώσετε πρώτα τη διαδικασία ζευγαρώματος.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC ισορροπία ισορροπία",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -6968,10 +6630,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "bitboxCubitOperationCancelled": "Η επιχείρηση ακυρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
-  },
   "passportStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@passportStep3": {
     "description": "Passport instruction step 3"
@@ -6987,10 +6645,6 @@
   "receivePayjoinFailQuestion": "Δεν υπάρχει χρόνος να περιμένουμε ή να αποτύχει το payjoin στο πλευρό του αποστολέα?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
-  },
-  "arkSendConfirmTitle": "Επιβεβαίωση αποστολής",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
   },
   "importQrDeviceSeedsignerStep1": "Power on your SeedSigner συσκευή",
   "@importQrDeviceSeedsignerStep1": {
@@ -7365,10 +7019,6 @@
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
   },
-  "arkAboutCopy": "Αντιγραφή",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
-  },
   "receiveNoteLabel": "Σημείωση",
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
@@ -7376,10 +7026,6 @@
   "payFirstName": "Πρώτο όνομα",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "Καμία συναλλαγή ακόμα.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "importWatchOnlySigningDevice": "Signing Device",
   "@importWatchOnlySigningDevice": {
@@ -7402,7 +7048,7 @@
       }
     }
   },
-  "buyKycPendingTitle": "KYC ID Verification Pending",
+  "buyKycPendingTitle": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
@@ -7430,7 +7076,7 @@
   "@pasteInputDefaultHint": {
     "description": "Default placeholder hint for paste input field"
   },
-  "sellKycPendingTitle": "KYC ID Verification Pending",
+  "sellKycPendingTitle": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
@@ -7473,10 +7119,6 @@
   "payAccountNumber": "Αριθμός λογαριασμού",
   "@payAccountNumber": {
     "description": "Label for account number"
-  },
-  "arkSatsUnit": "καθόταν",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
   },
   "payMinimumAmount": "Ελάχιστη: {amount}",
   "@payMinimumAmount": {
@@ -7555,15 +7197,6 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "Απέτυχε να σώσει τις ρυθμίσεις: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Πρότυπο απόσυρση",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
@@ -7579,15 +7212,6 @@
   "transactionDetailLabelTransferFees": "Τέλη μεταφοράς",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
-  },
-  "arkAboutDurationHours": "{hours} ώρες",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "importWalletSectionGeneric": "Generic πορτοφόλια",
   "@importWalletSectionGeneric": {
@@ -7658,10 +7282,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "arkAboutHide": "Hide",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
   "ledgerProcessingVerify": "Παρουσιάζοντας διεύθυνση στο Ledger...",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
@@ -7669,10 +7289,6 @@
   "coreScreensFeePriorityLabel": "Προτεραιότητα",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "arkSendPendingBalance": "Pending Balance    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coreScreensLogsTitle": "Logs",
   "@coreScreensLogsTitle": {
@@ -7682,7 +7298,7 @@
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
   },
-  "bip329LabelsHeading": "BIP329 Labels Import/Export",
+  "bip329LabelsHeading": "Εισαγωγή/Εξαγωγή Ετικετών BIP329",
   "@bip329LabelsHeading": {
     "description": "Main heading on BIP329 labels page"
   },
@@ -7709,10 +7325,6 @@
   "payBelowMinAmountError": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "Κιβωτός",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
   },
   "autoswapRecipientWalletInfo": "Επιλέξτε ποια πορτοφόλι Bitcoin θα λάβει τα μεταβιβασθέντα κεφάλαια (απαιτείται)",
   "@autoswapRecipientWalletInfo": {
@@ -7746,7 +7358,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "exchangeDcaSummaryMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
     "placeholders": {
@@ -7790,10 +7402,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "Αποστολή επιτυχής",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "importQrDevicePassportStep3": "Επιλέξτε \"Manage Account\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
@@ -7813,10 +7421,6 @@
   "walletNetworkLiquid": "Liquid Network",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
-  },
-  "receiveArkNetwork": "Κιβωτός",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
@@ -8135,10 +7739,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Αποζημιωμένος για να σώσει τις ρυθμίσεις",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "Επαλήθευση φωτός",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -8263,14 +7863,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "arkSendConfirmMessage": "Παρακαλούμε επιβεβαιώστε τις λεπτομέρειες της συναλλαγής σας πριν στείλετε.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin Δημιουργία χρόνος",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
@@ -8369,10 +7961,6 @@
   "exchangeAppSettingsDefaultCurrencyLabel": "Default Currency",
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
-  },
-  "arkSendRecipientError": "Παρακαλώ εισάγετε έναν παραλήπτη",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
   },
   "payRecipientName": "Μαθητές όνομα",
   "@payRecipientName": {
@@ -8503,19 +8091,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Error φόρτωσης περισσότερες διευθύνσεις: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Αντιγραφή",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "Δημιουργία συναλλαγής...",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -8617,15 +8192,6 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "addressViewErrorLoadingAddresses": "Error φόρτωσης διευθύνσεων: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Ο τύπος σύνδεσης που δεν έχει οριστικοποιηθεί.",
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
@@ -8707,10 +8273,6 @@
   "ledgerInstructionsAndroidDual": "Βεβαιωθείτε ότι το Ledger σας είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που ανοίγεται και το Bluetooth επιτρέπει.",
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
-  "arkSendRecipientLabel": "Η διεύθυνση του Recipient",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
   },
   "defaultWalletsLabel": "Default Wallets",
   "@defaultWalletsLabel": {
@@ -8799,10 +8361,6 @@
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
   },
-  "bitboxCubitInvalidResponse": "Ακυρωμένη απάντηση από τη συσκευή BitBox. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
   "settingsScreenTitle": "Ρυθμίσεις",
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
@@ -8814,10 +8372,6 @@
   "importQrDeviceKruxStep5": "Βάλτε τον κωδικό QR που βλέπετε στη συσκευή σας.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "Κατάσταση status status",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "Προσθέστε αυτό ως το λόγο για τη μεταφορά",
   "@fundExchangeHelpTransferCode": {
@@ -8903,15 +8457,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "arkAboutDurationMinutes": "{minutes} λεπτά",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "swapProgressTitle": "Εσωτερική μεταφορά",
   "@swapProgressTitle": {
@@ -9061,15 +8606,6 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "arkAboutDurationMinute": "{minutes} λεπτό",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "Λαμβάνουν ειδοποιήσεις ηλεκτρονικού ταχυδρομείου για παραγγελίες και ενημερώσεις λογαριασμού",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
@@ -9109,18 +8645,6 @@
   "electrumSaveFailedError": "Απέτυχε να σώσει προηγμένες επιλογές",
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
-  },
-  "arkSettleTransactionCount": "Settle {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenWalletTypeLabel": "Wallet Type:",
   "@bitboxScreenWalletTypeLabel": {
@@ -9333,10 +8857,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "Παραλαβή",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "Το Retry Count δεν μπορεί να είναι αρνητικό",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -9385,10 +8905,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "arkSettleMessage": "Τελικοποίηση εκκρεμών συναλλαγών και περιλαμβάνει ανακτήσιμα vtxos αν χρειαστεί",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "receiveCopyInvoice": "Αντίγραφο Invoice",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -9408,10 +8924,6 @@
   "paySendMax": "Max",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "arkReceiveArkAddress": "Ark διεύθυνση",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
   },
   "transactionNoteEditTitle": "Edit σημείωση",
   "@transactionNoteEditTitle": {
@@ -9449,15 +8961,6 @@
   "importQrDeviceKeystoneStep1": "Power on your Keystone",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} ημέρες",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 προσδιοριστικές εντροπίες",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -9568,10 +9071,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Ποσό (προαιρετικό)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "buyLevel1Limit": "Επίπεδο 1 όριο: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -9665,10 +9164,6 @@
   "walletDetailsPubkeyLabel": "Pubkey",
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
-  },
-  "arkAboutBoardingExitDelay": "Διοικητική καθυστέρηση εξόδου",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
   },
   "receiveConfirmedInFewSeconds": "Θα επιβεβαιωθεί σε λίγα δευτερόλεπτα",
   "@receiveConfirmedInFewSeconds": {
@@ -9785,10 +9280,6 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "arkTxBoarding": "Διοικητικό Συμβούλιο",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
-  },
   "bitboxActionVerifyAddressSuccess": "Απευθυνόμενη με επιτυχία",
   "@bitboxActionVerifyAddressSuccess": {
     "description": "Success text for verify address"
@@ -9882,10 +9373,6 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "arkAboutUnilateralExitDelay": "Unilateral καθυστέρηση εξόδου",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
   "payUnsupportedInvoiceType": "Μη υποστηριζόμενος τύπος τιμολογίου",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
@@ -9940,15 +9427,6 @@
   "encryptedVaultDescription": "Anonymous backup με ισχυρή κρυπτογράφηση χρησιμοποιώντας το σύννεφο σας.",
   "@encryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "arkAboutCopiedMessage": "{label} αντιγράφηκε στο clipboard",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "swapAmountLabel": "Ποσο Ποσό Ποσο",
   "@swapAmountLabel": {
@@ -10067,10 +9545,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "arkAboutServerPubkey": "Server pubkey",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "receiveReceiveAmount": "Αποδεχόμενο ποσό",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -10143,10 +9617,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "Δέσμευση",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "Ελάτε στην αποστολή",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -10175,7 +9645,7 @@
   "@bitboxScreenVerifyAddress": {
     "description": "Main text when showing address verification"
   },
-  "bitboxScreenConnectDevice": "Connect Your BitBox Device",
+  "bitboxScreenConnectDevice": "Συνδέστε τη Συσκευή BitBox σας",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
   },
@@ -10331,10 +9801,6 @@
       }
     }
   },
-  "arkSessionDuration": "Διάρκεια συνεδρίας",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
-  },
   "recoverbullErrorConnectionFailed": "Απέτυχε να συνδεθεί με τον βασικό διακομιστή-στόχο. Παρακαλώ δοκιμάστε ξανά αργότερα!",
   "@recoverbullErrorConnectionFailed": {
     "description": "Error message when server connection fails"
@@ -10353,10 +9819,6 @@
       }
     }
   },
-  "arkSettleTransactions": "Διαχωριστικές συναλλαγές",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "sharedWithBullBitcoin": "μοιράζονται με το Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
@@ -10368,10 +9830,6 @@
   "testBackupWarningMessage": "Χωρίς ένα αντίγραφο ασφαλείας, θα χάσετε τελικά την πρόσβαση στα χρήματά σας. Είναι εξαιρετικά σημαντικό να κάνετε ένα αντίγραφο ασφαλείας.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "Network",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "backupWalletHowToDecideBackupLosePhysical": "Ένας από τους πιο συνηθισμένους τρόπους που οι άνθρωποι χάνουν το Bitcoin τους είναι επειδή χάνουν το φυσικό αντίγραφο ασφαλείας. Ο καθένας που βρίσκει το φυσικό σας αντίγραφο ασφαλείας θα είναι σε θέση να πάρει όλο το Bitcoin σας. Αν είστε πολύ σίγουροι ότι μπορείτε να το κρύψετε καλά και ποτέ να το χάσετε, είναι μια καλή επιλογή.",
   "@backupWalletHowToDecideBackupLosePhysical": {
@@ -10450,10 +9908,6 @@
   "@verifyButton": {
     "description": "Button label to verify recovery phrase"
   },
-  "arkRecipientAddress": "Μαθητική διεύθυνση",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
-  },
   "googleDriveProvider": "Google Drive",
   "@googleDriveProvider": {
     "description": "Name of Google Drive provider"
@@ -10465,15 +9919,6 @@
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Αυτός ο μοναδικός αριθμός λογαριασμού δημιουργείται μόνο για εσάς",
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
-  },
-  "arkDurationMinutes": "{minutes} λεπτά",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
   },
   "transactionSwapDescLnReceiveExpired": "Αυτή η ανταλλαγή έχει λήξει. Κάθε ταμείο που αποστέλλεται θα επιστραφεί αυτόματα στον αποστολέα.",
   "@transactionSwapDescLnReceiveExpired": {
@@ -10508,7 +9953,7 @@
   "@dcaOrderTypeLabel": {
     "description": "Label for order type detail row"
   },
-  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
+  "dcaSuccessMessageHourly": "Θα αγοράζετε {amount} κάθε ώρα",
   "@dcaSuccessMessageHourly": {
     "description": "Success message for hourly frequency",
     "placeholders": {
@@ -10537,10 +9982,6 @@
   "dcaFundAccountButton": "Χρηματοδότηση του λογαριασμού σας",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
-  },
-  "arkSendTitle": "Αποστολή αποστολής",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
   },
   "transactionDetailLabelAmountReceived": "Ποσό που λαμβάνεται",
   "@transactionDetailLabelAmountReceived": {
@@ -10578,10 +10019,6 @@
   "@recoverbullGoogleDriveNoBackupsFound": {
     "description": "Message displayed when no backups are found in Google Drive"
   },
-  "arkDust": "Dust",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "backupWalletErrorGoogleDriveConnection": "Επιθυμήθηκε να συνδεθεί με το Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
     "description": "Error when Google Drive connection fails"
@@ -10593,15 +10030,6 @@
   "recoverbullErrorInvalidCredentials": "Λάθος κωδικό πρόσβασης για αυτό το αρχείο αντιγράφων ασφαλείας",
   "@recoverbullErrorInvalidCredentials": {
     "description": "Error message when wrong password is entered for vault"
-  },
-  "arkDurationSeconds": "{seconds} δευτερόλεπτα",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "transactionDetailAccelerate": "Accelerate",
   "@transactionDetailAccelerate": {
@@ -10616,10 +10044,6 @@
         "example": "PIN"
       }
     }
-  },
-  "arkUnifiedAddressCopied": "Ενοποιημένη διεύθυνση",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
   },
   "transactionSwapDescLnSendCompleted": "Η πληρωμή Lightning έχει αποσταλεί με επιτυχία! Η ανταλλαγή σας είναι τώρα πλήρης.",
   "@transactionSwapDescLnSendCompleted": {
@@ -10715,15 +10139,6 @@
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
-  "arkDurationHours": "{hours} ώρες",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "dcaFrequencyHourly": "ώρα",
   "@dcaFrequencyHourly": {
     "description": "Hourly DCA frequency"
@@ -10769,10 +10184,6 @@
   "@backupWalletInstructionSecurityRisk": {
     "description": "Security warning about protecting backup from theft"
   },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "Παρακαλώ περιμένετε ενώ θα τραβήξουμε το εφεδρικό αρχείο σας.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -10790,15 +10201,6 @@
     "description": "Error when backup fetch fails",
     "placeholders": {
       "error": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} λεπτό",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
         "type": "String"
       }
     }
@@ -10871,21 +10273,9 @@
   "@testYourWalletTitle": {
     "description": "Title for test your wallet screen"
   },
-  "arkForfeitAddress": "Forfeit διεύθυνση",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "dcaInsufficientBalanceDescription": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
   "@dcaInsufficientBalanceDescription": {
     "description": "InfoCard description explaining insufficient balance error"
-  },
-  "arkBtcAddress": "BTC διεύθυνση διεύθυνση",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
-  "arkCancelButton": "Ακύρωση",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "exchangeHomeDepositButton": "Προκαταβολή",
   "@exchangeHomeDepositButton": {
@@ -10907,7 +10297,7 @@
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
   },
-  "testBackupPinMessage": "Test to make sure you remember your backup {pinOrPassword}",
+  "testBackupPinMessage": "Δοκιμάστε για να βεβαιωθείτε ότι θυμάστε το εφεδρικό σας {pinOrPassword}",
   "@testBackupPinMessage": {
     "description": "Message prompting user to test backup PIN/password",
     "placeholders": {
@@ -10929,10 +10319,6 @@
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
   },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex02v6 ..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
-  },
   "backupWalletVaultProviderTakeYourTime": "Πάρτε το χρόνο σας",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
@@ -10952,10 +10338,6 @@
   "transactionDetailLabelExchangeRate": "Συναλλαγματική ισοτιμία",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "arkServerPubkey": "Server pubkey",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
   },
   "testBackupPhysicalBackupDescription": "Γράψτε 12 λέξεις σε ένα κομμάτι χαρτί. Κρατήστε τους ασφαλείς και βεβαιωθείτε ότι δεν τα χάσετε.",
   "@testBackupPhysicalBackupDescription": {
@@ -10984,10 +10366,6 @@
   "transactionDetailLabelToWallet": "To πορτοφόλι",
   "@transactionDetailLabelToWallet": {
     "description": "Label for destination wallet"
-  },
-  "arkToday": "Σήμερα σήμερα",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
   },
   "psbtFlowMoveBack": "Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
   "@psbtFlowMoveBack": {
@@ -11064,10 +10442,6 @@
       }
     }
   },
-  "arkSettleDescription": "Τελικοποίηση εκκρεμών συναλλαγών και περιλαμβάνει ανακτήσιμα vtxos αν χρειαστεί",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "Προσαρμοσμένη τοποθεσία: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
@@ -11085,10 +10459,6 @@
         "example": "PIN"
       }
     }
-  },
-  "arkUnilateralExitDelay": "Unilateral καθυστέρηση εξόδου",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
   },
   "dcaInsufficientBalanceTitle": "Ανεπαρκή ισορροπία",
   "@dcaInsufficientBalanceTitle": {
@@ -11139,7 +10509,7 @@
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
-  "dcaSuccessMessageMonthly": "You will buy {amount} every month",
+  "dcaSuccessMessageMonthly": "Θα αγοράζετε {amount} κάθε μήνα",
   "@dcaSuccessMessageMonthly": {
     "description": "Success message for monthly frequency",
     "placeholders": {
@@ -11184,10 +10554,6 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "legacySeedViewNoSeedsMessage": "Κανένας κληρονομικός σπόρος δεν βρέθηκε.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
   "dcaContinueButton": "Συνεχίστε να συνεχίζετε",
   "@dcaContinueButton": {
     "description": "Button label to proceed to next step in DCA flow"
@@ -11212,10 +10578,6 @@
   "@exchangeSupportChatEmptyState": {
     "description": "Message shown when there are no chat messages"
   },
-  "arkIncludeRecoverableVtxos": "Περιλαμβάνει ανακτήσιμο vtxos",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "recoverbullConnecting": "Συνδέοντας",
   "@recoverbullConnecting": {
     "description": "Status label indicating connection in progress"
@@ -11231,10 +10593,6 @@
   "transactionDetailLabelTransactionId": "Σύνδεση ID",
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
-  },
-  "arkReceiveTitle": "Ark παραλαβή",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Κατακρυπτόμενο θησαυροφυλάκιο: ",
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
@@ -11318,7 +10676,7 @@
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
-  "dcaSuccessMessageDaily": "Θα αγοράσετε κάθε μέρα",
+  "dcaSuccessMessageDaily": "Θα αγοράσετε {amount} κάθε μέρα",
   "@dcaSuccessMessageDaily": {
     "description": "Success message for daily frequency",
     "placeholders": {
@@ -11392,10 +10750,6 @@
   "@recoverbullGoogleDriveScreenTitle": {
     "description": "Screen title for Google Drive vaults management"
   },
-  "arkAboutTitle": "Σχετικά",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
   "psbtFlowTransactionImported": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
   "@psbtFlowTransactionImported": {
     "description": "Confirmation that transaction was imported successfully"
@@ -11415,10 +10769,6 @@
   "dcaFrequencyValidationError": "Επιλέξτε μια συχνότητα",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
-  },
-  "arkBoardingExitDelay": "Διοικητική καθυστέρηση εξόδου",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
   },
   "exchangeAuthLoginFailedOkButton": "ΕΝΤΆΞΕΙ",
   "@exchangeAuthLoginFailedOkButton": {
@@ -11447,10 +10797,6 @@
   "tapWordsInOrderTitle": "Πατήστε τις λέξεις ανάκτησης στις\nσωστή τάξη",
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
-  },
-  "arkConfirmed": "Επιβεβαιώθηκε",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
   },
   "enterPinAgainMessage": "Εισάγετε ξανά το {pinOrPassword} για να συνεχίσετε.",
   "@enterPinAgainMessage": {
@@ -11547,10 +10893,6 @@
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"
   },
-  "arkCopyAddress": "Διεύθυνση αντιγραφής διεύθυνση αντιγραφής",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
-  },
   "psbtFlowClickDone": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
   "@psbtFlowClickDone": {
     "description": "Instruction to click done button in app"
@@ -11571,10 +10913,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Passphrases:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "recoverbullContinue": "Συνεχίστε να συνεχίζετε",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"
@@ -11587,15 +10925,6 @@
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
   },
-  "arkDurationHour": "{hours} ώρα",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "Αυτά τα τέλη θα αφαιρεθούν από το ποσό που αποστέλλεται",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -11603,10 +10932,6 @@
   "recoverbullTorNotStarted": "Το Tor δεν ξεκινά",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
-  },
-  "arkPending": "Pending",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
   },
   "testBackupCreatedAt": "Δημιουργήθηκε στο:",
   "@testBackupCreatedAt": {
@@ -11646,10 +10971,6 @@
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
   },
-  "arkBalanceBreakdownTooltip": "Κατανομή ισορροπίας",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
-  },
   "exchangeDcaDeactivateTitle": "Απενεργοποιήστε το Recuring Buy",
   "@exchangeDcaDeactivateTitle": {
     "description": "Title shown when DCA is active and can be deactivated"
@@ -11675,10 +10996,6 @@
         "type": "String"
       }
     }
-  },
-  "legacySeedViewEmptyPassphrase": "(άδεια)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "backupWalletHowToDecideVaultModalTitle": "Πώς να αποφασίσετε",
   "@backupWalletHowToDecideVaultModalTitle": {
@@ -11740,7 +11057,7 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "dcaSuccessMessageWeekly": "You will buy {amount} every week",
+  "dcaSuccessMessageWeekly": "Θα αγοράζετε {amount} κάθε εβδομάδα",
   "@dcaSuccessMessageWeekly": {
     "description": "Success message for weekly frequency",
     "placeholders": {
@@ -11753,7 +11070,7 @@
   "@autoswapRecipientWalletPlaceholder": {
     "description": "Dropdown placeholder text when no wallet is selected"
   },
-  "enterYourBackupPinTitle": "Enter your backup {pinOrPassword}",
+  "enterYourBackupPinTitle": "Εισαγάγετε το εφεδρικό σας {pinOrPassword}",
   "@enterYourBackupPinTitle": {
     "description": "Title for entering backup PIN or password",
     "placeholders": {
@@ -11762,10 +11079,6 @@
         "example": "PIN"
       }
     }
-  },
-  "arkBalanceBreakdown": "Καταρροή ισορροπία",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
   },
   "recoverbullPasswordRequired": "Το Password απαιτείται",
   "@recoverbullPasswordRequired": {
@@ -11786,14 +11099,6 @@
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "@backupWalletVaultProviderGoogleDrive": {
     "description": "Name of Google Drive vault provider option"
-  },
-  "arkSettleButton": "Settle",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "googleDrivePrivacyMessage": "Η Google θα σας ζητήσει να μοιραστείτε προσωπικές πληροφορίες με αυτή την εφαρμογή.",
   "@googleDrivePrivacyMessage": {
@@ -11866,10 +11171,6 @@
   "@exchangeAuthLoginFailedTitle": {
     "description": "Title of the dialog shown when exchange login fails"
   },
-  "arkUnifiedAddressBip21": "Ενοποιημένη διεύθυνση (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
-  },
   "pickPasswordOrPinButton": "Επιλέξτε ένα {pinOrPassword} αντ 'αυτού",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -11895,10 +11196,6 @@
   "testBackupGoogleDrivePrivacyPart4": "ποτέ ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "arkConfirmButton": "Επιβεβαίωση",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "howToDecideBackupTitle": "Πώς να αποφασίσετε",
   "@howToDecideBackupTitle": {
@@ -11943,10 +11240,6 @@
   "recoverbullGotIt": "Got it Got it Got it",
   "@recoverbullGotIt": {
     "description": "Button text to acknowledge and dismiss message"
-  },
-  "arkCollaborativeRedeem": "Συνεργατικό Redeem",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
   },
   "usePasswordInsteadButton": "Χρησιμοποιήστε {pinOrPassword} αντ 'αυτού >>",
   "@usePasswordInsteadButton": {
@@ -12024,10 +11317,6 @@
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
   },
-  "arkArkAddress": "Ark διεύθυνση",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
-  },
   "testBackupStoreItSafe": "Το αποθηκεύει κάπου ασφαλές.",
   "@testBackupStoreItSafe": {
     "description": "Sub-instruction telling users to store recovery phrase safely"
@@ -12087,10 +11376,6 @@
   "@recoverbullConfirm": {
     "description": "Button text to confirm an action"
   },
-  "arkPendingBalance": "Pending Balance",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
-  },
   "pickPinInsteadButton": "Επιλέξτε PIN αντ 'αυτού >>",
   "@pickPinInsteadButton": {
     "description": "Button label to switch to PIN input"
@@ -12115,10 +11400,6 @@
   "@exchangeSupportChatMessageEmptyError": {
     "description": "Error message when trying to send an empty message"
   },
-  "legacySeedViewMnemonicLabel": "Mnemonic",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
-  },
   "fundExchangeCanadaPostTitle": "Σε μετρητά προσώπου ή χρέωση στον Καναδά Post",
   "@fundExchangeCanadaPostTitle": {
     "description": "Screen title for Canada Post payment method"
@@ -12126,10 +11407,6 @@
   "testBackupGoogleDrivePrivacyPart5": "μοιράζονται με το Bull Bitcoin.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "Σύνολο",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "backupWalletInstructionLosePhone": "Χωρίς αντίγραφα ασφαλείας, αν χάσετε ή σπάσει το τηλέφωνό σας ή αν απεγκαταστήσετε την εφαρμογή Bull Bitcoin, τα bitcoins σας θα χαθούν για πάντα.",
   "@backupWalletInstructionLosePhone": {
@@ -12249,10 +11526,6 @@
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
   },
-  "arkServerUrl": "Server URL",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "recoverbullFetchVaultKey": "Fetch Vault Key Key Key",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
@@ -12280,19 +11553,6 @@
   "backupWalletInstructionNoPassphrase": "Το εφεδρικό σας δεν προστατεύεται από το passphrase. Προσθέστε ένα παθητικό στο backup σας αργότερα δημιουργώντας ένα νέο πορτοφόλι.",
   "@backupWalletInstructionNoPassphrase": {
     "description": "Information about passphrase protection option"
-  },
-  "arkConfirmedBalance": "Επιβεβαιωμένη ισορροπία",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
-  "autoswapSaveErrorMessage": "Απέτυχε να σώσει τις ρυθμίσεις: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "dcaLightningAddressLabel": "Lightning διεύθυνση Lightning",
   "@dcaLightningAddressLabel": {
@@ -12367,7 +11627,7 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "autoswapMaxBalanceLabel": "Max Instant Wallet Balance",
+  "autoswapMaxBalanceLabel": "Μέγιστο Υπόλοιπο Instant Wallet",
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
@@ -12386,10 +11646,6 @@
   "recoverbullErrorSelectVault": "Απέτυχε να επιλέξει το θύλακα",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
-  },
-  "arkYesterday": "Χθες",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Επιθυμήθηκε να επιλέξει το θύλακα από το Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12423,7 +11679,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Αυτό θα στείλει ένα αίτημα διαγραφής λογαριασμού στην ομάδα υποστήριξής μας. Ο λογαριασμός σας θα διαγραφεί εντός 5 εργάσιμων ημερών.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12435,11 +11691,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Ζητήθηκε Διαγραφή Λογαριασμού",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Το αίτημά σας για διαγραφή λογαριασμού έχει υποβληθεί. Θα επεξεργαστεί εντός 5 εργάσιμων ημερών.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -12561,7 +11817,7 @@
   "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας",
   "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
   "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "Κάτι πήγε στραβά κατά τη ρύθμιση του πορτοφολιού σας. Παρακαλώ δοκιμάστε ξανά.",
   "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
   "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
@@ -13051,5 +12307,253 @@
   "logsShareOptionShare": "Κοινοποίηση",
   "logsShareOptionExport": "Εξαγωγή",
   "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
-  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
+  "coreSwapsStatusRefunded": "Επιστράφηκε",
+  "swapRestoreTitle": "Επαναφορά ανταλλαγών",
+  "swapRestoreActionable": "{count, plural, =0{Δεν υπάρχουν ανταλλαγές προς ανάκτηση} =1{Μπορείτε να επιχειρήσετε να ανακτήσετε 1 ανταλλαγή. Ενδέχεται να βρίσκεται ήδη σε τελική κατάσταση.} other{Μπορείτε να επιχειρήσετε να ανακτήσετε {count} ανταλλαγές. Σημειώστε ότι ορισμένες από αυτές ενδέχεται να βρίσκονται ήδη σε τελική κατάσταση.}}",
+  "swapRestoreNoSwaps": "Δεν βρέθηκαν ανταλλαγές για επαναφορά",
+  "swapRestoreRecoverableSection": "Ανακτήσιμα",
+  "swapRestoreAllSection": "Όλες οι ανταλλαγές",
+  "swapRestoreFailed": "Δεν ήταν δυνατή η επαναφορά των ανταλλαγών",
+  "swapRestoreKindLightningSend": "Αποστολή Lightning",
+  "swapRestoreKindLightningReceive": "Λήψη Lightning",
+  "swapRestoreKindCrossChain": "Μεταξύ αλυσίδων",
+  "swapRescueTitle": "Διάσωση ανταλλαγής",
+  "swapRescueTypeLabel": "Τύπος",
+  "swapRescueStatusLabel": "Κατάσταση",
+  "swapRescueAmountLabel": "Ποσό",
+  "swapRescueRouteLabel": "Διαδρομή",
+  "swapRescueCreatedLabel": "Δημιουργήθηκε",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueWalletLabel": "Επαναφορά σε πορτοφόλι",
+  "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
+  "swapRescueButton": "Επαναφορά",
+  "swapRescueSuccess": "Η ανταλλαγή επαναφέρθηκε — θα συνεχιστεί τώρα",
+  "mempoolServerStatusOnline": "Σε λειτουργία",
+  "mempoolServerStatusOffline": "Εκτός λειτουργίας",
+  "mempoolServerStatusChecking": "Έλεγχος...",
+  "mempoolServerStatusUnknown": "Άγνωστο",
+  "mempoolCustomServerSaveFailed": "Αποτυχία αποθήκευσης διακομιστή",
+  "mempoolCustomServerInfoDescription": "Οι διακομιστές mempool χρησιμοποιούνται για την εκτίμηση τελών και το άνοιγμα του block explorer κατά την προβολή λεπτομερειών συναλλαγής.",
+  "mempoolCustomServerUseSsl": "Χρήση SSL",
+  "mempoolCustomServerSslAutoDetected": "(Αυτόματος εντοπισμός)",
+  "mempoolCustomServerSslHelpText": "Για τοπικούς διακομιστές (.local, ιδιωτικές IP) και διακομιστές Tor (.onion), το SSL είναι συνήθως απενεργοποιημένο. Οι δημόσιες IP και τα domains θα πρέπει να χρησιμοποιούν SSL.",
+  "mempoolErrorSameAsDefault": "Αυτό το URL είναι ίδιο με τον προεπιλεγμένο διακομιστή. Χρησιμοποιήστε διαφορετικό URL.",
+  "mempoolErrorConnectionTimeout": "Η σύνδεση έληξε. Ο διακομιστής μπορεί να είναι αργός ή μη προσβάσιμος.",
+  "mempoolErrorHostNotFound": "Δεν είναι δυνατή η εύρεση αυτού του διακομιστή. Ελέγξτε το URL και δοκιμάστε ξανά.",
+  "mempoolErrorTorNotRunning": "Δεν είναι δυνατή η πρόσβαση στη διεύθυνση .onion. Βεβαιωθείτε ότι το Tor/Orbot εκτελείται και δοκιμάστε ξανά.",
+  "mempoolErrorConnectionFailed": "Αδυναμία σύνδεσης με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο δίκτυο και δοκιμάστε ξανά.",
+  "mempoolErrorNotMempoolServer": "Αυτό το URL δεν φαίνεται να είναι διακομιστής mempool. Επαληθεύστε τη διεύθυνση.",
+  "mempoolErrorServerUnavailable": "Ο διακομιστής δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
+  "mempoolErrorServerError": "Ο διακομιστής αντιμετώπισε σφάλμα. Δοκιμάστε ξανά αργότερα.",
+  "mempoolErrorInvalidResponse": "Ο διακομιστής επέστρεψε μη έγκυρη απόκριση.",
+  "mempoolErrorSaveServerFailed": "Αποτυχία αποθήκευσης διακομιστή",
+  "mempoolErrorLoadFailed": "Αποτυχία φόρτωσης δεδομένων διακομιστή mempool",
+  "mempoolErrorDeleteFailed": "Αποτυχία διαγραφής προσαρμοσμένου διακομιστή",
+  "receivePayjoinNoUtxos": "Λάβετε πρώτα κεφάλαια για να το ενεργοποιήσετε.\nΑπαιτούνται UTXOs για να χρησιμοποιήσετε το payjoin.",
+  "receiveLiquidRiskDisclosureLabel": "Οι πληρωμές θα μετατραπούν σε Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
+  "payViewReceipt": "Προβολή απόδειξης",
+  "paySinpeReceipt": "Απόδειξη SINPE",
+  "transactionFilterWithdraw": "Ανάληψη",
+  "transactionFilterPay": "Πληρωμή",
+  "transactionFilterFunding": "Χρηματοδότηση",
+  "transactionFilterReward": "Ανταμοιβή",
+  "transactionFilterRefund": "Επιστροφή",
+  "transactionFilterBalanceAdjustment": "Προσαρμογή",
+  "transactionListLoadingFailed": "Δεν ήταν δυνατή η φόρτωση των συναλλαγών.",
+  "transactionLabelNetworkFees": "Τέλη δικτύου",
+  "walletLiquidRiskDisclosureLabel": "Αυτά τα κεφάλαια είναι Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
+  "liquidRiskDisclosureSemanticLabel": "Άνοιγμα γνωστοποίησης κινδύνου Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Γνωστοποίηση Κινδύνου Liquid Bitcoin του Instant Payments Wallet",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "fundExchangeScamConsentError": "Αποτυχία καταγραφής της συγκατάθεσής σας. Δοκιμάστε ξανά.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Κολομβία",
+  "autoswapActiveCardTitle": "Autoswap είναι ενεργό",
+  "autoswapWarningExplanationBold": "αυτόματα",
+  "autoswapInfoConsentMessage": "Το Autoswap είναι αυτή τη στιγμή ενεργοποιημένο, αλλά δεν θα ενεργοποιηθεί μέχρι να δώσετε τη συγκατάθεσή σας. Θέλετε να παραμείνει ενεργό;",
+  "nfcNotAvailable": "Το NFC δεν υποστηρίζεται σε αυτή τη συσκευή",
+  "nfcDisabled": "Το NFC είναι απενεργοποιημένο. Ενεργοποιήστε το από τις ρυθμίσεις.",
+  "nfcInvalidData": "Δεν βρέθηκαν υποστηριζόμενα δεδομένα NFC",
+  "nfcConnectionLost": "Η σύνδεση NFC χάθηκε. Κρατήστε τη συσκευή σας κοντά στην ετικέτα NFC και δοκιμάστε ξανά.",
+  "nfcWriteFailed": "Η μεταφορά NFC απέτυχε. Δοκιμάστε ξανά.",
+  "nfcError": "Σφάλμα NFC: {error}",
+  "deleteLogsTitle": "Διαγραφή αρχείων καταγραφής",
+  "logsDeletedMessage": "Τα αρχεία καταγραφής διαγράφηκαν",
+  "sendSelfTransfer": "Αυτομεταφορά",
+  "sendCoordinatingPayjoinTransaction": "Συντονισμός συναλλαγής Payjoin.",
+  "sendErrorInvoiceExpired": "Αυτό το invoice έχει λήξει. Ζητήστε ένα νέο invoice από τον παραλήπτη.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Σκεφτείτε να χρηματοδοτήσετε το Instant Payments για να κάνετε μικρότερες πληρωμές.",
+  "psbtFlowSignViaNfc": "Υπογραφή μέσω NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Πλησιάστε το {deviceName} σας για να στείλετε το PSBT μέσω NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
+  "psbtFlowColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "psbtFlowColdcardQStep3": "Επιλέξτε την προτιμώμενη μέθοδο υπογραφής:",
+  "psbtFlowColdcardQStep4": "Για κωδικό QR:",
+  "psbtFlowColdcardQStep5": "   - Επιλέξτε «Scan any QR code» στο Coldcard Q σας",
+  "psbtFlowColdcardQStep6": "   - Σαρώστε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "psbtFlowColdcardQStep7": "   - Αν αντιμετωπίζετε πρόβλημα με τη σάρωση:",
+  "psbtFlowColdcardQStep8": "     - Αυξήστε τη φωτεινότητα της οθόνης της συσκευής σας",
+  "psbtFlowColdcardQStep9": "     - Μετακινήστε το κόκκινο λέιζερ πάνω-κάτω πάνω από τον κωδικό QR",
+  "psbtFlowColdcardQStep10": "     - Δοκιμάστε να απομακρύνετε λίγο τη συσκευή σας",
+  "psbtFlowColdcardQStep11": "Για NFC:",
+  "psbtFlowColdcardQStep12": "   - Επιλέξτε «Ready to Sign» στο Coldcard Q σας και μετά πατήστε το κουμπί NFC",
+  "psbtFlowColdcardQStep13": "   - Πλησιάστε το τηλέφωνό σας στο Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Περιμένετε να μεταφερθεί το PSBT",
+  "psbtFlowColdcardQStep15": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Q σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
+  "psbtFlowColdcardQStep16": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Q σας.",
+  "psbtFlowColdcardQStep17": "Το Coldcard Q θα εμφανίσει τότε έναν κωδικό QR της υπογεγραμμένης συναλλαγής ή θα προετοιμάσει τη μεταφορά μέσω NFC.",
+  "psbtFlowColdcardQStep18": "Αν υπογράψατε με QR, πατήστε «I'm done» στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "Το πορτοφόλι Bull Bitcoin θα σας ζητήσει να σαρώσετε τον κωδικό QR της υπογεγραμμένης συναλλαγής ή να χρησιμοποιήσετε NFC για να τη λάβετε.",
+  "psbtFlowColdcardQStep20": "   - Για QR: σαρώστε τον κωδικό QR στο Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Για NFC: πλησιάστε το τηλέφωνό σας στο Coldcard Q",
+  "psbtFlowColdcardQStep22": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "psbtFlowColdcardMk4Step3": "Επιλέξτε «Ready to Sign» στο Coldcard Mk4 σας και μετά πατήστε το κουμπί με τον αριθμό 3",
+  "psbtFlowColdcardMk4Step4": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Περιμένετε να μεταφερθεί το PSBT",
+  "psbtFlowColdcardMk4Step6": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Mk4 σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
+  "psbtFlowColdcardMk4Step7": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Mk4 σας.",
+  "psbtFlowColdcardMk4Step8": "Το Coldcard Mk4 θα προετοιμάσει τότε την υπογεγραμμένη συναλλαγή για μεταφορά μέσω NFC.",
+  "psbtFlowColdcardMk4Step9": "Στο πορτοφόλι Bull Bitcoin, πατήστε NFC στην οθόνη μετάδοσης.",
+  "psbtFlowColdcardMk4Step10": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4 για να λάβετε την υπογεγραμμένη συναλλαγή.",
+  "psbtFlowColdcardMk4Step11": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Ελέγξτε τις λεπτομέρειες της συναλλαγής στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Πλησιάστε το Coldcard σας για να λάβετε την υπογεγραμμένη συναλλαγή μέσω NFC",
+  "importColdcardInvalidWalletData": "Μη έγκυρα δεδομένα πορτοφολιού Coldcard",
+  "importColdcardConnectTitle": "Σύνδεση {deviceName}",
+  "importColdcardConnectDescription": "Εισαγωγή του descriptor πορτοφολιού από το {deviceName} σας",
+  "importColdcardScanNfcSheetTitle": "Πλησιάστε το {deviceName} σας για εισαγωγή του descriptor πορτοφολιού μέσω NFC",
+  "importColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
+  "importColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
+  "importColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "importColdcardQStep3": "Επιλέξτε το μενού advanced/settings",
+  "importColdcardQStep4": "Πατήστε «export wallet»",
+  "importColdcardQStep5": "Επιλέξτε «descriptor» ως τύπο εξαγωγής",
+  "importColdcardQStep6": "Πατήστε «Enter» στην πρώτη οθόνη",
+  "importColdcardQStep7": "Πατήστε «Enter» στη δεύτερη οθόνη",
+  "importColdcardQStep8": "Επιλέξτε τον τύπο διεύθυνσης (χρησιμοποιήστε Segwit αν δεν είστε σίγουροι)",
+  "importColdcardQStep9": "Για QR, πατήστε το κουμπί κωδικού QR στη συσκευή. Θα σας εμφανίσει έναν κωδικό QR στη συσκευή",
+  "importColdcardQStep10": "Για NFC, πατήστε το κουμπί NFC στη συσκευή",
+  "importColdcardQStep11": "Πατήστε το κουμπί «Open the camera» / «Scan NFC»",
+  "importColdcardQStep12": "Σαρώστε τον κωδικό QR που βλέπετε στη συσκευή σας ή τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
+  "importColdcardQStep13": "Αυτό είναι όλο!",
+  "importColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
+  "importColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
+  "importColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "importColdcardMk4Step3": "Επιλέξτε το μενού advanced/settings",
+  "importColdcardMk4Step4": "Πατήστε «export wallet»",
+  "importColdcardMk4Step5": "Επιλέξτε «descriptor» ως τύπο εξαγωγής",
+  "importColdcardMk4Step6": "Πατήστε «Enter» στην πρώτη οθόνη",
+  "importColdcardMk4Step7": "Πατήστε «Enter» στη δεύτερη οθόνη",
+  "importColdcardMk4Step8": "Επιλέξτε τον τύπο διεύθυνσης (χρησιμοποιήστε Segwit αν δεν είστε σίγουροι)",
+  "importColdcardMk4Step9": "Πατήστε τον αριθμό 3 για να ξεκινήσετε το NFC του Coldcard",
+  "importColdcardMk4Step10": "Πατήστε το κουμπί «Scan NFC»",
+  "importColdcardMk4Step11": "Τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
+  "importColdcardMk4Step12": "Αυτό είναι όλο!",
+  "fundExchangeCopDailyLimitWarning": "Αν υπερβείτε το ημερήσιο όριο συναλλαγών σας, η συναλλαγή θα αποτύχει. Θα χρειαστεί να επικοινωνήσετε με την υποστήριξη πελατών.",
+  "fundExchangeCopSenderName": "Όνομα αποστολέα",
+  "fundExchangeCopIssuingBank": "Τράπεζα έκδοσης",
+  "fundExchangeCopSelectBankError": "Επιλέξτε μια τράπεζα έκδοσης",
+  "fundExchangeCopAmount": "Ποσό",
+  "fundExchangeCopEnterAmountError": "Εισάγετε ένα ποσό",
+  "fundExchangeCopValidAmountError": "Εισάγετε ένα έγκυρο ποσό",
+  "fundExchangeCopGeneratePaymentLink": "Δημιουργία συνδέσμου πληρωμής",
+  "fundExchangeCopRedirectMessage": "Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.",
+  "fundExchangeCopOpenPaymentLink": "Άνοιγμα συνδέσμου πληρωμής",
+  "fundExchangeCopFailedToOpenLink": "Δεν ήταν δυνατό το άνοιγμα του συνδέσμου πληρωμής. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
+  "priceChartFailedToLoad": "Αποτυχία φόρτωσης ιστορικού τιμών",
+  "priceFailedToLoad": "Αποτυχία φόρτωσης τιμής",
+  "statusScreenTryAgain": "Δοκιμάστε ξανά",
+  "statusScreenContinue": "Συνέχεια",
+  "noteVisibleToSenderNotice": "Αυτή η σημείωση θα είναι ορατή στον παραλήπτη του QR ή του invoice σας.",
+  "viewerAddressTab": "Διεύθυνση",
+  "viewerPaymentUriTab": "URI πληρωμής",
+  "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
+  "errorReportingProgramTitle": "Πρόγραμμα Αναφοράς Σφαλμάτων",
+  "errorReportingProgramDescriptionP1": "Βοηθήστε μας να βελτιώσουμε το Bull συμμετέχοντας στο πρόγραμμα αναφοράς σφαλμάτων μας.",
+  "errorReportingProgramDescriptionP2": "Η Bull Bitcoin στέλνει ανώνυμες αναφορές σφαλμάτων όταν κάτι δεν λειτουργεί σωστά.",
+  "errorReportingProgramDescriptionP3": "Αυτό μας επιτρέπει να δούμε πόσους χρήστες επηρεάζει κάθε σφάλμα και να ιεραρχήσουμε ανάλογα τις διορθώσεις· χωρίς αυτό, δεν έχουμε τρόπο να μετρήσουμε τον αντίκτυπο.",
+  "errorReportingProgramDescriptionP4": "Οι αναφορές αποστέλλονται μόνο στον διακομιστή της Bull, ποτέ σε τρίτους.",
+  "errorReportingProgramDescriptionP5": "Η Bull Bitcoin είναι ανοιχτού κώδικα, οπότε μπορείτε να επαληθεύσετε τι αποστέλλεται.",
+  "errorReportingAcceptButton": "Αποδοχή",
+  "errorReportingCancelButton": "Ακύρωση",
+  "errorReportingRestartSnackbar": "Επανεκκινήστε την εφαρμογή για να εφαρμοστεί αυτή η αλλαγή",
+  "backupWarningTitle": "ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ",
+  "backupWarningBackupNow": "ΝΑΙ",
+  "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
+  "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
+  "logsViewerDeleteTitle": "Διαγραφή αρχείων καταγραφής",
+  "logsViewerDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα αρχεία καταγραφής; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+  "logsViewerDeleteButton": "Διαγραφή",
+  "logsViewerCancelButton": "Ακύρωση",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
+  "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
+  "sendSubSatVbyteWarning": "Οι συναλλαγές κάτω από 1 sat/vB ενδέχεται να χρειαστούν περισσότερο χρόνο για επιβεβαίωση και μπορεί να μην διαδοθούν σε όλους τους κόμβους.",
+  "sendBelowMinFeeRateError": "Ο ρυθμός τέλους πρέπει να είναι τουλάχιστον 0.1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Απαιτείται άδεια Bluetooth για τη σύνδεση με το BitBox02 Nova σας.",
+  "bitboxErrorBluetoothUnavailable": "Το Bluetooth δεν είναι διαθέσιμο. Ενεργοποιήστε το Bluetooth και δοκιμάστε ξανά.",
+  "bitboxErrorNoBleDevicesFound": "Δεν βρέθηκε κοντινό BitBox02 Nova. Ελέγξτε το Bluetooth και δοκιμάστε ξανά.",
+  "bitboxErrorMultipleBleDevicesFound": "Βρέθηκαν πολλαπλές συσκευές BitBox02 Nova. Κρατήστε μόνο μία κοντά και δοκιμάστε ξανά.",
+  "bitboxErrorOperationFailed": "Η λειτουργία BitBox απέτυχε. Δοκιμάστε ξανά.",
+  "bitboxScreenConnectSubtextBluetooth": "Βεβαιωθείτε ότι το BitBox02 Nova σας είναι ξεκλείδωτο και ότι το Bluetooth είναι ενεργοποιημένο.",
+  "bitboxScreenScanningSubtextBluetooth": "Αναζήτηση του BitBox02 Nova σας σε κοντινή απόσταση...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Αντιμετώπιση προβλημάτων BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Αν η συσκευή σας εξακολουθεί να μη συνδέεται με την εφαρμογή, δοκιμάστε τα εξής:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο και επιτρέπεται για αυτή την εφαρμογή.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο στο BitBox02 Nova σας.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Επανεκκινήστε το BitBox02 Nova σας και δοκιμάστε να συνδεθείτε ξανά.",
+  "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Τέλος",
+  "consolidationFailedBody": "Παρουσιάστηκε μη αναμενόμενο σφάλμα. Τα κεφάλαιά σας είναι ασφαλή: δεν μεταδόθηκε καμία συναλλαγή. Δοκιμάστε ξανά.",
+  "consolidationFailedTitle": "Η ενοποίηση απέτυχε",
+  "consolidationInProgress": "Ενοποίηση…",
+  "consolidationRequiredTitle": "Ενοποίηση πορτοφολιού",
+  "consolidationRequiredTitleNamed": "Ενοποίηση πορτοφολιού {walletName}",
+  "consolidationRowAmount": "Ποσό",
+  "consolidationRowNetworkFees": "Τέλη δικτύου",
+  "consolidationRowOutputs": "Έξοδοι",
+  "consolidationRowTransactions": "Συναλλαγές",
+  "consolidationScreenDescription": "Οι πάρα πολλές έξοδοι μπορούν να κάνουν το πορτοφόλι ασταθές. Η ενοποίηση τις συνδυάζει σε λιγότερες ώστε το πορτοφόλι σας να λειτουργεί σωστά.",
+  "consolidationScreenTitle": "Ενοποίηση",
+  "consolidationSuccessBody": "Τα νομίσματά σας συνδυάζονται. Θα ολοκληρωθεί μόλις το επιβεβαιώσει το δίκτυο.",
+  "consolidationSuccessTitle": "Η ενοποίηση ξεκίνησε",
+  "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
+  "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
+  "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Ενημέρωση για το Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
+  "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
+  "receiveAdditionalInformation": "Πρόσθετες πληροφορίες",
+  "receiveAdditionalInformationPlaceholder": "Προσθέστε ποσό ή μήνυμα για τον αποστολέα",
+  "receiveMessageForSender": "Μήνυμα για τον αποστολέα",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
+  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
+  "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
+  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
+  "coreSwapsStatusNotStarted": "Δεν ξεκίνησε",
+  "coreSwapsStatusAwaitingPayment": "Αναμονή πληρωμής",
+  "coreSwapsStatusAwaitingConfirmation": "Αναμονή επιβεβαίωσης",
+  "coreSwapsStatusUnderReview": "Υπό εξέταση",
+  "coreSwapsStatusRejected": "Απορρίφθηκε",
+  "coreSwapsStatusCanceled": "Ακυρώθηκε",
+  "coreSwapsStatusPaymentDeadlineExpired": "Η προθεσμία πληρωμής έληξε",
+  "coreSwapsStatusScheduled": "Προγραμματισμένο",
+  "coreSwapsStatusAwaitingClaim": "Αναμονή διεκδίκησης",
+  "coreSwapsStatusUnknown": "Άγνωστο",
+  "sendSwapExpiredTitle": "Η παραγγελία έληξε",
+  "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας."
 }

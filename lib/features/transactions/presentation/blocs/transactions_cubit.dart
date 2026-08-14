@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 part 'transactions_cubit.freezed.dart';
 part 'transactions_state.dart';
@@ -21,7 +22,9 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     required this._getTransactionsUsecase,
     required this._watchStartedWalletSyncsUsecase,
     required this._watchFinishedWalletSyncsUsecase,
-  }) : super(TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly)) {
+  }) : super(
+         TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly),
+       ) {
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));
@@ -40,6 +43,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   @override
   Future<void> close() async {
+    _debounceTimer?.cancel();
     await Future.wait([
       _startedSyncSubscription?.cancel() ?? Future.value(),
       _finishedSyncSubscription?.cancel() ?? Future.value(),

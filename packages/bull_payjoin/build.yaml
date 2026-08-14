@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            payjoin_database: lib/src/data/payjoin_database.dart
+          schema_dir: lib/src/data/schemas/
+          test_dir: test/migrations_test/

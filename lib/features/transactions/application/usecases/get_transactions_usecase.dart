@@ -1,32 +1,40 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/order_swap_transaction_match.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart';
 
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final BoltzSwapRepository _boltzSwapRepository;
-  final PayjoinRepository _payjoinRepository;
+  final SwapHistoryRepository _boltzSwapRepository;
+  final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
+  final GetTransactionOrderSwapsUsecase _getTransactionOrderSwapsUsecase;
 
   GetTransactionsUsecase({
     required this._settingsRepository,
     required this._walletTransactionRepository,
     required this._boltzSwapRepository,
-    required this._payjoinRepository,
+    required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
     required this._labelExchangeOrdersUsecase,
+    required this._getTransactionOrderSwapsUsecase,
   });
 
   Future<List<Transaction>> execute({
@@ -40,22 +48,44 @@ class GetTransactionsUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      // Fetch wallet transactions, payjoins, orders and swaps
-      final (walletTransactions, payjoins, orders, swaps) = await (
+      final orders = await orderRepository.getOrders();
+      await _labelExchangeOrdersUsecase.execute(orders: orders);
+
+      // Labels must exist before wallet transactions are hydrated.
+      final (
+        walletTransactions,
+        payjoinResult,
+        swaps,
+        loadedOrderSwaps,
+      ) = await (
         _walletTransactionRepository.getWalletTransactions(
           walletId: walletId,
           sync: sync,
           environment: environment,
         ),
-        _payjoinRepository.getPayjoins(
-          walletId: walletId,
-          environment: environment,
+        _payjoinSessions.list(
+          PayjoinSessionFilter(
+            walletId: walletId,
+            network: environment.isTestnet
+                ? BitcoinNetwork.testnet
+                : BitcoinNetwork.mainnet,
+          ),
         ),
-        orderRepository.getOrders(),
         _boltzSwapRepository.getAllSwaps(walletId: walletId),
+        _getTransactionOrderSwapsUsecase.execute(walletId: walletId),
       ).wait;
-
-      if (orders.isNotEmpty) await _labelExchangeOrdersUsecase.execute();
+      final payjoins = switch (payjoinResult) {
+        Ok(:final value) => value,
+        Err() => <PayjoinSession>[],
+      };
+      final orderSwaps = [...loadedOrderSwaps];
+      final canonicalOrderSwaps = <OrderSwapWalletLeg, OrderSwapRecord>{};
+      final secondaryOrderSwapLegs = <OrderSwapWalletLeg>{};
+      for (final orderSwap in loadedOrderSwaps) {
+        final canonical = canonicalOrderSwapWalletLeg(orderSwap);
+        if (canonical != null) canonicalOrderSwaps[canonical] = orderSwap;
+        secondaryOrderSwapLegs.addAll(secondaryOrderSwapWalletLegs(orderSwap));
+      }
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions
       //  as they should be linked and form a single Transaction entity.
@@ -65,56 +95,89 @@ class GetTransactionsUsecase {
       //  the only combination we need to handle is that a wallet transaction can
       //  have a payjoin, swap or order associated with it. A combination of a
       //  swap or order and payjoin is not possible currently.
-      final broadcastedTransactions = walletTransactions.map((wt) {
-        Swap? swap;
-        try {
-          swap = swaps.firstWhere(
-            (s) =>
-                (wt.isOutgoing && s.sendTxId == wt.txId) ||
-                (wt.isIncoming &&
-                    (s.receiveTxId == wt.txId || s.refundTxId == wt.txId)),
-          );
-        } catch (_) {
-          // If no swap is found, it means the transaction is not a swap
-          swap = null;
-        }
-        Payjoin? payjoin;
-        try {
-          payjoin = payjoins.firstWhere(
-            (pj) =>
-                [pj.txId, pj.originalTxId].contains(wt.txId) &&
-                // Make sure to match the direction of the payjoin, since
-                //  both a sender and receiver payjoin can exist for the
-                //  same transaction if it was done between two wallets in
-                //  the app.
-                wt.isOutgoing == pj is PayjoinSender,
-          );
-          // Remove the payjoin from the list of payjoins to avoid duplication
-          //  since it's already included in the broadcasted transaction
-          payjoins.remove(payjoin);
-        } catch (_) {
-          // If no payjoin is found, it means the transaction is not a payjoin
-          payjoin = null;
-        }
+      final broadcastedTransactions = walletTransactions
+          .map((wt) {
+            Swap? swap;
+            try {
+              swap = swaps.firstWhere((s) {
+                final claimedLeg =
+                    (wt.isOutgoing && s.sendTxId == wt.txId) ||
+                    (wt.isIncoming &&
+                        (s.receiveTxId == wt.txId || s.refundTxId == wt.txId));
+                return claimedLeg &&
+                    s.walletId == wt.walletId &&
+                    (s.amountSat == 0 || wt.amountSat <= s.amountSat) &&
+                    _transactionPaysSwapAddress(wt, s);
+              });
+            } catch (_) {
+              // If no swap is found, it means the transaction is not a swap
+              swap = null;
+            }
+            final orderSwap =
+                canonicalOrderSwaps[(txId: wt.txId, walletId: wt.walletId)];
+            if (orderSwap != null) {
+              orderSwaps.remove(orderSwap);
+            }
+            PayjoinSession? payjoin;
+            try {
+              payjoin = payjoins.firstWhere(
+                (pj) =>
+                    [pj.txId, pj.originalTxId].contains(wt.txId) &&
+                    // Make sure to match the direction of the payjoin, since
+                    //  both a sender and receiver payjoin can exist for the
+                    //  same transaction if it was done between two wallets in
+                    //  the app.
+                    wt.isOutgoing == pj is PayjoinSenderSession,
+              );
+              // Remove the payjoin from the list of payjoins to avoid duplication
+              //  since it's already included in the broadcasted transaction
+              payjoins.remove(payjoin);
+            } catch (_) {
+              // If no payjoin is found, it means the transaction is not a payjoin
+              payjoin = null;
+            }
 
-        Order? order;
-        try {
-          order = orders.firstWhere((o) => o.transactionId == wt.txId);
-          // Remove the order from the list of orders to avoid duplication
-          //  since it's already included in the broadcasted transaction
-          orders.remove(order);
-        } catch (_) {
-          // If no order is found, it means the transaction is not an order
-          order = null;
-        }
+            Order? order;
+            try {
+              order = orders.firstWhere((o) {
+                if (o.transactionId != wt.txId) return false;
+                if (o.toAddress != null && o.toAddress != wt.toAddress) {
+                  return false;
+                }
+                final expectedDirection = o is BuyOrder
+                    ? wt.isIncoming
+                    : o is SellOrder
+                    ? wt.isOutgoing
+                    : true;
+                return expectedDirection &&
+                    _transactionCoversOrderAmount(wt, o);
+              });
+              // Remove the order from the list of orders to avoid duplication
+              //  since it's already included in the broadcasted transaction
+              orders.remove(order);
+            } catch (_) {
+              // If no order is found, it means the transaction is not an order
+              order = null;
+            }
 
-        return Transaction(
-          walletTransaction: wt,
-          swap: swap,
-          payjoin: payjoin,
-          order: order,
-        );
-      }).toList();
+            return Transaction(
+              walletTransaction: wt,
+              swap: swap,
+              orderSwap: orderSwap,
+              payjoin: payjoin,
+              order: order,
+            );
+          })
+          .where((transaction) {
+            if (transaction.orderSwap != null) return true;
+            final walletTransaction = transaction.walletTransaction;
+            if (walletTransaction == null) return true;
+            return !secondaryOrderSwapLegs.contains((
+              txId: walletTransaction.txId,
+              walletId: walletTransaction.walletId,
+            ));
+          })
+          .toList();
 
       // A single swap can surface multiple on-chain legs in the user's own
       // wallets — most importantly a refunded chain swap, whose lockup output
@@ -163,7 +226,15 @@ class GetTransactionsUsecase {
         ...swaps
             .where((s) => !(s.recovered && s.status.isTerminal))
             .map((s) => Transaction(swap: s)),
-        ...payjoins.map((p) => Transaction(payjoin: p)),
+        // An aborted Payjoin means its original transaction was successfully
+        // broadcast or observed. If that wallet transaction is not visible in
+        // this fetch yet, do not render the terminal session as a second
+        // standalone `0 sats / pending` row; the real transaction will be
+        // joined through originalTxId once wallet sync catches up.
+        ...payjoins
+            .where((p) => !p.isAborted)
+            .map((p) => Transaction(payjoin: p)),
+        ...orderSwaps.map((orderSwap) => Transaction(orderSwap: orderSwap)),
         // If walletId is not null, the orders should be linked to a wallet transaction.
         // TODO: We could still check on the address of the order to see if it
         // is related to the wallet id, even without a wallet transaction yet.
@@ -181,7 +252,66 @@ class GetTransactionsUsecase {
         error: e,
         trace: stackTrace,
       );
-      throw Exception('Failed to fetch transactions: $e');
+      throw TransactionAggregationFailure(e.toString());
     }
+  }
+
+  /// The exchange tells us which address a completed order paid. Before the
+  /// order is attached to one of the user's transactions, that transaction
+  /// must actually have moved at least what the order claims — otherwise a
+  /// wrong or hostile server figure gets attributed to unrelated funds.
+  ///
+  /// `>=` rather than `==` on purpose: payouts are batched, so one transaction
+  /// can legitimately carry several orders and more sats than a single one.
+  bool _transactionCoversOrderAmount(WalletTransaction wt, Order order) {
+    final double declared;
+    switch (order) {
+      case BuyOrder(:final payoutAmount, :final payoutCurrency):
+        if (payoutCurrency != 'BTC') return true;
+        declared = payoutAmount;
+      case SellOrder(:final payinAmount, :final payinCurrency):
+        if (payinCurrency != 'BTC') return true;
+        declared = payinAmount;
+      default:
+        return true;
+    }
+    final declaredSat = ConvertAmount.btcToSats(declared);
+    if (declaredSat <= 0) return true;
+    return wt.amountSat >= declaredSat;
+  }
+
+  /// A swap leg is only this transaction's if the transaction actually pays
+  /// the address the swap is built around. Matching on the server-reported
+  /// txid alone lets a wrong id graft a swap onto an unrelated payment.
+  bool _transactionPaysSwapAddress(WalletTransaction wt, Swap swap) {
+    // Liquid outputs expose the unconfidential address while a swap address is
+    // confidential, so the two are not comparable here; the txid + wallet +
+    // amount checks remain. TODO(swaps): unblind before comparing.
+    if (!wt.isBitcoin) return true;
+
+    final expected = <String>{
+      if (wt.isOutgoing)
+        ...switch (swap) {
+          LnSendSwap(:final paymentAddress) => [paymentAddress],
+          ChainSwap(:final paymentAddress) => [paymentAddress],
+          _ => <String>[],
+        },
+      if (wt.isIncoming)
+        ...switch (swap) {
+          LnReceiveSwap(:final receiveAddress) => [?receiveAddress],
+          ChainSwap(:final receiveAddress, :final refundAddress) => [
+            ?receiveAddress,
+            ?refundAddress,
+          ],
+          LnSendSwap(:final refundAddress) => [?refundAddress],
+        },
+    };
+    // Nothing to compare against (a recovered swap carries no address): fall
+    // back to the other checks rather than dropping a legitimate leg.
+    if (expected.isEmpty) return true;
+
+    return wt.outputs.any(
+      (output) => output.address != null && expected.contains(output.address),
+    );
   }
 }

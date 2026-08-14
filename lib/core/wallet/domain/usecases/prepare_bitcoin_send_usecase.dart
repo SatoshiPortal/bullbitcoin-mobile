@@ -1,23 +1,23 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Outpoint;
 
 class PrepareBitcoinSendUsecase {
-  final PayjoinRepository _payjoin;
-  final BitcoinWalletRepository _bitcoinWalletRepository;
+  final PayjoinSessions _payjoin;
+  final BitcoinSendPort _bitcoinWalletRepository;
   final WalletUtxoRepository _walletUtxoRepository;
 
   PrepareBitcoinSendUsecase({
-    required PayjoinRepository payjoinRepository,
+    required PayjoinSessions payjoinSessions,
     required this._walletUtxoRepository,
     required this._bitcoinWalletRepository,
-  }) : _payjoin = payjoinRepository;
+  }) : _payjoin = payjoinSessions;
 
   Future<({String unsignedPsbt, int txSize, bool isToSelf})> execute({
     required String walletId,
@@ -49,10 +49,8 @@ class PrepareBitcoinSendUsecase {
       // path from ever pinning a frozen coin).
       final filteredSelectedInputs = selectedInputs
           ?.where(
-            (utxo) => !unspendableUtxos.contains((
-              txId: utxo.txId,
-              vout: utxo.vout,
-            )),
+            (utxo) =>
+                !unspendableUtxos.contains((txId: utxo.txId, vout: utxo.vout)),
           )
           .toList();
 
@@ -87,7 +85,13 @@ class PrepareBitcoinSendUsecase {
     // Freeze is matched by outpoint (globally unique), so the full frozen set
     // is safe to pass: buildPsbt ignores any outpoint this wallet doesn't own.
     final userFrozen = await _walletUtxoRepository.getAllFrozenOutpoints();
-    final payjoinFrozen = await _payjoin.getUtxosFrozenByOngoingPayjoins();
+    final payjoinResult = await _payjoin.reservedOutpoints();
+    final payjoinFrozen = switch (payjoinResult) {
+      Ok(:final value) => value,
+      Err() => throw PrepareBitcoinSendException(
+        'Failed to load Payjoin-reserved UTXOs',
+      ),
+    };
     return {...userFrozen, ...payjoinFrozen}.toList();
   }
 }

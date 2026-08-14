@@ -18,4 +18,9 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   TextColumn get exchangeTestnetBasicAuthUsername => text().nullable()();
   TextColumn get exchangeTestnetBasicAuthPassword => text().nullable()();
+
+  // No payjoin columns here: the Payjoin policy lives in payjoin.sqlite, owned
+  // by the bull_payjoin package. Schema 14 briefly added payjoin_enabled,
+  // payjoin_min_amount_sat and payjoin_expire_after_sec here, but 14 was never
+  // released, so nothing to keep for compatibility.
 }

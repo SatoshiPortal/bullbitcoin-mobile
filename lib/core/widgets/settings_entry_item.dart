@@ -27,10 +27,9 @@ class SettingsEntryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final effectiveIcon = isSuperUser ? Icons.admin_panel_settings : icon;
-    final effectiveIconColor =
-        isSuperUser
-            ? context.appColors.primary
-            : (iconColor ?? context.appColors.onSurface);
+    final effectiveIconColor = isSuperUser
+        ? context.appColors.primary
+        : (iconColor ?? context.appColors.onSurface);
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
