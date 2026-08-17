@@ -1,11 +1,19 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/primitives/payment_network.dart';
 
 sealed class SwapFailure extends Failure {
   const SwapFailure([super.logMessage]);
 }
 
 final class SwapNoPaymentOptionFailure extends SwapFailure {
-  const SwapNoPaymentOptionFailure([super.logMessage]);
+  final PaymentNetwork? inNetwork;
+  final PaymentNetwork? outNetwork;
+
+  const SwapNoPaymentOptionFailure({
+    this.inNetwork,
+    this.outNetwork,
+    String? logMessage,
+  }) : super(logMessage);
 }
 
 final class SwapAmountOutOfBoundsFailure extends SwapFailure {

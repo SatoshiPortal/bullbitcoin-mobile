@@ -12,7 +12,12 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
       SwapValidationFailure() => SendInvalidPaymentRequestFailure(
         logMessage: failure.logMessage,
       ),
-      SwapNoPaymentOptionFailure() ||
+      SwapNoPaymentOptionFailure(:final inNetwork, :final outNetwork) =>
+        SendSwapRouteUnavailableFailure(
+          inNetwork: inNetwork,
+          outNetwork: outNetwork,
+          logMessage: failure.logMessage,
+        ),
       SwapOrderExpiredFailure() ||
       SwapCreationUnknownFailure() ||
       SwapOrderMismatchFailure() ||

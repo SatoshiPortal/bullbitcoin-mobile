@@ -68,7 +68,11 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       );
       return Ok(model.toEntity(inNetwork: inNetwork, outNetwork: outNetwork));
     } catch (error) {
-      final failure = _mapFailure(error);
+      final failure = _mapFailure(
+        error,
+        inNetwork: inNetwork,
+        outNetwork: outNetwork,
+      );
       log.warning(
         '[OrderSwap] quote failed environment=${environment.name} '
         'route=${inNetwork.name}->${outNetwork.name} '
@@ -175,7 +179,13 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
           } catch (error) {
             if (error is ArgumentError) {
               await _saveRecordLocked(matching.markFailed());
-              return Err(_mapFailure(error));
+              return Err(
+                _mapFailure(
+                  error,
+                  inNetwork: inNetwork,
+                  outNetwork: outNetwork,
+                ),
+              );
             }
             return const Err(
               SwapCreationUnknownFailure(
@@ -280,7 +290,9 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
           return Err(SwapStorageFailure(storageError.toString()));
         }
       }
-      return Err(_mapFailure(error));
+      return Err(
+        _mapFailure(error, inNetwork: inNetwork, outNetwork: outNetwork),
+      );
     }
   }
 
@@ -654,7 +666,11 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     return current;
   }
 
-  SwapFailure _mapFailure(Object error) {
+  SwapFailure _mapFailure(
+    Object error, {
+    OrderSwapNetwork? inNetwork,
+    OrderSwapNetwork? outNetwork,
+  }) {
     if (error is ArgumentError) {
       return SwapOrderMismatchFailure(error.message.toString());
     }
@@ -680,7 +696,11 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     }
     if (error is ExchangeRpcException) {
       return switch (error.apiCode) {
-        'ERR_ORD_PO404' => SwapNoPaymentOptionFailure(error.logMessage),
+        'ERR_ORD_PO404' => SwapNoPaymentOptionFailure(
+          inNetwork: inNetwork?.toPaymentNetwork,
+          outNetwork: outNetwork?.toPaymentNetwork,
+          logMessage: error.logMessage,
+        ),
         'ERR_ORD_LMT001' => SwapAmountOutOfBoundsFailure(
           limitAmountSat: error.limit == null
               ? null
