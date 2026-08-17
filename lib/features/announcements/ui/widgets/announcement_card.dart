@@ -34,7 +34,10 @@ class AnnouncementCard extends StatelessWidget {
           title: announcement.title(context),
           description: announcement.description(context),
           tagColor: tone,
-          bgColor: tone.withValues(alpha: 0.12),
+          bgColor: Color.alphaBlend(
+            tone.withValues(alpha: 0.12),
+            colors.background,
+          ),
           onTap: onTap,
         ),
         Positioned(

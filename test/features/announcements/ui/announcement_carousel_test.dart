@@ -8,8 +8,10 @@ import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announc
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
+import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,51 +26,73 @@ class _MockDismissAnnouncementUsecase extends Mock
 class _MockWatchAppUpdateAnnouncementUsecase extends Mock
     implements WatchAppUpdateAnnouncementUsecase {}
 
-void main() {
-  testWidgets('shows the update warning on wallet home after HTTP 418', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final getVisible = _MockGetVisibleAnnouncementsUsecase();
-    final dismiss = _MockDismissAnnouncementUsecase();
-    final watchUpdate = _MockWatchAppUpdateAnnouncementUsecase();
-    final updateSignals = StreamController<bool>.broadcast();
-    addTearDown(updateSignals.close);
-    when(() => watchUpdate.execute()).thenAnswer((_) => updateSignals.stream);
-    when(() => getVisible.execute()).thenAnswer(
-      (_) async => Ok<List<Announcement>, AnnouncementsFailure>([
-        Announcement(
-          id: AnnouncementId.appUpdateRequired,
-          priority: 0,
-          tone: AnnouncementTone.warning,
-          action: const NoAction(),
-          dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
-        ),
-      ]),
+Announcement _announcement(AnnouncementId id, {int priority = 0}) =>
+    Announcement(
+      id: id,
+      priority: priority,
+      tone: AnnouncementTone.warning,
+      action: const NoAction(),
+      dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
     );
-    final cubit = AnnouncementsCubit(
-      getVisibleAnnouncementsUsecase: getVisible,
-      dismissAnnouncementUsecase: dismiss,
-      watchAppUpdateAnnouncementUsecase: watchUpdate,
-    );
-    addTearDown(cubit.close);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: BlocProvider.value(
+/// Pumps the carousel alone on a surface of [size], with the cubit already
+/// emitting [announcements].
+Future<void> _pumpCarousel(
+  WidgetTester tester, {
+  required List<Announcement> announcements,
+  Size size = const Size(390, 844),
+  double textScale = 1,
+}) async {
+  await tester.binding.setSurfaceSize(size);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+
+  final getVisible = _MockGetVisibleAnnouncementsUsecase();
+  final dismiss = _MockDismissAnnouncementUsecase();
+  final watchUpdate = _MockWatchAppUpdateAnnouncementUsecase();
+  final updateSignals = StreamController<bool>.broadcast();
+  addTearDown(updateSignals.close);
+  when(() => watchUpdate.execute()).thenAnswer((_) => updateSignals.stream);
+  when(() => getVisible.execute()).thenAnswer(
+    (_) async => Ok<List<Announcement>, AnnouncementsFailure>(announcements),
+  );
+  final cubit = AnnouncementsCubit(
+    getVisibleAnnouncementsUsecase: getVisible,
+    dismissAnnouncementUsecase: dismiss,
+    watchAppUpdateAnnouncementUsecase: watchUpdate,
+  );
+  addTearDown(cubit.close);
+
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.themeData(AppThemeType.light),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+          child: BlocProvider.value(
             value: cubit,
             child: const AnnouncementCarousel(),
           ),
         ),
       ),
+    ),
+  );
+  updateSignals.add(true);
+  await tester.pumpAndSettle();
+}
+
+double _carouselHeight(WidgetTester tester) =>
+    tester.getSize(find.byType(AnnouncementCarousel)).height;
+
+void main() {
+  testWidgets('shows the update warning on wallet home after HTTP 418', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
     );
-    updateSignals.add(true);
-    await tester.pumpAndSettle();
 
     expect(find.text('Update BULL'), findsOneWidget);
     expect(
@@ -78,5 +102,117 @@ void main() {
       ),
       findsOneWidget,
     );
+
+    // Fully opaque, so the black backdrop the home screen paints behind its
+    // scroll view can never show through and tint the banner mid-scroll.
+    expect(tester.widget<BullInfoCard>(find.byType(BullInfoCard)).bgColor.a, 1);
+  });
+
+  testWidgets('a lone banner ends where its text ends, with no gap', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+    );
+
+    // No dots strip for a single card, so the viewport is the card and
+    // nothing else.
+    expect(
+      tester.getSize(find.byType(SingleChildScrollView)).height,
+      tester.getSize(find.byType(AnnouncementCard)).height,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a narrower screen wraps the text into a taller card', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      size: const Size(390, 844),
+    );
+    final wide = _carouselHeight(tester);
+
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      // Roughly the smallest phone the app still supports.
+      size: const Size(320, 568),
+    );
+
+    expect(_carouselHeight(tester), greaterThan(wide));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a larger accessibility text scale grows the card', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+    );
+    final normal = _carouselHeight(tester);
+
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      textScale: 2,
+    );
+
+    expect(_carouselHeight(tester), greaterThan(normal));
+    expect(tester.takeException(), isNull);
+  });
+
+  // The case that used to overflow: two cards, the taller one clamped to a
+  // hardcoded 170 that a 360dp screen doesn't fit.
+  for (final size in const [Size(390, 844), Size(360, 780), Size(320, 568)]) {
+    testWidgets('two banners fit, and share the tallest height, at $size', (
+      tester,
+    ) async {
+      await _pumpCarousel(
+        tester,
+        announcements: [
+          _announcement(AnnouncementId.appUpdateRequired),
+          _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
+        ],
+        size: size,
+      );
+
+      final cardHeights = tester
+          .widgetList(find.byType(AnnouncementCard))
+          .map((card) => tester.getSize(find.byWidget(card)).height)
+          .toList();
+      expect(cardHeights, hasLength(2));
+
+      final tallest = cardHeights.reduce((a, b) => a > b ? a : b);
+      expect(_carouselHeight(tester), greaterThanOrEqualTo(tallest));
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('swiping snaps to the next announcement', (tester) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [
+        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
+      ],
+    );
+
+    final position = tester
+        .state<ScrollableState>(find.byType(Scrollable))
+        .position;
+    expect(position.pixels, 0);
+
+    await tester.drag(
+      find.byType(AnnouncementCard).first,
+      const Offset(-260, 0),
+    );
+    await tester.pumpAndSettle();
+
+    // Snapped to a whole page, never resting between two cards.
+    expect(position.pixels, position.viewportDimension);
   });
 }
