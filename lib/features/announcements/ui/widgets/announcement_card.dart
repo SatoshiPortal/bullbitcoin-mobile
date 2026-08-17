@@ -29,6 +29,10 @@ class AnnouncementCard extends StatelessWidget {
     };
 
     return Stack(
+      // Fill the height handed down by the carousel, which sizes every page to
+      // its tallest card: a shorter announcement then still reaches the bottom
+      // of the row, keeping the page indicator attached to it.
+      fit: StackFit.expand,
       children: [
         BullInfoCard(
           title: announcement.title(context),

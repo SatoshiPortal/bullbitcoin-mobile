@@ -42,6 +42,7 @@ export 'package:flutter/widgets.dart'
         GestureDetector,
         HitTestBehavior,
         IconData,
+        IntrinsicHeight,
         Key,
         LayoutBuilder,
         ListView,
@@ -61,6 +62,7 @@ export 'package:flutter/widgets.dart'
         SingleChildScrollView,
         SizedBox,
         Spacer,
+        StackFit,
         Stack,
         State,
         StatefulWidget,
@@ -78,6 +80,8 @@ export 'package:flutter/widgets.dart'
         VerticalDirection,
         VoidCallback,
         Widget,
+        WidgetsBinding,
+        WidgetsBindingObserver,
         Wrap,
         WrapCrossAlignment;
 

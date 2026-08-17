@@ -72,7 +72,11 @@ Future<void> _pumpCarousel(
           data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
           child: BlocProvider.value(
             value: cubit,
-            child: const AnnouncementCarousel(),
+            // Mirrors the wallet home screen: inside a sliver, so the carousel
+            // is laid out against an unbounded height exactly as in the app.
+            child: const CustomScrollView(
+              slivers: [SliverToBoxAdapter(child: AnnouncementCarousel())],
+            ),
           ),
         ),
       ),
@@ -84,6 +88,11 @@ Future<void> _pumpCarousel(
 
 double _carouselHeight(WidgetTester tester) =>
     tester.getSize(find.byType(AnnouncementCarousel)).height;
+
+/// The carousel's own horizontal scroll position — `.last` skips the outer
+/// vertical `CustomScrollView` of the harness.
+ScrollPosition _carouselScroll(WidgetTester tester) =>
+    tester.state<ScrollableState>(find.byType(Scrollable).last).position;
 
 void main() {
   testWidgets('shows the update warning on wallet home after HTTP 418', (
@@ -201,9 +210,7 @@ void main() {
       ],
     );
 
-    final position = tester
-        .state<ScrollableState>(find.byType(Scrollable))
-        .position;
+    final position = _carouselScroll(tester);
     expect(position.pixels, 0);
 
     await tester.drag(
@@ -214,5 +221,88 @@ void main() {
 
     // Snapped to a whole page, never resting between two cards.
     expect(position.pixels, position.viewportDimension);
+  });
+
+  testWidgets('every card fills the row, so the dots stay attached', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [
+        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
+      ],
+      size: const Size(360, 780),
+    );
+
+    // The short card is stretched to the tall one's height: the indicator sits
+    // just under whichever card is on screen, not floating below a short one.
+    final heights = tester
+        .widgetList(find.byType(BullInfoCard))
+        .map((card) => tester.getSize(find.byWidget(card)).height)
+        .toSet();
+    expect(heights, hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a window resize keeps the same card on screen', (tester) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [
+        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
+        _announcement(AnnouncementId.appUpdateRequired, priority: 2),
+      ],
+    );
+
+    // Land on the middle card, the one a pixel-based offset gets wrong.
+    await tester.dragFrom(const Offset(200, 100), const Offset(-300, 0));
+    await tester.pumpAndSettle();
+    final before = _carouselScroll(tester);
+    expect(before.pixels / before.viewportDimension, 1);
+
+    // Split-screen, a foldable unfolding, DeX: the width changes under us.
+    await tester.binding.setSurfaceSize(const Size(700, 844));
+    await tester.pumpAndSettle();
+
+    final after = _carouselScroll(tester);
+    expect(after.pixels / after.viewportDimension, 1);
+  });
+
+  testWidgets('a height-only resize leaves an in-flight drag alone', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [
+        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
+      ],
+    );
+
+    // Start a real drag and keep the pointer down, so the scroll position is
+    // a genuine in-flight `DragScrollActivity`, not idle — a programmatic
+    // jump to a non-page-aligned offset would settle back to the nearest
+    // page on its own via `PageScrollPhysics`, on any relayout, which would
+    // make the assertion below pass regardless of `didChangeMetrics`.
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(AnnouncementCard).first),
+    );
+    await gesture.moveBy(const Offset(-20, 0));
+    await tester.pump(const Duration(milliseconds: 16));
+    await gesture.moveBy(const Offset(-80, 0));
+    await tester.pump(const Duration(milliseconds: 16));
+    final duringDrag = _carouselScroll(tester).pixels;
+
+    // Only the height changes here, e.g. a keyboard inset appearing on a
+    // route above — the carousel's own width is untouched. A single frame,
+    // not `pumpAndSettle`, since the drag is still in progress.
+    await tester.binding.setSurfaceSize(const Size(390, 500));
+    await tester.pump();
+
+    expect(_carouselScroll(tester).pixels, duringDrag);
+
+    await gesture.up();
+    await tester.pumpAndSettle();
   });
 }
