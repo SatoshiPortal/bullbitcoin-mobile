@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/primitives/payment_network.dart';
 
 sealed class SendFailure extends Failure {
   const SendFailure([super.logMessage]);
@@ -44,6 +45,17 @@ final class SendAmountOutOfBoundsFailure extends SendFailure {
 
 final class SendSwapCreationFailure extends SendFailure {
   const SendSwapCreationFailure([super.logMessage]);
+}
+
+final class SendSwapRouteUnavailableFailure extends SendFailure {
+  final PaymentNetwork? inNetwork;
+  final PaymentNetwork? outNetwork;
+
+  const SendSwapRouteUnavailableFailure({
+    this.inNetwork,
+    this.outNetwork,
+    String? logMessage,
+  }) : super(logMessage);
 }
 
 final class SendRateLimitedFailure extends SendFailure {

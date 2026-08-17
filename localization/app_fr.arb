@@ -5024,5 +5024,7 @@
   "sendSwapExpiredMessage": "Cette commande a expiré avant l'envoi de fonds. Rien n'a été envoyé depuis votre portefeuille.",
   "announcementAppUpdateRequiredTitle": "Mettez BULL à jour",
   "announcementAppUpdateRequiredDescription": "Pour utiliser le service de paiement Lightning et de swap, veuillez mettre à jour l’application mobile BULL vers la nouvelle version.",
-  "mempoolErrorNetworkMismatch": "Ce serveur est sur un autre réseau Bitcoin."
+  "mempoolErrorNetworkMismatch": "Ce serveur est sur un autre réseau Bitcoin.",
+  "swapErrorRouteUnavailable": "{fromNetwork} vers {toNetwork} n'est pas disponible.",
+  "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible."
 }

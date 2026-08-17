@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:flutter/widgets.dart';
@@ -22,6 +23,13 @@ extension SendFailureL10n on SendFailure {
     SendAmountOutOfBoundsFailure() =>
       context.loc.sendErrorAmountBelowSwapLimits,
     SendSwapCreationFailure() => context.loc.sendErrorSwapCreationFailed,
+    SendSwapRouteUnavailableFailure(:final inNetwork?, :final outNetwork?) =>
+      context.loc.swapErrorRouteUnavailable(
+        inNetwork.toTranslated(context),
+        outNetwork.toTranslated(context),
+      ),
+    SendSwapRouteUnavailableFailure() =>
+      context.loc.swapErrorRouteUnavailableGeneric,
     SendRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     SendTransactionBuildFailure() => context.loc.sendErrorBuildFailed,
