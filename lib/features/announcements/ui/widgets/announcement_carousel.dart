@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/announcements/ui/announcement_navigation.dart
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_dismiss_dialog.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/widgets.dart' show MediaQuery;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -67,31 +66,76 @@ class _CarouselBody extends StatefulWidget {
   State<_CarouselBody> createState() => _CarouselBodyState();
 }
 
-class _CarouselBodyState extends State<_CarouselBody> {
-  /// Base height (at textScale 1.0) that fits a two-line title+description
-  /// card. Scales with the user's text size so larger accessibility settings
-  /// never overflow.
-  static const double _baseCardHeight = 90;
-  static const double _longCardHeight = 170;
-
+class _CarouselBodyState extends State<_CarouselBody>
+    with WidgetsBindingObserver {
   /// Extra height reserved for the page-indicator dots strip, only when more
   /// than one announcement is shown — reserving it for a single card renders
   /// as dead space between the card and the content below it.
-  static const double _dotsStripHeight = 22;
+  static const double _dotsStripHeight = 26;
 
-  late final PageController _controller;
+  late final ScrollController _controller;
   int _page = 0;
+  double? _lastPageWidth;
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController();
+    _controller = ScrollController()..addListener(_onScroll);
+    WidgetsBinding.instance.addObserver(this);
+    // Seed the baseline once the controller has a position, so the first
+    // real width change afterwards has something to compare against.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_controller.hasClients) return;
+      _lastPageWidth = _controller.position.viewportDimension;
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Keeps the same card on screen when the window resizes (split-screen,
+  /// a foldable unfolding, DeX).
+  ///
+  /// The offset is stored in pixels, not in pages: after a width change it
+  /// still points at the old pixel, which the page physics then snap to
+  /// whichever page is now nearest — usually a different card. Re-align on the
+  /// page we were showing, captured before the new layout runs.
+  ///
+  /// `didChangeMetrics` fires for any window-metric change, not only width:
+  /// a keyboard inset appearing on a route above, system-UI insets, a display
+  /// change. `jumpTo` goes through `goIdle`, cancelling an in-flight drag or
+  /// snap animation, so we only realign when the viewport width — the thing
+  /// that actually moves the page boundaries — has changed.
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    final targetPage = _page;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_controller.hasClients) return;
+      final pageWidth = _controller.position.viewportDimension;
+      if (pageWidth <= 0) return;
+      if (pageWidth == _lastPageWidth) return;
+      _lastPageWidth = pageWidth;
+      _controller.jumpTo(
+        (targetPage * pageWidth).clamp(0, _controller.position.maxScrollExtent),
+      );
+    });
+  }
+
+  /// Derives the active page from the scroll offset
+  void _onScroll() {
+    if (!_controller.hasClients) return;
+    final pageWidth = _controller.position.viewportDimension;
+    if (pageWidth <= 0) return;
+    final page = (_controller.offset / pageWidth).round().clamp(
+      0,
+      widget.announcements.length - 1,
+    );
+    if (page != _page) setState(() => _page = page);
   }
 
   void _onTap(Announcement announcement) {
@@ -125,53 +169,60 @@ class _CarouselBodyState extends State<_CarouselBody> {
     final activePage = _page.clamp(0, announcements.length - 1);
     final showDots = announcements.length > 1;
 
-    // Adapt to the user's text-scale setting so the card grows with larger
-    // accessibility font sizes instead of overflowing.
-    final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final baseHeight =
-        announcements.any(
-          (announcement) => announcement.id == AnnouncementId.appUpdateRequired,
-        )
-        ? _longCardHeight
-        : _baseCardHeight;
-    final cardHeight =
-        (baseHeight + (showDots ? _dotsStripHeight : 0)) * textScale;
-
-    return SizedBox(
-      height: cardHeight,
-      child: Stack(
-        children: [
-          PageView.builder(
-            controller: _controller,
-            itemCount: announcements.length,
-            onPageChanged: (i) => setState(() => _page = i),
-            itemBuilder: (context, index) {
-              final announcement = announcements[index];
-              // Reserve the dots strip at the bottom so the card's centered
-              // content never collides with the indicator.
-              return Padding(
-                padding: EdgeInsets.only(
-                  bottom: showDots ? _dotsStripHeight : 0,
+    // No fixed height: a horizontally paged scroll view takes its height from
+    // its child row, which in turn takes the height of the tallest card at
+    // this width and text scale.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _controller,
+              scrollDirection: Axis.horizontal,
+              physics: const PageScrollPhysics(),
+              // The row is only as tall as its tallest card, and every card
+              // fills that height, so the indicator stays visually attached to
+              // whichever card is on screen instead of floating below a short
+              // one. `stretch` needs a bounded height, which the intrinsic
+              // pass supplies — inside a sliver the row would otherwise be
+              // laid out against an infinite height.
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final announcement in announcements)
+                      SizedBox(
+                        width: constraints.maxWidth,
+                        // Reserve the dots strip at the bottom so the card
+                        // content never collides with the indicator.
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: showDots ? _dotsStripHeight : 0,
+                          ),
+                          child: AnnouncementCard(
+                            announcement: announcement,
+                            onTap: () => _onTap(announcement),
+                            onDismiss: () => _onDismiss(announcement),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                child: AnnouncementCard(
-                  announcement: announcement,
-                  onTap: () => _onTap(announcement),
-                  onDismiss: () => _onDismiss(announcement),
-                ),
-              );
-            },
-          ),
-          // Dots sit inside the card, bottom-centered, so they clearly belong
-          // to the carousel rather than floating below it.
-          if (showDots)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 8,
-              child: _Dots(count: announcements.length, active: activePage),
+              ),
             ),
-        ],
-      ),
+            // Dots sit in the strip reserved below the cards, bottom-centered,
+            // so they clearly belong to the carousel rather than floating
+            // below it.
+            if (showDots)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 4,
+                child: _Dots(count: announcements.length, active: activePage),
+              ),
+          ],
+        );
+      },
     );
   }
 }
