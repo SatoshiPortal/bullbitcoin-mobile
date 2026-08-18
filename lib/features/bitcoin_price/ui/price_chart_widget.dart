@@ -330,13 +330,17 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _pulseAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
-    _pulseAnimationController.repeat(reverse: true);
+    _pulseAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0.8, end: 1.2), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: 1.2, end: 1.0), weight: 1),
+        ]).animate(
+          CurvedAnimation(
+            parent: _pulseAnimationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+    _pulseAnimationController.forward();
 
     _dotPositionController = AnimationController(
       vsync: this,
