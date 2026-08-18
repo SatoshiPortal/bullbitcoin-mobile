@@ -11,9 +11,9 @@ import 'package:go_router/go_router.dart';
 
 enum WithdrawRoute {
   withdraw('/withdraw'),
-  withdrawRecipients('/withdraw/recipients'),
-  withdrawConfirmation('/withdraw/confirmation'),
-  withdrawSuccess('/withdraw/success');
+  withdrawRecipients('recipients'),
+  withdrawConfirmation('confirmation'),
+  withdrawSuccess('success');
 
   final String path;
 

@@ -11,9 +11,9 @@ import 'package:go_router/go_router.dart';
 
 enum SwapRoute {
   swap('/swap'),
-  confirmSwap('/swap/confirm'),
-  inProgressSwap('/swap/in-progress'),
-  scanQr('/swap/scan-qr');
+  confirmSwap('confirm'),
+  inProgressSwap('in-progress'),
+  scanQr('scan-qr');
 
   final String path;
 
