@@ -112,27 +112,22 @@ abstract class ReceiveState with _$ReceiveState {
           return bitcoinAddress!.address;
         }
 
-        Uri bip21Uri = Uri(
+        if (canPayjoin) {
+          return buildPayjoinPaymentRequest(
+            pjUri: payjoin!.pjUri,
+            amountBtc: confirmedAmountBtc,
+            note: note,
+          );
+        }
+
+        final bip21Uri = Uri(
           scheme: 'bitcoin',
           path: bitcoinAddress!.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (confirmedAmountBtc > 0) 'amount': formatBtcAmount(confirmedAmountBtc),
             if (note.isNotEmpty) 'message': note,
           },
         );
-
-        // Add payjoin parameters if available
-        if (canPayjoin) {
-          final pjUri = Uri.parse(payjoin!.pjUri);
-          final queryParameters = {
-            if (bip21Uri.queryParameters.isNotEmpty)
-              ...bip21Uri.queryParameters,
-            if (pjUri.queryParameters['pjos'] != null)
-              'pjos': pjUri.queryParameters['pjos'],
-            'pj': pjUri.queryParameters['pj'],
-          };
-          bip21Uri = bip21Uri.replace(queryParameters: queryParameters);
-        }
         return bip21Uri.toString();
       case ReceiveType.lightning:
         return lightningInvoiceNormalized;
@@ -146,7 +141,7 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: 'liquidnetwork',
           path: liquidAddress!.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (confirmedAmountBtc > 0) 'amount': formatBtcAmount(confirmedAmountBtc),
             if (note.isNotEmpty) 'message': note,
             'assetid':
                 wallet != null && wallet!.network == Network.liquidMainnet
@@ -158,6 +153,47 @@ abstract class ReceiveState with _$ReceiveState {
       case _:
         return '';
     }
+  }
+
+  /// Builds the BIP21 payment request for a payjoin receive.
+  ///
+  /// [pjUri] is the complete, valid BIP21 URI produced by the payjoin PDK. We
+  /// append amount/message verbatim instead of re-encoding it through
+  /// dart:core [Uri], which percent-encodes the `://` of the pj endpoint and
+  /// would drop `pjos`. Keeping the pj byte-identical preserves the payjoin
+  /// endpoint and keeps it as the last parameter (BIP-77 SHOULD).
+  ///
+  /// `pjos=0` is advertised when the PDK omits it: our receiver never
+  /// substitutes outputs (it calls `commitOutputs` without substitution), so
+  /// disabling output substitution matches actual behavior.
+  static String buildPayjoinPaymentRequest({
+    required String pjUri,
+    required double amountBtc,
+    required String note,
+  }) {
+    final q = pjUri.indexOf('?');
+    if (q < 0) return pjUri;
+    final base = pjUri.substring(0, q); // bitcoin:<address>
+    final pdkQuery = pjUri.substring(q + 1); // [pjos=0&]pj=...
+    final extras = <String>[
+      if (amountBtc > 0) 'amount=${formatBtcAmount(amountBtc)}',
+      if (note.isNotEmpty) 'message=${Uri.encodeQueryComponent(note)}',
+      if (!pdkQuery.contains('pjos=')) 'pjos=0',
+    ];
+    return extras.isEmpty ? pjUri : '$base?${extras.join('&')}&$pdkQuery';
+  }
+
+  /// Formats a BTC amount as a plain decimal for a BIP21 `amount` parameter.
+  ///
+  /// `double.toString()` switches to scientific notation below 1e-6 (e.g.
+  /// `1e-8` for 1 sat), which is not a valid BIP21 amount. Format with 8
+  /// decimals (sat precision) and trim trailing zeros.
+  static String formatBtcAmount(double amountBtc) {
+    var s = amountBtc.toStringAsFixed(8);
+    if (s.contains('.')) {
+      s = s.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+    }
+    return s;
   }
 
   String get addressOrInvoiceOnly {
