@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/tor_bull_mascot.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -21,14 +22,6 @@ import 'package:bull_tor/tor.dart' as tor;
 /// and back within 173 ms. Without this delay that healthy refresh would put an
 /// error and a Retry button on screen.
 const _blockageGrace = Duration(seconds: 5);
-
-/// How long the progress bar survives without the fraction moving.
-///
-/// The fraction is 85% directory completeness, and the directory is cached on
-/// disk: with a warm cache and no connectivity at all it reads 0.85 from the
-/// first frame. A bar that only appears while the number is actually moving
-/// cannot make that claim.
-const _progressStale = Duration(seconds: 15);
 
 /// When to start reassuring the user that the wait is normal.
 ///
@@ -65,10 +58,6 @@ class _ConnectingPageState extends State<ConnectingPage> {
   /// When the current user-visible blockage first appeared, for [_blockageGrace].
   DateTime? _blockageSince;
 
-  /// When the bootstrap fraction last actually changed, for [_progressStale].
-  DateTime? _fractionMovedAt;
-  double? _lastFraction;
-
   /// Whether this screen has already handed the flow to the next page.
   ///
   /// Readiness is not a single event: Tor republishes `TorReady` on every
@@ -103,26 +92,20 @@ class _ConnectingPageState extends State<ConnectingPage> {
   }
 
   void _onStateChanged(BuildContext context, RecoverBullState state) {
+    if (_hasNavigated) return;
+
     final connection = state.torConnection;
     final now = DateTime.now();
 
-    final fraction = switch (connection) {
-      tor.TorConnecting(:final progress) => progress,
-      _ => null,
-    };
     final diagnostic = switch (connection) {
       tor.TorConnecting(:final diagnostic) => diagnostic,
       _ => null,
     };
 
-    // `build` reads these through `_progressIsLive` and `_blockageIsSettled`,
-    // so they are widget state, not bookkeeping. Mutating them bare only
-    // appeared to work because the one-second ticker rebuilt anyway.
+    // `build` reads this through `_blockageIsSettled`, so it is widget state,
+    // not bookkeeping. Mutating it bare only appeared to work because the
+    // one-second ticker rebuilt anyway.
     setState(() {
-      if (fraction != null && _lastFraction != fraction) {
-        _lastFraction = fraction;
-        _fractionMovedAt = now;
-      }
       if (diagnostic == null) {
         _blockageSince = null;
       } else {
@@ -152,7 +135,6 @@ class _ConnectingPageState extends State<ConnectingPage> {
 
     if (connection is tor.TorReady &&
         state.keyServerStatus == KeyServerStatus.online) {
-      if (_hasNavigated) return;
       _hasNavigated = true;
       final hasPreSelectedVault = state.vault != null;
       final nextPage = switch (state.flow) {
@@ -173,12 +155,6 @@ class _ConnectingPageState extends State<ConnectingPage> {
   bool get _blockageIsSettled {
     final since = _blockageSince;
     return since != null && DateTime.now().difference(since) >= _blockageGrace;
-  }
-
-  /// Whether the fraction is moving, and so worth drawing as a bar.
-  bool get _progressIsLive {
-    final at = _fractionMovedAt;
-    return at != null && DateTime.now().difference(at) < _progressStale;
   }
 
   @override
@@ -215,7 +191,6 @@ class _ConnectingPageState extends State<ConnectingPage> {
                       state: state,
                       elapsed: _elapsed,
                       showBlockage: _blockageIsSettled,
-                      progressIsLive: _progressIsLive,
                     ),
                   ),
                 ),
@@ -235,13 +210,11 @@ class _Body extends StatelessWidget {
   final RecoverBullState state;
   final Duration elapsed;
   final bool showBlockage;
-  final bool progressIsLive;
 
   const _Body({
     required this.state,
     required this.elapsed,
     required this.showBlockage,
-    required this.progressIsLive,
   });
 
   tor.TorConnectionState get _tor => state.torConnection;
@@ -305,6 +278,50 @@ class _Body extends StatelessWidget {
       _serverPhase == _PhaseState.failed ||
       _diagnostic != null;
 
+  TorBullState get _mascotState {
+    final diagnostic = _diagnostic;
+    if (diagnostic?.suggestsCensorship ?? false) {
+      return TorBullState.filtered;
+    }
+
+    if (_hasFailure) return TorBullState.failed;
+    if (_tor is tor.TorReady) return TorBullState.ready;
+
+    if (diagnostic != null) {
+      return diagnostic.suggestsCensorship
+          ? TorBullState.filtered
+          : TorBullState.failed;
+    }
+
+    return switch (_tor) {
+      tor.TorConnecting(transport: tor.TorTransport.snowflake) =>
+        TorBullState.snowflake,
+      tor.TorUninitialized() || tor.TorStopped() => TorBullState.idle,
+      tor.TorReady() ||
+      tor.TorConnecting() ||
+      tor.TorUnavailable() => TorBullState.direct,
+    };
+  }
+
+  String _connectionNarrative(BuildContext context) {
+    if (_tor is tor.TorReady &&
+        state.keyServerStatus != KeyServerStatus.online) {
+      return context.loc.recoverbullConnectingTor;
+    }
+
+    return switch (_mascotState) {
+      TorBullState.direct => context.loc.torSettingsModeDirectDescription,
+      TorBullState.filtered => [
+        context.loc.torSettingsDescCensored,
+        context.loc.torSettingsModeAutomaticDescription,
+      ].join(' '),
+      TorBullState.snowflake => context.loc.torSettingsModeSnowflakeDescription,
+      TorBullState.ready => context.loc.torSettingsDescConnected,
+      TorBullState.failed => _failureMessage(context),
+      TorBullState.idle => context.loc.recoverbullPleaseWait,
+    };
+  }
+
   /// One message, chosen by what actually failed.
   ///
   /// The wording stays hedged for the network diagnoses: upstream documents
@@ -346,12 +363,68 @@ class _Body extends StatelessWidget {
       mainAxisAlignment: .center,
       crossAxisAlignment: .stretch,
       children: [
+        Center(
+          child: TorBullMascot(
+            state: _mascotState,
+            semanticLabel: context.loc.recoverbullTorNetwork,
+          ),
+        ),
+        const Gap(12),
         BBText(
           context.loc.recoverbullCheckingConnection,
           textAlign: .center,
           style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
         ),
-        const Gap(32),
+        const Gap(12),
+        if (!_hasFailure)
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Container(
+              key: ValueKey(_mascotState),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: switch (_mascotState) {
+                  TorBullState.filtered => context.appColors.warningContainer,
+                  TorBullState.failed => context.appColors.errorContainer,
+                  _ => context.appColors.surface,
+                },
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  if (_mascotState == TorBullState.filtered)
+                    BBText(
+                      context.loc.torSettingsStatusCensored,
+                      textAlign: .center,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.warning,
+                        fontWeight: .w700,
+                      ),
+                    ),
+                  if (_mascotState == TorBullState.snowflake)
+                    BBText(
+                      context.loc.torSettingsActiveTransport(
+                        context.loc.torSettingsModeSnowflake,
+                      ),
+                      textAlign: .center,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.info,
+                        fontWeight: .w700,
+                      ),
+                    ),
+                  BBText(
+                    _connectionNarrative(context),
+                    textAlign: .center,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                    maxLines: 4,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        const Gap(20),
         _PhaseCard(
           label: context.loc.recoverbullTorNetwork,
           phase: _torPhase,
@@ -360,14 +433,6 @@ class _Body extends StatelessWidget {
           // about a third of the time.
           caption: _torPhase == _PhaseState.active
               ? context.loc.recoverbullPhaseNetworkInfo
-              : null,
-          // Only drawn while the number is genuinely moving — a cached
-          // directory reports 0.85 with no connectivity whatsoever.
-          fraction: _torPhase == _PhaseState.active && progressIsLive
-              ? switch (_tor) {
-                  tor.TorConnecting(:final progress) => progress,
-                  _ => null,
-                }
               : null,
           elapsed: _torPhase == _PhaseState.active ? elapsed : null,
         ),
@@ -419,7 +484,6 @@ class _PhaseCard extends StatelessWidget {
   final String label;
   final _PhaseState phase;
   final String? caption;
-  final double? fraction;
   final Duration? elapsed;
 
   /// An extra language-neutral token for the detail line, such as `2/3`.
@@ -429,7 +493,6 @@ class _PhaseCard extends StatelessWidget {
     required this.label,
     required this.phase,
     this.caption,
-    this.fraction,
     this.elapsed,
     this.trailingDetail,
   });
@@ -481,10 +544,7 @@ class _PhaseCard extends StatelessWidget {
               ),
             ],
           ),
-          if (caption != null ||
-              fraction != null ||
-              elapsed != null ||
-              trailingDetail != null) ...[
+          if (caption != null || elapsed != null || trailingDetail != null) ...[
             const Gap(8),
             Padding(
               padding: const EdgeInsets.only(left: 32),
@@ -499,30 +559,10 @@ class _PhaseCard extends StatelessWidget {
                       ),
                       maxLines: 2,
                     ),
-                  if (fraction != null) ...[
-                    const Gap(6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: fraction!.clamp(0.0, 1.0),
-                        minHeight: 4,
-                        backgroundColor: context.appColors.onSurface.withValues(
-                          alpha: 0.1,
-                        ),
-                        valueColor: AlwaysStoppedAnimation<Color>(color),
-                      ),
-                    ),
-                  ],
-                  if (fraction != null ||
-                      elapsed != null ||
-                      trailingDetail != null) ...[
+                  if (elapsed != null || trailingDetail != null) ...[
                     const Gap(6),
                     BBText(
                       [
-                        if (fraction != null)
-                          context.loc.torSettingsBootstrapProgress(
-                            (fraction! * 100).round(),
-                          ),
                         ?trailingDetail,
                         // A bare timer, deliberately unlocalised: no words to
                         // translate, and it is the only element that keeps

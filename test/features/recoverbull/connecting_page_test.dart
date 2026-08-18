@@ -96,7 +96,36 @@ void main() {
     expect(find.text(l10n.recoverbullCheckingConnection), findsOneWidget);
     expect(find.text(l10n.recoverbullTorNetwork), findsOneWidget);
     expect(find.text(l10n.recoverbullRecoverBullServer), findsOneWidget);
-    expect(find.text(l10n.recoverbullPleaseWait), findsOneWidget);
+    expect(find.byKey(const ValueKey('tor-bull-direct')), findsOneWidget);
+    expect(find.text(l10n.torSettingsModeDirectDescription), findsOneWidget);
+  });
+
+  // Tor being usable and the key server answering are two different facts,
+  // separated by 17-24s on device. Holding the mascot on "searching" for that
+  // whole window told the user nothing had happened yet.
+  testWidgets('shows Tor ready while the RecoverBull server is checked', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+        keyServerStatus: KeyServerStatus.connecting,
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.byKey(const ValueKey('tor-bull-ready')), findsOneWidget);
+    expect(find.byKey(const ValueKey('tor-bull-direct')), findsNothing);
+    expect(find.text(l10n.recoverbullConnectingTor), findsOneWidget);
   });
 
   // The headline of this screen: a blockage that outlives the grace period has
@@ -182,6 +211,31 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.torSettingsDescCensored), findsOneWidget);
     expect(find.text(l10n.recoverbullTorCantStart), findsNothing);
+  });
+
+  testWidgets('shows the filtered mascot after the grace period', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          progress: 0.08,
+          diagnostic: tor.TorDiagnostic.filtering,
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('tor-bull-filtered')), findsNothing);
+
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(seconds: 6)),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byKey(const ValueKey('tor-bull-filtered')), findsOneWidget);
   });
 
   // Tor republishes readiness on every directory refresh, so the success
