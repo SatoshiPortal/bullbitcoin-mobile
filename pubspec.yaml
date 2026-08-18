@@ -14,6 +14,7 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/bull_tor
 
 dependencies:
   flutter:
@@ -49,17 +50,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -113,7 +114,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
