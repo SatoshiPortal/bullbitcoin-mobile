@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -27,17 +26,13 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.exchangeStatisticsTitle,
-          onBack: () => context.pop(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.exchangeStatisticsTitle,
+        onBack: () => context.pop(),
       ),
-      body: _buildBody(context),
+      padding: EdgeInsets.zero,
+      child: _buildBody(context),
     );
   }
 
@@ -73,7 +68,7 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            BBButton.big(
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () => context.read<StatisticsCubit>().loadStatistics(),
               bgColor: context.appColors.onSurface,
@@ -153,7 +148,7 @@ class _OrderStatsSection extends StatelessWidget {
         _StatSectionCard(
           title: context.loc.exchangeStatisticsBuyStats,
           icon: Icons.arrow_downward,
-          iconColor: Colors.green,
+          iconColor: context.bull.success,
           stats: [
             _StatRow(
               label: context.loc.exchangeStatisticsVolume,
@@ -176,7 +171,7 @@ class _OrderStatsSection extends StatelessWidget {
         _StatSectionCard(
           title: context.loc.exchangeStatisticsSellStats,
           icon: Icons.arrow_upward,
-          iconColor: Colors.red,
+          iconColor: context.bull.error,
           stats: [
             _StatRow(
               label: context.loc.exchangeStatisticsVolume,

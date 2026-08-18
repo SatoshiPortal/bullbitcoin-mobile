@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,8 +34,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
@@ -53,116 +50,108 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                SettingsEntryItem(
-                  icon: Icons.currency_exchange,
-                  title: Platform.isIOS && !isSuperuser
-                      ? context.loc.settingsAccountSettingsTitle
-                      : context.loc.settingsExchangeSettingsTitle,
-                  onTap: () {
-                    if (Platform.isIOS) {
-                      if (isSuperuser) {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
-                        }
-                      } else {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
-                        }
-                      }
-                    } else {
-                      final notLoggedIn = context
-                          .read<ExchangeCubit>()
-                          .state
-                          .notLoggedIn;
-                      if (notLoggedIn) {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
-                      } else {
-                        context.pushNamed(SettingsRoute.exchangeSettings.name);
-                      }
-                    }
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.save,
-                  title: context.loc.settingsWalletBackupTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.backupSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.currency_bitcoin,
-                  title: context.loc.settingsBitcoinSettingsTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.bitcoinSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.app_settings_alt,
-                  title: context.loc.settingsAppSettingsTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.appSettings.name);
-                  },
-                ),
-
-                SettingsEntryItem(
-                  icon: Icons.map,
-                  title: context.loc.settingsBtcMapTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.btcMap.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.description,
-                  title: context.loc.settingsTermsOfServiceTitle,
-                  onTap: () {
-                    final url = Uri.parse(
-                      SettingsConstants.termsAndConditionsLink,
-                    );
-                    launchUrl(url, mode: LaunchMode.inAppBrowserView);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.monitor_heart,
-                  iconColor: serviceStatusLoading
-                      ? context.appColors.textMuted
-                      : serviceStatus.allServicesOnline
-                      ? context.appColors.success
-                      : context.appColors.error,
-                  title: context.loc.settingsServicesStatusTitle,
-                  onTap: () {
-                    context.pushNamed(StatusCheckRoute.serviceStatus.name);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.settingsScreenTitle,
+        onBack: context.pop,
       ),
-      bottomNavigationBar: BottomAppBar(
+      padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+      scrollable: true,
+      child: Column(
+        children: [
+          BullSettingsEntryItem(
+            icon: Icons.currency_exchange,
+            title: Platform.isIOS && !isSuperuser
+                ? context.loc.settingsAccountSettingsTitle
+                : context.loc.settingsExchangeSettingsTitle,
+            onTap: () {
+              if (Platform.isIOS) {
+                if (isSuperuser) {
+                  final notLoggedIn = context
+                      .read<ExchangeCubit>()
+                      .state
+                      .notLoggedIn;
+                  if (notLoggedIn) {
+                    context.goNamed(ExchangeRoute.exchangeLanding.name);
+                  } else {
+                    context.pushNamed(SettingsRoute.exchangeSettings.name);
+                  }
+                } else {
+                  final notLoggedIn = context
+                      .read<ExchangeCubit>()
+                      .state
+                      .notLoggedIn;
+                  if (notLoggedIn) {
+                    context.goNamed(ExchangeRoute.exchangeLanding.name);
+                  } else {
+                    context.pushNamed(SettingsRoute.exchangeSettings.name);
+                  }
+                }
+              } else {
+                final notLoggedIn = context
+                    .read<ExchangeCubit>()
+                    .state
+                    .notLoggedIn;
+                if (notLoggedIn) {
+                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                } else {
+                  context.pushNamed(SettingsRoute.exchangeSettings.name);
+                }
+              }
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.save,
+            title: context.loc.settingsWalletBackupTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.backupSettings.name);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.currency_bitcoin,
+            title: context.loc.settingsBitcoinSettingsTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.bitcoinSettings.name);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.app_settings_alt,
+            title: context.loc.settingsAppSettingsTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.appSettings.name);
+            },
+          ),
+
+          BullSettingsEntryItem(
+            icon: Icons.map,
+            title: context.loc.settingsBtcMapTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.btcMap.name);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.description,
+            title: context.loc.settingsTermsOfServiceTitle,
+            onTap: () {
+              final url = Uri.parse(SettingsConstants.termsAndConditionsLink);
+              launchUrl(url, mode: LaunchMode.inAppBrowserView);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.monitor_heart,
+            iconColor: serviceStatusLoading
+                ? context.appColors.textMuted
+                : serviceStatus.allServicesOnline
+                ? context.appColors.success
+                : context.appColors.error,
+            title: context.loc.settingsServicesStatusTitle,
+            onTap: () {
+              context.pushNamed(StatusCheckRoute.serviceStatus.name);
+            },
+          ),
+        ],
+      ),
+      bottomBar: BottomAppBar(
         height: 150,
         padding: EdgeInsets.zero,
         color: context.appColors.transparent,
@@ -176,7 +165,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   title: Center(
                     child: Text(
                       '${context.loc.settingsAppVersionLabel}$appVersion',
-                      style: theme.textTheme.labelMedium?.copyWith(
+                      style: context.bullText.labelMedium?.copyWith(
                         color: context.appColors.onSurface,
                       ),
                     ),
@@ -212,7 +201,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           const Gap(8),
                           Text(
                             context.loc.settingsGithubLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: context.bullText.bodyMedium?.copyWith(
                               color: context.appColors.onSurface,
                             ),
                           ),
@@ -243,7 +232,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           const Gap(8),
                           Text(
                             context.loc.settingsGetHelpLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: context.bullText.bodyMedium?.copyWith(
                               color: context.appColors.onSurface,
                             ),
                           ),

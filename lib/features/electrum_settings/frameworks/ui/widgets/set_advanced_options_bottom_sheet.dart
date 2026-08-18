@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SetAdvancedOptionsBottomSheet extends StatefulWidget {
@@ -16,7 +15,7 @@ class SetAdvancedOptionsBottomSheet extends StatefulWidget {
   static Future<void> show(BuildContext context) {
     final bloc = context.read<ElectrumSettingsBloc>();
 
-    return BlurredBottomSheet.show<void>(
+    return BullBottomSheet.show<void>(
       context: context,
       child: BlocProvider.value(
         value: bloc,
@@ -421,7 +420,7 @@ class _SetAdvancedOptionsBottomSheetState
                           Row(
                             children: [
                               Expanded(
-                                child: BBButton.small(
+                                child: BullButton.secondary(
                                   label: context.loc.electrumReset,
                                   disabled: state.isSavingAdvancedOptions,
                                   onPressed: () {
@@ -443,21 +442,14 @@ class _SetAdvancedOptionsBottomSheetState
                                     );
                                     FocusScope.of(context).unfocus();
                                   },
-                                  bgColor: context.appColors.transparent,
-                                  outlined: true,
-                                  textStyle: context.font.headlineLarge,
-                                  textColor: context.appColors.onSurface,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: BBButton.small(
+                                child: BullButton.primary(
                                   label: context.loc.electrumConfirm,
                                   disabled: state.isSavingAdvancedOptions,
                                   onPressed: _confirm,
-                                  bgColor: context.appColors.onSurface,
-                                  textStyle: context.font.headlineLarge,
-                                  textColor: context.appColors.surface,
                                 ),
                               ),
                             ],

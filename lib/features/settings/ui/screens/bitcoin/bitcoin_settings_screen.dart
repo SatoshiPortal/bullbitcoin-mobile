@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,95 +24,86 @@ class BitcoinSettingsScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
     );
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsBitcoinSettingsTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                SettingsEntryItem(
-                  icon: Icons.account_balance_wallet,
-                  title: context.loc.bitcoinSettingsWalletsTitle,
-                  onTap: () {
-                    context.pushNamed(
-                      SettingsRoute.walletDetailsWalletList.name,
-                    );
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.sim_card_download,
-                  title: context.loc.bitcoinSettingsImportWalletTitle,
-                  onTap: () => context.pushNamed(
-                    ImportWalletRoute.importWalletHome.name,
-                  ),
-                ),
-                SettingsEntryItem(
-                  icon: Icons.satellite_alt,
-                  title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
-                  onTap: () => context.pushNamed(
-                    BroadcastSignedTxRoute.broadcastHome.name,
-                  ),
-                ),
-                SettingsEntryItem(
-                  icon: Icons.compare_arrows,
-                  title: context.loc.bitcoinSettingsPayjoinTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.payjoinSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.swap_vertical_circle,
-                  title: context.loc.autoswapSettingsTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.autoswapSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.hub,
-                  title: context.loc.bitcoinSettingsElectrumServerTitle,
-                  onTap: () {
-                    context.pushNamed(
-                      ElectrumSettingsRoute.electrumSettings.name,
-                    );
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.memory,
-                  title: context.loc.bitcoinSettingsMempoolServerTitle,
-                  onTap: () {
-                    context.pushNamed(MempoolSettingsRoute.name);
-                  },
-                ),
-                if (isSuperuser && isDevModeEnabled)
-                  SettingsEntryItem(
-                    icon: Icons.science,
-                    title: context.loc.bitcoinSettingsTestnetModeTitle,
-                    isSuperUser: true,
-                    trailing: const TestnetModeSwitch(),
-                  ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.vpn_key,
-                    title: 'Seed Viewer',
-                    isSuperUser: true,
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.allSeedView.name);
-                    },
-                  ),
-                if (isSuperuser && isDevModeEnabled)
-                  SettingsEntryItem(
-                    icon: Icons.science,
-                    title: context.loc.bitcoinSettingsBip85EntropiesTitle,
-                    isSuperUser: isSuperuser && isDevModeEnabled,
-                    onTap: () =>
-                        context.pushNamed(Bip85EntropyRoute.bip85Home.name),
-                  ),
-              ],
-            ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.settingsBitcoinSettingsTitle,
+        onBack: context.pop,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+      scrollable: true,
+      child: Column(
+        children: [
+          BullSettingsEntryItem(
+            icon: Icons.account_balance_wallet,
+            title: context.loc.bitcoinSettingsWalletsTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.walletDetailsWalletList.name);
+            },
           ),
-        ),
+          BullSettingsEntryItem(
+            icon: Icons.sim_card_download,
+            title: context.loc.bitcoinSettingsImportWalletTitle,
+            onTap: () =>
+                context.pushNamed(ImportWalletRoute.importWalletHome.name),
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.satellite_alt,
+            title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
+            onTap: () =>
+                context.pushNamed(BroadcastSignedTxRoute.broadcastHome.name),
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.compare_arrows,
+            title: context.loc.bitcoinSettingsPayjoinTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.payjoinSettings.name);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.swap_vertical_circle,
+            title: context.loc.autoswapSettingsTitle,
+            onTap: () {
+              context.pushNamed(SettingsRoute.autoswapSettings.name);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.hub,
+            title: context.loc.bitcoinSettingsElectrumServerTitle,
+            onTap: () {
+              context.pushNamed(ElectrumSettingsRoute.electrumSettings.name);
+            },
+          ),
+          BullSettingsEntryItem(
+            icon: Icons.memory,
+            title: context.loc.bitcoinSettingsMempoolServerTitle,
+            onTap: () {
+              context.pushNamed(MempoolSettingsRoute.name);
+            },
+          ),
+          if (isSuperuser && isDevModeEnabled)
+            BullSettingsEntryItem(
+              icon: Icons.science,
+              title: context.loc.bitcoinSettingsTestnetModeTitle,
+              isSuperUser: true,
+              trailing: const TestnetModeSwitch(),
+            ),
+          if (isSuperuser)
+            BullSettingsEntryItem(
+              icon: Icons.vpn_key,
+              title: 'Seed Viewer',
+              isSuperUser: true,
+              onTap: () {
+                context.pushNamed(SettingsRoute.allSeedView.name);
+              },
+            ),
+          if (isSuperuser && isDevModeEnabled)
+            BullSettingsEntryItem(
+              icon: Icons.science,
+              title: context.loc.bitcoinSettingsBip85EntropiesTitle,
+              isSuperUser: isSuperuser && isDevModeEnabled,
+              onTap: () => context.pushNamed(Bip85EntropyRoute.bip85Home.name),
+            ),
+        ],
       ),
     );
   }

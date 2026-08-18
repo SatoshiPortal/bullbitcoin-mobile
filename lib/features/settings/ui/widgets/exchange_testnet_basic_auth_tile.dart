@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExchangeTestnetBasicAuthTile extends StatelessWidget {
@@ -9,7 +9,7 @@ class ExchangeTestnetBasicAuthTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.lock_outline,
       title: context.loc.exchangeTestnetBasicAuthTitle,
       onTap: () => _showDialog(context),

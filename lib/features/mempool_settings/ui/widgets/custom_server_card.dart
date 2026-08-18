@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
@@ -10,6 +8,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class CustomServerCard extends StatelessWidget {
   final MempoolServerDto? customServer;
@@ -164,7 +163,7 @@ class CustomServerCard extends StatelessWidget {
   }
 
   void _showEditServerSheet(BuildContext context) {
-    BlurredBottomSheet.show(
+    BullBottomSheet.show(
       context: context,
       child: BlocProvider.value(
         value: context.read<MempoolSettingsCubit>(),
@@ -177,48 +176,47 @@ class CustomServerCard extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    BlurredDialog.show(
+    BullDialog.show(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: context.appColors.surface,
-        title: Text(
-          context.loc.mempoolCustomServerDeleteTitle,
-          style: context.font.headlineSmall?.copyWith(
-            color: context.appColors.error,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          context.loc.mempoolCustomServerDeleteMessage,
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.onSurface,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              context.loc.cancel,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
+      builder: (dialogContext) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            context.loc.mempoolCustomServerDeleteTitle,
+            style: context.font.headlineSmall?.copyWith(
+              color: context.appColors.error,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<MempoolSettingsCubit>().deleteCustomServer();
-            },
-            child: Text(
-              context.loc.delete,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
-                fontWeight: FontWeight.bold,
-              ),
+          const Gap(12),
+          Text(
+            context.loc.mempoolCustomServerDeleteMessage,
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.onSurface,
             ),
+          ),
+          const Gap(20),
+          Row(
+            children: [
+              Expanded(
+                child: BullButton.secondary(
+                  label: context.loc.cancel,
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                ),
+              ),
+              const Gap(12),
+              Expanded(
+                child: BullButton.danger(
+                  label: context.loc.delete,
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    context.read<MempoolSettingsCubit>().deleteCustomServer();
+                  },
+                ),
+              ),
+            ],
           ),
         ],
-        actionsAlignment: MainAxisAlignment.spaceBetween,
       ),
     );
   }
@@ -236,7 +234,7 @@ class _AddCustomServerButton extends StatelessWidget {
         onTap: isProcessing
             ? null
             : () {
-                BlurredBottomSheet.show(
+                BullBottomSheet.show(
                   context: context,
                   child: BlocProvider.value(
                     value: context.read<MempoolSettingsCubit>(),

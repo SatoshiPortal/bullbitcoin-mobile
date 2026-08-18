@@ -4,11 +4,10 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -35,66 +34,57 @@ class ExchangeSecurityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.exchangeSettingsSecuritySettingsTitle,
-          onBack: () => context.pop(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.exchangeSettingsSecuritySettingsTitle,
+        onBack: () => context.pop(),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: context.appColors.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.appColors.overlay.withValues(alpha: 0.05),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+      padding: const EdgeInsets.all(BullSpacing.md),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.appColors.surface,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: context.appColors.overlay.withValues(alpha: 0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  mainAxisSize: .min,
-                  children: [
-                    BBText(
-                      context.loc.exchangeSecurityManage2FAPasswordLabel,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: BBButton.big(
-                        label: context.loc.exchangeSecurityAccessSettingsButton,
-                        onPressed: () {
-                          _openSecurityWebView(context);
-                        },
-                        bgColor: context.appColors.onSurface,
-                        textColor: context.appColors.surface,
-                        iconData: Icons.arrow_forward,
-                      ),
-                    ),
-                  ],
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
+              children: [
+                BBText(
+                  context.loc.exchangeSecurityManage2FAPasswordLabel,
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.appColors.textMuted,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: BullButton.big(
+                    label: context.loc.exchangeSecurityAccessSettingsButton,
+                    onPressed: () {
+                      _openSecurityWebView(context);
+                    },
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
+                    iconData: Icons.arrow_forward,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -151,15 +141,13 @@ class _SecurityWebViewScreenState extends State<_SecurityWebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.exchangeSettingsSecuritySettingsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.exchangeSettingsSecuritySettingsTitle,
+        onBack: () => Navigator.of(context).pop(),
       ),
-      body: SafeArea(child: WebViewWidget(controller: _controller)),
+      padding: EdgeInsets.zero,
+      child: WebViewWidget(controller: _controller),
     );
   }
 }

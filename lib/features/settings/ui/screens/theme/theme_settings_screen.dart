@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/theme_option.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,15 +16,17 @@ class ThemeSettingsScreen extends StatelessWidget {
           current.storedSettings?.themeMode !=
           previous.storedSettings?.themeMode,
       listener: (context, state) => context.pop(),
-      child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.settingsThemeTitle)),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: AppThemeMode.values
-                .map((themeMode) => ThemeOption(themeMode: themeMode))
-                .toList(),
-          ),
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.settingsThemeTitle,
+          onBack: context.pop,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+        scrollable: true,
+        child: Column(
+          children: AppThemeMode.values
+              .map((themeMode) => ThemeOption(themeMode: themeMode))
+              .toList(),
         ),
       ),
     );

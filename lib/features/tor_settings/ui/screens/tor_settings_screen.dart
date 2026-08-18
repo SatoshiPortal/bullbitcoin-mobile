@@ -1,8 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class TorSettingsScreen extends StatefulWidget {
   const TorSettingsScreen({super.key});
@@ -20,16 +21,16 @@ class _TorSettingsScreenState extends State<TorSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.torSettingsTitle)),
-      body: const SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: [TorProxyWidget()],
-          ),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.torSettingsTitle,
+        onBack: context.pop,
+      ),
+      padding: const EdgeInsets.all(BullSpacing.md),
+      scrollable: true,
+      child: const Column(
+        crossAxisAlignment: .stretch,
+        children: [TorProxyWidget()],
       ),
     );
   }

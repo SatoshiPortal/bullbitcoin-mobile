@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_item.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class MempoolServerList extends StatelessWidget {
   const MempoolServerList({super.key});
@@ -114,39 +112,34 @@ class MempoolServerList extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    BlurredDialog.show(
+    BullDialog.show(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: context.appColors.surface,
-        title: Text(context.loc.mempoolCustomServerDeleteTitle),
-        content: Text(
-          context.loc.mempoolCustomServerDeleteMessage,
-          style: context.font.bodyMedium,
-        ),
-        actions: [
+      builder: (dialogContext) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(context.loc.mempoolCustomServerDeleteTitle),
+          const Gap(12),
+          Text(
+            context.loc.mempoolCustomServerDeleteMessage,
+            style: context.font.bodyMedium,
+          ),
+          const Gap(20),
           Row(
             children: [
               Expanded(
-                child: BBButton.small(
+                child: BullButton.secondary(
                   label: context.loc.cancel,
                   onPressed: () => Navigator.of(dialogContext).pop(),
-                  bgColor: context.appColors.transparent,
-                  outlined: true,
-                  textStyle: context.font.headlineLarge,
-                  textColor: context.appColors.secondary,
                 ),
               ),
               const Gap(12),
               Expanded(
-                child: BBButton.small(
+                child: BullButton.danger(
                   label: context.loc.delete,
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                     context.read<MempoolSettingsCubit>().deleteCustomServer();
                   },
-                  bgColor: context.appColors.error,
-                  textStyle: context.font.headlineLarge,
-                  textColor: context.appColors.onPrimary,
                 ),
               ),
             ],

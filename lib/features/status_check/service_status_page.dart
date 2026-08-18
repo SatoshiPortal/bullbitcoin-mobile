@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class ServiceStatusPage extends StatefulWidget {
   const ServiceStatusPage({super.key});
@@ -29,14 +29,17 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.statusCheckTitle)),
-      body: BlocBuilder<ServiceStatusCubit, ServiceStatusState>(
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.statusCheckTitle,
+        onBack: context.pop,
+      ),
+      child: BlocBuilder<ServiceStatusCubit, ServiceStatusState>(
         builder: (context, state) {
           final serviceStatus = state.serviceStatus;
           final cubit = context.read<ServiceStatusCubit>();
 
-          return BBPullableBody(
+          return BullPullableBody(
             indicatorKey: _refreshIndicatorKey,
             onRefresh: () async => await cubit.checkStatus(),
             slivers: [
@@ -71,7 +74,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                       mainAxisAlignment: .center,
                       children: [
                         if (serviceStatus.lastChecked != null)
-                          BBText(
+                          BullText(
                             context.loc.statusCheckLastChecked(
                               _formatDateTime(serviceStatus.lastChecked!),
                             ),
@@ -113,13 +116,13 @@ class _ServiceStatusItem extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        BBText(
+        BullText(
           service.name,
           style: context.font.bodyMedium,
           color: context.appColors.onSurface,
         ),
         const Spacer(),
-        BBText(
+        BullText(
           _getStatusText(context),
           style: context.font.bodySmall,
           color: context.appColors.onSurfaceVariant,
@@ -131,12 +134,12 @@ class _ServiceStatusItem extends StatelessWidget {
   Color _getStatusColor(BuildContext context) {
     switch (service.status) {
       case ServiceStatus.online:
-        return context.appColors.success;
+        return context.bull.success;
       case ServiceStatus.offline:
-        return context.appColors.error;
+        return context.bull.error;
       case ServiceStatus.unknown:
       case ServiceStatus.disabled:
-        return context.appColors.textMuted;
+        return context.bull.onSurfaceVariant;
     }
   }
 

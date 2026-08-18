@@ -3,16 +3,15 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_failure_l10n.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class AutoSwapSettingsScreen extends StatefulWidget {
   const AutoSwapSettingsScreen({super.key});
@@ -38,57 +37,59 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<AutoSwapSettingsCubit>(
       create: (_) => locator<AutoSwapSettingsCubit>()..loadSettings(),
-      child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.autoswapSettingsTitle)),
-        body: SafeArea(
-          child: BBKeyboardActions(
-            disableScroll: true,
-            focusNodes: [_amountNode, _triggerNode, _feeNode],
-            child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-              builder: (context, state) {
-                final enabled = state.enabledToggle;
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.autoswapSettingsTitle,
+          onBack: context.pop,
+        ),
+        padding: EdgeInsets.zero,
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode, _triggerNode, _feeNode],
+          child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+            builder: (context, state) {
+              final enabled = state.enabledToggle;
 
-                return SingleChildScrollView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: state.loading
-                        ? const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Gap(16),
-                              _EnabledToggle(),
-                              if (state.failure case final failure?) ...[
-                                const Gap(16),
-                                InfoCard(
-                                  description: failure.toTranslated(context),
-                                  tagColor: context.appColors.error,
-                                  bgColor: context.appColors.errorContainer,
-                                ),
-                              ],
-                              if (enabled) ...[
-                                const Gap(16),
-                                _AmountThresholdField(focusNode: _amountNode),
-                                const Gap(16),
-                                _TriggerBalanceField(focusNode: _triggerNode),
-                                const Gap(16),
-                                _FeeThresholdField(focusNode: _feeNode),
-                                const Gap(16),
-                                _WalletSelectionDropdown(),
-                              ],
-                            ],
+              return SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: state.loading
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32.0),
+                            child: CircularProgressIndicator(),
                           ),
-                  ),
-                );
-              },
-            ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Gap(16),
+                            _EnabledToggle(),
+                            if (state.failure case final failure?) ...[
+                              const Gap(16),
+                              InfoCard(
+                                description: failure.toTranslated(context),
+                                tagColor: context.appColors.error,
+                                bgColor: context.appColors.errorContainer,
+                              ),
+                            ],
+                            if (enabled) ...[
+                              const Gap(16),
+                              _AmountThresholdField(focusNode: _amountNode),
+                              const Gap(16),
+                              _TriggerBalanceField(focusNode: _triggerNode),
+                              const Gap(16),
+                              _FeeThresholdField(focusNode: _feeNode),
+                              const Gap(16),
+                              _WalletSelectionDropdown(),
+                            ],
+                          ],
+                        ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -115,7 +116,7 @@ class _EnabledToggle extends StatelessWidget {
                 color: context.appColors.text,
               ),
             ),
-            BBSwitch(
+            BullSwitch(
               value: enabled,
               onChanged: (value) {
                 context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
@@ -465,7 +466,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
           ],
         ),
         const Gap(8),
-        BBDropdown<Wallet>(
+        BullDropdown<Wallet>(
           items: availableWallets
               .map(
                 (wallet) => DropdownMenuItem(

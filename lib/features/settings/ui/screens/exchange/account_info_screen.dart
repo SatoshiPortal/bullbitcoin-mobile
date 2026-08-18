@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class ExchangeAccountInfoScreen extends StatelessWidget {
   const ExchangeAccountInfoScreen({super.key});
@@ -16,10 +18,13 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     final state = context.select((ExchangeCubit cubit) => cubit.state);
     final userSummary = state.userSummary;
 
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
-      body: Column(
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.exchangeAccountInfoTitle,
+        onBack: context.pop,
+      ),
+      padding: EdgeInsets.zero,
+      child: Column(
         children: [
           if (state.isFetchingUserSummary)
             LinearProgressIndicator(

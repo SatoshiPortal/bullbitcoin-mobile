@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status_card.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class TorProxyWidget extends StatelessWidget {
   const TorProxyWidget({super.key});
@@ -20,10 +19,10 @@ class TorProxyWidget extends StatelessWidget {
 
     return Column(
       children: [
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.security,
           title: context.loc.torSettingsEnableProxy,
-          trailing: Switch(
+          trailing: BullSwitch(
             value: useTorProxy,
             onChanged: (value) {
               context
@@ -42,7 +41,7 @@ class TorProxyWidget extends StatelessWidget {
           TorConnectionStatusCard(connection: torState.connection),
           const Gap(16),
           Card(
-            child: SettingsEntryItem(
+            child: BullSettingsEntryItem(
               icon: Icons.settings_ethernet,
               title: context.loc.torSettingsProxyPort,
               trailing: Text(

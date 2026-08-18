@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -169,40 +170,40 @@ class _BtcMapScreenState extends State<BtcMapScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: _onPopInvoked,
-      child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.settingsBtcMapTitle)),
-        body: SafeArea(
-          child: _hasError
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(context.loc.oopsSomethingWentWrong),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: _retry,
-                        child: Text(context.loc.retry),
-                      ),
-                    ],
-                  ),
-                )
-              : Stack(
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.settingsBtcMapTitle,
+          onBack: () => _onPopInvoked(false, null),
+        ),
+        padding: EdgeInsets.zero,
+        child: _hasError
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    WebViewWidget(controller: _controller),
-                    // Opaque while loading so the brief first (theme-priming)
-                    // load and the reload aren't seen behind the spinner.
-                    if (_isLoading)
-                      Positioned.fill(
-                        child: ColoredBox(
-                          color: theme.scaffoldBackgroundColor,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      ),
+                    Text(context.loc.oopsSomethingWentWrong),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: _retry,
+                      child: Text(context.loc.retry),
+                    ),
                   ],
                 ),
-        ),
+              )
+            : Stack(
+                children: [
+                  WebViewWidget(controller: _controller),
+                  // Opaque while loading so the brief first (theme-priming)
+                  // load and the reload aren't seen behind the spinner.
+                  if (_isLoading)
+                    Positioned.fill(
+                      child: ColoredBox(
+                        color: theme.scaffoldBackgroundColor,
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                    ),
+                ],
+              ),
       ),
     );
   }

@@ -1,15 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/mempool_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
@@ -28,7 +26,7 @@ class SetCustomServerBottomSheet extends StatefulWidget {
   }) {
     final cubit = context.read<MempoolSettingsCubit>();
 
-    return BlurredBottomSheet.show<bool>(
+    return BullBottomSheet.show<bool>(
       context: context,
       child: BlocProvider.value(
         value: cubit,
@@ -273,7 +271,7 @@ class _SetCustomServerBottomSheetState
                           ],
                         ),
                       ),
-                      Switch(
+                      BullSwitch(
                         value: _enableSsl,
                         onChanged: (value) {
                           setState(() {
@@ -335,11 +333,9 @@ class _SetCustomServerBottomSheetState
                       ),
                     )
                   else
-                    BBButton.big(
+                    BullButton.primary(
                       label: context.loc.save,
                       onPressed: _saveServer,
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
                     ),
                 ],
               ),

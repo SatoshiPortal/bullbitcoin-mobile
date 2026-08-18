@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/widgets/warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TestnetModeSwitch extends StatelessWidget {
@@ -29,7 +29,7 @@ class TestnetModeSwitch extends StatelessWidget {
     final isTestnetMode =
         context.watch<SettingsCubit>().state.environment == Environment.testnet;
 
-    return Switch(
+    return BullSwitch(
       value: isTestnetMode,
       onChanged: (value) => _showWarningBottomSheet(context, value),
     );

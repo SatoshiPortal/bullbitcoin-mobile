@@ -2,14 +2,12 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environmen
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class CustomServerInput {
   final String url;
@@ -24,7 +22,7 @@ class AddCustomServerBottomSheet extends StatefulWidget {
   static Future<CustomServerInput?> show(BuildContext context) {
     final bloc = context.read<ElectrumSettingsBloc>();
 
-    return BlurredBottomSheet.show<CustomServerInput>(
+    return BullBottomSheet.show<CustomServerInput>(
       context: context,
       child: BlocProvider.value(
         value: bloc,
@@ -219,7 +217,7 @@ class _AddCustomServerBottomSheetState
                             ],
                           ),
                         ),
-                        Switch(
+                        BullSwitch(
                           value: _enableSsl,
                           onChanged: (value) {
                             setState(() {
@@ -247,11 +245,9 @@ class _AddCustomServerBottomSheetState
                     ),
                   ),
                   const Gap(24),
-                  BBButton.big(
+                  BullButton.primary(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
                   ),
                 ],
               ),

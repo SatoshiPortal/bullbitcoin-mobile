@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class DeleteCustomServerDialog {
   static Future<bool?> show(
@@ -11,46 +9,36 @@ class DeleteCustomServerDialog {
     String serverUrl,
     bool isLastCustomServer,
   ) {
-    return BlurredDialog.show<bool>(
+    return BullDialog.show<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: context.appColors.surfaceContainer,
-        title: Text(context.loc.electrumDeleteServerTitle),
-        content: Column(
-          mainAxisSize: .min,
-          children: [
-            if (isLastCustomServer)
-              Text(
-                context.loc.electrumDeletePrivacyNotice,
-                style: context.font.bodyMedium,
-              ),
+      builder: (dialogContext) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(context.loc.electrumDeleteServerTitle),
+          const Gap(12),
+          if (isLastCustomServer)
             Text(
-              context.loc.electrumDeleteConfirmation(serverUrl),
+              context.loc.electrumDeletePrivacyNotice,
               style: context.font.bodyMedium,
             ),
-          ],
-        ),
-        actions: [
+          Text(
+            context.loc.electrumDeleteConfirmation(serverUrl),
+            style: context.font.bodyMedium,
+          ),
+          const Gap(20),
           Row(
             children: [
               Expanded(
-                child: BBButton.small(
+                child: BullButton.secondary(
                   label: context.loc.electrumCancel,
                   onPressed: () => Navigator.of(dialogContext).pop(false),
-                  bgColor: context.appColors.transparent,
-                  outlined: true,
-                  textStyle: context.font.headlineLarge,
-                  textColor: context.appColors.secondary,
                 ),
               ),
               const Gap(12),
               Expanded(
-                child: BBButton.small(
+                child: BullButton.danger(
                   label: context.loc.electrumDelete,
                   onPressed: () => Navigator.of(dialogContext).pop(true),
-                  bgColor: context.appColors.error,
-                  textStyle: context.font.headlineLarge,
-                  textColor: context.appColors.onPrimary,
                 ),
               ),
             ],

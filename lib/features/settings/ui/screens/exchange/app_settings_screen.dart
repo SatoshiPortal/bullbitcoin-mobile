@@ -2,14 +2,13 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ExchangeAppSettingsScreen extends StatefulWidget {
@@ -43,74 +42,63 @@ class _ExchangeAppSettingsScreenState extends State<ExchangeAppSettingsScreen> {
           context.loc.exchangeAppSettingsSaveSuccessMessage,
         );
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.settingsAppSettingsTitle,
-            onBack: () => context.pop(),
-          ),
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.settingsAppSettingsTitle,
+          onBack: () => context.pop(),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDropdownField(
-                  context,
-                  context.loc.exchangeAppSettingsPreferredLanguageLabel,
-                  selectedLanguage,
-                  ExchangeLanguage.values.map((lang) => lang.code).toList(),
-                  ExchangeLanguage.values
-                      .map((lang) => lang.displayName)
-                      .toList(),
-                  (value) {
-                    context.read<ExchangeCubit>().updateSelectedLanguage(value);
-                  },
-                ),
-                const SizedBox(height: 24),
-                _buildDropdownField(
-                  context,
-                  context.loc.exchangeAppSettingsDefaultCurrencyLabel,
-                  selectedCurrency,
-                  FiatCurrency.values.map((currency) => currency.code).toList(),
-                  FiatCurrency.values.map((currency) => currency.code).toList(),
-                  (value) {
-                    context.read<ExchangeCubit>().updateSelectedCurrency(value);
-                  },
-                ),
-                const SizedBox(height: 32),
-                const _EmailNotificationsToggle(),
-                const Spacer(),
-                if (hasUnsetValues) ...[
-                  BBText(
-                    context.loc.exchangeAppSettingsValidationWarning,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.error,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                SizedBox(
-                  width: double.infinity,
-                  child: BBButton.big(
-                    label: context.loc.exchangeAppSettingsSaveButton,
-                    onPressed: () async {
-                      await context.read<ExchangeCubit>().savePreferences();
-                    },
-                    disabled: state.isSaving || hasUnsetValues,
-                    bgColor: hasUnsetValues
-                        ? context.appColors.outline
-                        : context.appColors.onSurface,
-                    textColor: context.appColors.surface,
-                  ),
-                ),
-              ],
+        padding: const EdgeInsets.all(BullSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDropdownField(
+              context,
+              context.loc.exchangeAppSettingsPreferredLanguageLabel,
+              selectedLanguage,
+              ExchangeLanguage.values.map((lang) => lang.code).toList(),
+              ExchangeLanguage.values.map((lang) => lang.displayName).toList(),
+              (value) {
+                context.read<ExchangeCubit>().updateSelectedLanguage(value);
+              },
             ),
-          ),
+            const SizedBox(height: 24),
+            _buildDropdownField(
+              context,
+              context.loc.exchangeAppSettingsDefaultCurrencyLabel,
+              selectedCurrency,
+              FiatCurrency.values.map((currency) => currency.code).toList(),
+              FiatCurrency.values.map((currency) => currency.code).toList(),
+              (value) {
+                context.read<ExchangeCubit>().updateSelectedCurrency(value);
+              },
+            ),
+            const SizedBox(height: 32),
+            const _EmailNotificationsToggle(),
+            const Spacer(),
+            if (hasUnsetValues) ...[
+              BBText(
+                context.loc.exchangeAppSettingsValidationWarning,
+                style: context.font.bodySmall?.copyWith(
+                  color: context.appColors.error,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            SizedBox(
+              width: double.infinity,
+              child: BullButton.big(
+                label: context.loc.exchangeAppSettingsSaveButton,
+                onPressed: () async {
+                  await context.read<ExchangeCubit>().savePreferences();
+                },
+                disabled: state.isSaving || hasUnsetValues,
+                bgColor: hasUnsetValues
+                    ? context.appColors.outline
+                    : context.appColors.onSurface,
+                textColor: context.appColors.surface,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -226,15 +214,13 @@ class _EmailNotificationsToggle extends StatelessWidget {
               ],
             ),
           ),
-          Switch(
+          BullSwitch(
             value: emailNotificationsEnabled,
             onChanged: (value) {
               context.read<ExchangeCubit>().updateSelectedEmailNotifications(
                 value,
               );
             },
-            activeTrackColor: context.appColors.primary,
-            activeThumbColor: context.appColors.surface,
           ),
         ],
       ),

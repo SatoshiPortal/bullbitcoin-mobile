@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ExchangeFileUploadScreen extends StatelessWidget {
@@ -25,29 +25,20 @@ class ExchangeFileUploadScreen extends StatelessWidget {
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.exchangeFileUploadTitle,
-            onBack: () => context.pop(),
-          ),
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.exchangeFileUploadTitle,
+          onBack: () => context.pop(),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Error message
-                const _ErrorMessage(),
-                // Upload option card (similar to BB-Exchange UploadOption)
-                const _UploadOptionCard(),
-              ],
-            ),
-          ),
+        padding: const EdgeInsets.all(BullSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Error message
+            const _ErrorMessage(),
+            // Upload option card (similar to BB-Exchange UploadOption)
+            const _UploadOptionCard(),
+          ],
         ),
       ),
     );

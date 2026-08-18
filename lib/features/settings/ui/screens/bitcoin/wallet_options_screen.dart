@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,48 +19,46 @@ class WalletOptionsScreen extends StatelessWidget {
           bloc.state.wallets.where((w) => w.id == walletId).firstOrNull,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          wallet?.displayLabel(context) ??
-              context.loc.walletOptionsUnnamedWalletFallback,
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title:
+            wallet?.displayLabel(context) ??
+            context.loc.walletOptionsUnnamedWalletFallback,
+        onBack: context.pop,
       ),
-      body: SafeArea(
-        child: wallet == null
-            ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
-            : Column(
-                children: [
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      children: [
-                        SettingsEntryItem(
-                          icon: Icons.account_balance_wallet,
-                          title: context.loc.walletOptionsWalletDetailsTitle,
-                          onTap: () {
-                            context.pushNamed(
-                              SettingsRoute.walletDetailsSelectedWallet.name,
-                              pathParameters: {'walletId': walletId},
-                            );
-                          },
-                        ),
-                        SettingsEntryItem(
-                          icon: Icons.currency_bitcoin,
-                          title: context.loc.addressViewAddressesTitle,
-                          onTap: () {
-                            context.pushNamed(
-                              SettingsRoute.walletAddresses.name,
-                              pathParameters: {'walletId': walletId},
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+      padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+      child: wallet == null
+          ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: [
+                      BullSettingsEntryItem(
+                        icon: Icons.account_balance_wallet,
+                        title: context.loc.walletOptionsWalletDetailsTitle,
+                        onTap: () {
+                          context.pushNamed(
+                            SettingsRoute.walletDetailsSelectedWallet.name,
+                            pathParameters: {'walletId': walletId},
+                          );
+                        },
+                      ),
+                      BullSettingsEntryItem(
+                        icon: Icons.currency_bitcoin,
+                        title: context.loc.addressViewAddressesTitle,
+                        onTap: () {
+                          context.pushNamed(
+                            SettingsRoute.walletAddresses.name,
+                            pathParameters: {'walletId': walletId},
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-      ),
+                ),
+              ],
+            ),
     );
   }
 }

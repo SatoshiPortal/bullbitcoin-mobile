@@ -2,9 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_state.dart';
@@ -45,17 +43,13 @@ class _ExchangeBitcoinWalletsScreenState
           SnackBarUtils.showSnackBar(context, state.saveError!);
         }
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.exchangeBitcoinWalletsTitle,
-            onBack: () => context.pop(),
-          ),
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.exchangeBitcoinWalletsTitle,
+          onBack: () => context.pop(),
         ),
-        body: _buildBody(context),
+        padding: EdgeInsets.zero,
+        child: _buildBody(context),
       ),
     );
   }
@@ -94,7 +88,7 @@ class _ExchangeBitcoinWalletsScreenState
               ),
             ),
             const SizedBox(height: 16),
-            BBButton.big(
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () => context.read<DefaultWalletsCubit>().init(),
               bgColor: context.appColors.onSurface,
@@ -203,7 +197,7 @@ class _WalletAddressField extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: BBButton.big(
+                child: BullButton.big(
                   label: context.loc.cancel,
                   onPressed: () => cubit.cancelEditing(),
                   disabled: isSaving,
@@ -231,7 +225,7 @@ class _WalletAddressField extends StatelessWidget {
                           ),
                         ),
                       )
-                    : BBButton.big(
+                    : BullButton.big(
                         label: context.loc.save,
                         onPressed: () => cubit.saveWallet(type),
                         bgColor: context.appColors.onSurface,

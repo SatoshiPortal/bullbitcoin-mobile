@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -31,7 +33,9 @@ void main() {
 
   Widget buildTestWidget({Brightness? brightness}) {
     return MaterialApp(
-      theme: brightness == null ? null : ThemeData(brightness: brightness),
+      theme: AppTheme.themeData(
+        brightness == Brightness.dark ? AppThemeType.dark : AppThemeType.light,
+      ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const BtcMapScreen(),
@@ -191,6 +195,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
@@ -207,9 +212,12 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
-    expect(find.byType(BackButton), findsOneWidget);
+    final backButton = find.byWidgetPredicate(
+      (widget) => widget is BullIcon && widget.icon == BullIcons.arrowBack,
+    );
+    expect(backButton, findsOneWidget);
 
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(backButton);
     // The pop is async (canGoBack first): settle through the microtask and
     // the reverse route transition. Settles because the home route animates
     // nothing once BtcMapScreen (and its spinner) is gone.

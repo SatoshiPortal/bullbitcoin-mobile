@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DevModeSwitch extends StatelessWidget {
@@ -22,7 +22,7 @@ class DevModeSwitch extends StatelessWidget {
     final isDevModeEnabled =
         context.watch<SettingsCubit>().state.isDevModeEnabled ?? false;
 
-    return Switch(
+    return BullSwitch(
       value: isDevModeEnabled,
       onChanged: (value) async {
         if (value) {

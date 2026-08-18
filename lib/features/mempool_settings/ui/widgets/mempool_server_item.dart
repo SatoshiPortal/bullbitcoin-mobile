@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_se
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class MempoolServerItem extends StatelessWidget {
   const MempoolServerItem({
@@ -177,7 +178,7 @@ class MempoolServerItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Switch(
+                  BullSwitch(
                     value: useForFeeEstimation,
                     onChanged: isProcessing ? null : onFeeEstimationChanged,
                   ),
