@@ -35,6 +35,7 @@ class MnemonicWidget extends StatefulWidget {
   final bool allowLabel;
   final bool allowMultipleMnemonicLength;
   final bool allowAutoFillWords;
+  final bool protectSensitiveSemantics;
 
   final String? externalError;
 
@@ -48,6 +49,7 @@ class MnemonicWidget extends StatefulWidget {
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
     this.allowAutoFillWords = true,
+    this.protectSensitiveSemantics = true,
     this.externalError,
   });
 
@@ -66,6 +68,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   MnemonicEntryFailure? _failure;
   late bip39.MnemonicLength length;
   late List<TextEditingController> _controllers;
+  final FocusNode _passphraseFocusNode = FocusNode();
   String passphrase = '';
   String label = '';
 
@@ -84,6 +87,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
     for (final controller in _controllers) {
       controller.dispose();
     }
+    _passphraseFocusNode.dispose();
     super.dispose();
   }
 
@@ -173,17 +177,40 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             controllers: _controllers,
             language: widget.language,
             allowAutoFillWords: widget.allowAutoFillWords,
+            protectSensitiveSemantics: widget.protectSensitiveSemantics,
           ),
 
           if (widget.allowPassphrase) ...[
             const Gap(16),
-            LabeledTextInput(
-              label: 'Passphrase',
-              hint: 'Optional Passphrase',
-              value: passphrase,
-              onChanged: updatePassphrase,
-              maxLines: 1,
-            ),
+            if (widget.protectSensitiveSemantics)
+              Semantics(
+                container: true,
+                identifier: 'mnemonic-passphrase',
+                label: 'Passphrase',
+                textField: true,
+                obscured: true,
+                onFocus: _passphraseFocusNode.requestFocus,
+                onSetText: (value) => setState(() => passphrase = value),
+                child: ExcludeSemantics(
+                  child: LabeledTextInput(
+                    label: 'Passphrase',
+                    hint: 'Optional Passphrase',
+                    value: passphrase,
+                    onChanged: updatePassphrase,
+                    maxLines: 1,
+                    focusNode: _passphraseFocusNode,
+                  ),
+                ),
+              )
+            else
+              LabeledTextInput(
+                label: 'Passphrase',
+                hint: 'Optional Passphrase',
+                value: passphrase,
+                onChanged: updatePassphrase,
+                maxLines: 1,
+                focusNode: _passphraseFocusNode,
+              ),
           ],
 
           if (widget.allowLabel) ...[
@@ -236,6 +263,7 @@ class MnemonicWord extends StatelessWidget {
   /// and the keyboard, but swallows any further edit until it is emptied, so
   /// a stray keystroke cannot break a word that was the only possibility left.
   final ValueListenable<bool> fieldLock;
+  final bool protectSensitiveSemantics;
 
   /// Non-null on the last field only: the checksum candidates, derived from
   /// every other word. The badge then answers "is this word acceptable", not
@@ -251,6 +279,7 @@ class MnemonicWord extends StatelessWidget {
     required this.focusNode,
     required this.onComplete,
     required this.fieldLock,
+    this.protectSensitiveSemantics = true,
     this.candidates,
   });
 
@@ -261,6 +290,63 @@ class MnemonicWord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textField = ValueListenableBuilder<bool>(
+      valueListenable: fieldLock,
+      builder: (context, locked, _) {
+        return TextField(
+          enableSuggestions: false,
+          autocorrect: false,
+          controller: controller,
+          inputFormatters: [
+            TextInputFormatter.withFunction((oldValue, newValue) {
+              if (!locked) return newValue;
+              final isDeletion = newValue.text.length < oldValue.text.length;
+              return isDeletion ? TextEditingValue.empty : oldValue;
+            }),
+            TextInputFormatter.withFunction(
+              (_, value) => value.copyWith(text: value.text.toLowerCase()),
+            ),
+          ],
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.text,
+          ),
+          focusNode: focusNode,
+          clipBehavior: .antiAliasWithSaveLayer,
+          onEditingComplete: onComplete,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.only(right: 8),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: context.appColors.transparent),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: context.appColors.transparent),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: context.appColors.transparent),
+            ),
+          ),
+        );
+      },
+    );
+
+    final protectedTextField = Semantics(
+      container: true,
+      identifier: 'mnemonic-word-${index + 1}',
+      label: displayIndex,
+      textField: true,
+      obscured: true,
+      onFocus: focusNode.requestFocus,
+      onSetText: (value) {
+        final text = value.toLowerCase();
+        if (fieldLock.value && text.length >= controller.text.length) return;
+        controller.value = TextEditingValue(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      },
+      child: ExcludeSemantics(child: textField),
+    );
+
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -306,60 +392,7 @@ class MnemonicWord extends StatelessWidget {
           ),
           const Gap(4),
           Expanded(
-            child: ValueListenableBuilder<bool>(
-              valueListenable: fieldLock,
-              builder: (context, locked, _) {
-                return TextField(
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  controller: controller,
-                  inputFormatters: [
-                    // A locked word was the only possibility left: swallow any
-                    // further typing instead of closing the keyboard - the
-                    // field stays focused and editable, but the word cannot be
-                    // broken. A deletion empties the field instead, which
-                    // unlocks it: backspace is the user's undo instinct, and
-                    // the clear icon remains the explicit way out.
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      if (!locked) return newValue;
-                      final isDeletion =
-                          newValue.text.length < oldValue.text.length;
-                      return isDeletion ? TextEditingValue.empty : oldValue;
-                    }),
-                    // Keeps the previous behaviour of lowercasing as you type.
-                    // Same length in and out, so the caret position stays valid.
-                    TextInputFormatter.withFunction(
-                      (_, value) =>
-                          value.copyWith(text: value.text.toLowerCase()),
-                    ),
-                  ],
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.text,
-                  ),
-                  focusNode: focusNode,
-                  clipBehavior: .antiAliasWithSaveLayer,
-                  onEditingComplete: onComplete,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.only(right: 8),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: context.appColors.transparent,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: context.appColors.transparent,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: context.appColors.transparent,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+            child: protectSensitiveSemantics ? protectedTextField : textField,
           ),
           ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
@@ -387,12 +420,14 @@ class MnemonicSentenceWidget extends StatefulWidget {
   final List<TextEditingController> controllers;
   final bip39.Language language;
   final bool allowAutoFillWords;
+  final bool protectSensitiveSemantics;
 
   const MnemonicSentenceWidget({
     super.key,
     required this.controllers,
     required this.language,
     this.allowAutoFillWords = true,
+    this.protectSensitiveSemantics = true,
   });
 
   @override
@@ -647,6 +682,9 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
                       itemBuilder: (context, index) => _HintChip(
                         word: hints[index],
                         onTap: () => _onHintTap(query.index, hints[index]),
+                        semanticLabel: '${query.index + 1}',
+                        protectSensitiveSemantics:
+                            widget.protectSensitiveSemantics,
                       ),
                     ),
             ),
@@ -674,6 +712,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             onComplete: () => _focusNext(index + 1),
             fieldLock: _fieldLocks[index],
             candidates: index == count - 1 ? _candidatePool : null,
+            protectSensitiveSemantics: widget.protectSensitiveSemantics,
           ),
       ],
     );
@@ -738,12 +777,19 @@ class MnemonicLengthDropdown extends StatelessWidget {
 class _HintChip extends StatelessWidget {
   final String word;
   final VoidCallback onTap;
+  final String semanticLabel;
+  final bool protectSensitiveSemantics;
 
-  const _HintChip({required this.word, required this.onTap});
+  const _HintChip({
+    required this.word,
+    required this.onTap,
+    required this.semanticLabel,
+    this.protectSensitiveSemantics = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final chip = InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -755,6 +801,16 @@ class _HintChip extends StatelessWidget {
         ),
         child: Center(child: BBText(word, style: context.font.bodyLarge)),
       ),
+    );
+
+    if (!protectSensitiveSemantics) return chip;
+
+    return Semantics(
+      container: true,
+      label: semanticLabel,
+      button: true,
+      onTap: onTap,
+      child: ExcludeSemantics(child: chip),
     );
   }
 }

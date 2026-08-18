@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A valid 12 word sentence, used so submitting exercises the real checksum.
@@ -25,11 +27,14 @@ Future<void> pumpWidget(
   bip39.MnemonicLength length = bip39.MnemonicLength.words12,
   bool allowAutoFillWords = false,
   bool allowMultipleMnemonicLength = true,
+  bool allowPassphrase = false,
+  bool protectSensitiveSemantics = true,
   String? externalError,
   required void Function(Mnemonic) onSubmit,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
+      theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
@@ -39,8 +44,9 @@ Future<void> pumpWidget(
             onSubmit: onSubmit,
             allowAutoFillWords: allowAutoFillWords,
             allowMultipleMnemonicLength: allowMultipleMnemonicLength,
+            protectSensitiveSemantics: protectSensitiveSemantics,
             allowLabel: false,
-            allowPassphrase: false,
+            allowPassphrase: allowPassphrase,
             externalError: externalError,
           ),
         ),
@@ -252,6 +258,95 @@ void main() {
         );
       }
     });
+
+    testWidgets('protects mnemonic values while keeping fields actionable', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await pumpWidget(
+        tester,
+        onSubmit: (_) {},
+        protectSensitiveSemantics: true,
+      );
+
+      const syntheticValue = 'synthetic-value-only';
+      await tester.enterText(wordField(0), syntheticValue);
+      await tester.pump();
+
+      expect(find.bySemanticsLabel(syntheticValue), findsNothing);
+      final field = tester.getSemantics(
+        find.bySemanticsIdentifier('mnemonic-word-1'),
+      );
+      final data = field.getSemanticsData();
+      expect(data.value, isEmpty);
+      expect(data.flagsCollection.isTextField, isTrue);
+      expect(data.flagsCollection.isObscured, isTrue);
+      expect(data.hasAction(SemanticsAction.focus), isTrue);
+      expect(data.hasAction(SemanticsAction.setText), isTrue);
+
+      field.owner!.performAction(
+        field.id,
+        SemanticsAction.setText,
+        'another-synthetic-value',
+      );
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(wordField(0)).controller!.text,
+        equals('another-synthetic-value'),
+      );
+      semantics.dispose();
+    });
+
+    testWidgets('keeps length selector and submit accessible when protected', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await pumpWidget(
+        tester,
+        onSubmit: (_) {},
+        protectSensitiveSemantics: true,
+      );
+
+      expect(find.byType(DropdownButton<bip39.MnemonicLength>), findsOneWidget);
+      expect(find.bySemanticsLabel('Submit'), findsOneWidget);
+      semantics.dispose();
+    });
+
+    testWidgets(
+      'protects the optional passphrase while keeping it actionable',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        await pumpWidget(tester, onSubmit: (_) {}, allowPassphrase: true);
+
+        const syntheticPassphrase = 'synthetic-passphrase-only';
+        final passphraseField = wordField(12);
+        await tester.enterText(passphraseField, syntheticPassphrase);
+        await tester.pump();
+
+        expect(find.bySemanticsLabel(syntheticPassphrase), findsNothing);
+        final field = tester.getSemantics(
+          find.bySemanticsIdentifier('mnemonic-passphrase'),
+        );
+        final data = field.getSemanticsData();
+        expect(data.value, isEmpty);
+        expect(data.flagsCollection.isTextField, isTrue);
+        expect(data.flagsCollection.isObscured, isTrue);
+        expect(data.hasAction(SemanticsAction.focus), isTrue);
+        expect(data.hasAction(SemanticsAction.setText), isTrue);
+
+        field.owner!.performAction(
+          field.id,
+          SemanticsAction.setText,
+          'another-synthetic-passphrase',
+        );
+        await tester.pump();
+        expect(
+          tester.widget<TextField>(passphraseField).controller!.text,
+          equals('another-synthetic-passphrase'),
+        );
+        semantics.dispose();
+      },
+    );
   });
 
   group('MnemonicWidget suggestions', () {
@@ -269,6 +364,35 @@ void main() {
       expect(find.text('zone'), findsOneWidget);
       expect(find.text('zoo'), findsOneWidget);
     });
+
+    testWidgets(
+      'protects suggestion words but keeps generic chips actionable',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        await pumpWidget(
+          tester,
+          onSubmit: (_) {},
+          protectSensitiveSemantics: true,
+        );
+
+        await tester.tap(wordField(0));
+        await tester.pump();
+        await tester.enterText(wordField(0), 'zo');
+        await tester.pump();
+
+        expect(find.bySemanticsLabel('zone'), findsNothing);
+        expect(find.bySemanticsLabel('zoo'), findsNothing);
+        expect(find.bySemanticsLabel('1'), findsWidgets);
+        expect(
+          tester
+              .getSemantics(find.bySemanticsLabel('1').first)
+              .getSemanticsData()
+              .hasAction(SemanticsAction.tap),
+          isTrue,
+        );
+        semantics.dispose();
+      },
+    );
 
     testWidgets('tapping a suggestion fills the focused field', (tester) async {
       await pumpWidget(tester, onSubmit: (_) {});

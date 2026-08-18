@@ -9,6 +9,7 @@ class LabeledTextInput extends StatelessWidget {
   final String hint;
   final Function(String)? onChanged;
   final int? maxLines;
+  final FocusNode? focusNode;
 
   const LabeledTextInput({
     super.key,
@@ -17,6 +18,7 @@ class LabeledTextInput extends StatelessWidget {
     required this.onChanged,
     this.hint = '',
     this.maxLines,
+    this.focusNode,
   });
 
   @override
@@ -63,6 +65,7 @@ class LabeledTextInput extends StatelessWidget {
             hint: hint,
             hideBorder: true,
             maxLines: maxLines,
+            focusNode: focusNode,
           ),
         ),
       ],
