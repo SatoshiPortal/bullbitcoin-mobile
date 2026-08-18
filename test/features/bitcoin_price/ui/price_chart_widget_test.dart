@@ -106,7 +106,7 @@ void main() {
     await tester.pump();
 
     expect(priceChartCubit.state.selectedDataPointIndex, 2);
-    expect(tester.binding.transientCallbackCount, greaterThan(0));
+    expect(tester.binding.transientCallbackCount, 0);
 
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();

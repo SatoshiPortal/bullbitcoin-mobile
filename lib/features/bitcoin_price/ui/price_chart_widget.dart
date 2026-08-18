@@ -308,10 +308,7 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
   late Animation<double> _lineAnimation;
   late AnimationController _pulseAnimationController;
   late Animation<double> _pulseAnimation;
-  late AnimationController _dotPositionController;
-  late Animation<double> _dotPositionAnimation;
-  int _previousIndex = 0;
-  bool _isDragging = false;
+  late final Listenable _chartAnimations;
 
   @override
   void initState() {
@@ -342,34 +339,13 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
         );
     _pulseAnimationController.forward();
 
-    _dotPositionController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _dotPositionAnimation = CurvedAnimation(
-      parent: _dotPositionController,
-      curve: Curves.easeOutCubic,
-    );
-  }
-
-  @override
-  void didUpdateWidget(_Chart oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    final currentIndex =
-        widget.selectedIndex ?? _touchedIndex ?? (widget.rates.length - 1);
-    if (currentIndex != _previousIndex && !_isDragging) {
-      _previousIndex = currentIndex;
-      _dotPositionController.reset();
-      _dotPositionController.forward();
-    }
+    _chartAnimations = Listenable.merge([_lineAnimation, _pulseAnimation]);
   }
 
   @override
   void dispose() {
     _lineAnimationController.dispose();
     _pulseAnimationController.dispose();
-    _dotPositionController.dispose();
     super.dispose();
   }
 
@@ -388,11 +364,6 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
         widget.selectedIndex ?? _touchedIndex ?? rates.length - 1;
 
     return GestureDetector(
-      onHorizontalDragStart: (_) {
-        setState(() {
-          _isDragging = true;
-        });
-      },
       onHorizontalDragUpdate: (details) {
         final box = context.findRenderObject() as RenderBox?;
         if (box == null) return;
@@ -410,11 +381,6 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
           widget.onTap(index);
         }
       },
-      onHorizontalDragEnd: (_) {
-        setState(() {
-          _isDragging = false;
-        });
-      },
       onTapDown: (details) {
         final box = context.findRenderObject() as RenderBox?;
         if (box == null) return;
@@ -430,28 +396,20 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
         });
         widget.onTap(index);
       },
-      child: AnimatedBuilder(
-        animation: Listenable.merge([
-          _lineAnimation,
-          _pulseAnimation,
-          _dotPositionAnimation,
-        ]),
-        builder: (context, child) {
-          return CustomPaint(
-            size: Size.infinite,
-            painter: _ChartPainter(
-              prices: prices,
-              minPrice: minPrice - padding,
-              maxPrice: maxPrice + padding,
-              lineColor: context.appColors.onPrimary,
-              selectedIndex: displayIndex,
-              lineAnimation: _lineAnimation.value,
-              pulseScale: _pulseAnimation.value,
-              dotColor: context.appColors.onTertiary,
-              borderColor: context.appColors.onPrimary,
-            ),
-          );
-        },
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: _ChartPainter(
+          prices: prices,
+          minPrice: minPrice - padding,
+          maxPrice: maxPrice + padding,
+          lineColor: context.appColors.onPrimary,
+          selectedIndex: displayIndex,
+          lineAnimation: _lineAnimation,
+          pulseAnimation: _pulseAnimation,
+          repaint: _chartAnimations,
+          dotColor: context.appColors.onTertiary,
+          borderColor: context.appColors.onPrimary,
+        ),
       ),
     );
   }
@@ -465,18 +423,19 @@ class _ChartPainter extends CustomPainter {
     required this.lineColor,
     this.selectedIndex,
     required this.lineAnimation,
-    required this.pulseScale,
+    required this.pulseAnimation,
+    required Listenable repaint,
     required this.dotColor,
     required this.borderColor,
-  });
+  }) : super(repaint: repaint);
 
   final List<double> prices;
   final double minPrice;
   final double maxPrice;
   final Color lineColor;
   final int? selectedIndex;
-  final double lineAnimation;
-  final double pulseScale;
+  final Animation<double> lineAnimation;
+  final Animation<double> pulseAnimation;
   final Color dotColor;
   final Color borderColor;
 
@@ -499,7 +458,7 @@ class _ChartPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    final visibleCount = (prices.length * lineAnimation).ceil();
+    final visibleCount = (prices.length * lineAnimation.value).ceil();
     final startIndex = (prices.length - visibleCount).clamp(
       0,
       prices.length - 1,
@@ -559,7 +518,7 @@ class _ChartPainter extends CustomPainter {
       final normalizedPrice = (prices[selectedIndex!] - minPrice) / priceRange;
       final y = size.height - (normalizedPrice * size.height);
 
-      final dotRadius = 6.0 * pulseScale;
+      final dotRadius = 6.0 * pulseAnimation.value;
       final glowRadius = dotRadius + 4;
 
       final glowPaint = Paint()
@@ -588,7 +547,10 @@ class _ChartPainter extends CustomPainter {
   bool shouldRepaint(_ChartPainter oldDelegate) {
     return oldDelegate.prices != prices ||
         oldDelegate.selectedIndex != selectedIndex ||
-        oldDelegate.lineAnimation != lineAnimation ||
-        oldDelegate.pulseScale != pulseScale;
+        oldDelegate.lineColor != lineColor ||
+        oldDelegate.dotColor != dotColor ||
+        oldDelegate.borderColor != borderColor ||
+        oldDelegate.minPrice != minPrice ||
+        oldDelegate.maxPrice != maxPrice;
   }
 }
