@@ -1,17 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
   const ViewVaultKeyWarningBottomSheet({super.key});
 
   static Future<bool?> show(BuildContext context) {
-    return BlurredBottomSheet.show<bool?>(
+    return BullBottomSheet.show<bool?>(
       context: context,
       child: const ViewVaultKeyWarningBottomSheet(),
     );
@@ -32,7 +30,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   const Gap(24),
-                  BBText(
+                  BullText(
                     context.loc.backupSettingsSecurityWarning,
                     style: context.font.headlineMedium,
                   ),
@@ -52,7 +50,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.backupSettingsKeyWarningBold,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.secondary,
@@ -61,13 +59,13 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                     maxLines: 4,
                   ),
                   const Gap(24),
-                  BBText(
+                  BullText(
                     context.loc.backupSettingsKeyWarningMessage,
                     maxLines: 4,
                     style: context.font.bodyMedium,
                   ),
                   const Gap(16),
-                  BBText(
+                  BullText(
                     context.loc.backupSettingsKeyWarningExample,
                     maxLines: 3,
                     style: context.font.bodyMedium,
@@ -76,7 +74,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: BBButton.big(
+                        child: BullButton.big(
                           label: context.loc.cancelButton,
                           onPressed: () => Navigator.of(context).pop(false),
                           bgColor: context.appColors.transparent,
@@ -87,7 +85,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                       ),
                       const Gap(16),
                       Expanded(
-                        child: BBButton.big(
+                        child: BullButton.big(
                           label: context.loc.sendContinue,
                           onPressed: () => context.pop(true),
                           bgColor: context.appColors.secondary,

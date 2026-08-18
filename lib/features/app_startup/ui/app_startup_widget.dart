@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_screen.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart'
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullPage, Gap;
 import 'package:url_launcher/url_launcher.dart';
 
 class AppStartupWidget extends StatefulWidget {
@@ -96,8 +95,9 @@ class AppStartupFailureScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return BullPage(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: Column(
@@ -144,7 +144,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              BBButton.big(
+              BullButton.big(
                 onPressed: () {
                   final url = Uri.parse(SettingsConstants.webSupportLink);
                   // ignore: deprecated_member_use

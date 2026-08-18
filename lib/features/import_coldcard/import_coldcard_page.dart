@@ -1,18 +1,15 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
@@ -70,18 +67,19 @@ class ImportColdcardPage extends StatelessWidget {
     final deviceName = signerDevice.displayName;
     final illustrationPath = Assets.misc.qRPlaceholder.path;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.importColdcardConnectTitle(deviceName)),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.importColdcardConnectTitle(deviceName),
+        onBack: context.pop,
       ),
-      body: Padding(
+      child: Padding(
         padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            BBText(
+            BullText(
               context.loc.importColdcardConnectDescription(deviceName),
-              style: context.font.bodyLarge,
+              style: Theme.of(context).textTheme.bodyLarge,
               textAlign: .center,
               maxLines: 2,
             ),
@@ -96,19 +94,16 @@ class ImportColdcardPage extends StatelessWidget {
             Column(
               children: [
                 if (signerDevice == SignerDeviceEntity.coldcardQ) ...[
-                  BBButton.small(
+                  BullButton.secondary(
                     label: context.loc.importColdcardButtonOpenCamera,
                     onPressed: () => context.pushNamed(
                       ImportWatchOnlyWalletRoutes.scan.name,
                       extra: signerDevice,
                     ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
-                    outlined: true,
                   ),
                   Gap(Device.screen.height * 0.02),
                 ],
-                BBButton.small(
+                BullButton.secondary(
                   label: context.loc.scanNfcButton,
                   onPressed: () => NfcBottomSheet.showReadNfc(
                     context: context,
@@ -118,12 +113,9 @@ class ImportColdcardPage extends StatelessWidget {
                     onDataReceived: (payload) =>
                         _handleNfcData(context, payload),
                   ),
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
                 ),
                 Gap(Device.screen.height * 0.02),
-                BBButton.small(
+                BullButton.secondary(
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed: () {
                     if (signerDevice == SignerDeviceEntity.coldcardQ) {
@@ -132,9 +124,6 @@ class ImportColdcardPage extends StatelessWidget {
                       ColdcardMk4InstructionsBottomSheet.show(context);
                     }
                   },
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
                 ),
               ],
             ),

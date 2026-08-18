@@ -2,8 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/bip85_failure_l10n.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
@@ -11,7 +9,8 @@ import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullFadingLinearProgress, BullPage, BullTopBar, Gap;
 
 class Bip85HomePage extends StatefulWidget {
   const Bip85HomePage({super.key});
@@ -33,9 +32,15 @@ class _Bip85HomePageView extends StatelessWidget {
           state.failure!.toTranslated(context),
         );
       },
-      child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.bip85Title)),
-        body: BlocBuilder<Bip85EntropyCubit, Bip85EntropyState>(
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.bip85Title,
+          onBack: Navigator.of(context).canPop()
+              ? () => Navigator.of(context).pop()
+              : null,
+        ),
+        padding: EdgeInsets.zero,
+        child: BlocBuilder<Bip85EntropyCubit, Bip85EntropyState>(
           builder: (context, state) {
             final cubit = context.read<Bip85EntropyCubit>();
 
@@ -43,7 +48,7 @@ class _Bip85HomePageView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Column(
                 children: [
-                  FadingLinearProgress(trigger: state.isLoading),
+                  BullFadingLinearProgress(trigger: state.isLoading),
                   Container(
                     margin: const EdgeInsets.all(16),
                     padding: const EdgeInsets.all(12),
@@ -91,20 +96,16 @@ class _Bip85HomePageView extends StatelessWidget {
                     child: Row(
                       children: [
                         Expanded(
-                          child: BBButton.big(
+                          child: BullButton.primary(
                             onPressed: () => cubit.deriveNextMnemonic(),
                             label: context.loc.bip85NextMnemonic,
-                            bgColor: context.appColors.onSurface,
-                            textColor: context.appColors.surface,
                           ),
                         ),
                         Gap(Device.screen.width * 0.01),
                         Expanded(
-                          child: BBButton.big(
+                          child: BullButton.primary(
                             onPressed: () => cubit.deriveNextHex(),
                             label: context.loc.bip85NextHex,
-                            bgColor: context.appColors.onSurface,
-                            textColor: context.appColors.surface,
                           ),
                         ),
                       ],

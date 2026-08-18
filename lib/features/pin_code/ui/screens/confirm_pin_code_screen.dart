@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullDialPad, BullInputText, BullPage, BullTopBar, Gap;
 
 class ConfirmPinCodeScreen extends StatelessWidget {
   const ConfirmPinCodeScreen({super.key});
@@ -23,17 +21,13 @@ class ConfirmPinCodeScreen extends StatelessWidget {
         if (didPop) return;
         backHandler();
       },
-      child: Scaffold(
+      child: BullPage(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            onBack: backHandler,
-            title: context.loc.pinCodeAuthentication,
-          ),
+        topBar: BullTopBar(
+          onBack: backHandler,
+          title: context.loc.pinCodeAuthentication,
         ),
-        body: SafeArea(
+        child: SafeArea(
           child: Column(
             children: [
               Expanded(
@@ -109,7 +103,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: DialPad(
+                child: BullDialPad(
                   disableFeedback: true,
                   onlyDigits: true,
                   onNumberPressed: (value) =>
@@ -128,7 +122,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
             ],
           ),
         ),
-        bottomNavigationBar: SafeArea(
+        bottomBar: SafeArea(
           child: AnimatedPadding(
             duration: const Duration(milliseconds: 150),
             curve: Curves.easeOut,
@@ -155,7 +149,7 @@ class _ConfirmButton extends StatelessWidget {
       child: BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
         selector: (state) => state.canConfirm,
         builder: (context, canConfirm) {
-          return BBButton.big(
+          return BullButton.big(
             label: context.loc.pinCodeConfirm,
             textStyle: context.font.headlineLarge,
             bgColor: canConfirm

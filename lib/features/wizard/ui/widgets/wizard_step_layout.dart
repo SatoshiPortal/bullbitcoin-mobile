@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 /// Common scaffold for the body of one wizard PageView page. Renders the
 /// red "PAGE x / total" eyebrow + bold uppercase title, then the page's
@@ -33,7 +32,7 @@ class WizardStepLayout extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             context.loc.wizardPageIndicator(page.number, WizardPage.total),
             style: context.font.labelMedium?.copyWith(
               color: context.appColors.primary,
@@ -42,7 +41,7 @@ class WizardStepLayout extends StatelessWidget {
             ),
           ),
           SizedBox(height: vGapSm),
-          BBText(
+          BullText(
             title.toUpperCase(),
             style: context.font.displaySmall?.copyWith(
               fontWeight: FontWeight.w900,

@@ -1,9 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -18,7 +15,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
@@ -37,14 +34,12 @@ class ImportWatchOnlyScreen extends StatelessWidget {
         parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
         settingsRepository: locator(),
       )..init(),
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: TopBar(
-            onBack: () => context.pop(),
-            title: context.loc.importWatchOnlyTitle,
-          ),
+      child: BullPage(
+        topBar: BullTopBar(
+          onBack: () => context.pop(),
+          title: context.loc.importWatchOnlyTitle,
         ),
-        body: BlocConsumer<ImportWatchOnlyCubit, ImportWatchOnlyState>(
+        child: BlocConsumer<ImportWatchOnlyCubit, ImportWatchOnlyState>(
           listener: (context, state) {
             if (state.importedWallet != null) {
               // Trigger wallet refresh before navigating to home
@@ -73,16 +68,17 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           watchOnlyWallet: state.watchOnlyWallet!,
                         )
                       else ...[
-                        PasteInput(
+                        BullPasteInput(
                           text: state.input,
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
                         if (state.failure != null)
                           Center(
-                            child: BBText(
+                            child: BullText(
                               state.failure!.toTranslated(context),
-                              style: TextStyle(color: context.appColors.error),
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              color: context.appColors.error,
                             ),
                           ),
                         const Gap(32),

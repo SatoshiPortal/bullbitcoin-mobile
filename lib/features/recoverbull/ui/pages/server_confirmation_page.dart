@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -12,7 +11,8 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPage, BullTopBar;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -68,19 +68,12 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: BBText(
-          context.loc.recoverbullServerConfirmTitle,
-          style: context.font.headlineMedium,
-          color: context.appColors.onSurface,
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.recoverbullServerConfirmTitle,
+        onBack: () => context.pop(),
       ),
-      body: _isLoading
+      child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(24),
@@ -152,7 +145,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     textAlign: .center,
                   ),
                   const Spacer(),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.recoverbullContinue,
                     onPressed: () async {
                       await _allowPermissionUsecase.execute(true);

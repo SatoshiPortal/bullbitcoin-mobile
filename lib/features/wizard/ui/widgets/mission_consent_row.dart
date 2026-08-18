@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 /// Yes / No row shown by `WizardScreen` in place of the dots + Next
 /// button on the mission page. Tapping a button records consent +
@@ -59,7 +58,7 @@ class _ConsentButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return BBButton.big(
+    return BullButton.big(
       label: label,
       onPressed: onTap,
       bgColor: selected ? colors.primary : colors.surface,

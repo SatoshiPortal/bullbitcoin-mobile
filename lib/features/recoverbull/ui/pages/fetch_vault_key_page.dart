@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPage, BullTopBar;
 import 'package:go_router/go_router.dart';
 
 class FetchVaultKeyPage extends StatefulWidget {
@@ -64,17 +65,25 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.recoverbullFetchVaultKey),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: KeyServerStatusWidget(),
+    return BullPage(
+      topBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BullTopBar(
+            title: context.loc.recoverbullFetchVaultKey,
+            onBack: Navigator.of(context).pop,
+          ),
+          const Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: KeyServerStatusWidget(),
+            ),
           ),
         ],
       ),
-      body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
+      padding: EdgeInsets.zero,
+      child: BlocConsumer<RecoverBullBloc, RecoverBullState>(
         listenWhen: (previous, current) =>
             previous.failure != current.failure ||
             current.decryptedVault != null &&

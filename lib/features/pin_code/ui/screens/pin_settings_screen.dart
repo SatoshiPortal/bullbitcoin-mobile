@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullPage, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class PinSettingsScreen extends StatelessWidget {
@@ -16,16 +15,12 @@ class PinSettingsScreen extends StatelessWidget {
     final bloc = context.read<PinCodeSettingBloc>();
     final isPinCodeSet = context.watch<PinCodeSettingBloc>().state.isPinCodeSet;
 
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          onBack: () => context.pop(),
-          title: context.loc.pinCodeSecurityPinTitle,
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        onBack: () => context.pop(),
+        title: context.loc.pinCodeSecurityPinTitle,
       ),
-      body: SafeArea(
+      child: SafeArea(
         child: Column(
           children: [
             Expanded(
@@ -58,7 +53,7 @@ class PinSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  BBButton.big(
+                  BullButton.big(
                     label: isPinCodeSet
                         ? context.loc.pinCodeChangeButton
                         : context.loc.pinCodeCreateButton,
@@ -68,7 +63,7 @@ class PinSettingsScreen extends StatelessWidget {
                   ),
                   const Gap(16),
                   if (isPinCodeSet)
-                    BBButton.big(
+                    BullButton.big(
                       label: context.loc.pinCodeRemoveButton,
                       onPressed: () => bloc.add(const PinCodeDelete()),
                       bgColor: context.appColors.error,

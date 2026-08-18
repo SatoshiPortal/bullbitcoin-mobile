@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
@@ -10,7 +9,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_tor/tor.dart' as tor;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullPage, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,15 +41,17 @@ class ConnectingPage extends StatelessWidget {
           ).pushReplacement(MaterialPageRoute(builder: (context) => nextPage));
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
+      child: BullPage(
+        // This page intentionally has a titleless AppBar; BullTopBar requires
+        // a title and would add visible chrome that is not present today.
+        topBar: AppBar(
           forceMaterialTransparency: true,
           leading: IconButton(
             onPressed: () => context.pop(),
             icon: const Icon(Icons.arrow_back),
           ),
         ),
-        body: Padding(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: BlocBuilder<RecoverBullBloc, RecoverBullState>(
             builder: (context, state) {
@@ -111,7 +112,7 @@ class ConnectingPage extends StatelessWidget {
                       maxLines: 3,
                     ),
                     const Gap(24),
-                    BBButton.big(
+                    BullButton.big(
                       label: context.loc.recoverbullRetry,
                       textStyle: context.font.headlineLarge,
                       bgColor: context.appColors.onSurface,

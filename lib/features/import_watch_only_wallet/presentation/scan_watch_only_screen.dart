@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -15,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
 import 'package:satoshifier/satoshifier.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class ScanWatchOnlyScreen extends StatefulWidget {
   final SignerDeviceEntity? signerDevice;
@@ -89,7 +89,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               bottom: MediaQuery.of(context).size.height * 0.25,
               left: 24,
               right: 24,
-              child: BBButton.big(
+              child: BullButton.big(
                 iconData: Icons.copy,
                 textStyle: context.font.labelMedium,
                 textColor: context.appColors.onPrimary,

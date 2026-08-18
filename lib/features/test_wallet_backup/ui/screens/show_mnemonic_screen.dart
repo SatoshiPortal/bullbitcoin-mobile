@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
@@ -12,7 +11,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullPage, Gap;
 
 class ShowMnemonicScreen extends StatefulWidget {
   const ShowMnemonicScreen({super.key});
@@ -24,6 +23,12 @@ class ShowMnemonicScreen extends StatefulWidget {
 class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
     with PrivacyScreen {
   @override
+  void initState() {
+    super.initState();
+    unawaited(enableScreenPrivacy());
+  }
+
+  @override
   void dispose() {
     unawaited(disableScreenPrivacy());
     super.dispose();
@@ -31,52 +36,46 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: enableScreenPrivacy(),
-      builder: (context, snapshot) {
-        return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
-          builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
+    return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
+      builder: (context, state) {
+        final walletName = state.selectedWallet?.isDefault ?? false
+            ? context.loc.testBackupDefaultWallets
+            : state.selectedWallet?.displayLabel(context) ?? '';
+        final title = context.loc.testBackupWalletTitle(walletName);
 
-            return Scaffold(
-              backgroundColor: context.appColors.background,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
+        return BullPage(
+          padding: EdgeInsets.zero,
+          topBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: AppBarWidget(title: title),
+          ),
+          child: Column(
+            children: [
+              const Expanded(
+                child: SingleChildScrollView(child: _MnemonicDisplay()),
               ),
-              body: Column(
-                children: [
-                  const Expanded(
-                    child: SingleChildScrollView(child: _MnemonicDisplay()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      children: [
-                        BBButton.big(
-                          label: context.loc.testBackupNext,
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const VerifyMnemonicScreen(),
-                              ),
-                            );
-                          },
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
-                        ),
-                        Gap(Device.screen.height * 0.05),
-                      ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  children: [
+                    BullButton.big(
+                      label: context.loc.testBackupNext,
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const VerifyMnemonicScreen(),
+                          ),
+                        );
+                      },
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
                     ),
-                  ),
-                ],
+                    Gap(Device.screen.height * 0.05),
+                  ],
+                ),
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );
@@ -316,14 +315,16 @@ class _RecoveryPhraseWord extends StatelessWidget {
             const Gap(12),
             Expanded(
               flex: 6,
-              child: BBText(
-                word,
-                textAlign: .start,
-                maxLines: 2,
-                style: context.font.bodyLarge?.copyWith(
-                  fontWeight: .w700,
-                  fontSize: 14,
-                  color: context.appColors.secondary,
+              child: ExcludeSemantics(
+                child: BBText(
+                  word,
+                  textAlign: .start,
+                  maxLines: 2,
+                  style: context.font.bodyLarge?.copyWith(
+                    fontWeight: .w700,
+                    fontSize: 14,
+                    color: context.appColors.secondary,
+                  ),
                 ),
               ),
             ),
@@ -372,12 +373,14 @@ class _PassphraseWidget extends StatelessWidget {
             ),
           ),
           const Gap(8),
-          BBText(
-            passphrase,
-            style: context.font.bodyLarge?.copyWith(
-              fontWeight: .w700,
-              fontSize: 14,
-              color: context.appColors.secondary,
+          ExcludeSemantics(
+            child: BBText(
+              passphrase,
+              style: context.font.bodyLarge?.copyWith(
+                fontWeight: .w700,
+                fontSize: 14,
+                color: context.appColors.secondary,
+              ),
             ),
           ),
         ],

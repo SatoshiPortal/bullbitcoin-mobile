@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -14,7 +12,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullPage, BullSettingsEntryItem, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -49,40 +48,31 @@ class _Screen extends StatelessWidget {
       },
       child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              forceMaterialTransparency: true,
-              automaticallyImplyLeading: false,
-              flexibleSpace: TopBar(
-                title: context.loc.backupSettingsScreenTitle,
-                onBack: () => context.pop(),
-              ),
+          return BullPage(
+            topBar: BullTopBar(
+              title: context.loc.backupSettingsScreenTitle,
+              onBack: () => context.pop(),
             ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: _BackupTestStatusWidget(),
-                      ),
-                      const Gap(40),
-                      const _StartBackupButton(),
-                      if (state.lastEncryptedBackup != null)
-                        const _ViewVaultKeyButton(),
-                      if (state.lastEncryptedBackup != null ||
-                          state.lastPhysicalBackup != null)
-                        const _TestBackupButton(),
-                      const _RecoverBullSettingsButton(),
-                      const _Bip329LabelsButton(),
-                      const _TransactionHistoryButton(),
-                    ],
-                  ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            scrollable: true,
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: _BackupTestStatusWidget(),
                 ),
-              ),
+                const Gap(40),
+                const _StartBackupButton(),
+                if (state.lastEncryptedBackup != null)
+                  const _ViewVaultKeyButton(),
+                if (state.lastEncryptedBackup != null ||
+                    state.lastPhysicalBackup != null)
+                  const _TestBackupButton(),
+                const _RecoverBullSettingsButton(),
+                const _Bip329LabelsButton(),
+                const _TransactionHistoryButton(),
+              ],
             ),
           );
         },
@@ -149,7 +139,7 @@ class _TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.verified,
       title: context.loc.backupSettingsTestBackup,
       onTap: () => context.pushNamed(
@@ -165,7 +155,7 @@ class _StartBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.save_as,
       iconColor: context.appColors.primary,
       title: context.loc.backupSettingsStartBackup,
@@ -182,7 +172,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.vpn_key,
       title: context.loc.backupSettingsViewVaultKey,
       onTap: () async {
@@ -207,7 +197,7 @@ class _TransactionHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.file_download,
       title: context.loc.transactionHistoryTitle,
       onTap: () => context.pushNamed(TransactionsRoute.exportTransactions.name),
@@ -220,7 +210,7 @@ class _Bip329LabelsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.sell,
       title: context.loc.backupSettingsLabelsButton,
       onTap: () => context.push(LabelsRouter.route.path),
@@ -233,7 +223,7 @@ class _RecoverBullSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.cloud_circle,
       iconColor: context.appColors.secondary,
       textColor: context.appColors.secondary,

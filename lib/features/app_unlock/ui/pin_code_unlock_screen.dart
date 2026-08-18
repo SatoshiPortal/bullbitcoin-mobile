@@ -1,8 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/app_unlock_failure_l10n.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
@@ -10,7 +7,8 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullDialPad, BullInputText, BullPage, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
@@ -69,17 +67,17 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: canPop,
-      child: Scaffold(
+      child: BullPage(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
+        topBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
+          flexibleSpace: BullTopBar(
             onBack: canPop ? () => context.pop() : null,
             title: context.loc.appUnlockScreenTitle,
           ),
         ),
-        body: SafeArea(
+        child: SafeArea(
           child: Column(
             children: [
               Expanded(
@@ -182,16 +180,18 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   selector: (state) =>
                       state.timeoutSeconds == 0 && !state.isVerifying,
                   builder: (context, padEnabled) {
-                    return DialPad(
-                      disableFeedback: true,
-                      onlyDigits: true,
-                      enabled: padEnabled,
-                      onNumberPressed: (value) => context
-                          .read<AppUnlockBloc>()
-                          .add(AppUnlockPinCodeNumberAdded(int.parse(value))),
-                      onBackspacePressed: () => context
-                          .read<AppUnlockBloc>()
-                          .add(const AppUnlockPinCodeNumberRemoved()),
+                    return IgnorePointer(
+                      ignoring: !padEnabled,
+                      child: BullDialPad(
+                        disableFeedback: true,
+                        onlyDigits: true,
+                        onNumberPressed: (value) => context
+                            .read<AppUnlockBloc>()
+                            .add(AppUnlockPinCodeNumberAdded(int.parse(value))),
+                        onBackspacePressed: () => context
+                            .read<AppUnlockBloc>()
+                            .add(const AppUnlockPinCodeNumberRemoved()),
+                      ),
                     );
                   },
                 ),
@@ -200,7 +200,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
             ],
           ),
         ),
-        bottomNavigationBar: SafeArea(
+        bottomBar: SafeArea(
           child: AnimatedPadding(
             duration: const Duration(milliseconds: 150),
             curve: Curves.easeOut,
@@ -212,7 +212,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
             child: BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
               selector: (state) => state.canSubmit,
               builder: (context, canSubmit) {
-                return BBButton.big(
+                return BullButton.big(
                   label: context.loc.appUnlockButton,
                   textStyle: context.font.headlineLarge,
                   bgColor: canSubmit

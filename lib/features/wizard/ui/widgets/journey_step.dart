@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class JourneyStep extends StatelessWidget {
   const JourneyStep({super.key});
@@ -29,7 +29,7 @@ class JourneyStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             loc.wizardJourneyBody,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -67,7 +67,7 @@ class _Tip extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: BBText(
+            child: BullText(
               text,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,

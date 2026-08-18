@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPage, Gap;
 
 class VerifyMnemonicScreen extends StatefulWidget {
   const VerifyMnemonicScreen({super.key});
@@ -22,6 +22,12 @@ class VerifyMnemonicScreen extends StatefulWidget {
 class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
     with PrivacyScreen {
   @override
+  void initState() {
+    super.initState();
+    unawaited(enableScreenPrivacy());
+  }
+
+  @override
   void dispose() {
     unawaited(disableScreenPrivacy());
     super.dispose();
@@ -29,111 +35,101 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: enableScreenPrivacy(),
-      builder: (context, snapshot) {
-        return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
-          listenWhen: (previous, current) =>
-              (previous.reorderedMnemonic.length != current.mnemonic.length &&
-                  current.reorderedMnemonic.length ==
-                      current.mnemonic.length) ||
-              (previous.statusError.isEmpty && current.statusError.isNotEmpty),
-          listener: (context, state) {
-            if (state.statusError.isNotEmpty) {
-              SnackBarUtils.showSnackBar(context, state.statusError);
-              context.read<TestWalletBackupBloc>().add(const ClearError());
-            } else if (state.reorderedMnemonic.length ==
-                    state.mnemonic.length &&
-                state.statusError.isEmpty) {
-              // Verify and save backup completion before navigating
-              context.read<TestWalletBackupBloc>().add(
-                const VerifyPhysicalBackup(),
-              );
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const BackupTestSuccessScreen(),
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
-            final reorderedMnemonic = context
-                .watch<TestWalletBackupBloc>()
-                .state
-                .reorderedMnemonic;
-            final mnemonic = context
-                .watch<TestWalletBackupBloc>()
-                .state
-                .mnemonic;
+    return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
+      listenWhen: (previous, current) =>
+          (previous.reorderedMnemonic.length != current.mnemonic.length &&
+              current.reorderedMnemonic.length == current.mnemonic.length) ||
+          (previous.statusError.isEmpty && current.statusError.isNotEmpty),
+      listener: (context, state) {
+        if (state.statusError.isNotEmpty) {
+          SnackBarUtils.showSnackBar(context, state.statusError);
+          context.read<TestWalletBackupBloc>().add(const ClearError());
+        } else if (state.reorderedMnemonic.length == state.mnemonic.length &&
+            state.statusError.isEmpty) {
+          // Verify and save backup completion before navigating
+          context.read<TestWalletBackupBloc>().add(
+            const VerifyPhysicalBackup(),
+          );
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const BackupTestSuccessScreen(),
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        final walletName = state.selectedWallet?.isDefault ?? false
+            ? context.loc.testBackupDefaultWallets
+            : state.selectedWallet?.displayLabel(context) ?? '';
+        final title = context.loc.testBackupWalletTitle(walletName);
+        final reorderedMnemonic = context
+            .watch<TestWalletBackupBloc>()
+            .state
+            .reorderedMnemonic;
+        final mnemonic = context.watch<TestWalletBackupBloc>().state.mnemonic;
 
-            final nextWordNumber = reorderedMnemonic.isEmpty
-                ? 1
-                : reorderedMnemonic.length + 1;
-            final showPrompt = reorderedMnemonic.length < mnemonic.length;
-            return Scaffold(
-              backgroundColor: context.appColors.onSecondary,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
-              ),
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      BBText(
-                        context.loc.testBackupTapWordsInOrder,
-                        textAlign: .center,
-                        maxLines: 2,
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: .w600,
-                          fontSize: 16,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      const Gap(20),
-                      if (showPrompt)
-                        Column(
-                          children: [
-                            BBText(
-                              context.loc.testBackupWhatIsWordNumber(
-                                nextWordNumber,
-                              ),
-                              textAlign: .center,
-                              style: context.font.labelMedium?.copyWith(
-                                fontWeight: .w700,
-                                color: context.appColors.outline,
-                                letterSpacing: 0,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        )
-                      else
+        final nextWordNumber = reorderedMnemonic.isEmpty
+            ? 1
+            : reorderedMnemonic.length + 1;
+        final showPrompt = reorderedMnemonic.length < mnemonic.length;
+        return BullPage(
+          padding: EdgeInsets.zero,
+          topBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: AppBarWidget(title: title),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: .stretch,
+                children: [
+                  BBText(
+                    context.loc.testBackupTapWordsInOrder,
+                    textAlign: .center,
+                    maxLines: 2,
+                    style: context.font.headlineLarge?.copyWith(
+                      fontWeight: .w600,
+                      fontSize: 16,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const Gap(20),
+                  if (showPrompt)
+                    Column(
+                      children: [
                         BBText(
-                          context.loc.testBackupAllWordsSelected,
+                          context.loc.testBackupWhatIsWordNumber(
+                            nextWordNumber,
+                          ),
                           textAlign: .center,
                           style: context.font.labelMedium?.copyWith(
                             fontWeight: .w700,
-                            color: context.appColors.surface,
+                            color: context.appColors.outline,
                             letterSpacing: 0,
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ),
-                      const Gap(16),
+                      ],
+                    )
+                  else
+                    BBText(
+                      context.loc.testBackupAllWordsSelected,
+                      textAlign: .center,
+                      style: context.font.labelMedium?.copyWith(
+                        fontWeight: .w700,
+                        color: context.appColors.surface,
+                        letterSpacing: 0,
+                        fontSize: 14,
+                      ),
+                    ),
+                  const Gap(16),
 
-                      const _ShuffledMnemonicGrid(),
-                    ],
-                  ),
-                ),
+                  const _ShuffledMnemonicGrid(),
+                ],
               ),
-            );
-          },
+            ),
+          ),
         );
       },
     );
@@ -259,14 +255,16 @@ class _ShuffledMnemonicWord extends StatelessWidget {
               ),
             ),
             const Gap(12),
-            BBText(
-              word,
-              textAlign: .start,
-              maxLines: 2,
-              style: context.font.bodyLarge?.copyWith(
-                fontWeight: .w700,
-                fontSize: 14,
-                color: context.appColors.secondary,
+            ExcludeSemantics(
+              child: BBText(
+                word,
+                textAlign: .start,
+                maxLines: 2,
+                style: context.font.bodyLarge?.copyWith(
+                  fontWeight: .w700,
+                  fontSize: 14,
+                  color: context.appColors.secondary,
+                ),
               ),
             ),
           ],

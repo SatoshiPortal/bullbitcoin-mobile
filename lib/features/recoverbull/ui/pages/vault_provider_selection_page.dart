@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -13,7 +11,8 @@ import 'package:bb_mobile/features/recoverbull/ui/pages/vault_selected_page.dart
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullFadingLinearProgress, Gap;
 import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
@@ -21,6 +20,8 @@ class VaultProviderSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // AppBar is required here to keep the custom KeyServerStatusWidget in the
+    // same trailing action slot; BullTopBar cannot preserve that layout.
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -83,7 +84,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
         builder: (context, state) {
           return Column(
             children: [
-              FadingLinearProgress(
+              BullFadingLinearProgress(
                 trigger: state.isLoading,
                 backgroundColor: context.appColors.surface,
                 foregroundColor: context.appColors.primary,
@@ -116,7 +117,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          BlurredBottomSheet.show(
+                          BullBottomSheet.show(
                             context: context,
                             child: const HowToDecideVaultLocation(),
                           );

@@ -5,11 +5,10 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/picker_sheet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
@@ -39,7 +38,7 @@ class CustomizeStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             loc.wizardCustomizeBody,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -47,7 +46,7 @@ class CustomizeStep extends StatelessWidget {
             ),
           ),
           SizedBox(height: vGap),
-          SettingsEntryItem(
+          BullSettingsEntryItem(
             icon: Icons.brightness_6_outlined,
             title: loc.settingsThemeTitle,
             trailing: _TrailingValue(text: _themeLabel(context, themeMode)),
@@ -58,7 +57,7 @@ class CustomizeStep extends StatelessWidget {
             },
           ),
           Divider(height: 1, color: context.appColors.border),
-          SettingsEntryItem(
+          BullSettingsEntryItem(
             icon: Icons.language,
             title: loc.settingsLanguageTitle,
             trailing: _TrailingValue(text: language.label),
@@ -69,7 +68,7 @@ class CustomizeStep extends StatelessWidget {
             },
           ),
           Divider(height: 1, color: context.appColors.border),
-          SettingsEntryItem(
+          BullSettingsEntryItem(
             icon: Icons.attach_money,
             title: loc.wizardCustomizeDefaultCurrency,
             trailing: _TrailingValue(text: defaultCurrency),
@@ -101,7 +100,7 @@ class _TrailingValue extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BBText(
+        BullText(
           text,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.onSurface,

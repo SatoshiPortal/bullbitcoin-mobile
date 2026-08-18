@@ -4,13 +4,13 @@ import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 /// Stateful only to own the screen-capture lifecycle: the user types their
@@ -40,18 +40,13 @@ class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.importMnemonicTitle,
-          color: context.appColors.background,
-          onBack: () => context.pop(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.importMnemonicTitle,
+        onBack: () => context.pop(),
       ),
-      body: BlocBuilder<ImportMnemonicCubit, ImportMnemonicState>(
+      padding: EdgeInsets.zero,
+      child: BlocBuilder<ImportMnemonicCubit, ImportMnemonicState>(
         builder: (context, state) {
           return Stack(
             children: [

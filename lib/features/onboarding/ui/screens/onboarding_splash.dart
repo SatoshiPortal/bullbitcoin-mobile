@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/advanced_options.dart';
@@ -14,7 +13,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -40,7 +39,7 @@ class OnboardingSplash extends StatelessWidget {
                     ),
                   ),
                   const Gap(36),
-                  BBText(
+                  BullText(
                     context.loc.onboardingBullBitcoin,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
@@ -49,7 +48,7 @@ class OnboardingSplash extends StatelessWidget {
                       height: 1,
                     ),
                   ),
-                  BBText(
+                  BullText(
                     context.loc.onboardingOwnYourMoney,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
@@ -61,7 +60,7 @@ class OnboardingSplash extends StatelessWidget {
                   const Gap(10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 48),
-                    child: BBText(
+                    child: BullText(
                       context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
                       color: context.appColors.onPrimaryFixed,

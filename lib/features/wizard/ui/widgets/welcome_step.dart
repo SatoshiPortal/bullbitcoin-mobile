@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 /// Page 1 of the wizard — splash-style welcome that mirrors
 /// `OnboardingSplash` visually. Renders only the centered content; the
@@ -22,7 +21,7 @@ class WelcomeStep extends StatelessWidget {
           const Spacer(flex: 2),
           Image.asset(Assets.logos.bbLogoWhite.path, height: 127),
           const Gap(36),
-          BBText(
+          BullText(
             context.loc.onboardingBullBitcoin,
             style: AppFonts.textTitleTheme.textStyle.copyWith(
               fontSize: 54,
@@ -31,7 +30,7 @@ class WelcomeStep extends StatelessWidget {
               height: 1,
             ),
           ),
-          BBText(
+          BullText(
             context.loc.onboardingOwnYourMoney,
             style: AppFonts.textTitleTheme.textStyle.copyWith(
               fontSize: 40,
@@ -43,7 +42,7 @@ class WelcomeStep extends StatelessWidget {
           const Gap(10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
-            child: BBText(
+            child: BullText(
               context.loc.onboardingSplashDescription,
               style: context.font.labelSmall,
               color: context.appColors.onPrimaryFixed,
