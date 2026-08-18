@@ -205,6 +205,7 @@ class _TestableSendCubit extends SendCubit {
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
     required super.verifySignedTxUsecase,
+    super.parsePaymentRequest,
   });
 
   void setStateForTest(SendState state) => emit(state);
@@ -293,7 +294,9 @@ void main() {
 
   late StreamController<PayjoinSession> payjoinEvents;
 
-  _TestableSendCubit buildCubit() => _TestableSendCubit(
+  _TestableSendCubit buildCubit({
+    Future<PaymentRequest> Function(String)? parsePaymentRequest,
+  }) => _TestableSendCubit(
     labelsFacade: labelsFacade,
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
@@ -332,6 +335,7 @@ void main() {
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
     verifySignedTxUsecase: verifySignedTxUsecase,
+    parsePaymentRequest: parsePaymentRequest,
   );
 
   /// Precondition state that makes [SendState.willAttemptPayjoin] true and
@@ -357,6 +361,9 @@ void main() {
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(_bitcoinLocalWallet());
     registerFallbackValue(BigInt.zero);
+    registerFallbackValue(
+      const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
+    );
   });
 
   setUp(() {
@@ -809,5 +816,136 @@ void main() {
       expect(stored.reference, 'broadcast-txid');
       expect(stored.label, 'coffee');
     });
+  });
+
+  group('SendCubit.onChangedText stale detection results', () {
+    const oldText = 'old payment request';
+    const newText = 'new payment request';
+    const oldPaymentRequest = PaymentRequest.bitcoin(
+      address: 'old-address',
+      isTestnet: true,
+    );
+    const newPaymentRequest = PaymentRequest.bitcoin(
+      address: 'new-address',
+      isTestnet: true,
+    );
+
+    test('ignores an old success that resolves after a new success', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == oldText ? oldResult.future : newResult.future;
+      });
+
+      final oldInput = cubit.onChangedText(oldText);
+      final newInput = cubit.onChangedText(newText);
+      newResult.complete(newPaymentRequest);
+      await newInput;
+      oldResult.complete(oldPaymentRequest);
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, newText);
+      expect(cubit.state.paymentRequest, newPaymentRequest);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('ignores an old error that resolves after a new success', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == oldText ? oldResult.future : newResult.future;
+      });
+
+      final oldInput = cubit.onChangedText(oldText);
+      final newInput = cubit.onChangedText(newText);
+      newResult.complete(newPaymentRequest);
+      await newInput;
+      oldResult.completeError(StateError('old parse failed'));
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, newText);
+      expect(cubit.state.paymentRequest, newPaymentRequest);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('ignores an old success that resolves after a scan', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: oldText),
+      ).thenAnswer((_) => oldResult.future);
+
+      final oldInput = cubit.onChangedText(oldText);
+      await cubit.onScannedPaymentRequest('scanned payment request', null);
+      oldResult.complete(oldPaymentRequest);
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, 'scanned payment request');
+      expect(cubit.state.paymentRequest, isNull);
+    });
+
+    test(
+      'ignores a stale scan after a newer paste during Lightning parsing',
+      () async {
+        final parsing = Completer<PaymentRequest>();
+        final cubit = buildCubit(parsePaymentRequest: (_) => parsing.future);
+        addTearDown(cubit.close);
+        when(
+          () => detectBitcoinStringUsecase.execute(data: 'new payment request'),
+        ).thenAnswer(
+          (_) async => const PaymentRequest.bitcoin(
+            address: 'new-address',
+            isTestnet: true,
+          ),
+        );
+        when(
+          () => bestWalletUsecase.execute(
+            wallets: any(named: 'wallets'),
+            request: any(named: 'request'),
+            amountSat: any(named: 'amountSat'),
+          ),
+        ).thenReturn(_bitcoinLocalWallet());
+        const bip21 = PaymentRequest.bip21(
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:old-address?lightning=old-invoice',
+          address: 'old-address',
+          lightning: 'old-invoice',
+        );
+
+        final oldScan = cubit.onScannedPaymentRequest('old scan', bip21);
+        await Future<void>.delayed(Duration.zero);
+        await cubit.onChangedText('new payment request');
+        parsing.complete(
+          PaymentRequest.bolt11(
+            invoice: 'stale-invoice',
+            amountSat: 1000,
+            paymentHash: 'stale-hash',
+            expiresAt: DateTime(2030).millisecondsSinceEpoch ~/ 1000,
+            isTestnet: true,
+          ),
+        );
+        await oldScan;
+
+        expect(cubit.state.copiedRawPaymentRequest, 'new payment request');
+        expect(
+          cubit.state.paymentRequest,
+          const PaymentRequest.bitcoin(address: 'new-address', isTestnet: true),
+        );
+        expect(cubit.state.selectedWallet, isNull);
+        expect(cubit.state.step, SendStep.address);
+        expect(cubit.state.loadingBestWallet, isFalse);
+      },
+    );
   });
 }
