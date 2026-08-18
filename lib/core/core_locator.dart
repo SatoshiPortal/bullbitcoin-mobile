@@ -9,6 +9,8 @@ import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
+    as settings;
 import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
@@ -55,7 +57,25 @@ class CoreLocator {
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
-    bull_tor.TorLocator.registerRepositories(locator);
+    await SettingsLocator.registerRepositories(locator);
+    final settingsRepository = locator<settings.SettingsRepository>();
+    final appSettings = await settingsRepository.fetch();
+    bull_tor.TorLocator.registerRepositories(
+      locator,
+      initialMode: appSettings.torTransportMode,
+      lastSuccessfulTransport: appSettings.lastSuccessfulTorTransport,
+      onSuccessfulTransport: (transport) async {
+        try {
+          await settingsRepository.setLastSuccessfulTorTransport(transport);
+        } catch (error, stackTrace) {
+          log.warning(
+            'Could not persist the successful Tor transport',
+            error: error,
+            trace: stackTrace,
+          );
+        }
+      },
+    );
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);

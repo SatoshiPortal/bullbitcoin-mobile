@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/report.dart';
+import 'package:bull_tor/tor.dart';
 
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
@@ -34,6 +35,8 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool isDevModeEnabled,
     required bool useTorProxy,
     required int torProxyPort,
+    TorTransportMode torTransportMode = TorTransportMode.automatic,
+    TorTransport? lastSuccessfulTorTransport,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
@@ -51,6 +54,8 @@ class SettingsRepository implements domain.SettingsRepository {
         isDevModeEnabled: isDevModeEnabled,
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
+        torTransportMode: torTransportMode,
+        lastSuccessfulTorTransport: lastSuccessfulTorTransport,
         themeMode: themeMode,
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
@@ -73,6 +78,8 @@ class SettingsRepository implements domain.SettingsRepository {
       isDevModeEnabled: s.isDevModeEnabled,
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
+      torTransportMode: s.torTransportMode,
+      lastSuccessfulTorTransport: s.lastSuccessfulTorTransport,
       themeMode: s.themeMode,
       isErrorReportingEnabled: s.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
@@ -124,6 +131,16 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setTorProxyPort(int port) async {
     await _settingsDatasource.setTorProxyPort(port);
+  }
+
+  @override
+  Future<void> setTorTransportMode(TorTransportMode mode) async {
+    await _settingsDatasource.setTorTransportMode(mode);
+  }
+
+  @override
+  Future<void> setLastSuccessfulTorTransport(TorTransport transport) async {
+    await _settingsDatasource.setLastSuccessfulTorTransport(transport);
   }
 
   @override
