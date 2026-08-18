@@ -19,7 +19,11 @@ dependencies:
   drift: ^2.29.0
   freezed_annotation: ^3.1.0
   meta: ^1.17.0
-  payjoin: ^0.2.1+payjoin-1.0.0-rc.8
+  payjoin:
+    git:
+      url: https://github.com/SatoshiPortal/payjoin-rust
+      ref: 9e760b537175da70150e8a58bddb4d333e523aa4
+      path: payjoin-ffi/dart
   primitives:
   sqlite3: ^2.9.4
   synchronized: ^3.4.0
