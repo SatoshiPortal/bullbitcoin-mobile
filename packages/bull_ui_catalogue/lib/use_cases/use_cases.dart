@@ -81,6 +81,44 @@ m.Widget bullButtonBigUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Semantic variants', type: BullButton)
+m.Widget bullButtonSemanticVariantsUseCase(m.BuildContext context) {
+  final disabled = context.knobs.boolean(label: 'disabled');
+  final size = context.knobs.object.dropdown<BullButtonSize>(
+    label: 'size',
+    options: BullButtonSize.values,
+    labelBuilder: (value) => value.name,
+  );
+  return _frame(
+    context,
+    m.Column(
+      mainAxisSize: m.MainAxisSize.min,
+      children: [
+        BullButton.primary(
+          label: 'Continue',
+          onPressed: () {},
+          disabled: disabled,
+          size: size,
+        ),
+        const m.SizedBox(height: BullSpacing.sm),
+        BullButton.secondary(
+          label: 'Review',
+          onPressed: () {},
+          disabled: disabled,
+          size: size,
+        ),
+        const m.SizedBox(height: BullSpacing.sm),
+        BullButton.danger(
+          label: 'Delete',
+          onPressed: () {},
+          disabled: disabled,
+          size: size,
+        ),
+      ],
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Small', type: BullButton)
 m.Widget bullButtonSmallUseCase(m.BuildContext context) {
   return _frame(
@@ -163,6 +201,49 @@ m.Widget bullScaffoldUseCase(m.BuildContext context) {
             ),
           ),
         ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Wizard page', type: BullPage)
+m.Widget bullPageUseCase(m.BuildContext context) {
+  return BullPage(
+    topBar: BullTopBar(
+      title: context.knobs.string(label: 'title', initialValue: 'Receive'),
+    ),
+    scrollable: true,
+    bottomBar: BullBottomActionBar(
+      actions: [
+        BullButton.secondary(label: 'Back', onPressed: () {}),
+        BullButton.primary(label: 'Continue', onPressed: () {}),
+      ],
+    ),
+    child: m.Column(
+      crossAxisAlignment: m.CrossAxisAlignment.start,
+      children: [
+        BullText(
+          'Page content',
+          style: m.Theme.of(context).textTheme.bodyLarge,
+        ),
+        for (var i = 0; i < 8; i++)
+          const m.Padding(
+            padding: m.EdgeInsets.only(top: BullSpacing.md),
+            child: m.Text('Scrollable section'),
+          ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Responsive actions', type: BullBottomActionBar)
+m.Widget bullBottomActionBarUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    BullBottomActionBar(
+      actions: [
+        BullButton.secondary(label: 'Back', onPressed: () {}),
+        BullButton.primary(label: 'Continue', onPressed: () {}),
       ],
     ),
   );

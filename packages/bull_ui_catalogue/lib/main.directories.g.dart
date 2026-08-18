@@ -74,6 +74,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 _bull_ui_catalogue_use_cases_use_cases.bullButtonBigUseCase,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Semantic variants',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullButtonSemanticVariantsUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Small',
             builder:
                 _bull_ui_catalogue_use_cases_use_cases.bullButtonSmallUseCase,
@@ -125,6 +130,25 @@ final directories = <_widgetbook.WidgetbookNode>[
   _widgetbook.WidgetbookFolder(
     name: 'chrome',
     children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'BullBottomActionBar',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Responsive actions',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullBottomActionBarUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'BullPage',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Wizard page',
+            builder: _bull_ui_catalogue_use_cases_use_cases.bullPageUseCase,
+          ),
+        ],
+      ),
       _widgetbook.WidgetbookComponent(
         name: 'BullScaffold',
         useCases: [

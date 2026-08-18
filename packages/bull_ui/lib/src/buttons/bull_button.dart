@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
+import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
@@ -12,12 +13,67 @@ enum BullButtonSize {
   large,
 }
 
-/// Primary button — duplicated from `core/widgets/buttons/button.dart`.
+enum _BullButtonVariant { primary, secondary, danger }
+
+/// A semantic or legacy-sized Bull button.
 ///
-/// Use [BullButton.big] / [BullButton.small]. Supports an optional icon,
-/// outlined and disabled states. Colours are supplied by the caller (read from
-/// `context.bull`) so the widget itself hardcodes none.
+/// Prefer [BullButton.primary], [BullButton.secondary], or [BullButton.danger]
+/// for semantic intent. These variants resolve their colours from
+/// `context.bull` and support both [BullButtonSize.large] and
+/// [BullButtonSize.small]. [BullButton.big] and [BullButton.small] remain
+/// available for existing callers that provide explicit colours.
 class BullButton extends StatelessWidget {
+  const BullButton.primary({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.size = BullButtonSize.large,
+    this.iconData,
+    this.iconFirst = false,
+    this.disabled = false,
+    this.height,
+    this.width,
+    this.textStyle,
+  }) : bgColor = null,
+       textColor = null,
+       outlined = false,
+       borderColor = null,
+       _semanticVariant = _BullButtonVariant.primary;
+
+  const BullButton.secondary({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.size = BullButtonSize.large,
+    this.iconData,
+    this.iconFirst = false,
+    this.disabled = false,
+    this.height,
+    this.width,
+    this.textStyle,
+  }) : bgColor = null,
+       textColor = null,
+       outlined = true,
+       borderColor = null,
+       _semanticVariant = _BullButtonVariant.secondary;
+
+  const BullButton.danger({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.size = BullButtonSize.large,
+    this.iconData,
+    this.iconFirst = false,
+    this.disabled = false,
+    this.height,
+    this.width,
+    this.textStyle,
+  }) : bgColor = null,
+       textColor = null,
+       outlined = false,
+       borderColor = null,
+       _semanticVariant = _BullButtonVariant.danger;
+
   const BullButton.big({
     super.key,
     required this.label,
@@ -32,7 +88,8 @@ class BullButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
-  }) : size = BullButtonSize.large;
+  }) : size = BullButtonSize.large,
+       _semanticVariant = null;
 
   const BullButton.small({
     super.key,
@@ -48,7 +105,8 @@ class BullButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
-  }) : size = BullButtonSize.small;
+  }) : size = BullButtonSize.small,
+       _semanticVariant = null;
 
   /// Optional leading/trailing icon glyph.
   final IconData? iconData;
@@ -57,10 +115,10 @@ class BullButton extends StatelessWidget {
   final String label;
 
   /// Background fill.
-  final Color bgColor;
+  final Color? bgColor;
 
   /// Label and icon colour.
-  final Color textColor;
+  final Color? textColor;
 
   /// When true, the icon precedes the label.
   final bool iconFirst;
@@ -89,12 +147,28 @@ class BullButton extends StatelessWidget {
   /// Overrides the default label text style.
   final TextStyle? textStyle;
 
+  final _BullButtonVariant? _semanticVariant;
+
   @override
   Widget build(BuildContext context) {
+    final colors = _semanticVariant == null ? null : context.bull;
+    final resolvedBgColor = switch (_semanticVariant) {
+      _BullButtonVariant.primary => colors!.primary,
+      _BullButtonVariant.secondary => colors!.surface,
+      _BullButtonVariant.danger => colors!.error,
+      null => bgColor!,
+    };
+    final resolvedTextColor = switch (_semanticVariant) {
+      _BullButtonVariant.primary => colors!.onPrimary,
+      _BullButtonVariant.secondary => colors!.primary,
+      _BullButtonVariant.danger => colors!.onError,
+      null => textColor!,
+    };
+    final resolvedBorderColor = borderColor ?? resolvedTextColor;
     final radius = BorderRadius.circular(BullRadius.xxs);
 
     final image = iconData != null
-        ? Icon(iconData, size: 20, color: textColor)
+        ? Icon(iconData, size: 20, color: resolvedTextColor)
         : const SizedBox.shrink();
 
     final labelText = Flexible(
@@ -103,7 +177,7 @@ class BullButton extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: textStyle ?? Theme.of(context).textTheme.headlineLarge,
-        color: textColor,
+        color: resolvedTextColor,
       ),
     );
 
@@ -122,10 +196,8 @@ class BullButton extends StatelessWidget {
                 ? null
                 : const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: bgColor,
-              border: outlined
-                  ? Border.all(color: borderColor ?? textColor)
-                  : null,
+              color: resolvedBgColor,
+              border: outlined ? Border.all(color: resolvedBorderColor) : null,
               borderRadius: radius,
             ),
             child: Row(

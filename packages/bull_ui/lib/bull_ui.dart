@@ -43,6 +43,7 @@ export 'package:flutter/widgets.dart'
         HitTestBehavior,
         IconData,
         Key,
+        LayoutBuilder,
         ListView,
         MainAxisAlignment,
         MainAxisSize,
@@ -51,6 +52,7 @@ export 'package:flutter/widgets.dart'
         Padding,
         PageController,
         PageView,
+        PopScope,
         Positioned,
         Radius,
         Row,
@@ -93,6 +95,8 @@ export 'src/theme/bull_tokens.dart';
 
 // Chrome.
 export 'src/chrome/bull_scaffold.dart';
+export 'src/chrome/bull_bottom_action_bar.dart';
+export 'src/chrome/bull_page.dart';
 export 'src/chrome/bull_selection_action_bar.dart';
 export 'src/chrome/bull_success_screen.dart';
 export 'src/chrome/bull_top_bar.dart';
