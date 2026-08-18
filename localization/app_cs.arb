@@ -2126,10 +2126,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor proxy se vztahuje pouze na Bitcoin (ne Liquid)\n• Výchozí port Orbot je 9050\n• Ujistěte se, že Orbot běží před povolením\n• Připojení může být pomalejší přes Tor",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "Bitcoin adresa",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -9424,10 +9420,6 @@
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
   },
-  "torSettingsInfoTitle": "Důležité informace",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
   "importColdcardInstructionsStep7": "Na mobilním zařízení klepněte na \"open camera\"",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
@@ -12555,5 +12547,26 @@
   "coreSwapsStatusAwaitingClaim": "Čeká na vyzvednutí",
   "coreSwapsStatusUnknown": "Neznámé",
   "sendSwapExpiredTitle": "Objednávka vypršela",
-  "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno."
+  "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno.",
+  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
+  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
+  "torSettingsBootstrapProgress": "Připojování… {percent} %",
+  "recoverbullPhaseNetworkInfo": "Načítání informací o síti",
+  "recoverbullLongestStep": "Toto je nejdelší krok. První spuštění může trvat déle než minutu.",
+  "recoverbullTorOffline": "Zdá se, že není k dispozici připojení k internetu.",
+  "recoverbullTorClockSkewed": "Hodiny zařízení jdou špatně, takže Tor nemůže ověřit certifikáty uzlů. Zkontrolujte nastavení data a času.",
+  "recoverbullTorCantStart": "Tor se nyní nedokázal připojit. Zkuste to prosím znovu.",
+  "recoverbullServerUnreachableTorOk": "Tor funguje, ale zálohovací server neodpověděl. Hned po prvním spuštění to může chvíli trvat.",
+  "torSettingsEmbeddedTitle": "Vestavěný Tor",
+  "torSettingsEmbeddedDescription": "Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion. Ostatní provoz aplikace zůstává přímý.",
+  "torSettingsTransportMode": "Způsob připojení",
+  "torSettingsModeAutomatic": "Automaticky",
+  "torSettingsModeDirect": "Přímé",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
+  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
+  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
+  "torSettingsActiveTransport": "Aktivní transport: {transport}",
+  "torSettingsExternalProxyTitle": "Externí proxy Tor (pokročilé)",
+  "torSettingsExternalProxyDescription": "Když je zapnuto, servery Bitcoin Electrum a zašifrované záhy procházejí přes Orbot na nastaveném portu místo vestavěného Toru. Liquid se přes něj nikdy nesměruje."
 }

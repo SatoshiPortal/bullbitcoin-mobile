@@ -12293,14 +12293,6 @@
   "@torSettingsDescUnknown": {
     "description": "Description when Tor status is unknown"
   },
-  "torSettingsInfoTitle": "Important Information",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
-  "torSettingsInfoDescription": "• Tor proxy only applies to Bitcoin (not Liquid)\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connection may be slower through Tor",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "withdrawSuccessTitle": "Withdrawal Initiated",
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"

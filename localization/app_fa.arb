@@ -839,14 +839,6 @@
   "@walletAutoTransferAllowButton": {
     "description": "Button to allow auto-transfer despite high fees"
   },
-  "torSettingsInfoTitle": "اطلاعات مهم",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
-  "torSettingsInfoDescription": "• Tor پروکسی فقط در مورد Bitcoin (نه نقدینگی)\n• پورت Orbot 9050\nاطمینان حاصل کنید که Orbot قبل از فعال شدن در حال اجرا است.\n• اتصال ممکن است از طریق Tor کندتر باشد",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "withdrawSuccessTitle": "خروج اجباری",
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"
@@ -12555,5 +12547,26 @@
   "coreSwapsStatusAwaitingClaim": "در انتظار دریافت",
   "coreSwapsStatusUnknown": "نامشخص",
   "sendSwapExpiredTitle": "سفارش منقضی شد",
-  "sendSwapExpiredMessage": "این سفارش پیش از ارسال هرگونه وجهی منقضی شد. هیچ مبلغی از کیف پول شما ارسال نشد."
+  "sendSwapExpiredMessage": "این سفارش پیش از ارسال هرگونه وجهی منقضی شد. هیچ مبلغی از کیف پول شما ارسال نشد.",
+  "torSettingsStatusCensored": "به‌نظر می‌رسد اتصال فیلتر شده است",
+  "torSettingsDescCensored": "Tor نتوانست به شبکه برسد. این معمولاً یعنی اتصال در حال فیلتر شدن است.",
+  "torSettingsBootstrapProgress": "در حال اتصال… {percent}%",
+  "recoverbullPhaseNetworkInfo": "در حال دریافت اطلاعات شبکه",
+  "recoverbullLongestStep": "این طولانی‌ترین مرحله است. نخستین اجرا ممکن است بیش از یک دقیقه طول بکشد.",
+  "recoverbullTorOffline": "به‌نظر می‌رسد اتصال اینترنت برقرار نیست.",
+  "recoverbullTorClockSkewed": "ساعت دستگاه شما درست نیست، بنابراین Tor نمی‌تواند گواهی‌های بازپخش‌ها را بررسی کند. تاریخ و ساعت را بررسی کنید.",
+  "recoverbullTorCantStart": "Tor در حال حاضر نتوانست متصل شود. دوباره تلاش کنید.",
+  "recoverbullServerUnreachableTorOk": "Tor کار می‌کند، اما سرور پشتیبان پاسخ نداد. درست پس از نخستین اجرا ممکن است کمی طول بکشد.",
+  "torSettingsEmbeddedTitle": "Tor داخلی",
+  "torSettingsEmbeddedDescription": "Tor داخلی توسط RecoverBull و سرورهای Bitcoin Electrum با نشانی .onion استفاده می‌شود. سایر ترافیک برنامه مستقیم می‌ماند.",
+  "torSettingsTransportMode": "روش اتصال",
+  "torSettingsModeAutomatic": "خودکار",
+  "torSettingsModeDirect": "مستقیم",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "ابتدا اتصال مستقیم به Tor را می‌آزماید و اگر به‌نظر برسد شبکه Tor را مسدود می‌کند، از Snowflake استفاده می‌کند.",
+  "torSettingsModeDirectDescription": "بدون حامل اتصال‌پذیر، مستقیماً به شبکه Tor متصل می‌شود.",
+  "torSettingsModeSnowflakeDescription": "از پروکسی‌های داوطلبانه Snowflake استفاده می‌کند تا از شبکه‌ای فیلترشده به Tor برسد.",
+  "torSettingsActiveTransport": "حامل فعال: {transport}",
+  "torSettingsExternalProxyTitle": "پروکسی Tor بیرونی (پیشرفته)",
+  "torSettingsExternalProxyDescription": "در صورت فعال بودن، سرورهای Bitcoin Electrum و پشتیبان‌های رمزگذاری‌شده به‌جای Tor داخلی از Orbot روی درگاه تنظیم‌شده عبور می‌کنند. Liquid هرگز از آن عبور نمی‌کند."
 }
