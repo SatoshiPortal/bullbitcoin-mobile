@@ -47,4 +47,14 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
       (server) => server.status == ElectrumServerStatus.offline,
     );
   }
+
+  bool get activeOnionServersAreOffline {
+    final activeServers = customServers.isNotEmpty
+        ? customServers
+        : defaultServers;
+    return activeServers.any((server) => server.isOnion) &&
+        activeServers.every(
+          (server) => server.status == ElectrumServerStatus.offline,
+        );
+  }
 }

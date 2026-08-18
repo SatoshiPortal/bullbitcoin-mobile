@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/adapters/server_status_adapter.dart';
+import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +11,7 @@ import 'self_signed_electrum_server.dart';
 /// The probe must accept exactly the certificates the BDK/LWK sync accepts,
 /// so that "online" here means the wallet can really use the server.
 void main() {
-  const adapter = ServerStatusAdapter();
+  const adapter = ServerStatusAdapter(ElectrumSocketConnector());
   const network = ElectrumServerNetwork.bitcoinMainnet;
 
   late SelfSignedElectrumServer fixture;

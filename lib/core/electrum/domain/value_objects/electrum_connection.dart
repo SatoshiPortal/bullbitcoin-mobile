@@ -5,7 +5,11 @@
 /// attempt by merging:
 /// - the active server set (custom-if-set else defaults, in priority order),
 /// - the persisted electrum settings (retry / timeout / stopGap / validate),
-/// - the current Tor preference (socks5 proxy).
+/// - the proxy this server should go through, if any.
+///
+/// [socks5] is a `host:port` string rather than a typed endpoint because that
+/// is the shape its consumers take: BDK's Electrum client accepts a string,
+/// and the advanced options let the user type one by hand.
 ///
 /// [isCustom] is carried only so the executor's error reporting can tell the
 /// caller which tier was exhausted — datasources should not branch on it.
@@ -27,4 +31,14 @@ class ElectrumConnection {
     required this.isCustom,
     this.socks5,
   });
+
+  ElectrumConnection withSocks5(String? socks5) => ElectrumConnection(
+    url: url,
+    retry: retry,
+    timeout: timeout,
+    stopGap: stopGap,
+    validateDomain: validateDomain,
+    isCustom: isCustom,
+    socks5: socks5,
+  );
 }

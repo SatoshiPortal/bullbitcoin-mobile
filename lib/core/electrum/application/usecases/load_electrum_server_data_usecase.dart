@@ -6,10 +6,11 @@ import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -23,6 +24,7 @@ class LoadElectrumServerDataUsecase {
   final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
   final SettingsRepository _settingsRepository;
+  final ElectrumTorSessionPort _torSessionPort;
 
   const LoadElectrumServerDataUsecase({
     required this._electrumServerRepository,
@@ -30,6 +32,7 @@ class LoadElectrumServerDataUsecase {
     required this._environmentPort,
     required this._serverStatusPort,
     required this._settingsRepository,
+    required this._torSessionPort,
   });
 
   @useResult
@@ -39,6 +42,10 @@ class LoadElectrumServerDataUsecase {
     try {
       final isLiquid = request.isLiquid;
       final environment = await _environmentPort.getEnvironment();
+      final network = ElectrumServerNetwork.fromEnvironment(
+        isTestnet: environment.isTestnet,
+        isLiquid: isLiquid,
+      );
 
       // Fetch servers, settings, and app settings in parallel
       final (serversResult, settingsResult, appSettings) = await (
@@ -46,12 +53,7 @@ class LoadElectrumServerDataUsecase {
           isTestnet: environment.isTestnet,
           isLiquid: isLiquid,
         ),
-        _electrumSettingsRepository.fetchByNetwork(
-          ElectrumServerNetwork.fromEnvironment(
-            isTestnet: environment.isTestnet,
-            isLiquid: isLiquid,
-          ),
-        ),
+        _electrumSettingsRepository.fetchByNetwork(network),
         _settingsRepository.fetch(),
       ).wait;
 
@@ -74,17 +76,26 @@ class LoadElectrumServerDataUsecase {
         return const Err(ElectrumLoadFailure('No Electrum servers found'));
       }
 
-      // Check server statuses (use Tor proxy if enabled for Bitcoin/Testnet, not Liquid)
-      final useTorProxy = !isLiquid && appSettings.useTorProxy;
       final serverStatusMap = <String, ElectrumServerStatus>{};
       await Future.wait(
         servers.map((server) async {
-          final status = await _serverStatusPort.checkSocket(
-            url: server.url,
-            useTorProxy: useTorProxy,
-            torProxyPort: appSettings.torProxyPort,
-          );
-          serverStatusMap[server.url] = status;
+          ElectrumTorRoute? route;
+          try {
+            route = await _torSessionPort.open(
+              network: network,
+              serverUrl: server.url,
+              externalProxyEnabled: appSettings.useTorProxy,
+              externalProxyPort: appSettings.torProxyPort,
+            );
+            serverStatusMap[server.url] = await _serverStatusPort.checkSocket(
+              url: server.url,
+              proxyEndpoint: route?.endpoint,
+            );
+          } catch (_) {
+            serverStatusMap[server.url] = ElectrumServerStatus.offline;
+          } finally {
+            await route?.close();
+          }
         }),
       );
 
