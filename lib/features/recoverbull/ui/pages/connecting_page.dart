@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -6,16 +8,178 @@ import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bull_tor/tor.dart' as tor;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_tor/tor.dart' as tor;
 
-class ConnectingPage extends StatelessWidget {
+/// How long a blockage must persist before it is shown as a failure.
+///
+/// Tor restarts its directory fetch as soon as the current directory becomes
+/// usable, which briefly drops readiness — a real observed dip was 100% to 45%
+/// and back within 173 ms. Without this delay that healthy refresh would put an
+/// error and a Retry button on screen.
+const _blockageGrace = Duration(seconds: 5);
+
+/// How long the progress bar survives without the fraction moving.
+///
+/// The fraction is 85% directory completeness, and the directory is cached on
+/// disk: with a warm cache and no connectivity at all it reads 0.85 from the
+/// first frame. A bar that only appears while the number is actually moving
+/// cannot make that claim.
+const _progressStale = Duration(seconds: 15);
+
+/// When to start reassuring the user that the wait is normal.
+///
+/// The directory phase is 85% of the bootstrap budget and reports progress only
+/// a handful of times — a measured cold start went 43 s between two updates —
+/// so past this point the screen looks stalled even though it is not.
+const _reassureAfter = Duration(seconds: 20);
+
+class ConnectingPage extends StatefulWidget {
   const ConnectingPage({super.key});
+
+  @override
+  State<ConnectingPage> createState() => _ConnectingPageState();
+}
+
+class _ConnectingPageState extends State<ConnectingPage> {
+  /// Ticks the elapsed counter. During the long directory phase this is the
+  /// only thing on screen that actually moves, so it carries the whole sense
+  /// of progress.
+  Timer? _ticker;
+
+  /// Start of the phase currently on screen, not of the page.
+  ///
+  /// A single page-lifetime clock lied twice: the key-server row opened at the
+  /// bootstrap's own elapsed time, attributing 50 s of Tor work to the server,
+  /// and after a retry both the counter and the "this is the longest step"
+  /// threshold carried over from the attempt that had already failed.
+  DateTime _startedAt = DateTime.now();
+  Duration _elapsed = Duration.zero;
+
+  /// Which phase the clock currently belongs to, to notice a handover.
+  bool? _torPhaseWasActive;
+
+  /// When the current user-visible blockage first appeared, for [_blockageGrace].
+  DateTime? _blockageSince;
+
+  /// When the bootstrap fraction last actually changed, for [_progressStale].
+  DateTime? _fractionMovedAt;
+  double? _lastFraction;
+
+  /// Whether this screen has already handed the flow to the next page.
+  ///
+  /// Readiness is not a single event: Tor republishes `TorReady` on every
+  /// directory refresh, and the key-server check emits its own states, so the
+  /// success condition below is satisfied more than once. Without this guard
+  /// each repetition pushed another route, stacking duplicate pages behind the
+  /// one the user sees.
+  bool _hasNavigated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      setState(() => _elapsed = DateTime.now().difference(_startedAt));
+    });
+
+    // `BlocListener` only sees emissions after it subscribes, so a blockage
+    // already present at mount would not start the grace clock until arti
+    // happened to re-emit. Seeding from the current state removes that
+    // dependency.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _onStateChanged(context, context.read<RecoverBullBloc>().state);
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  void _onStateChanged(BuildContext context, RecoverBullState state) {
+    final connection = state.torConnection;
+    final now = DateTime.now();
+
+    final fraction = switch (connection) {
+      tor.TorConnecting(:final progress) => progress,
+      _ => null,
+    };
+    final diagnostic = switch (connection) {
+      tor.TorConnecting(:final diagnostic) => diagnostic,
+      _ => null,
+    };
+
+    // `build` reads these through `_progressIsLive` and `_blockageIsSettled`,
+    // so they are widget state, not bookkeeping. Mutating them bare only
+    // appeared to work because the one-second ticker rebuilt anyway.
+    setState(() {
+      if (fraction != null && _lastFraction != fraction) {
+        _lastFraction = fraction;
+        _fractionMovedAt = now;
+      }
+      if (diagnostic == null) {
+        _blockageSince = null;
+      } else {
+        _blockageSince ??= now;
+      }
+
+      // Hand the clock over when Tor stops being the active phase, so the
+      // key-server row starts from zero instead of inheriting the bootstrap.
+      final torIsActive = connection is! tor.TorReady;
+      if (_torPhaseWasActive != null && _torPhaseWasActive != torIsActive) {
+        _startedAt = now;
+        _elapsed = Duration.zero;
+      }
+      _torPhaseWasActive = torIsActive;
+
+      // A retry restarts the wait: `OnTorInitialization` clears the failure and
+      // sets the key-server status back to unknown, so the clock has to follow.
+      if (connection is tor.TorConnecting &&
+          state.keyServerStatus == KeyServerStatus.unknown &&
+          _elapsed > Duration.zero &&
+          diagnostic == null) {
+        _startedAt = now;
+        _elapsed = Duration.zero;
+        _blockageSince = null;
+      }
+    });
+
+    if (connection is tor.TorReady &&
+        state.keyServerStatus == KeyServerStatus.online) {
+      if (_hasNavigated) return;
+      _hasNavigated = true;
+      final hasPreSelectedVault = state.vault != null;
+      final nextPage = switch (state.flow) {
+        RecoverBullFlow.secureVault => const PasswordInputPage(),
+        _ =>
+          hasPreSelectedVault
+              ? const PasswordInputPage()
+              : const VaultProviderSelectionPage(),
+      };
+
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => nextPage));
+    }
+  }
+
+  /// Whether a blockage has lasted long enough to be worth showing.
+  bool get _blockageIsSettled {
+    final since = _blockageSince;
+    return since != null && DateTime.now().difference(since) >= _blockageGrace;
+  }
+
+  /// Whether the fraction is moving, and so worth drawing as a bar.
+  bool get _progressIsLive {
+    final at = _fractionMovedAt;
+    return at != null && DateTime.now().difference(at) < _progressStale;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,25 +187,7 @@ class ConnectingPage extends StatelessWidget {
       listenWhen: (previous, current) =>
           previous.torConnection != current.torConnection ||
           previous.keyServerStatus != current.keyServerStatus,
-      listener: (context, state) {
-        if (state.torConnection is tor.TorReady &&
-            state.keyServerStatus == KeyServerStatus.online) {
-          final flow = state.flow;
-          final hasPreSelectedVault = state.vault != null;
-
-          final nextPage = switch (flow) {
-            RecoverBullFlow.secureVault => const PasswordInputPage(),
-            _ =>
-              hasPreSelectedVault
-                  ? const PasswordInputPage()
-                  : const VaultProviderSelectionPage(),
-          };
-
-          Navigator.of(
-            context,
-          ).pushReplacement(MaterialPageRoute(builder: (context) => nextPage));
-        }
-      },
+      listener: _onStateChanged,
       child: Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -50,91 +196,31 @@ class ConnectingPage extends StatelessWidget {
             icon: const Icon(Icons.arrow_back),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: BlocBuilder<RecoverBullBloc, RecoverBullState>(
-            builder: (context, state) {
-              final torStatus = switch (state.torConnection) {
-                tor.TorReady() => KeyServerStatus.online,
-                tor.TorUnavailable() => KeyServerStatus.offline,
-                tor.TorConnecting() => KeyServerStatus.connecting,
-                tor.TorUninitialized() ||
-                tor.TorStopped() => KeyServerStatus.unknown,
-              };
-              final torOnline = torStatus == KeyServerStatus.online;
-              final serverOnline =
-                  state.keyServerStatus == KeyServerStatus.online;
-              final hasError =
-                  torStatus == KeyServerStatus.offline ||
-                  state.keyServerStatus == KeyServerStatus.offline;
-
-              return Column(
-                mainAxisAlignment: .center,
-                crossAxisAlignment: .center,
-                children: [
-                  if (!torOnline || !serverOnline)
-                    Gif(
-                      autostart: Autostart.loop,
-                      width: 200,
-                      height: 200,
-                      image: AssetImage(Assets.animations.cubesLoading.path),
-                    )
-                  else
-                    const SizedBox(height: 200),
-                  const Gap(24),
-                  BBText(
-                    context.loc.recoverbullCheckingConnection,
-                    textAlign: .center,
-                    style: context.font.headlineLarge?.copyWith(
-                      fontWeight: .bold,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: BlocBuilder<RecoverBullBloc, RecoverBullState>(
+              // Centred when it fits, scrollable when it does not — without
+              // ever measuring the body's intrinsic height. `BBText` degrades
+              // to `AutoSizeText`, which is a `LayoutBuilder`, and asking a
+              // `LayoutBuilder` for intrinsics throws during layout: that is
+              // what left this screen blank for the whole bootstrap.
+              builder: (context, state) => LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: _Body(
+                      state: state,
+                      elapsed: _elapsed,
+                      showBlockage: _blockageIsSettled,
+                      progressIsLive: _progressIsLive,
                     ),
                   ),
-                  const Gap(24),
-                  _StatusRow(
-                    label: context.loc.recoverbullTorNetwork,
-                    status: torStatus,
-                  ),
-                  const Gap(12),
-                  _StatusRow(
-                    label: context.loc.recoverbullRecoverBullServer,
-                    status: state.keyServerStatus,
-                  ),
-                  const Gap(40),
-                  if (hasError) ...[
-                    BBText(
-                      state.failure?.toTranslated(context) ??
-                          context.loc.recoverbullConnectionFailed,
-                      textAlign: .center,
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.error,
-                      ),
-                      maxLines: 3,
-                    ),
-                    const Gap(24),
-                    BBButton.big(
-                      label: context.loc.recoverbullRetry,
-                      textStyle: context.font.headlineLarge,
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
-                      onPressed: () {
-                        context.read<RecoverBullBloc>().add(
-                          const OnTorInitialization(restart: true),
-                        );
-                      },
-                    ),
-                  ] else ...[
-                    BBText(
-                      context.loc.recoverbullPleaseWait,
-                      textAlign: .center,
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
-                      maxLines: 2,
-                    ),
-                  ],
-                ],
-              );
-            },
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -142,17 +228,228 @@ class ConnectingPage extends StatelessWidget {
   }
 }
 
-class _StatusRow extends StatelessWidget {
-  final String label;
-  final KeyServerStatus status;
+/// Where each of the three phases stands.
+enum _PhaseState { pending, active, done, failed }
 
-  const _StatusRow({required this.label, required this.status});
+class _Body extends StatelessWidget {
+  final RecoverBullState state;
+  final Duration elapsed;
+  final bool showBlockage;
+  final bool progressIsLive;
+
+  const _Body({
+    required this.state,
+    required this.elapsed,
+    required this.showBlockage,
+    required this.progressIsLive,
+  });
+
+  tor.TorConnectionState get _tor => state.torConnection;
+
+  /// The blockage worth acting on, once it has outlived the grace period.
+  tor.TorDiagnostic? get _diagnostic {
+    if (!showBlockage) return null;
+    return switch (_tor) {
+      tor.TorConnecting(:final diagnostic) => diagnostic,
+      _ => null,
+    };
+  }
+
+  /// The blockage a bootstrap reported when it gave up.
+  ///
+  /// Deliberately not subject to [_blockageGrace]: that grace exists to ride
+  /// out a transient readiness dip, and a terminal failure is not one. Without
+  /// this the reason was dropped exactly when it stopped being provisional.
+  tor.TorDiagnostic? get _failureDiagnostic => switch (_tor) {
+    tor.TorUnavailable(failure: tor.TorBootstrapFailure(:final diagnostic)) =>
+      diagnostic,
+    _ => null,
+  };
+
+  /// There is deliberately no separate "internet" phase.
+  ///
+  /// Nothing in the data can carry one honestly: upstream's connectivity flag is
+  /// tri-state and its "no blockage" answer covers both "fine" and "too early to
+  /// say", so the only positive proof of connectivity is Tor being ready — the
+  /// very thing the next row already reports. A missing network shows up here
+  /// instead, as the reason Tor is stuck.
+  _PhaseState get _torPhase {
+    return switch (_tor) {
+      tor.TorReady() => _PhaseState.done,
+      tor.TorUnavailable() => _PhaseState.failed,
+      tor.TorConnecting() => _PhaseState.active,
+      tor.TorUninitialized() || tor.TorStopped() => _PhaseState.pending,
+    };
+  }
+
+  _PhaseState get _serverPhase {
+    return switch (state.keyServerStatus) {
+      KeyServerStatus.online => _PhaseState.done,
+      KeyServerStatus.offline => _PhaseState.failed,
+      KeyServerStatus.connecting =>
+        _tor is tor.TorReady ? _PhaseState.active : _PhaseState.pending,
+      KeyServerStatus.unknown => _PhaseState.pending,
+    };
+  }
+
+  /// A settled blockage counts, not just a failed phase.
+  ///
+  /// Without `_diagnostic` here the whole grace-period mechanism was
+  /// unreachable: the explanation is only rendered from the failure panel, and
+  /// that panel was gated on a *failed* phase. In the mainline case this screen
+  /// exists for — device offline, Tor still `TorConnecting` with a diagnostic,
+  /// key server not yet checked — the Tor phase is `active` and the server phase
+  /// `pending`, so nothing was shown until the bootstrap gave up minutes later.
+  bool get _hasFailure =>
+      _torPhase == _PhaseState.failed ||
+      _serverPhase == _PhaseState.failed ||
+      _diagnostic != null;
+
+  /// One message, chosen by what actually failed.
+  ///
+  /// The wording stays hedged for the network diagnoses: upstream documents
+  /// them as best effort that "may declare that Arti is stuck for reasons that
+  /// are incorrect", so the screen offers an explanation and never asserts.
+  String _failureMessage(BuildContext context) {
+    final diagnostic = _diagnostic ?? _failureDiagnostic;
+    if (diagnostic != null) {
+      if (diagnostic.suggestsCensorship) {
+        return context.loc.torSettingsDescCensored;
+      }
+      return switch (diagnostic) {
+        tor.TorDiagnostic.offline => context.loc.recoverbullTorOffline,
+        tor.TorDiagnostic.clockSkewed => context.loc.recoverbullTorClockSkewed,
+        tor.TorDiagnostic.filtering ||
+        tor.TorDiagnostic.cantReachTor => context.loc.torSettingsDescCensored,
+        tor.TorDiagnostic.cantBootstrap ||
+        tor.TorDiagnostic.unknown => context.loc.recoverbullTorCantStart,
+      };
+    }
+
+    // Only blame the server when Tor actually reached readiness. Otherwise the
+    // server never got a working proxy to go through, and telling the user
+    // "Tor is working" would be false — the shape of a bug seen in testing,
+    // where a torn-down Tor still produced a server-side error message.
+    if (_serverPhase == _PhaseState.failed) {
+      return _torPhase == _PhaseState.done
+          ? context.loc.recoverbullServerUnreachableTorOk
+          : context.loc.recoverbullTorCantStart;
+    }
+
+    return state.failure?.toTranslated(context) ??
+        context.loc.recoverbullConnectionFailed;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final statusText = _getStatusText(context);
-    final statusColor = _getStatusColor(context);
-    final icon = _getIcon();
+    return Column(
+      mainAxisAlignment: .center,
+      crossAxisAlignment: .stretch,
+      children: [
+        BBText(
+          context.loc.recoverbullCheckingConnection,
+          textAlign: .center,
+          style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
+        ),
+        const Gap(32),
+        _PhaseCard(
+          label: context.loc.recoverbullTorNetwork,
+          phase: _torPhase,
+          // No sub-step is named: the conn/dir split that would identify the
+          // exact phase is private upstream, so claiming one would be wrong
+          // about a third of the time.
+          caption: _torPhase == _PhaseState.active
+              ? context.loc.recoverbullPhaseNetworkInfo
+              : null,
+          // Only drawn while the number is genuinely moving — a cached
+          // directory reports 0.85 with no connectivity whatsoever.
+          fraction: _torPhase == _PhaseState.active && progressIsLive
+              ? switch (_tor) {
+                  tor.TorConnecting(:final progress) => progress,
+                  _ => null,
+                }
+              : null,
+          elapsed: _torPhase == _PhaseState.active ? elapsed : null,
+        ),
+        const Gap(8),
+        _PhaseCard(
+          label: context.loc.recoverbullRecoverBullServer,
+          phase: _serverPhase,
+          elapsed: _serverPhase == _PhaseState.active ? elapsed : null,
+          // Bare "2/3", deliberately unlocalised, like the timer.
+          trailingDetail:
+              _serverPhase == _PhaseState.active && state.keyServerAttempt > 0
+              ? '${state.keyServerAttempt}/${state.keyServerAttempts}'
+              : null,
+        ),
+        const Gap(24),
+        if (_hasFailure)
+          _FailurePanel(
+            message: _failureMessage(context),
+            // A single event: `OnTorInitialization` chains to the server check
+            // itself, and `restart` guarantees a stuck client is replaced rather
+            // than adopted — which is what left a retry waiting on a dead
+            // bootstrap after the network came back.
+            onRetry: () {
+              final bloc = context.read<RecoverBullBloc>();
+              if (_tor is tor.TorReady) {
+                bloc.add(const OnServerCheck());
+              } else {
+                bloc.add(const OnTorInitialization(restart: true));
+              }
+            },
+          )
+        else
+          BBText(
+            elapsed >= _reassureAfter
+                ? context.loc.recoverbullLongestStep
+                : context.loc.recoverbullPleaseWait,
+            textAlign: .center,
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.textMuted,
+            ),
+            maxLines: 3,
+          ),
+      ],
+    );
+  }
+}
+
+class _PhaseCard extends StatelessWidget {
+  final String label;
+  final _PhaseState phase;
+  final String? caption;
+  final double? fraction;
+  final Duration? elapsed;
+
+  /// An extra language-neutral token for the detail line, such as `2/3`.
+  final String? trailingDetail;
+
+  const _PhaseCard({
+    required this.label,
+    required this.phase,
+    this.caption,
+    this.fraction,
+    this.elapsed,
+    this.trailingDetail,
+  });
+
+  Color _color(BuildContext context) => switch (phase) {
+    _PhaseState.done => context.appColors.success,
+    _PhaseState.failed => context.appColors.error,
+    _PhaseState.active || _PhaseState.pending => context.appColors.textMuted,
+  };
+
+  String _statusLabel(BuildContext context) => switch (phase) {
+    _PhaseState.done => context.loc.recoverbullConnected,
+    _PhaseState.failed => context.loc.recoverbullFailed,
+    _PhaseState.active => context.loc.recoverbullConnecting,
+    _PhaseState.pending => context.loc.recoverbullWaiting,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _color(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -160,54 +457,158 @@ class _StatusRow extends StatelessWidget {
         color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: .start,
         children: [
-          Icon(icon, size: 20, color: statusColor),
-          const Gap(12),
-          Expanded(
-            child: BBText(
-              label,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.onSurface,
+          Row(
+            children: [
+              _PhaseIcon(phase: phase, color: color),
+              const Gap(12),
+              Expanded(
+                child: BBText(
+                  label,
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.appColors.onSurface,
+                  ),
+                ),
+              ),
+              BBText(
+                _statusLabel(context),
+                style: context.font.bodyMedium?.copyWith(
+                  color: color,
+                  fontWeight: .w600,
+                ),
+              ),
+            ],
+          ),
+          if (caption != null ||
+              fraction != null ||
+              elapsed != null ||
+              trailingDetail != null) ...[
+            const Gap(8),
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  if (caption != null)
+                    BBText(
+                      caption!,
+                      style: context.font.bodySmall?.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                      maxLines: 2,
+                    ),
+                  if (fraction != null) ...[
+                    const Gap(6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: fraction!.clamp(0.0, 1.0),
+                        minHeight: 4,
+                        backgroundColor: context.appColors.onSurface.withValues(
+                          alpha: 0.1,
+                        ),
+                        valueColor: AlwaysStoppedAnimation<Color>(color),
+                      ),
+                    ),
+                  ],
+                  if (fraction != null ||
+                      elapsed != null ||
+                      trailingDetail != null) ...[
+                    const Gap(6),
+                    BBText(
+                      [
+                        if (fraction != null)
+                          context.loc.torSettingsBootstrapProgress(
+                            (fraction! * 100).round(),
+                          ),
+                        ?trailingDetail,
+                        // A bare timer, deliberately unlocalised: no words to
+                        // translate, and it is the only element that keeps
+                        // moving during the long directory phase.
+                        if (elapsed != null) _formatElapsed(elapsed!),
+                      ].join('  ·  '),
+                      style: context.font.bodySmall?.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-          ),
-          BBText(
-            statusText,
-            style: context.font.bodyMedium?.copyWith(
-              color: statusColor,
-              fontWeight: .w600,
-            ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  String _getStatusText(BuildContext context) {
-    return switch (status) {
-      KeyServerStatus.unknown => context.loc.recoverbullWaiting,
-      KeyServerStatus.connecting => context.loc.recoverbullConnecting,
-      KeyServerStatus.online => context.loc.recoverbullConnected,
-      KeyServerStatus.offline => context.loc.recoverbullFailed,
-    };
+  static String _formatElapsed(Duration d) {
+    final minutes = d.inMinutes;
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
+}
 
-  Color _getStatusColor(BuildContext context) {
-    return switch (status) {
-      KeyServerStatus.online => context.appColors.success,
-      KeyServerStatus.offline => context.appColors.error,
-      KeyServerStatus.connecting ||
-      KeyServerStatus.unknown => context.appColors.textMuted,
-    };
+class _PhaseIcon extends StatelessWidget {
+  final _PhaseState phase;
+  final Color color;
+
+  const _PhaseIcon({required this.phase, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    if (phase == _PhaseState.active) {
+      return SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(color),
+        ),
+      );
+    }
+
+    return Icon(
+      switch (phase) {
+        _PhaseState.done => Icons.check_circle,
+        _PhaseState.failed => Icons.error,
+        _PhaseState.pending => Icons.circle_outlined,
+        _PhaseState.active => Icons.hourglass_empty,
+      },
+      size: 20,
+      color: color,
+    );
   }
+}
 
-  IconData _getIcon() {
-    return switch (status) {
-      KeyServerStatus.online => Icons.check_circle,
-      KeyServerStatus.offline => Icons.error,
-      KeyServerStatus.connecting => Icons.hourglass_empty,
-      KeyServerStatus.unknown => Icons.circle_outlined,
-    };
+class _FailurePanel extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _FailurePanel({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BBText(
+          message,
+          textAlign: .center,
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.error,
+          ),
+          maxLines: 4,
+        ),
+        const Gap(24),
+        BBButton.big(
+          label: context.loc.recoverbullRetry,
+          textStyle: context.font.headlineLarge,
+          bgColor: context.appColors.onSurface,
+          textColor: context.appColors.surface,
+          onPressed: onRetry,
+        ),
+      ],
+    );
   }
 }
