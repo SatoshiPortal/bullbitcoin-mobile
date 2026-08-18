@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class FundExchangeErrorText extends StatelessWidget {
   const FundExchangeErrorText({
@@ -20,10 +18,10 @@ class FundExchangeErrorText extends StatelessWidget {
     final message = error.displayMessage(context.loc);
 
     if (title == null) {
-      return BBText(
+      return BullText(
         message,
-        style: context.font.bodyMedium,
-        color: Theme.of(context).colorScheme.error,
+        style: context.bullText.bodyMedium,
+        color: context.bull.error,
         textAlign: textAlign,
       );
     }
@@ -31,19 +29,19 @@ class FundExchangeErrorText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BBText(
+        BullText(
           title,
-          style: context.font.bodyLarge?.copyWith(
+          style: context.bullText.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.error,
+            color: context.bull.error,
           ),
           textAlign: textAlign,
         ),
         const SizedBox(height: 4),
-        BBText(
+        BullText(
           message,
-          style: context.font.bodyMedium,
-          color: Theme.of(context).colorScheme.error,
+          style: context.bullText.bodyMedium,
+          color: context.bull.error,
           textAlign: textAlign,
         ),
       ],

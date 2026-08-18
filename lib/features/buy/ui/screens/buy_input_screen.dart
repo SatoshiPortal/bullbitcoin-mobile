@@ -3,12 +3,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
@@ -17,7 +13,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 /// Renders whichever error the order creation failed with. Amount limits get
@@ -123,25 +119,17 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
       (BuyBloc bloc) => bloc.state.isPayjoinEnabled,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        // Adding the leading icon button here manually since we are in the first
-        // route of a shellroute and so no back button is provided by default.
-        leading: context.canPop()
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  context.pop();
-                },
-              )
-            : null,
-        title: Text(context.loc.buyInputTitle),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.buyInputTitle,
+        onBack: context.canPop() ? context.pop : null,
       ),
-      body: SafeArea(
+      safeArea: false,
+      child: SafeArea(
         child: BBKeyboardActions(
           disableScroll: true,
           focusNodes: [_amountNode],
-          child: ScrollableColumn(
+          child: BullScrollableColumn(
             crossAxisAlignment: .start,
             children: [
               const Gap(24),
@@ -158,7 +146,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         style: context.font.bodyMedium,
                       ),
                     ),
-                    BBSwitch(
+                    BullSwitch(
                       value: isPayjoinEnabled,
                       onChanged: isCreatingOrder
                           ? null
@@ -181,7 +169,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                   const Gap(16),
                   if (isStarted) ...[
                     if (needsKycUpgrade) ...[
-                      InfoCard(
+                      BullInfoCard(
                         title: context.loc.buyInputKycPending,
                         description: context.loc.buyInputKycMessage,
                         bgColor: context.appColors.tertiary.withValues(
@@ -190,18 +178,16 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BBButton.big(
+                      BullButton.primary(
                         label: context.loc.buyInputCompleteKyc,
                         onPressed: () {
                           context.pushReplacementNamed(
                             ExchangeRoute.exchangeKyc.name,
                           );
                         },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
                       ),
                     ] else if (showInsufficientBalanceError) ...[
-                      InfoCard(
+                      BullInfoCard(
                         title: context.loc.buyInputInsufficientBalance,
                         description:
                             context.loc.buyInputInsufficientBalanceMessage,
@@ -211,18 +197,16 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BBButton.big(
+                      BullButton.primary(
                         label: context.loc.buyInputFundAccount,
                         onPressed: () {
                           context.pushReplacementNamed(
                             FundExchangeRoute.fundExchange.name,
                           );
                         },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
                       ),
                     ] else
-                      BBButton.big(
+                      BullButton.primary(
                         label: context.loc.buyInputContinue,
                         disabled: !canCreateOrder || isCreatingOrder,
                         onPressed: () {
@@ -230,8 +214,6 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                             const BuyEvent.createOrder(),
                           );
                         },
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
                       ),
                   ] else ...[
                     const LoadingLineContent(

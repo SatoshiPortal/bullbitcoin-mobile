@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class FundExchangeMethodListTile extends StatelessWidget {
   final String title;
@@ -16,18 +14,22 @@ class FundExchangeMethodListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListTile(
-      tileColor: context.appColors.transparent,
-      shape: const RoundedRectangleBorder(),
-      title: BBText(title, style: theme.textTheme.bodyLarge),
-      subtitle: BBText(
-        subtitle,
-        style: theme.textTheme.labelMedium,
-        color: context.appColors.outline,
-      ),
+    return BullBorderedTile(
       onTap: onTap,
-      trailing: const Icon(Icons.arrow_forward),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BullText(title, style: context.bullText.bodyLarge),
+                BullText(subtitle, style: context.bullText.labelMedium),
+              ],
+            ),
+          ),
+          const BullIcon(BullIcons.chevronRight),
+        ],
+      ),
     );
   }
 }

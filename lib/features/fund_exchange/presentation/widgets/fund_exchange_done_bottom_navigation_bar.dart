@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class FundExchangeDoneBottomNavigationBar extends StatelessWidget {
@@ -11,12 +9,11 @@ class FundExchangeDoneBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      top: false,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: BBButton.big(
+        padding: const EdgeInsets.all(BullSpacing.md),
+        child: BullButton.secondary(
           label: context.loc.fundExchangeDoneButton,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
           onPressed: () {
             context.goNamed(ExchangeRoute.exchangeHome.name);
           },

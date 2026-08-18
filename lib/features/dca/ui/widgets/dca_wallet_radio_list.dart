@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class DcaWalletRadioList extends StatelessWidget {
   const DcaWalletRadioList({
@@ -27,7 +27,7 @@ class DcaWalletRadioList extends StatelessWidget {
       crossAxisAlignment: .start,
       mainAxisSize: .min,
       children: [
-        Text(
+        BullText(
           context.loc.dcaSelectWalletTypeLabel,
           style: context.font.bodyMedium,
         ),
@@ -49,14 +49,14 @@ class DcaWalletRadioList extends StatelessWidget {
                       DcaNetwork.lightning =>
                         context.loc.dcaWalletTypeLightning,
                       DcaNetwork.liquid => context.loc.dcaWalletTypeLiquid,
-                    }, style: context.font.headlineSmall),
+                    }, style: context.bullText.headlineSmall),
                     subtitle: Text(switch (walletType) {
                       DcaNetwork.bitcoin =>
                         context.loc.dcaWalletBitcoinSubtitle,
                       DcaNetwork.lightning =>
                         context.loc.dcaWalletLightningSubtitle,
                       DcaNetwork.liquid => context.loc.dcaWalletLiquidSubtitle,
-                    }, style: context.font.bodySmall),
+                    }, style: context.bullText.bodySmall),
                     value: walletType,
                   ),
                   const Gap(16),

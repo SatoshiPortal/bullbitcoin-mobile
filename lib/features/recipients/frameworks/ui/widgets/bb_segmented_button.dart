@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 // TODO: This should be moved to the shared widgets package and replace the
 // BBSegmentFull widget there, which is unneccessarily Stateful which causes
@@ -71,6 +72,56 @@ class BBSegmentedButton extends StatelessWidget {
                         ),
                 ),
             },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BullChoiceTile extends StatelessWidget {
+  const BullChoiceTile({
+    super.key,
+    required this.title,
+    required this.selected,
+    required this.onTap,
+    this.enabled = true,
+  });
+
+  final Widget title;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    return Semantics(
+      button: true,
+      selected: selected,
+      enabled: enabled,
+      onTap: enabled ? onTap : null,
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(8),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(color: colors.outlineVariant),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(child: title),
+                Icon(
+                  selected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  color: selected ? colors.primary : colors.onSurfaceVariant,
+                ),
+              ],
+            ),
           ),
         ),
       ),

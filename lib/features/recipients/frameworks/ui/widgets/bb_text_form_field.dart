@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class BBTextFormField extends StatelessWidget {
   const BBTextFormField({
@@ -46,98 +47,69 @@ class BBTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDisabled = disabled ?? false;
 
-    return Column(
-      crossAxisAlignment: .start,
-      mainAxisSize: .min,
-      children: [
-        if (labelText != null)
-          Text(
-            labelText!,
-            style:
-                labelStyle ??
-                context.font.bodyLarge?.copyWith(
-                  color: isDisabled
-                      ? context.appColors.outline
-                      : context.appColors.secondary,
-                  fontWeight: .w500,
-                ),
-            textAlign: .left,
+    return FormField<String>(
+      initialValue: controller?.text,
+      validator: validator,
+      enabled: !isDisabled,
+      builder: (field) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (labelText != null)
+            Text(
+              labelText!,
+              style:
+                  labelStyle ??
+                  context.font.bodyLarge?.copyWith(
+                    color: isDisabled
+                        ? context.appColors.outline
+                        : context.appColors.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+          const SizedBox(height: 8),
+          BullInputText(
+            controller: controller,
+            focusNode: focusNode,
+            value: controller?.text ?? '',
+            disabled: isDisabled,
+            hint: hintText,
+            fixedPrefix: prefixText,
+            rightIcon: suffixText == null ? suffix : Text(suffixText!),
+            style: style ?? context.font.bodyLarge,
+            onDone: onFieldSubmitted,
+            onChanged: (value) {
+              var nextValue = value;
+              if (inputFormatters != null) {
+                final oldValue = TextEditingValue(text: controller?.text ?? '');
+                var nextEditingValue = TextEditingValue(text: value);
+                for (final formatter in inputFormatters!) {
+                  nextEditingValue = formatter.formatEditUpdate(
+                    oldValue,
+                    nextEditingValue,
+                  );
+                }
+                nextValue = nextEditingValue.text;
+                if (controller != null && controller!.text != nextValue) {
+                  controller!.value = nextEditingValue;
+                }
+              }
+              field.didChange(nextValue);
+              onChanged?.call(nextValue);
+            },
           ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          focusNode: focusNode,
-          autofocus: autofocus ?? false,
-          textInputAction: textInputAction,
-          inputFormatters: inputFormatters,
-          style: (style ?? context.font.bodyLarge)?.copyWith(
-            color: isDisabled ? context.appColors.outline : null,
-          ),
-          enabled: !isDisabled,
-          decoration: InputDecoration(
-            fillColor: isDisabled
-                ? context.appColors.surfaceContainerHighest
-                : context.appColors.onSecondary,
-            filled: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.appColors.secondaryFixedDim,
+          if (field.hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                field.errorText!,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: context.appColors.error),
               ),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.appColors.secondaryFixedDim,
-              ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.appColors.secondaryFixedDim.withValues(
-                  alpha: 0.5,
-                ),
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-            hintText: hintText,
-            hintStyle: context.font.bodyMedium?.copyWith(
-              color: context.appColors.outline,
-            ),
-            prefixIcon: prefixText != null
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      prefixText!,
-                      style: (style ?? context.font.bodyLarge)?.copyWith(
-                        color: isDisabled ? context.appColors.outline : null,
-                      ),
-                    ),
-                  )
-                : prefix,
-            prefixIconConstraints: prefixText != null
-                ? const BoxConstraints(minWidth: 0, minHeight: 0)
-                : null,
-            suffixIcon: suffixText != null
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: Text(
-                      suffixText!,
-                      style: (style ?? context.font.bodyLarge)?.copyWith(
-                        color: isDisabled ? context.appColors.outline : null,
-                      ),
-                    ),
-                  )
-                : suffix,
-            suffixIconConstraints: suffixText != null
-                ? const BoxConstraints(minWidth: 0, minHeight: 0)
-                : null,
-          ),
-          onFieldSubmitted: onFieldSubmitted,
-          validator: validator,
-          onChanged: onChanged,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

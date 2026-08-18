@@ -1,17 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class WithdrawConfirmationScreen extends StatelessWidget {
   const WithdrawConfirmationScreen({super.key});
@@ -30,18 +27,16 @@ class WithdrawConfirmationScreen extends StatelessWidget {
           : null,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          Assets.logos.bbLogoSmall.path,
-          height: 32,
-          width: 32,
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.withdrawConfirmTitle,
+        onBack: context.pop,
       ),
-      body: SafeArea(
+      safeArea: false,
+      child: SafeArea(
         child: Column(
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: context.select<WithdrawBloc, bool>(
                 (bloc) =>
@@ -53,7 +48,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
               foregroundColor: context.appColors.primary,
             ),
             Expanded(
-              child: ScrollableColumn(
+              child: BullScrollableColumn(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 children: [
                   const Gap(24.0),
@@ -250,12 +245,10 @@ class _ConfirmButton extends StatelessWidget {
           const Gap(16),
         ],
         const Gap(16),
-        BBButton.big(
+        BullButton.primary(
           label: context.loc.withdrawConfirmButton,
           disabled: isConfirmingWithdrawal,
           onPressed: onConfirmPressed,
-          bgColor: context.appColors.onSurface,
-          textColor: context.appColors.surface,
         ),
       ],
     );

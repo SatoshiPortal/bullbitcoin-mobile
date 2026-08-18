@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -177,6 +177,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: WebViewWidget(controller: _controller));
+    return BullPage(
+      padding: EdgeInsets.zero,
+      topBar: null,
+      child: WebViewWidget(controller: _controller),
+    );
   }
 }

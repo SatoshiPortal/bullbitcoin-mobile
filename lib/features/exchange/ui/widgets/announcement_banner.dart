@@ -1,11 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class AnnouncementBanner extends StatelessWidget {
   const AnnouncementBanner({super.key});
@@ -45,14 +42,10 @@ class _AnnouncementItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? context.appColors.surface
-              : context.appColors.secondary,
+          color: isDarkMode ? context.bull.surface : context.bull.secondary,
           borderRadius: BorderRadius.circular(2),
           border: isDarkMode
-              ? Border.all(
-                  color: context.appColors.outline.withValues(alpha: 0.3),
-                )
+              ? Border.all(color: context.bull.outline.withValues(alpha: 0.3))
               : null,
         ),
         child: Row(
@@ -60,8 +53,8 @@ class _AnnouncementItem extends StatelessWidget {
             Icon(
               Icons.info_outline,
               color: isDarkMode
-                  ? context.appColors.onSurface
-                  : context.appColors.onSecondary,
+                  ? context.bull.onSurface
+                  : context.bull.onSecondary,
               size: 32,
             ),
             const Gap(16),
@@ -69,24 +62,24 @@ class _AnnouncementItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(
+                  BullText(
                     announcement.title,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullText.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                     color: isDarkMode
-                        ? context.appColors.onSurface
-                        : context.appColors.onSecondary,
+                        ? context.bull.onSurface
+                        : context.bull.onSecondary,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     announcement.description,
-                    style: context.font.bodySmall,
+                    style: context.bullText.bodySmall,
                     color: isDarkMode
-                        ? context.appColors.onSurface.withValues(alpha: 0.7)
-                        : context.appColors.onSecondary,
+                        ? context.bull.onSurface.withValues(alpha: 0.7)
+                        : context.bull.onSecondary,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -106,7 +99,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
   final Announcement announcement;
 
   static Future<void> show(BuildContext context, Announcement announcement) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: _AnnouncementBottomSheet(announcement: announcement),
     );
@@ -119,7 +112,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.surface,
+        color: context.bull.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: SafeArea(
@@ -134,7 +127,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: context.appColors.outline.withValues(alpha: 0.3),
+                    color: context.bull.outline.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -147,14 +140,14 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.info_outline,
-                    color: context.appColors.onSurface,
+                    color: context.bull.onSurface,
                     size: 24,
                   ),
                   const Gap(12),
                   Expanded(
-                    child: BBText(
+                    child: BullText(
                       announcement.title,
-                      style: context.font.titleLarge?.copyWith(
+                      style: context.bullText.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -164,7 +157,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                     onTap: () => Navigator.of(context).pop(),
                     child: Icon(
                       Icons.close,
-                      color: context.appColors.onSurface,
+                      color: context.bull.onSurface,
                       size: 24,
                     ),
                   ),
@@ -175,10 +168,10 @@ class _AnnouncementBottomSheet extends StatelessWidget {
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: BBText(
+                child: BullText(
                   announcement.description,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface.withValues(alpha: 0.8),
+                  style: context.bullText.bodyMedium?.copyWith(
+                    color: context.bull.onSurface.withValues(alpha: 0.8),
                     height: 1.5,
                   ),
                 ),

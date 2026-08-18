@@ -1,11 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ExchangeSupportLoginScreen extends StatelessWidget {
@@ -15,16 +12,13 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        title: BBText(
-          context.loc.exchangeSupportChatTitle,
-          style: context.font.headlineMedium,
-        ),
-        backgroundColor: context.appColors.background,
+    return BullPage(
+      padding: EdgeInsets.zero,
+      topBar: BullTopBar(
+        title: context.loc.exchangeSupportChatTitle,
+        onBack: context.pop,
       ),
-      body: Column(
+      child: Column(
         children: [
           // Chat area with overlay
           Expanded(
@@ -42,18 +36,18 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         height: 48,
                         color:
                             Color.lerp(
-                              context.appColors.primary,
-                              context.appColors.secondaryFixed,
+                              context.bull.primary,
+                              context.bull.secondaryFixed,
                               0.2,
                             ) ??
-                            context.appColors.primary,
+                            context.bull.primary,
                       ),
                       const Gap(12),
                       _FakeMessageBubble(
                         isUser: true,
                         widthFraction: 0.55,
                         height: 36,
-                        color: context.appColors.secondary,
+                        color: context.bull.secondary,
                       ),
                       const Gap(12),
                       _FakeMessageBubble(
@@ -62,37 +56,35 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         height: 64,
                         color:
                             Color.lerp(
-                              context.appColors.primary,
-                              context.appColors.secondaryFixed,
+                              context.bull.primary,
+                              context.bull.secondaryFixed,
                               0.2,
                             ) ??
-                            context.appColors.primary,
+                            context.bull.primary,
                       ),
                       const Gap(12),
                       _FakeMessageBubble(
                         isUser: true,
                         widthFraction: 0.45,
                         height: 36,
-                        color: context.appColors.secondary,
+                        color: context.bull.secondary,
                       ),
                     ],
                   ),
                 ),
                 // Semi-transparent overlay with login card
                 Container(
-                  color: context.appColors.onSurface.withValues(alpha: 0.55),
+                  color: context.bull.onSurface.withValues(alpha: 0.55),
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32),
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: context.appColors.surfaceContainer,
+                          color: context.bull.surfaceContainer,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: context.appColors.outline.withValues(
-                              alpha: 0.3,
-                            ),
+                            color: context.bull.outline.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Column(
@@ -101,20 +93,20 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                             Icon(
                               Icons.chat_bubble_outline,
                               size: 48,
-                              color: context.appColors.primary,
+                              color: context.bull.primary,
                             ),
                             const Gap(16),
-                            BBText(
+                            BullText(
                               context.loc.exchangeSupportLoginChatRequired,
-                              style: context.font.bodyLarge?.copyWith(
-                                color: context.appColors.onSurface,
+                              style: context.bullText.bodyLarge?.copyWith(
+                                color: context.bull.onSurface,
                               ),
                               textAlign: TextAlign.center,
                             ),
                             const Gap(24),
                             SizedBox(
                               width: double.infinity,
-                              child: BBButton.big(
+                              child: BullButton.big(
                                 label: context.loc.exchangeLoginButton,
                                 onPressed: () {
                                   context.goNamed(
@@ -123,8 +115,8 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                                     extra: draft,
                                   );
                                 },
-                                bgColor: context.appColors.primary,
-                                textColor: context.appColors.onPrimary,
+                                bgColor: context.bull.primary,
+                                textColor: context.bull.onPrimary,
                               ),
                             ),
                           ],
@@ -187,11 +179,9 @@ class _DisabledMessageInput extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 24),
         decoration: BoxDecoration(
-          color: context.appColors.background,
+          color: context.bull.background,
           border: Border(
-            top: BorderSide(
-              color: context.appColors.outline.withValues(alpha: 0.2),
-            ),
+            top: BorderSide(color: context.bull.outline.withValues(alpha: 0.2)),
           ),
         ),
         child: Row(
@@ -199,13 +189,13 @@ class _DisabledMessageInput extends StatelessWidget {
             SizedBox(
               width: 52,
               height: 52,
-              child: BBButton.big(
+              child: BullButton.big(
                 label: '',
                 iconData: Icons.attach_file,
                 disabled: true,
                 onPressed: () {},
-                bgColor: context.appColors.surfaceContainer,
-                textColor: context.appColors.onSurface,
+                bgColor: context.bull.surfaceContainer,
+                textColor: context.bull.onSurface,
                 width: 52,
                 height: 52,
               ),
@@ -214,13 +204,13 @@ class _DisabledMessageInput extends StatelessWidget {
             SizedBox(
               width: 52,
               height: 52,
-              child: BBButton.big(
+              child: BullButton.big(
                 label: '',
                 iconData: Icons.description,
                 disabled: true,
                 onPressed: () {},
-                bgColor: context.appColors.surfaceContainer,
-                textColor: context.appColors.onSurface,
+                bgColor: context.bull.surfaceContainer,
+                textColor: context.bull.onSurface,
                 width: 52,
                 height: 52,
               ),
@@ -240,19 +230,19 @@ class _DisabledMessageInput extends StatelessWidget {
             SizedBox(
               width: 52,
               height: 52,
-              child: BBButton.big(
+              child: BullButton.big(
                 label: '',
                 iconData: Icons.send,
                 disabled: true,
                 onPressed: () {},
                 bgColor:
                     Color.lerp(
-                      context.appColors.primary,
-                      context.appColors.secondaryFixed,
+                      context.bull.primary,
+                      context.bull.secondaryFixed,
                       0.2,
                     ) ??
-                    context.appColors.primary,
-                textColor: context.appColors.onPrimary,
+                    context.bull.primary,
+                textColor: context.bull.onPrimary,
                 width: 52,
                 height: 52,
               ),

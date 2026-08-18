@@ -1,14 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class SellAmountInputBottomButtons extends StatefulWidget {
@@ -85,25 +83,23 @@ class _SellAmountInputBottomButtonsState
     } else if (_needsKycUpgrade) {
       return Column(
         children: [
-          InfoCard(
+          BullInfoCard(
             title: context.loc.sellKycPendingTitle,
             description: context.loc.sellKycPendingDescription,
             bgColor: context.appColors.tertiary.withValues(alpha: 0.1),
             tagColor: context.appColors.onTertiary,
           ),
           const Gap(16.0),
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.sellCompleteKYC,
             onPressed: () {
               context.pushReplacementNamed(ExchangeRoute.exchangeKyc.name);
             },
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
           ),
         ],
       );
     } else {
-      return BBButton.big(
+      return BullButton.primary(
         label: context.loc.sellSendPaymentContinue,
         onPressed: () {
           if (widget.formKey.currentState!.validate()) {
@@ -126,8 +122,6 @@ class _SellAmountInputBottomButtonsState
             );
           }
         },
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
       );
     }
   }

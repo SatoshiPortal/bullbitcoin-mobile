@@ -1,13 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ExchangeLandingScreen extends StatelessWidget {
@@ -18,147 +14,73 @@ class ExchangeLandingScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return; // Don't allow back navigation
-
-        // Navigate to the wallet home screen when the user wants to exit the
-        // exchange landing screen.
-        context.goNamed(WalletRoute.walletHome.name);
+        if (!didPop) context.goNamed(WalletRoute.walletHome.name);
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(
-          leading: BackButton(
-            color: context.appColors.onSurface,
-            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+      child: BullPage(
+        padding: EdgeInsets.zero,
+        topBar: BullTopBar(
+          title: context.loc.exchangeBrandName,
+          onBack: () => context.goNamed(WalletRoute.walletHome.name),
+        ),
+        bottomBar: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: SafeArea(
+            top: false,
+            child: BullButton.primary(
+              label: context.loc.exchangeLoginButton,
+              onPressed: () => context.goNamed(ExchangeRoute.exchangeAuth.name),
+            ),
           ),
         ),
-        extendBodyBehindAppBar: true,
-        body: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(BullSpacing.md),
+          child: Column(
+            children: [
+              const Gap(BullSpacing.lg),
+              Image.asset(
+                Assets.logos.bbLogoSmall.path,
+                width: 120,
+                height: 120,
+              ),
+              const Gap(BullSpacing.md),
+              BullText(
+                context.loc.exchangeBrandName,
+                style: context.bullText.displayLarge,
+                color: context.bull.primary,
+              ),
+              const Gap(BullSpacing.sm),
+              BullText(
+                context.loc.exchangeLandingConnectAccount,
+                style: context.bullText.headlineSmall,
+              ),
+              const Gap(BullSpacing.lg),
+              BullBorderedTile(
+                padding: const EdgeInsets.all(BullSpacing.lg),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Gap(32),
-                    Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            Assets.logos.bbLogoSmall.path,
-                            width: 120,
-                            height: 120,
-                          ),
-                          const Gap(16),
-                          BBText(
-                            context.loc.exchangeBrandName,
-                            style: AppFonts.textTitleTheme.textStyle.copyWith(
-                              color: context.appColors.primary,
-                              fontSize: 64,
-                            ),
-                          ),
-                          const Gap(12),
-                          BBText(
-                            context.loc.exchangeLandingConnectAccount,
-                            style: context.font.headlineSmall?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Gap(32),
-                    Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: context.appColors.surfaceContainer,
-                        border: Border.all(
-                          color: context.appColors.outline,
-                          width: 0,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          BBText(
-                            context.loc.exchangeFeatureSelfCustody,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                          const Gap(12),
-                          BBText(
-                            context.loc.exchangeFeatureDcaOrders,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                          const Gap(12),
-                          BBText(
-                            context.loc.exchangeFeatureSellBitcoin,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                          const Gap(12),
-                          BBText(
-                            context.loc.exchangeFeatureBankTransfers,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                          const Gap(12),
-                          BBText(
-                            context.loc.exchangeFeatureCustomerSupport,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                          const Gap(12),
-                          BBText(
-                            context.loc.exchangeFeatureUnifiedHistory,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Gap(16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: context.appColors.warningContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: BBText(
-                        context.loc.exchangeLandingDisclaimerLegal,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.onSurface,
-                        ),
-                      ),
-                    ),
+                    for (final text in [
+                      context.loc.exchangeFeatureSelfCustody,
+                      context.loc.exchangeFeatureDcaOrders,
+                      context.loc.exchangeFeatureSellBitcoin,
+                      context.loc.exchangeFeatureBankTransfers,
+                      context.loc.exchangeFeatureCustomerSupport,
+                      context.loc.exchangeFeatureUnifiedHistory,
+                    ]) ...[
+                      BullText(text, style: context.bullText.bodyLarge),
+                      const Gap(BullSpacing.sm),
+                    ],
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: BBButton.big(
-                  label: context.loc.exchangeLoginButton,
-                  onPressed: () {
-                    context.goNamed(ExchangeRoute.exchangeAuth.name);
-                  },
-                  bgColor: context.appColors.primary,
-                  textColor: context.appColors.onPrimary,
-                ),
+              const Gap(BullSpacing.sm),
+              BullInfoCard(
+                description: context.loc.exchangeLandingDisclaimerLegal,
+                tagColor: context.bull.warning,
+                bgColor: context.bull.warningContainer,
               ),
-            ),
-            const Gap(16),
-          ],
+            ],
+          ),
         ),
       ),
     );

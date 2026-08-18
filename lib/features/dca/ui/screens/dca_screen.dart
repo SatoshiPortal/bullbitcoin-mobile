@@ -1,10 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_amount_input_fields.dart';
@@ -12,7 +9,7 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart'
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {
@@ -55,21 +52,25 @@ class _DcaScreenState extends State<DcaScreen> {
       },
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          appBar: AppBar(title: Text(context.loc.dcaSetupTitle)),
-          body: SafeArea(
+        child: BullPage(
+          topBar: BullTopBar(
+            title: context.loc.dcaSetupTitle,
+            onBack: context.pop,
+          ),
+          safeArea: false,
+          child: SafeArea(
             child: BBKeyboardActions(
               disableScroll: true,
               focusNodes: [_amountNode],
               child: Form(
                 key: _formKey,
-                child: ScrollableColumn(
+                child: BullScrollableColumn(
                   crossAxisAlignment: .start,
                   children: [
                     const Gap(24),
                     if (!_hasFunds) ...[
                       const Spacer(),
-                      InfoCard(
+                      BullInfoCard(
                         title: context.loc.dcaSetupInsufficientBalance,
                         description:
                             context.loc.dcaSetupInsufficientBalanceMessage,
@@ -79,15 +80,13 @@ class _DcaScreenState extends State<DcaScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BBButton.big(
+                      BullButton.primary(
                         label: context.loc.dcaSetupFundAccount,
                         onPressed: () {
                           context.pushReplacementNamed(
                             FundExchangeRoute.fundExchange.name,
                           );
                         },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
                       ),
                     ] else ...[
                       Padding(
@@ -129,7 +128,7 @@ class _DcaScreenState extends State<DcaScreen> {
                         },
                       ),
                       const Spacer(),
-                      BBButton.big(
+                      BullButton.primary(
                         label: context.loc.dcaSetupContinue,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
@@ -142,8 +141,6 @@ class _DcaScreenState extends State<DcaScreen> {
                             );
                           }
                         },
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
                       ),
                     ],
                     const Gap(16.0),

@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
@@ -32,15 +31,15 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
       children: [
         Text(
           context.loc.exchangeCurrencyDropdownTitle,
-          style: context.font.bodyMedium,
+          style: context.bullText.bodyMedium,
         ),
         const Gap(4.0),
         SizedBox(
           height: 56,
           child: Material(
             elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
+            shadowColor: context.bull.onSurface.withValues(alpha: 0.7),
+            color: context.bull.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: isLoading
@@ -51,10 +50,10 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                       ),
-                      dropdownColor: context.appColors.surface,
+                      dropdownColor: context.bull.surface,
                       icon: Icon(
                         Icons.keyboard_arrow_down,
-                        color: context.appColors.onSurface,
+                        color: context.bull.onSurface,
                       ),
                       items: currencies.map((currency) {
                         final balance = balances
@@ -64,7 +63,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                           value: currency.code,
                           child: Text(
                             '${currency.symbol} ${currency.code} ${balance != null ? '- ${FormatAmount.fiat(balance.amount, currency.code, simpleFormat: true)}' : ''}',
-                            style: context.font.headlineSmall,
+                            style: context.bullText.headlineSmall,
                           ),
                         );
                       }).toList(),

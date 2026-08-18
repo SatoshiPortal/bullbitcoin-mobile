@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class DcaFrequencyRadioList extends StatelessWidget {
   const DcaFrequencyRadioList({
@@ -27,7 +27,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
       crossAxisAlignment: .start,
       mainAxisSize: .min,
       children: [
-        Text(
+        BullText(
           context.loc.dcaSelectFrequencyLabel,
           style: context.font.bodyMedium,
         ),
@@ -44,7 +44,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(color: borderColor),
                     ),
-                    title: Text(switch (frequency) {
+                    title: BullText(switch (frequency) {
                       DcaBuyFrequency.hourly =>
                         context.loc.dcaConfirmFrequencyHourly,
                       DcaBuyFrequency.daily =>
@@ -53,7 +53,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
                         context.loc.dcaConfirmFrequencyWeekly,
                       DcaBuyFrequency.monthly =>
                         context.loc.dcaConfirmFrequencyMonthly,
-                    }, style: context.font.headlineSmall),
+                    }, style: context.bullText.headlineSmall),
                     value: frequency,
                   ),
                   const Gap(16),
@@ -64,7 +64,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
         ),
         if (hasError) ...[
           const Gap(4),
-          Text(
+          BullText(
             errorText!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.error,

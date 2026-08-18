@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_detail.dart';
@@ -7,7 +6,8 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class FundExchangeArsBankTransferScreen extends StatelessWidget {
   const FundExchangeArsBankTransferScreen({super.key});
@@ -22,49 +22,48 @@ class FundExchangeArsBankTransferScreen extends StatelessWidget {
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.fundExchangeTitle),
-        scrolledUnderElevation: 0.0,
+    return BullPage(
+      padding: EdgeInsets.zero,
+      topBar: BullTopBar(
+        title: context.loc.fundExchangeTitle,
+        onBack: context.pop,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .start,
-            children: [
-              BBText(
-                context.loc.fundExchangeArsBankTransferTitle,
-                style: theme.textTheme.displaySmall,
-              ),
-              const Gap(16.0),
-              BBText(
-                context.loc.fundExchangeArsBankTransferDescription,
-                style: theme.textTheme.headlineSmall,
+      bottomBar: const FundExchangeDoneBottomNavigationBar(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: .center,
+          crossAxisAlignment: .start,
+          children: [
+            BullText(
+              context.loc.fundExchangeArsBankTransferTitle,
+              style: theme.textTheme.displaySmall,
+            ),
+            const Gap(16.0),
+            BullText(
+              context.loc.fundExchangeArsBankTransferDescription,
+              style: theme.textTheme.headlineSmall,
+            ),
+            const Gap(24.0),
+            if (failedToLoadFundingDetails ||
+                details is! ArsBankTransferFundingDetails?) ...[
+              const FundExchangeDetailsErrorCard(),
+              const Gap(24.0),
+            ] else ...[
+              FundExchangeDetail(
+                label: context.loc.fundExchangeLabelRecipientNameArs,
+                value: details?.beneficiaryName,
               ),
               const Gap(24.0),
-              if (failedToLoadFundingDetails ||
-                  details is! ArsBankTransferFundingDetails?) ...[
-                const FundExchangeDetailsErrorCard(),
-                const Gap(24.0),
-              ] else ...[
-                FundExchangeDetail(
-                  label: context.loc.fundExchangeLabelRecipientNameArs,
-                  value: details?.beneficiaryName,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: context.loc.fundExchangeLabelCvu,
-                  value: details?.cvu,
-                ),
-                const Gap(24.0),
-              ],
+              FundExchangeDetail(
+                label: context.loc.fundExchangeLabelCvu,
+                value: details?.cvu,
+              ),
+              const Gap(24.0),
             ],
-          ),
+          ],
         ),
       ),
-      bottomNavigationBar: const FundExchangeDoneBottomNavigationBar(),
     );
   }
 }

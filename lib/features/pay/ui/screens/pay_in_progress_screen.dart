@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
@@ -10,7 +9,7 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -118,20 +117,13 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
 
           context.goNamed(ExchangeRoute.exchangeHome.name);
         },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(context.loc.payTitle),
-            automaticallyImplyLeading: false,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  context.goNamed(ExchangeRoute.exchangeHome.name);
-                },
-              ),
-            ],
+        child: BullPage(
+          topBar: BullTopBar(
+            title: context.loc.payTitle,
+            onAction: () => context.goNamed(ExchangeRoute.exchangeHome.name),
           ),
-          body: SafeArea(
+          safeArea: false,
+          child: SafeArea(
             child: Center(
               child: Column(
                 mainAxisAlignment: .center,
@@ -162,14 +154,14 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
               ),
             ),
           ),
-          bottomNavigationBar: SafeArea(
+          bottomBar: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: .min,
                 children: [
                   if (order != null)
-                    BBButton.big(
+                    BullButton.primary(
                       label: context.loc.payViewDetails,
                       onPressed: () {
                         context.pushNamed(
@@ -177,8 +169,6 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                           pathParameters: {'orderId': order.orderId},
                         );
                       },
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
                     ),
                 ],
               ),

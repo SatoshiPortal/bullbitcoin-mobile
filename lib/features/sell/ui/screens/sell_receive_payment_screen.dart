@@ -4,21 +4,19 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
@@ -41,25 +39,18 @@ class SellReceivePaymentScreen extends StatelessWidget {
           : '',
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: '',
-          bullLogo: true,
-          onBack: () {
-            Navigator.of(context).pop();
-          },
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sellPleasePayInvoice,
+        onBack: context.pop,
       ),
-      body: SingleChildScrollView(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: .start,
           children: [
             Center(
-              child: BBText(
+              child: BullText(
                 context.loc.sellPleasePayInvoice,
                 style: context.font.headlineMedium,
                 color: context.appColors.secondary,
@@ -69,7 +60,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: .center,
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.sellPriceWillRefreshIn,
                     style: context.font.bodyMedium,
                     color: context.appColors.outline,
@@ -175,7 +166,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: BBButton.big(
+                  child: BullButton.secondary(
                     label: context.loc.sellCopyInvoice,
                     onPressed: () {
                       if (bip21InvoiceData.isNotEmpty) {
@@ -185,20 +176,12 @@ class SellReceivePaymentScreen extends StatelessWidget {
                         SnackBarUtils.showCopiedSnackBar(context);
                       }
                     },
-                    bgColor: context.appColors.transparent,
-                    textColor: context.appColors.secondary,
-                    outlined: true,
-                    borderColor: context.appColors.secondary,
                   ),
                 ),
                 const Gap(16),
                 Expanded(
-                  child: BBButton.big(
+                  child: BullButton.secondary(
                     label: context.loc.sellShowQrCode,
-                    bgColor: context.appColors.transparent,
-                    textColor: context.appColors.secondary,
-                    outlined: true,
-                    borderColor: context.appColors.secondary,
                     onPressed: () {
                       SellQrBottomSheet.show(context, bip21InvoiceData);
                     },
@@ -225,7 +208,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .start,
         children: [
-          BBText(
+          BullText(
             label,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -237,7 +220,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
               mainAxisAlignment: .end,
               children: [
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     value,
                     textAlign: .end,
                     maxLines: 2,

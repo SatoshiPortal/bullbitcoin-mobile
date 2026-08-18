@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class RecipientsListTab extends StatefulWidget {
   const RecipientsListTab({this.hookError, super.key});
@@ -154,7 +153,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             );
           },
         ),
-        BBButton.big(
+        BullButton.primary(
           label: context.loc.recipientsContinue,
           disabled: _selectedRecipient == null,
           onPressed: () {
@@ -162,8 +161,6 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               RecipientsEvent.selected(_selectedRecipient!),
             );
           },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
       ],
     );

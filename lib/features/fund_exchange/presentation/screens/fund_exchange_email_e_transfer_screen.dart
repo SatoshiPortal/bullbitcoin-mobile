@@ -1,13 +1,13 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_detail.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class FundExchangeEmailETransferScreen extends StatelessWidget {
   const FundExchangeEmailETransferScreen({super.key});
@@ -24,58 +24,57 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
     final failedToLoadFundingDetails = context.select(
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.fundExchangeTitle),
-        scrolledUnderElevation: 0.0,
+    return BullPage(
+      padding: EdgeInsets.zero,
+      topBar: BullTopBar(
+        title: context.loc.fundExchangeTitle,
+        onBack: context.pop,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .start,
-            children: [
-              BBText(
-                context.loc.fundExchangeETransferTitle,
-                style: theme.textTheme.displaySmall,
-              ),
-              const Gap(16.0),
-              BBText(
-                context.loc.fundExchangeETransferDescription,
-                style: theme.textTheme.headlineSmall,
+      bottomBar: const FundExchangeDoneBottomNavigationBar(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: .center,
+          crossAxisAlignment: .start,
+          children: [
+            BullText(
+              context.loc.fundExchangeETransferTitle,
+              style: theme.textTheme.displaySmall,
+            ),
+            const Gap(16.0),
+            BullText(
+              context.loc.fundExchangeETransferDescription,
+              style: theme.textTheme.headlineSmall,
+            ),
+            const Gap(24.0),
+            if (failedToLoadFundingDetails ||
+                details is! ETransferFundingDetails?) ...[
+              const FundExchangeDetailsErrorCard(),
+              const Gap(24.0),
+            ] else ...[
+              FundExchangeDetail(
+                label: context.loc.fundExchangeETransferLabelBeneficiaryName,
+                value: details?.beneficiaryName,
               ),
               const Gap(24.0),
-              if (failedToLoadFundingDetails ||
-                  details is! ETransferFundingDetails?) ...[
-                const FundExchangeDetailsErrorCard(),
-                const Gap(24.0),
-              ] else ...[
-                FundExchangeDetail(
-                  label: context.loc.fundExchangeETransferLabelBeneficiaryName,
-                  value: details?.beneficiaryName,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: context.loc.fundExchangeETransferLabelEmail,
-                  value: details?.beneficiaryEmail,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: context.loc.fundExchangeETransferLabelSecretQuestion,
-                  value: details?.secretQuestion,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: context.loc.fundExchangeETransferLabelSecretAnswer,
-                  value: userSummary?.userNumber.toString() ?? '',
-                ),
-              ],
+              FundExchangeDetail(
+                label: context.loc.fundExchangeETransferLabelEmail,
+                value: details?.beneficiaryEmail,
+              ),
+              const Gap(24.0),
+              FundExchangeDetail(
+                label: context.loc.fundExchangeETransferLabelSecretQuestion,
+                value: details?.secretQuestion,
+              ),
+              const Gap(24.0),
+              FundExchangeDetail(
+                label: context.loc.fundExchangeETransferLabelSecretAnswer,
+                value: userSummary?.userNumber.toString() ?? '',
+              ),
             ],
-          ),
+          ],
         ),
       ),
-      bottomNavigationBar: const FundExchangeDoneBottomNavigationBar(),
     );
   }
 }

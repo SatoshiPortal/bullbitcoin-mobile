@@ -8,9 +8,9 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 enum RecipientsTab { newRecipient, recipientsList }
 
@@ -66,17 +66,14 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.recipientsScreenTitle),
-        // TODO: he app bar with the loading indicator below like this should
-        // be a shared widget so all screens have the loading indicator out-of-the-box
-        // and in the same place/way. This new shared widget should replace
-        // the current use of TopBar and the need to always add the back behaviour
-        // manually in various places that use the bad TopBar widget.
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: BlocSelector<RecipientsBloc, RecipientsState, bool>(
+    return BullPage(
+      topBar: Column(
+        children: [
+          BullTopBar(
+            title: context.loc.recipientsScreenTitle,
+            onBack: context.pop,
+          ),
+          BlocSelector<RecipientsBloc, RecipientsState, bool>(
             selector: (state) =>
                 state.isLoading || (widget.isHookRunning ?? false),
             builder: (context, isLoading) => isLoading
@@ -88,52 +85,50 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
                   )
                 : const SizedBox(height: 3),
           ),
-        ),
+        ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              const Gap(16.0),
-              Text(
-                context.loc.recipientsScreenSubtitle,
-                style: context.font.labelMedium?.copyWith(
-                  color: context.appColors.secondary,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            const Gap(16.0),
+            Text(
+              context.loc.recipientsScreenSubtitle,
+              style: context.font.labelMedium?.copyWith(
+                color: context.appColors.secondary,
+              ),
+            ),
+            const Gap(16.0),
+            // Tab selector
+            BBSegmentedButton(
+              items: RecipientsTab.values.map((e) => e.name).toSet(),
+              labels: {
+                RecipientsTab.newRecipient.name: context.loc.recipientsTabNew,
+                RecipientsTab.recipientsList.name:
+                    context.loc.recipientsTabList,
+              },
+              selected: _currentTab.name,
+              onChanged: (value) {
+                setState(() {
+                  _currentTab = RecipientsTab.values.firstWhere(
+                    (element) => element.name == value,
+                  );
+                });
+              },
+            ),
+            const Gap(16.0),
+            // Tab content
+            Expanded(
+              child: switch (_currentTab) {
+                RecipientsTab.newRecipient => NewRecipientTab(
+                  hookError: widget.onRecipientAddedHookError,
                 ),
-              ),
-              const Gap(16.0),
-              // Tab selector
-              BBSegmentedButton(
-                items: RecipientsTab.values.map((e) => e.name).toSet(),
-                labels: {
-                  RecipientsTab.newRecipient.name: context.loc.recipientsTabNew,
-                  RecipientsTab.recipientsList.name:
-                      context.loc.recipientsTabList,
-                },
-                selected: _currentTab.name,
-                onChanged: (value) {
-                  setState(() {
-                    _currentTab = RecipientsTab.values.firstWhere(
-                      (element) => element.name == value,
-                    );
-                  });
-                },
-              ),
-              const Gap(16.0),
-              // Tab content
-              Expanded(
-                child: switch (_currentTab) {
-                  RecipientsTab.newRecipient => NewRecipientTab(
-                    hookError: widget.onRecipientAddedHookError,
-                  ),
-                  RecipientsTab.recipientsList => RecipientsListTab(
-                    hookError: widget.onRecipientSelectedHookError,
-                  ),
-                },
-              ),
-            ],
-          ),
+                RecipientsTab.recipientsList => RecipientsListTab(
+                  hookError: widget.onRecipientSelectedHookError,
+                ),
+              },
+            ),
+          ],
         ),
       ),
     );

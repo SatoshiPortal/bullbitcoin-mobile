@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
@@ -243,7 +243,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return BullPage(
+      padding: EdgeInsets.zero,
+      topBar: null,
       child: _isGeneratingApiKey
           ? const Center(child: CircularProgressIndicator())
           : WebViewWidget(controller: _controller),
@@ -309,7 +311,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     await _controller.reload();
 
     if (!mounted) return;
-    await BlurredDialog.show(
+    await BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.loc.exchangeAuthLoginFailedTitle),

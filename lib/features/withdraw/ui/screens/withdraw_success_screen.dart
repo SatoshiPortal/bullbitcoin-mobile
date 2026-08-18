@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class WithdrawSuccessScreen extends StatelessWidget {
@@ -24,20 +23,13 @@ class WithdrawSuccessScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.withdrawAmountTitle),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                context.goNamed(ExchangeRoute.exchangeHome.name);
-              },
-            ),
-          ],
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.withdrawAmountTitle,
+          onAction: () => context.goNamed(ExchangeRoute.exchangeHome.name),
         ),
-        body: SafeArea(
+        safeArea: false,
+        child: SafeArea(
           child: Column(
             children: [
               Expanded(
@@ -64,7 +56,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
               if (order != null)
                 Padding(
                   padding: const EdgeInsets.all(24.0),
-                  child: BBButton.big(
+                  child: BullButton.primary(
                     label: context.loc.withdrawSuccessOrderDetails,
                     onPressed: () {
                       context.pushNamed(
@@ -73,8 +65,6 @@ class WithdrawSuccessScreen extends StatelessWidget {
                         queryParameters: {'returnToExchange': 'true'},
                       );
                     },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
                   ),
                 ),
             ],

@@ -1,11 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class BuyAccelerateSuccessScreen extends StatelessWidget {
@@ -24,50 +22,40 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
         // buy success screen.
         context.goNamed(WalletRoute.walletHome.name);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.buyConfirmTitle),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-            ),
-          ],
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.buyConfirmTitle,
+          actionIcon: BullIcons.close,
+          onAction: () => context.goNamed(WalletRoute.walletHome.name),
         ),
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: .center,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 100,
-                  color: context.appColors.success,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  context.loc.buyBitcoinSent,
-                  style: context.font.titleLarge,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  context.loc.buyThatWasFast,
-                  style: context.font.bodyMedium,
-                  textAlign: .center,
-                ),
-              ],
-            ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: .center,
+            children: [
+              BullIcon(
+                BullIcons.checkCircle,
+                size: 100,
+                color: context.bull.success,
+              ),
+              const Gap(BullSpacing.lg),
+              BullText(
+                context.loc.buyBitcoinSent,
+                style: context.bullText.titleLarge,
+              ),
+              const Gap(BullSpacing.xs),
+              BullText(
+                context.loc.buyThatWasFast,
+                style: context.bullText.bodyMedium,
+                textAlign: .center,
+              ),
+            ],
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: .min,
-              children: [
-                if (buyOrder != null)
-                  BBButton.big(
+        bottomBar: buyOrder == null
+            ? null
+            : BullBottomActionBar(
+                actions: [
+                  BullButton.primary(
                     label: context.loc.buyViewDetails,
                     onPressed: () {
                       context.pushNamed(
@@ -75,13 +63,9 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
                         pathParameters: {'orderId': buyOrder.orderId},
                       );
                     },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
                   ),
-              ],
-            ),
-          ),
-        ),
+                ],
+              ),
       ),
     );
   }

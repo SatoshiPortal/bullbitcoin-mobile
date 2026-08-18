@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_coin_selection_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class SellAdvancedOptionsBottomSheet extends StatelessWidget {
@@ -31,7 +29,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Center(
-                child: BBText(
+                child: BullText(
                   context.loc.sellAdvancedOptions,
                   style: context.font.headlineMedium,
                 ),
@@ -50,7 +48,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              BBText(
+              BullText(
                 context.loc.sellReplaceByFeeActivated,
                 style: context.font.headlineMedium,
               ),
@@ -66,7 +64,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           ListTile(
-            title: BBText(
+            title: BullText(
               context.loc.sellSelectCoinsManually,
               style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
             ),
@@ -82,11 +80,9 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
             },
           ),
           const Gap(24),
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.sellDone,
             onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
         ],
       ),

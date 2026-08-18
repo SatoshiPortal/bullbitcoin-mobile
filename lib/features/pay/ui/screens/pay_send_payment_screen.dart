@@ -4,24 +4,20 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});
@@ -85,19 +81,17 @@ class PaySendPaymentScreen extends StatelessWidget {
           : false,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          Assets.logos.bbLogoSmall.path,
-          height: 32,
-          width: 32,
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.payConfirmPayment,
+        onBack: context.pop,
       ),
-      body: SafeArea(
-        child: ScrollableColumn(
+      safeArea: false,
+      child: SafeArea(
+        child: BullScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: isConfirmingPayment,
               backgroundColor: context.appColors.onPrimary,
@@ -114,10 +108,13 @@ class PaySendPaymentScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: .center,
               children: [
-                Text(
-                  context.loc.payPriceRefreshIn,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.outline,
+                Flexible(
+                  child: Text(
+                    context.loc.payPriceRefreshIn,
+                    textAlign: .center,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.outline,
+                    ),
                   ),
                 ),
                 if (order?.confirmationDeadline case final deadline?)
@@ -244,7 +241,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                       style: context.font.bodyMedium,
                     ),
                   ),
-                  BBSwitch(
+                  BullSwitch(
                     value: isPayjoinEnabled,
                     onChanged: isConfirmingPayment || isPayinBroadcast
                         ? null
@@ -495,7 +492,7 @@ class _BottomButtons extends StatelessWidget {
       children: [
         const _PayError(),
         if (wallet != null && !wallet.isLiquid) ...[
-          BBButton.big(
+          BullButton.secondary(
             label: context.loc.payAdvancedSettings,
             disabled: isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
@@ -507,19 +504,13 @@ class _BottomButtons extends StatelessWidget {
                 ),
               );
             },
-            bgColor: context.appColors.transparent,
-            textColor: context.appColors.secondary,
-            outlined: true,
-            borderColor: context.appColors.secondary,
           ),
           const Gap(16),
         ],
-        BBButton.big(
+        BullButton.primary(
           label: context.loc.payContinue,
           disabled: isConfirmingPayment || isPayinBroadcast,
           onPressed: onContinuePressed,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
       ],
     );

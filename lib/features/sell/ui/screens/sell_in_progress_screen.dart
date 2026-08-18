@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class SellInProgressScreen extends StatelessWidget {
   const SellInProgressScreen({super.key});
@@ -17,12 +17,10 @@ class SellInProgressScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.sellTitle),
-          automaticallyImplyLeading: false,
-        ),
-        body: SafeArea(
+      child: BullPage(
+        topBar: BullTopBar(title: context.loc.sellTitle),
+        safeArea: false,
+        child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -46,13 +44,11 @@ class SellInProgressScreen extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                BBButton.big(
+                BullButton.primary(
                   label: context.loc.sellGoHome,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

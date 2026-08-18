@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 
 class InteracEmailCadForm extends StatefulWidget {
   const InteracEmailCadForm({super.key, this.hookError});
@@ -194,32 +195,22 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             ),
           ),
           const Gap(8.0),
-          RadioGroup<bool>(
-            groupValue: _isMyAccount,
-            onChanged: (value) {
-              if (!_onlyOwnerPermitted) {
-                setState(() {
-                  _isMyAccount = value ?? false;
-                });
-              }
-            },
-            child: Column(
-              children: [
-                RadioListTile<bool>(
-                  title: Text(context.loc.recipientsAccountOwnerMine),
-                  value: true,
-                  contentPadding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                ),
-                const Gap(8.0),
-                RadioListTile<bool>(
-                  title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
-                  value: false,
-                  contentPadding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
-            ),
+          Column(
+            children: [
+              BullChoiceTile(
+                title: Text(context.loc.recipientsAccountOwnerMine),
+                selected: _isMyAccount,
+                enabled: !_onlyOwnerPermitted,
+                onTap: () => setState(() => _isMyAccount = true),
+              ),
+              const Gap(8.0),
+              BullChoiceTile(
+                title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
+                selected: !_isMyAccount,
+                enabled: !_onlyOwnerPermitted,
+                onTap: () => setState(() => _isMyAccount = false),
+              ),
+            ],
           ),
           const Gap(24.0),
           RecipientFormContinueButton(

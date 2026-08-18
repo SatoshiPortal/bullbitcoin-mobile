@@ -1,23 +1,20 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class FundExchangeScamWarningCard extends StatelessWidget {
   const FundExchangeScamWarningCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
+    return BullBorderedTile(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BBText(
+            BullText(
               context.loc.fundExchangeWarningTacticsTitle,
-              style: theme.textTheme.headlineSmall,
+              style: context.bullText.headlineSmall,
             ),
             const Gap(8.0),
             ..._scammerTacticsStrings(context).map(
@@ -26,9 +23,9 @@ class FundExchangeScamWarningCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('• ', style: theme.textTheme.bodyMedium),
+                    BullText('• ', style: context.bullText.bodyMedium),
                     Expanded(
-                      child: BBText(item, style: theme.textTheme.bodyMedium),
+                      child: BullText(item, style: context.bullText.bodyMedium),
                     ),
                   ],
                 ),

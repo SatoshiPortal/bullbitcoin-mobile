@@ -3,8 +3,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
@@ -13,7 +11,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});
@@ -62,9 +61,13 @@ class BuyConfirmScreen extends StatelessWidget {
     final isRefreshingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isRefreshingOrder,
     );
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.buyConfirmTitle)),
-      body: SafeArea(
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.buyConfirmTitle,
+        onBack: context.pop,
+      ),
+      safeArea: false,
+      child: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -84,7 +87,7 @@ class BuyConfirmScreen extends StatelessWidget {
                 ),
                 const Gap(13),
                 Center(
-                  child: BBText(
+                  child: BullText(
                     formattedPayInAmount,
                     style: context.font.displaySmall,
                     color: context.appColors.secondary,
@@ -117,7 +120,7 @@ class BuyConfirmScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
+      bottomBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -149,14 +152,12 @@ class BuyConfirmScreen extends StatelessWidget {
                   ],
                 ),
               const Gap(16),
-              BBButton.big(
+              BullButton.primary(
                 label: context.loc.buyConfirmPurchase,
                 disabled: isConfirmingOrder || isRefreshingOrder,
                 onPressed: () {
                   context.read<BuyBloc>().add(const BuyEvent.confirmOrder());
                 },
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

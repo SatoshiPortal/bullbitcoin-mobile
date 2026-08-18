@@ -1,16 +1,13 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class WithdrawAmountScreen extends StatefulWidget {
@@ -42,27 +39,19 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Adding the leading icon button here manually since we are in the first
-        // route of a shellroute and so no back button is provided by default.
-        leading: context.canPop()
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  context.pop();
-                },
-              )
-            : null,
-        title: Text(context.loc.withdrawAmountTitle),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.withdrawAmountTitle,
+        onBack: context.canPop() ? context.pop : null,
       ),
-      body: SafeArea(
+      safeArea: false,
+      child: SafeArea(
         child: BBKeyboardActions(
           disableScroll: true,
           focusNodes: [_amountNode],
           child: Form(
             key: _formKey,
-            child: ScrollableColumn(
+            child: BullScrollableColumn(
               crossAxisAlignment: .start,
               children: [
                 const Gap(40.0),
@@ -77,7 +66,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                   },
                 ),
                 const Spacer(),
-                BBButton.big(
+                BullButton.primary(
                   label: context.loc.withdrawAmountContinue,
                   disabled: _fiatCurrency == null,
                   onPressed: () {
@@ -90,8 +79,6 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                       );
                     }
                   },
-                  bgColor: context.appColors.onSurface,
-                  textColor: context.appColors.surface,
                 ),
                 const Gap(16.0),
               ],

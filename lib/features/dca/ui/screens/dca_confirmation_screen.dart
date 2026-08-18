@@ -1,16 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_confirmation_detail_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class DcaConfirmationScreen extends StatelessWidget {
   const DcaConfirmationScreen({super.key});
@@ -23,24 +21,23 @@ class DcaConfirmationScreen extends StatelessWidget {
       return const LoadingBoxContent(height: 200);
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.dcaConfirmTitle),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: FadingLinearProgress(
-            height: 3,
-            trigger: confirmationState.isConfirmingDca,
-            backgroundColor: context.appColors.surface,
-            foregroundColor: context.appColors.primary,
-          ),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.dcaConfirmTitle,
+        onBack: context.pop,
       ),
-      body: SafeArea(
-        child: ScrollableColumn(
+      safeArea: false,
+      child: SafeArea(
+        child: BullScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           crossAxisAlignment: .start,
           children: [
+            BullFadingLinearProgress(
+              height: 3,
+              trigger: confirmationState.isConfirmingDca,
+              backgroundColor: context.bull.surface,
+              foregroundColor: context.bull.primary,
+            ),
             const Gap(24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -109,14 +106,12 @@ class DcaConfirmationScreen extends StatelessWidget {
               ),
               const Gap(16),
             ],
-            BBButton.big(
+            BullButton.primary(
               label: context.loc.dcaConfirmContinue,
               disabled: confirmationState.isConfirmingDca,
               onPressed: () {
                 context.read<DcaBloc>().add(const DcaEvent.confirmed());
               },
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             ),
             const Gap(16.0),
           ],

@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
@@ -47,7 +46,7 @@ class ExchangeAmountInputField extends StatelessWidget {
       children: [
         Text(
           context.loc.exchangeAmountInputTitle,
-          style: context.font.bodyMedium,
+          style: context.bullText.bodyMedium,
         ),
         const Gap(4.0),
         Card(
@@ -83,15 +82,15 @@ class ExchangeAmountInputField extends StatelessWidget {
                           inputFormatters: [
                             AmountInputFormatter(inputCurrency),
                           ],
-                          style: context.font.displaySmall?.copyWith(
-                            color: context.appColors.primary,
+                          style: context.bullText.displaySmall?.copyWith(
+                            color: context.bull.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
                               decimalDigits: amountInputDecimals,
                             ).format(0),
-                            hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.appColors.primary,
+                            hintStyle: context.bullText.displaySmall?.copyWith(
+                              color: context.bull.primary,
                             ),
                             border: InputBorder.none,
                           ),
@@ -145,8 +144,8 @@ class ExchangeAmountInputField extends StatelessWidget {
                             : _isFiatCurrencyInput
                             ? _fiatCurrency!.code
                             : _bitcoinUnit.code,
-                        style: context.font.displaySmall?.copyWith(
-                          color: context.appColors.primary,
+                        style: context.bullText.displaySmall?.copyWith(
+                          color: context.bull.primary,
                         ),
                       ),
                     ],
@@ -175,7 +174,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                           },
                           child: Icon(
                             Icons.swap_vert,
-                            color: context.appColors.outline,
+                            color: context.bull.outline,
                           ),
                         ),
                         const Gap(8.0),
@@ -183,8 +182,8 @@ class ExchangeAmountInputField extends StatelessWidget {
                           _isFiatCurrencyInput
                               ? _bitcoinUnit?.code ?? BitcoinUnit.btc.code
                               : _fiatCurrency!.code,
-                          style: context.font.bodyMedium?.copyWith(
-                            color: context.appColors.outline,
+                          style: context.bullText.bodyMedium?.copyWith(
+                            color: context.bull.outline,
                           ),
                         ),
                       ],

@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class FundExchangeJurisdictionDropdown extends StatelessWidget {
   final FundingJurisdiction initialValue;
@@ -15,80 +13,36 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 56,
-      child: Material(
-        elevation: 4,
-        shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(4.0),
-        child: Center(
-          child: DropdownButtonFormField<FundingJurisdiction>(
-            alignment: Alignment.centerLeft,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+    return BullDropdown<FundingJurisdiction>(
+      value: initialValue,
+      items: [
+        for (final jurisdiction in FundingJurisdiction.values)
+          DropdownMenuItem(
+            value: jurisdiction,
+            child: BullText(
+              _label(context, jurisdiction),
+              style: context.bullText.bodyLarge,
             ),
-            dropdownColor: context.appColors.surface,
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: context.appColors.onSurface,
-            ),
-            initialValue: initialValue,
-            items: [
-              DropdownMenuItem(
-                value: FundingJurisdiction.canada,
-                child: BBText(
-                  context.loc.fundExchangeJurisdictionCanada,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-              DropdownMenuItem(
-                value: FundingJurisdiction.europe,
-                child: BBText(
-                  context.loc.fundExchangeJurisdictionEurope,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-              DropdownMenuItem(
-                value: FundingJurisdiction.mexico,
-                child: BBText(
-                  context.loc.fundExchangeJurisdictionMexico,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-              DropdownMenuItem(
-                value: FundingJurisdiction.costaRica,
-                child: BBText(
-                  context.loc.fundExchangeJurisdictionCostaRica,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-              DropdownMenuItem(
-                value: FundingJurisdiction.argentina,
-                child: BBText(
-                  context.loc.fundExchangeJurisdictionArgentina,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-              DropdownMenuItem(
-                value: FundingJurisdiction.colombia,
-                child: BBText(
-                  context.loc.fundExchangeJurisdictionColombia,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-            ],
-            onChanged: (value) {
-              if (value != null) {
-                if (onChanged != null) {
-                  onChanged!(value);
-                }
-              }
-            },
           ),
-        ),
-      ),
+      ],
+      onChanged: (value) {
+        if (value != null) onChanged?.call(value);
+      },
     );
   }
+
+  String _label(
+    BuildContext context,
+    FundingJurisdiction value,
+  ) => switch (value) {
+    FundingJurisdiction.canada => context.loc.fundExchangeJurisdictionCanada,
+    FundingJurisdiction.europe => context.loc.fundExchangeJurisdictionEurope,
+    FundingJurisdiction.mexico => context.loc.fundExchangeJurisdictionMexico,
+    FundingJurisdiction.costaRica =>
+      context.loc.fundExchangeJurisdictionCostaRica,
+    FundingJurisdiction.argentina =>
+      context.loc.fundExchangeJurisdictionArgentina,
+    FundingJurisdiction.colombia =>
+      context.loc.fundExchangeJurisdictionColombia,
+  };
 }

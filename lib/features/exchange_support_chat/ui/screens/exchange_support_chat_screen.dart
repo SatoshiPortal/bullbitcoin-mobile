@@ -6,20 +6,17 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
@@ -51,28 +48,21 @@ class ExchangeSupportChatScreen extends StatelessWidget {
         cubit.loadMessages();
         return cubit;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: BackButton(
-            color: context.appColors.onSurface,
-            onPressed: () {
-              if (context.canPop()) {
-                context.pop();
-              } else if (fromExchange) {
-                context.goNamed(ExchangeRoute.exchangeHome.name);
-              } else {
-                context.goNamed(WalletRoute.walletHome.name);
-              }
-            },
-          ),
-          title: BBText(
-            context.loc.exchangeSupportChatTitle,
-            style: context.font.headlineMedium,
-          ),
-          backgroundColor: context.appColors.background,
+      child: BullPage(
+        padding: EdgeInsets.zero,
+        topBar: BullTopBar(
+          title: context.loc.exchangeSupportChatTitle,
+          onBack: () {
+            if (context.canPop()) {
+              context.pop();
+            } else if (fromExchange) {
+              context.goNamed(ExchangeRoute.exchangeHome.name);
+            } else {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
+          },
         ),
-        backgroundColor: context.appColors.background,
-        body: const _ChatBody(),
+        child: const _ChatBody(),
       ),
     );
   }
@@ -140,10 +130,10 @@ class _ChatBodyState extends State<_ChatBody> {
 
                   if (state.messages.isEmpty && !state.loadingMessages) {
                     return Center(
-                      child: BBText(
+                      child: BullText(
                         context.loc.exchangeSupportChatEmptyState,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.bodyLarge?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                     );
@@ -218,13 +208,13 @@ class _MessageBubble extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isUserMessage
-                  ? context.appColors.secondary
+                  ? context.bull.secondary
                   : Color.lerp(
-                          context.appColors.primary,
-                          context.appColors.secondaryFixed,
+                          context.bull.primary,
+                          context.bull.secondaryFixed,
                           0.2,
                         ) ??
-                        context.appColors.primary,
+                        context.bull.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -233,12 +223,12 @@ class _MessageBubble extends StatelessWidget {
                   : CrossAxisAlignment.start,
               children: [
                 if (message.text != null && message.text!.isNotEmpty)
-                  BBText(
+                  BullText(
                     message.text!,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullText.bodyMedium?.copyWith(
                       color: isUserMessage
-                          ? context.appColors.onSecondary
-                          : context.appColors.onPrimary,
+                          ? context.bull.onSecondary
+                          : context.bull.onPrimary,
                     ),
                   ),
                 if (message.attachments != null &&
@@ -254,12 +244,12 @@ class _MessageBubble extends StatelessWidget {
                 ],
                 if (message.createdAt != null) ...[
                   const Gap(4),
-                  BBText(
+                  BullText(
                     _formatTime(message.createdAt!, context),
-                    style: context.font.labelSmall?.copyWith(
+                    style: context.bullText.labelSmall?.copyWith(
                       color: isUserMessage
-                          ? context.appColors.textMuted
-                          : context.appColors.onPrimary.withValues(alpha: 0.7),
+                          ? context.bull.textMuted
+                          : context.bull.onPrimary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -317,24 +307,22 @@ class _MessageInputState extends State<_MessageInput> {
           bottom: MediaQuery.of(context).viewInsets.bottom + 24,
         ),
         decoration: BoxDecoration(
-          color: context.appColors.background,
+          color: context.bull.background,
           border: Border(
-            top: BorderSide(
-              color: context.appColors.outline.withValues(alpha: 0.2),
-            ),
+            top: BorderSide(color: context.bull.outline.withValues(alpha: 0.2)),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (state.errorSendingMessage.isNotEmpty) ...[
-              BBText(
+              BullText(
                 state.errorSendingMessage ==
                         ExchangeSupportChatCubit.errorMessageEmpty
                     ? context.loc.exchangeSupportChatMessageEmptyError
                     : state.errorSendingMessage,
-                style: context.font.labelSmall?.copyWith(
-                  color: context.appColors.error,
+                style: context.bullText.labelSmall?.copyWith(
+                  color: context.bull.error,
                 ),
               ),
               const Gap(8),
@@ -370,15 +358,15 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: '',
                     iconData: Icons.attach_file,
                     disabled: false,
                     onPressed: () {
                       context.read<ExchangeSupportChatCubit>().addAttachment();
                     },
-                    bgColor: context.appColors.surfaceContainer,
-                    textColor: context.appColors.onSurface,
+                    bgColor: context.bull.surfaceContainer,
+                    textColor: context.bull.onSurface,
                     width: 52,
                     height: 52,
                   ),
@@ -387,15 +375,15 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: '',
                     iconData: Icons.description,
                     disabled: false,
                     onPressed: () {
                       context.read<ExchangeSupportChatCubit>().attachLogs();
                     },
-                    bgColor: context.appColors.surfaceContainer,
-                    textColor: context.appColors.onSurface,
+                    bgColor: context.bull.surfaceContainer,
+                    textColor: context.bull.onSurface,
                     width: 52,
                     height: 52,
                   ),
@@ -421,7 +409,7 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: '',
                     iconData: Icons.send,
                     disabled:
@@ -432,12 +420,12 @@ class _MessageInputState extends State<_MessageInput> {
                     },
                     bgColor:
                         Color.lerp(
-                          context.appColors.primary,
-                          context.appColors.secondaryFixed,
+                          context.bull.primary,
+                          context.bull.secondaryFixed,
                           0.2,
                         ) ??
-                        context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
+                        context.bull.primary,
+                    textColor: context.bull.onPrimary,
                     width: 52,
                     height: 52,
                   ),
@@ -498,13 +486,13 @@ class _AttachmentWidget extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: isUserMessage
-                  ? context.appColors.secondary
-                  : context.appColors.primary.withValues(alpha: 0.1),
+                  ? context.bull.secondary
+                  : context.bull.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isUserMessage
-                    ? context.appColors.onSecondary
-                    : context.appColors.secondary,
+                    ? context.bull.onSecondary
+                    : context.bull.secondary,
                 width: isUserMessage ? 1 : 2,
               ),
             ),
@@ -515,19 +503,17 @@ class _AttachmentWidget extends StatelessWidget {
                   Icons.image,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSecondary
-                      : context.appColors.secondary,
+                      ? context.bull.onSecondary
+                      : context.bull.secondary,
                 ),
                 const Gap(8),
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     attachment.fileName != null
                         ? _shortenFileName(attachment.fileName!)
                         : context.loc.exchangeSupportChatAttachmentImage,
-                    style: context.font.bodySmall?.copyWith(
-                      color: isUserMessage
-                          ? context.appColors.onSecondary
-                          : null,
+                    style: context.bullText.bodySmall?.copyWith(
+                      color: isUserMessage ? context.bull.onSecondary : null,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -547,7 +533,7 @@ class _AttachmentWidget extends StatelessWidget {
                     Icon(
                       Icons.download,
                       size: 20,
-                      color: context.appColors.onPrimary,
+                      color: context.bull.onPrimary,
                     ),
                 ],
               ],
@@ -573,13 +559,13 @@ class _AttachmentWidget extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isUserMessage
-                ? context.appColors.secondaryFixedDim
-                : context.appColors.primary.withValues(alpha: 0.1),
+                ? context.bull.secondaryFixedDim
+                : context.bull.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isUserMessage
-                  ? context.appColors.outline.withValues(alpha: 0.2)
-                  : context.appColors.secondary,
+                  ? context.bull.outline.withValues(alpha: 0.2)
+                  : context.bull.secondary,
               width: isUserMessage ? 1 : 2,
             ),
           ),
@@ -591,33 +577,33 @@ class _AttachmentWidget extends StatelessWidget {
                   Icons.picture_as_pdf,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSecondary
-                      : context.appColors.secondary,
+                      ? context.bull.onSecondary
+                      : context.bull.secondary,
                 )
               else if (isLog)
                 Icon(
                   Icons.description,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSecondary
-                      : context.appColors.secondary,
+                      ? context.bull.onSecondary
+                      : context.bull.secondary,
                 )
               else
                 Icon(
                   Icons.file_present,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSecondary
-                      : context.appColors.secondary,
+                      ? context.bull.onSecondary
+                      : context.bull.secondary,
                 ),
               const Gap(8),
               Flexible(
-                child: BBText(
+                child: BullText(
                   attachment.fileName != null
                       ? _shortenFileName(attachment.fileName!)
                       : context.loc.exchangeSupportChatAttachmentUnknownFile,
-                  style: context.font.bodySmall?.copyWith(
-                    color: isUserMessage ? context.appColors.onSecondary : null,
+                  style: context.bullText.bodySmall?.copyWith(
+                    color: isUserMessage ? context.bull.onSecondary : null,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -634,11 +620,7 @@ class _AttachmentWidget extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 else
-                  Icon(
-                    Icons.download,
-                    size: 20,
-                    color: context.appColors.onPrimary,
-                  ),
+                  Icon(Icons.download, size: 20, color: context.bull.onPrimary),
               ],
             ],
           ),
@@ -669,10 +651,10 @@ class _AttachmentPreviewWidget extends StatelessWidget {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: context.appColors.surfaceContainer,
+            color: context.bull.surfaceContainer,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: context.appColors.outline.withValues(alpha: 0.2),
+              color: context.bull.outline.withValues(alpha: 0.2),
             ),
           ),
           child: isImage && attachment.fileData != null
@@ -698,7 +680,7 @@ class _AttachmentPreviewWidget extends StatelessWidget {
           right: -4,
           child: IconButton(
             icon: const Icon(Icons.cancel, size: 20),
-            color: context.appColors.primary,
+            color: context.bull.primary,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: onRemove,

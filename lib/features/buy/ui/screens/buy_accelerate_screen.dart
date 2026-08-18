@@ -3,13 +3,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class BuyAccelerateScreen extends StatelessWidget {
   const BuyAccelerateScreen({super.key});
@@ -58,9 +58,13 @@ class BuyAccelerateScreen extends StatelessWidget {
 
         Navigator.of(context, rootNavigator: true).pop();
       },
-      child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.buyConfirmExpressWithdrawal)),
-        body: SafeArea(
+      child: BullPage(
+        topBar: BullTopBar(
+          title: context.loc.buyConfirmExpressWithdrawal,
+          onBack: context.pop,
+        ),
+        safeArea: false,
+        child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -98,7 +102,7 @@ class BuyAccelerateScreen extends StatelessWidget {
             ),
           ),
         ),
-        bottomNavigationBar: SafeArea(
+        bottomBar: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -107,16 +111,14 @@ class BuyAccelerateScreen extends StatelessWidget {
                 if (isAcceleratingOrder)
                   const Center(child: CircularProgressIndicator())
                 else
-                  BBButton.big(
+                  BullButton.secondary(
                     label: context.loc.buyWaitForFreeWithdrawal,
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                     },
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.secondary,
                   ),
                 const Gap(16),
-                BBButton.big(
+                BullButton.primary(
                   label: context.loc.buyConfirmExpress,
                   disabled: isAcceleratingOrder,
                   onPressed: () {
@@ -124,8 +126,6 @@ class BuyAccelerateScreen extends StatelessWidget {
                       const BuyEvent.accelerateTransactionConfirmed(),
                     );
                   },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onPrimary,
                 ),
               ],
             ),

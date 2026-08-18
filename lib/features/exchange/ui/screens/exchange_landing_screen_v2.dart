@@ -1,12 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,151 +14,68 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return; // Don't allow back navigation
-
-        // Navigate to the wallet home screen when the user wants to exit the
-        // exchange landing screen.
-        context.goNamed(WalletRoute.walletHome.name);
+        if (!didPop) context.goNamed(WalletRoute.walletHome.name);
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.surface,
-        appBar: AppBar(
-          leading: BackButton(
-            color: context.appColors.onSurface,
-            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-          ),
+      child: BullPage(
+        padding: EdgeInsets.zero,
+        topBar: BullTopBar(
+          title: context.loc.exchangeBrandName,
+          onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
-        extendBodyBehindAppBar: true,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(BullSpacing.md),
           child: Column(
             children: [
-              const Gap(32),
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      Assets.logos.bbLogoSmall.path,
-                      width: 120,
-                      height: 120,
-                    ),
-                    const Gap(16),
-                    BBText(
-                      context.loc.exchangeBrandName,
-                      style: AppFonts.textTitleTheme.textStyle.copyWith(
-                        color: context.appColors.primary,
-                        fontSize: 64,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeLandingRecommendedExchange,
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
+              const Gap(BullSpacing.lg),
+              Image.asset(
+                Assets.logos.bbLogoSmall.path,
+                width: 120,
+                height: 120,
               ),
-              const Gap(32),
-              // Features List Box
-              Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: context.appColors.primary,
-                    width: 0,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              const Gap(BullSpacing.md),
+              BullText(
+                context.loc.exchangeBrandName,
+                style: context.bullText.displayLarge,
+                color: context.bull.primary,
+              ),
+              const Gap(BullSpacing.sm),
+              BullText(
+                context.loc.exchangeLandingRecommendedExchange,
+                style: context.bullText.headlineSmall,
+              ),
+              const Gap(BullSpacing.lg),
+              BullBorderedTile(
+                padding: const EdgeInsets.all(BullSpacing.lg),
                 child: Column(
-                  crossAxisAlignment: .start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    BBText(
+                    for (final text in [
                       context.loc.exchangeFeatureSelfCustody,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
                       context.loc.exchangeFeatureDcaOrders,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
                       context.loc.exchangeFeatureSellBitcoin,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
                       context.loc.exchangeFeatureBankTransfers,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
                       context.loc.exchangeFeatureCustomerSupport,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
                       context.loc.exchangeFeatureUnifiedHistory,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
+                    ]) ...[
+                      BullText(text, style: context.bullText.bodyLarge),
+                      const Gap(BullSpacing.sm),
+                    ],
                   ],
                 ),
               ),
-              const Gap(16),
-              // Disclaimer Box
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.appColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: context.appColors.onSurface,
-                      size: 20,
-                    ),
-                    const Gap(8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          BBText(
-                            context.loc.exchangeLandingDisclaimerNotAvailable,
-                            style: context.font.bodySmall?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              const Gap(BullSpacing.sm),
+              BullInfoCard(
+                description: context.loc.exchangeLandingDisclaimerNotAvailable,
+                tagColor: context.bull.primary,
+                bgColor: context.bull.surface,
               ),
-              const Gap(40),
-              // Call-to-Action Button
+              const Gap(BullSpacing.xl),
               SizedBox(
                 width: double.infinity,
-                child: BBButton.big(
+                child: BullButton.primary(
                   label: context.loc.exchangeGoToWebsiteButton,
                   onPressed: () async {
-                    final Uri url = Uri.parse('https://app.bullbitcoin.com');
+                    final url = Uri.parse('https://app.bullbitcoin.com');
                     if (await canLaunchUrl(url)) {
                       await launchUrl(
                         url,
@@ -170,11 +83,8 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       );
                     }
                   },
-                  bgColor: context.appColors.primary,
-                  textColor: context.appColors.onPrimary,
                 ),
               ),
-              const Gap(32),
             ],
           ),
         ),

@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/mode
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class NequiCopForm extends StatefulWidget {
   const NequiCopForm({super.key, this.hookError});
@@ -90,40 +90,22 @@ class NequiCopFormState extends State<NequiCopForm> {
             textAlign: .left,
           ),
           const Gap(8.0),
-          Material(
-            elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopDocumentType>(
-                isExpanded: true,
-                alignment: Alignment.centerLeft,
-                underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(4.0),
-                dropdownColor: context.appColors.surface,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
-                ),
-                value: _documentType,
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _documentType = value;
-                  });
-                },
-                items: [
-                  ...CopDocumentType.values.map((type) {
-                    return DropdownMenuItem<CopDocumentType>(
-                      value: type,
-                      child: Text(copDocumentTypeLabel(context, type)),
-                    );
-                  }),
-                ],
-              ),
-            ),
+          BullDropdown<CopDocumentType>(
+            value: _documentType,
+            onChanged: (value) {
+              if (value == null) return;
+              setState(() {
+                _documentType = value;
+              });
+            },
+            items: [
+              ...CopDocumentType.values.map((type) {
+                return DropdownMenuItem<CopDocumentType>(
+                  value: type,
+                  child: Text(copDocumentTypeLabel(context, type)),
+                );
+              }),
+            ],
           ),
           const Gap(12.0),
           BBTextFormField(

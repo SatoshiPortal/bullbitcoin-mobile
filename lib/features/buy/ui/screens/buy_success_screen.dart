@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
@@ -127,7 +126,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
             },
           ),
         const Gap(16),
-        BBButton.big(
+        BullButton.primary(
           label: context.loc.buyViewDetails,
           onPressed: () {
             final txId = buyOrder.payjoin?.txid;
@@ -143,8 +142,6 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
               );
             }
           },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
       ],
     );

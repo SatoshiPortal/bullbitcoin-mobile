@@ -2,15 +2,13 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class FundExchangeWarningBottomSheet extends StatefulWidget {
   const FundExchangeWarningBottomSheet({super.key});
@@ -97,12 +95,12 @@ class _FundExchangeWarningBottomSheetState
                 ),
               ),
               const Gap(8.0),
-              BBText(
+              BullText(
                 context.loc.fundExchangeWarningTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(4.0),
-              BBText(
+              BullText(
                 context.loc.fundExchangeWarningDescription,
                 style: theme.textTheme.headlineSmall,
                 textAlign: TextAlign.center,
@@ -125,7 +123,7 @@ class _FundExchangeWarningBottomSheetState
                           _hasConfirmedNoCoercion = value;
                         });
                       },
-                title: BBText(
+                title: BullText(
                   context.loc.fundExchangeWarningConfirmation,
                   style: theme.textTheme.bodyLarge,
                 ),
@@ -133,7 +131,7 @@ class _FundExchangeWarningBottomSheetState
               ),
               const Gap(16.0),
               if (_submitConsentError != null) ...[
-                BBText(
+                BullText(
                   context.loc.fundExchangeScamConsentError,
                   style: theme.textTheme.bodyMedium,
                   color: theme.colorScheme.error,
@@ -141,7 +139,7 @@ class _FundExchangeWarningBottomSheetState
                 ),
                 const Gap(8.0),
               ],
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.fundExchangeContinueButton,
                 disabled: !_hasConfirmedNoCoercion || _isLoading,
                 onPressed: () {

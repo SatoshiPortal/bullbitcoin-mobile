@@ -1,9 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart';
 
 class FundExchangeDetail extends StatelessWidget {
   const FundExchangeDetail({
@@ -19,24 +17,23 @@ class FundExchangeDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: .center,
       crossAxisAlignment: .start,
       children: [
-        BBText(label, style: theme.textTheme.bodyMedium),
+        BullText(label, style: context.bullText.bodyMedium),
         if (helpText != null) ...[
           const Gap(4.0),
-          BBText(
+          BullText(
             helpText!,
-            style: theme.textTheme.labelMedium,
-            color: context.appColors.outline,
+            style: context.bullText.labelMedium,
+            color: context.bull.outline,
           ),
         ],
         const Gap(8.0),
         ListTile(
           title: value != null
-              ? BBText(value!, style: theme.textTheme.bodyLarge)
+              ? BullText(value!, style: context.bullText.bodyLarge)
               : const LoadingLineContent(),
           trailing: IconButton(
             onPressed: value != null

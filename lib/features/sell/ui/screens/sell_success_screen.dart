@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -105,7 +104,7 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
             ),
       actions: [
         if (order != null)
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.sellViewDetailsButton,
             onPressed: () {
               final txId = order.payjoin?.txid;
@@ -123,8 +122,6 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
                 );
               }
             },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
       ],
     );

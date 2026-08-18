@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const SellExternalWalletNetworkSelectionScreen({super.key});
@@ -19,19 +18,23 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
           (bloc.state as SellWalletSelectionState).isCreatingSellOrder,
     );
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.sellSelectNetwork)),
-      body: SafeArea(
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sellSelectNetwork,
+        onBack: context.pop,
+      ),
+      safeArea: false,
+      child: SafeArea(
         child: Column(
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: isCreatingSellOrder,
               backgroundColor: context.appColors.onPrimary,
               foregroundColor: context.appColors.primary,
             ),
             Expanded(
-              child: ScrollableColumn(
+              child: BullScrollableColumn(
                 children: [
                   const Gap(24.0),
                   Text(
