@@ -1,16 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_alert_dialog.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
 
 class WalletDetailsScreen extends StatelessWidget {
   const WalletDetailsScreen({super.key, required this.walletId});
@@ -35,13 +33,13 @@ class WalletDetailsScreen extends StatelessWidget {
             IconButton(
               onPressed: isDeletingWallet
                   ? null
-                  : () => BlurredDialog.show(
-                      context: context,
-                      builder: (_) => WalletDeletionConfirmationAlertDialog(
-                        walletId: wallet.id,
+                  : () => WalletDeletionConfirmationSheet.show(
+                      context,
+                      onConfirm: () => context.read<WalletBloc>().add(
+                        WalletDeleted(wallet.id),
                       ),
                     ),
-              icon: const Icon(CupertinoIcons.delete),
+              icon: const BullIcon(BullIcons.deleteOutline),
             ),
         ],
       ),
