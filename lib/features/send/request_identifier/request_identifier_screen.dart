@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class RequestIdentifierScreen extends StatelessWidget {
@@ -107,7 +106,7 @@ class PasteRequestWidget extends StatelessWidget {
 
     final cubit = context.read<RequestIdentifierCubit>();
 
-    return BBInputText(
+    return BullInputText(
       onlyPaste: true,
       onChanged: cubit.updateRawRequest,
       value: address,

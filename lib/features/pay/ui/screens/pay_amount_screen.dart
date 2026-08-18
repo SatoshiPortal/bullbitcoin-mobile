@@ -3,14 +3,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_amount_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayAmountScreen extends StatefulWidget {
@@ -94,7 +93,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                         ),
                       ),
                       const Gap(8.0),
-                      BBInputText(
+                      BullInputText(
                         controller: _descriptionController,
                         value: _descriptionController.text,
                         hint: context.loc.payDescriptionHint,

@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
 class LabeledTextInput extends StatelessWidget {
   final String label;
@@ -47,7 +46,7 @@ class LabeledTextInput extends StatelessWidget {
               ),
             ],
           ),
-          child: BBInputText(
+          child: BullInputText(
             value: value,
             onChanged: onChanged ?? (_) {},
             disabled: onChanged == null,
