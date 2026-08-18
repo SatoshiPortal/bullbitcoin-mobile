@@ -10,12 +10,10 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
@@ -48,7 +46,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -80,18 +78,13 @@ class SendAddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.sendTitle,
-          color: context.appColors.background,
-          onBack: () => context.pop(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sendTitle,
+        onBack: () => context.pop(),
       ),
-      body: Stack(
+      padding: EdgeInsets.zero,
+      child: Stack(
         fit: .expand,
         children: [
           Column(
@@ -179,14 +172,12 @@ class SendContinueWithAddressButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
 
-    return BBButton.big(
+    return BullButton.primary(
       label: context.loc.sendContinue,
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
       disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -307,18 +298,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.sendTitle,
-          onBack: () => context.read<SendCubit>().backClicked(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sendTitle,
+        onBack: () => context.read<SendCubit>().backClicked(),
       ),
-      body: Column(
+      padding: EdgeInsets.zero,
+      resizeToAvoidBottomInset: true,
+      child: Column(
         children: [
           FadingLinearProgress(
             height: 3,
@@ -638,7 +625,7 @@ class SendAmountConfirmButton extends StatelessWidget {
     final inputAmountSat = context.select(
       (SendCubit cubit) => cubit.state.inputAmountSat,
     );
-    return BBButton.big(
+    return BullButton.primary(
       label: context.loc.sendContinue,
       onPressed: () {
         final cubit = context.read<SendCubit>();
@@ -653,8 +640,6 @@ class SendAmountConfirmButton extends StatelessWidget {
           creatingSwap ||
           loadingBestWallet ||
           inputAmountSat <= 0,
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -703,16 +688,13 @@ class SendConfirmScreen extends StatelessWidget {
     final isUnconfidentialLiquidDestination = context.select(
       (SendCubit cubit) => cubit.state.isUnconfidentialLiquidDestination,
     );
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.sendTitle,
-          onBack: () => context.read<SendCubit>().backClicked(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sendTitle,
+        onBack: () => context.read<SendCubit>().backClicked(),
       ),
-      body: Column(
+      padding: EdgeInsets.zero,
+      child: Column(
         children: [
           FadingLinearProgress(
             height: 3,
@@ -867,7 +849,7 @@ class _BottomButtons extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           if (isBitcoinWallet && !hasFinalizedTx) ...[
-            BBButton.big(
+            BullButton.secondary(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
                 BlurredBottomSheet.show(
@@ -878,10 +860,6 @@ class _BottomButtons extends StatelessWidget {
                   ),
                 );
               },
-              borderColor: context.appColors.secondary,
-              outlined: true,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
             ),
             const Gap(12),
           ],
@@ -910,15 +888,13 @@ class ConfirmSendButton extends StatelessWidget {
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
-    return BBButton.big(
+    return BullButton.primary(
       label: hasFinalizedTx
           ? context.loc.sendBroadcastTransaction
           : context.loc.sendConfirm,
       onPressed: () {
         context.read<SendCubit>().onConfirmTransactionClicked();
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
       disabled: disableSendButton,
     );
   }
@@ -1681,18 +1657,13 @@ class SendSendingScreen extends StatelessWidget {
         payjoinExpiresAt != null &&
         payjoinExpiresAt.difference(DateTime.now()) <= const Duration(hours: 1);
 
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: context.loc.sendTitle),
-        actions: [
-          CloseButton(
-            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-          ),
-        ],
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sendTitle,
+        onAction: () => context.goNamed(WalletRoute.walletHome.name),
       ),
-      body: Padding(
+      padding: EdgeInsets.zero,
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Align(
           child: Column(
@@ -1839,16 +1810,13 @@ class SendSucessScreen extends StatelessWidget {
             ? orderSwap.localPayinTransactionId != null &&
                   orderSwap.sourceWalletId != null
             : chainSwap != null || payjoin != null);
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.sendTitle,
-          onBack: () => context.goNamed(WalletRoute.walletHome.name),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.sendTitle,
+        onBack: () => context.goNamed(WalletRoute.walletHome.name),
       ),
-      body: Padding(
+      padding: EdgeInsets.zero,
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: .stretch,
@@ -1985,7 +1953,7 @@ class SendSucessScreen extends StatelessWidget {
             ],
             const Spacer(flex: 2),
             if (hasDetails)
-              BBButton.big(
+              BullButton.secondary(
                 label: context.loc.sendViewDetails,
                 onPressed: () {
                   if (walletTransaction != null) {
@@ -2039,8 +2007,6 @@ class SendSucessScreen extends StatelessWidget {
                     );
                   }
                 },
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
               ),
             const Gap(32),
           ],
@@ -2063,7 +2029,7 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
     );
 
-    return BBButton.big(
+    return BullButton.primary(
       label: context.loc.sendShowPsbt,
       onPressed: () {
         context.pushNamed(
@@ -2071,8 +2037,6 @@ class ShowPsbtButton extends StatelessWidget {
           extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
         );
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -2098,7 +2062,7 @@ class SignLedgerButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BBButton.big(
+    return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -2125,8 +2089,6 @@ class SignLedgerButton extends StatelessWidget {
           }
         }
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -2152,7 +2114,7 @@ class SignBitBoxButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BBButton.big(
+    return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -2184,8 +2146,6 @@ class SignBitBoxButton extends StatelessWidget {
           }
         }
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 

@@ -1,8 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
@@ -11,7 +7,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,18 +22,14 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
         if (didPop) return; // Don't allow back navigation
         context.go(WalletRoute.walletHome.path);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.receiveTitle,
-            actionIcon: Icons.close,
-            onAction: () => context.go(WalletRoute.walletHome.path),
-          ),
+      child: BullPage(
+        padding: EdgeInsets.zero,
+        topBar: BullTopBar(
+          title: context.loc.receiveTitle,
+          actionIcon: BullIcons.close,
+          onAction: () => context.go(WalletRoute.walletHome.path),
         ),
-        body: const PaymentReceivedPage(),
-        // child: AmountPage(),
+        child: const PaymentReceivedPage(),
       ),
     );
   }
@@ -71,21 +63,21 @@ class PaymentReceivedPage extends StatelessWidget {
             width: 100,
           ),
           const Gap(20),
-          BBText(
+          BullText(
             context.loc.receivePaymentReceived,
-            style: context.font.headlineLarge,
+            style: context.bullText.headlineLarge,
           ),
           const Gap(24),
           CurrencyText(
             finalAmount,
             showFiat: false,
-            style: context.font.displaySmall,
+            style: context.bullText.displaySmall,
           ),
           const Gap(4),
-          BBText(
+          BullText(
             '~$amountFiat',
-            style: context.font.bodyLarge,
-            color: context.appColors.onSurfaceVariant,
+            style: context.bullText.bodyLarge,
+            color: context.bull.textMuted,
           ),
           const Spacer(),
           const ReceiveDetailsButton(),
@@ -103,7 +95,7 @@ class ReceiveDetailsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
+      child: BullButton.primary(
         label: context.loc.receiveDetails,
         onPressed: () {
           final target = receiveDetailsTarget(
@@ -136,8 +128,6 @@ class ReceiveDetailsButton extends StatelessWidget {
               break;
           }
         },
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
       ),
     );
   }

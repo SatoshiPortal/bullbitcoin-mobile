@@ -3,9 +3,7 @@ import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
@@ -19,7 +17,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,27 +26,22 @@ class BroadcastSignedTxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.broadcastSignedTxPageTitle,
-          onBack: () => context.pop(),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.broadcastSignedTxPageTitle,
+        onBack: () => context.pop(),
       ),
+      padding: EdgeInsets.zero,
       // Actions are pinned to the bottom of the screen (not inline in the
       // scroll content) so they don't jump when the error appears/disappears.
-      bottomNavigationBar:
-          BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
-            builder: (context, state) {
-              final showActions =
-                  state.transaction != null && !state.isBroadcasted;
-              if (!showActions) return const SizedBox.shrink();
-              return const SafeArea(child: _BroadcastActions());
-            },
-          ),
-      body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+      bottomBar: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+        builder: (context, state) {
+          final showActions = state.transaction != null && !state.isBroadcasted;
+          if (!showActions) return const SizedBox.shrink();
+          return const _BroadcastActions();
+        },
+      ),
+      child: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
 
@@ -77,7 +70,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ],
 
                   const Gap(16),
-                  BBButton.small(
+                  BullButton.secondary(
                     label: context.loc.broadcastSignedTxCameraButton,
                     onPressed: () {
                       cubit.resetState();
@@ -85,34 +78,25 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         BroadcastSignedTxRoute.broadcastScanQr.name,
                       );
                     },
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
                     iconData: Icons.qr_code_scanner,
-                    outlined: true,
                   ),
                   const Gap(32),
-                  BBButton.small(
+                  BullButton.secondary(
                     label: context.loc.broadcastSignedTxNfcButton,
                     onPressed: () => NfcBottomSheet.showReadNfc(
                       context: context,
                       title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
                       onDataReceived: (payload) => cubit.onQrScanned(payload),
                     ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
                     iconData: Icons.nfc,
-                    outlined: true,
                   ),
                   const Gap(32),
-                  BBButton.small(
+                  BullButton.secondary(
                     label: context.loc.broadcastSignedTxPushTxButton,
                     onPressed: () => context.pushNamed(
                       BroadcastSignedTxRoute.broadcastScanNfc.name,
                     ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
                     iconData: Icons.contactless_outlined,
-                    outlined: true,
                   ),
                 ],
 
@@ -142,10 +126,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 100, right: 100),
-                    child: BBButton.big(
+                    child: BullButton.primary(
                       label: context.loc.broadcastSignedTxDoneButton,
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
                       onPressed: () =>
                           context.goNamed(WalletRoute.walletHome.name),
                     ),
@@ -173,32 +155,18 @@ class _BroadcastActions extends StatelessWidget {
       (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
     );
 
-    return Row(
-      children: [
+    return BullBottomActionBar(
+      actions: [
         if (pushTxUri != null)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: BBButton.big(
-                label: context.loc.broadcastSignedTxPushTxButton,
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
-                onPressed: cubit.pushTxUri,
-                disabled: isBroadcasting,
-              ),
-            ),
+          BullButton.primary(
+            label: context.loc.broadcastSignedTxPushTxButton,
+            onPressed: cubit.pushTxUri,
+            disabled: isBroadcasting,
           ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: BBButton.big(
-              label: context.loc.broadcastSignedTxBroadcast,
-              bgColor: context.appColors.primary,
-              textColor: context.appColors.onPrimary,
-              onPressed: cubit.broadcastTransaction,
-              disabled: isBroadcasting,
-            ),
-          ),
+        BullButton.primary(
+          label: context.loc.broadcastSignedTxBroadcast,
+          onPressed: cubit.broadcastTransaction,
+          disabled: isBroadcasting,
         ),
       ],
     );

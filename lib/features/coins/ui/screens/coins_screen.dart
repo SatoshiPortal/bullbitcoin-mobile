@@ -32,29 +32,28 @@ class CoinsScreen extends StatelessWidget {
       builder: (context, state) {
         final selectionActive =
             state.selecting && state.selectedOutpoints.isNotEmpty;
-        return BullScaffold(
-          body: SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                _TopChrome(state: state),
-                if (state.status != CoinsStatus.loading)
-                  CoinsSummaryBar(
-                    coinsCount: state.utxos.length,
-                    totalSat: state.totalSat,
-                    frozenSat: state.frozenSat,
-                    spendableSat: state.spendableSat,
-                    hasFrozen: state.hasFrozen,
-                  ),
-                if (!state.selecting && state.status == CoinsStatus.ready)
-                  _SubHeader(state: state),
-                Expanded(child: _Body(state: state)),
-                if (!state.selecting && state.status == CoinsStatus.ready)
-                  const _FooterHint(),
-              ],
-            ),
+        return BullPage(
+          padding: EdgeInsets.zero,
+          topBar: null,
+          child: Column(
+            children: [
+              _TopChrome(state: state),
+              if (state.status != CoinsStatus.loading)
+                CoinsSummaryBar(
+                  coinsCount: state.utxos.length,
+                  totalSat: state.totalSat,
+                  frozenSat: state.frozenSat,
+                  spendableSat: state.spendableSat,
+                  hasFrozen: state.hasFrozen,
+                ),
+              if (!state.selecting && state.status == CoinsStatus.ready)
+                _SubHeader(state: state),
+              Expanded(child: _Body(state: state)),
+              if (!state.selecting && state.status == CoinsStatus.ready)
+                const _FooterHint(),
+            ],
           ),
-          bottomNavigationBar: selectionActive
+          bottomBar: selectionActive
               ? CoinsSelectionBar(
                   selectedCount: state.selectedOutpoints.length,
                   selectedTotalSat: state.selectedUtxos.fold(

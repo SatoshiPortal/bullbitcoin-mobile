@@ -1,12 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,25 +41,25 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
           current.error is SettingsFailure && previous.error != current.error,
       listener: (context, state) {
         final failure = state.error! as SettingsFailure;
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        BullSnackBar.show(context, message: failure.toTranslated(context));
       },
       child: Padding(
         padding: EdgeInsets.only(top: topGap / 2),
-        child: BorderedTappableTile(
+        child: BullBorderedTile(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-          backgroundColor: context.appColors.surfaceContainerHighest,
+          backgroundColor: context.bull.surfaceContainerHighest,
           onLongPress: () =>
               context.pushNamed(SettingsRoute.payjoinSettings.name),
           child: Row(
             children: [
               Expanded(
-                child: BBText(
+                child: BullText(
                   context.loc.receivePayjoinQrBadge,
-                  style: context.font.bodyMedium,
-                  color: context.appColors.secondary,
+                  style: context.bullText.bodyMedium,
+                  color: context.bull.secondary,
                 ),
               ),
-              BBSwitch(
+              BullSwitch(
                 value: enabled,
                 onChanged: (value) {
                   context.read<ReceiveBloc>().add(

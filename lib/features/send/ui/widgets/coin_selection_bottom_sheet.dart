@@ -3,13 +3,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class CoinSelectionBottomSheet extends StatelessWidget {
@@ -54,15 +52,16 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             alignment: Alignment.center,
             children: [
               Center(
-                child: BBText(
+                child: BullText(
                   context.loc.sendSelectAmount,
-                  style: context.font.headlineMedium,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
                 ),
               ),
               Positioned(
@@ -76,19 +75,22 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(32),
-          BBText(selectedUtxoTotal, style: context.font.displaySmall),
+          BullText(
+            selectedUtxoTotal,
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
           const Gap(8),
-          BBText(
+          BullText(
             '${context.loc.sendAmountRequested}$amountToSend',
-            style: context.font.bodySmall,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           if (!isAmountSufficient) ...[
             const Gap(8),
-            BBText(
+            BullText(
               context.loc.sendSelectedUtxosInsufficient,
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.error,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: context.appColors.error),
             ),
           ],
           const Gap(24),
@@ -111,11 +113,9 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             shrinkWrap: true,
           ),
           const Gap(24),
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
             disabled: !isAmountSufficient,
           ),
           const Gap(24),

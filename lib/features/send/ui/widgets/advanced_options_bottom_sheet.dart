@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class AdvancedOptionsBottomSheet extends StatelessWidget {
@@ -25,15 +23,16 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             alignment: Alignment.center,
             children: [
               Center(
-                child: BBText(
+                child: BullText(
                   context.loc.sendAdvancedOptions,
-                  style: context.font.headlineMedium,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
                   color: context.appColors.secondary,
                 ),
               ),
@@ -49,11 +48,11 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(32),
           Row(
-            mainAxisAlignment: .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              BBText(
+              BullText(
                 context.loc.sendReplaceByFeeActivated,
-                style: context.font.headlineMedium,
+                style: Theme.of(context).textTheme.headlineMedium,
                 color: context.appColors.secondary,
               ),
               Switch(
@@ -65,9 +64,11 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           ListTile(
-            title: BBText(
+            title: BullText(
               context.loc.sendSelectCoinsManually,
-              style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
               color: context.appColors.secondary,
             ),
             trailing: Icon(
@@ -85,11 +86,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             },
           ),
           const Gap(24),
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

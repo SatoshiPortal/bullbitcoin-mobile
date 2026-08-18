@@ -1,16 +1,13 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
@@ -33,15 +30,12 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.replaceByFeeScreenTitle),
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back),
-        ),
+    return BullPage(
+      topBar: BullTopBar(
+        title: context.loc.replaceByFeeScreenTitle,
+        onBack: context.pop,
       ),
-      body: BBKeyboardActions(
+      child: BBKeyboardActions(
         disableScroll: true,
         focusNodes: [_feeNode],
         child: BlocBuilder<ReplaceByFeeCubit, ReplaceByFeeState>(
@@ -52,10 +46,10 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: BBText(
+                  child: BullText(
                     state.failure!.toTranslated(context),
-                    style: context.font.bodyMedium,
-                    color: context.appColors.error,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.error,
                   ),
                 ),
               );
@@ -85,19 +79,17 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                     ),
                     if (state.failure != null) ...[
                       const Gap(16),
-                      BBText(
+                      BullText(
                         state.failure!.toTranslated(context),
-                        style: context.font.bodyMedium,
-                        color: context.appColors.error,
+                        style: context.bullText.bodyMedium,
+                        color: context.bull.error,
                       ),
                       const Gap(16),
                     ],
 
-                    BBButton.big(
+                    BullButton.primary(
                       label: context.loc.replaceByFeeBroadcastButton,
                       onPressed: () => cubit.broadcast(),
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
                     ),
                   ],
                 ),
@@ -113,30 +105,22 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
     BuildContext context,
     double originalFeeRate,
   ) {
-    return Material(
-      elevation: 1,
-      borderRadius: BorderRadius.circular(2),
-      clipBehavior: .hardEdge,
-      color: context.appColors.onSecondary,
-      shadowColor: context.appColors.secondary,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: .stretch,
-          children: [
-            BBText(
-              context.loc.replaceByFeeOriginalTransactionTitle,
-              style: context.font.headlineLarge,
+    return BullBorderedTile(
+      child: Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          BullText(
+            context.loc.replaceByFeeOriginalTransactionTitle,
+            style: context.bullText.headlineLarge,
+          ),
+          const Gap(16),
+          BullText(
+            context.loc.replaceByFeeFeeRateDisplay(
+              originalFeeRate.toStringAsFixed(1),
             ),
-            const Gap(16),
-            BBText(
-              context.loc.replaceByFeeFeeRateDisplay(
-                originalFeeRate.toStringAsFixed(1),
-              ),
-              style: context.font.labelMedium,
-            ),
-          ],
-        ),
+            style: context.bullText.labelMedium,
+          ),
+        ],
       ),
     );
   }

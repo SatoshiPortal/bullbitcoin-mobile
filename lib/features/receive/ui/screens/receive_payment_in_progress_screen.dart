@@ -1,13 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceivePaymentInProgressScreen extends StatelessWidget {
@@ -22,18 +18,14 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
 
         context.go(WalletRoute.walletHome.path);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.receiveTitle,
-            actionIcon: Icons.close,
-            onAction: () => context.go(WalletRoute.walletHome.path),
-          ),
+      child: BullPage(
+        padding: EdgeInsets.zero,
+        topBar: BullTopBar(
+          title: context.loc.receiveTitle,
+          actionIcon: BullIcons.close,
+          onAction: () => context.go(WalletRoute.walletHome.path),
         ),
-        body: const PaymentInProgressPage(),
-        // child: AmountPage(),
+        child: const PaymentInProgressPage(),
       ),
     );
   }
@@ -60,32 +52,32 @@ class PaymentInProgressPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: .center,
         children: [
-          BBText(
+          BullText(
             context.loc.receivePaymentInProgress,
-            style: context.font.headlineLarge,
+            style: context.bullText.headlineLarge,
           ),
           if (isBitcoin) ...[
-            BBText(
+            BullText(
               context.loc.receiveBitcoinConfirmationMessage,
-              style: context.font.headlineMedium,
+              style: context.bullText.headlineMedium,
             ),
           ] else ...[
-            BBText(
+            BullText(
               context.loc.receiveLiquidConfirmationMessage,
-              style: context.font.headlineMedium,
+              style: context.bullText.headlineMedium,
             ),
           ],
           const Gap(16),
           CurrencyText(
             amountSat ?? 0,
             showFiat: false,
-            style: context.font.headlineLarge,
+            style: context.bullText.headlineLarge,
           ),
           const Gap(4),
-          BBText(
+          BullText(
             '~$amountFiat',
-            style: context.font.bodyLarge,
-            color: context.appColors.surface,
+            style: context.bullText.bodyLarge,
+            color: context.bull.textMuted,
           ),
         ],
       ),

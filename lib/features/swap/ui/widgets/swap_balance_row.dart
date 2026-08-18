@@ -3,11 +3,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class SwapBalanceRow extends StatelessWidget {
   const SwapBalanceRow({super.key, required this.amountController});
@@ -45,12 +43,10 @@ class SwapBalanceRow extends StatelessWidget {
         const Gap(4),
         Text(balance, style: context.font.labelLarge),
         const Spacer(),
-        BBButton.small(
+        BullButton.secondary(
           label: context.loc.swapMaxButton,
           height: 30,
           width: 51,
-          bgColor: context.appColors.secondaryFixedDim,
-          textColor: context.appColors.secondary,
           textStyle: context.font.labelLarge,
           disabled: maxAmountSat == null || maxAmountSat <= 0,
           onPressed: () {

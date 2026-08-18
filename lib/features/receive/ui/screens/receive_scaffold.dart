@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveScaffold extends StatelessWidget {
@@ -20,26 +19,23 @@ class ReceiveScaffold extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       behavior: .translucent,
-      child: Scaffold(
+      child: BullPage(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.receiveTitle,
-            onBack: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.goNamed(WalletRoute.walletHome.name);
-              }
-            },
-          ),
+        padding: EdgeInsets.zero,
+        topBar: BullTopBar(
+          title: context.loc.receiveTitle,
+          onBack: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
+          },
         ),
-        body: Column(
+        child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            const Gap(10),
+            const Gap(BullSpacing.sm),
             ReceiveNetworkSelection(wallet: wallet),
             Expanded(child: child),
           ],

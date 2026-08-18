@@ -8,14 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class ScanQrPage extends StatelessWidget {
   const ScanQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+    return BullPage(
+      safeArea: false,
+      padding: EdgeInsets.zero,
+      child: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
 

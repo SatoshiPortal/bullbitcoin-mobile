@@ -1,10 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
@@ -13,7 +9,7 @@ import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dar
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatefulWidget {
@@ -96,7 +92,7 @@ class _MessageForSenderTile extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: hPad),
-      child: BorderedTappableTile(
+      child: BullBorderedTile(
         onTap: () async {
           final bloc = context.read<ReceiveBloc>();
           final saved = await LabelEntryBottomSheet.note(
@@ -119,22 +115,22 @@ class _MessageForSenderTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(
+                  BullText(
                     title,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyLarge,
+                    color: context.bull.secondary,
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     note.isEmpty ? context.loc.receiveEnterHere : note,
-                    style: context.font.bodyMedium,
+                    style: context.bullText.bodyMedium,
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            Icon(Icons.edit, size: 20, color: context.appColors.secondary),
+            Icon(Icons.edit, size: 20, color: context.bull.secondary),
           ],
         ),
       ),
@@ -154,10 +150,10 @@ class _ReceiveFailureMessage extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBText(
+      child: BullText(
         failure.toTranslated(context),
-        style: context.font.bodyMedium,
-        color: context.appColors.error,
+        style: context.bullText.bodyMedium,
+        color: context.bull.error,
         textAlign: TextAlign.center,
       ),
     );
@@ -186,7 +182,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         16,
         16 + MediaQuery.of(context).padding.bottom,
       ),
-      child: BBButton.big(
+      child: BullButton.primary(
         label: context.loc.receiveContinue,
         onPressed: () {
           final bloc = context.read<ReceiveBloc>();
@@ -199,8 +195,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
           }
         },
         disabled: creatingSwap || amountException != null,
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
+        size: BullButtonSize.large,
       ),
     );
   }

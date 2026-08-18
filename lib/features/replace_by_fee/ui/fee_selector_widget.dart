@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+// CustomFeeListItem owns the fee input/controller integration; keep this
+// application-coupled widget while migrating the surrounding presentation.
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class BumpFeeSelectorWidget extends StatelessWidget {
   const BumpFeeSelectorWidget({
@@ -58,9 +57,9 @@ class BumpFeeSelectorWidget extends StatelessWidget {
               exchangeRate: 0.0,
               fiatCurrencyCode: '',
               defaultAbsolute: false,
-              tileColor: context.appColors.onSecondary,
-              tileShadowColor: context.appColors.secondary,
-              unselectedIconColor: context.appColors.surface,
+              tileColor: context.bull.onSecondary,
+              tileShadowColor: context.bull.secondary,
+              unselectedIconColor: context.bull.surface,
               allowAbsoluteToggle: false,
               commitOnChange: true,
               focusNode: focusNode,
@@ -93,53 +92,40 @@ class _FastestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      radius: 2,
+    return BullBorderedTile(
       onTap: onTap,
-      child: Material(
-        elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(2),
-        clipBehavior: .hardEdge,
-        color: context.appColors.onSecondary,
-        shadowColor: context.appColors.secondary,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: .spaceBetween,
-            crossAxisAlignment: .start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .stretch,
-                  children: [
-                    BBText(
-                      context.loc.replaceByFeeFastestTitle,
-                      style: context.font.headlineLarge,
-                    ),
-                    const Gap(4),
-                    BBText(
-                      context.loc.replaceByFeeFastestDescription,
-                      style: context.font.labelMedium,
-                    ),
-                    const Gap(2),
-                    BBText(
-                      context.loc.replaceByFeeFeeRateDisplay(
-                        fastestFeeRate.feeRate.satPerVbyte.toStringAsFixed(1),
-                      ),
-                      style: context.font.labelMedium,
-                    ),
-                  ],
+      child: Row(
+        mainAxisAlignment: .spaceBetween,
+        crossAxisAlignment: .start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .stretch,
+              children: [
+                BullText(
+                  context.loc.replaceByFeeFastestTitle,
+                  style: context.bullText.headlineLarge,
                 ),
-              ),
-              Icon(
-                Icons.radio_button_checked_outlined,
-                color: isSelected
-                    ? context.appColors.primary
-                    : context.appColors.surface,
-              ),
-            ],
+                const Gap(4),
+                BullText(
+                  context.loc.replaceByFeeFastestDescription,
+                  style: context.bullText.labelMedium,
+                ),
+                const Gap(2),
+                BullText(
+                  context.loc.replaceByFeeFeeRateDisplay(
+                    fastestFeeRate.feeRate.satPerVbyte.toStringAsFixed(1),
+                  ),
+                  style: context.bullText.labelMedium,
+                ),
+              ],
+            ),
           ),
-        ),
+          BullIcon(
+            isSelected ? BullIcons.checkCircle : BullIcons.close,
+            color: isSelected ? context.bull.primary : context.bull.surface,
+          ),
+        ],
       ),
     );
   }

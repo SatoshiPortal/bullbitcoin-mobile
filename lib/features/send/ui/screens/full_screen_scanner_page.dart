@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 /// Callback for when a payment request is detected from a QR code
 typedef OnScannedPaymentRequestCallback =
@@ -42,9 +42,10 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.secondaryFixedDim,
-      body: Stack(
+    return BullPage(
+      safeArea: false,
+      padding: EdgeInsets.zero,
+      child: Stack(
         fit: .expand,
         children: [
           QrScannerWidget(onScanned: _onScanned),
@@ -53,15 +54,13 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
               bottom: MediaQuery.of(context).size.height * 0.25,
               left: 24,
               right: 24,
-              child: BBButton.big(
+              child: BullButton.secondary(
                 iconData: Icons.check_circle,
                 textStyle: context.font.labelMedium,
-                textColor: context.appColors.onPrimary,
                 onPressed: () {},
                 label: data.$1.length > 30
                     ? '${data.$1.substring(0, 10)}…${data.$1.substring(data.$1.length - 10)}'
                     : data.$1,
-                bgColor: context.appColors.transparent,
               ),
             ),
 

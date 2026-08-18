@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveNetworkSelection extends StatelessWidget {
@@ -21,7 +20,7 @@ class ReceiveNetworkSelection extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBSegmentFull(
+      child: BullSegmented(
         items: {for (final type in availableNetworks) _label(context, type)},
         initialValue: _label(context, defaultNetwork),
         onSelected: (label) {

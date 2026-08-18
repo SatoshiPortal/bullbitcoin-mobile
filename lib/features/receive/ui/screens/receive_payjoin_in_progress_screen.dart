@@ -1,21 +1,14 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceivePayjoinInProgressScreen extends StatelessWidget {
@@ -62,25 +55,24 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
 
           context.go(WalletRoute.walletHome.path);
         },
-        child: Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
-              title: context.loc.receiveTitle,
-              actionIcon: Icons.close,
-              onAction: () => context.go(WalletRoute.walletHome.path),
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(3.0),
-              child: FadingLinearProgress(
-                trigger: isBroadcasting,
-                backgroundColor: context.appColors.onPrimary,
-                foregroundColor: context.appColors.primary,
+        child: BullPage(
+          padding: EdgeInsets.zero,
+          topBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BullTopBar(
+                title: context.loc.receiveTitle,
+                actionIcon: BullIcons.close,
+                onAction: () => context.go(WalletRoute.walletHome.path),
               ),
-            ),
+              BullFadingLinearProgress(
+                trigger: isBroadcasting,
+                backgroundColor: context.bull.surface,
+                foregroundColor: context.bull.primary,
+              ),
+            ],
           ),
-          body: const PayjoinInProgressPage(),
+          child: const PayjoinInProgressPage(),
         ),
       ),
     );
@@ -175,77 +167,77 @@ class PayjoinInProgressPage extends StatelessWidget {
             child: Column(
               children: [
                 if (isBelowMinimum) ...[
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinBelowMinimum,
-                    style: context.font.headlineLarge,
+                    style: context.bullText.headlineLarge,
                     maxLines: 2,
                     textAlign: .center,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinBelowMinimumSubtext,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
                 ] else if (isFallbackCompleted) ...[
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinFallbackCompleted,
-                    style: context.font.headlineLarge,
+                    style: context.bullText.headlineLarge,
                     maxLines: 2,
                     textAlign: .center,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinFallbackCompletedSubtext,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
                 ] else if (isRealPayjoin) ...[
-                  BBText(
+                  BullText(
                     context.loc.receivePaymentInProgress,
-                    style: context.font.headlineLarge,
+                    style: context.bullText.headlineLarge,
                     maxLines: 2,
                     textAlign: .center,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     context.loc.receiveBitcoinConfirmationMessage,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
                 ] else if (isExpired) ...[
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinExpired,
-                    style: context.font.headlineLarge,
+                    style: context.bullText.headlineLarge,
                     maxLines: 2,
                     textAlign: .center,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinExpiredSubtext,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
                 ] else ...[
-                  BBText(
+                  BullText(
                     context.loc.receivePayjoinInProgress,
-                    style: context.font.headlineLarge,
+                    style: context.bullText.headlineLarge,
                     maxLines: 2,
                     textAlign: .center,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     context.loc.receiveWaitForPayjoin,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
@@ -260,13 +252,13 @@ class PayjoinInProgressPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: .center,
                       children: [
-                        BBText(
+                        BullText(
                           context.loc.receivePayjoinFallbackCountdown,
-                          style: context.font.bodyMedium,
-                          color: context.appColors.secondary,
+                          style: context.bullText.bodyMedium,
+                          color: context.bull.secondary,
                         ),
                         const Gap(4),
-                        Countdown(
+                        BullCountdown(
                           until: payjoinExpiresAt.add(
                             const Duration(
                               seconds:
@@ -284,14 +276,14 @@ class PayjoinInProgressPage extends StatelessWidget {
                   CurrencyText(
                     amountSat,
                     showFiat: false,
-                    style: context.font.displaySmall,
+                    style: context.bullText.displaySmall,
                     textAlign: .center,
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
+                    style: context.bullText.bodyMedium,
+                    color: context.bull.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
@@ -301,15 +293,13 @@ class PayjoinInProgressPage extends StatelessWidget {
           ),
           const Spacer(flex: 2),
           if (isFallbackCompleted && payjoinId != null)
-            BBButton.big(
+            BullButton.primary(
               label: context.loc.receiveViewDetails,
               onPressed: () => context.goNamed(
                 TransactionsRoute.payjoinTransactionDetails.name,
                 pathParameters: {'payjoinId': payjoinId},
                 queryParameters: {'returnHome': 'true'},
               ),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             )
           else if (canManuallyBroadcastOriginal)
             const ReceiveBroadcastPayjoinButton(),
@@ -340,12 +330,12 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
         children: [
           Text(
             context.loc.receivePayjoinFailQuestion,
-            style: context.font.titleSmall,
+            style: context.bullText.titleSmall,
             textAlign: .center,
             maxLines: 2,
           ),
           const Gap(16),
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.receivePaymentNormally,
             disabled: isBroadcasting,
             onPressed: () {
@@ -354,8 +344,6 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
                 const ReceivePayjoinOriginalTxBroadcasted(),
               );
             },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
           const Gap(16),
           if (broadcastOriginalTransactionException != null) ...[
@@ -363,8 +351,8 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
               context.loc.receiveError(
                 broadcastOriginalTransactionException.message,
               ),
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.error,
               ),
               textAlign: .center,
             ),
