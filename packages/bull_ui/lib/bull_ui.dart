@@ -46,6 +46,7 @@ export 'package:flutter/widgets.dart'
         ListView,
         MainAxisAlignment,
         MainAxisSize,
+        Navigator,
         NeverScrollableScrollPhysics,
         Opacity,
         Padding,

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -38,7 +37,7 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
@@ -252,14 +251,14 @@ class SettingsRouter {
                   ),
                   BlocListener<WalletBloc, WalletState>(
                     listenWhen: (previous, current) {
-                      // Listen for wallet deletion error to show an alert dialog
+                      // Listen for wallet deletion error to show a sheet.
                       return previous.walletDeletionError == null &&
                           current.walletDeletionError != null;
                     },
                     listener: (context, state) {
-                      BlurredDialog.show(
-                        context: context,
-                        builder: (_) => const FailedWalletDeletionAlertDialog(),
+                      WalletDeletionFailedSheet.show(
+                        context,
+                        error: state.walletDeletionError!,
                       );
                     },
                   ),

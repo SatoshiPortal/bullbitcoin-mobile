@@ -22,6 +22,8 @@ abstract final class BullIcons {
   static const IconData arrowBack = Icons.arrow_back;
   static const IconData chevronRight = Icons.chevron_right;
   static const IconData accountTree = Icons.account_tree;
+  static const IconData deleteOutline = Icons.delete_outline;
+  static const IconData errorOutline = Icons.error_outline;
 }
 
 /// A thin wrapper over the Flutter [Icon] so feature code never touches
