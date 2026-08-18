@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class WalletDetailBalanceCard extends StatelessWidget {
   const WalletDetailBalanceCard({
@@ -37,16 +36,16 @@ class WalletDetailBalanceCard extends StatelessWidget {
           ),
           fit: .cover,
           colorFilter: signer == SignerEntity.none
-              ? ColorFilter.mode(context.theme.secondaryHeaderColor, .color)
+              ? ColorFilter.mode(theme.secondaryHeaderColor, .color)
               : null,
         ),
         border: Border(
           bottom: BorderSide(
             color: isLiquid && signer == SignerEntity.local
-                ? context.appColors.tertiary
+                ? context.bull.tertiary
                 : !isLiquid && signer == SignerEntity.local
-                ? context.appColors.onTertiary
-                : context.appColors.secondary,
+                ? context.bull.onTertiary
+                : context.bull.secondary,
             width: 9,
           ),
         ),
@@ -67,7 +66,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
                     CurrencyText(
                       balanceSat,
                       style: theme.textTheme.displaySmall?.copyWith(
-                        color: context.appColors.onPrimary,
+                        color: context.bull.onPrimary,
                       ),
                       showFiat: false,
                     ),

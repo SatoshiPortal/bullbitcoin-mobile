@@ -1,12 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class BackupWarningOverlay extends StatelessWidget {
@@ -49,7 +46,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Material(
-        color: context.appColors.surface.withAlpha(100),
+        color: context.bull.surface.withAlpha(100),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: SafeArea(
@@ -60,7 +57,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: context.appColors.surface,
+                  color: context.bull.surface,
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
@@ -75,18 +72,18 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            BBText(
+                            BullText(
                               context.loc.backupWarningTitle,
-                              style: context.font.headlineMedium?.copyWith(
+                              style: context.bullText.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
-                              color: context.appColors.onSurface,
+                              color: context.bull.onSurface,
                             ),
                             const Gap(16),
-                            BBText(
+                            BullText(
                               context.loc.backupWarningDescription,
-                              style: context.font.bodyMedium,
-                              color: context.appColors.onSurface,
+                              style: context.bullText.bodyMedium,
+                              color: context.bull.onSurface,
                             ),
                             const Gap(8),
                             for (final reason in [
@@ -101,55 +98,50 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    BBText(
+                                    BullText(
                                       '•  ',
-                                      style: context.font.bodyMedium,
-                                      color: context.appColors.onSurface,
+                                      style: context.bullText.bodyMedium,
+                                      color: context.bull.onSurface,
                                     ),
                                     Expanded(
-                                      child: BBText(
+                                      child: BullText(
                                         reason,
-                                        style: context.font.bodyMedium,
-                                        color: context.appColors.onSurface,
+                                        style: context.bullText.bodyMedium,
+                                        color: context.bull.onSurface,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
                             const Gap(8),
-                            BBText(
+                            BullText(
                               context.loc.backupWarningNoRecovery,
-                              style: context.font.bodyMedium?.copyWith(
+                              style: context.bullText.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
-                              color: context.appColors.onSurface,
+                              color: context.bull.onSurface,
                             ),
                           ],
                         ),
                       ),
                     ),
                     const Gap(24),
-                    BBButton.big(
+                    BullButton.primary(
                       label: context.loc.backupWarningBackupNow,
                       onPressed: () {
                         context.pushNamed(
                           BackupSettingsSubroute.backupOptions.name,
                         );
                       },
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
                     ),
                     const Gap(12),
-                    BBButton.big(
+                    BullButton.secondary(
                       label: context.loc.backupWarningBackupLater,
                       onPressed: () {
                         context.read<WalletBloc>().add(
                           const DismissBackupWarning(),
                         );
                       },
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.onSurface,
-                      outlined: true,
                     ),
                   ],
                 ),

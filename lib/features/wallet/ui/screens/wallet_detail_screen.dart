@@ -1,15 +1,13 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
+// Disclosure and loading widgets retain application-specific semantics; their
+// surrounding page chrome is migrated to bull_ui below.
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -18,10 +16,9 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart'
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,30 +38,26 @@ class WalletDetailScreen extends StatelessWidget {
     });
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: walletName.isEmpty
-            ? const LoadingLineContent(width: 150)
-            : BBText(walletName, style: context.font.headlineMedium),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.pushNamed(
-                SettingsRoute.walletOptions.name,
-                pathParameters: {'walletId': walletId},
-              );
-            },
-            icon: const Icon(CupertinoIcons.settings),
-          ),
-        ],
+    return BullPage(
+      padding: EdgeInsets.zero,
+      topBar: BullTopBar(
+        title: walletName,
+        onBack: context.pop,
+        onAction: () {
+          context.pushNamed(
+            SettingsRoute.walletOptions.name,
+            pathParameters: {'walletId': walletId},
+          );
+        },
+        actionIcon: BullIcons.tune,
       ),
-      body: wallet == null
+      child: wallet == null
           ? const LoadingBoxContent(height: 100)
           : BlocProvider<TransactionsCubit>(
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: Builder(
-                builder: (context) => BBPullableBody(
+                builder: (context) => BullPullableBody(
                   onRefresh: () async {
                     await context.read<WalletBloc>().refresh();
                     if (context.mounted) {
@@ -108,12 +101,8 @@ class WalletDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
-          child: WalletBottomButtons(wallet: wallet),
-        ),
+      bottomBar: BullBottomActionBar(
+        actions: [WalletBottomButtons(wallet: wallet)],
       ),
     );
   }
@@ -189,84 +178,65 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
     final subtitle = utxos == null ? null : _subtitle(context, utxos);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: InkWell(
-        borderRadius: radius,
+      child: BullBorderedTile(
         onTap: () async {
           await context.pushNamed(CoinsRoute.coins.name, extra: widget.wallet);
           // Reflect any freeze/unfreeze done on the Coins screen.
           _reload();
         },
-        child: Container(
-          decoration: BoxDecoration(
-            color: context.appColors.cardBackground,
-            borderRadius: radius,
-            border: Border.all(color: context.appColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: context.appColors.scrim,
-                offset: const Offset(0, 1),
-                blurRadius: 3,
-              ),
-            ],
-          ),
-          // ClipRRect + a stretched leading bar gives the 4px bitcoin-orange
-          // left accent without a non-uniform Border (which can't be combined
-          // with a borderRadius).
-          child: ClipRRect(
-            borderRadius: radius,
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(width: 4, color: context.appColors.bitcoinOrange),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 13,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.account_tree,
-                            size: 24,
-                            color: context.appColors.bitcoinOrange,
-                          ),
-                          const Gap(12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                BBText(
-                                  context.loc.walletButtonCoins,
-                                  style: context.font.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
+        child: ClipRRect(
+          borderRadius: radius,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 13,
+                    ),
+                    child: Row(
+                      children: [
+                        BullIcon(
+                          BullIcons.accountTree,
+                          size: 24,
+                          color: context.bull.primary,
+                        ),
+                        const Gap(12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              BullText(
+                                context.loc.walletButtonCoins,
+                                style: context.bullText.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (subtitle != null) ...[
+                                const Gap(2),
+                                BullText(
+                                  subtitle,
+                                  style: context.bullText.labelMedium?.copyWith(
+                                    color: context.bull.textMuted,
                                   ),
                                 ),
-                                if (subtitle != null) ...[
-                                  const Gap(2),
-                                  BBText(
-                                    subtitle,
-                                    style: context.font.labelMedium?.copyWith(
-                                      color: context.appColors.textMuted,
-                                    ),
-                                  ),
-                                ],
                               ],
-                            ),
+                            ],
                           ),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 22,
-                            color: context.appColors.textMuted,
-                          ),
-                        ],
-                      ),
+                        ),
+                        BullIcon(
+                          BullIcons.chevronRight,
+                          size: 22,
+                          color: context.bull.textMuted,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class TransactionDetailsStatusLabel extends StatelessWidget {
   const TransactionDetailsStatusLabel({super.key});
@@ -79,14 +77,14 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
             (swap.status == SwapStatus.failed ||
                 swap.status == SwapStatus.expired));
 
-    return BBText(
+    return BullText(
       label,
-      style: context.font.headlineLarge?.copyWith(
+      style: context.bullText.headlineLarge?.copyWith(
         color: failedOrExpired
             ? (orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
                       swap?.status == SwapStatus.failed
-                  ? context.appColors.error
-                  : context.appColors.error.withValues(alpha: 0.7))
+                  ? context.bull.error
+                  : context.bull.error.withValues(alpha: 0.7))
             : null,
       ),
     );

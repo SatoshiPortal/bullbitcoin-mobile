@@ -3,21 +3,15 @@ import 'dart:io';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/presentation/cubit.dart';
 import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class Bip329LabelsPage extends StatelessWidget {
@@ -30,29 +24,27 @@ class Bip329LabelsPage extends StatelessWidget {
         exportLabelsUsecase: locator<ExportLabelsUsecase>(),
         importLabelsUsecase: locator<ImportLabelsUsecase>(),
       ),
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            onBack: () => context.pop(),
-            title: context.loc.bip329LabelsTitle,
-          ),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(3),
-            child: BlocSelector<Bip329LabelsCubit, Bip329LabelsState, bool>(
+      child: BullPage(
+        topBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BullTopBar(
+              onBack: context.pop,
+              title: context.loc.bip329LabelsTitle,
+            ),
+            BlocSelector<Bip329LabelsCubit, Bip329LabelsState, bool>(
               selector: (state) =>
                   state.maybeWhen(loading: () => true, orElse: () => false),
-              builder: (context, isLoading) => FadingLinearProgress(
+              builder: (context, isLoading) => BullFadingLinearProgress(
                 height: 3,
                 trigger: isLoading,
-                backgroundColor: context.appColors.onPrimary,
-                foregroundColor: context.appColors.primary,
+                backgroundColor: context.bull.onPrimary,
+                foregroundColor: context.bull.primary,
               ),
             ),
-          ),
+          ],
         ),
-        body: SafeArea(
+        child: SafeArea(
           child: BlocConsumer<Bip329LabelsCubit, Bip329LabelsState>(
             listener: (context, state) {
               state.when(
@@ -95,19 +87,19 @@ class Bip329LabelsPage extends StatelessWidget {
                   crossAxisAlignment: .stretch,
                   children: [
                     const Gap(20),
-                    BBText(
+                    BullText(
                       context.loc.bip329LabelsHeading,
-                      style: context.font.headlineLarge,
+                      style: context.bullText.headlineLarge,
                       textAlign: .center,
                     ),
                     const Gap(16),
-                    BBText(
+                    BullText(
                       context.loc.bip329LabelsDescription,
-                      style: context.font.bodyLarge,
+                      style: context.bullText.bodyLarge,
                       textAlign: .center,
                     ),
                     const Spacer(),
-                    BBButton.big(
+                    BullButton.secondary(
                       label: context.loc.bip329LabelsImportButton,
                       onPressed: () async {
                         if (isLoading) return;
@@ -126,22 +118,18 @@ class Bip329LabelsPage extends StatelessWidget {
                           );
                         }
                       },
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
-                      iconData: Icons.file_upload,
+                      iconData: BullIcons.sync,
                       iconFirst: true,
                       disabled: isLoading,
                     ),
                     const Gap(12),
-                    BBButton.big(
+                    BullButton.primary(
                       label: context.loc.bip329LabelsExportButton,
                       onPressed: () async {
                         if (isLoading) return;
                         await cubit.exportLabels(LabelFormat.bip329);
                       },
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
-                      iconData: Icons.file_download,
+                      iconData: BullIcons.contentCopy,
                       iconFirst: true,
                       disabled: isLoading,
                     ),

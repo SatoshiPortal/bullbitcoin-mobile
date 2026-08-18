@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class LabelText extends StatelessWidget {
   const LabelText(this.label, {super.key, this.style});
@@ -24,7 +24,7 @@ class LabelText extends StatelessWidget {
 
         final isOverflowing = textPainter.didExceedMaxLines;
 
-        final textWidget = BBText(
+        final textWidget = BullText(
           displayLabel,
           style: style,
           maxLines: 1,

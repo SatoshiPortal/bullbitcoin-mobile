@@ -1,7 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class LegacyStorageStepRow extends StatelessWidget {
   const LegacyStorageStepRow({
@@ -23,10 +20,10 @@ class LegacyStorageStepRow extends StatelessWidget {
           _Bullet(index: index),
           const Gap(12),
           Expanded(
-            child: BBText(
+            child: BullText(
               label,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.onSurface,
               ),
             ),
           ),
@@ -47,14 +44,14 @@ class _Bullet extends StatelessWidget {
       width: 22,
       height: 22,
       decoration: BoxDecoration(
-        color: context.appColors.primary,
+        color: context.bull.primary,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
-      child: BBText(
+      child: BullText(
         '$index',
-        style: context.font.labelSmall?.copyWith(
-          color: context.appColors.onPrimary,
+        style: context.bullText.labelSmall?.copyWith(
+          color: context.bull.onPrimary,
           fontWeight: FontWeight.w700,
           fontSize: 12,
         ),

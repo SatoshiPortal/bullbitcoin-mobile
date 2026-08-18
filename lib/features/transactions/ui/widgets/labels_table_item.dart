@@ -1,11 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class LabelsTableItem extends StatelessWidget {
   const LabelsTableItem({super.key, required this.title, required this.labels});
@@ -22,10 +20,10 @@ class LabelsTableItem extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: BBText(
+            child: BullText(
               title,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.onSurface,
               ),
             ),
           ),

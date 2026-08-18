@@ -1,12 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_important_callout.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_screen_scaffold.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_step_row.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class LegacyStorageWarningScreen extends StatelessWidget {
   const LegacyStorageWarningScreen({
@@ -42,10 +38,10 @@ class LegacyStorageWarningScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBText(
+          BullText(
             loc.legacyStorageIntroDescription,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
+            style: context.bullText.bodyMedium?.copyWith(
+              color: context.bull.onSurface,
               height: 1.35,
             ),
           ),
@@ -60,34 +56,28 @@ class LegacyStorageWarningScreen extends StatelessWidget {
                 : loc.legacyStorageHasBackupImportantBody,
           ),
           const Gap(10),
-          BBText(
+          BullText(
             hasNoBackup
                 ? loc.legacyStorageContinueFooterNoBackup
                 : loc.legacyStorageContinueFooterHasBackup,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
+            style: context.bullText.bodyMedium?.copyWith(
+              color: context.bull.onSurface,
               height: 1.35,
             ),
           ),
         ],
       ),
       primaryButton: hasNoBackup
-          ? BBButton.big(
+          ? BullButton.primary(
               label: loc.legacyStorageBackupNowButton,
               onPressed: onBackupNow,
-              bgColor: context.appColors.primary,
-              textColor: context.appColors.onPrimary,
             )
           : null,
-      secondaryButton: BBButton.big(
+      secondaryButton: BullButton.secondary(
         label: hasNoBackup
             ? loc.legacyStorageRiskAckButton
             : loc.legacyStorageRiskAckButtonHasBackup,
         onPressed: onAcknowledgeRisk,
-        bgColor: context.appColors.background,
-        textColor: context.appColors.primary,
-        borderColor: context.appColors.primary,
-        outlined: true,
       ),
     );
   }

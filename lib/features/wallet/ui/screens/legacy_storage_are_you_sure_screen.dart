@@ -1,10 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_screen_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class LegacyStorageAreYouSureScreen extends StatefulWidget {
   const LegacyStorageAreYouSureScreen({
@@ -28,8 +25,8 @@ class _LegacyStorageAreYouSureScreenState
   @override
   Widget build(BuildContext context) {
     final loc = context.loc;
-    final bodyTextStyle = context.font.bodyMedium?.copyWith(
-      color: context.appColors.onSurface,
+    final bodyTextStyle = context.bullText.bodyMedium?.copyWith(
+      color: context.bull.onSurface,
       height: 1.35,
     );
 
@@ -40,25 +37,25 @@ class _LegacyStorageAreYouSureScreenState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBText(loc.legacyStorageAreYouSureParagraphOne, style: bodyTextStyle),
+          BullText(
+            loc.legacyStorageAreYouSureParagraphOne,
+            style: bodyTextStyle,
+          ),
           const Gap(16),
-          BBText(loc.legacyStorageAreYouSureParagraphTwo, style: bodyTextStyle),
+          BullText(
+            loc.legacyStorageAreYouSureParagraphTwo,
+            style: bodyTextStyle,
+          ),
         ],
       ),
-      primaryButton: BBButton.big(
+      primaryButton: BullButton.primary(
         label: loc.legacyStorageBackupNowButton,
         onPressed: widget.onBackupNow,
-        bgColor: context.appColors.primary,
-        textColor: context.appColors.onPrimary,
       ),
-      secondaryButton: BBButton.big(
+      secondaryButton: BullButton.secondary(
         label: loc.legacyStorageContinueWithoutBackupButton,
         onPressed: widget.onConfirmContinue,
         disabled: !_accepted,
-        bgColor: context.appColors.background,
-        textColor: context.appColors.primary,
-        borderColor: context.appColors.primary,
-        outlined: true,
       ),
       belowButtons: _AcceptRisksRow(
         value: _accepted,
@@ -93,18 +90,18 @@ class _AcceptRisksRow extends StatelessWidget {
             child: Checkbox(
               value: value,
               onChanged: onChanged,
-              activeColor: context.appColors.primary,
-              side: BorderSide(color: context.appColors.primary, width: 2),
+              activeColor: context.bull.primary,
+              side: BorderSide(color: context.bull.primary, width: 2),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               visualDensity: VisualDensity.compact,
             ),
           ),
           const Gap(12),
           Expanded(
-            child: BBText(
+            child: BullText(
               label,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.onSurface,
               ),
             ),
           ),

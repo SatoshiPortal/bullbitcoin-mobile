@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+// This custom multi-action bar is coupled to chart, exchange support and the
+// superuser logo interaction; keep its behavior while using Bull theme tokens.
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -10,7 +11,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletHomeAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -42,7 +43,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
     );
 
     return AppBar(
-      backgroundColor: context.appColors.transparent,
+      backgroundColor: context.bull.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -57,7 +58,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
             ? IconButton(
                 icon: Icon(
                   Icons.arrow_back,
-                  color: context.appColors.onPrimary,
+                  color: context.bull.onPrimary,
                   size: 24,
                 ),
                 onPressed: () {
@@ -75,7 +76,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.show_chart,
-                        color: context.appColors.onPrimary,
+                        color: context.bull.onPrimary,
                         size: 24,
                       ),
                       onPressed: () {
@@ -88,7 +89,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.chat_bubble_outline,
-                        color: context.appColors.onPrimary,
+                        color: context.bull.onPrimary,
                         size: 24,
                       ),
                       onPressed: () {
@@ -112,10 +113,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
               ),
       ),
       leadingWidth: showChart ? 56 : 112,
-      actionsIconTheme: IconThemeData(
-        color: context.appColors.onPrimary,
-        size: 24,
-      ),
+      actionsIconTheme: IconThemeData(color: context.bull.onPrimary, size: 24),
       actionsPadding: const EdgeInsets.only(right: 16),
       actions: showChart
           ? null
@@ -125,7 +123,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                   context.pushNamed(TransactionsRoute.transactions.name);
                 },
                 visualDensity: VisualDensity.compact,
-                color: context.appColors.onPrimary,
+                color: context.bull.onPrimary,
                 iconSize: 32,
                 icon: const Icon(Icons.history),
               ),
@@ -136,7 +134,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                   Assets.icons.settingsLine.path,
                   width: 32,
                   height: 32,
-                  color: context.appColors.onPrimary,
+                  color: context.bull.onPrimary,
                 ),
               ),
             ],

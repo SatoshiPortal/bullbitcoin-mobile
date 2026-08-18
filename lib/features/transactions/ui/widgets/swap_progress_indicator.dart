@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class SwapProgressIndicator extends StatelessWidget {
   const SwapProgressIndicator({required this.swap});
@@ -36,7 +35,7 @@ class SwapProgressIndicator extends StatelessWidget {
                       right: stepWidth / 2,
                       child: Container(
                         height: 5,
-                        color: context.appColors.surfaceContainerHighest,
+                        color: context.bull.surfaceContainerHighest,
                       ),
                     ),
 
@@ -48,7 +47,7 @@ class SwapProgressIndicator extends StatelessWidget {
                         width: stepWidth * currentStep,
                         child: Container(
                           height: 5,
-                          color: context.appColors.primary,
+                          color: context.bull.primary,
                         ),
                       ),
 
@@ -64,33 +63,32 @@ class SwapProgressIndicator extends StatelessWidget {
                         // Determine colors based on state
                         final Color indicatorColor;
                         if (isFailedOrExpired && index == 0) {
-                          indicatorColor = context.appColors.error;
+                          indicatorColor = context.bull.error;
                         } else if (isCompleted) {
-                          indicatorColor = context.appColors.primary;
+                          indicatorColor = context.bull.primary;
                         } else {
-                          indicatorColor =
-                              context.appColors.surfaceContainerHighest;
+                          indicatorColor = context.bull.surfaceContainerHighest;
                         }
 
                         // Create indicator content
                         Widget? indicatorChild;
                         if (isFailedOrExpired && index == 0) {
-                          indicatorChild = Icon(
-                            Icons.error_outline,
+                          indicatorChild = BullIcon(
+                            BullIcons.close,
                             size: 15,
-                            color: context.appColors.onError,
+                            color: context.bull.onError,
                           );
                         } else if (isCompleted) {
-                          indicatorChild = Icon(
-                            Icons.check,
+                          indicatorChild = BullIcon(
+                            BullIcons.check,
                             size: 20,
-                            color: context.appColors.onPrimary,
+                            color: context.bull.onPrimary,
                           );
                         } else {
                           indicatorChild = Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: context.appColors.onSurfaceVariant,
+                              color: context.bull.textMuted,
                               fontWeight: .bold,
                               fontSize: 15,
                             ),
@@ -111,8 +109,7 @@ class SwapProgressIndicator extends StatelessWidget {
                                       shape: .circle,
                                       border: isCurrent
                                           ? Border.all(
-                                              color:
-                                                  context.appColors.secondary,
+                                              color: context.bull.secondary,
                                               width: 2,
                                             )
                                           : null,
@@ -207,13 +204,13 @@ class SwapProgressIndicator extends StatelessWidget {
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
 
     if (isFailedOrExpired) {
-      return index == 0 ? context.appColors.error : context.appColors.outline;
+      return index == 0 ? context.bull.error : context.bull.outline;
     }
 
     if (index <= currentStep) {
-      return context.appColors.primary;
+      return context.bull.primary;
     }
 
-    return context.appColors.outline;
+    return context.bull.outline;
   }
 }

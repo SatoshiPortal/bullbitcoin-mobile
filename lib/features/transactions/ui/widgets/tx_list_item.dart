@@ -1,14 +1,12 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -32,12 +30,12 @@ class TxListItem extends StatelessWidget {
         ? Icons.arrow_upward
         : Icons.arrow_downward;
     final walletColor = isOrderType
-        ? context.appColors.border
+        ? context.bull.border
         : tx.isOngoingSwap
-        ? context.appColors.border.withValues(alpha: 0.3)
+        ? context.bull.border.withValues(alpha: 0.3)
         : tx.isBitcoin
-        ? context.appColors.onTertiary
-        : context.appColors.tertiary;
+        ? context.bull.onTertiary
+        : context.bull.tertiary;
     final networkLabel = isOrderType
         ? tx.order!.orderTypeLabel
         : isLnSwap
@@ -111,7 +109,7 @@ class TxListItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: context.appColors.surface,
+          color: context.bull.surface,
           borderRadius: BorderRadius.circular(2.0),
           boxShadow: const [],
         ),
@@ -121,16 +119,16 @@ class TxListItem extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 color: tx.isOngoingSwap
-                    ? context.appColors.border.withValues(alpha: 0.3)
-                    : context.appColors.surface,
+                    ? context.bull.border.withValues(alpha: 0.3)
+                    : context.bull.surface,
                 border: Border.all(
                   color: tx.isOngoingSwap
-                      ? context.appColors.border.withValues(alpha: 0.5)
-                      : context.appColors.border,
+                      ? context.bull.border.withValues(alpha: 0.5)
+                      : context.bull.border,
                 ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
-              child: Icon(icon, color: context.appColors.onSurface),
+              child: BullIcon(icon, color: context.bull.onSurface),
             ),
             const Gap(16.0),
             Expanded(
@@ -144,7 +142,7 @@ class TxListItem extends StatelessWidget {
                         ? orderAmountAndCurrency.$1.toInt()
                         : tx.swapListAmountSat,
                     showFiat: false,
-                    style: context.font.bodyLarge,
+                    style: context.bullText.bodyLarge,
                     fiatAmount:
                         isOrderType &&
                             showOrderInFiat &&
@@ -176,10 +174,10 @@ class TxListItem extends StatelessWidget {
                     color: walletColor,
                     borderRadius: BorderRadius.circular(2.0),
                   ),
-                  child: BBText(
+                  child: BullText(
                     networkLabel,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurface,
+                    style: context.bullText.labelSmall?.copyWith(
+                      color: context.bull.onSurface,
                     ),
                   ),
                 ),
@@ -187,27 +185,27 @@ class TxListItem extends StatelessWidget {
                 if (isOrderType && tx.order!.isCompleted() && date != null)
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         date,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.appColors.success,
+                        color: context.bull.success,
                       ),
                     ],
                   )
                 else if (isOrderType)
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         tx.order!.orderStatus.value,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                     ],
@@ -221,17 +219,17 @@ class TxListItem extends StatelessWidget {
                             OrderSwapLocalStatus.refunded))
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         date ?? '',
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.appColors.success,
+                        color: context.bull.success,
                       ),
                     ],
                   )
@@ -239,63 +237,63 @@ class TxListItem extends StatelessWidget {
                     (tx.walletTransaction?.isConfirmed ?? false))
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         date ?? '',
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.appColors.success,
+                        color: context.bull.success,
                       ),
                     ],
                   )
                 else if (date != null && isOrderType)
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         date,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.appColors.success,
+                        color: context.bull.success,
                       ),
                     ],
                   )
                 else if (date != null && tx.isOngoingSwap)
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         date,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.sync,
                         size: 12.0,
-                        color: context.appColors.textMuted,
+                        color: context.bull.textMuted,
                       ),
                     ],
                   )
                 else ...[
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         tx.isOngoingSwap
                             ? context.loc.transactionStatusInProgress
                             : context.loc.transactionStatusPending,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelSmall?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(4.0),
@@ -303,7 +301,7 @@ class TxListItem extends StatelessWidget {
                         Icon(
                           Icons.sync,
                           size: 12.0,
-                          color: context.appColors.textMuted,
+                          color: context.bull.textMuted,
                         ),
                     ],
                   ),

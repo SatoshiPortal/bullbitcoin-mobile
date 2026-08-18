@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class TxsFilterItem extends StatelessWidget {
   const TxsFilterItem({
@@ -18,25 +16,15 @@ class TxsFilterItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? context.appColors.onSurface
-              : context.appColors.transparent,
-          borderRadius: BorderRadius.circular(2.0),
-          border: Border.all(
-            color: isSelected
-                ? context.appColors.onSurface
-                : context.appColors.border,
-          ),
-        ),
-        child: BBText(
+      child: BullBorderedTile(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        backgroundColor: isSelected
+            ? context.bull.onSurface
+            : context.bull.surface,
+        child: BullText(
           title,
-          style: context.font.bodyMedium?.copyWith(
-            color: isSelected
-                ? context.appColors.surface
-                : context.appColors.onSurface,
+          style: context.bullText.bodyMedium?.copyWith(
+            color: isSelected ? context.bull.surface : context.bull.onSurface,
           ),
         ),
       ),

@@ -1,10 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class SwapStatusDescription extends StatelessWidget {
   const SwapStatusDescription({required this.swap});
@@ -22,41 +18,29 @@ class SwapStatusDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isFailedOrExpired
-                ? context.appColors.errorContainer.withValues(alpha: 0.15)
-                : context.appColors.surfaceContainerHighest.withValues(
-                    alpha: 0.5,
-                  ),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isFailedOrExpired
-                  ? context.appColors.error.withValues(alpha: 0.5)
-                  : context.appColors.outline.withValues(alpha: 0.3),
-            ),
-          ),
+        BullBorderedTile(
+          backgroundColor: isFailedOrExpired
+              ? context.bull.errorContainer
+              : context.bull.surfaceContainerHighest,
           child: Column(
             crossAxisAlignment: .start,
             children: [
               Row(
                 children: [
-                  Icon(
+                  BullIcon(
                     swap.status == SwapStatus.failed ||
                             swap.status == SwapStatus.expired
-                        ? Icons.warning_amber_rounded
-                        : Icons.info_outline,
+                        ? BullIcons.close
+                        : BullIcons.accountTree,
                     size: 20,
                     color:
                         swap.status == SwapStatus.failed ||
                             swap.status == SwapStatus.expired
-                        ? context.appColors.error
-                        : context.appColors.secondary,
+                        ? context.bull.error
+                        : context.bull.secondary,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     swap.status == SwapStatus.failed
                         ? (swap.isChainSwap
                               ? context.loc.transactionStatusTransferFailed
@@ -68,38 +52,38 @@ class SwapStatusDescription extends StatelessWidget {
                         : (swap.isChainSwap
                               ? context.loc.transactionSwapStatusTransferStatus
                               : context.loc.transactionSwapStatusSwapStatus),
-                    style: context.font.titleSmall?.copyWith(
+                    style: context.bullText.titleSmall?.copyWith(
                       color:
                           swap.status == SwapStatus.failed ||
                               swap.status == SwapStatus.expired
-                          ? context.appColors.error
-                          : context.appColors.secondary,
+                          ? context.bull.error
+                          : context.bull.secondary,
                       fontWeight: .bold,
                     ),
                   ),
                 ],
               ),
               const Gap(8),
-              BBText(
+              BullText(
                 _getSwapStatusDescription(context),
-                style: context.font.bodySmall?.copyWith(
+                style: context.bullText.bodySmall?.copyWith(
                   color:
                       swap.status == SwapStatus.failed ||
                           swap.status == SwapStatus.expired
-                      ? context.appColors.error
-                      : context.appColors.onSurfaceVariant,
+                      ? context.bull.error
+                      : context.bull.textMuted,
                 ),
               ),
               if (_getAdditionalInfo(context).isNotEmpty) ...[
                 const Gap(12),
-                BBText(
+                BullText(
                   _getAdditionalInfo(context),
-                  style: context.font.bodySmall?.copyWith(
+                  style: context.bullText.bodySmall?.copyWith(
                     color:
                         swap.status == SwapStatus.failed ||
                             swap.status == SwapStatus.expired
-                        ? context.appColors.error.withValues(alpha: 0.8)
-                        : context.appColors.outline,
+                        ? context.bull.error.withValues(alpha: 0.8)
+                        : context.bull.outline,
                     fontStyle: .italic,
                   ),
                 ),
@@ -109,13 +93,13 @@ class SwapStatusDescription extends StatelessWidget {
         ),
         if (shouldShowWarning) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: swap.isChainSwap
                 ? '${context.loc.transactionSwapDoNotUninstall}\n\n'
                       '${context.loc.transactionSwapOpenWithin24h}'
                 : context.loc.transactionSwapDoNotUninstall,
-            tagColor: context.appColors.tertiary,
-            bgColor: context.appColors.warningContainer,
+            tagColor: context.bull.tertiary,
+            bgColor: context.bull.warningContainer,
             boldDescription: true,
           ),
         ],

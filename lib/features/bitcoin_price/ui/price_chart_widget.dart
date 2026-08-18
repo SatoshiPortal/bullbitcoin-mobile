@@ -3,10 +3,8 @@ import 'dart:math' as math;
 import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -65,10 +63,10 @@ class PriceChartWidget extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  BBText(
+                  BullText(
                     state.failure!.toTranslated(context),
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onPrimary,
+                      color: context.bull.onPrimary,
                     ),
                   ),
                   const Gap(16),
@@ -80,7 +78,7 @@ class PriceChartWidget extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.refresh,
-                      color: context.appColors.onPrimary,
+                      color: context.bull.onPrimary,
                       size: 32,
                     ),
                   ),
@@ -95,14 +93,12 @@ class PriceChartWidget extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(
-                      color: context.appColors.onPrimary,
-                    ),
+                    CircularProgressIndicator(color: context.bull.onPrimary),
                     const Gap(16),
-                    BBText(
+                    BullText(
                       context.loc.priceChartFetchingHistory,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onPrimary,
+                        color: context.bull.onPrimary,
                       ),
                     ),
                   ],
@@ -185,7 +181,7 @@ class _PriceDisplay extends StatelessWidget {
       return;
     }
 
-    final selectedCurrency = await BlurredBottomSheet.show<String?>(
+    final selectedCurrency = await BullBottomSheet.show<String?>(
       context: context,
       child: CurrencyBottomSheet(
         availableCurrencies: availableCurrencies,
@@ -233,12 +229,10 @@ class _PriceDisplay extends StatelessWidget {
                       style: context.font.headlineSmall,
                     ),
                     const Gap(6),
-                    BBText(
+                    BullText(
                       currency,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.onPrimary.withValues(
-                          alpha: 0.7,
-                        ),
+                        color: context.bull.onPrimary.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -252,13 +246,13 @@ class _PriceDisplay extends StatelessWidget {
                 _openCurrencyBottomSheet(builderContext);
               },
               child: Center(
-                child: BBText(
+                child: BullText(
                   NumberFormat.currency(
                     symbol: '',
                     decimalDigits: 2,
                   ).format(price),
                   style: context.font.displaySmall?.copyWith(
-                    color: context.appColors.onPrimary,
+                    color: context.bull.onPrimary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -271,10 +265,10 @@ class _PriceDisplay extends StatelessWidget {
                 _openCurrencyBottomSheet(builderContext);
               },
               child: Center(
-                child: BBText(
+                child: BullText(
                   dateFormat.format(date.toLocal()),
                   style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.onPrimary.withValues(alpha: 0.6),
+                    color: context.bull.onPrimary.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -439,12 +433,12 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
               prices: prices,
               minPrice: minPrice - padding,
               maxPrice: maxPrice + padding,
-              lineColor: context.appColors.onPrimary,
+              lineColor: context.bull.onPrimary,
               selectedIndex: displayIndex,
               lineAnimation: _lineAnimation.value,
               pulseScale: _pulseAnimation.value,
-              dotColor: context.appColors.onTertiary,
-              borderColor: context.appColors.onPrimary,
+              dotColor: context.bull.onTertiary,
+              borderColor: context.bull.onPrimary,
             ),
           );
         },

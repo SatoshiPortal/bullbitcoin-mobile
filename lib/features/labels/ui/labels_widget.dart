@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -6,6 +5,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class LabelsWidget extends StatefulWidget {
   const LabelsWidget({super.key, required this.labels, this.onDelete});
@@ -106,9 +106,9 @@ class LabelChip extends StatelessWidget {
         vertical: Device.screen.height * 0.01,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.onSecondary,
+        color: context.bull.onSecondary,
         borderRadius: radius,
-        border: Border.all(color: context.appColors.secondaryFixedDim),
+        border: Border.all(color: context.bull.secondaryFixedDim),
       ),
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Row(
@@ -117,8 +117,8 @@ class LabelChip extends StatelessWidget {
           Flexible(
             child: LabelText(
               label,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.secondary,
+              style: context.bullText.bodyLarge?.copyWith(
+                color: context.bull.secondary,
               ),
             ),
           ),
@@ -131,17 +131,17 @@ class LabelChip extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    context.appColors.primary,
+                    context.bull.primary,
                   ),
                 ),
               )
             else
               GestureDetector(
                 onTap: onDelete,
-                child: Icon(
-                  Icons.close,
+                child: BullIcon(
+                  BullIcons.close,
                   size: 16,
-                  color: context.appColors.primary,
+                  color: context.bull.primary,
                 ),
               ),
           ],

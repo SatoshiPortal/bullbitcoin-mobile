@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class TxsSyncingIndicator extends StatelessWidget {
   const TxsSyncingIndicator({super.key});
@@ -12,11 +11,11 @@ class TxsSyncingIndicator extends StatelessWidget {
       (TransactionsCubit cubit) => cubit.state.isSyncing,
     );
 
-    return FadingLinearProgress(
+    return BullFadingLinearProgress(
       trigger: isSyncing,
       height: 3,
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      foregroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: context.bull.secondary,
+      foregroundColor: context.bull.primary,
     );
   }
 }

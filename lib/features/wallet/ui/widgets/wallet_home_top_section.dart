@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -12,7 +11,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -79,7 +78,7 @@ class _UIState extends State<_UI> {
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
-          color: Colors.transparent,
+          color: context.bull.transparent,
           child: image,
         ),
         AnimatedSwitcher(
@@ -151,8 +150,8 @@ class _BtcTotalAmt extends StatelessWidget {
     return CurrencyText(
       btcTotal,
       showFiat: false,
-      style: context.font.displaySmall,
-      color: context.appColors.onPrimary,
+      style: context.bullText.displaySmall,
+      color: context.bull.onPrimary,
     );
   }
 }
@@ -180,14 +179,14 @@ class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: context.appColors.shimmerBase,
-      highlightColor: context.appColors.shimmerHighlight,
+      baseColor: context.bull.shimmerBase,
+      highlightColor: context.bull.shimmerHighlight,
       child: SizedBox(
         width: 200,
         height: 40,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: context.appColors.surface,
+            color: context.bull.surface,
             borderRadius: BorderRadius.circular(4),
           ),
         ),
@@ -214,7 +213,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.unconfirmedIncomingBalance,
     );
     if (unconfirmed == 0) return const SizedBox.shrink();
-    final color = context.appColors.onPrimary;
+    final color = context.bull.onPrimary;
     return GestureDetector(
       onTap: () {
         context.pushNamed(TransactionsRoute.transactions.name);
@@ -226,19 +225,19 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.arrow_downward, color: color, size: 20),
+                BullIcon(BullIcons.arrowBack, color: color, size: 20),
                 CurrencyText(
                   unconfirmed,
                   showFiat: false,
-                  style: context.font.bodyLarge,
+                  style: context.bullText.bodyLarge,
                   color: color,
                 ),
               ],
             ),
             Align(
-              child: Text(
+              child: BullText(
                 context.loc.walletBalanceUnconfirmedIncoming,
-                style: context.font.bodyLarge?.copyWith(color: color),
+                style: context.bullText.bodyLarge?.copyWith(color: color),
               ),
             ),
           ],

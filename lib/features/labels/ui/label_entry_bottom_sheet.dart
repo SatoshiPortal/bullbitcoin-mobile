@@ -1,18 +1,13 @@
 import 'dart:math' as math;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 /// Shared bottom-sheet editor for user-entered annotations on payment
@@ -179,16 +174,16 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           Row(
             children: [
               const Spacer(),
-              BBText(
+              BullText(
                 widget.title,
-                style: context.font.headlineMedium,
-                color: context.appColors.secondary,
+                style: context.bullText.headlineMedium,
+                color: context.bull.secondary,
               ),
               const Spacer(),
               IconButton(
                 onPressed: () => context.pop(),
-                color: context.appColors.secondary,
-                icon: const Icon(Icons.close_sharp),
+                color: context.bull.secondary,
+                icon: const BullIcon(BullIcons.close),
               ),
             ],
           ),
@@ -197,17 +192,17 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.info_outline,
+                BullIcon(
+                  BullIcons.accountTree,
                   size: Device.screen.height * 0.02,
-                  color: context.appColors.onSurfaceVariant,
+                  color: context.bull.textMuted,
                 ),
                 Gap(Device.screen.width * 0.02),
                 Expanded(
-                  child: BBText(
+                  child: BullText(
                     widget.disclosure!,
-                    style: context.font.bodySmall,
-                    color: context.appColors.onSurfaceVariant,
+                    style: context.bullText.bodySmall,
+                    color: context.bull.textMuted,
                     maxLines: 3,
                   ),
                 ),
@@ -216,14 +211,14 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           ],
           if (widget.suggestionsFuture != null) _buildSuggestionsBlock(),
           Gap(gap),
-          BorderedTappableTile(
+          BullBorderedTile(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   widget.title,
-                  style: context.font.bodyLarge,
-                  color: context.appColors.secondary,
+                  style: context.bullText.bodyLarge,
+                  color: context.bull.secondary,
                 ),
                 const Gap(4),
                 TextFormField(
@@ -235,15 +230,15 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
                     // Strip newline / tab / carriage return on type or paste.
                     FilteringTextInputFormatter.deny(RegExp(r'[\n\t\r]')),
                   ],
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.secondary,
+                  style: context.bullText.bodyMedium?.copyWith(
+                    color: context.bull.secondary,
                   ),
                   decoration: InputDecoration(
                     isCollapsed: true,
                     border: InputBorder.none,
                     hintText: widget.hint ?? context.loc.receiveEnterHere,
-                    hintStyle: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                    hintStyle: context.bullText.bodyMedium?.copyWith(
+                      color: context.bull.textMuted,
                     ),
                     counterText: '',
                   ),
@@ -253,19 +248,17 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           ),
           if (_errorMessage != null) ...[
             Gap(tightGap),
-            BBText(
+            BullText(
               _errorMessage!,
-              style: context.font.bodySmall,
-              color: context.appColors.error,
+              style: context.bullText.bodySmall,
+              color: context.bull.error,
             ),
           ],
           Gap(gap),
-          BBButton.big(
+          BullButton.primary(
             label: context.loc.receiveSave,
             disabled: !_canSave,
             onPressed: _save,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
           Gap(gap),
         ],
@@ -298,7 +291,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Gap(tightGap),
-            if (loading) FadingLinearProgress(trigger: true),
+            if (loading) const BullFadingLinearProgress(trigger: true),
             if (showChips) ...[
               if (loading) Gap(tightGap),
               SizedBox(

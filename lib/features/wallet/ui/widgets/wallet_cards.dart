@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
+// WalletCard owns wallet-model-specific balance/signing presentation; retain
+// it as the application-coupled leaf while the surrounding list uses Bull.
 class WalletCards extends StatelessWidget {
   const WalletCards({
     super.key,
@@ -25,15 +25,15 @@ class WalletCards extends StatelessWidget {
     final isLiquid = wallet.isLiquid;
     final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 
-    final watchonlyColor = context.appColors.secondary;
+    final watchonlyColor = context.bull.secondary;
 
     if (watchOrSignsRemotely && !isTestnet) return watchonlyColor;
     if (watchOrSignsRemotely && isTestnet) return watchonlyColor;
 
-    if (isLiquid) return context.appColors.tertiary;
+    if (isLiquid) return context.bull.tertiary;
 
-    if (isTestnet) return context.appColors.onTertiary;
-    return context.appColors.onTertiary;
+    if (isTestnet) return context.bull.onTertiary;
+    return context.bull.onTertiary;
   }
 
   @override

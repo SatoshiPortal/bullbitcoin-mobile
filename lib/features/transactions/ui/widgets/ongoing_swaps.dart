@@ -1,10 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class OngoingSwapsWidget extends StatelessWidget {
   const OngoingSwapsWidget({super.key, required this.ongoingSwaps});
@@ -26,12 +23,12 @@ class OngoingSwapsWidget extends StatelessWidget {
 
           child: Row(
             children: [
-              Icon(Icons.swap_horiz, color: context.appColors.secondary),
+              BullIcon(BullIcons.sync, color: context.bull.secondary),
               const Gap(8),
-              BBText(
+              BullText(
                 context.loc.transactionListOngoingTransfersTitle,
-                style: context.font.titleMedium?.copyWith(
-                  color: context.appColors.secondary,
+                style: context.bullText.titleMedium?.copyWith(
+                  color: context.bull.secondary,
                   fontWeight: .w600,
                 ),
               ),
@@ -39,13 +36,13 @@ class OngoingSwapsWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.appColors.secondary,
+                  color: context.bull.secondary,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: BBText(
+                child: BullText(
                   ongoingSwaps.length.toString(),
-                  style: context.font.labelSmall?.copyWith(
-                    color: context.appColors.onSecondary,
+                  style: context.bullText.labelSmall?.copyWith(
+                    color: context.bull.onSecondary,
                     fontWeight: .w600,
                   ),
                 ),
@@ -56,10 +53,10 @@ class OngoingSwapsWidget extends StatelessWidget {
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: BBText(
+          child: BullText(
             context.loc.transactionListOngoingTransfersDescription,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.outline,
+            style: context.bullText.bodySmall?.copyWith(
+              color: context.bull.outline,
               fontStyle: .italic,
             ),
           ),

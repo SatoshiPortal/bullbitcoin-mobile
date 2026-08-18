@@ -1,14 +1,11 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class BroadcastPayjoinOriginalTxButton extends StatefulWidget {
   final PayjoinSession payjoin;
@@ -79,7 +76,7 @@ class _BroadcastPayjoinOriginalTxButtonState
     );
     return Column(
       children: [
-        BBButton.big(
+        BullButton.primary(
           label: isSender
               ? context.loc.transactionPayjoinSendWithout
               : context.loc.receivePaymentNormally,
@@ -96,15 +93,13 @@ class _BroadcastPayjoinOriginalTxButtonState
               );
             }
           },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
         const Gap(16),
         if (broadcastOriginalTransactionException != null) ...[
-          Text(
+          BullText(
             context.loc.oopsSomethingWentWrong,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
+            style: context.bullText.bodyMedium?.copyWith(
+              color: context.bull.error,
             ),
             textAlign: .center,
           ),

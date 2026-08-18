@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -10,15 +9,15 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
-import 'package:flutter/material.dart';
+// Address/transaction viewers and the large details table are application
+// coupled; retain their behavior and migrate their text/theme surface here.
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -100,13 +99,17 @@ class TransactionDetailsTable extends StatelessWidget {
             displayWidget: isLiquid
                 ? TransactionViewer.liquid(
                     txId,
-                    style: TextStyle(color: context.appColors.primary),
+                    style: context.bullText.bodyMedium?.copyWith(
+                      color: context.bull.primary,
+                    ),
                     isTestnet: isTestnet,
                     unblindedUrl: transaction?.walletTransaction?.unblindedUrl,
                   )
                 : TransactionViewer.bitcoin(
                     txId,
-                    style: TextStyle(color: context.appColors.primary),
+                    style: context.bullText.bodyMedium?.copyWith(
+                      color: context.bull.primary,
+                    ),
                     isTestnet: isTestnet,
                   ),
           ),
@@ -146,7 +149,7 @@ class TransactionDetailsTable extends StatelessWidget {
             copyValue: toAddress,
             displayWidget: AddressViewer(
               toAddress,
-              style: TextStyle(color: context.appColors.onSurface),
+              style: context.bullText.bodyMedium,
             ),
           ),
         if (addressLabels.isNotEmpty && toAddress != null)
@@ -837,10 +840,10 @@ class TransactionDetailsTable extends StatelessWidget {
                         (swap as LnSendSwap).refundTxid != null)
                 ? context.loc.transactionDetailLabelRefunded
                 : swap.status.displayName(context),
-            expandableChild: BBText(
+            expandableChild: BullText(
               swap.getDisplayMessage(context),
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.secondary,
+              style: context.bullText.bodySmall?.copyWith(
+                color: context.bull.secondary,
               ),
               maxLines: 5,
             ),
@@ -1012,12 +1015,12 @@ class TransactionDetailsTable extends StatelessWidget {
                   const Gap(4),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: BBText(
+                    child: BullText(
                       swap.isLnReceiveSwap
                           ? context.loc.transactionFeesDeductedFrom
                           : context.loc.transactionFeesTotalDeducted,
-                      style: context.font.labelSmall,
-                      color: context.appColors.secondary,
+                      style: context.bullText.labelSmall,
+                      color: context.bull.secondary,
                     ),
                   ),
                   if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
@@ -1100,10 +1103,10 @@ class TransactionDetailsTable extends StatelessWidget {
                         transaction.payjoinFeeContributionSat!,
                       ),
                     ).toUpperCase(),
-              expandableChild: BBText(
+              expandableChild: BullText(
                 context.loc.transactionPayjoinFeeContributionExplanation,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.secondary,
+                style: context.bullText.bodySmall?.copyWith(
+                  color: context.bull.secondary,
                 ),
                 maxLines: 5,
               ),
@@ -1119,17 +1122,17 @@ Widget _feeRow(BuildContext context, String label, int amt) {
     padding: const EdgeInsets.symmetric(vertical: 4),
     child: Row(
       children: [
-        BBText(
+        BullText(
           label,
-          style: context.font.bodySmall,
-          color: context.appColors.secondary,
+          style: context.bullText.bodySmall,
+          color: context.bull.secondary,
         ),
         const Spacer(),
         CurrencyText(
           amt,
           showFiat: false,
-          style: context.font.bodySmall,
-          color: context.appColors.secondary,
+          style: context.bullText.bodySmall,
+          color: context.bull.secondary,
         ),
       ],
     ),

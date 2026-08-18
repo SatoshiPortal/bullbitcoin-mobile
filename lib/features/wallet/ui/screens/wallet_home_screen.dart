@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -10,6 +8,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletHomeScreen extends StatefulWidget {
@@ -103,17 +102,16 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
         onPopInvokedWithResult: (didPop, _) {},
         child: Stack(
           children: [
-            // Black background visible only during iOS top overscroll
             Positioned(
               top: 0,
               left: 0,
               right: 0,
               child: ColoredBox(
-                color: AppColors.dark.background,
+                color: context.bull.inverseSurface,
                 child: const SizedBox(height: 300),
               ),
             ),
-            BBPullableBody(
+            BullPullableBody(
               indicatorKey: _indicatorKey,
               onRefresh: () => context.read<WalletBloc>().refresh(),
               slivers: [
@@ -131,21 +129,17 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                     },
                   ),
                 ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: BullSpacing.xxxl * 2),
+                ),
               ],
             ),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13.0,
-                    vertical: 16.0,
-                  ),
-                  child: WalletBottomButtons(),
-                ),
+              child: BullBottomActionBar(
+                actions: const [WalletBottomButtons()],
               ),
             ),
           ],

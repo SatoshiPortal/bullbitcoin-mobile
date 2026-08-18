@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomeFiatBalance extends StatelessWidget {
@@ -85,16 +85,14 @@ class HomeFiatBalance extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: context.appColors.border.withValues(alpha: 0.3),
-          ),
-          color: context.appColors.border.withValues(alpha: 0.3),
+          border: Border.all(color: context.bull.border.withValues(alpha: 0.3)),
+          color: context.bull.border.withValues(alpha: 0.3),
         ),
         child: CurrencyText(
           balanceSat,
           showFiat: true,
-          style: context.font.bodyLarge,
-          color: context.appColors.onPrimary,
+          style: context.bullText.bodyLarge,
+          color: context.bull.onPrimary,
         ),
       ),
     );
@@ -110,20 +108,18 @@ class _HomeFiatBalanceSkeleton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: context.appColors.border.withValues(alpha: 0.3),
-        ),
-        color: context.appColors.border.withValues(alpha: 0.3),
+        border: Border.all(color: context.bull.border.withValues(alpha: 0.3)),
+        color: context.bull.border.withValues(alpha: 0.3),
       ),
       child: Shimmer.fromColors(
-        baseColor: context.appColors.shimmerBase,
-        highlightColor: context.appColors.shimmerHighlight,
+        baseColor: context.bull.shimmerBase,
+        highlightColor: context.bull.shimmerHighlight,
         child: SizedBox(
           width: 140,
           height: 22,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: context.appColors.surface,
+              color: context.bull.surface,
               borderRadius: BorderRadius.circular(4),
             ),
           ),

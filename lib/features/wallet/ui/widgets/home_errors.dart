@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
+// BackupCard is coupled to backup-settings copy and routing; InfoCard remains
+// the legacy warning adapter until that application contract is extracted.
 class HomeWarnings extends StatelessWidget {
   const HomeWarnings({super.key});
 
@@ -44,8 +44,8 @@ class HomeWarnings extends StatelessWidget {
                 InfoCard(
                   title: warning.title,
                   description: warning.description,
-                  tagColor: context.appColors.error,
-                  bgColor: context.appColors.errorContainer,
+                  tagColor: context.bull.error,
+                  bgColor: context.bull.errorContainer,
                   onTap: () => context.pushNamed(warning.actionRoute),
                 ),
               ],

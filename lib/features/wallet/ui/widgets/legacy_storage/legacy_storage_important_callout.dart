@@ -1,7 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 
 class LegacyStorageImportantCallout extends StatelessWidget {
   const LegacyStorageImportantCallout({
@@ -18,37 +15,31 @@ class LegacyStorageImportantCallout extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.appColors.errorContainer,
-        border: Border(
-          left: BorderSide(color: context.appColors.primary, width: 3),
-        ),
+        color: context.bull.errorContainer,
+        border: Border(left: BorderSide(color: context.bull.primary, width: 3)),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            color: context.appColors.primary,
-            size: 20,
-          ),
+          BullIcon(BullIcons.close, color: context.bull.primary, size: 20),
           const Gap(10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   title,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.primary,
+                  style: context.bullText.bodyMedium?.copyWith(
+                    color: context.bull.primary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const Gap(2),
-                BBText(
+                BullText(
                   body,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
+                  style: context.bullText.bodyMedium?.copyWith(
+                    color: context.bull.onSurface,
                     height: 1.35,
                   ),
                 ),
