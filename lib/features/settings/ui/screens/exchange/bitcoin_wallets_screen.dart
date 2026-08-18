@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
@@ -187,7 +187,7 @@ class _WalletAddressField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         if (isEditing) ...[
-          BBInputText(
+          BullInputText(
             value: inputValue,
             onChanged: (value) => cubit.updateAddress(type, value),
             hint: type.addressHint,

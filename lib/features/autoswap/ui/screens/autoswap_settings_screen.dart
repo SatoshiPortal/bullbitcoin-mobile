@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_failure_l10n.dart';
@@ -13,7 +12,7 @@ import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
 class AutoSwapSettingsScreen extends StatefulWidget {
   const AutoSwapSettingsScreen({super.key});
@@ -168,7 +167,7 @@ class _AmountThresholdField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: BBInputText(
+              child: BullInputText(
                 value: amountThresholdInput ?? '',
                 focusNode: focusNode,
                 onlyNumbers: true,
@@ -273,7 +272,7 @@ class _TriggerBalanceField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: BBInputText(
+              child: BullInputText(
                 value: triggerBalanceSatsInput ?? '',
                 focusNode: focusNode,
                 onlyNumbers: true,
@@ -371,7 +370,7 @@ class _FeeThresholdField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: BBInputText(
+              child: BullInputText(
                 value: feeThresholdInput ?? '',
                 focusNode: focusNode,
                 onlyNumbers: true,

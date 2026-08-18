@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -49,7 +48,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -201,7 +200,7 @@ class AddressField extends StatelessWidget {
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
 
-    return BBInputText(
+    return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
       hint: context.loc.sendPasteAddressOrInvoice,

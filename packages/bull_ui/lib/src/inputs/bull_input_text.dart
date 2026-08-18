@@ -143,8 +143,12 @@ class _BullInputTextState extends State<BullInputText> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    // Numeric and obscured fields are never legitimately multiline, so they
+    // default to a single line instead of Flutter's unlimited `null`.
+    final effectiveMaxLines =
+        widget.maxLines ?? (widget.obscure || widget.onlyNumbers ? 1 : null);
     final shouldPreventNewlines =
-        widget.maxLines != null && widget.maxLines! <= 2;
+        effectiveMaxLines != null && effectiveMaxLines <= 2;
 
     return TextField(
       key: widget.uiKey,
@@ -171,7 +175,7 @@ class _BullInputTextState extends State<BullInputText> {
       enableIMEPersonalizedLearning: false,
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
-      maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
+      maxLines: effectiveMaxLines,
       style:
           widget.style ??
           Theme.of(context).textTheme.headlineSmall?.copyWith(
