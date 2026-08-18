@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -47,9 +45,6 @@ class WalletLocator {
         watchElectrumSyncResultsUsecase:
             locator<WatchElectrumSyncResultsUsecase>(),
         syncCoordinator: locator<SyncCoordinator>(),
-        initializeTorUsecase: locator<InitTorUsecase>(),
-        checkForTorInitializationOnStartupUsecase:
-            locator<IsTorRequiredUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),

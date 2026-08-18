@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bull_tor/tor.dart' as tor;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -21,10 +21,10 @@ class ConnectingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<RecoverBullBloc, RecoverBullState>(
       listenWhen: (previous, current) =>
-          previous.torStatus != current.torStatus ||
+          previous.torConnection != current.torConnection ||
           previous.keyServerStatus != current.keyServerStatus,
       listener: (context, state) {
-        if (state.torStatus == TorStatus.online &&
+        if (state.torConnection is tor.TorReady &&
             state.keyServerStatus == KeyServerStatus.online) {
           final flow = state.flow;
           final hasPreSelectedVault = state.vault != null;
@@ -54,11 +54,18 @@ class ConnectingPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: BlocBuilder<RecoverBullBloc, RecoverBullState>(
             builder: (context, state) {
-              final torOnline = state.torStatus == TorStatus.online;
+              final torStatus = switch (state.torConnection) {
+                tor.TorReady() => KeyServerStatus.online,
+                tor.TorUnavailable() => KeyServerStatus.offline,
+                tor.TorConnecting() => KeyServerStatus.connecting,
+                tor.TorUninitialized() ||
+                tor.TorStopped() => KeyServerStatus.unknown,
+              };
+              final torOnline = torStatus == KeyServerStatus.online;
               final serverOnline =
                   state.keyServerStatus == KeyServerStatus.online;
               final hasError =
-                  state.torStatus == TorStatus.offline ||
+                  torStatus == KeyServerStatus.offline ||
                   state.keyServerStatus == KeyServerStatus.offline;
 
               return Column(
@@ -85,14 +92,12 @@ class ConnectingPage extends StatelessWidget {
                   const Gap(24),
                   _StatusRow(
                     label: context.loc.recoverbullTorNetwork,
-                    status: state.torStatus,
-                    isKeyServer: false,
+                    status: torStatus,
                   ),
                   const Gap(12),
                   _StatusRow(
                     label: context.loc.recoverbullRecoverBullServer,
                     status: state.keyServerStatus,
-                    isKeyServer: true,
                   ),
                   const Gap(40),
                   if (hasError) ...[
@@ -112,9 +117,9 @@ class ConnectingPage extends StatelessWidget {
                       bgColor: context.appColors.onSurface,
                       textColor: context.appColors.surface,
                       onPressed: () {
-                        context.read<RecoverBullBloc>()
-                          ..add(const OnTorInitialization())
-                          ..add(const OnServerCheck());
+                        context.read<RecoverBullBloc>().add(
+                          const OnTorInitialization(restart: true),
+                        );
                       },
                     ),
                   ] else ...[
@@ -139,14 +144,9 @@ class ConnectingPage extends StatelessWidget {
 
 class _StatusRow extends StatelessWidget {
   final String label;
-  final dynamic status;
-  final bool isKeyServer;
+  final KeyServerStatus status;
 
-  const _StatusRow({
-    required this.label,
-    required this.status,
-    required this.isKeyServer,
-  });
+  const _StatusRow({required this.label, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -185,46 +185,29 @@ class _StatusRow extends StatelessWidget {
   }
 
   String _getStatusText(BuildContext context) {
-    if (isKeyServer) {
-      return switch (status as KeyServerStatus) {
-        KeyServerStatus.unknown => context.loc.recoverbullWaiting,
-        KeyServerStatus.connecting => context.loc.recoverbullConnecting,
-        KeyServerStatus.online => context.loc.recoverbullConnected,
-        KeyServerStatus.offline => context.loc.recoverbullFailed,
-      };
-    } else {
-      return switch (status as TorStatus) {
-        TorStatus.unknown => context.loc.recoverbullWaiting,
-        TorStatus.connecting => context.loc.recoverbullConnecting,
-        TorStatus.online => context.loc.recoverbullConnected,
-        TorStatus.offline => context.loc.recoverbullFailed,
-      };
-    }
+    return switch (status) {
+      KeyServerStatus.unknown => context.loc.recoverbullWaiting,
+      KeyServerStatus.connecting => context.loc.recoverbullConnecting,
+      KeyServerStatus.online => context.loc.recoverbullConnected,
+      KeyServerStatus.offline => context.loc.recoverbullFailed,
+    };
   }
 
   Color _getStatusColor(BuildContext context) {
-    final statusEnum = isKeyServer
-        ? (status as KeyServerStatus)
-        : (status as TorStatus);
-
-    return switch (statusEnum.toString().split('.').last) {
-      'online' => context.appColors.success,
-      'offline' => context.appColors.error,
-      'connecting' => context.appColors.textMuted,
-      _ => context.appColors.textMuted,
+    return switch (status) {
+      KeyServerStatus.online => context.appColors.success,
+      KeyServerStatus.offline => context.appColors.error,
+      KeyServerStatus.connecting ||
+      KeyServerStatus.unknown => context.appColors.textMuted,
     };
   }
 
   IconData _getIcon() {
-    final statusEnum = isKeyServer
-        ? (status as KeyServerStatus)
-        : (status as TorStatus);
-
-    return switch (statusEnum.toString().split('.').last) {
-      'online' => Icons.check_circle,
-      'offline' => Icons.error,
-      'connecting' => Icons.hourglass_empty,
-      _ => Icons.circle_outlined,
+    return switch (status) {
+      KeyServerStatus.online => Icons.check_circle,
+      KeyServerStatus.offline => Icons.error,
+      KeyServerStatus.connecting => Icons.hourglass_empty,
+      KeyServerStatus.unknown => Icons.circle_outlined,
     };
   }
 }

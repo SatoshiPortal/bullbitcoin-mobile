@@ -9,13 +9,13 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor HTTP Client, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
     %% Feature modules
     SETTINGS[Settings]
-    TOR[Tor]
+    TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
     SECRETS[Secrets]
@@ -66,6 +66,8 @@ graph TB
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
     AUTOSWAP --> SWAPS
+    APP_STARTUP --> TOR
+    AUTOSWAPS --> TRANSFER
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
@@ -108,11 +110,12 @@ graph TB
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     STATUS --> BULL_PAYJOIN
+    STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SWAPS --> UTXO_MGMT
-    TOR --> CORE
+    CORE --> TOR
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -136,7 +139,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_PAYJOIN packageStyle
+    class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
+    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -175,7 +179,8 @@ graph TB
    - Database (Drift/SQLite)
    - Secure Storage instance (Flutter Secure Storage)
    - API Clients (REST/GraphQL clients)
-   - Factory for a HTTP client to connect to Tor
+   - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
+   - Explicit Orbot SOCKS override for Bitcoin Electrum `.onion` servers
    - UI Kit (shared widgets, theme)
    - DI setup and interfaces (Service Locator pattern)
    - Router setup and interfaces (Navigation)
@@ -194,6 +199,7 @@ graph TB
 ### Central Features (Highly Depended Upon)
 
 - **Core**: Foundation for all features
+- **Tor**: `packages/tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus external SOCKS verification for the explicit Electrum Orbot override. Depends on Flutter: it owns a platform plugin and app-directory storage, which is the infrastructure-package exception in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price

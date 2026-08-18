@@ -22,6 +22,7 @@ dependencies:
   bull_payjoin:
   bull_ui:
   primitives:
+  bull_tor:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1

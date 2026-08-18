@@ -14,7 +14,9 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
+import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
 
 class CoreLocator {
@@ -23,13 +25,21 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources(GetIt locator) async {
+    await bull_tor.TorLocator.registerDatasources(
+      locator,
+      logger: bull_tor.TorLogger(
+        configCallback: log.config,
+        fineCallback: log.fine,
+        warningCallback: log.warning,
+      ),
+    );
     await TorLocator.registerDatasources(locator);
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
-    await RecoverbullLocator.registerDatasources(locator);
+    RecoverbullLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
     SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
@@ -47,6 +57,7 @@ class CoreLocator {
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
+    bull_tor.TorLocator.registerRepositories(locator);
     await TorLocator.registerRepositories(locator);
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
@@ -55,7 +66,7 @@ class CoreLocator {
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
-    await RecoverbullLocator.registerRepositories(locator);
+    RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
@@ -70,6 +81,7 @@ class CoreLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    bull_tor.TorLocator.registerUsecases(locator);
     LabelsLocator.registerUseCases(locator);
     ElectrumLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
