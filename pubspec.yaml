@@ -132,10 +132,6 @@ dependencies:
       ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
   bitcoin_base: ^7.0.0
   socks5_proxy: ^2.1.1
-  tor:
-    git:
-      url: https://github.com/Foundation-Devices/tor
-      ref: b92e2bc5a404367298b6016f171df29d1aae66d0
   meta: ^1.17.0
   workmanager: ^0.9.0
   path: ^1.9.1

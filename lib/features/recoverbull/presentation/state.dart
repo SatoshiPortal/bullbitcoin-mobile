@@ -36,8 +36,8 @@ sealed class RecoverBullState with _$RecoverBullState {
     /// The full readiness snapshot, not just the coarse status.
     ///
     /// The screen needs `fraction` for progress and `blockage` to say *why*
-    /// Tor is stuck; deriving those from [TorStatus] is impossible because it
-    /// collapses all three into four values.
+    /// Tor is stuck; deriving those from a coarse status enum is impossible
+    /// because it collapses all three into four values.
     @Default(tor.TorUninitialized()) tor.TorConnectionState torConnection,
   }) = _RecoverBullState;
 

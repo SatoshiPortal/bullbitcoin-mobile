@@ -14566,5 +14566,22 @@
   "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
   "@transactionPayjoinFallbackProcessing": {
     "description": "Status shown while broadcasting a payjoin fallback transaction"
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsBootstrapProgress": "Connecting… {percent}%",
+  "@torSettingsBootstrapProgress": {
+    "description": "Bootstrap progress percentage while Tor is connecting.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   }
 }

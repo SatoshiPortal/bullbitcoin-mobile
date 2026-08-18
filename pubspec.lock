@@ -2046,15 +2046,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.18.0"
-  tor:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: b92e2bc5a404367298b6016f171df29d1aae66d0
-      resolved-ref: b92e2bc5a404367298b6016f171df29d1aae66d0
-      url: "https://github.com/Foundation-Devices/tor"
-    source: git
-    version: "0.1.0"
   type_plus:
     dependency: transitive
     description:
