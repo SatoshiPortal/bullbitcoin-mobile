@@ -797,6 +797,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
       final current = _currentPaymentState;
       if (current == null) return;
+      if (current.payOrder.orderId != requestedOrderId) return;
       if (!current.isPayinBroadcast) {
         try {
           validatePayOrderDepositAddress(
