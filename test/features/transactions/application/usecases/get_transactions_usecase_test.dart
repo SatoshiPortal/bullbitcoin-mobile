@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -32,6 +34,34 @@ class _MockLabelExchangeOrdersUsecase extends Mock
 
 class _MockGetTransactionOrderSwapsUsecase extends Mock
     implements GetTransactionOrderSwapsUsecase {}
+
+class _CountingList<T> extends ListBase<T> {
+  final List<T> _items;
+  int accesses = 0;
+
+  _CountingList(Iterable<T> items) : _items = [...items];
+
+  @override
+  T operator [](int index) {
+    accesses++;
+    return _items[index];
+  }
+
+  @override
+  void operator []=(int index, T value) {
+    accesses++;
+    _items[index] = value;
+  }
+
+  @override
+  int get length => _items.length;
+
+  @override
+  set length(int value) {
+    accesses++;
+    _items.length = value;
+  }
+}
 
 void main() {
   late _MockSettingsRepository settingsRepository;
@@ -212,6 +242,148 @@ void main() {
     expect(transactions.single.walletTransaction?.txId, 'payin-tx');
     expect(transactions.single.orderSwap?.localId, 'chain-order');
   });
+
+  test(
+    'matches unique order txids with linearly bounded source accesses',
+    () async {
+      const count = 1000;
+      final walletTransactions = [
+        for (var i = 0; i < count; i++)
+          _walletTransaction(
+            txId: 'tx-$i',
+            walletId: 'wallet-$i',
+            isIncoming: false,
+          ),
+      ];
+      final countedOrders = _CountingList<Order>([
+        for (var i = 0; i < count; i++) _sellOrder('tx-$i'),
+      ]);
+      orders = countedOrders;
+      when(
+        () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+      ).thenAnswer((_) async {});
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((_) async => walletTransactions);
+      when(
+        () => payjoinSessions.list(any()),
+      ).thenAnswer((_) async => const Ok([]));
+
+      final transactions = await usecase.execute();
+
+      expect(transactions, hasLength(count));
+      expect(
+        transactions.every((transaction) => transaction.order != null),
+        isTrue,
+      );
+      expect(
+        countedOrders.accesses,
+        lessThanOrEqualTo(count * 30),
+        reason:
+            'unique txids should not scan the source order list quadratically',
+      );
+    },
+  );
+
+  test('consumes exchange orders independently from order swaps', () async {
+    final walletTransaction = _walletTransaction(
+      txId: 'exchange-tx',
+      walletId: 'wallet-1',
+      isIncoming: false,
+    );
+
+    orders = [_sellOrder('exchange-tx')];
+    when(
+      () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+    ).thenAnswer((_) async {});
+    when(
+      () => payjoinSessions.list(any()),
+    ).thenAnswer((_) async => const Ok([]));
+    when(
+      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => []);
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: any(named: 'walletId'),
+        sync: any(named: 'sync'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer((_) async => [walletTransaction]);
+    when(
+      () => payjoinSessions.list(any()),
+    ).thenAnswer((_) async => const Ok([]));
+    when(
+      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => [_receiveOrderSwap()]);
+
+    final transactions = await usecase.execute();
+
+    expect(transactions, hasLength(2));
+    expect(transactions.singleWhere((tx) => tx.order != null).order, orders[0]);
+    expect(
+      transactions.singleWhere((tx) => tx.orderSwap != null).orderSwap?.localId,
+      'receive-order',
+    );
+  });
+
+  test(
+    'does not let a non-finite BTC amount abort valid associations',
+    () async {
+      final malformed = _sellOrder(
+        'malformed-tx',
+        payinAmount: double.infinity,
+      );
+      final valid = _sellOrder('valid-tx', payinAmount: 0.000005);
+      orders = [malformed, valid];
+      when(
+        () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+      ).thenAnswer((_) async {});
+      when(
+        () => payjoinSessions.list(any()),
+      ).thenAnswer((_) async => const Ok([]));
+      when(
+        () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => []);
+      final validTransaction = _walletTransaction(
+        txId: 'valid-tx',
+        walletId: 'wallet-1',
+        isIncoming: false,
+      );
+      final malformedTransaction = _walletTransaction(
+        txId: 'malformed-tx',
+        walletId: 'wallet-1',
+        isIncoming: false,
+      );
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((_) async => [malformedTransaction, validTransaction]);
+
+      final transactions = await usecase.execute();
+
+      expect(transactions, hasLength(3));
+      expect(transactions.singleWhere((tx) => tx.order == valid).order, valid);
+      expect(
+        transactions
+            .singleWhere((tx) => tx.order == malformed)
+            .walletTransaction,
+        isNull,
+      );
+      expect(
+        transactions
+            .singleWhere((tx) => tx.walletTransaction == malformedTransaction)
+            .order,
+        isNull,
+      );
+    },
+  );
 }
 
 WalletTransaction _walletTransaction({
@@ -258,6 +430,25 @@ OrderSwapRecord _receiveOrderSwap() => OrderSwapRecord(
   ),
   createdAt: DateTime.utc(2026),
   localStatus: OrderSwapLocalStatus.completed,
+);
+
+Order _sellOrder(String txId, {double payinAmount = 0}) => Order.sell(
+  orderId: 'order-$txId',
+  orderType: OrderType.sell,
+  message: OrderMessage(code: '', message: ''),
+  orderNumber: 1,
+  payinAmount: payinAmount,
+  payinCurrency: 'BTC',
+  payoutAmount: 1,
+  payoutCurrency: 'CAD',
+  payinMethod: OrderPaymentMethod.bitcoin,
+  payoutMethod: OrderPaymentMethod.cadBalance,
+  orderStatus: OrderStatus.completed,
+  payinStatus: OrderPayinStatus.completed,
+  payoutStatus: OrderPayoutStatus.completed,
+  createdAt: DateTime.utc(2026),
+  bitcoinTransactionId: txId,
+  isTestnet: false,
 );
 
 OrderSwapRecord _chainOrderSwap() => OrderSwapRecord(
