@@ -1382,7 +1382,7 @@ packages:
     source: hosted
     version: "1.0.0"
   no_screenshot:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: no_screenshot
       sha256: "2192d312e74e67b88ae6cf61cea0e0ae66aee3881127c0740dcbdcd1d4eed3e9"

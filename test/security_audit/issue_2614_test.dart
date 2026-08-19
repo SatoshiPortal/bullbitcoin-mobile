@@ -14,7 +14,7 @@ void main() {
       ).readAsStringSync();
 
       expect(source, contains('PrivacyScreen'));
-      expect(source, contains('privacy_screen.dart'));
+      expect(source, contains('package:screen_privacy/screen_privacy.dart'));
     });
   });
 }

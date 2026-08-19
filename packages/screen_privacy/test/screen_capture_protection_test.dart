@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/screen_capture_protection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 
 /// The `no_screenshot` plugin flips the OS capture flag through this method
 /// channel. We record the last method it received to assert what the

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';

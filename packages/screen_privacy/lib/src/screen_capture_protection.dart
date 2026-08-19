@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:logging/logging.dart';
 import 'package:no_screenshot/no_screenshot.dart';
+
+final _log = Logger('ScreenCaptureProtection');
 
 /// Controls OS-level screen-capture blocking (Android `FLAG_SECURE`, iOS secure
 /// overlay) via the `no_screenshot` plugin.
@@ -55,12 +57,10 @@ class ScreenCaptureProtection {
       // otherwise vanish as an unhandled async error. On a secret screen a
       // silent failure means we may be showing the mnemonic without
       // FLAG_SECURE set, so make it loud rather than let it disappear.
-      log.severe(
-        message:
-            'ScreenCaptureProtection: failed to '
-            '${shouldProtect ? 'enable' : 'disable'} capture blocking',
-        error: e,
-        trace: st,
+      _log.severe(
+        'failed to ${shouldProtect ? 'enable' : 'disable'} capture blocking',
+        e,
+        st,
       );
     }
   }

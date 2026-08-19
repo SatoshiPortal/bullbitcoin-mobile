@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/screen_capture_protection.dart';
+import 'package:screen_privacy/src/screen_capture_protection.dart';
 
 /// Adds screen-capture protection to a screen for as long as it is mounted.
 ///

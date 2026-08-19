@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
