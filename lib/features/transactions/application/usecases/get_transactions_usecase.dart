@@ -140,7 +140,9 @@ class GetTransactionsUsecase {
             Order? order;
             try {
               order = orders.firstWhere((o) {
-                if (o.transactionId != wt.txId) return false;
+                if (![o.transactionId, o.payjoin?.txid].contains(wt.txId)) {
+                  return false;
+                }
                 if (o.toAddress != null && o.toAddress != wt.toAddress) {
                   return false;
                 }
