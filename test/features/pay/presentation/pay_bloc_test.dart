@@ -670,6 +670,52 @@ void main() {
       expect(state.isConfirmingPayment, isTrue);
     });
 
+    test('an old order poll cannot overwrite a replacement order', () async {
+      final poll = Completer<Order>();
+      when(
+        () => getOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) => poll.future);
+      when(
+        () => payOrder.payinStatus,
+      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      final replacementOrder = _MockPayOrder();
+      when(() => replacementOrder.orderId).thenReturn('order-2');
+      when(() => replacementOrder.toAddress).thenReturn(payinAddress);
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await untilCalled(() => getOrder.execute(orderId: 'order-1'));
+      bloc.seed(paymentState().copyWith(payOrder: replacementOrder));
+      poll.complete(payOrder);
+      await pumpEventQueue();
+
+      final state = bloc.state as PayPaymentState;
+      expect(state.payOrder, same(replacementOrder));
+    });
+
+    test('poll and screen update share one in-flight order request', () async {
+      final request = Completer<Order>();
+      var requestCount = 0;
+      when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer((
+        _,
+      ) {
+        requestCount++;
+        return request.future;
+      });
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await untilCalled(() => getOrder.execute(orderId: any(named: 'orderId')));
+
+      bloc.add(const PayEvent.updateOrderStatus(orderId: 'order-1'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(requestCount, 1);
+
+      request.complete(payOrder);
+      await pumpEventQueue();
+
+      expect(requestCount, 2);
+    });
+
     test('absolute custom fees pass their actual rate to Payjoin', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
