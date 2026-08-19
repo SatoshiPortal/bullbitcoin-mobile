@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -145,6 +146,7 @@ void main() {
   late _MockBroadcastOriginalTransactionUsecase broadcastOriginalTransaction;
   late _MockGetTransactionOrderSwapUsecase getTransactionOrderSwap;
   late _MockWatchTransactionOrderSwapUsecase watchTransactionOrderSwap;
+  late _MockGetOrderUsecase getOrder;
 
   TransactionDetailsCubit buildCubit() => TransactionDetailsCubit(
     getWalletUsecase: getWallet,
@@ -155,7 +157,7 @@ void main() {
     getSwapUsecase: _MockGetSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
     getPayjoinByTxIdUsecase: getPayjoinByTxId,
-    getOrderUsecase: _MockGetOrderUsecase(),
+    getOrderUsecase: getOrder,
     watchSwapUsecase: _MockWatchSwapUsecase(),
     watchPayjoinUsecase: watchPayjoin,
     watchTransactionOrderSwapUsecase: watchTransactionOrderSwap,
@@ -178,6 +180,7 @@ void main() {
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
     getTransactionOrderSwap = _MockGetTransactionOrderSwapUsecase();
     watchTransactionOrderSwap = _MockWatchTransactionOrderSwapUsecase();
+    getOrder = _MockGetOrderUsecase();
 
     when(() => broadcastOriginalTransaction.canExecute(any())).thenAnswer((
       invocation,
@@ -1313,7 +1316,96 @@ void main() {
       },
     );
   });
+
+  group('TransactionDetailsCubit.initByOrderId transaction resolution', () {
+    // _loadDetailsByOrderId looks the txid up, then hands it to
+    // initByWalletTxId, which looks it up again — so the usecase is called
+    // more than once per init. What matters is which txid was asked for, not
+    // how often, hence capture over a call count.
+    void expectResolvedTxIds(String txId) {
+      final resolved = verify(
+        () => getTransactionsByTxId.execute(captureAny()),
+      ).captured;
+      expect(resolved, isNotEmpty);
+      expect(resolved, everyElement(txId));
+    }
+
+    test('resolves the payjoin txid when the order has no txid yet', () async {
+      // The exchange can know the payjoin it broadcast before it reports its
+      // own payout txid. Without the fallback the screen stays on order-only
+      // details, with no payjoin shown and no watcher armed.
+      final order = _buyOrder(payjoinTxId: 'payjoin-txid');
+      when(
+        () => getOrder.execute(orderId: 'order-1'),
+      ).thenAnswer((_) async => order);
+      when(() => getTransactionsByTxId.execute(any())).thenAnswer(
+        (_) async => [Transaction(payjoin: _receiver(), order: order)],
+      );
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByOrderId('order-1');
+
+      expectResolvedTxIds('payjoin-txid');
+    });
+
+    test('prefers the order txid when both are known', () async {
+      final order = _buyOrder(
+        bitcoinTransactionId: 'payout-txid',
+        payjoinTxId: 'payjoin-txid',
+      );
+      when(
+        () => getOrder.execute(orderId: 'order-1'),
+      ).thenAnswer((_) async => order);
+      when(() => getTransactionsByTxId.execute(any())).thenAnswer(
+        (_) async => [Transaction(payjoin: _receiver(), order: order)],
+      );
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByOrderId('order-1');
+
+      expectResolvedTxIds('payout-txid');
+    });
+
+    test('falls back to order-only details when no txid is known', () async {
+      final order = _buyOrder();
+      when(
+        () => getOrder.execute(orderId: 'order-1'),
+      ).thenAnswer((_) async => order);
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByOrderId('order-1');
+
+      verifyNever(() => getTransactionsByTxId.execute(any()));
+      expect(cubit.state.transaction?.order, order);
+    });
+  });
 }
+
+Order _buyOrder({String? bitcoinTransactionId, String? payjoinTxId}) =>
+    Order.buy(
+      orderId: 'order-1',
+      orderType: OrderType.buy,
+      message: OrderMessage(code: '', message: ''),
+      orderNumber: 1,
+      payinAmount: 100,
+      payinCurrency: 'CAD',
+      payoutAmount: 0.001,
+      payoutCurrency: 'BTC',
+      payinMethod: OrderPaymentMethod.eTransfer,
+      payoutMethod: OrderPaymentMethod.bitcoin,
+      orderStatus: OrderStatus.inProgress,
+      payinStatus: OrderPayinStatus.completed,
+      payoutStatus: OrderPayoutStatus.completed,
+      createdAt: DateTime.utc(2026, 8, 19),
+      bitcoinTransactionId: bitcoinTransactionId,
+      payjoinDetails: payjoinTxId == null
+          ? null
+          : OrderPayjoinDetails(txid: payjoinTxId),
+      isTestnet: false,
+    );
 
 OrderSwapRecord _receiveOrderSwap() {
   final createdAt = DateTime.utc(2026, 8, 10);
