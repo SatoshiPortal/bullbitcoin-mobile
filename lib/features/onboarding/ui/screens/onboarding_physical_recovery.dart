@@ -59,41 +59,31 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                     ),
                     Expanded(
                       child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: .stretch,
-                              children: [
-                                IgnorePointer(
-                                  ignoring:
-                                      state.onboardingStepStatus ==
-                                      OnboardingStepStatus.loading,
-                                  child: Opacity(
-                                    opacity:
-                                        state.onboardingStepStatus ==
-                                            OnboardingStepStatus.loading
-                                        ? 0.5
-                                        : 1.0,
-                                    child: MnemonicWidget(
-                                      initialLength:
-                                          bip39.MnemonicLength.words12,
-                                      allowMultipleMnemonicLength: true,
-                                      allowLabel: false,
-                                      allowPassphrase: false,
-                                      submitLabel:
-                                          context.loc.onboardingRecover,
-                                      onSubmit: (mnemonic) {
-                                        context.read<OnboardingBloc>().add(
-                                          OnboardingRecoverWalletClicked(
-                                            mnemonic: mnemonic,
-                                          ),
-                                        );
-                                      },
-                                    ),
+                        // MnemonicWidget owns its own scroll and docks the
+                        // in-app keyboard at the bottom, so it fills the space.
+                        child: IgnorePointer(
+                          ignoring:
+                              state.onboardingStepStatus ==
+                              OnboardingStepStatus.loading,
+                          child: Opacity(
+                            opacity:
+                                state.onboardingStepStatus ==
+                                    OnboardingStepStatus.loading
+                                ? 0.5
+                                : 1.0,
+                            child: MnemonicWidget(
+                              initialLength: bip39.MnemonicLength.words12,
+                              allowMultipleMnemonicLength: true,
+                              allowLabel: false,
+                              allowPassphrase: false,
+                              submitLabel: context.loc.onboardingRecover,
+                              onSubmit: (mnemonic) {
+                                context.read<OnboardingBloc>().add(
+                                  OnboardingRecoverWalletClicked(
+                                    mnemonic: mnemonic,
                                   ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
                           ),
                         ),

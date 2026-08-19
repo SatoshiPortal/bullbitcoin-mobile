@@ -10,6 +10,11 @@ class LabeledTextInput extends StatelessWidget {
   final Function(String)? onChanged;
   final int? maxLines;
 
+  /// Both default to true. Set them false for secrets: the IME's suggestion
+  /// and autocorrect caches must never see the value.
+  final bool enableSuggestions;
+  final bool autocorrect;
+
   const LabeledTextInput({
     super.key,
     required this.label,
@@ -17,6 +22,8 @@ class LabeledTextInput extends StatelessWidget {
     required this.onChanged,
     this.hint = '',
     this.maxLines,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
   });
 
   @override
@@ -63,6 +70,8 @@ class LabeledTextInput extends StatelessWidget {
             hint: hint,
             hideBorder: true,
             maxLines: maxLines,
+            enableSuggestions: enableSuggestions,
+            autocorrect: autocorrect,
           ),
         ),
       ],
