@@ -28,6 +28,25 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
+# The `onion` (embedded Tor) plugin depends on IPtProxy, which ships only as a
+# static `.xcframework` and is force-loaded by onion's own podspec. We must keep
+# `use_frameworks!` (dynamic) so the flutter_rust_bridge plugins
+# (rust_lib_bull_sdk, onion, …) expose loadable `.framework`s at runtime — but
+# CocoaPods then aborts with "transitive dependencies that include statically
+# linked binaries (IPtProxy)". That guard is a false positive here because onion
+# links the static IPtProxy binary itself, so we disable just that check.
+#
+# Caveat: this suppresses the check for ALL pods, not just IPtProxy — a future
+# dependency with a genuine static-transitive problem (duplicate symbols /
+# duplicated global state across dynamic frameworks) would no longer be caught
+# here. Re-scope to IPtProxy if CocoaPods ever makes per-pod suppression clean.
+pre_install do |installer|
+  Pod::Installer::Xcode::TargetValidator.send(
+    :define_method,
+    :verify_no_static_framework_transitive_dependencies,
+  ) {}
+end
+
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
@@ -41,6 +60,19 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    # IPtProxy (Snowflake) is a Go static library force-loaded by the `onion`
+    # framework. Go's Darwin runtime references the BSD resolver symbols
+    # (res_9_ninit / res_9_nclose / res_9_nsearch) which live in libresolv, but
+    # nothing links it — the app fails at link time with those undefined
+    # symbols. Link libresolv into the targets that pull in IPtProxy.
+    if ['onion', 'IPtProxy'].include?(target.name)
+      target.build_configurations.each do |config|
+        ldflags = Array(config.build_settings['OTHER_LDFLAGS'] || ['$(inherited)'])
+        ldflags << '-lresolv' unless ldflags.include?('-lresolv')
+        config.build_settings['OTHER_LDFLAGS'] = ldflags
+      end
+    end
 
     target.build_configurations.each do |config|
           xcconfig_path = config.base_configuration_reference.real_path
