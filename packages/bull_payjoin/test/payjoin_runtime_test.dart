@@ -115,6 +115,7 @@ void main() {
   Future<Result<PayjoinLifecycle, PayjoinFailure>> open({PayjoinLogPort? log}) {
     return openPayjoin(
       databasePath: '${directory.path}/payjoin.sqlite',
+      databaseKey: 'test-only-payjoin-key',
       wallet: _WalletPort(),
       blockchain: _BlockchainPort(),
       fees: _FeesPort(),

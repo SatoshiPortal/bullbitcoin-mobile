@@ -1,28 +1,19 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/screens/pre_init_scaffold.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AppInitErrorScreen extends StatefulWidget {
+class AppInitErrorScreen extends StatelessWidget {
   const AppInitErrorScreen({super.key, required this.error});
 
   final Object error;
-
-  @override
-  State<AppInitErrorScreen> createState() => _AppInitErrorScreenState();
-}
-
-class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
-  Language _language = Language.fromKeyboard();
 
   Future<void> _shareLogs(BuildContext context, AppLocalizations loc) async {
     try {
@@ -76,168 +67,87 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = lookupAppLocalizations(_language.locale);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.themeData(AppThemeType.dark),
-      locale: _language.locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) {
-          // Seed Device.screen so AppLanguagePicker / TranslationWarningBottomSheet
-          // (which read it synchronously) work on this pre-init screen.
-          Device.init(context);
-          return Scaffold(
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            loc.appInitErrorTitle,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        AppLanguagePicker(
-                          value: _language,
-                          onChanged: (lang) => setState(() => _language = lang),
-                        ),
-                      ],
-                    ),
-                    const Gap(24),
-                    _BackupSection(
-                      asset: 'assets/misc/undraw_secure-usb-drive.svg',
-                      title: loc.appInitErrorHasBackupTitle,
-                      message: loc.appInitErrorHasBackupMessage,
-                    ),
-                    const Gap(32),
-                    Divider(color: context.appColors.border),
-                    const Gap(32),
-                    _BackupSection(
-                      asset: 'assets/misc/undraw_forgot-password.svg',
-                      title: loc.appInitErrorNoBackupTitle,
-                      message: loc.appInitErrorNoBackupMessage,
-                    ),
-                    const Gap(32),
-                    BBButton.big(
-                      label: loc.appInitErrorContactSupportButton,
-                      iconData: Icons.open_in_new,
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                      onPressed: _contactSupport,
-                    ),
-                    const Gap(12),
-                    BBButton.big(
-                      label: loc.appInitErrorShareLogsButton,
-                      iconData: Icons.share,
-                      iconFirst: true,
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.text,
-                      borderColor: context.appColors.border,
-                      outlined: true,
-                      onPressed: () => _shareLogs(context, loc),
-                    ),
-                    const Gap(12),
-                    BBButton.big(
-                      label: loc.logsShareOptionExport,
-                      iconData: Icons.file_download_outlined,
-                      iconFirst: true,
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.text,
-                      borderColor: context.appColors.border,
-                      outlined: true,
-                      onPressed: () => _exportLogs(context, loc),
-                    ),
-                    const Gap(12),
-                    BBButton.big(
-                      label: loc.deleteLogsTitle,
-                      iconData: Icons.delete_outline,
-                      iconFirst: true,
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.error,
-                      borderColor: context.appColors.error,
-                      outlined: true,
-                      onPressed: () => _deleteLogs(context, loc),
-                    ),
-                    const Gap(16),
-                    _ErrorDetails(
-                      error: widget.error,
-                      label: loc.appInitErrorDetailsToggle,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _BackupSection extends StatelessWidget {
-  const _BackupSection({
-    required this.asset,
-    required this.title,
-    required this.message,
-  });
-
-  final String asset;
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Center(
-          child: SvgPicture.asset(
-            asset,
-            height: 120,
-            fit: BoxFit.contain,
-            placeholderBuilder: (_) => const SizedBox(height: 120),
-          ),
+    return PreInitScaffold(
+      title: (loc) => loc.appInitErrorTitle,
+      builder: (context, loc) => [
+        PreInitIllustration(
+          asset: 'assets/misc/undraw_secure-usb-drive.svg',
+          title: loc.appInitErrorHasBackupTitle,
+          message: loc.appInitErrorHasBackupMessage,
+        ),
+        const Gap(32),
+        Divider(color: context.appColors.border),
+        const Gap(32),
+        PreInitIllustration(
+          asset: 'assets/misc/undraw_forgot-password.svg',
+          title: loc.appInitErrorNoBackupTitle,
+          message: loc.appInitErrorNoBackupMessage,
+        ),
+        const Gap(32),
+        BBButton.big(
+          label: loc.appInitErrorContactSupportButton,
+          iconData: Icons.open_in_new,
+          bgColor: context.appColors.primary,
+          textColor: context.appColors.onPrimary,
+          onPressed: _contactSupport,
+        ),
+        const Gap(12),
+        BBButton.big(
+          label: loc.appInitErrorShareLogsButton,
+          iconData: Icons.share,
+          iconFirst: true,
+          bgColor: context.appColors.surface,
+          textColor: context.appColors.text,
+          borderColor: context.appColors.border,
+          outlined: true,
+          onPressed: () => _shareLogs(context, loc),
+        ),
+        const Gap(12),
+        BBButton.big(
+          label: loc.logsShareOptionExport,
+          iconData: Icons.file_download_outlined,
+          iconFirst: true,
+          bgColor: context.appColors.surface,
+          textColor: context.appColors.text,
+          borderColor: context.appColors.border,
+          outlined: true,
+          onPressed: () => _exportLogs(context, loc),
+        ),
+        const Gap(12),
+        BBButton.big(
+          label: loc.deleteLogsTitle,
+          iconData: Icons.delete_outline,
+          iconFirst: true,
+          bgColor: context.appColors.surface,
+          textColor: context.appColors.error,
+          borderColor: context.appColors.error,
+          outlined: true,
+          onPressed: () => _deleteLogs(context, loc),
         ),
         const Gap(16),
-        Text(
-          title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const Gap(8),
-        Text(
-          message,
-          style: theme.textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
+        ErrorDetailsPanel(error: error, label: loc.appInitErrorDetailsToggle),
       ],
     );
   }
 }
 
-class _ErrorDetails extends StatefulWidget {
-  const _ErrorDetails({required this.error, required this.label});
+/// Collapsible raw-error panel. Developer detail, shown only when the user
+/// opens it; the screens themselves lead with a localized message.
+class ErrorDetailsPanel extends StatefulWidget {
+  const ErrorDetailsPanel({
+    super.key,
+    required this.error,
+    required this.label,
+  });
 
   final Object error;
   final String label;
 
   @override
-  State<_ErrorDetails> createState() => _ErrorDetailsState();
+  State<ErrorDetailsPanel> createState() => _ErrorDetailsPanelState();
 }
 
-class _ErrorDetailsState extends State<_ErrorDetails> {
+class _ErrorDetailsPanelState extends State<ErrorDetailsPanel> {
   bool _expanded = false;
 
   @override

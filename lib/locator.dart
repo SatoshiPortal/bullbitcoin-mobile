@@ -59,6 +59,7 @@ class AppLocator {
   static Future<void> setup(
     GetIt locator,
     SqliteDatabase database, {
+    required String databaseKey,
     String? payjoinDatabasePath,
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
@@ -82,6 +83,7 @@ class AppLocator {
     PayjoinSetup.setup(
       locator,
       database,
+      databaseKey: databaseKey,
       databasePath: payjoinDatabasePath,
       startRecovery: startPayjoinRecovery,
     );

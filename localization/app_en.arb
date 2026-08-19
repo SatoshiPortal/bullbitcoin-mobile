@@ -14672,5 +14672,57 @@
   "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
   "@mnemonicShuffleKeyboardHint": {
     "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
+  },
+  "startupKeychainLockedTitle": "Unlock your device to continue",
+  "@startupKeychainLockedTitle": {
+    "description": "Title of the pre-init screen shown when the keychain is still locked after boot."
+  },
+  "startupKeychainLockedMessage": "Your local data is encrypted with a key that becomes available only after this device has been unlocked once since it started. Unlock the device, then try again.",
+  "@startupKeychainLockedMessage": {
+    "description": "Explanation on the keychain-locked startup screen."
+  },
+  "startupKeychainLockedRetryButton": "Try again",
+  "@startupKeychainLockedRetryButton": {
+    "description": "Retry button on the keychain-locked startup screen."
+  },
+  "localDataRecoveryTitle": "Local data cannot be opened",
+  "@localDataRecoveryTitle": {
+    "description": "Title of the screen shown when the local database exists but its encryption key is gone."
+  },
+  "localDataRecoveryMessage": "The data stored on this device is encrypted with a key that is no longer in the keychain, so it cannot be read. This usually happens after a backup was restored onto a different device.",
+  "@localDataRecoveryMessage": {
+    "description": "Explanation on the local-data recovery screen."
+  },
+  "localDataRecoveryRetryButton": "Try again",
+  "@localDataRecoveryRetryButton": {
+    "description": "Retry button on the local-data recovery screen."
+  },
+  "localDataRecoveryResetButton": "Reset local data",
+  "@localDataRecoveryResetButton": {
+    "description": "Destructive action on the local-data recovery screen."
+  },
+  "localDataRecoveryResetWarning": "Resetting deletes the data this app stores on this device: wallets, labels, transaction history and settings. Your bitcoin is not stored in the app, so you can restore your wallets from your backup afterwards. This cannot be undone.",
+  "@localDataRecoveryResetWarning": {
+    "description": "Warning shown above the reset action on the local-data recovery screen."
+  },
+  "localDataRecoveryResetConfirmTitle": "Reset local data?",
+  "@localDataRecoveryResetConfirmTitle": {
+    "description": "Title of the confirmation dialog for the local-data reset."
+  },
+  "localDataRecoveryResetConfirmMessage": "This permanently deletes the app data on this device. Make sure you have your wallet backup before continuing.",
+  "@localDataRecoveryResetConfirmMessage": {
+    "description": "Body of the confirmation dialog for the local-data reset."
+  },
+  "localDataRecoveryResetConfirmButton": "Reset",
+  "@localDataRecoveryResetConfirmButton": {
+    "description": "Confirm button of the local-data reset dialog."
+  },
+  "localDataRecoveryCancelButton": "Cancel",
+  "@localDataRecoveryCancelButton": {
+    "description": "Cancel button of the local-data reset dialog."
+  },
+  "localDataRecoveryResetFailedMessage": "Could not reset local data",
+  "@localDataRecoveryResetFailedMessage": {
+    "description": "Snackbar shown when the local-data reset itself fails."
   }
 }
