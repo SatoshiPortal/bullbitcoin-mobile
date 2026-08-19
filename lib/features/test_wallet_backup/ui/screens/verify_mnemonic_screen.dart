@@ -32,9 +32,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final fingerprint = context.select<TestWalletBackupBloc, String?>(
-      (bloc) => bloc.state.selectedWallet?.masterFingerprint,
-    );
+    // `context.select` is only legal inside `build`. The selected wallet is
+    // fixed before this screen is reached (the user views the mnemonic first),
+    // so reading the fingerprint once at mount is sufficient here.
+    final fingerprint = context
+        .read<TestWalletBackupBloc>()
+        .state
+        .selectedWallet
+        ?.masterFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
       unawaited(_loadSecret());

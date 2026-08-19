@@ -100,9 +100,14 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final fingerprint = context.select<TestWalletBackupBloc, String?>(
-      (bloc) => bloc.state.selectedWallet?.masterFingerprint,
-    );
+    // `context.select` is only legal inside `build`; here we read the current
+    // value. `build` calls `context.watch<TestWalletBackupBloc>()`, so a state
+    // change still triggers `didChangeDependencies` again and reloads.
+    final fingerprint = context
+        .read<TestWalletBackupBloc>()
+        .state
+        .selectedWallet
+        ?.masterFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
       _secretFuture = fingerprint == null
