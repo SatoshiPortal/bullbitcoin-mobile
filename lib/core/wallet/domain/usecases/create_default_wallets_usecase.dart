@@ -44,7 +44,7 @@ class CreateDefaultWalletsUsecase {
       if (hasBitcoin && hasLiquid) return existing;
 
       final isGenerated = mnemonicWords == null;
-      final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
+      final mnemonic = mnemonicWords ?? await _mnemonicGenerator.generate();
       final DateTime? birthday = isGenerated ? DateTime.now().toUtc() : null;
       final seed = await _seedRepository.createFromMnemonic(
         mnemonicWords: mnemonic,
