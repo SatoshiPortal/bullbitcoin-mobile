@@ -99,7 +99,9 @@ class GetTransactionsByTxIdUsecase {
       } else if (orderSwap != null) {
         return [Transaction(orderSwap: orderSwap)];
       } else if (payjoins.isNotEmpty) {
-        return payjoins.map((pj) => Transaction(payjoin: pj)).toList();
+        return payjoins
+            .map((pj) => Transaction(payjoin: pj, order: order))
+            .toList();
       } else if (order != null) {
         return [Transaction(order: order)];
       } else {
