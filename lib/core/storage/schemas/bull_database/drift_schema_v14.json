@@ -548,26 +548,6 @@
             "dsl_features": []
           },
           {
-            "name": "tor_transport_mode",
-            "getter_name": "torTransportMode",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": "const CustomExpression('\\'automatic\\'')",
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "last_successful_tor_transport",
-            "getter_name": "lastSuccessfulTorTransport",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
             "name": "theme_mode",
             "getter_name": "themeMode",
             "moor_type": "string",
@@ -2662,7 +2642,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"tor_transport_mode\" TEXT NOT NULL DEFAULT 'automatic', \"last_successful_tor_transport\" TEXT NULL, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL);"
+          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL);"
         }
       ]
     },
