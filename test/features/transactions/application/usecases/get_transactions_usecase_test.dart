@@ -1,10 +1,12 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -211,6 +213,50 @@ void main() {
     expect(transactions.single.orderSwap?.localId, 'receive-order');
   });
 
+  test('binds a buy the exchange still knows only by its payjoin txid', () async {
+    // The exchange broadcasts the payjoin before it reports that transaction as
+    // the order's payout, so the order carries no payout txid yet while the
+    // wallet already sees the transaction. Both describe the same event and the
+    // amounts agree; the list must show one row, not "Bitcoin" plus "Buy
+    // Bitcoin".
+    final payout = _walletTransaction(
+      txId: 'payjoin-txid',
+      walletId: 'w1',
+      isIncoming: true,
+      amountSat: 175906,
+      address: 'bc1qmine',
+    );
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: any(named: 'walletId'),
+        sync: any(named: 'sync'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer((_) async => [payout]);
+    when(
+      () => payjoinSessions.list(any()),
+    ).thenAnswer((_) async => const Ok([]));
+    orders.add(
+      _buyOrder(
+        txId: null,
+        address: 'bc1qmine',
+        payoutAmountBtc: 0.00175906,
+        payjoinTxid: 'payjoin-txid',
+        orderStatus: OrderStatus.inProgress,
+      ),
+    );
+
+    final transactions = await usecase.execute();
+
+    expect(
+      transactions,
+      hasLength(1),
+      reason: 'the order must not be listed again beside its own payjoin',
+    );
+    expect(transactions.single.order?.orderId, 'buy-order');
+    expect(transactions.single.walletTransaction?.txId, 'payjoin-txid');
+  });
+
   test('keeps one canonical row for an internal chain swap', () async {
     final payin = _walletTransaction(
       txId: 'payin-tx',
@@ -390,6 +436,8 @@ WalletTransaction _walletTransaction({
   required String txId,
   required String walletId,
   required bool isIncoming,
+  int amountSat = 1000,
+  String? address,
 }) {
   return WalletTransaction(
     walletId: walletId,
@@ -399,14 +447,52 @@ WalletTransaction _walletTransaction({
         : WalletTransactionDirection.outgoing,
     status: WalletTransactionStatus.confirmed,
     txId: txId,
-    amountSat: 1000,
+    amountSat: amountSat,
     feeSat: 1,
     vsize: 100,
     inputs: const [],
-    outputs: const [],
+    outputs: [
+      if (address != null)
+        TransactionOutput.bitcoin(
+          txId: txId,
+          vout: 0,
+          isOwn: isIncoming,
+          scriptPubkey: Uint8List(0),
+          address: address,
+        ),
+    ],
     isRbf: false,
   );
 }
+
+Order _buyOrder({
+  required String? txId,
+  required String address,
+  required double payoutAmountBtc,
+  String? payjoinTxid,
+  OrderStatus orderStatus = OrderStatus.completed,
+}) => Order.buy(
+  orderId: 'buy-order',
+  orderType: OrderType.buy,
+  message: OrderMessage(code: '', message: ''),
+  orderNumber: 1,
+  payinAmount: 100,
+  payinCurrency: 'CAD',
+  payoutAmount: payoutAmountBtc,
+  payoutCurrency: 'BTC',
+  payinMethod: OrderPaymentMethod.cadBalance,
+  payoutMethod: OrderPaymentMethod.bitcoin,
+  orderStatus: orderStatus,
+  payinStatus: OrderPayinStatus.completed,
+  payoutStatus: OrderPayoutStatus.completed,
+  createdAt: DateTime.utc(2026),
+  bitcoinAddress: address,
+  bitcoinTransactionId: txId,
+  payjoinDetails: payjoinTxid == null
+      ? null
+      : OrderPayjoinDetails(txid: payjoinTxid),
+  isTestnet: false,
+);
 
 OrderSwapRecord _receiveOrderSwap() => OrderSwapRecord(
   localId: 'receive-order',
