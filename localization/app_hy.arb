@@ -3638,5 +3638,7 @@
   "torSettingsModeSnowflakeDescription": "Օգտագործում է կամավորների Snowflake պրոքսիները՝ զտված ցանցից Tor-ին հասնելու համար։",
   "torSettingsActiveTransport": "Ակտիվ փոխադրում՝ {transport}",
   "torSettingsExternalProxyTitle": "Արտաքին Tor պրոքսի (առաջադեմ)",
-  "torSettingsExternalProxyDescription": "Միացնելու դեպքում Bitcoin Electrum սերվերները և գաղտնագրված պահուստները անցնում են Orbot-ով՝ նշված պորտում, ներկառուցված Tor-ի փոխարեն։ Liquid-ը երբեք չի անցնում դրանով։"
+  "torSettingsExternalProxyDescription": "Միացնելու դեպքում Bitcoin Electrum սերվերները և գաղտնագրված պահուստները անցնում են Orbot-ով՝ նշված պորտում, ներկառուցված Tor-ի փոխարեն։ Liquid-ը երբեք չի անցնում դրանով։",
+  "settingsScreenPrivacyTitle": "Էկրանի գաղտնիություն",
+  "settingsScreenPrivacyDisabledMessage": "Այժմ սքրինշոթերը թույլատրված են զգայուն էկրաններում"
 }

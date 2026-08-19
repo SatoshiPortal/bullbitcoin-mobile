@@ -4967,5 +4967,7 @@
   "torSettingsModeSnowflakeDescription": "Nutzt freiwillige Snowflake-Proxys, um Tor aus einem gefilterten Netzwerk zu erreichen.",
   "torSettingsActiveTransport": "Aktiver Transport: {transport}",
   "torSettingsExternalProxyTitle": "Externer Tor-Proxy (erweitert)",
-  "torSettingsExternalProxyDescription": "Wenn aktiviert, laufen Bitcoin-Electrum-Server und verschlüsselte Backups über Orbot auf dem konfigurierten Port statt über das eingebettete Tor. Liquid wird nie darüber geleitet."
+  "torSettingsExternalProxyDescription": "Wenn aktiviert, laufen Bitcoin-Electrum-Server und verschlüsselte Backups über Orbot auf dem konfigurierten Port statt über das eingebettete Tor. Liquid wird nie darüber geleitet.",
+  "settingsScreenPrivacyTitle": "Bildschirmschutz",
+  "settingsScreenPrivacyDisabledMessage": "Screenshots sind auf sensiblen Bildschirmen jetzt erlaubt"
 }

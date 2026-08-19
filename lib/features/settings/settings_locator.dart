@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
@@ -69,6 +70,12 @@ class SettingsLocator {
 
     locator.registerFactory<SetErrorReportingUsecase>(
       () => SetErrorReportingUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<SetScreenCaptureProtectionUsecase>(
+      () => SetScreenCaptureProtectionUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
@@ -135,6 +142,8 @@ class SettingsLocator {
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
+        setScreenCaptureProtectionUsecase:
+            locator<SetScreenCaptureProtectionUsecase>(),
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),

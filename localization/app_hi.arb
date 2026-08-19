@@ -12758,5 +12758,7 @@
   "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
   "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
   "torSettingsExternalProxyTitle": "बाहरी Tor प्रॉक्सी (उन्नत)",
-  "torSettingsExternalProxyDescription": "सक्षम होने पर, Bitcoin Electrum सर्वर और एन्क्रिप्टेड बैकअप अंतर्निहित Tor के बजाय कॉन्फ़िगर किए गए पोर्ट पर Orbot से गुजरते हैं। Liquid कभी इससे नहीं जाता।"
+  "torSettingsExternalProxyDescription": "सक्षम होने पर, Bitcoin Electrum सर्वर और एन्क्रिप्टेड बैकअप अंतर्निहित Tor के बजाय कॉन्फ़िगर किए गए पोर्ट पर Orbot से गुजरते हैं। Liquid कभी इससे नहीं जाता।",
+  "settingsScreenPrivacyTitle": "स्क्रीन गोपनीयता",
+  "settingsScreenPrivacyDisabledMessage": "अब संवेदनशील स्क्रीन पर स्क्रीनशॉट लेने की अनुमति है"
 }

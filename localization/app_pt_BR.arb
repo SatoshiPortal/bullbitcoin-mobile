@@ -12568,5 +12568,7 @@
   "torSettingsModeSnowflakeDescription": "Usa proxies voluntários do Snowflake para alcançar o Tor a partir de uma rede filtrada.",
   "torSettingsActiveTransport": "Transporte ativo: {transport}",
   "torSettingsExternalProxyTitle": "Proxy Tor externo (avançado)",
-  "torSettingsExternalProxyDescription": "Quando ativado, os servidores Bitcoin Electrum e os backups criptografados passam pelo Orbot na porta configurada em vez do Tor integrado. O Liquid nunca é roteado por ele."
+  "torSettingsExternalProxyDescription": "Quando ativado, os servidores Bitcoin Electrum e os backups criptografados passam pelo Orbot na porta configurada em vez do Tor integrado. O Liquid nunca é roteado por ele.",
+  "settingsScreenPrivacyTitle": "Privacidade da tela",
+  "settingsScreenPrivacyDisabledMessage": "Agora as capturas de tela são permitidas em telas sensíveis"
 }

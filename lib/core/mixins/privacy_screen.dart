@@ -1,9 +1,22 @@
-import 'package:no_screenshot/no_screenshot.dart';
+import 'package:bb_mobile/core/utils/screen_capture_protection.dart';
 
+/// Adds screen-capture protection to a screen for as long as it is mounted.
+///
+/// Call [enableScreenPrivacy] once when the screen appears (in `initState` or a
+/// stored future) and [disableScreenPrivacy] once when it goes away (in
+/// `dispose`).
 mixin PrivacyScreen {
-  Future<void> enableScreenPrivacy() async =>
-      await NoScreenshot.instance.screenshotOff();
+  bool _privacyAcquired = false;
 
-  Future<void> disableScreenPrivacy() async =>
-      await NoScreenshot.instance.screenshotOn();
+  Future<void> enableScreenPrivacy() async {
+    if (_privacyAcquired) return;
+    _privacyAcquired = true;
+    await ScreenCaptureProtection.instance.acquire();
+  }
+
+  Future<void> disableScreenPrivacy() async {
+    if (!_privacyAcquired) return;
+    _privacyAcquired = false;
+    await ScreenCaptureProtection.instance.release();
+  }
 }

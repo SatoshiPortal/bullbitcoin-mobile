@@ -12568,5 +12568,7 @@
   "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
   "torSettingsActiveTransport": "Aktivní transport: {transport}",
   "torSettingsExternalProxyTitle": "Externí proxy Tor (pokročilé)",
-  "torSettingsExternalProxyDescription": "Když je zapnuto, servery Bitcoin Electrum a zašifrované záhy procházejí přes Orbot na nastaveném portu místo vestavěného Toru. Liquid se přes něj nikdy nesměruje."
+  "torSettingsExternalProxyDescription": "Když je zapnuto, servery Bitcoin Electrum a zašifrované záhy procházejí přes Orbot na nastaveném portu místo vestavěného Toru. Liquid se přes něj nikdy nesměruje.",
+  "settingsScreenPrivacyTitle": "Soukromí obrazovky",
+  "settingsScreenPrivacyDisabledMessage": "Snímky obrazovky jsou nyní na citlivých obrazovkách povoleny"
 }

@@ -4992,5 +4992,7 @@
   "torSettingsModeSnowflakeDescription": "Käyttää vapaaehtoisten Snowflake-välityspalvelimia Torin tavoittamiseen suodatetusta verkosta.",
   "torSettingsActiveTransport": "Aktiivinen siirtotapa: {transport}",
   "torSettingsExternalProxyTitle": "Ulkoinen Tor-välityspalvelin (lisäasetus)",
-  "torSettingsExternalProxyDescription": "Kun tämä on käytössä, Bitcoin Electrum -palvelimet ja salatut varmuuskopiot kulkevat Orbotin kautta määritetyssä portissa sisäänrakennetun Torin sijaan. Liquidia ei koskaan reititetä sen kautta."
+  "torSettingsExternalProxyDescription": "Kun tämä on käytössä, Bitcoin Electrum -palvelimet ja salatut varmuuskopiot kulkevat Orbotin kautta määritetyssä portissa sisäänrakennetun Torin sijaan. Liquidia ei koskaan reititetä sen kautta.",
+  "settingsScreenPrivacyTitle": "Näytön yksityisyys",
+  "settingsScreenPrivacyDisabledMessage": "Kuvakaappaukset ovat nyt sallittuja arkaluonteisilla näytöillä"
 }

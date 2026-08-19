@@ -3785,5 +3785,7 @@
   "torSettingsModeSnowflakeDescription": "იყენებს მოხალისეთა Snowflake-პროქსებს, რომ ფილტრირებული ქსელიდან მიაღწიოს Tor-ს.",
   "torSettingsActiveTransport": "აქტიური ტრანსპორტი: {transport}",
   "torSettingsExternalProxyTitle": "გარე Tor-პროქსი (დამატებითი)",
-  "torSettingsExternalProxyDescription": "ჩართვისას Bitcoin Electrum სერვერები და დაშიფრული სარეზერვო ასლები გადის Orbot-ით მითითებულ პორტზე, ჩაშენებული Tor-ის ნაცვლად. Liquid არასოდეს გადის მისით."
+  "torSettingsExternalProxyDescription": "ჩართვისას Bitcoin Electrum სერვერები და დაშიფრული სარეზერვო ასლები გადის Orbot-ით მითითებულ პორტზე, ჩაშენებული Tor-ის ნაცვლად. Liquid არასოდეს გადის მისით.",
+  "settingsScreenPrivacyTitle": "ეკრანის კონფიდენციალურობა",
+  "settingsScreenPrivacyDisabledMessage": "სკრინშოტები ახლა დაშვებულია მგრძნობიარე ეკრანებზე"
 }

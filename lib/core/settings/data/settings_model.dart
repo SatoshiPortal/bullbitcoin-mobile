@@ -17,6 +17,7 @@ class SettingsModel {
   final TorTransport? lastSuccessfulTorTransport;
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
+  final bool screenCaptureProtectionEnabled;
   final String? exchangeTestnetBasicAuthUsername;
   final String? exchangeTestnetBasicAuthPassword;
 
@@ -35,6 +36,7 @@ class SettingsModel {
     this.lastSuccessfulTorTransport,
     required this.themeMode,
     required this.isErrorReportingEnabled,
+    required this.screenCaptureProtectionEnabled,
     this.exchangeTestnetBasicAuthUsername,
     this.exchangeTestnetBasicAuthPassword,
   });
@@ -55,6 +57,7 @@ class SettingsModel {
       lastSuccessfulTorTransport: lastSuccessfulTorTransport?.name,
       themeMode: themeMode.name,
       isErrorReportingEnabled: isErrorReportingEnabled,
+      screenCaptureProtectionEnabled: screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
     );
@@ -83,6 +86,7 @@ class SettingsModel {
       },
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
+      screenCaptureProtectionEnabled: row.screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: row.exchangeTestnetBasicAuthPassword,
     );

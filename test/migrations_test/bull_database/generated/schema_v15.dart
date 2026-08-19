@@ -1828,6 +1828,17 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             'NOT NULL DEFAULT 0 CHECK (is_error_reporting_enabled IN (0, 1))',
         defaultValue: const CustomExpression('0'),
       );
+  late final GeneratedColumn<int>
+  screenCaptureProtectionEnabled = GeneratedColumn<int>(
+    'screen_capture_protection_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 1 CHECK (screen_capture_protection_enabled IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
   late final GeneratedColumn<String> exchangeTestnetBasicAuthUsername =
       GeneratedColumn<String>(
         'exchange_testnet_basic_auth_username',
@@ -1862,6 +1873,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     lastSuccessfulTorTransport,
     themeMode,
     isErrorReportingEnabled,
+    screenCaptureProtectionEnabled,
     exchangeTestnetBasicAuthUsername,
     exchangeTestnetBasicAuthPassword,
   ];
@@ -1932,6 +1944,10 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.int,
         data['${effectivePrefix}is_error_reporting_enabled'],
       )!,
+      screenCaptureProtectionEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}screen_capture_protection_enabled'],
+      )!,
       exchangeTestnetBasicAuthUsername: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exchange_testnet_basic_auth_username'],
@@ -1967,6 +1983,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String? lastSuccessfulTorTransport;
   final String themeMode;
   final int isErrorReportingEnabled;
+  final int screenCaptureProtectionEnabled;
   final String? exchangeTestnetBasicAuthUsername;
   final String? exchangeTestnetBasicAuthPassword;
   const SettingsData({
@@ -1984,6 +2001,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     this.lastSuccessfulTorTransport,
     required this.themeMode,
     required this.isErrorReportingEnabled,
+    required this.screenCaptureProtectionEnabled,
     this.exchangeTestnetBasicAuthUsername,
     this.exchangeTestnetBasicAuthPassword,
   });
@@ -2008,6 +2026,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     }
     map['theme_mode'] = Variable<String>(themeMode);
     map['is_error_reporting_enabled'] = Variable<int>(isErrorReportingEnabled);
+    map['screen_capture_protection_enabled'] = Variable<int>(
+      screenCaptureProtectionEnabled,
+    );
     if (!nullToAbsent || exchangeTestnetBasicAuthUsername != null) {
       map['exchange_testnet_basic_auth_username'] = Variable<String>(
         exchangeTestnetBasicAuthUsername,
@@ -2040,6 +2061,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           : Value(lastSuccessfulTorTransport),
       themeMode: Value(themeMode),
       isErrorReportingEnabled: Value(isErrorReportingEnabled),
+      screenCaptureProtectionEnabled: Value(screenCaptureProtectionEnabled),
       exchangeTestnetBasicAuthUsername:
           exchangeTestnetBasicAuthUsername == null && nullToAbsent
           ? const Value.absent()
@@ -2075,6 +2097,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       isErrorReportingEnabled: serializer.fromJson<int>(
         json['isErrorReportingEnabled'],
       ),
+      screenCaptureProtectionEnabled: serializer.fromJson<int>(
+        json['screenCaptureProtectionEnabled'],
+      ),
       exchangeTestnetBasicAuthUsername: serializer.fromJson<String?>(
         json['exchangeTestnetBasicAuthUsername'],
       ),
@@ -2105,6 +2130,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'isErrorReportingEnabled': serializer.toJson<int>(
         isErrorReportingEnabled,
       ),
+      'screenCaptureProtectionEnabled': serializer.toJson<int>(
+        screenCaptureProtectionEnabled,
+      ),
       'exchangeTestnetBasicAuthUsername': serializer.toJson<String?>(
         exchangeTestnetBasicAuthUsername,
       ),
@@ -2129,6 +2157,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     Value<String?> lastSuccessfulTorTransport = const Value.absent(),
     String? themeMode,
     int? isErrorReportingEnabled,
+    int? screenCaptureProtectionEnabled,
     Value<String?> exchangeTestnetBasicAuthUsername = const Value.absent(),
     Value<String?> exchangeTestnetBasicAuthPassword = const Value.absent(),
   }) => SettingsData(
@@ -2149,6 +2178,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     themeMode: themeMode ?? this.themeMode,
     isErrorReportingEnabled:
         isErrorReportingEnabled ?? this.isErrorReportingEnabled,
+    screenCaptureProtectionEnabled:
+        screenCaptureProtectionEnabled ?? this.screenCaptureProtectionEnabled,
     exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername.present
         ? exchangeTestnetBasicAuthUsername.value
         : this.exchangeTestnetBasicAuthUsername,
@@ -2192,6 +2223,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       isErrorReportingEnabled: data.isErrorReportingEnabled.present
           ? data.isErrorReportingEnabled.value
           : this.isErrorReportingEnabled,
+      screenCaptureProtectionEnabled:
+          data.screenCaptureProtectionEnabled.present
+          ? data.screenCaptureProtectionEnabled.value
+          : this.screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername:
           data.exchangeTestnetBasicAuthUsername.present
           ? data.exchangeTestnetBasicAuthUsername.value
@@ -2221,6 +2256,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('themeMode: $themeMode, ')
           ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
           ..write(
+            'screenCaptureProtectionEnabled: $screenCaptureProtectionEnabled, ',
+          )
+          ..write(
             'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
           )
           ..write(
@@ -2246,6 +2284,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     lastSuccessfulTorTransport,
     themeMode,
     isErrorReportingEnabled,
+    screenCaptureProtectionEnabled,
     exchangeTestnetBasicAuthUsername,
     exchangeTestnetBasicAuthPassword,
   );
@@ -2267,6 +2306,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.lastSuccessfulTorTransport == this.lastSuccessfulTorTransport &&
           other.themeMode == this.themeMode &&
           other.isErrorReportingEnabled == this.isErrorReportingEnabled &&
+          other.screenCaptureProtectionEnabled ==
+              this.screenCaptureProtectionEnabled &&
           other.exchangeTestnetBasicAuthUsername ==
               this.exchangeTestnetBasicAuthUsername &&
           other.exchangeTestnetBasicAuthPassword ==
@@ -2288,6 +2329,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String?> lastSuccessfulTorTransport;
   final Value<String> themeMode;
   final Value<int> isErrorReportingEnabled;
+  final Value<int> screenCaptureProtectionEnabled;
   final Value<String?> exchangeTestnetBasicAuthUsername;
   final Value<String?> exchangeTestnetBasicAuthPassword;
   const SettingsCompanion({
@@ -2305,6 +2347,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.lastSuccessfulTorTransport = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
+    this.screenCaptureProtectionEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
     this.exchangeTestnetBasicAuthPassword = const Value.absent(),
   });
@@ -2323,6 +2366,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.lastSuccessfulTorTransport = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
+    this.screenCaptureProtectionEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
     this.exchangeTestnetBasicAuthPassword = const Value.absent(),
   }) : environment = Value(environment),
@@ -2346,6 +2390,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String>? lastSuccessfulTorTransport,
     Expression<String>? themeMode,
     Expression<int>? isErrorReportingEnabled,
+    Expression<int>? screenCaptureProtectionEnabled,
     Expression<String>? exchangeTestnetBasicAuthUsername,
     Expression<String>? exchangeTestnetBasicAuthPassword,
   }) {
@@ -2366,6 +2411,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (themeMode != null) 'theme_mode': themeMode,
       if (isErrorReportingEnabled != null)
         'is_error_reporting_enabled': isErrorReportingEnabled,
+      if (screenCaptureProtectionEnabled != null)
+        'screen_capture_protection_enabled': screenCaptureProtectionEnabled,
       if (exchangeTestnetBasicAuthUsername != null)
         'exchange_testnet_basic_auth_username':
             exchangeTestnetBasicAuthUsername,
@@ -2390,6 +2437,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<String?>? lastSuccessfulTorTransport,
     Value<String>? themeMode,
     Value<int>? isErrorReportingEnabled,
+    Value<int>? screenCaptureProtectionEnabled,
     Value<String?>? exchangeTestnetBasicAuthUsername,
     Value<String?>? exchangeTestnetBasicAuthPassword,
   }) {
@@ -2410,6 +2458,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       themeMode: themeMode ?? this.themeMode,
       isErrorReportingEnabled:
           isErrorReportingEnabled ?? this.isErrorReportingEnabled,
+      screenCaptureProtectionEnabled:
+          screenCaptureProtectionEnabled ?? this.screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername:
           exchangeTestnetBasicAuthUsername ??
           this.exchangeTestnetBasicAuthUsername,
@@ -2468,6 +2518,11 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
         isErrorReportingEnabled.value,
       );
     }
+    if (screenCaptureProtectionEnabled.present) {
+      map['screen_capture_protection_enabled'] = Variable<int>(
+        screenCaptureProtectionEnabled.value,
+      );
+    }
     if (exchangeTestnetBasicAuthUsername.present) {
       map['exchange_testnet_basic_auth_username'] = Variable<String>(
         exchangeTestnetBasicAuthUsername.value,
@@ -2498,6 +2553,9 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('lastSuccessfulTorTransport: $lastSuccessfulTorTransport, ')
           ..write('themeMode: $themeMode, ')
           ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
+          ..write(
+            'screenCaptureProtectionEnabled: $screenCaptureProtectionEnabled, ',
+          )
           ..write(
             'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
           )

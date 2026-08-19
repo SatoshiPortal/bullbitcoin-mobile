@@ -23,6 +23,8 @@ class ShowMnemonicScreen extends StatefulWidget {
 
 class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
     with PrivacyScreen {
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
+
   @override
   void dispose() {
     unawaited(disableScreenPrivacy());
@@ -32,7 +34,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: enableScreenPrivacy(),
+      future: _privacyFuture,
       builder: (context, snapshot) {
         return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
           builder: (context, state) {
@@ -100,9 +102,6 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // `context.select` is only legal inside `build`; here we read the current
-    // value. `build` calls `context.watch<TestWalletBackupBloc>()`, so a state
-    // change still triggers `didChangeDependencies` again and reloads.
     final fingerprint = context
         .read<TestWalletBackupBloc>()
         .state

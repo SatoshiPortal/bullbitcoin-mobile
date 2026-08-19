@@ -146,6 +146,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     TorTransport? lastSuccessfulTorTransport,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
+    @Default(true) bool screenCaptureProtectionEnabled,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;

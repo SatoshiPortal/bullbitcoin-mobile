@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -48,6 +49,9 @@ class _MockSetThemeModeUsecase extends Mock implements SetThemeModeUsecase {}
 class _MockSetErrorReportingUsecase extends Mock
     implements SetErrorReportingUsecase {}
 
+class _MockSetScreenCaptureProtectionUsecase extends Mock
+    implements SetScreenCaptureProtectionUsecase {}
+
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
 
@@ -75,6 +79,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setIsDevModeUsecase,
     required super.setThemeModeUsecase,
     required super.setErrorReportingUsecase,
+    required super.setScreenCaptureProtectionUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
     required super.watchPayjoinPolicyUsecase,
@@ -108,6 +113,8 @@ void main() {
       setIsDevModeUsecase: _MockSetIsDevModeUsecase(),
       setThemeModeUsecase: _MockSetThemeModeUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
+      setScreenCaptureProtectionUsecase:
+          _MockSetScreenCaptureProtectionUsecase(),
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: setPayjoinEnabled,

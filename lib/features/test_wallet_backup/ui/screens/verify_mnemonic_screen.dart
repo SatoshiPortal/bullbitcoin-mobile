@@ -29,12 +29,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   String? _fingerprint;
   bool _isLoading = true;
 
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // `context.select` is only legal inside `build`. The selected wallet is
-    // fixed before this screen is reached (the user views the mnemonic first),
-    // so reading the fingerprint once at mount is sufficient here.
     final fingerprint = context
         .read<TestWalletBackupBloc>()
         .state
@@ -108,7 +107,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: enableScreenPrivacy(),
+      future: _privacyFuture,
       builder: (context, snapshot) {
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>

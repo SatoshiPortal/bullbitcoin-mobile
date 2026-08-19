@@ -5045,5 +5045,7 @@
   "torSettingsExternalProxyTitle": "Proxy Tor externe (avancé)",
   "torSettingsExternalProxyDescription": "Lorsque l'option est activée, les serveurs Bitcoin Electrum et les sauvegardes chiffrées passent par Orbot sur le port configuré au lieu du Tor intégré. Liquid n'y passe jamais.",
   "swapErrorRouteUnavailable": "{fromNetwork} vers {toNetwork} n'est pas disponible.",
-  "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible."
+  "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible.",
+  "settingsScreenPrivacyTitle": "Confidentialité de l’écran",
+  "settingsScreenPrivacyDisabledMessage": "Les captures d’écran sont désormais autorisées sur les écrans sensibles"
 }

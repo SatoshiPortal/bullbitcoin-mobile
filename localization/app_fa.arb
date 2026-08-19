@@ -12568,5 +12568,7 @@
   "torSettingsModeSnowflakeDescription": "از پروکسی‌های داوطلبانه Snowflake استفاده می‌کند تا از شبکه‌ای فیلترشده به Tor برسد.",
   "torSettingsActiveTransport": "حامل فعال: {transport}",
   "torSettingsExternalProxyTitle": "پروکسی Tor بیرونی (پیشرفته)",
-  "torSettingsExternalProxyDescription": "در صورت فعال بودن، سرورهای Bitcoin Electrum و پشتیبان‌های رمزگذاری‌شده به‌جای Tor داخلی از Orbot روی درگاه تنظیم‌شده عبور می‌کنند. Liquid هرگز از آن عبور نمی‌کند."
+  "torSettingsExternalProxyDescription": "در صورت فعال بودن، سرورهای Bitcoin Electrum و پشتیبان‌های رمزگذاری‌شده به‌جای Tor داخلی از Orbot روی درگاه تنظیم‌شده عبور می‌کنند. Liquid هرگز از آن عبور نمی‌کند.",
+  "settingsScreenPrivacyTitle": "حریم خصوصی صفحه",
+  "settingsScreenPrivacyDisabledMessage": "اکنون گرفتن اسکرین‌شات در صفحه‌های حساس مجاز است"
 }

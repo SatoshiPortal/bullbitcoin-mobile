@@ -24,6 +24,7 @@ class DatabaseSeeds {
             torTransportMode: 'automatic',
             themeMode: 'system',
             isErrorReportingEnabled: false,
+            screenCaptureProtectionEnabled: true,
           ),
         );
   }

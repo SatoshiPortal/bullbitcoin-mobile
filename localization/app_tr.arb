@@ -12568,5 +12568,7 @@
   "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
   "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
   "torSettingsExternalProxyTitle": "Harici Tor vekili (gelişmiş)",
-  "torSettingsExternalProxyDescription": "Etkinleştirildiğinde Bitcoin Electrum sunucuları ve şifreli yedekler, gömülü Tor yerine yapılandırılan porttaki Orbot üzerinden geçer. Liquid asla bunun üzerinden yönlendirilmez."
+  "torSettingsExternalProxyDescription": "Etkinleştirildiğinde Bitcoin Electrum sunucuları ve şifreli yedekler, gömülü Tor yerine yapılandırılan porttaki Orbot üzerinden geçer. Liquid asla bunun üzerinden yönlendirilmez.",
+  "settingsScreenPrivacyTitle": "Ekran gizliliği",
+  "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor"
 }

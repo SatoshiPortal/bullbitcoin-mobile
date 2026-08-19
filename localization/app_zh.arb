@@ -5001,5 +5001,7 @@
   "torSettingsModeSnowflakeDescription": "通过志愿者提供的 Snowflake 代理，从被过滤的网络连接 Tor。",
   "torSettingsActiveTransport": "当前传输方式：{transport}",
   "torSettingsExternalProxyTitle": "外部 Tor 代理（高级）",
-  "torSettingsExternalProxyDescription": "启用后，Bitcoin Electrum 服务器和加密备份将通过配置端口上的 Orbot，而不是内置 Tor。Liquid 永不经由它路由。"
+  "torSettingsExternalProxyDescription": "启用后，Bitcoin Electrum 服务器和加密备份将通过配置端口上的 Orbot，而不是内置 Tor。Liquid 永不经由它路由。",
+  "settingsScreenPrivacyTitle": "屏幕隐私",
+  "settingsScreenPrivacyDisabledMessage": "现在允许在敏感屏幕上截屏"
 }

@@ -12572,5 +12572,7 @@
   "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
   "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
   "torSettingsExternalProxyTitle": "พร็อกซี Tor ภายนอก (ขั้นสูง)",
-  "torSettingsExternalProxyDescription": "เมื่อเปิดใช้งาน เซิร์ฟเวอร์ Bitcoin Electrum และข้อมูลสำรองที่เข้ารหัสจะผ่าน Orbot ที่พอร์ตที่กำหนดไว้ แทน Tor ในตัว ส่วน Liquid จะไม่ผ่าน Orbot เลย"
+  "torSettingsExternalProxyDescription": "เมื่อเปิดใช้งาน เซิร์ฟเวอร์ Bitcoin Electrum และข้อมูลสำรองที่เข้ารหัสจะผ่าน Orbot ที่พอร์ตที่กำหนดไว้ แทน Tor ในตัว ส่วน Liquid จะไม่ผ่าน Orbot เลย",
+  "settingsScreenPrivacyTitle": "ความเป็นส่วนตัวของหน้าจอ",
+  "settingsScreenPrivacyDisabledMessage": "ตอนนี้อนุญาตให้จับภาพหน้าจอในหน้าจอที่ละเอียดอ่อนได้แล้ว"
 }

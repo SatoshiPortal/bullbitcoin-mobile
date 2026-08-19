@@ -7275,6 +7275,7 @@ final class Schema15 extends i0.VersionedSchema {
         _column_286,
         _column_157,
         _column_233,
+        _column_287,
         _column_235,
         _column_236,
       ],
@@ -7648,6 +7649,9 @@ class Shape42 extends i0.VersionedTable {
       columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<int> get isErrorReportingEnabled =>
       columnsByName['is_error_reporting_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get screenCaptureProtectionEnabled =>
+      columnsByName['screen_capture_protection_enabled']!
+          as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get exchangeTestnetBasicAuthUsername =>
       columnsByName['exchange_testnet_basic_auth_username']!
           as i1.GeneratedColumn<String>;
@@ -7673,6 +7677,17 @@ i1.GeneratedColumn<String> _column_286(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
+i1.GeneratedColumn<int> _column_287(
+  String aliasedName,
+) => i1.GeneratedColumn<int>(
+  'screen_capture_protection_enabled',
+  aliasedName,
+  false,
+  type: i1.DriftSqlType.int,
+  $customConstraints:
+      'NOT NULL DEFAULT 1 CHECK (screen_capture_protection_enabled IN (0, 1))',
+  defaultValue: const i1.CustomExpression('1'),
+);
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,

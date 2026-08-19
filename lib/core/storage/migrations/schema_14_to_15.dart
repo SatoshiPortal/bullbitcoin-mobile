@@ -4,14 +4,13 @@ import 'package:drift/drift.dart';
 
 /// Migration from version 14 to 15.
 ///
-/// Adds the persisted Tor transport preferences to the settings table
-/// (`tor_transport_mode`, `last_successful_tor_transport`). Schema 14 shipped in
-/// v6.13.0 without these columns, so they belong in this new version rather than
-/// being retrofitted into the released v14.
-///
-/// The adds are guarded: an early, unreleased develop build briefly added the
-/// Tor columns in the 13→14 step, so a dev device may already have them. The
-/// guard makes the migration idempotent instead of throwing `duplicate column`.
+/// Adds the settings columns introduced after the v14 release (schema 14 ships
+/// in v6.13.0):
+/// - `tor_transport_mode` / `last_successful_tor_transport` — persisted Tor
+///   transport preferences.
+/// - `screen_capture_protection_enabled` — gates screenshot/recording blocking
+///   on sensitive screens (defaults to true so installs keep protection until
+///   the user opts out).
 class Schema14To15 {
   static Future<void> migrate(Migrator m, Schema15 schema15) async {
     await _addColumnIfNotExists(
@@ -24,6 +23,13 @@ class Schema14To15 {
         schema15.settings.lastSuccessfulTorTransport,
       ),
       'settings.last_successful_tor_transport column',
+    );
+    await _addColumnIfNotExists(
+      () => m.addColumn(
+        schema15.settings,
+        schema15.settings.screenCaptureProtectionEnabled,
+      ),
+      'settings.screen_capture_protection_enabled column',
     );
   }
 }

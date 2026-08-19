@@ -12959,5 +12959,7 @@
   "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
   "torSettingsActiveTransport": "Active transport: {transport}",
   "torSettingsExternalProxyTitle": "Bahari Tor proxy (advanced)",
-  "torSettingsExternalProxyDescription": "Enable karne par, Bitcoin Electrum ke .onion servers embedded Tor ki jagah configure kiye gaye port par Orbot ka istemal karte hain."
+  "torSettingsExternalProxyDescription": "Enable karne par, Bitcoin Electrum ke .onion servers embedded Tor ki jagah configure kiye gaye port par Orbot ka istemal karte hain.",
+  "settingsScreenPrivacyTitle": "Screen Privacy",
+  "settingsScreenPrivacyDisabledMessage": "Ab sanvedansheel screen par screenshot lene ki anumati hai"
 }

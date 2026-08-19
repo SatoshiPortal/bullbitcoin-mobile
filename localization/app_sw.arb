@@ -3650,5 +3650,7 @@
   "torSettingsModeSnowflakeDescription": "Hutumia proksi za kujitolea za Snowflake kufikia Tor kutoka mtandao uliochujwa.",
   "torSettingsActiveTransport": "Usafirishaji unaotumika: {transport}",
   "torSettingsExternalProxyTitle": "Proksi ya nje ya Tor (ya kina)",
-  "torSettingsExternalProxyDescription": "Ikiwashwa, seva za Bitcoin Electrum na nakala rudufu zilizosimbwa hupitia Orbot kwenye mlango uliowekwa badala ya Tor iliyojumuishwa. Liquid haipitishwi kamwe kupitia hiyo."
+  "torSettingsExternalProxyDescription": "Ikiwashwa, seva za Bitcoin Electrum na nakala rudufu zilizosimbwa hupitia Orbot kwenye mlango uliowekwa badala ya Tor iliyojumuishwa. Liquid haipitishwi kamwe kupitia hiyo.",
+  "settingsScreenPrivacyTitle": "Faragha ya skrini",
+  "settingsScreenPrivacyDisabledMessage": "Sasa picha za skrini zinaruhusiwa kwenye skrini nyeti"
 }

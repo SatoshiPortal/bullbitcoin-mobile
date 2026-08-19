@@ -9641,5 +9641,7 @@
   "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
   "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
   "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্ৰক্সী (উন্নত)",
-  "torSettingsExternalProxyDescription": "সক্ৰিয় কৰিলে, Bitcoin Electrum ছাৰ্ভাৰ আৰু এনক্ৰিপ্ট কৰা বেকআপসমূহ অন্তৰ্নিহিত Tor-ৰ পৰিবৰ্তে নিৰ্ধাৰিত পৰ্টত Orbot-ৰ মাজেদি যায়। Liquid কেতিয়াও ইয়াৰ মাজেদি নাযায়।"
+  "torSettingsExternalProxyDescription": "সক্ৰিয় কৰিলে, Bitcoin Electrum ছাৰ্ভাৰ আৰু এনক্ৰিপ্ট কৰা বেকআপসমূহ অন্তৰ্নিহিত Tor-ৰ পৰিবৰ্তে নিৰ্ধাৰিত পৰ্টত Orbot-ৰ মাজেদি যায়। Liquid কেতিয়াও ইয়াৰ মাজেদি নাযায়।",
+  "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
+  "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে"
 }

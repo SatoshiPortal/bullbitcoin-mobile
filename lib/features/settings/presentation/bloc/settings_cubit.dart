@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/screen_capture_protection.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -17,6 +18,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,6 +42,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setIsDevModeUsecase,
     required this._setThemeModeUsecase,
     required this._setErrorReportingUsecase,
+    required this._setScreenCaptureProtectionUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
@@ -64,6 +67,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetThemeModeUsecase _setThemeModeUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
+  final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
@@ -83,6 +87,11 @@ class SettingsCubit extends Cubit<SettingsState> {
       PackageInfo.fromPlatform(),
     ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
+
+    // Mirror the persisted preference into the process-wide capture controller
+    // so protected screens honour the user's choice from the first frame.
+    ScreenCaptureProtection.instance.enabledByUser =
+        storedSettings.screenCaptureProtectionEnabled;
 
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
@@ -207,6 +216,25 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isErrorReportingEnabled: enabled),
+      ),
+    );
+  }
+
+  Future<void> toggleScreenCaptureProtection(bool enabled) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Screen capture protection toggled: $enabled was '
+      '${settings?.screenCaptureProtectionEnabled}',
+    );
+    await _setScreenCaptureProtectionUsecase.execute(enabled);
+    // Apply immediately: this flips FLAG_SECURE on any protected screen that
+    // is currently mounted, and clears it if the user just opted out.
+    ScreenCaptureProtection.instance.enabledByUser = enabled;
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(
+          screenCaptureProtectionEnabled: enabled,
+        ),
       ),
     );
   }
