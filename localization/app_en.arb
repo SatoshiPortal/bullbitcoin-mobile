@@ -14652,5 +14652,21 @@
   "recoverbullServerUnreachableTorOk": "Tor is working, but the backup server did not answer. This can take a moment right after a first start.",
   "@recoverbullServerUnreachableTorOk": {
     "description": "Shown when Tor is up but the RecoverBull onion service did not answer, so the failure is localised to the server."
+  },
+  "swapErrorRouteUnavailable": "{fromNetwork} to {toNetwork} is not available.",
+  "@swapErrorRouteUnavailable": {
+    "description": "Shown when the exchange rejects a swap because no payment option/route exists for it (API ERR_ORD_PO404), naming the source and destination networks.",
+    "placeholders": {
+      "fromNetwork": {
+        "type": "String"
+      },
+      "toNetwork": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRouteUnavailableGeneric": "This swap is not available.",
+  "@swapErrorRouteUnavailableGeneric": {
+    "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
   }
 }

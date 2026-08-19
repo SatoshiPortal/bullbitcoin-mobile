@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/widgets.dart';
@@ -14,8 +15,14 @@ extension SwapFailureL10n on SwapFailure {
       isMinimum: false,
     ) =>
       context.loc.swapErrorAmountAboveMaximum(limit.toString()),
+    SwapNoPaymentOptionFailure(:final inNetwork?, :final outNetwork?) =>
+      context.loc.swapErrorRouteUnavailable(
+        inNetwork.toTranslated(context),
+        outNetwork.toTranslated(context),
+      ),
+    SwapNoPaymentOptionFailure() =>
+      context.loc.swapErrorRouteUnavailableGeneric,
     SwapAmountOutOfBoundsFailure() ||
-    SwapNoPaymentOptionFailure() ||
     SwapValidationFailure() ||
     SwapOrderNotFoundFailure() ||
     SwapOrderExpiredFailure() ||

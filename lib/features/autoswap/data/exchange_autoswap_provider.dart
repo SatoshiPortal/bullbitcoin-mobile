@@ -13,6 +13,16 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 class ExchangeAutoswapProvider implements AutoswapProviderPort {
+  /// Fallback when the server sends no Retry-After.
+  static const _createRetryDelay = Duration(seconds: 5);
+
+  /// Longest wait worth taking inline. `Retry-After` is server-controlled and
+  /// unbounded, and sleeping on it would park the watcher (its in-flight guard
+  /// drops every sync meanwhile) and stall `dispose`, which awaits the run.
+  /// Past this the quote is stale anyway, so the next sync retries instead.
+  /// Matches the spacing `RefreshOrderSwapsUsecase` uses on the same API.
+  static const _maxCreateRetryDelay = Duration(seconds: 30);
+
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
@@ -20,16 +30,18 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
   final SwapFacade _swapFacade;
   final LabelsFacade _labelsFacade;
+  final Future<void> Function(Duration) _delay;
 
-  const ExchangeAutoswapProvider(
+  ExchangeAutoswapProvider(
     this._walletRepository,
     this._settingsRepository,
     this._liquidWalletRepository,
     this._getReceiveAddress,
     this._broadcastLiquidTransaction,
     this._swapFacade,
-    this._labelsFacade,
-  );
+    this._labelsFacade, {
+    Future<void> Function(Duration)? delay,
+  }) : _delay = delay ?? Future<void>.delayed;
 
   @override
   Future<Result<String, AutoswapFailure>> execute(AutoSwap settings) async {
@@ -123,20 +135,35 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         );
       }
 
-      final createResult = await _swapFacade.createOrder(
-        amountSat: BigInt.from(amountSat),
-        isInAmountFixed: true,
-        inNetwork: OrderSwapNetwork.liquid,
-        outNetwork: OrderSwapNetwork.bitcoin,
-        destinationAddress: destination.address,
-        fallbackAddress: fallback.address,
-        purpose: OrderSwapPurpose.autoswap,
-        environment: orderEnvironment,
-        sourceWalletId: liquidWallet.id,
-        destinationWalletId: recipientWallet.id,
-        note: 'Auto-Transfer',
-        quotedCounterpartAmountSat: quote.outAmountSat,
-      );
+      Future<Result<OrderSwapRecord, SwapFailure>> create() =>
+          _swapFacade.createOrder(
+            amountSat: BigInt.from(amountSat),
+            isInAmountFixed: true,
+            inNetwork: OrderSwapNetwork.liquid,
+            outNetwork: OrderSwapNetwork.bitcoin,
+            destinationAddress: destination.address,
+            fallbackAddress: fallback.address,
+            purpose: OrderSwapPurpose.autoswap,
+            environment: orderEnvironment,
+            sourceWalletId: liquidWallet.id,
+            destinationWalletId: recipientWallet.id,
+            note: 'Auto-Transfer',
+            quotedCounterpartAmountSat: quote.outAmountSat,
+          );
+
+      var createResult = await create();
+      // The quote just used the rate-limit slot, so this call is the one that
+      // gets refused. Nothing was created server-side, so one retry is safe.
+      // Keep the wait short: the quote it submits goes stale.
+      if (createResult case Err(
+        :final failure,
+      ) when failure is SwapRateLimitedFailure) {
+        final wait = failure.retryAfter ?? _createRetryDelay;
+        if (wait <= _maxCreateRetryDelay) {
+          await _delay(wait);
+          createResult = await create();
+        }
+      }
       if (createResult case Err(:final failure)) {
         return Err(AutoswapProviderFailure(failure.runtimeType.toString()));
       }

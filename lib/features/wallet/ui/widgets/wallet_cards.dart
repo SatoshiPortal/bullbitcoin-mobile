@@ -52,7 +52,8 @@ class WalletCards extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          for (final w in wallets) ...[
+          for (final (index, w) in wallets.indexed) ...[
+            if (index > 0) const Gap(8),
             WalletCard(
               tagColor: cardDetails(context, w),
               title: w.displayLabel(context),
@@ -62,7 +63,6 @@ class WalletCards extends StatelessWidget {
               fiatCurrency: fiatCurrency,
               onTap: () => onTap?.call(w),
             ),
-            const Gap(8),
           ],
         ],
       ),
