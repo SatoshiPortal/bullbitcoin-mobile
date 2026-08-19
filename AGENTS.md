@@ -31,6 +31,13 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 - **`fvm dart fix --dry-run` must print `Nothing to fix!`** before commit. If not, run `fvm dart fix --apply` and stage the result.
 - **Pre-commit hook is the floor.** It runs analyze + dart fix dry-run ([`.git_hooks/pre-commit`](.git_hooks/pre-commit)). **Never `--no-verify`.** If it fails, fix the cause.
 
+## Database schema migration support
+
+- Every database schema version shipped in a published release is immutable and must remain a supported upgrade source through the migration chain; `main` generally archives that published truth.
+- Before the next release, `develop` keeps exactly one pending schema revision: the latest published schema plus 1. Aggregate all unreleased schema changes into that same next migration and snapshot; never bump once per feature or commit.
+- Intermediate schema states that existed only in `develop` are not compatibility targets. Development installs may require a reset or reinstall; do not add production migration guards or preserve intermediate snapshots solely for them.
+- Before release, verify the path from the latest published `main` schema fixture to the final pending schema. Once shipped, that migration and snapshot become immutable.
+
 ## Monorepo / melos
 
 The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. The Flutter app remains at the repo root through `useRootAsPackage: true`; current members are the `bull_ui` design system, its dev-only catalogue, the pure-Dart `primitives` package, the pure-Dart `bull_payjoin` package, and the Flutter `bull_tor` package. The makefile remains the canonical entry point across the workspace.

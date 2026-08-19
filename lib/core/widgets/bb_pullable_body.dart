@@ -24,6 +24,7 @@ class BBPullableBody extends StatelessWidget {
     required this.onRefresh,
     required this.slivers,
     this.bottomChild,
+    this.bottomInset = 0,
   });
 
   /// Forwarded to the inner [BBRefreshIndicator]. Use a
@@ -32,6 +33,9 @@ class BBPullableBody extends StatelessWidget {
   final RefreshCallback onRefresh;
   final List<Widget> slivers;
   final Widget? bottomChild;
+
+  /// Space reserved at the end of the scroll content.
+  final double bottomInset;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,8 @@ class BBPullableBody extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           ...slivers,
+          if (bottomInset > 0)
+            SliverToBoxAdapter(child: SizedBox(height: bottomInset)),
           SliverFillRemaining(
             hasScrollBody: false,
             child: bottomChild == null

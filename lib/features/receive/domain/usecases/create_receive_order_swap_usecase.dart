@@ -143,7 +143,12 @@ class CreateReceiveOrderSwapUsecase {
         isMinimum: isMinimum,
         logMessage: logMessage,
       ),
-    SwapNoPaymentOptionFailure() ||
+    SwapNoPaymentOptionFailure(:final inNetwork, :final outNetwork) =>
+      ReceiveSwapRouteUnavailableFailure(
+        inNetwork: inNetwork,
+        outNetwork: outNetwork,
+        logMessage: failure.logMessage,
+      ),
     SwapValidationFailure() ||
     SwapProviderFailure() => ReceiveSwapUnavailableFailure(failure.logMessage),
     SwapRateLimitedFailure(:final retryAfter) => ReceiveRateLimitedFailure(

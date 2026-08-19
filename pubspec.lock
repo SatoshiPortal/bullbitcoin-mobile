@@ -1505,10 +1505,11 @@ packages:
   payjoin:
     dependency: transitive
     description:
-      name: payjoin
-      sha256: "52696fe34ef3c05f9827f5dd08a984e8ea86642677ba934f65a7f3a722755985"
-      url: "https://pub.dev"
-    source: hosted
+      path: "payjoin-ffi/dart"
+      ref: "51da8ed79ee57536f4be223a01e6ecb163986f28"
+      resolved-ref: "51da8ed79ee57536f4be223a01e6ecb163986f28"
+      url: "https://github.com/SatoshiPortal/payjoin-rust"
+    source: git
     version: "0.2.1+payjoin-1.0.0-rc.8"
   permission_handler:
     dependency: "direct main"

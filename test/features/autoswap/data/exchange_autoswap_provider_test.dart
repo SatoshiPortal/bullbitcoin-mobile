@@ -102,6 +102,7 @@ void main() {
   late _MockSwapFacade swapFacade;
   late _MockLabelsFacade labelsFacade;
   late ExchangeAutoswapProvider provider;
+  late List<Duration> delays;
 
   const settings = AutoSwap(
     enabled: true,
@@ -130,6 +131,7 @@ void main() {
     broadcastLiquid = _MockBroadcastLiquid();
     swapFacade = _MockSwapFacade();
     labelsFacade = _MockLabelsFacade();
+    delays = [];
     provider = ExchangeAutoswapProvider(
       walletRepository,
       settingsRepository,
@@ -138,6 +140,7 @@ void main() {
       broadcastLiquid,
       swapFacade,
       labelsFacade,
+      delay: (duration) async => delays.add(duration),
     );
 
     when(() => settingsRepository.fetch()).thenAnswer(
@@ -498,4 +501,161 @@ void main() {
       );
     },
   );
+
+  group('a rate-limited order creation', () {
+    /// Stubs everything up to `createOrder` so each test only has to say what
+    /// that call returns, in order.
+    void stubUpToCreate(List<Result<OrderSwapRecord, SwapFailure>> creates) {
+      when(
+        () => liquidWalletRepository.buildPset(
+          walletId: 'liquid-wallet',
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          feeRate: any(named: 'feeRate'),
+        ),
+      ).thenAnswer((_) async => 'pset');
+      when(
+        () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
+      ).thenAnswer((_) async => (200, 500));
+      when(
+        () => swapFacade.getQuote(
+          environment: OrderSwapEnvironment.testnet,
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: true,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+        ),
+      ).thenAnswer(
+        (_) async => Ok(
+          OrderSwapQuote(
+            inAmountSat: BigInt.from(2499500),
+            outAmountSat: BigInt.from(2479500),
+            inNetwork: OrderSwapNetwork.liquid,
+            outNetwork: OrderSwapNetwork.bitcoin,
+            inCurrency: 'LBTC',
+            outCurrency: 'BTC',
+            feeBasisPoints: 80,
+            warnings: const [],
+          ),
+        ),
+      );
+      final remaining = [...creates];
+      when(
+        () => swapFacade.createOrder(
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: true,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+          destinationAddress: any(named: 'destinationAddress'),
+          fallbackAddress: any(named: 'fallbackAddress'),
+          purpose: OrderSwapPurpose.autoswap,
+          environment: OrderSwapEnvironment.testnet,
+          sourceWalletId: 'liquid-wallet',
+          destinationWalletId: 'bitcoin-wallet',
+          note: 'Auto-Transfer',
+          quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
+        ),
+      ).thenAnswer((_) async => remaining.removeAt(0));
+    }
+
+    test('is retried once after the delay the server asks for', () async {
+      stubUpToCreate([
+        const Err(SwapRateLimitedFailure(retryAfter: Duration(seconds: 5))),
+        const Err(SwapProviderFailure('second attempt')),
+      ]);
+
+      final result = await provider.execute(settings);
+
+      // Waited exactly as long as the server asked, then tried again.
+      expect(delays, [const Duration(seconds: 5)]);
+      expect(
+        (result as Err<String, AutoswapFailure>).failure,
+        isA<AutoswapProviderFailure>(),
+      );
+      verify(
+        () => swapFacade.createOrder(
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: true,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+          destinationAddress: any(named: 'destinationAddress'),
+          fallbackAddress: any(named: 'fallbackAddress'),
+          purpose: OrderSwapPurpose.autoswap,
+          environment: OrderSwapEnvironment.testnet,
+          sourceWalletId: 'liquid-wallet',
+          destinationWalletId: 'bitcoin-wallet',
+          note: 'Auto-Transfer',
+          quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
+        ),
+      ).called(2);
+    });
+
+    test('falls back to a short delay when none is supplied', () async {
+      stubUpToCreate([
+        const Err(SwapRateLimitedFailure()),
+        const Err(SwapProviderFailure('second attempt')),
+      ]);
+
+      await provider.execute(settings);
+
+      expect(delays, [const Duration(seconds: 5)]);
+    });
+
+    /// `Retry-After` is server-controlled and unbounded. Sleeping on a long
+    /// one would park the watcher and stall its disposal, so the run gives up
+    /// and lets the next wallet sync try again.
+    test('a delay longer than the cap is not waited out', () async {
+      stubUpToCreate([
+        const Err(SwapRateLimitedFailure(retryAfter: Duration(minutes: 10))),
+      ]);
+
+      final result = await provider.execute(settings);
+
+      expect(delays, isEmpty);
+      expect(
+        (result as Err<String, AutoswapFailure>).failure,
+        isA<AutoswapProviderFailure>(),
+      );
+      verify(
+        () => swapFacade.createOrder(
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: true,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+          destinationAddress: any(named: 'destinationAddress'),
+          fallbackAddress: any(named: 'fallbackAddress'),
+          purpose: OrderSwapPurpose.autoswap,
+          environment: OrderSwapEnvironment.testnet,
+          sourceWalletId: 'liquid-wallet',
+          destinationWalletId: 'bitcoin-wallet',
+          note: 'Auto-Transfer',
+          quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
+        ),
+      ).called(1);
+    });
+
+    test('other failures are not retried', () async {
+      stubUpToCreate([const Err(SwapProviderFailure('nope'))]);
+
+      await provider.execute(settings);
+
+      expect(delays, isEmpty);
+      verify(
+        () => swapFacade.createOrder(
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: true,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+          destinationAddress: any(named: 'destinationAddress'),
+          fallbackAddress: any(named: 'fallbackAddress'),
+          purpose: OrderSwapPurpose.autoswap,
+          environment: OrderSwapEnvironment.testnet,
+          sourceWalletId: 'liquid-wallet',
+          destinationWalletId: 'bitcoin-wallet',
+          note: 'Auto-Transfer',
+          quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
+        ),
+      ).called(1);
+    });
+  });
 }

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/primitives/payment_network.dart';
 
 sealed class ReceiveFailure extends Failure {
   const ReceiveFailure([super.logMessage]);
@@ -21,6 +22,17 @@ final class ReceiveInvalidInvoiceFailure extends ReceiveFailure {
 
 final class ReceiveSwapUnavailableFailure extends ReceiveFailure {
   const ReceiveSwapUnavailableFailure([super.logMessage]);
+}
+
+final class ReceiveSwapRouteUnavailableFailure extends ReceiveFailure {
+  final PaymentNetwork? inNetwork;
+  final PaymentNetwork? outNetwork;
+
+  const ReceiveSwapRouteUnavailableFailure({
+    this.inNetwork,
+    this.outNetwork,
+    String? logMessage,
+  }) : super(logMessage);
 }
 
 final class ReceiveNetworkFailure extends ReceiveFailure {

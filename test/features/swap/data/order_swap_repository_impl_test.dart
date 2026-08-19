@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
@@ -75,6 +76,36 @@ void main() {
     );
     expect(failure.isMinimum, isTrue);
   });
+
+  test(
+    'preserves the requested networks on a missing payment option',
+    () async {
+      when(
+        () => remote.getBestSwapOption(
+          amountSat: BigInt.from(50000),
+          isInAmountFixed: false,
+          inNetwork: OrderSwapNetwork.bitcoin,
+          outNetwork: OrderSwapNetwork.lightning,
+        ),
+      ).thenThrow(const ExchangeRpcException(apiCode: 'ERR_ORD_PO404'));
+
+      final result = await repository.getQuote(
+        environment: OrderSwapEnvironment.testnet,
+        amountSat: BigInt.from(50000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.bitcoin,
+        outNetwork: OrderSwapNetwork.lightning,
+      );
+
+      final failure = (result as Err<OrderSwapQuote, SwapFailure>).failure;
+      expect(failure, isA<SwapNoPaymentOptionFailure>());
+      expect(
+        (failure as SwapNoPaymentOptionFailure).inNetwork,
+        PaymentNetwork.bitcoin,
+      );
+      expect(failure.outNetwork, PaymentNetwork.lightning);
+    },
+  );
 
   test('routes mainnet quotes to the mainnet datasource', () async {
     when(

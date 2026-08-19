@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -227,6 +228,39 @@ void main() {
       expect(result, isA<Ok<OrderSwapRecord, ReceiveFailure>>());
     },
   );
+
+  test('maps a missing payment route to a dedicated failure', () async {
+    when(
+      () => swapFacade.getQuote(
+        environment: OrderSwapEnvironment.testnet,
+        amountSat: BigInt.from(50000),
+        isInAmountFixed: true,
+        inNetwork: OrderSwapNetwork.lightning,
+        outNetwork: OrderSwapNetwork.liquid,
+      ),
+    ).thenAnswer(
+      (_) async => const Err(
+        SwapNoPaymentOptionFailure(
+          inNetwork: PaymentNetwork.lightning,
+          outNetwork: PaymentNetwork.liquid,
+          logMessage: 'no route',
+        ),
+      ),
+    );
+
+    final result = await usecase.execute(
+      wallet: _wallet(Network.liquidTestnet),
+      amountSat: 50000,
+    );
+
+    final failure = (result as Err<OrderSwapRecord, ReceiveFailure>).failure;
+    expect(failure, isA<ReceiveSwapRouteUnavailableFailure>());
+    expect(
+      (failure as ReceiveSwapRouteUnavailableFailure).inNetwork,
+      PaymentNetwork.lightning,
+    );
+    expect(failure.outNetwork, PaymentNetwork.liquid);
+  });
 
   test('routes mainnet through the Exchange facade', () async {
     when(

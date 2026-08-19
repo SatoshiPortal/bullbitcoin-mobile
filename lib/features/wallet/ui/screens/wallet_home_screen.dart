@@ -20,6 +20,9 @@ class WalletHomeScreen extends StatefulWidget {
 }
 
 class _WalletHomeScreenState extends State<WalletHomeScreen> {
+  /// Height the pinned Receive/Send bar occupies
+  static const double _bottomBarHeight = 52.0 + 16.0 * 2;
+
   final GlobalKey<RefreshIndicatorState> _indicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
@@ -116,8 +119,15 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             BBPullableBody(
               indicatorKey: _indicatorKey,
               onRefresh: () => context.read<WalletBloc>().refresh(),
+              // Clearance for the bar pinned at the bottom of this Stack, so
+              // the last wallet card can be scrolled out from under it.
+              bottomInset:
+                  _bottomBarHeight + MediaQuery.paddingOf(context).bottom,
               slivers: [
-                const SliverToBoxAdapter(child: WalletHomeTopSection()),
+                // Pinned rather than scrolled away: the balance and the
+                // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
+                // scroll underneath.
+                const PinnedHeaderSliver(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),

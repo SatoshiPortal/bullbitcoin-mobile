@@ -1790,24 +1790,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     $customConstraints: 'NOT NULL DEFAULT 9050',
     defaultValue: const CustomExpression('9050'),
   );
-  late final GeneratedColumn<String> torTransportMode = GeneratedColumn<String>(
-    'tor_transport_mode',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT \'automatic\'',
-    defaultValue: const CustomExpression('\'automatic\''),
-  );
-  late final GeneratedColumn<String> lastSuccessfulTorTransport =
-      GeneratedColumn<String>(
-        'last_successful_tor_transport',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        $customConstraints: 'NULL',
-      );
   late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
     'theme_mode',
     aliasedName,
@@ -1858,8 +1840,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     isDevModeEnabled,
     useTorProxy,
     torProxyPort,
-    torTransportMode,
-    lastSuccessfulTorTransport,
     themeMode,
     isErrorReportingEnabled,
     exchangeTestnetBasicAuthUsername,
@@ -1916,14 +1896,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.int,
         data['${effectivePrefix}tor_proxy_port'],
       )!,
-      torTransportMode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tor_transport_mode'],
-      )!,
-      lastSuccessfulTorTransport: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_successful_tor_transport'],
-      ),
       themeMode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}theme_mode'],
@@ -1963,8 +1935,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int isDevModeEnabled;
   final int useTorProxy;
   final int torProxyPort;
-  final String torTransportMode;
-  final String? lastSuccessfulTorTransport;
   final String themeMode;
   final int isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
@@ -1980,8 +1950,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.isDevModeEnabled,
     required this.useTorProxy,
     required this.torProxyPort,
-    required this.torTransportMode,
-    this.lastSuccessfulTorTransport,
     required this.themeMode,
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
@@ -2000,12 +1968,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['is_dev_mode_enabled'] = Variable<int>(isDevModeEnabled);
     map['use_tor_proxy'] = Variable<int>(useTorProxy);
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
-    map['tor_transport_mode'] = Variable<String>(torTransportMode);
-    if (!nullToAbsent || lastSuccessfulTorTransport != null) {
-      map['last_successful_tor_transport'] = Variable<String>(
-        lastSuccessfulTorTransport,
-      );
-    }
     map['theme_mode'] = Variable<String>(themeMode);
     map['is_error_reporting_enabled'] = Variable<int>(isErrorReportingEnabled);
     if (!nullToAbsent || exchangeTestnetBasicAuthUsername != null) {
@@ -2033,11 +1995,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       isDevModeEnabled: Value(isDevModeEnabled),
       useTorProxy: Value(useTorProxy),
       torProxyPort: Value(torProxyPort),
-      torTransportMode: Value(torTransportMode),
-      lastSuccessfulTorTransport:
-          lastSuccessfulTorTransport == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSuccessfulTorTransport),
       themeMode: Value(themeMode),
       isErrorReportingEnabled: Value(isErrorReportingEnabled),
       exchangeTestnetBasicAuthUsername:
@@ -2067,10 +2024,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       isDevModeEnabled: serializer.fromJson<int>(json['isDevModeEnabled']),
       useTorProxy: serializer.fromJson<int>(json['useTorProxy']),
       torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
-      torTransportMode: serializer.fromJson<String>(json['torTransportMode']),
-      lastSuccessfulTorTransport: serializer.fromJson<String?>(
-        json['lastSuccessfulTorTransport'],
-      ),
       themeMode: serializer.fromJson<String>(json['themeMode']),
       isErrorReportingEnabled: serializer.fromJson<int>(
         json['isErrorReportingEnabled'],
@@ -2097,10 +2050,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'isDevModeEnabled': serializer.toJson<int>(isDevModeEnabled),
       'useTorProxy': serializer.toJson<int>(useTorProxy),
       'torProxyPort': serializer.toJson<int>(torProxyPort),
-      'torTransportMode': serializer.toJson<String>(torTransportMode),
-      'lastSuccessfulTorTransport': serializer.toJson<String?>(
-        lastSuccessfulTorTransport,
-      ),
       'themeMode': serializer.toJson<String>(themeMode),
       'isErrorReportingEnabled': serializer.toJson<int>(
         isErrorReportingEnabled,
@@ -2125,8 +2074,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? isDevModeEnabled,
     int? useTorProxy,
     int? torProxyPort,
-    String? torTransportMode,
-    Value<String?> lastSuccessfulTorTransport = const Value.absent(),
     String? themeMode,
     int? isErrorReportingEnabled,
     Value<String?> exchangeTestnetBasicAuthUsername = const Value.absent(),
@@ -2142,10 +2089,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
     useTorProxy: useTorProxy ?? this.useTorProxy,
     torProxyPort: torProxyPort ?? this.torProxyPort,
-    torTransportMode: torTransportMode ?? this.torTransportMode,
-    lastSuccessfulTorTransport: lastSuccessfulTorTransport.present
-        ? lastSuccessfulTorTransport.value
-        : this.lastSuccessfulTorTransport,
     themeMode: themeMode ?? this.themeMode,
     isErrorReportingEnabled:
         isErrorReportingEnabled ?? this.isErrorReportingEnabled,
@@ -2182,12 +2125,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       torProxyPort: data.torProxyPort.present
           ? data.torProxyPort.value
           : this.torProxyPort,
-      torTransportMode: data.torTransportMode.present
-          ? data.torTransportMode.value
-          : this.torTransportMode,
-      lastSuccessfulTorTransport: data.lastSuccessfulTorTransport.present
-          ? data.lastSuccessfulTorTransport.value
-          : this.lastSuccessfulTorTransport,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
       isErrorReportingEnabled: data.isErrorReportingEnabled.present
           ? data.isErrorReportingEnabled.value
@@ -2216,8 +2153,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
-          ..write('torTransportMode: $torTransportMode, ')
-          ..write('lastSuccessfulTorTransport: $lastSuccessfulTorTransport, ')
           ..write('themeMode: $themeMode, ')
           ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
           ..write(
@@ -2242,8 +2177,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     isDevModeEnabled,
     useTorProxy,
     torProxyPort,
-    torTransportMode,
-    lastSuccessfulTorTransport,
     themeMode,
     isErrorReportingEnabled,
     exchangeTestnetBasicAuthUsername,
@@ -2263,8 +2196,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.isDevModeEnabled == this.isDevModeEnabled &&
           other.useTorProxy == this.useTorProxy &&
           other.torProxyPort == this.torProxyPort &&
-          other.torTransportMode == this.torTransportMode &&
-          other.lastSuccessfulTorTransport == this.lastSuccessfulTorTransport &&
           other.themeMode == this.themeMode &&
           other.isErrorReportingEnabled == this.isErrorReportingEnabled &&
           other.exchangeTestnetBasicAuthUsername ==
@@ -2284,8 +2215,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> isDevModeEnabled;
   final Value<int> useTorProxy;
   final Value<int> torProxyPort;
-  final Value<String> torTransportMode;
-  final Value<String?> lastSuccessfulTorTransport;
   final Value<String> themeMode;
   final Value<int> isErrorReportingEnabled;
   final Value<String?> exchangeTestnetBasicAuthUsername;
@@ -2301,8 +2230,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.isDevModeEnabled = const Value.absent(),
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
-    this.torTransportMode = const Value.absent(),
-    this.lastSuccessfulTorTransport = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
@@ -2319,8 +2246,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.isDevModeEnabled = const Value.absent(),
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
-    this.torTransportMode = const Value.absent(),
-    this.lastSuccessfulTorTransport = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
@@ -2342,8 +2267,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? isDevModeEnabled,
     Expression<int>? useTorProxy,
     Expression<int>? torProxyPort,
-    Expression<String>? torTransportMode,
-    Expression<String>? lastSuccessfulTorTransport,
     Expression<String>? themeMode,
     Expression<int>? isErrorReportingEnabled,
     Expression<String>? exchangeTestnetBasicAuthUsername,
@@ -2360,9 +2283,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (isDevModeEnabled != null) 'is_dev_mode_enabled': isDevModeEnabled,
       if (useTorProxy != null) 'use_tor_proxy': useTorProxy,
       if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
-      if (torTransportMode != null) 'tor_transport_mode': torTransportMode,
-      if (lastSuccessfulTorTransport != null)
-        'last_successful_tor_transport': lastSuccessfulTorTransport,
       if (themeMode != null) 'theme_mode': themeMode,
       if (isErrorReportingEnabled != null)
         'is_error_reporting_enabled': isErrorReportingEnabled,
@@ -2386,8 +2306,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? isDevModeEnabled,
     Value<int>? useTorProxy,
     Value<int>? torProxyPort,
-    Value<String>? torTransportMode,
-    Value<String?>? lastSuccessfulTorTransport,
     Value<String>? themeMode,
     Value<int>? isErrorReportingEnabled,
     Value<String?>? exchangeTestnetBasicAuthUsername,
@@ -2404,9 +2322,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
       useTorProxy: useTorProxy ?? this.useTorProxy,
       torProxyPort: torProxyPort ?? this.torProxyPort,
-      torTransportMode: torTransportMode ?? this.torTransportMode,
-      lastSuccessfulTorTransport:
-          lastSuccessfulTorTransport ?? this.lastSuccessfulTorTransport,
       themeMode: themeMode ?? this.themeMode,
       isErrorReportingEnabled:
           isErrorReportingEnabled ?? this.isErrorReportingEnabled,
@@ -2452,14 +2367,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (torProxyPort.present) {
       map['tor_proxy_port'] = Variable<int>(torProxyPort.value);
     }
-    if (torTransportMode.present) {
-      map['tor_transport_mode'] = Variable<String>(torTransportMode.value);
-    }
-    if (lastSuccessfulTorTransport.present) {
-      map['last_successful_tor_transport'] = Variable<String>(
-        lastSuccessfulTorTransport.value,
-      );
-    }
     if (themeMode.present) {
       map['theme_mode'] = Variable<String>(themeMode.value);
     }
@@ -2494,8 +2401,6 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
-          ..write('torTransportMode: $torTransportMode, ')
-          ..write('lastSuccessfulTorTransport: $lastSuccessfulTorTransport, ')
           ..write('themeMode: $themeMode, ')
           ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
           ..write(

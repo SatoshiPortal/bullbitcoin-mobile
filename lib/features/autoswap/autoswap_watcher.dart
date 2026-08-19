@@ -28,15 +28,43 @@ class AutoswapWatcher {
 
   Future<void> _run() async {
     try {
-      final result = await _executeAutoswap.execute();
-      if (result case Err<String, AutoswapFailure>(:final failure)) {
-        if (failure is AutoswapExecutionFailure ||
-            failure is AutoswapProviderFailure) {
-          log.warning('Autoswap failed (${failure.runtimeType})');
-        }
+      switch (await _executeAutoswap.execute()) {
+        case Ok():
+          log.info('[Autoswap] transfer under way');
+        case Err(:final failure):
+          final line = '[Autoswap] no transfer: ${_describe(failure)}';
+          // Being switched off, or sitting below the trigger, is the steady
+          // state rather than a problem — and this runs on every liquid sync.
+          // Those stay at info, which the console shows but the log file
+          // skips; warnings are reserved for something worth acting on.
+          if (failure is AutoswapDisabledFailure ||
+              failure is AutoswapInsufficientBalanceFailure) {
+            log.info(line);
+          } else {
+            log.warning(line);
+          }
       }
     } catch (error) {
-      log.warning('Autoswap watcher failed (${error.runtimeType})');
+      log.warning('[Autoswap] watcher failed (${error.runtimeType})');
     }
   }
+
+  String _describe(AutoswapFailure failure) => switch (failure) {
+    AutoswapFeeLimitExceededFailure(
+      :final feePercent,
+      :final thresholdPercent,
+    ) =>
+      'fee ${feePercent.toStringAsFixed(2)}% is above the '
+          '${thresholdPercent.toStringAsFixed(2)}% ceiling',
+    AutoswapInsufficientBalanceFailure(:final requiredThresholdSats?) =>
+      'balance is below the trigger of $requiredThresholdSats sats',
+    // Raised without a threshold when fees eat the whole excess.
+    AutoswapInsufficientBalanceFailure() =>
+      'nothing left to transfer once fees are covered',
+    AutoswapInvalidSettingsFailure(:final violation) =>
+      'invalid settings (${violation.name})',
+    AutoswapProviderFailure() || AutoswapExecutionFailure() =>
+      '${failure.runtimeType} (${failure.logMessage})',
+    _ => failure.runtimeType.toString(),
+  };
 }
