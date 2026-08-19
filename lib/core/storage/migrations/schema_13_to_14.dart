@@ -10,9 +10,11 @@ import 'package:drift/drift.dart';
 ///
 /// Schema 14 also briefly carried the Payjoin policy columns on `settings` and
 /// an `is_aborted` flag on the payjoin tables. Payjoin now owns its own
-/// database (payjoin.sqlite, see the bull_payjoin package), and 14 was never
-/// released — every tag up to v6.12.5 ships schema 13 — so those columns were
-/// folded out of this step rather than added and then migrated away.
+/// database (payjoin.sqlite, see the bull_payjoin package); those columns were
+/// folded out of this step (rather than added and then migrated away) while
+/// schema 14 was still unreleased. Schema 14 itself shipped in v6.13.0 with
+/// only the dismissed_announcements and order_swaps additions — the Tor and
+/// screen-capture columns come later, in the 14→15 step.
 ///
 /// Adds the order_swaps table and indexes for crash-safe Exchange transfers.
 /// The table includes the nullable quoted_amount_sat column used to validate
