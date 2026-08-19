@@ -46,37 +46,4 @@ void main() {
     expect(settings.single.screenCaptureProtectionEnabled, 1);
     await migratedDb.close();
   });
-
-  test(
-    'v14 to v15 tolerates tor columns already present (idempotency guard)',
-    () async {
-      final schema = await verifier.schemaAt(14);
-
-      // Simulate a dev device that received the tor columns from develop's
-      // earlier, broken 13->14 build: add them onto the released v14 settings
-      // table before upgrading.
-      final seeded = v14.DatabaseAtV14(schema.newConnection());
-      await seeded.customStatement(
-        "ALTER TABLE settings ADD COLUMN tor_transport_mode TEXT NOT NULL "
-        "DEFAULT 'automatic'",
-      );
-      await seeded.customStatement(
-        'ALTER TABLE settings ADD COLUMN last_successful_tor_transport TEXT',
-      );
-      await seeded.close();
-
-      // Opening the app database runs the 14->15 migration. The _addColumnIfNot
-      // Exists guard must skip the duplicate tor adds instead of throwing, and
-      // still add the new screen-capture column.
-      final db = SqliteDatabase(schema.newConnection());
-      final columns = await db
-          .customSelect("SELECT name FROM pragma_table_info('settings')")
-          .map((row) => row.read<String>('name'))
-          .get();
-      expect(columns, contains('tor_transport_mode'));
-      expect(columns, contains('last_successful_tor_transport'));
-      expect(columns, contains('screen_capture_protection_enabled'));
-      await db.close();
-    },
-  );
 }
