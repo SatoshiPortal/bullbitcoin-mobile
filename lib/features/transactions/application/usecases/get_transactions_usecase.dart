@@ -105,8 +105,11 @@ class GetTransactionsUsecase {
       }
       final orderBuckets = <String, List<int>>{};
       for (var index = 0; index < orders.length; index++) {
-        final txId = orders[index].transactionId;
-        if (txId != null) orderBuckets.putIfAbsent(txId, () => []).add(index);
+        final order = orders[index];
+        // The payjoin is broadcast before the payout txid is reported.
+        for (final txId in {order.transactionId, order.payjoin?.txid}) {
+          if (txId != null) orderBuckets.putIfAbsent(txId, () => []).add(index);
+        }
       }
       final consumedPayjoinIndices = <int>{};
       final consumedOrderIndices = <int>{};
