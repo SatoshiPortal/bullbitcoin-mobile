@@ -138,8 +138,12 @@ class UrQrReader {
 
     final sequenceNumber = int.parse(match.group(1)!);
     final sequenceCount = int.parse(match.group(2)!);
+    // Note: sequenceNumber may legitimately exceed sequenceCount. Animated
+    // URs are fountain-coded (BCR-2020-005): once the pure fragments 1..N
+    // have played, the stream keeps emitting mixed parts N+1, N+2, ... so a
+    // decoder that missed frames can still recover. Rejecting those parts
+    // breaks scanning of any stream the camera joins mid-animation.
     if (sequenceNumber < 1 ||
-        sequenceNumber > sequenceCount ||
         sequenceCount > maxMultipartParts ||
         data.length > maxMultipartMessageSize) {
       throw UrSequenceLimitExceeded();
