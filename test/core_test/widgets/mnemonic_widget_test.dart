@@ -98,6 +98,14 @@ Finder _backspaceKey() => find.descendant(
 
 Finder shuffleToggle() => find.byKey(const Key('mnemonicParanoidToggle'));
 
+Finder enterKey() => find.byKey(const Key('mnemonicEnterKey'));
+
+/// Taps enter, tolerating a disabled key so a test can assert it did nothing.
+Future<void> tapEnter(WidgetTester tester) async {
+  await tester.tap(enterKey(), warnIfMissed: false);
+  await tester.pumpAndSettle();
+}
+
 /// The on-screen centre of every letter key currently rendered, keyed by
 /// letter — used to detect that the layout changed (reshuffled) or held still.
 Map<String, Offset> keyPositions(WidgetTester tester) {
@@ -650,6 +658,62 @@ void main() {
       await focusField(tester, 11);
 
       expect(find.text('128 possible last words'), findsOneWidget);
+    });
+
+    testWidgets('enter moves to the next word once the word is whole', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await typeWord(tester, 0, 'raise');
+
+      await tapEnter(tester);
+
+      expect(fieldHasFocus(tester, 1), isTrue);
+      expect(fieldText(tester, 0), equals('raise'));
+    });
+
+    testWidgets('enter skips an untouched field', (tester) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await focusField(tester, 1);
+
+      await tapEnter(tester);
+      expect(fieldHasFocus(tester, 2), isTrue);
+
+      // Repeatable, so a run of empty fields can be stepped through.
+      await tapEnter(tester);
+      expect(fieldHasFocus(tester, 3), isTrue);
+      expect(fieldText(tester, 1), isEmpty);
+      expect(fieldText(tester, 2), isEmpty);
+    });
+
+    testWidgets('enter holds the field while the word is a prefix', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      // 'rai' still matches raise/rail/rain: nothing has been decided yet.
+      await typeWord(tester, 0, 'rai');
+
+      await tapEnter(tester);
+
+      expect(fieldHasFocus(tester, 0), isTrue);
+      expect(
+        fieldText(tester, 0),
+        equals('rai'),
+        reason: 'enter must never pick a word on the user behalf',
+      );
+      expect(fieldText(tester, 1), isEmpty);
+    });
+
+    testWidgets('enter on the last field dismisses the keyboard', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await fillAll(tester, validWords);
+
+      await focusField(tester, 11);
+      await tapEnter(tester);
+
+      expect(fieldHasFocus(tester, 11), isFalse);
     });
 
     testWidgets('tapping a chip on the last field dismisses the keyboard', (

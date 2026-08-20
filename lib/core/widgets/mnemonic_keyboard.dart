@@ -38,8 +38,15 @@ class MnemonicKeyboard extends StatelessWidget {
   /// is already empty, so there is nothing to delete.
   final bool canBackspace;
 
+  /// Whether the enter key is active. False on a half-typed prefix — only the
+  /// owner knows whether the word has resolved.
+  final bool canAdvance;
+
   final void Function(String letter) onLetter;
   final VoidCallback onBackspace;
+
+  /// Moves to the next field. Never completes or chooses a word.
+  final VoidCallback onEnter;
 
   /// Paranoid mode toggle, shown as a key next to backspace.
   final bool shuffleActive;
@@ -53,8 +60,10 @@ class MnemonicKeyboard extends StatelessWidget {
     super.key,
     required this.enabledLetters,
     required this.canBackspace,
+    required this.canAdvance,
     required this.onLetter,
     required this.onBackspace,
+    required this.onEnter,
     required this.shuffleActive,
     required this.onToggleShuffle,
     required this.shuffleHint,
@@ -87,27 +96,29 @@ class MnemonicKeyboard extends StatelessWidget {
                 enabledLetters: enabledLetters,
                 onLetter: onLetter,
                 paranoid: shuffleActive,
+                trailing: _BackspaceKey(
+                  enabled: canBackspace,
+                  onTap: onBackspace,
+                ),
               ),
               _LetterRow(
                 letters: layout.sublist(19, 26),
                 enabledLetters: enabledLetters,
                 onLetter: onLetter,
                 paranoid: shuffleActive,
-                // Backspace shares its slot with the shuffle toggle
+                trailingKeys: 2,
+                // The shuffle toggle shares its slot with enter
                 trailing: Row(
                   children: [
-                    Expanded(
-                      child: _BackspaceKey(
-                        enabled: canBackspace,
-                        onTap: onBackspace,
-                      ),
-                    ),
                     Expanded(
                       child: _ShuffleKey(
                         active: shuffleActive,
                         hint: shuffleHint,
                         onTap: onToggleShuffle,
                       ),
+                    ),
+                    Expanded(
+                      child: _EnterKey(enabled: canAdvance, onTap: onEnter),
                     ),
                   ],
                 ),
@@ -127,12 +138,16 @@ class _LetterRow extends StatelessWidget {
   final bool paranoid;
   final Widget? trailing;
 
+  /// How many keys [trailing] lays out, used to size its slot.
+  final int trailingKeys;
+
   const _LetterRow({
     required this.letters,
     required this.enabledLetters,
     required this.onLetter,
     required this.paranoid,
     this.trailing,
+    this.trailingKeys = 1,
   });
 
   @override
@@ -150,7 +165,8 @@ class _LetterRow extends StatelessWidget {
                 onTap: () => onLetter(letter),
               ),
             ),
-          if (trailing != null) Expanded(flex: 2, child: trailing!),
+          // One unit per key, so trailing keys stay a letter wide.
+          if (trailing != null) Expanded(flex: trailingKeys, child: trailing!),
         ],
       ),
     );
@@ -206,6 +222,34 @@ class _BackspaceKey extends StatelessWidget {
       onTap: onTap,
       child: Icon(
         Icons.backspace_outlined,
+        size: 20,
+        color: enabled
+            ? context.appColors.onSurface
+            : context.appColors.textMuted,
+      ),
+    );
+  }
+}
+
+/// Moves to the next field, and nothing else.
+///
+/// It must never accept a suggestion: the chips are shuffled in paranoid mode,
+/// so the first one is arbitrary, and no shortcut is worth writing a word the
+/// user did not choose into a recovery phrase.
+class _EnterKey extends StatelessWidget {
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _EnterKey({required this.enabled, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return _KeyCap(
+      key: const Key('mnemonicEnterKey'),
+      enabled: enabled,
+      onTap: onTap,
+      child: Icon(
+        Icons.keyboard_return,
         size: 20,
         color: enabled
             ? context.appColors.onSurface

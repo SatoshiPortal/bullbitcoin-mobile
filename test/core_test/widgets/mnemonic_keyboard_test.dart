@@ -7,8 +7,10 @@ Future<void> pumpKeyboard(
   WidgetTester tester, {
   required Set<String> enabledLetters,
   bool canBackspace = true,
+  bool canAdvance = true,
   void Function(String)? onLetter,
   VoidCallback? onBackspace,
+  VoidCallback? onEnter,
   VoidCallback? onToggleShuffle,
 }) async {
   await tester.pumpWidget(
@@ -19,8 +21,10 @@ Future<void> pumpKeyboard(
         body: MnemonicKeyboard(
           enabledLetters: enabledLetters,
           canBackspace: canBackspace,
+          canAdvance: canAdvance,
           onLetter: onLetter ?? (_) {},
           onBackspace: onBackspace ?? () {},
+          onEnter: onEnter ?? () {},
           shuffleActive: false,
           onToggleShuffle: onToggleShuffle ?? () {},
           shuffleHint: 'shuffle',
@@ -90,6 +94,33 @@ void main() {
         find.byIcon(Icons.backspace_outlined),
         warnIfMissed: false,
       );
+      expect(fired, isFalse);
+    });
+
+    testWidgets('enter reports when enabled', (tester) async {
+      var fired = false;
+      await pumpKeyboard(
+        tester,
+        enabledLetters: const {},
+        onEnter: () => fired = true,
+      );
+
+      await tester.tap(find.byIcon(Icons.keyboard_return));
+      expect(fired, isTrue);
+    });
+
+    testWidgets('enter does nothing while the word is unfinished', (
+      tester,
+    ) async {
+      var fired = false;
+      await pumpKeyboard(
+        tester,
+        enabledLetters: const {},
+        canAdvance: false,
+        onEnter: () => fired = true,
+      );
+
+      await tester.tap(find.byIcon(Icons.keyboard_return), warnIfMissed: false);
       expect(fired, isFalse);
     });
   });
