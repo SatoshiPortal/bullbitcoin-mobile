@@ -212,6 +212,7 @@ class TransactionDetailsTable extends StatelessWidget {
             DetailsTableItem(
               label: context.loc.transactionDetailLabelOrderNumber,
               displayValue: orderSwap.order!.orderNumber.toString(),
+              copyValue: orderSwap.order!.orderNumber.toString(),
             ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayinAmount,
