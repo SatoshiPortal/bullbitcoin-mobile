@@ -12568,5 +12568,7 @@
   "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
   "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
   "torSettingsExternalProxyTitle": "Εξωτερικός διαμεσολαβητής Tor (για προχωρημένους)",
-  "torSettingsExternalProxyDescription": "Όταν είναι ενεργό, οι διακομιστές Bitcoin Electrum και τα κρυπτογραφημένα αντίγραφα ασφαλείας περνούν μέσω του Orbot στη ρυθμισμένη θύρα αντί του ενσωματωμένου Tor. Το Liquid δεν δρομολογείται ποτέ μέσω αυτού."
+  "torSettingsExternalProxyDescription": "Όταν είναι ενεργό, οι διακομιστές Bitcoin Electrum και τα κρυπτογραφημένα αντίγραφα ασφαλείας περνούν μέσω του Orbot στη ρυθμισμένη θύρα αντί του ενσωματωμένου Tor. Το Liquid δεν δρομολογείται ποτέ μέσω αυτού.",
+  "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
+  "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες"
 }

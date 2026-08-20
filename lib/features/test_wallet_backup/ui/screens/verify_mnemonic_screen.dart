@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -29,12 +29,16 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   String? _fingerprint;
   bool _isLoading = true;
 
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final fingerprint = context.select<TestWalletBackupBloc, String?>(
-      (bloc) => bloc.state.selectedWallet?.masterFingerprint,
-    );
+    final fingerprint = context
+        .read<TestWalletBackupBloc>()
+        .state
+        .selectedWallet
+        ?.masterFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
       unawaited(_loadSecret());
@@ -103,7 +107,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: enableScreenPrivacy(),
+      future: _privacyFuture,
       builder: (context, snapshot) {
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>

@@ -23,6 +23,7 @@ abstract class SettingsRepository {
     TorTransport? lastSuccessfulTorTransport,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
+    bool screenCaptureProtectionEnabled = true,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
   });
@@ -54,6 +55,8 @@ abstract class SettingsRepository {
   Future<void> setThemeMode(AppThemeMode themeMode);
 
   Future<void> setErrorReportingEnabled(bool enabled);
+
+  Future<void> setScreenCaptureProtectionEnabled(bool enabled);
 
   Future<void> setExchangeTestnetBasicAuth({
     String? username,

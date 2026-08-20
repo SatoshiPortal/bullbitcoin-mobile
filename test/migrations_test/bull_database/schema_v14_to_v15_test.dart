@@ -13,7 +13,8 @@ void main() {
 
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v14 to v15 adds Tor transport settings with defaults', () async {
+  test('v14 to v15 adds Tor transport and screen-capture settings with '
+      'defaults', () async {
     final schema = await verifier.schemaAt(14);
     final oldDb = v14.DatabaseAtV14(schema.newConnection());
     await oldDb
@@ -40,6 +41,9 @@ void main() {
     expect(settings.single.environment, 'testnet');
     expect(settings.single.torTransportMode, 'automatic');
     expect(settings.single.lastSuccessfulTorTransport, isNull);
+    // Screen-capture protection is added in this step and defaults to enabled
+    // (1) so existing installs keep protection until the user opts out.
+    expect(settings.single.screenCaptureProtectionEnabled, 1);
     await migratedDb.close();
   });
 }

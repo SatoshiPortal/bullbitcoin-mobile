@@ -10454,5 +10454,7 @@
   "torSettingsModeSnowflakeDescription": "Използва доброволчески Snowflake прокси сървъри, за да достигне Tor от филтрирана мрежа.",
   "torSettingsActiveTransport": "Активен транспорт: {transport}",
   "torSettingsExternalProxyTitle": "Външно Tor прокси (за напреднали)",
-  "torSettingsExternalProxyDescription": "Когато е включено, сървърите Bitcoin Electrum и шифрованите резервни копия преминават през Orbot на конфигурирания порт вместо през вградения Tor. Liquid никога не се маршрутизира през него."
+  "torSettingsExternalProxyDescription": "Когато е включено, сървърите Bitcoin Electrum и шифрованите резервни копия преминават през Orbot на конфигурирания порт вместо през вградения Tor. Liquid никога не се маршрутизира през него.",
+  "settingsScreenPrivacyTitle": "Поверителност на екрана",
+  "settingsScreenPrivacyDisabledMessage": "Екранните снимки вече са разрешени на чувствителните екрани"
 }

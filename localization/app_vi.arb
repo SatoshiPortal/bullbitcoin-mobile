@@ -3638,5 +3638,7 @@
   "torSettingsModeSnowflakeDescription": "Dùng các proxy Snowflake tình nguyện để tiếp cận Tor từ mạng bị lọc.",
   "torSettingsActiveTransport": "Phương thức đang dùng: {transport}",
   "torSettingsExternalProxyTitle": "Proxy Tor bên ngoài (nâng cao)",
-  "torSettingsExternalProxyDescription": "Khi bật, các máy chủ Bitcoin Electrum và bản sao lưu đã mã hóa sẽ đi qua Orbot ở cổng đã cấu hình thay vì Tor tích hợp. Liquid không bao giờ được định tuyến qua đó."
+  "torSettingsExternalProxyDescription": "Khi bật, các máy chủ Bitcoin Electrum và bản sao lưu đã mã hóa sẽ đi qua Orbot ở cổng đã cấu hình thay vì Tor tích hợp. Liquid không bao giờ được định tuyến qua đó.",
+  "settingsScreenPrivacyTitle": "Quyền riêng tư màn hình",
+  "settingsScreenPrivacyDisabledMessage": "Ảnh chụp màn hình hiện được cho phép trên các màn hình nhạy cảm"
 }

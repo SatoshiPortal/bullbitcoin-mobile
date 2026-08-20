@@ -39,6 +39,7 @@ class SettingsRepository implements domain.SettingsRepository {
     TorTransport? lastSuccessfulTorTransport,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
+    bool screenCaptureProtectionEnabled = true,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
   }) async {
@@ -58,6 +59,7 @@ class SettingsRepository implements domain.SettingsRepository {
         lastSuccessfulTorTransport: lastSuccessfulTorTransport,
         themeMode: themeMode,
         isErrorReportingEnabled: isErrorReportingEnabled,
+        screenCaptureProtectionEnabled: screenCaptureProtectionEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
         exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
       ),
@@ -82,6 +84,7 @@ class SettingsRepository implements domain.SettingsRepository {
       lastSuccessfulTorTransport: s.lastSuccessfulTorTransport,
       themeMode: s.themeMode,
       isErrorReportingEnabled: s.isErrorReportingEnabled,
+      screenCaptureProtectionEnabled: s.screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
     );
@@ -165,5 +168,10 @@ class SettingsRepository implements domain.SettingsRepository {
     // Sync [Report]'s boot-time mirror so the next cold start's Sentry
     // init can seed consent before the locator is available.
     await Report.updateConsent(enabled);
+  }
+
+  @override
+  Future<void> setScreenCaptureProtectionEnabled(bool enabled) async {
+    await _settingsDatasource.setScreenCaptureProtectionEnabled(enabled);
   }
 }

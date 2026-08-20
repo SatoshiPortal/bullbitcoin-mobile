@@ -15,6 +15,7 @@ workspace:
   - packages/bull_ui_catalogue
   - packages/primitives
   - packages/bull_tor
+  - packages/screen_privacy
 
 dependencies:
   flutter:
@@ -23,6 +24,7 @@ dependencies:
   bull_ui:
   primitives:
   bull_tor:
+  screen_privacy:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -65,7 +67,6 @@ dependencies:
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
-  no_screenshot: ^1.1.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7

@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'dart:async';
+
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -15,177 +17,187 @@ import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
+class AllSeedViewScreen extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
 
   const AllSeedViewScreen({super.key, required this.appUnlockFacade});
 
   @override
+  State<AllSeedViewScreen> createState() => _AllSeedViewScreenState();
+}
+
+class _AllSeedViewScreenState extends State<AllSeedViewScreen>
+    with PrivacyScreen {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(enableScreenPrivacy());
+  }
+
+  @override
+  void dispose() {
+    unawaited(disableScreenPrivacy());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    enableScreenPrivacy();
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          disableScreenPrivacy();
+    return BlocListener<AllSeedViewCubit, AllSeedViewState>(
+      listenWhen: (p, c) => p.failure != c.failure,
+      listener: (context, state) {
+        if (state.failure case final failure?
+            when failure is! AllSeedViewFetchFailure) {
+          SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
         }
       },
-      child: BlocListener<AllSeedViewCubit, AllSeedViewState>(
-        listenWhen: (p, c) => p.failure != c.failure,
-        listener: (context, state) {
-          if (state.failure case final failure?
-              when failure is! AllSeedViewFetchFailure) {
-            SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
+        builder: (context, state) {
+          // Viewing raw seed phrases exposes full custody of every wallet,
+          // so it demands the same step-up re-authentication the app
+          // already requires before changing the PIN. With no PIN set the
+          // unlock screen succeeds immediately.
+          if (!state.isUnlocked) {
+            return widget.appUnlockFacade.buildReauthenticationGate(
+              canPop: true,
+              onSuccess: (grant) =>
+                  context.read<AllSeedViewCubit>().unlock(grant),
+            );
           }
-        },
-        child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
-          builder: (context, state) {
-            // Viewing raw seed phrases exposes full custody of every wallet,
-            // so it demands the same step-up re-authentication the app
-            // already requires before changing the PIN. With no PIN set the
-            // unlock screen succeeds immediately.
-            if (!state.isUnlocked) {
-              return appUnlockFacade.buildReauthenticationGate(
-                canPop: true,
-                onSuccess: (grant) =>
-                    context.read<AllSeedViewCubit>().unlock(grant),
-              );
-            }
-            return Scaffold(
-              appBar: AppBar(
-                title: BBText(
-                  context.loc.allSeedViewTitle,
-                  style: const TextStyle(fontWeight: .bold, fontSize: 20),
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(3),
-                  child: state.loading
-                      ? FadingLinearProgress(
-                          height: 3,
-                          trigger: state.loading,
-                          backgroundColor: context.appColors.surface,
-                          foregroundColor: context.appColors.primary,
-                        )
-                      : const SizedBox(height: 3),
-                ),
+          return Scaffold(
+            appBar: AppBar(
+              title: BBText(
+                context.loc.allSeedViewTitle,
+                style: const TextStyle(fontWeight: .bold, fontSize: 20),
               ),
-              body: Builder(
-                builder: (context) {
-                  if (state.loading) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: BBText(
-                          context.loc.allSeedViewLoadingMessage,
-                          style: context.font.bodyMedium,
-                          color: context.appColors.onSurface.withValues(
-                            alpha: 0.7,
-                          ),
-                          textAlign: .center,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(3),
+                child: state.loading
+                    ? FadingLinearProgress(
+                        height: 3,
+                        trigger: state.loading,
+                        backgroundColor: context.appColors.surface,
+                        foregroundColor: context.appColors.primary,
+                      )
+                    : const SizedBox(height: 3),
+              ),
+            ),
+            body: Builder(
+              builder: (context) {
+                if (state.loading) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: BBText(
+                        context.loc.allSeedViewLoadingMessage,
+                        style: context.font.bodyMedium,
+                        color: context.appColors.onSurface.withValues(
+                          alpha: 0.7,
                         ),
+                        textAlign: .center,
                       ),
-                    );
-                  }
-                  if (state.failure is AllSeedViewFetchFailure) {
-                    return Center(
-                      child: BBText(
-                        state.failure!.toTranslated(context),
-                        style: context.font.bodyLarge,
-                        color: context.appColors.error,
-                      ),
-                    );
-                  }
-                  if (state.allSeeds.isEmpty) {
-                    return Center(
-                      child: BBText(
-                        context.loc.allSeedViewNoSeedsFound,
-                        style: context.font.bodyLarge,
-                        color: context.appColors.onSurface,
-                      ),
-                    );
-                  }
-                  if (!state.seedsVisible) {
-                    return SafeArea(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Center(
-                              child: Icon(
-                                Icons.visibility_off,
-                                size: 120,
-                                color: context.appColors.onSurface.withValues(
-                                  alpha: 0.3,
-                                ),
+                    ),
+                  );
+                }
+                if (state.failure is AllSeedViewFetchFailure) {
+                  return Center(
+                    child: BBText(
+                      state.failure!.toTranslated(context),
+                      style: context.font.bodyLarge,
+                      color: context.appColors.error,
+                    ),
+                  );
+                }
+                if (state.allSeeds.isEmpty) {
+                  return Center(
+                    child: BBText(
+                      context.loc.allSeedViewNoSeedsFound,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.onSurface,
+                    ),
+                  );
+                }
+                if (!state.seedsVisible) {
+                  return SafeArea(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Icon(
+                              Icons.visibility_off,
+                              size: 120,
+                              color: context.appColors.onSurface.withValues(
+                                alpha: 0.3,
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: BBButton.big(
-                              label: context.loc.allSeedViewShowSeedsButton,
-                              onPressed: () => _showWarningDialog(context),
-                              bgColor: context.appColors.secondary,
-                              textColor: context.appColors.onSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      if (state.existingWallets.isNotEmpty) ...[
-                        BBText(
-                          context.loc.allSeedViewExistingWallets(
-                            state.existingWallets.length,
-                          ),
-                          style: context.font.headlineSmall?.copyWith(
-                            fontWeight: .bold,
-                          ),
-                          color: context.appColors.onSurface,
                         ),
-                        const SizedBox(height: 8),
-                        ...state.existingWallets.map<Widget>(
-                          (seed) =>
-                              _buildSeedCard(context, seed, isOldWallet: false),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                      if (state.oldWallets.isNotEmpty) ...[
-                        BBText(
-                          context.loc.allSeedViewOldWallets(
-                            state.oldWallets.length,
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: BBButton.big(
+                            label: context.loc.allSeedViewShowSeedsButton,
+                            onPressed: () => _showWarningDialog(context),
+                            bgColor: context.appColors.secondary,
+                            textColor: context.appColors.onSecondary,
                           ),
-                          style: context.font.headlineSmall?.copyWith(
-                            fontWeight: .bold,
-                          ),
-                          color: context.appColors.onSurface,
-                        ),
-                        const SizedBox(height: 8),
-                        ...state.oldWallets.map<Widget>(
-                          (seed) =>
-                              _buildSeedCard(context, seed, isOldWallet: true),
                         ),
                       ],
-                      if (state.swapMasterKey != null) ...[
-                        const SizedBox(height: 24),
-                        BBText(
-                          'Swap mnemonic',
-                          style: context.font.headlineSmall?.copyWith(
-                            fontWeight: .bold,
-                          ),
-                          color: context.appColors.onSurface,
-                        ),
-                        const SizedBox(height: 8),
-                        _buildSwapKeyCard(context, state.swapMasterKey!),
-                      ],
-                    ],
+                    ),
                   );
-                },
-              ),
-            );
-          },
-        ),
+                }
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    if (state.existingWallets.isNotEmpty) ...[
+                      BBText(
+                        context.loc.allSeedViewExistingWallets(
+                          state.existingWallets.length,
+                        ),
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: .bold,
+                        ),
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      ...state.existingWallets.map<Widget>(
+                        (seed) =>
+                            _buildSeedCard(context, seed, isOldWallet: false),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                    if (state.oldWallets.isNotEmpty) ...[
+                      BBText(
+                        context.loc.allSeedViewOldWallets(
+                          state.oldWallets.length,
+                        ),
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: .bold,
+                        ),
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      ...state.oldWallets.map<Widget>(
+                        (seed) =>
+                            _buildSeedCard(context, seed, isOldWallet: true),
+                      ),
+                    ],
+                    if (state.swapMasterKey != null) ...[
+                      const SizedBox(height: 24),
+                      BBText(
+                        'Swap mnemonic',
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: .bold,
+                        ),
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildSwapKeyCard(context, state.swapMasterKey!),
+                    ],
+                  ],
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }

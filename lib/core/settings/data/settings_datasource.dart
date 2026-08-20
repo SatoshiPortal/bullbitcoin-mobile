@@ -101,6 +101,13 @@ class SettingsDatasource {
     );
   }
 
+  Future<void> setScreenCaptureProtectionEnabled(bool enabled) async {
+    await _sqlite.managers.settings.update(
+      (f) =>
+          f(id: const Value(1), screenCaptureProtectionEnabled: Value(enabled)),
+    );
+  }
+
   Future<void> setExchangeTestnetBasicAuth({
     String? username,
     String? password,

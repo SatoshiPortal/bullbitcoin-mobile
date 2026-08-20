@@ -12778,5 +12778,7 @@
   "torSettingsModeSnowflakeDescription": "ফিল্টার করা নেটওয়ার্ক থেকে Tor-এ পৌঁছাতে স্বেচ্ছাসেবী Snowflake প্রক্সি ব্যবহার করে।",
   "torSettingsActiveTransport": "সক্রিয় ট্রান্সপোর্ট: {transport}",
   "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্রক্সি (উন্নত)",
-  "torSettingsExternalProxyDescription": "সক্রিয় থাকলে, Bitcoin Electrum সার্ভার এবং এনক্রিপ্ট করা ব্যাকআপগুলি অন্তর্নির্মিত Tor-এর পরিবর্তে নির্ধারিত পোর্টে Orbot-এর মাধ্যমে যায়। Liquid কখনও এর মাধ্যমে যায় না।"
+  "torSettingsExternalProxyDescription": "সক্রিয় থাকলে, Bitcoin Electrum সার্ভার এবং এনক্রিপ্ট করা ব্যাকআপগুলি অন্তর্নির্মিত Tor-এর পরিবর্তে নির্ধারিত পোর্টে Orbot-এর মাধ্যমে যায়। Liquid কখনও এর মাধ্যমে যায় না।",
+  "settingsScreenPrivacyTitle": "স্ক্রিন গোপনীয়তা",
+  "settingsScreenPrivacyDisabledMessage": "এখন সংবেদনশীল স্ক্রিনে স্ক্রিনশট নেওয়ার অনুমতি রয়েছে"
 }

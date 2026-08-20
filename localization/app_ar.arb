@@ -12571,5 +12571,7 @@
   "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
   "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
   "torSettingsExternalProxyTitle": "وكيل Tor خارجي (متقدم)",
-  "torSettingsExternalProxyDescription": "عند التفعيل، تمر خوادم Bitcoin Electrum والنسخ الاحتياطية المشفَّرة عبر Orbot على المنفذ المُعد بدلاً من Tor المدمج. لا يتم توجيه Liquid عبره أبداً."
+  "torSettingsExternalProxyDescription": "عند التفعيل، تمر خوادم Bitcoin Electrum والنسخ الاحتياطية المشفَّرة عبر Orbot على المنفذ المُعد بدلاً من Tor المدمج. لا يتم توجيه Liquid عبره أبداً.",
+  "settingsScreenPrivacyTitle": "خصوصية الشاشة",
+  "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة"
 }

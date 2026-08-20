@@ -12568,5 +12568,7 @@
   "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
   "torSettingsActiveTransport": "활성 전송: {transport}",
   "torSettingsExternalProxyTitle": "외부 Tor 프록시(고급)",
-  "torSettingsExternalProxyDescription": "활성화하면 Bitcoin Electrum 서버와 암호화된 백업이 내장 Tor 대신 설정된 포트의 Orbot을 통해 전달됩니다. Liquid는 이를 통해 전달되지 않습니다."
+  "torSettingsExternalProxyDescription": "활성화하면 Bitcoin Electrum 서버와 암호화된 백업이 내장 Tor 대신 설정된 포트의 Orbot을 통해 전달됩니다. Liquid는 이를 통해 전달되지 않습니다.",
+  "settingsScreenPrivacyTitle": "화면 개인정보 보호",
+  "settingsScreenPrivacyDisabledMessage": "이제 민감한 화면에서 스크린샷이 허용됩니다"
 }

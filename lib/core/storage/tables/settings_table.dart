@@ -19,6 +19,8 @@ class Settings extends Table {
   TextColumn get themeMode => text().withDefault(const Constant('system'))();
   BoolColumn get isErrorReportingEnabled =>
       boolean().withDefault(const Constant(false))();
+  BoolColumn get screenCaptureProtectionEnabled =>
+      boolean().withDefault(const Constant(true))();
   TextColumn get exchangeTestnetBasicAuthUsername => text().nullable()();
   TextColumn get exchangeTestnetBasicAuthPassword => text().nullable()();
 
