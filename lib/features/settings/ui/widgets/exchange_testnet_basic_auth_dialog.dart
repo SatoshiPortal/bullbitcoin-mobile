@@ -1,31 +1,17 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ExchangeTestnetBasicAuthTile extends StatelessWidget {
-  const ExchangeTestnetBasicAuthTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.lock_outline,
-      title: context.loc.exchangeTestnetBasicAuthTitle,
-      onTap: () => _showDialog(context),
-    );
-  }
-
-  Future<void> _showDialog(BuildContext context) {
-    final cubit = context.read<SettingsCubit>();
-    return showDialog<void>(
-      context: context,
-      builder: (_) => BlocProvider.value(
-        value: cubit,
-        child: const _ExchangeTestnetBasicAuthDialog(),
-      ),
-    );
-  }
+Future<void> showExchangeTestnetBasicAuthDialog(BuildContext context) {
+  final cubit = context.read<SettingsCubit>();
+  return showDialog<void>(
+    context: context,
+    builder: (_) => BlocProvider.value(
+      value: cubit,
+      child: const _ExchangeTestnetBasicAuthDialog(),
+    ),
+  );
 }
 
 class _ExchangeTestnetBasicAuthDialog extends StatefulWidget {

@@ -14680,5 +14680,137 @@
   "settingsScreenPrivacyDisabledMessage": "Screenshots are now allowed on sensitive screens",
   "@settingsScreenPrivacyDisabledMessage": {
     "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
+  },
+  "settingsSearchHint": "Search settings",
+  "@settingsSearchHint": {
+    "description": "Placeholder for the settings search field"
+  },
+  "settingsSearchNoResults": "No settings found.",
+  "@settingsSearchNoResults": {
+    "description": "Empty state shown when settings search has no matches"
+  },
+  "settingsSearchMempoolKeywords": "block explorer|fee estimation|transaction fees|mempool API",
+  "@settingsSearchMempoolKeywords": {
+    "description": "Pipe-separated search aliases for Mempool settings. These are search metadata and are not displayed."
+  },
+  "settingsSearchExchangeKeywords": "account|exchange account|trading|buy and sell",
+  "@settingsSearchExchangeKeywords": {
+    "description": "Pipe-separated search aliases for Exchange. Search metadata; not displayed."
+  },
+  "settingsSearchWalletBackupKeywords": "backup|recovery|recover wallet|seed backup",
+  "@settingsSearchWalletBackupKeywords": {
+    "description": "Pipe-separated search aliases for Wallet Backup. Search metadata; not displayed."
+  },
+  "settingsSearchStartBackupKeywords": "create backup|save backup|back up wallet",
+  "@settingsSearchStartBackupKeywords": {
+    "description": "Pipe-separated search aliases for Start Backup. Search metadata; not displayed."
+  },
+  "settingsSearchRecoverbullKeywords": "encrypted backup|cloud backup|encrypted vault|vault recovery",
+  "@settingsSearchRecoverbullKeywords": {
+    "description": "Pipe-separated search aliases for Recoverbull. Search metadata; not displayed."
+  },
+  "settingsSearchLabelsKeywords": "wallet labels|transaction labels|BIP329|import labels|export labels",
+  "@settingsSearchLabelsKeywords": {
+    "description": "Pipe-separated search aliases for Labels. Search metadata; not displayed."
+  },
+  "settingsSearchTransactionHistoryKeywords": "export transactions|transaction export|CSV|wallet history",
+  "@settingsSearchTransactionHistoryKeywords": {
+    "description": "Pipe-separated search aliases for Transaction History. Search metadata; not displayed."
+  },
+  "settingsSearchBitcoinSettingsKeywords": "bitcoin preferences|network settings|wallet settings",
+  "@settingsSearchBitcoinSettingsKeywords": {
+    "description": "Pipe-separated search aliases for Bitcoin Settings. Search metadata; not displayed."
+  },
+  "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
+  "@settingsSearchAppSettingsKeywords": {
+    "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
+  },
+  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin map|merchant map|places to spend bitcoin",
+  "@settingsSearchBtcMapKeywords": {
+    "description": "Pipe-separated search aliases for Map. Search metadata; not displayed."
+  },
+  "settingsSearchTermsOfServiceKeywords": "terms and conditions|legal|user agreement|TOS",
+  "@settingsSearchTermsOfServiceKeywords": {
+    "description": "Pipe-separated search aliases for Terms of Service. Search metadata; not displayed."
+  },
+  "settingsSearchServicesStatusKeywords": "service health|system status|online|outage",
+  "@settingsSearchServicesStatusKeywords": {
+    "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
+  },
+  "settingsSearchWalletsKeywords": "manage wallets|wallet details|bitcoin wallets",
+  "@settingsSearchWalletsKeywords": {
+    "description": "Pipe-separated search aliases for Wallets. Search metadata; not displayed."
+  },
+  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
+  "@settingsSearchImportWalletKeywords": {
+    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
+  },
+  "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
+  "@settingsSearchBroadcastTransactionKeywords": {
+    "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
+  },
+  "settingsSearchPayjoinKeywords": "payjoin privacy|collaborative transaction|P2EP",
+  "@settingsSearchPayjoinKeywords": {
+    "description": "Pipe-separated search aliases for Payjoin. Search metadata; not displayed."
+  },
+  "settingsSearchAutoswapKeywords": "autoswap|automatic swap|auto transfer|instant wallet balance",
+  "@settingsSearchAutoswapKeywords": {
+    "description": "Pipe-separated search aliases for Auto Transfer. Search metadata; not displayed."
+  },
+  "settingsSearchElectrumKeywords": "bitcoin node|electrum node|custom server|personal node",
+  "@settingsSearchElectrumKeywords": {
+    "description": "Pipe-separated search aliases for Electrum. Search metadata; not displayed."
+  },
+  "settingsSearchTestnetModeKeywords": "test network|bitcoin testnet|liquid testnet|testing mode",
+  "@settingsSearchTestnetModeKeywords": {
+    "description": "Pipe-separated search aliases for Testnet Mode. Search metadata; not displayed."
+  },
+  "settingsSearchSeedViewerKeywords": "seed phrase|recovery phrase|mnemonic|backup words|show seeds",
+  "@settingsSearchSeedViewerKeywords": {
+    "description": "Pipe-separated search aliases for Seed Viewer. Search metadata; not displayed."
+  },
+  "settingsSearchBip85Keywords": "deterministic entropy|child seeds|derived entropy|BIP85",
+  "@settingsSearchBip85Keywords": {
+    "description": "Pipe-separated search aliases for BIP85. Search metadata; not displayed."
+  },
+  "settingsSearchLanguageKeywords": "locale|translation|display language|preferred language",
+  "@settingsSearchLanguageKeywords": {
+    "description": "Pipe-separated search aliases for Language. Search metadata; not displayed."
+  },
+  "settingsSearchThemeKeywords": "appearance|dark mode|light mode|system theme",
+  "@settingsSearchThemeKeywords": {
+    "description": "Pipe-separated search aliases for Theme. Search metadata; not displayed."
+  },
+  "settingsSearchCurrencyKeywords": "fiat currency|local currency|default currency|exchange currency",
+  "@settingsSearchCurrencyKeywords": {
+    "description": "Pipe-separated search aliases for Currency. Search metadata; not displayed."
+  },
+  "settingsSearchSecurityPinKeywords": "PIN code|passcode|app lock|authentication|change PIN",
+  "@settingsSearchSecurityPinKeywords": {
+    "description": "Pipe-separated search aliases for Security PIN. Search metadata; not displayed."
+  },
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network",
+  "@settingsSearchTorKeywords": {
+    "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "settingsSearchLogsKeywords": "debug logs|diagnostic logs|app logs|export logs",
+  "@settingsSearchLogsKeywords": {
+    "description": "Pipe-separated search aliases for Logs. Search metadata; not displayed."
+  },
+  "settingsSearchDevModeKeywords": "developer mode|development settings|debug mode|advanced testing",
+  "@settingsSearchDevModeKeywords": {
+    "description": "Pipe-separated search aliases for Dev Mode. Search metadata; not displayed."
+  },
+  "settingsSearchTestnetCredentialsKeywords": "testnet user credentials|testnet login|testnet username|testnet password|basic auth",
+  "@settingsSearchTestnetCredentialsKeywords": {
+    "description": "Pipe-separated search aliases for Testnet Credentials. Search metadata; not displayed."
+  },
+  "settingsSearchErrorReportingKeywords": "crash reports|bug reports|diagnostics|telemetry|error logs",
+  "@settingsSearchErrorReportingKeywords": {
+    "description": "Pipe-separated search aliases for Error Reporting. Search metadata; not displayed."
+  },
+  "settingsSearchScreenPrivacyKeywords": "screenshots|screen recording|capture protection|privacy",
+  "@settingsSearchScreenPrivacyKeywords": {
+    "description": "Pipe-separated search aliases for Screen Privacy. Search metadata; not displayed."
   }
 }
