@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class SettingsEntryItem extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback? onTap;
   final Color? iconColor;
   final Color? textColor;
@@ -15,6 +16,7 @@ class SettingsEntryItem extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.subtitle,
     this.onTap,
     this.iconColor,
     this.textColor,
@@ -44,6 +46,16 @@ class SettingsEntryItem extends StatelessWidget {
           color: textColor ?? context.appColors.onSurface,
         ),
       ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
       trailing: trailing ?? const Icon(Icons.chevron_right),
       onTap: onTap,
     );

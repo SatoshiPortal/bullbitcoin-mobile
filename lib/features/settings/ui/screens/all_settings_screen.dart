@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/settings_search_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,6 +32,12 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     context.read<ServiceStatusCubit>().checkStatus();
   }
 
+  Future<void> _openSettingsSearch(List<SettingsItem> items) async {
+    final item = await SettingsSearchSheet.show(context: context, items: items);
+    if (item == null || !mounted) return;
+    item.open(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -44,6 +49,9 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     final isSuperuser =
         context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
         false;
+    final isDevModeEnabled =
+        context.select((SettingsCubit cubit) => cubit.state.isDevModeEnabled) ??
+        false;
 
     final serviceStatusLoading = context.select(
       (ServiceStatusCubit cubit) => cubit.state.isLoading,
@@ -53,110 +61,49 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
+    final exchangeTitle = Platform.isIOS && !isSuperuser
+        ? context.loc.settingsAccountSettingsTitle
+        : context.loc.settingsExchangeSettingsTitle;
+    final items = buildSettingsItems(
+      localization: context.loc,
+      exchangeTitle: exchangeTitle,
+      isSuperuser: isSuperuser,
+      isDevModeEnabled: isDevModeEnabled,
+    );
+
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
+      appBar: AppBar(
+        title: Text(context.loc.settingsScreenTitle),
+        actionsPadding: const EdgeInsets.only(right: 8),
+        actions: [
+          IconButton(
+            key: const Key('settings-search-button'),
+            tooltip: context.loc.settingsSearchHint,
+            color: context.appColors.secondary,
+            iconSize: 32,
+            icon: const Icon(Icons.search),
+            onPressed: () => _openSettingsSearch(items),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                SettingsEntryItem(
-                  icon: Icons.currency_exchange,
-                  title: Platform.isIOS && !isSuperuser
-                      ? context.loc.settingsAccountSettingsTitle
-                      : context.loc.settingsExchangeSettingsTitle,
-                  onTap: () {
-                    if (Platform.isIOS) {
-                      if (isSuperuser) {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
-                        }
-                      } else {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
-                        }
-                      }
-                    } else {
-                      final notLoggedIn = context
-                          .read<ExchangeCubit>()
-                          .state
-                          .notLoggedIn;
-                      if (notLoggedIn) {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
-                      } else {
-                        context.pushNamed(SettingsRoute.exchangeSettings.name);
-                      }
-                    }
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.save,
-                  title: context.loc.settingsWalletBackupTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.backupSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.currency_bitcoin,
-                  title: context.loc.settingsBitcoinSettingsTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.bitcoinSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.app_settings_alt,
-                  title: context.loc.settingsAppSettingsTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.appSettings.name);
-                  },
-                ),
-
-                SettingsEntryItem(
-                  icon: Icons.map,
-                  title: context.loc.settingsBtcMapTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.btcMap.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.description,
-                  title: context.loc.settingsTermsOfServiceTitle,
-                  onTap: () {
-                    final url = Uri.parse(
-                      SettingsConstants.termsAndConditionsLink,
-                    );
-                    launchUrl(url, mode: LaunchMode.inAppBrowserView);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.monitor_heart,
-                  iconColor: serviceStatusLoading
-                      ? context.appColors.textMuted
-                      : serviceStatus.allServicesOnline
-                      ? context.appColors.success
-                      : context.appColors.error,
-                  title: context.loc.settingsServicesStatusTitle,
-                  onTap: () {
-                    context.pushNamed(StatusCheckRoute.serviceStatus.name);
-                  },
-                ),
+                const Gap(16),
+                for (final item in items.inSection(SettingsItemSection.root))
+                  item.buildTile(
+                    context,
+                    iconColor: item.id == SettingsItemId.servicesStatus
+                        ? serviceStatusLoading
+                              ? context.appColors.textMuted
+                              : serviceStatus.allServicesOnline
+                              ? context.appColors.success
+                              : context.appColors.error
+                        : null,
+                  ),
               ],
             ),
           ),
