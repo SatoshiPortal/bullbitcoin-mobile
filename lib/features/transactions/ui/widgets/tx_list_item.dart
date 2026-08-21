@@ -6,18 +6,24 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TxListItem extends StatelessWidget {
-  const TxListItem({super.key, required this.tx});
+  const TxListItem({
+    super.key,
+    required this.tx,
+    required this.onDetailsClosed,
+  });
 
   final Transaction tx;
+
+  /// Called when the details screen this row opened is closed, so the list
+  /// can pick up anything edited there — labels, in particular.
+  final VoidCallback onDetailsClosed;
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +81,6 @@ class TxListItem extends StatelessWidget {
     final showOrderInFiat = isOrderType && tx.order!.displaysFiatAmount;
     return InkWell(
       onTap: () async {
-        final transactionsCubit = context.read<TransactionsCubit>();
-
         if (tx.orderSwap != null) {
           await context.pushNamed(
             TransactionsRoute.orderSwapTransactionDetails.name,
@@ -108,9 +112,7 @@ class TxListItem extends StatelessWidget {
           return;
         }
 
-        // Notes are edited on the details screen but stored apart from the
-        // transaction, so this row still shows the labels read on load.
-        await transactionsCubit.refreshLabels();
+        onDetailsClosed();
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8.0),
