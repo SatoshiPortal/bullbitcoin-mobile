@@ -36,7 +36,13 @@ void main() {
     seedRepository = _MockSeedRepository();
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => const SettingsEntity(environment: Environment.testnet, bitcoinUnit: BitcoinUnit.sats, currencyCode: 'CAD')); 
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
     usecase = CreateEncryptedVaultUsecase(
       recoverBullRepository: recoverBullRepository,
       seedRepository: seedRepository,
