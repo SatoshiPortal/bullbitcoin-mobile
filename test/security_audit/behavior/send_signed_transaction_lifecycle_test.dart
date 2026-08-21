@@ -1,12 +1,3 @@
-// Behavioral proof for two audit findings on SendCubit:
-//
-// 1. `_invalidateSignedTransaction()` (added by `fix(send)`) only clears
-//    `signedBitcoinTx`. The BDK path stores its signed payload in
-//    `signedBitcoinPsbt`, which survives every payment edit and is the value
-//    `onConfirmTransactionClicked()` broadcasts.
-// 2. `broadcastTransaction()` guards its `emit`s with `isClosed` but still
-//    dereferences `state.txId!` for the post-broadcast bookkeeping, so a cubit
-//    closed mid-broadcast throws instead of recording the send.
 import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -16,7 +7,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -36,6 +26,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -70,8 +61,7 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockConvertSatsToCurrencyAmountUsecase extends Mock
     implements ConvertSatsToCurrencyAmountUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockLoadSendFeesUsecase extends Mock implements LoadSendFeesUsecase {}
 
 class _MockGetAvailableCurrenciesUsecase extends Mock
     implements GetAvailableCurrenciesUsecase {}
@@ -171,7 +161,7 @@ class _TestSendCubit extends SendCubit {
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
     required super.convertSatsToCurrencyAmountUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.loadSendFeesUsecase,
     required super.getAvailableCurrenciesUsecase,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
@@ -260,7 +250,7 @@ void main() {
       getSettingsUsecase: _MockGetSettingsUsecase(),
       convertSatsToCurrencyAmountUsecase:
           _MockConvertSatsToCurrencyAmountUsecase(),
-      getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+      loadSendFeesUsecase: _MockLoadSendFeesUsecase(),
       getAvailableCurrenciesUsecase: _MockGetAvailableCurrenciesUsecase(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),

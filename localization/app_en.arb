@@ -14684,5 +14684,13 @@
   "psbtFlowMissingPsbt": "No transaction to display. Please go back and try again.",
   "@psbtFlowMissingPsbt": {
     "description": "Shown on the PSBT display screen when it was opened without a built transaction (e.g. the build failed), instead of rendering a meaningless QR code."
+  },
+  "sendFeesFallbackWarning": "Couldn't fetch current fee rates. Values shown are fallback minimums — verify or set a custom fee.",
+  "@sendFeesFallbackWarning": {
+    "description": "Warning shown on the send confirm screen when the fee API was unreachable and the displayed fee rates are stale or relay-floor fallback values instead of live market rates."
+  },
+  "sendFeesFallbackWarningTitle": "Fee rates unavailable",
+  "@sendFeesFallbackWarningTitle": {
+    "description": "Title of the warning card shown on the send confirm screen when live fee rates could not be fetched and fallback values are displayed."
   }
 }

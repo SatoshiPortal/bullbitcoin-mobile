@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -165,6 +166,9 @@ class SendLocator {
     locator.registerFactory<GetSendPayjoinEnabledUsecase>(
       () => GetSendPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
+    locator.registerFactory<LoadSendFeesUsecase>(
+      () => LoadSendFeesUsecase(locator<GetNetworkFeesUsecase>()),
+    );
     locator.registerFactory<VerifySignedTxUsecase>(
       () => VerifySignedTxUsecase(),
     );
@@ -180,7 +184,7 @@ class SendLocator {
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         convertSatsToCurrencyAmountUsecase:
             locator<ConvertSatsToCurrencyAmountUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        loadSendFeesUsecase: locator<LoadSendFeesUsecase>(),
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
