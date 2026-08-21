@@ -876,6 +876,20 @@ class _SlowPaymentWarning extends StatelessWidget {
   }
 }
 
+class _FallbackFeesWarning extends StatelessWidget {
+  const _FallbackFeesWarning();
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      title: context.loc.sendFeesFallbackWarningTitle,
+      description: context.loc.sendFeesFallbackWarning,
+      tagColor: context.appColors.error,
+      bgColor: context.appColors.errorContainer,
+    );
+  }
+}
+
 class _BottomButtons extends StatelessWidget {
   const _BottomButtons();
 
@@ -992,6 +1006,9 @@ class _OnchainTransactionReview extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
+    final usingFallbackFees = context.select(
+      (SendCubit cubit) => cubit.state.usingFallbackFees,
+    );
     final isToSelf = context.select(
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
@@ -1058,6 +1075,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           const Gap(16),
           _HighFeeWarning(feePercent),
         ],
+        if (usingFallbackFees) ...[const Gap(16), const _FallbackFeesWarning()],
       ],
     );
   }
