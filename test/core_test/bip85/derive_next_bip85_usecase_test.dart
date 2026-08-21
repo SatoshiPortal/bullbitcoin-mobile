@@ -269,6 +269,29 @@ void main() {
       );
     });
 
+    test('looks up the default wallet in the active environment', () async {
+      when(() => settingsRepository.fetch()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      stubWallets([defaultWallet.copyWith(network: Network.bitcoinTestnet)]);
+      when(
+        () => bip85Repository.fetchAll(),
+      ).thenAnswer((_) async => const Ok([]));
+
+      expect(await usecase.execute(), isA<Ok>());
+      verify(
+        () => walletRepository.getWallets(
+          onlyDefaults: true,
+          onlyBitcoin: true,
+          environment: Environment.testnet,
+        ),
+      ).called(1);
+    });
+
     test('no default wallet is its own failure', () async {
       stubWallets([]);
 
