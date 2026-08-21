@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_encrypted_vault_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -19,6 +20,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_u
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -32,6 +34,8 @@ class _MockPickVault extends Mock implements PickVaultUsecase {}
 class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
+
+class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
@@ -68,6 +72,7 @@ void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
+  late _MockWalletRepository walletRepository;
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
@@ -83,12 +88,14 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_MockEncryptedVault());
+    registerFallbackValue(DateTime(2000));
   });
 
   setUp(() {
     pickVault = _MockPickVault();
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
+    walletRepository = _MockWalletRepository();
     storeKey = _MockStoreKey();
     checkConnection = _MockCheckConnection();
     when(
@@ -125,6 +132,9 @@ void main() {
     pickVaultUsecase: pickVault,
     saveFileToSystemUsecase: saveFile,
     createEncryptedVaultUsecase: createVault,
+    completeEncryptedVaultBackupUsecase: CompleteEncryptedVaultBackupUsecase(
+      walletRepository: walletRepository,
+    ),
     storeVaultKeyIntoServerUsecase: storeKey,
     checkKeyServerConnectionUsecase: checkConnection,
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
@@ -193,7 +203,7 @@ void main() {
     );
   });
 
-  group('OnVaultCreation store-key failure mapping', () {
+  group('OnVaultCreation', () {
     test(
       'rate-limited storeVaultKey -> VaultRateLimitedFailure (cooldown kept)',
       () async {
@@ -202,9 +212,10 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(
-          () => createVault.execute(),
-        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => createVault.execute()).thenAnswer(
+          (_) async =>
+              Ok((vault: vault, vaultKey: 'deadbeef', walletId: 'wallet-id')),
+        );
         when(
           () => checkConnection.execute(),
         ).thenAnswer((_) async => const Ok(true));
@@ -245,10 +256,63 @@ void main() {
           (bloc.state.failure as VaultRateLimitedFailure).retryIn,
           cooldown,
         );
+        verifyNever(
+          () => walletRepository.updateEncryptedBackupTime(
+            time: any(named: 'time'),
+            walletId: 'wallet-id',
+          ),
+        );
 
         await bloc.close();
       },
     );
+
+    test('records completion after the file and key are stored', () async {
+      final vault = _MockEncryptedVault();
+      when(() => vault.toFile()).thenReturn('{}');
+      when(() => vault.filename).thenReturn('vault.json');
+      when(() => createVault.execute()).thenAnswer(
+        (_) async =>
+            Ok((vault: vault, vaultKey: 'deadbeef', walletId: 'wallet-id')),
+      );
+      when(
+        () => saveFile.execute(
+          content: any(named: 'content'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => storeKey.execute(
+          password: any(named: 'password'),
+          vault: any(named: 'vault'),
+          vaultKey: any(named: 'vaultKey'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => walletRepository.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: 'wallet-id',
+        ),
+      ).thenAnswer((_) async {});
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+
+      bloc.add(const OnVaultPasswordSet(password: 'pw'));
+      await pumpEventQueue();
+      bloc.add(
+        const OnVaultProviderSelection(provider: VaultProvider.customLocation),
+      );
+      await pumpEventQueue();
+
+      expect(bloc.state.vault, vault);
+      verify(
+        () => walletRepository.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: 'wallet-id',
+        ),
+      ).called(1);
+
+      await bloc.close();
+    });
   });
 
   test('maps external failure while fetching and does not decrypt', () async {
@@ -279,9 +343,9 @@ void main() {
     'maps external failure while storing without announcing creation',
     () async {
       final vault = _MockEncryptedVault();
-      when(
-        () => createVault.execute(),
-      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(() => createVault.execute()).thenAnswer(
+        (_) async => Ok((vault: vault, vaultKey: 'key', walletId: 'wallet-id')),
+      );
       when(
         () => connectDrive.execute(),
       ).thenAnswer((_) async => const Ok(null));

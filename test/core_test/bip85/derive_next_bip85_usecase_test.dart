@@ -280,7 +280,9 @@ void main() {
       'returns Bip85UnexpectedFailure when the default seed cannot be read',
       () async {
         // The seed use case returns a failure now rather than throwing.
-        when(() => getDefaultSeedUsecase.execute(environment: Environment.mainnet)).thenAnswer(
+        when(
+          () => getDefaultSeedUsecase.execute(environment: Environment.mainnet),
+        ).thenAnswer(
           (_) async => const Err<Seed, SeedFailure>(
             SeedFetchFailure('internal db error with secret path /data/user'),
           ),

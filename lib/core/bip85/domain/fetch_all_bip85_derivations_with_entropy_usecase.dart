@@ -35,19 +35,18 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final Seed defaultSeed;
-    switch (await _getDefaultSeedUsecase.execute(
+      switch (await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
       )) {
-      case Ok(:final value):
-        defaultSeed = value;
-      case Err(:final failure):
-        log.warning('bip85 derivations: ${failure.logMessage}');
-        // The seed layer's vocabulary stops here.
-        return Err(
-          Bip85UnexpectedFailure('default seed: ${failure.runtimeType}'),
-        );
-    }
-
+        case Ok(:final value):
+          defaultSeed = value;
+        case Err(:final failure):
+          log.warning('bip85 derivations: ${failure.logMessage}');
+          // The seed layer's vocabulary stops here.
+          return Err(
+            Bip85UnexpectedFailure('default seed: ${failure.runtimeType}'),
+          );
+      }
 
       final xprvBase58 = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
