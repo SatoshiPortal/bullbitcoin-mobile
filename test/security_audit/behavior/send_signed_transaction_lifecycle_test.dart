@@ -19,7 +19,6 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -39,6 +38,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -85,8 +85,7 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockLoadSendFeesUsecase extends Mock implements LoadSendFeesUsecase {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -204,7 +203,7 @@ class _TestSendCubit extends SendCubit {
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
     required super.getSendExchangeRateUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.loadSendFeesUsecase,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -309,7 +308,7 @@ void main() {
       detectBitcoinStringUsecase: _MockDetectBitcoinStringUsecase(),
       getSettingsUsecase: _MockGetSettingsUsecase(),
       getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
-      getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+      loadSendFeesUsecase: _MockLoadSendFeesUsecase(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
