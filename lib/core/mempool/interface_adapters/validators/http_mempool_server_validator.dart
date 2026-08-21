@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_por
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:dio/dio.dart';
@@ -14,10 +15,12 @@ import 'package:bull_tor/tor.dart';
 class HttpMempoolServerValidator implements MempoolServerValidatorPort {
   final MempoolTorSessionPort _torSessionPort;
   final TorHttpClientFactory _torHttpClientFactory;
+  final SettingsRepository? _settingsRepository;
 
   HttpMempoolServerValidator({
     required this._torSessionPort,
     required this._torHttpClientFactory,
+    this._settingsRepository,
   });
   static const _timeout = Duration(seconds: 5);
 
@@ -58,6 +61,21 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
             trace: stackTrace,
           );
           return const Err(MempoolValidationTorNotRunningFailure());
+        }
+      } else {
+        // Clearnet custom server: honor the external Tor proxy when the user
+        // configured one, the same way fee fetching does — otherwise
+        // validation (and only validation) leaks around the proxy.
+        final settings = _settingsRepository == null
+            ? null
+            : await _settingsRepository.fetch();
+        if (settings?.useTorProxy == true) {
+          torClient = _torHttpClientFactory.create(
+            TorProxyEndpoint(
+              host: InternetAddress.loopbackIPv4.address,
+              port: settings!.torProxyPort,
+            ),
+          );
         }
       }
 
@@ -134,7 +152,7 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
         trace: st,
       );
       return Err(_dioFailure(e, url));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Validation failed with unexpected exception',
         error: e,
@@ -148,10 +166,22 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
       // validation leaves both null and never opens a Tor session.
       try {
         torClient?.close(force: true);
-      } catch (_) {}
+      } on Exception catch (error, stackTrace) {
+        log.warning(
+          'Failed to close the mempool validation Tor client',
+          error: error,
+          trace: stackTrace,
+        );
+      }
       try {
         await route?.close();
-      } catch (_) {}
+      } on Exception catch (error, stackTrace) {
+        log.warning(
+          'Failed to close the mempool validation Tor route',
+          error: error,
+          trace: stackTrace,
+        );
+      }
     }
   }
 

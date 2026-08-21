@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:get_it/get_it.dart';
 
 class FeesLocator {
@@ -14,6 +15,8 @@ class FeesLocator {
         getActiveMempoolServerUsecase: locator<GetActiveMempoolServerUsecase>(),
         mempoolSettingsRepository: locator<MempoolSettingsRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        tor: locator<Tor>(),
+        torHttpClientFactory: locator<TorHttpClientFactory>(),
       ),
     );
   }

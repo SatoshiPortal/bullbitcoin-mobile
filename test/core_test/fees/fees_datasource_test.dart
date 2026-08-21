@@ -3,9 +3,13 @@ import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_s
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,6 +19,14 @@ class _MockSettingsRepo extends Mock implements MempoolSettingsRepository {}
 
 class _MockActiveServerUsecase extends Mock
     implements GetActiveMempoolServerUsecase {}
+
+class _MockAppSettingsRepo extends Mock implements SettingsRepository {}
+
+class _MockTor extends Mock implements Tor {}
+
+class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
+
+class _MockTorSessions extends Mock implements TorSessions {}
 
 const _precise = ApiServiceConstants.mempoolPreciseFeesPath;
 const _recommended = ApiServiceConstants.mempoolRecommendedFeesPath;
@@ -230,6 +242,126 @@ void main() {
       expect(
         () => datasource.fetchBitcoinNetworkFees(isTestnet: false),
         throwsA(isA<MempoolFeesException>()),
+      );
+    });
+  });
+
+  group('FeesDatasource Tor routing', () {
+    late _MockAppSettingsRepo appSettingsRepo;
+    late _MockTor tor;
+    late _MockEmbeddedTor embeddedTor;
+    late _MockTorSessions torSessions;
+
+    FeesDatasource buildWithTor({required bool useTorProxy}) {
+      // The Tor path reads the adapter to attach the proxied HttpClient;
+      // a real one keeps the mock Dio usable while exercising that code.
+      when(() => dio.httpClientAdapter).thenReturn(IOHttpClientAdapter());
+      when(() => appSettingsRepo.fetch()).thenAnswer(
+        (_) async => SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.btc,
+          currencyCode: 'USD',
+          useTorProxy: useTorProxy,
+        ),
+      );
+      when(() => tor.embedded).thenReturn(embeddedTor);
+      when(() => embeddedTor.sessions).thenReturn(torSessions);
+      when(() => torSessions.open()).thenAnswer(
+        (_) async => TorSession(
+          TorProxyEndpoint(host: '127.0.0.1', port: 9050),
+          TorTransport.direct,
+          () async {},
+        ),
+      );
+      return FeesDatasource(
+        getActiveMempoolServerUsecase: activeServer,
+        mempoolSettingsRepository: settingsRepo,
+        settingsRepository: appSettingsRepo,
+        tor: tor,
+        dioBuilder: (_) => dio,
+      );
+    }
+
+    setUp(() {
+      appSettingsRepo = _MockAppSettingsRepo();
+      tor = _MockTor();
+      embeddedTor = _MockEmbeddedTor();
+      torSessions = _MockTorSessions();
+    });
+
+    test('retries through embedded Tor when the direct fetch fails', () async {
+      final ds = buildWithTor(useTorProxy: false);
+      // First round (direct) fails on both endpoints; the Tor retry succeeds.
+      var preciseCalls = 0;
+      when(() => dio.get<dynamic>(_precise)).thenAnswer((_) async {
+        preciseCalls++;
+        if (preciseCalls == 1) throw _dioError(_precise);
+        return _ok(_precise, {
+          'fastestFee': 2,
+          'halfHourFee': 2,
+          'hourFee': 1,
+          'economyFee': 1,
+          'minimumFee': 1,
+        });
+      });
+      when(
+        () => dio.get<dynamic>(_recommended),
+      ).thenThrow(_dioError(_recommended));
+
+      final fees = await ds.fetchBitcoinNetworkFees(isTestnet: false);
+
+      expect(fees.fastestFee, 2.0);
+      verify(() => torSessions.open()).called(1);
+    });
+
+    test(
+      'does not open a Tor session when the direct fetch succeeds',
+      () async {
+        final ds = buildWithTor(useTorProxy: false);
+        when(() => dio.get<dynamic>(_precise)).thenAnswer(
+          (_) async => _ok(_precise, {
+            'fastestFee': 2,
+            'halfHourFee': 2,
+            'hourFee': 1,
+            'economyFee': 1,
+            'minimumFee': 1,
+          }),
+        );
+
+        await ds.fetchBitcoinNetworkFees(isTestnet: false);
+
+        verifyNever(() => torSessions.open());
+      },
+    );
+
+    test(
+      'does not retry through embedded Tor when the external proxy is set',
+      () async {
+        final ds = buildWithTor(useTorProxy: true);
+        when(() => dio.get<dynamic>(_precise)).thenThrow(_dioError(_precise));
+        when(
+          () => dio.get<dynamic>(_recommended),
+        ).thenThrow(_dioError(_recommended));
+
+        await expectLater(
+          () => ds.fetchBitcoinNetworkFees(isTestnet: false),
+          throwsA(isA<MempoolFeesException>()),
+        );
+        verifyNever(() => torSessions.open());
+      },
+    );
+
+    test('does not swallow programmer errors during Tor setup', () async {
+      final ds = buildWithTor(useTorProxy: false);
+      when(() => dio.get<dynamic>(_precise)).thenThrow(_dioError(_precise));
+      when(
+        () => dio.get<dynamic>(_recommended),
+      ).thenThrow(_dioError(_recommended));
+      when(() => torSessions.open()).thenThrow(StateError('invalid Tor state'));
+
+      await expectLater(
+        () => ds.fetchBitcoinNetworkFees(isTestnet: false),
+        throwsA(isA<StateError>()),
       );
     });
   });

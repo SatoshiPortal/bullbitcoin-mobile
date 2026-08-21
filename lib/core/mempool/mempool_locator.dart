@@ -55,6 +55,7 @@ class MempoolLocator {
       () => HttpMempoolServerValidator(
         torSessionPort: locator<MempoolTorSessionPort>(),
         torHttpClientFactory: locator<TorHttpClientFactory>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
