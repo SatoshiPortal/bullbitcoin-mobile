@@ -87,6 +87,7 @@ class RecoverbullLocator {
     locator.registerFactory<CreateEncryptedVaultUsecase>(
       () => CreateEncryptedVaultUsecase(
         seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
         walletRepository: locator<WalletRepository>(),
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),

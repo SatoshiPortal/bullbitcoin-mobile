@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
@@ -15,11 +16,13 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateEncryptedVaultUsecase {
   final RecoverBullRepository _recoverBullRepository;
   final SeedRepository _seedRepository;
+  final SettingsRepository _settingsRepository;
   final WalletRepository _walletRepository;
 
   CreateEncryptedVaultUsecase({
     required this._recoverBullRepository,
     required this._seedRepository,
+    required this._settingsRepository,
     required this._walletRepository,
   });
 
@@ -31,9 +34,11 @@ class CreateEncryptedVaultUsecase {
   >
   execute() async {
     try {
+      final settings = await _settingsRepository.fetch();
       final defaultBitcoinWallets = await _walletRepository.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
+        environment: settings.environment,
       );
 
       if (defaultBitcoinWallets.isEmpty) {
