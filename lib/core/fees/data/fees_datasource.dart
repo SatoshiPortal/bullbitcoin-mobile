@@ -3,12 +3,16 @@ import 'dart:convert';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 class FeesDatasource {
   /// Builds the HTTP client for a resolved base URL. Injected so tests can
   /// supply a mock; defaults to a real Dio.
   final Dio Function(String baseUrl) _dioBuilder;
+  final TorHttpClientFactory _torHttpClientFactory =
+      const TorHttpClientFactory();
 
   FeesDatasource({Dio Function(String baseUrl)? dioBuilder})
     : _dioBuilder = dioBuilder ?? _defaultDioBuilder;
@@ -34,18 +38,30 @@ class FeesDatasource {
   /// neither endpoint yields a usable response.
   Future<MempoolFeesModel> fetchBitcoinNetworkFees({
     required String baseUrl,
+    TorProxyEndpoint? proxyEndpoint,
   }) async {
-    // Fees and mempool are application traffic and intentionally remain direct.
     final http = _dioBuilder(baseUrl);
+    try {
+      if (proxyEndpoint != null) {
+        final adapter = http.httpClientAdapter;
+        if (adapter is! IOHttpClientAdapter) {
+          throw MempoolFeesException('Fee HTTP client cannot use a Tor route');
+        }
+        adapter.createHttpClient = () =>
+            _torHttpClientFactory.create(proxyEndpoint);
+      }
 
-    final fees =
-        await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
-        await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
-    if (fees == null) {
-      throw MempoolFeesException('No mempool fee endpoint available');
+      final fees =
+          await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
+          await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
+      if (fees == null) {
+        throw MempoolFeesException('No mempool fee endpoint available');
+      }
+
+      return fees;
+    } finally {
+      http.close(force: true);
     }
-
-    return fees;
   }
 
   /// GETs a fee endpoint and parses it. Returns the model on a 200 with a
