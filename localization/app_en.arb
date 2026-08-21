@@ -14680,5 +14680,9 @@
   "settingsScreenPrivacyDisabledMessage": "Screenshots are now allowed on sensitive screens",
   "@settingsScreenPrivacyDisabledMessage": {
     "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
+  },
+  "psbtFlowMissingPsbt": "No transaction to display. Please go back and try again.",
+  "@psbtFlowMissingPsbt": {
+    "description": "Shown on the PSBT display screen when it was opened without a built transaction (e.g. the build failed), instead of rendering a meaningless QR code."
   }
 }

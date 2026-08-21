@@ -2073,6 +2073,10 @@ class ShowPsbtButton extends StatelessWidget {
       },
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
+      // Without a built PSBT (e.g. the transaction build failed) there is
+      // nothing to sign — pushing the route would render a meaningless
+      // static QR for an empty payload.
+      disabled: unsignedPsbt == null,
     );
   }
 }

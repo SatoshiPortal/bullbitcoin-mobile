@@ -228,7 +228,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   void backClicked() {
-    _invalidateSignedTransaction();
+    _invalidatePreparedTransaction();
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.amount) {
@@ -260,7 +260,7 @@ class SendCubit extends Cubit<SendState>
   ) async {
     _startNewPaymentRequestInput();
     clearFailure();
-    _invalidateSignedTransaction();
+    _invalidatePreparedTransaction();
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
       RegExp(r'^["\"]+|["\"]+$'),
       '',
@@ -289,7 +289,7 @@ class SendCubit extends Cubit<SendState>
     final inputGeneration = _startNewPaymentRequestInput();
     try {
       clearFailure();
-      _invalidateSignedTransaction();
+      _invalidatePreparedTransaction();
       final sanitizedText = text.trim().replaceAll(
         RegExp(r'^["\"]+|["\"]+$'),
         '',
@@ -725,7 +725,7 @@ class SendCubit extends Cubit<SendState>
       final amountChanged =
           state.amount != validatedAmount || state.sendMax != isMax;
       emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
-      _invalidateSignedTransaction();
+      _invalidatePreparedTransaction();
       // Amount is part of the cache fingerprint — any change invalidates
       // every previously-built preview PSBT. Without this clear, the user
       // can open the fee modal at amount A, change the amount to B
@@ -1352,6 +1352,7 @@ class SendCubit extends Cubit<SendState>
   // will fire.
   Future<void> createTransaction() async {
     try {
+      _invalidatePreparedTransaction();
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
         await loadFees();
         if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
@@ -1552,6 +1553,7 @@ class SendCubit extends Cubit<SendState>
                 'Built fee $builtFee sats at ${txPreparation.txSize} vbytes '
                 'is below the relay floor',
               ),
+              unsignedPsbt: null,
               buildingTransaction: false,
             ),
           );
@@ -1638,10 +1640,15 @@ class SendCubit extends Cubit<SendState>
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
+      // Every failure path below clears unsignedPsbt: the build start already
+      // nulled bitcoinAbsoluteFeesSat, and leaving the previous build's PSBT
+      // in state would let the user sign a stale transaction (wrong amount or
+      // recipient) while the confirm screen shows no fee.
       if (e is ConsolidationRequiredException) {
         emit(
           state.copyWith(
             consolidationRequired: true,
+            unsignedPsbt: null,
             buildingTransaction: false,
           ),
         );
@@ -1651,6 +1658,7 @@ class SendCubit extends Cubit<SendState>
         emit(
           state.copyWith(
             failure: SendTransactionBuildFailure(e.message),
+            unsignedPsbt: null,
             buildingTransaction: false,
           ),
         );
@@ -1660,6 +1668,7 @@ class SendCubit extends Cubit<SendState>
         emit(
           state.copyWith(
             failure: SendTransactionBuildFailure(e.message),
+            unsignedPsbt: null,
             buildingTransaction: false,
           ),
         );
@@ -1668,6 +1677,7 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(
           failure: SendTransactionBuildFailure(e.toString()),
+          unsignedPsbt: null,
           buildingTransaction: false,
         ),
       );
@@ -1970,7 +1980,7 @@ class SendCubit extends Cubit<SendState>
           state.willAttemptPayjoin && state.payjoinSender == null;
       if (orderNeedsPayin || sendNeedsSignature || sendNeedsPayjoinStart) {
         if (orderNeedsPayin) {
-          _invalidateSignedTransaction();
+          _invalidatePreparedTransaction();
           clearBitcoinFeePreviews();
         }
         // The regular Bitcoin build path may already have prepared and signed
@@ -2317,7 +2327,7 @@ class SendCubit extends Cubit<SendState>
   /// with a broadcastable signature attached to the old recipient/amount.
   /// The unsigned PSBT goes too: it is the reference
   /// [updateSignedBitcoinTx] verifies a hardware signature against.
-  void _invalidateSignedTransaction() {
+  void _invalidatePreparedTransaction() {
     if (state.signedBitcoinTx == null &&
         state.signedBitcoinPsbt == null &&
         state.signedLiquidTx == null &&
