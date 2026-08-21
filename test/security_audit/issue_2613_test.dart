@@ -18,7 +18,7 @@ void main() {
       // over a Result now rather than a bare `await` (#1895); what this audit
       // pins is that the seed comes from GetDefaultSeedUsecase and nowhere
       // else, not the syntax used to read it.
-      expect(source, contains('_getDefaultSeedUsecase.execute()'));
+      expect(source, contains('_getDefaultSeedUsecase.execute('));
       expect(source, contains('defaultSeed.bytes'));
       expect(source, contains('Bip85HardenedPath(e.path)'));
       expect(source, contains('xprvFingerprint'));
