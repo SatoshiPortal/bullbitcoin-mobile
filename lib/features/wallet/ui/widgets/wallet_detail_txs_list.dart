@@ -33,6 +33,7 @@ class WalletDetailTxsList extends StatelessWidget {
             ? context.loc.transactionListLoadingFailed
             : null,
         sliver: sliver,
+        onDetailsClosed: context.read<TransactionsCubit>().refreshLabels,
       ),
     );
   }

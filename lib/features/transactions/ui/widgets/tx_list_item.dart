@@ -13,9 +13,17 @@ import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TxListItem extends StatelessWidget {
-  const TxListItem({super.key, required this.tx});
+  const TxListItem({
+    super.key,
+    required this.tx,
+    required this.onDetailsClosed,
+  });
 
   final Transaction tx;
+
+  /// Called when the details screen this row opened is closed, so the list
+  /// can pick up anything edited there — labels, in particular.
+  final VoidCallback onDetailsClosed;
 
   @override
   Widget build(BuildContext context) {
@@ -72,40 +80,39 @@ class TxListItem extends StatelessWidget {
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat = isOrderType && tx.order!.displaysFiatAmount;
     return InkWell(
-      onTap: () {
+      onTap: () async {
         if (tx.orderSwap != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.orderSwapTransactionDetails.name,
             pathParameters: {'localId': tx.orderSwap!.localId},
           );
-          return;
         } else if (tx.walletTransaction != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.transactionDetails.name,
             pathParameters: {'txId': tx.walletTransaction!.txId},
             queryParameters: {'walletId': tx.walletTransaction!.walletId},
           );
-          return;
         } else if (tx.swap != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.swapTransactionDetails.name,
             pathParameters: {'swapId': tx.swap!.id},
             queryParameters: {'walletId': tx.swap!.walletId},
           );
-          return;
         } else if (tx.payjoin != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.payjoinTransactionDetails.name,
             pathParameters: {'payjoinId': tx.payjoin!.id},
           );
-          return;
         } else if (tx.order != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.orderTransactionDetails.name,
             pathParameters: {'orderId': tx.order!.orderId},
           );
+        } else {
           return;
         }
+
+        onDetailsClosed();
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8.0),
