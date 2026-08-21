@@ -44,6 +44,11 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   StreamSubscription? _finishedSyncSubscription;
   Timer? _debounceTimer;
 
+  /// Bumped every time [loadTxs] replaces the list, so a [refreshLabels] that
+  /// started from an older snapshot can tell it lost the race and drop its
+  /// result instead of reinstating stale transactions.
+  int _loadGeneration = 0;
+
   @override
   Future<void> close() async {
     _debounceTimer?.cancel();
@@ -66,6 +71,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         walletId: state.walletId,
       );
 
+      _loadGeneration++;
       emit(
         state.copyWith(transactions: transactions, isSyncing: false, err: null),
       );
@@ -81,11 +87,18 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     final transactions = state.transactions;
     if (transactions == null || transactions.isEmpty) return;
 
+    final generation = _loadGeneration;
     final refreshed = await _refreshTransactionLabelsUsecase.execute(
       transactions,
     );
-    // Identical when no label changed.
-    if (isClosed || identical(refreshed, transactions)) return;
+    if (isClosed ||
+        // A load landed while we were reading; its transactions are newer and
+        // carry freshly read labels anyway.
+        _loadGeneration != generation ||
+        // Identical when no label changed.
+        identical(refreshed, transactions)) {
+      return;
+    }
 
     emit(state.copyWith(transactions: refreshed));
   }

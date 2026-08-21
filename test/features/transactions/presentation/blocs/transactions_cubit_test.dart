@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -115,6 +117,36 @@ void main() {
       await pumpEventQueue();
 
       expect(emissions, emissionsBefore);
+    });
+
+    test('drops its result when a load landed while it was reading', () async {
+      cubit.emit(TransactionsState(transactions: [_transaction()]));
+      final relabelled = _transaction(
+        labels: [Label.tx(id: 1, transactionId: 'txid-1', label: 'rent')],
+      );
+      final freshlySynced = _transaction(
+        labels: [Label.tx(id: 2, transactionId: 'txid-1', label: 'synced')],
+      );
+      // Hold the label read open so the load can land underneath it.
+      final labelRead = Completer<List<Transaction>>();
+      when(
+        () => refreshTransactionLabelsUsecase.execute(any()),
+      ).thenAnswer((_) => labelRead.future);
+      when(
+        () => getTransactionsUsecase.execute(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+        ),
+      ).thenAnswer((_) async => [freshlySynced]);
+
+      final refresh = cubit.refreshLabels();
+      await cubit.loadTxs();
+      labelRead.complete([relabelled]);
+      await refresh;
+
+      // The load's transactions win: they are newer and were hydrated with
+      // freshly read labels anyway.
+      expect(cubit.state.transactions, [freshlySynced]);
     });
 
     test('does nothing before the first load', () async {
