@@ -398,49 +398,43 @@ class RecipientDetailsDto {
         );
 
       // COSTA RICA
+      // ownerName is nullable by design for the SINPE types: the server fills it
+      // from a Ridivi lookup that can fail or be empty on older records.
+      // Requiring it here silently dropped those recipients (#2529).
       case RecipientType.sinpeIbanUsd:
         if (iban == null) {
           throw StateError('iban is required for SINPE_IBAN_USD.');
-        }
-        if (ownerName == null) {
-          throw StateError('ownerName is required for SINPE_IBAN_USD.');
         }
         return SinpeIbanUsdDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
           iban: iban!,
-          ownerName: ownerName!,
+          ownerName: ownerName,
         );
 
       case RecipientType.sinpeIbanCrc:
         if (iban == null) {
           throw StateError('iban is required for SINPE_IBAN_CRC.');
         }
-        if (ownerName == null) {
-          throw StateError('ownerName is required for SINPE_IBAN_CRC.');
-        }
         return SinpeIbanCrcDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
           iban: iban!,
-          ownerName: ownerName!,
+          ownerName: ownerName,
         );
 
       case RecipientType.sinpeMovilCrc:
         if (phoneNumber == null) {
           throw StateError('phoneNumber is required for SINPE_MOVIL_CRC.');
         }
-        if (ownerName == null) {
-          throw StateError('ownerName is required for SINPE_MOVIL_CRC.');
-        }
         return SinpeMovilCrcDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
           phoneNumber: phoneNumber!,
-          ownerName: ownerName!,
+          ownerName: ownerName,
         );
 
       // ARGENTINA
