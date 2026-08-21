@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_defa
 import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -15,6 +16,7 @@ class Bip85EntropyLocator {
       () => FetchAllBip85DerivationsWithEntropyUsecase(
         bip85Repository: locator<Bip85Repository>(),
         getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
