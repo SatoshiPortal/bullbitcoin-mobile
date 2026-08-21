@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_s
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -16,6 +18,8 @@ class FeesDatasource {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
   final MempoolSettingsRepository _mempoolSettingsRepository;
   final SettingsRepository? _settingsRepository;
+  final Tor? _tor;
+  final TorHttpClientFactory _torHttpClientFactory;
 
   /// Builds the HTTP client for a resolved base URL. Injected so tests can
   /// supply a mock; defaults to a real Dio. The base URL is only known at
@@ -27,6 +31,8 @@ class FeesDatasource {
     required this._getActiveMempoolServerUsecase,
     required this._mempoolSettingsRepository,
     this._settingsRepository,
+    this._tor,
+    this._torHttpClientFactory = const TorHttpClientFactory(),
     Dio Function(String baseUrl)? dioBuilder,
   }) : _dioBuilder = dioBuilder ?? _defaultDioBuilder;
 
@@ -41,13 +47,9 @@ class FeesDatasource {
     ),
   );
 
-  Future<Dio> _buildHttp(String baseUrl) async {
+  Dio _buildHttp(String baseUrl, {int? proxyPort}) {
     final http = _dioBuilder(baseUrl);
-    final settings = _settingsRepository == null
-        ? null
-        : await _settingsRepository.fetch();
-    if (settings?.useTorProxy == true) {
-      final proxyPort = settings!.torProxyPort;
+    if (proxyPort != null) {
       final adapter = IOHttpClientAdapter(
         createHttpClient: () {
           final client = HttpClient();
@@ -69,6 +71,54 @@ class FeesDatasource {
       http.httpClientAdapter = adapter;
     }
     return http;
+  }
+
+  /// Fetches both fee endpoints through an embedded Tor session, returning
+  /// null when Tor is unavailable or the fetch still fails. The session's
+  /// live endpoint is used — never a persisted port, which goes stale the
+  /// moment embedded Tor restarts on a new random port.
+  Future<MempoolFeesModel?> _fetchViaEmbeddedTor(String baseUrl) async {
+    final tor = _tor;
+    if (tor == null) return null;
+    TorSession? session;
+    HttpClient? torClient;
+    try {
+      session = await tor.embedded.sessions.open();
+      torClient = _torHttpClientFactory.create(session.endpoint);
+      final http = _dioBuilder(baseUrl);
+      final adapter = http.httpClientAdapter;
+      if (adapter is IOHttpClientAdapter) {
+        adapter.createHttpClient = () => torClient!;
+      }
+      return await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
+          await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
+    } on Exception catch (error, stackTrace) {
+      log.warning(
+        'Embedded Tor fee fetch failed',
+        error: error,
+        trace: stackTrace,
+      );
+      return null;
+    } finally {
+      try {
+        torClient?.close(force: true);
+      } on Exception catch (error, stackTrace) {
+        log.warning(
+          'Failed to close the embedded Tor fee client',
+          error: error,
+          trace: stackTrace,
+        );
+      }
+      try {
+        await session?.close();
+      } on Exception catch (error, stackTrace) {
+        log.warning(
+          'Failed to close the embedded Tor fee session',
+          error: error,
+          trace: stackTrace,
+        );
+      }
+    }
   }
 
   /// Fetches precise (sub-1 sat/vByte) fee rates from the mempool API.
@@ -112,11 +162,34 @@ class FeesDatasource {
           : 'https://${ApiServiceConstants.bbMempoolUrlPath}';
     }
 
-    final http = await _buildHttp(baseUrl);
+    final appSettings = _settingsRepository == null
+        ? null
+        : await _settingsRepository.fetch();
+    final useExternalProxy = appSettings?.useTorProxy == true;
+    final isOnion = Uri.parse(baseUrl).host.toLowerCase().endsWith('.onion');
 
-    final fees =
-        await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
-        await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
+    MempoolFeesModel? fees;
+    if (!useExternalProxy && isOnion) {
+      // A hidden service is only reachable through Tor — go straight to the
+      // embedded session instead of attempting a direct connection first.
+      fees = await _fetchViaEmbeddedTor(baseUrl);
+    } else {
+      final http = _buildHttp(
+        baseUrl,
+        proxyPort: useExternalProxy ? appSettings!.torProxyPort : null,
+      );
+      fees =
+          await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
+          await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
+      if (fees == null && !useExternalProxy) {
+        // On networks where clearnet is blocked or broken — the reason many
+        // users run Tor in the first place — the direct fetch fails while
+        // the app's embedded Tor works fine. Retry through it before giving
+        // up; without fee rates the send flow cannot build a transaction.
+        fees = await _fetchViaEmbeddedTor(baseUrl);
+      }
+    }
+
     if (fees == null) {
       throw MempoolFeesException('No mempool fee endpoint available');
     }

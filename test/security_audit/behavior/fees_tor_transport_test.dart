@@ -1,11 +1,3 @@
-// Behavioral proof for the audit finding on the fee datasource Tor transport
-// (issue #2658 fix).
-//
-// `fix(fees)` configures Tor by assigning `'SOCKS5 host:port'` to
-// `HttpClient.findProxy`. dart:io only understands the browser PAC vocabulary
-// (`DIRECT`, `PROXY host:port`), so this string is not a usable proxy
-// directive. The second test runs a real SOCKS5 proxy in front of the fee
-// oracle: a Tor-aware client must succeed through it.
 import 'dart:convert';
 import 'dart:io';
 
@@ -17,6 +9,7 @@ import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_netwo
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,6 +21,12 @@ class _MockActiveServerUsecase extends Mock
     implements GetActiveMempoolServerUsecase {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class _MockTor extends Mock implements Tor {}
+
+class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
+
+class _MockTorSessions extends Mock implements TorSessions {}
 
 /// Minimal SOCKS5 CONNECT proxy: enough to prove whether the HTTP client
 /// actually speaks SOCKS5 to the configured port.
@@ -148,14 +147,19 @@ void main() {
     await feeServer.close(force: true);
   });
 
-  FeesDatasource buildDatasource({required int torPort}) {
+  FeesDatasource buildFeesDatasource({
+    required int torPort,
+    bool useTorProxy = true,
+    Tor? tor,
+    Dio Function(String baseUrl)? dioBuilder,
+  }) {
     final settingsRepository = _MockSettingsRepository();
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => SettingsEntity(
         environment: Environment.mainnet,
         bitcoinUnit: BitcoinUnit.sats,
         currencyCode: 'CAD',
-        useTorProxy: true,
+        useTorProxy: useTorProxy,
         torProxyPort: torPort,
       ),
     );
@@ -177,49 +181,103 @@ void main() {
       getActiveMempoolServerUsecase: _MockActiveServerUsecase(),
       mempoolSettingsRepository: mempoolSettings,
       settingsRepository: settingsRepository,
-      dioBuilder: (_) => Dio(
-        BaseOptions(
-          baseUrl: 'http://${feeServer.address.address}:${feeServer.port}',
-          connectTimeout: const Duration(seconds: 2),
-          receiveTimeout: const Duration(seconds: 2),
-          followRedirects: false,
-          validateStatus: (status) => status == 200,
-        ),
-      ),
+      tor: tor,
+      dioBuilder:
+          dioBuilder ??
+          (_) => Dio(
+            BaseOptions(
+              baseUrl: 'http://${feeServer.address.address}:${feeServer.port}',
+              connectTimeout: const Duration(seconds: 2),
+              receiveTimeout: const Duration(seconds: 2),
+              followRedirects: false,
+              validateStatus: (status) => status == 200,
+            ),
+          ),
     );
   }
 
-  test('fee fetch fails closed when the Tor proxy is unreachable', () async {
-    final probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
-    final closedPort = probe.port;
-    await probe.close();
+  group('FeesDatasource Tor transport', () {
+    test('fails closed when the Tor proxy is unreachable', () async {
+      final probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final closedPort = probe.port;
+      await probe.close();
 
-    final datasource = buildDatasource(torPort: closedPort);
+      final datasource = buildFeesDatasource(torPort: closedPort);
 
-    await expectLater(
-      datasource.fetchBitcoinNetworkFees(isTestnet: false),
-      throwsA(anything),
-    );
-    expect(
-      directHits,
-      0,
-      reason: 'no fee request may bypass the configured proxy',
-    );
-  });
+      await expectLater(
+        datasource.fetchBitcoinNetworkFees(isTestnet: false),
+        throwsA(anything),
+      );
+      expect(
+        directHits,
+        0,
+        reason: 'no fee request may bypass the configured proxy',
+      );
+    });
 
-  test('fee fetch succeeds through a running SOCKS5 proxy', () async {
-    final proxy = await _Socks5Proxy.start();
-    addTearDown(proxy.close);
+    test('succeeds through a running SOCKS5 proxy', () async {
+      final proxy = await _Socks5Proxy.start();
+      addTearDown(proxy.close);
 
-    final datasource = buildDatasource(torPort: proxy.port);
+      final datasource = buildFeesDatasource(torPort: proxy.port);
 
-    final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
 
-    expect(fees.fastestFee, 4);
-    expect(
-      proxy.connections,
-      greaterThan(0),
-      reason: 'the Tor setting must route fee traffic through the SOCKS5 proxy',
-    );
+      expect(fees.fastestFee, 4);
+      expect(
+        proxy.connections,
+        greaterThan(0),
+        reason:
+            'the Tor setting must route fee traffic through the SOCKS5 proxy',
+      );
+    });
+
+    test('failed direct fetch retries through embedded Tor SOCKS5', () async {
+      final proxy = await _Socks5Proxy.start();
+      addTearDown(proxy.close);
+      final probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final closedPort = probe.port;
+      await probe.close();
+
+      final tor = _MockTor();
+      final embeddedTor = _MockEmbeddedTor();
+      final sessions = _MockTorSessions();
+      var sessionClosed = false;
+      when(() => tor.embedded).thenReturn(embeddedTor);
+      when(() => embeddedTor.sessions).thenReturn(sessions);
+      when(() => sessions.open()).thenAnswer(
+        (_) async => TorSession(
+          TorProxyEndpoint(host: '127.0.0.1', port: proxy.port),
+          TorTransport.direct,
+          () async => sessionClosed = true,
+        ),
+      );
+
+      var clientCount = 0;
+      final datasource = buildFeesDatasource(
+        torPort: proxy.port,
+        useTorProxy: false,
+        tor: tor,
+        dioBuilder: (_) {
+          clientCount++;
+          final port = clientCount == 1 ? closedPort : feeServer.port;
+          return Dio(
+            BaseOptions(
+              baseUrl: 'http://${feeServer.address.address}:$port',
+              connectTimeout: const Duration(seconds: 2),
+              receiveTimeout: const Duration(seconds: 2),
+              followRedirects: false,
+              validateStatus: (status) => status == 200,
+            ),
+          );
+        },
+      );
+
+      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+
+      expect(fees.fastestFee, 4);
+      expect(proxy.connections, greaterThan(0));
+      expect(sessionClosed, isTrue);
+    });
   });
 }

@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/mempool_tor_session_adapter.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempool_server_validator.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +17,8 @@ class _MockTor extends Mock implements Tor {}
 class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
 
 class _MockTorSessions extends Mock implements TorSessions {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _FakeSessionPort implements MempoolTorSessionPort {
   _FakeSessionPort({this.error});
@@ -122,6 +128,53 @@ void main() {
       );
 
       expect(sessions.opened, isEmpty);
+    });
+
+    test('routes clearnet validation through the external proxy', () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      var directHits = 0;
+      server.listen((request) async {
+        directHits++;
+        request.response
+          ..statusCode = 200
+          ..write('reachable without the proxy');
+        await request.response.close();
+      });
+      addTearDown(() async {
+        await server.close(force: true);
+      });
+
+      final probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final closedProxyPort = probe.port;
+      await probe.close();
+      final settingsRepository = _MockSettingsRepository();
+      when(() => settingsRepository.fetch()).thenAnswer(
+        (_) async => SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          useTorProxy: true,
+          torProxyPort: closedProxyPort,
+        ),
+      );
+      final validator = HttpMempoolServerValidator(
+        torSessionPort: _FakeSessionPort(),
+        torHttpClientFactory: factory,
+        settingsRepository: settingsRepository,
+      );
+
+      final result = await validator.validateServer(
+        url: '${server.address.address}:${server.port}',
+        network: MempoolServerNetwork.bitcoinMainnet,
+        enableSsl: false,
+      );
+
+      expect(result, isA<Err<void, MempoolFailure>>());
+      expect(
+        (result as Err<void, MempoolFailure>).failure,
+        isA<MempoolValidationConnectionErrorFailure>(),
+      );
+      expect(directHits, 0, reason: 'validation must not bypass the proxy');
     });
   });
 }
