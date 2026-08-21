@@ -1617,4 +1617,96 @@ void main() {
       );
     });
   });
+
+  group('SendCubit.createTransaction failure invalidation', () {
+    final feeOptions = FeeOptions(
+      fastest: NetworkFee.relativeFromSatPerVbyte(10),
+      economic: NetworkFee.relativeFromSatPerVbyte(5),
+      slow: NetworkFee.relativeFromSatPerVbyte(1),
+      minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
+    );
+
+    SendState confirmStateWithStaleTransaction() => SendState(
+      step: SendStep.confirm,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinLocalWallet(),
+      copiedRawPaymentRequest: 'bc1qaddr',
+      confirmedAmountSat: 50000,
+      unsignedPsbt: 'c3RhbGUtcHNidA==',
+      signedBitcoinPsbt: 'c2lnbmVkLXN0YWxlLXBzYnQ=',
+      signedBitcoinTx: 'signed-stale-tx',
+      signedLiquidTx: 'signed-stale-pset',
+      bitcoinFeesList: feeOptions,
+      liquidFeesList: feeOptions,
+    );
+
+    setUp(() {
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => []);
+    });
+
+    test('clears stale transaction payloads when the build throws', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          networkFee: any(named: 'networkFee'),
+          amountSat: any(named: 'amountSat'),
+          replaceByFee: any(named: 'replaceByFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          drain: any(named: 'drain'),
+        ),
+      ).thenThrow(PrepareBitcoinSendException('electrum unreachable'));
+
+      cubit.setStateForTest(confirmStateWithStaleTransaction());
+      await cubit.createTransaction();
+
+      expect(cubit.state.unsignedPsbt, isNull);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.signedLiquidTx, isNull);
+      expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+      expect(cubit.state.buildingTransaction, isFalse);
+    });
+
+    test(
+      'clears stale transaction payloads when the fee is below relay',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            networkFee: any(named: 'networkFee'),
+            amountSat: any(named: 'amountSat'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenAnswer(
+          (_) async =>
+              (unsignedPsbt: 'cHNidP8=', txSize: 1000, isToSelf: false),
+        );
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async => 1);
+
+        cubit.setStateForTest(confirmStateWithStaleTransaction());
+        await cubit.createTransaction();
+
+        expect(cubit.state.unsignedPsbt, isNull);
+        expect(cubit.state.signedBitcoinPsbt, isNull);
+        expect(cubit.state.signedBitcoinTx, isNull);
+        expect(cubit.state.signedLiquidTx, isNull);
+        expect(cubit.state.failure, isA<SendFeeBelowRelayFloorFailure>());
+        expect(cubit.state.buildingTransaction, isFalse);
+      },
+    );
+  });
 }

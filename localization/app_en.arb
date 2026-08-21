@@ -14705,5 +14705,9 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "psbtFlowMissingPsbt": "No transaction to display. Please go back and try again.",
+  "@psbtFlowMissingPsbt": {
+    "description": "Shown on the PSBT display screen when it was opened without a built transaction (e.g. the build failed), instead of rendering a meaningless QR code."
   }
 }

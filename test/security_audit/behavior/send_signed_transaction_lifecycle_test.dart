@@ -317,22 +317,23 @@ void main() {
   });
 
   group('signed payload invalidation', () {
-    test('going back to edit the payment drops the signed BDK PSBT', () {
+    test('going back to edit the payment drops every prepared payload', () {
       cubit.seed(
         const SendState(
           step: SendStep.confirm,
           unsignedPsbt: 'cHNidP8BAHECAAAA-unsigned',
           signedBitcoinPsbt: 'cHNidP8BAHECAAAA-signed',
+          signedBitcoinTx: 'signed-bitcoin-tx',
+          signedLiquidTx: 'signed-liquid-tx',
         ),
       );
 
       cubit.backClicked();
 
-      expect(
-        cubit.state.signedBitcoinPsbt,
-        isNull,
-        reason: 'a payment edit must never leave a broadcastable signed PSBT',
-      );
+      expect(cubit.state.unsignedPsbt, isNull);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.signedLiquidTx, isNull);
     });
 
     test('changing the amount drops the signed BDK PSBT', () async {
