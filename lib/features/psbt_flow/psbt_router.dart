@@ -32,7 +32,7 @@ class PsbtRouterConfig {
       }
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text(context.loc.oopsSomethingWentWrong)),
+        body: Center(child: Text(context.loc.psbtFlowMissingPsbt)),
       );
     },
   );
