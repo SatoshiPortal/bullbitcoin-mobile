@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
