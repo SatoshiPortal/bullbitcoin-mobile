@@ -6,8 +6,10 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -72,40 +74,43 @@ class TxListItem extends StatelessWidget {
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat = isOrderType && tx.order!.displaysFiatAmount;
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        final transactionsCubit = context.read<TransactionsCubit>();
+
         if (tx.orderSwap != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.orderSwapTransactionDetails.name,
             pathParameters: {'localId': tx.orderSwap!.localId},
           );
-          return;
         } else if (tx.walletTransaction != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.transactionDetails.name,
             pathParameters: {'txId': tx.walletTransaction!.txId},
             queryParameters: {'walletId': tx.walletTransaction!.walletId},
           );
-          return;
         } else if (tx.swap != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.swapTransactionDetails.name,
             pathParameters: {'swapId': tx.swap!.id},
             queryParameters: {'walletId': tx.swap!.walletId},
           );
-          return;
         } else if (tx.payjoin != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.payjoinTransactionDetails.name,
             pathParameters: {'payjoinId': tx.payjoin!.id},
           );
-          return;
         } else if (tx.order != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.orderTransactionDetails.name,
             pathParameters: {'orderId': tx.order!.orderId},
           );
+        } else {
           return;
         }
+
+        // Notes are edited on the details screen but stored apart from the
+        // transaction, so this row still shows the labels read on load.
+        await transactionsCubit.refreshLabels();
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8.0),

@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/transactions/application/ports/transaction_ex
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
@@ -93,6 +94,12 @@ class TransactionsLocator {
       ),
     );
 
+    locator.registerFactory<RefreshTransactionLabelsUsecase>(
+      () => RefreshTransactionLabelsUsecase(
+        labelsFacade: locator<LabelsFacade>(),
+      ),
+    );
+
     locator.registerFactory<ExportTransactionsCsvUsecase>(
       () => ExportTransactionsCsvUsecase(
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),
@@ -138,6 +145,8 @@ class TransactionsLocator {
         walletId: walletId,
         exchangeOnly: exchangeOnly ?? false,
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),
+        refreshTransactionLabelsUsecase:
+            locator<RefreshTransactionLabelsUsecase>(),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:

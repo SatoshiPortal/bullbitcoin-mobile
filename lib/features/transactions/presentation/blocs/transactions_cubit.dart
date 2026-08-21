@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -20,6 +21,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     String? walletId,
     bool exchangeOnly = false,
     required this._getTransactionsUsecase,
+    required this._refreshTransactionLabelsUsecase,
     required this._watchStartedWalletSyncsUsecase,
     required this._watchFinishedWalletSyncsUsecase,
   }) : super(
@@ -34,6 +36,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }
 
   final GetTransactionsUsecase _getTransactionsUsecase;
+  final RefreshTransactionLabelsUsecase _refreshTransactionLabelsUsecase;
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
 
@@ -71,6 +74,20 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         emit(state.copyWith(err: e, isSyncing: false));
       }
     }
+  }
+
+  /// Re-reads the labels of the transactions already in state.
+  Future<void> refreshLabels() async {
+    final transactions = state.transactions;
+    if (transactions == null || transactions.isEmpty) return;
+
+    final refreshed = await _refreshTransactionLabelsUsecase.execute(
+      transactions,
+    );
+    // Identical when no label changed.
+    if (isClosed || identical(refreshed, transactions)) return;
+
+    emit(state.copyWith(transactions: refreshed));
   }
 
   void setFilter(TransactionsFilter filter) {
