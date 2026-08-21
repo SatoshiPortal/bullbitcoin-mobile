@@ -15449,5 +15449,9 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "psbtFlowMissingPsbt": "No transaction to display. Please go back and try again.",
+  "@psbtFlowMissingPsbt": {
+    "description": "Shown on the PSBT display screen when it was opened without a built transaction (e.g. the build failed), instead of rendering a meaningless QR code."
   }
 }
