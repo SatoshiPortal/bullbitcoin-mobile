@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -37,9 +38,13 @@ void main() {
     usecase = RefreshTransactionLabelsUsecase(labelsFacade: labelsFacade);
   });
 
+  void stubLabels(List<Label> labels) {
+    when(labelsFacade.fetchAllOrFailure).thenAnswer((_) async => Ok(labels));
+  }
+
   test('picks up a label added after the transactions were loaded', () async {
     final added = Label.tx(id: 1, transactionId: 'txid-1', label: 'rent');
-    when(labelsFacade.fetchAll).thenAnswer((_) async => [added]);
+    stubLabels([added]);
 
     final refreshed = await usecase.execute([
       Transaction(walletTransaction: _walletTransaction(txId: 'txid-1')),
@@ -50,7 +55,7 @@ void main() {
 
   test('drops a label that was deleted', () async {
     final removed = Label.tx(id: 1, transactionId: 'txid-1', label: 'rent');
-    when(labelsFacade.fetchAll).thenAnswer((_) async => []);
+    stubLabels([]);
 
     final refreshed = await usecase.execute([
       Transaction(
@@ -66,7 +71,7 @@ void main() {
 
   test('only touches the transaction the label belongs to', () async {
     final label = Label.tx(id: 1, transactionId: 'txid-2', label: 'rent');
-    when(labelsFacade.fetchAll).thenAnswer((_) async => [label]);
+    stubLabels([label]);
 
     final refreshed = await usecase.execute([
       Transaction(walletTransaction: _walletTransaction(txId: 'txid-1')),
@@ -78,9 +83,7 @@ void main() {
   });
 
   test('ignores labels stored against an address, not a transaction', () async {
-    when(
-      labelsFacade.fetchAll,
-    ).thenAnswer((_) async => [Label.addr(id: 1, address: 'bc1q', label: 'x')]);
+    stubLabels([Label.addr(id: 1, address: 'bc1q', label: 'x')]);
 
     final refreshed = await usecase.execute([
       Transaction(walletTransaction: _walletTransaction(txId: 'txid-1')),
@@ -89,10 +92,32 @@ void main() {
     expect(refreshed.single.labels, isEmpty);
   });
 
+  test('keeps the labels it has when the read fails, instead of blanking '
+      'every row', () async {
+    final existing = Label.tx(id: 1, transactionId: 'txid-1', label: 'rent');
+    when(labelsFacade.fetchAllOrFailure).thenAnswer(
+      (_) async => const Err(LabelUnexpectedFailure('database is locked')),
+    );
+
+    final transactions = [
+      Transaction(
+        walletTransaction: _walletTransaction(
+          txId: 'txid-1',
+          labels: [existing],
+        ),
+      ),
+    ];
+
+    expect(
+      identical(await usecase.execute(transactions), transactions),
+      isTrue,
+    );
+  });
+
   test('returns the same list when no label changed, so the cubit can '
       'skip emitting', () async {
     final unchanged = Label.tx(id: 1, transactionId: 'txid-1', label: 'rent');
-    when(labelsFacade.fetchAll).thenAnswer((_) async => [unchanged]);
+    stubLabels([unchanged]);
 
     final transactions = [
       Transaction(
@@ -109,20 +134,20 @@ void main() {
     );
   });
 
-  test('leaves a row that has no wallet transaction alone', () async {
-    when(labelsFacade.fetchAll).thenAnswer((_) async => []);
-
+  test('does not read storage for a list with no wallet transaction, such '
+      'as an exchange-only list', () async {
     final transactions = [const Transaction()];
 
     expect(
       identical(await usecase.execute(transactions), transactions),
       isTrue,
     );
+    verifyNever(labelsFacade.fetchAllOrFailure);
   });
 
   test('does not read storage when there is nothing loaded yet', () async {
     expect(await usecase.execute(const []), isEmpty);
 
-    verifyNever(labelsFacade.fetchAll);
+    verifyNever(labelsFacade.fetchAllOrFailure);
   });
 }

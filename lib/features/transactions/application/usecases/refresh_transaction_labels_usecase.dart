@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
@@ -15,16 +16,27 @@ class RefreshTransactionLabelsUsecase {
   /// Returns the list it was given when nothing changed, so the caller can
   /// skip emitting a new state.
   Future<List<Transaction>> execute(List<Transaction> transactions) async {
-    if (transactions.isEmpty) return transactions;
+    // Only a wallet transaction carries labels, so an exchange-only list has
+    // nothing to join and needs no read at all.
+    if (!transactions.any((t) => t.walletTransaction != null)) {
+      return transactions;
+    }
+
+    final labels = switch (await _labelsFacade.fetchAllOrFailure()) {
+      Ok(:final value) => value,
+      // A failed read is not "the labels are gone": leave the list alone
+      // rather than blanking every row until the next full load.
+      Err() => null,
+    };
+    if (labels == null) return transactions;
 
     final labelsByReference = <String, List<Label>>{};
-    for (final label in await _labelsFacade.fetchAll()) {
+    for (final label in labels) {
       labelsByReference.putIfAbsent(label.reference, () => []).add(label);
     }
 
     var changed = false;
     final refreshed = transactions.map((transaction) {
-      // Only a wallet transaction carries labels.
       final walletTransaction = transaction.walletTransaction;
       if (walletTransaction == null) return transaction;
 

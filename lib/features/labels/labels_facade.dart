@@ -56,12 +56,19 @@ class LabelsFacade {
   }
 
   Future<List<Label>> fetchAll() async {
+    final result = await fetchAllOrFailure();
+    return result.fold((labels) => labels, (_) => const <Label>[]);
+  }
+
+  /// [fetchAll] without the best-effort degradation, for the caller that must
+  /// tell "there are no labels" apart from "the read failed" — reporting the
+  /// former for the latter would look like the labels had been deleted.
+  Future<Result<List<Label>, LabelFailure>> fetchAllOrFailure() async {
     final result = await _fetchAllLabelsUsecase.execute();
-    return result.fold(
+    return result.map(
       (labels) => labels
           .map((label) => LabelMapper.applicationLabelToLabel(label))
           .toList(),
-      (_) => const <Label>[],
     );
   }
 
