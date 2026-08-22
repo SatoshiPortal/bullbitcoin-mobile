@@ -255,8 +255,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // creation — re-sync the toggle with the persisted policy the same
       // way pay/sell do at confirm time.
       final tradingEnabled = await _getBuyPayjoinEnabledUsecase.execute();
-      if (!tradingEnabled && state.isPayjoinEnabled) {
-        emit(state.copyWith(isPayjoinEnabled: false));
+      if (tradingEnabled != state.isPayjoinEnabled) {
+        emit(state.copyWith(isPayjoinEnabled: tradingEnabled));
       }
       final usePayjoin = state.shouldUsePayjoin;
 

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
@@ -84,6 +85,8 @@ class _MockLabelCompletedBuyOrderUsecase extends Mock
     implements LabelCompletedBuyOrderUsecase {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(const BitcoinAmount(0)));
+
   test(
     'closing the Buy flow cleans up its current unconfirmed order',
     () async {
@@ -191,6 +194,70 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(bloc.state.isUpdatingPayjoin, isFalse);
   });
+
+  for (final (:persisted, :local) in [
+    (persisted: false, local: true),
+    (persisted: true, local: false),
+  ]) {
+    test('order creation syncs local $local to persisted $persisted', () async {
+      final getPayjoinEnabled = _MockGetBuyPayjoinEnabledUsecase();
+      final createOrder = _MockCreateBuyOrderUsecase();
+      final cancelPayjoin = _MockCancelAbandonedBuyPayjoinUsecase();
+      final order = _MockBuyOrder();
+      when(
+        () => getPayjoinEnabled.execute(),
+      ).thenAnswer((_) async => persisted);
+      when(() => cancelPayjoin.execute(null)).thenAnswer((_) async {});
+      when(() => cancelPayjoin.execute(order)).thenAnswer((_) async {});
+      when(
+        () => createOrder.execute(
+          toAddress: 'bc1qdestination',
+          orderAmount: any(named: 'orderAmount'),
+          currency: FiatCurrency.cad,
+          isLiquid: false,
+          isOwner: true,
+          payjoinWalletId: null,
+          payjoinAmountSat: null,
+        ),
+      ).thenAnswer((_) async => order);
+      final bloc = _SeedableBuyBloc(
+        getWalletsUsecase: _MockGetWalletsUsecase(),
+        getReceiveAddressUsecase: _MockGetReceiveAddressUsecase(),
+        getExchangeUserSummaryUsecase: _MockGetExchangeUserSummaryUsecase(),
+        confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+        createBuyOrderUsecase: createOrder,
+        refreshBuyOrderUsecase: _MockRefreshBuyOrderUsecase(),
+        getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+        convertSatsToCurrencyAmountUsecase:
+            _MockConvertSatsToCurrencyAmountUsecase(),
+        accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+        getSettingsUsecase: _MockGetSettingsUsecase(),
+        cancelAbandonedBuyPayjoinUsecase: cancelPayjoin,
+        getBuyPayjoinEnabledUsecase: getPayjoinEnabled,
+        setBuyPayjoinEnabledUsecase: _MockSetBuyPayjoinEnabledUsecase(),
+        labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+      );
+      addTearDown(bloc.close);
+      bloc.seed(
+        BuyState(
+          bitcoinAddressInput: 'bc1qdestination',
+          amountInput: '1000',
+          isFiatCurrencyInput: false,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyInput: 'CAD',
+          isPayjoinEnabled: local,
+        ),
+      );
+
+      final completed = bloc.stream.firstWhere(
+        (state) => state.buyOrder == order && !state.isCreatingOrder,
+      );
+      bloc.add(const BuyEvent.createOrder());
+      await completed;
+
+      expect(bloc.state.isPayjoinEnabled, persisted);
+    });
+  }
 
   test(
     'a failed payjoin update restores the prior value and surfaces error',
