@@ -52,8 +52,14 @@ abstract class PayjoinRepository {
   /// Does nothing when the session is unknown or already terminal.
   Future<void> cancelReceiver(String payjoinId);
 
-  /// Stops receivers that have not committed a proposal yet.
+  /// Stops receivers that have not committed a proposal yet and are no
+  /// longer permitted by the current policy (a trade receiver survives when
+  /// only `enabled` was switched off, and vice versa).
   Future<void> disableReceivers();
+
+  /// Stops every receiver that has not committed a proposal yet, regardless
+  /// of policy. Backs the public disableAll() escape hatch.
+  Future<void> settleAllReceivers();
 
   /// Resumes polling/watching for every unfinished payjoin session left over
   /// from a previous app run. The foreground composition root calls this

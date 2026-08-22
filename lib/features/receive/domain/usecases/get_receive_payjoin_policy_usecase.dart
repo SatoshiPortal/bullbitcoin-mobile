@@ -5,6 +5,6 @@ class GetReceivePayjoinPolicyUsecase {
 
   const GetReceivePayjoinPolicyUsecase(this._settings);
 
-  Future<({bool enabled, int minimumAmountSat})> execute() =>
-      _settings.watchPayjoinPolicy().first;
+  Future<({bool enabled, bool tradingEnabled, int minimumAmountSat})>
+  execute() => _settings.watchPayjoinPolicy().first;
 }

@@ -84,6 +84,11 @@ class PaySendPaymentScreen extends StatelessWidget {
           ? (bloc.state as PayPaymentState).isPayjoinEnabled
           : false,
     );
+    final isUpdatingPayjoin = context.select(
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).isUpdatingPayjoin
+          : false,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -240,13 +245,16 @@ class PaySendPaymentScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      context.loc.payjoinUseToggle,
+                      context.loc.settingsPayjoinTradingEnabledLabel,
                       style: context.font.bodyMedium,
                     ),
                   ),
                   BBSwitch(
                     value: isPayjoinEnabled,
-                    onChanged: isConfirmingPayment || isPayinBroadcast
+                    onChanged:
+                        isConfirmingPayment ||
+                            isPayinBroadcast ||
+                            isUpdatingPayjoin
                         ? null
                         : (enabled) => context.read<PayBloc>().add(
                             PayEvent.payjoinToggled(enabled),
@@ -486,6 +494,11 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is PayPaymentState &&
           (bloc.state as PayPaymentState).isPayinBroadcast,
     );
+    final isUpdatingPayjoin = context.select(
+      (PayBloc bloc) =>
+          bloc.state is PayPaymentState &&
+          (bloc.state as PayPaymentState).isUpdatingPayjoin,
+    );
     final wallet = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
           ? (bloc.state as PayPaymentState).selectedWallet
@@ -497,7 +510,8 @@ class _BottomButtons extends StatelessWidget {
         if (wallet != null && !wallet.isLiquid) ...[
           BBButton.big(
             label: context.loc.payAdvancedSettings,
-            disabled: isConfirmingPayment || isPayinBroadcast,
+            disabled:
+                isConfirmingPayment || isPayinBroadcast || isUpdatingPayjoin,
             onPressed: () {
               BlurredBottomSheet.show(
                 context: context,
@@ -516,7 +530,8 @@ class _BottomButtons extends StatelessWidget {
         ],
         BBButton.big(
           label: context.loc.payContinue,
-          disabled: isConfirmingPayment || isPayinBroadcast,
+          disabled:
+              isConfirmingPayment || isPayinBroadcast || isUpdatingPayjoin,
           onPressed: onContinuePressed,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

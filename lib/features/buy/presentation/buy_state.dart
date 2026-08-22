@@ -24,8 +24,8 @@ sealed class BuyState with _$BuyState {
     @Default(false) bool isConfirmingOrder,
     ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
-    @Default(false) bool payjoinGloballyEnabled,
     @Default(true) bool isPayjoinEnabled,
+    @Default(false) bool isUpdatingPayjoin,
     FeeOptions? accelerationNetworkFees,
     GetNetworkFeesException? getNetworkFeesException,
     ConvertSatsToCurrencyAmountException? convertSatsToCurrencyAmountException,
@@ -106,8 +106,10 @@ sealed class BuyState with _$BuyState {
     return selectedWallet != null || bitcoinAddressInput.isNotEmpty;
   }
 
+  // Not gated on the trading setting: the switch stays visible (defaulted
+  // from the setting, see _onStarted) so it can be flipped back on in-flow —
+  // the per-order switch reads AND writes the global trading setting.
   bool get canOfferPayjoin =>
-      payjoinGloballyEnabled &&
       userSummary?.payjoinReceiveEnabled == true &&
       selectedWallet?.network.isBitcoin == true;
 
@@ -115,7 +117,7 @@ sealed class BuyState with _$BuyState {
       canOfferPayjoin && isPayjoinEnabled && amountSat != null;
 
   bool get canCreateOrder {
-    return isPositiveAmount && hasDestination;
+    return isPositiveAmount && hasDestination && !isUpdatingPayjoin;
   }
 
   double _truncateToDecimals(double value, int decimals) {

@@ -33,16 +33,16 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 class _MockTorStatusUsecase extends Mock implements TorStatusUsecase {}
 
 void main() {
-  test('disabled Payjoin is not probed or reported offline', () async {
+  (CheckAllServiceStatusUsecase, _MockPayjoinDiagnostics) build(
+    PayjoinPolicy policy,
+  ) {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final payjoinDiagnostics = _MockPayjoinDiagnostics();
     final walletRepository = _MockWalletRepository();
     final torStatusUsecase = _MockTorStatusUsecase();
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     when(torStatusUsecase.execute).thenAnswer((_) async => TorStatus.unknown);
-    when(
-      payjoinPolicy.load,
-    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(policy));
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: _MockElectrumConnectivityPort(),
       exchangeRateRepository: _MockExchangeRateRepository(),
@@ -53,11 +53,31 @@ void main() {
       walletRepository: walletRepository,
       torStatusUsecase: torStatusUsecase,
     );
+    return (usecase, payjoinDiagnostics);
+  }
+
+  test('Payjoin with both switches off is not probed or reported '
+      'offline', () async {
+    final (usecase, payjoinDiagnostics) = build(
+      PayjoinPolicy.defaults().copyWith(tradingEnabled: false),
+    );
 
     final status = await usecase.execute(network: Network.bitcoinMainnet);
 
     expect(status.payjoin.status, ServiceStatus.disabled);
     expect(status.payjoin.isOffline, isFalse);
     verifyNever(payjoinDiagnostics.relayHealth);
+  });
+
+  test('default policy (trading on) probes the relays', () async {
+    final (usecase, payjoinDiagnostics) = build(PayjoinPolicy.defaults());
+    when(
+      payjoinDiagnostics.relayHealth,
+    ).thenAnswer((_) async => const Ok(PayjoinRelayHealth.available));
+
+    final status = await usecase.execute(network: Network.bitcoinMainnet);
+
+    expect(status.payjoin.status, ServiceStatus.online);
+    verify(payjoinDiagnostics.relayHealth).called(1);
   });
 }

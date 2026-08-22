@@ -35,12 +35,17 @@ final class StartPayjoinReceiver {
   final Sats? amount;
   final DateTime? expiresAt;
 
+  /// A Bull Bitcoin exchange trade payout (buy order). Trade sessions are
+  /// gated by PayjoinPolicy.tradingEnabled instead of PayjoinPolicy.enabled.
+  final bool isTrade;
+
   StartPayjoinReceiver({
     required this.walletId,
     required this.network,
     required this.address,
     this.amount,
     this.expiresAt,
+    this.isTrade = false,
   }) {
     _requireNotBlank(walletId, 'walletId');
     _requireSupportedNetwork(network);

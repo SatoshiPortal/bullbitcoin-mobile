@@ -31,8 +31,10 @@ class CreateSellOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
+      // A sell order is an exchange trade: gated by the payjoin TRADING
+      // setting, independent of the global payjoin setting.
       final payjoinEnabled = switch (await _payjoinPolicy.load()) {
-        Ok(:final value) => value.enabled,
+        Ok(:final value) => value.tradingEnabled,
         Err() => false,
       };
       final isTestnet = settings.environment.isTestnet;
@@ -45,7 +47,7 @@ class CreateSellOrderUsecase {
           network == OrderBitcoinNetwork.bitcoin;
       log.info(
         'Sell Payjoin order request: requested=$usePayjoin, '
-        'globalEnabled=$payjoinEnabled, '
+        'tradingEnabled=$payjoinEnabled, '
         'network=${network.value}, sent=$resolvedUsePayjoin',
       );
       final order = await repo.placeSellOrder(

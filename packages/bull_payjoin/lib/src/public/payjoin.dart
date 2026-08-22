@@ -112,6 +112,11 @@ final class _UnavailablePayjoinPolicy implements PayjoinPolicyAccess {
   ) async => Err(_failure);
 
   @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
+    bool tradingEnabled,
+  ) async => Err(_failure);
+
+  @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(
     Sats amount,
   ) async => Err(_failure);

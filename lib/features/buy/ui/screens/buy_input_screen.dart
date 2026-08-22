@@ -122,6 +122,9 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
     final isPayjoinEnabled = context.select(
       (BuyBloc bloc) => bloc.state.isPayjoinEnabled,
     );
+    final isUpdatingPayjoin = context.select(
+      (BuyBloc bloc) => bloc.state.isUpdatingPayjoin,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -154,13 +157,13 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        context.loc.payjoinUseToggle,
+                        context.loc.settingsPayjoinTradingEnabledLabel,
                         style: context.font.bodyMedium,
                       ),
                     ),
                     BBSwitch(
                       value: isPayjoinEnabled,
-                      onChanged: isCreatingOrder
+                      onChanged: isCreatingOrder || isUpdatingPayjoin
                           ? null
                           : (enabled) => context.read<BuyBloc>().add(
                               BuyEvent.payjoinToggled(enabled),

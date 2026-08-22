@@ -15,6 +15,7 @@ void main() {
     expect(
       () => PayjoinPolicy(
         enabled: true,
+        tradingEnabled: true,
         minimumAmount: Sats.fromInt(999),
         sessionLifetime: const Duration(minutes: 1),
       ),
@@ -26,6 +27,7 @@ void main() {
     expect(
       () => PayjoinPolicy(
         enabled: true,
+        tradingEnabled: true,
         minimumAmount: Sats.fromInt(1000),
         sessionLifetime: const Duration(seconds: 59),
       ),
@@ -37,6 +39,7 @@ void main() {
     expect(
       () => PayjoinPolicy(
         enabled: true,
+        tradingEnabled: true,
         minimumAmount: Sats.fromInt(1000),
         sessionLifetime: const Duration(seconds: 60, milliseconds: 1),
       ),

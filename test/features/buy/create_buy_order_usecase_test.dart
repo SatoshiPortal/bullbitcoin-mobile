@@ -50,6 +50,7 @@ void main() {
         (_) async => Ok(
           PayjoinPolicy(
             enabled: true,
+            tradingEnabled: true,
             minimumAmount: PayjoinPolicy.minimumAllowedAmount,
             sessionLifetime: PayjoinPolicy.minimumSessionLifetime,
           ),

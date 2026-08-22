@@ -32,6 +32,7 @@ void main() {
       return primitives.Ok(
         payjoin.PayjoinPolicy(
           enabled: enabled,
+          tradingEnabled: true,
           minimumAmount: primitives.Sats.fromInt(10000),
           sessionLifetime: const Duration(hours: 24),
         ),
@@ -109,6 +110,7 @@ void main() {
       return primitives.Ok(
         payjoin.PayjoinPolicy(
           enabled: true,
+          tradingEnabled: true,
           minimumAmount: primitives.Sats.fromInt(10000),
           sessionLifetime: const Duration(hours: 24),
         ),

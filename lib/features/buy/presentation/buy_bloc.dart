@@ -19,8 +19,10 @@ import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart'
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/set_buy_payjoin_enabled_usecase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -41,7 +43,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._accelerateBuyOrderUsecase,
     required this._getSettingsUsecase,
     required this._cancelAbandonedBuyPayjoinUsecase,
-    required this._getBuyPayjoinEnabledUsecase,
+    required this._getPayjoinTradingEnabledUsecase,
+    required this._setBuyPayjoinEnabledUsecase,
     required this._labelCompletedBuyOrderUsecase,
   }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
@@ -53,7 +56,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyRefreshOrder>(_onRefreshOrder);
     on<_BuyConfirmOrder>(_onConfirmOrder);
-    on<_BuyPayjoinToggled>(_onPayjoinToggled);
+    on<_BuyPayjoinToggled>(_onPayjoinToggled, transformer: droppable());
     on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
     on<_BuyAccelerateTransactionConfirmed>(_onAccelerateTransactionConfirmed);
   }
@@ -69,14 +72,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
-  final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
+  final GetPayjoinTradingEnabledUsecase _getPayjoinTradingEnabledUsecase;
+  final SetBuyPayjoinEnabledUsecase _setBuyPayjoinEnabledUsecase;
   final LabelCompletedBuyOrderUsecase _labelCompletedBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
       final settings = await _getSettingsUsecase.execute();
-      final payjoinEnabled = await _getBuyPayjoinEnabledUsecase.execute();
+      final payjoinEnabled = await _getPayjoinTradingEnabledUsecase.execute();
       final preferredCurrency = summary.currency ?? settings.currencyCode;
       final balances = summary.balances.fold<Map<String, double>>({}, (
         map,
@@ -101,7 +105,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           currencyInput: currencyInput,
           bitcoinUnit: settings.bitcoinUnit,
           balances: balances,
-          payjoinGloballyEnabled: payjoinEnabled,
+          isPayjoinEnabled: payjoinEnabled,
         ),
       );
 
@@ -213,6 +217,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyCreateOrder event,
     Emitter<BuyState> emit,
   ) async {
+    if (state.isUpdatingPayjoin) return;
     try {
       await _cancelAbandonedPayjoin(state.buyOrder);
       // Clear any previous exceptions and reset the buy order so that we create
@@ -245,7 +250,17 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // endpoint can revise it afterwards. Everything else (an external
       // address, Liquid, an account outside the pilot) keeps placing the order
       // exactly as before.
-      final usePayjoin = state.shouldUsePayjoin;
+      // The trading setting can change from Settings or another flow while
+      // this screen is open, and a buy order cannot be revised after
+      // creation — re-sync the toggle with the persisted policy at confirm
+      // time, in both directions, so a setting changed elsewhere is what
+      // the order actually follows. The decision is carried by
+      // `tradingEnabled` itself; the emit only corrects the visible switch.
+      final tradingEnabled = await _getPayjoinTradingEnabledUsecase.execute();
+      if (tradingEnabled != state.isPayjoinEnabled) {
+        emit(state.copyWith(isPayjoinEnabled: tradingEnabled));
+      }
+      final usePayjoin = tradingEnabled && state.shouldUsePayjoin;
 
       final order = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
@@ -347,8 +362,42 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     }
   }
 
-  void _onPayjoinToggled(_BuyPayjoinToggled event, Emitter<BuyState> emit) {
-    emit(state.copyWith(isPayjoinEnabled: event.enabled));
+  Future<void> _onPayjoinToggled(
+    _BuyPayjoinToggled event,
+    Emitter<BuyState> emit,
+  ) async {
+    final previous = state.isPayjoinEnabled;
+    // Clear only a stale failure from a previous toggle attempt; an
+    // unrelated create-order error must survive a mere switch tap.
+    final retainedError =
+        state.createOrderBuyError is PayjoinSettingUpdateFailedBuyError
+        ? null
+        : state.createOrderBuyError;
+    emit(
+      state.copyWith(
+        isUpdatingPayjoin: true,
+        createOrderBuyError: retainedError,
+      ),
+    );
+    final failure = await _setBuyPayjoinEnabledUsecase.execute(event.enabled);
+    if (failure == null) {
+      emit(
+        state.copyWith(
+          isPayjoinEnabled: event.enabled,
+          isUpdatingPayjoin: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          isPayjoinEnabled: previous,
+          isUpdatingPayjoin: false,
+          // An unrelated create-order error keeps precedence over the toggle
+          // failure — the reverted switch is the toggle's own feedback.
+          createOrderBuyError: retainedError ?? failure,
+        ),
+      );
+    }
   }
 
   Future<void> _cancelAbandonedPayjoin(BuyOrder? order) async {

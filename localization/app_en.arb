@@ -14169,6 +14169,18 @@
   "@settingsPayjoinAdvancedTitle": {
     "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
+  "settingsPayjoinTradingEnabledLabel": "Payjoin trading enabled",
+  "@settingsPayjoinTradingEnabledLabel": {
+    "description": "Label next to the payjoin-for-trades switch (buy/sell/pay orders); independent of the global payjoin switch"
+  },
+  "settingsPayjoinTradingDescription": "Uses payjoin when sending or receiving bitcoin for Bull Bitcoin trades (buy, sell and bill payments). Independent of the Payjoin setting above: the Bull Bitcoin exchange is already the counterparty to the trade.",
+  "payjoinTradingSettingUpdateError": "Could not update the Payjoin trading setting. Try again.",
+  "@payjoinTradingSettingUpdateError": {
+    "description": "Shown when persisting the Payjoin trading preference fails."
+  },
+  "@settingsPayjoinTradingDescription": {
+    "description": "Explanation under the payjoin-for-trades switch"
+  },
   "settingsPayjoinEnabledLabel": "Payjoin enabled",
   "@settingsPayjoinEnabledLabel": {
     "description": "Label next to the global payjoin enable/disable switch"
@@ -14372,10 +14384,6 @@
   "payjoinViaRegularSend": "via regular send",
   "@payjoinViaRegularSend": {
     "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
-  },
-  "payjoinUseToggle": "Use payjoin",
-  "@payjoinUseToggle": {
-    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
   },
   "addressViewErrorWalletNotFound": "This wallet could not be found.",
   "@addressViewErrorWalletNotFound": {
