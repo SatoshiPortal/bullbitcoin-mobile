@@ -27,7 +27,7 @@ typedef OhttpKeysFetcher =
     });
 
 class PdkPayjoinDatasource {
-  final String _payjoinDirectoryUrl;
+  final List<String> _payjoinDirectoryUrls;
   final Dio _dio;
   final logger.PayjoinLogger _log;
   final OhttpKeysFetcher _fetchOhttpKeys;
@@ -49,7 +49,7 @@ class PdkPayjoinDatasource {
   bool _disposed = false;
 
   PdkPayjoinDatasource({
-    this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
+    this._payjoinDirectoryUrls = PayjoinConstants.directoryUrls,
     required this._dio,
     required this._log,
     OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
@@ -106,10 +106,31 @@ class PdkPayjoinDatasource {
     await _expiredController.close();
   }
 
+  /// Resolves the first reachable payjoin directory in preference order
+  /// (Bull Bitcoin first, public fallback second) together with its OHTTP
+  /// keys and a working relay. A directory whose keys can't be fetched
+  /// through any of its allowed relays is treated as down.
+  Future<(OhttpKeys?, String?, String?)>
+  fetchOhttpKeyRelayAndDirectory() async {
+    for (final directory in _payjoinDirectoryUrls) {
+      final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
+        payjoinDirectory: directory,
+      );
+      if (ohttpKeys != null && ohttpRelay != null) {
+        return (ohttpKeys, ohttpRelay, directory);
+      }
+      _log.info('Payjoin directory unreachable, trying next');
+    }
+    return (null, null, null);
+  }
+
   Future<(OhttpKeys?, String?)> fetchOhttpKeyAndRelay({
     required String payjoinDirectory,
   }) async {
-    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
+    // ohttpRelayUrlsFor enforces the relay/directory non-collusion rule.
+    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrlsFor(
+      payjoinDirectory,
+    )) {
       try {
         final ohttpKeys = await _fetchOhttpKeys(
           ohttpRelayUrl: ohttpRelayUrl,
@@ -141,18 +162,17 @@ class PdkPayjoinDatasource {
     int? amountSat,
   }) async {
     try {
-      final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
-        payjoinDirectory: _payjoinDirectoryUrl,
-      );
+      final (ohttpKeys, ohttpRelay, directory) =
+          await fetchOhttpKeyRelayAndDirectory();
 
-      if (ohttpRelay == null || ohttpKeys == null) {
-        throw Exception('All OHTTP relays failed');
+      if (ohttpRelay == null || ohttpKeys == null || directory == null) {
+        throw Exception('All payjoin directories/OHTTP relays failed');
       }
 
       var receiverBuilder =
           ReceiverBuilder(
                 address: address,
-                directory: _payjoinDirectoryUrl,
+                directory: directory,
                 ohttpKeys: ohttpKeys,
               )
               .withExpiration(expirationSecs: expireAfterSec)
@@ -259,7 +279,11 @@ class PdkPayjoinDatasource {
     // published and the creation aborts cleanly.
     await persistBeforePost(model);
 
-    await postOriginalProposal(withReplyKey, persister);
+    await postOriginalProposal(
+      withReplyKey,
+      persister,
+      PayjoinConstants.ohttpRelayUrlsForBip21(model.uri),
+    );
     _log.info('[sender] original proposal posted for $senderLogRef');
 
     // The POST transitioned the session to PollingForProposal, but `model`
@@ -281,10 +305,11 @@ class PdkPayjoinDatasource {
   Future<void> postOriginalProposal(
     WithReplyKey withReplyKey,
     InMemoryJsonSenderSessionPersister persister,
+    List<String> ohttpRelays,
   ) async {
     Object? lastError;
     var posted = false;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+    for (final relay in ohttpRelays) {
       try {
         final reqCtx = withReplyKey.createV2PostRequest(ohttpRelay: relay);
         final body = await postBytes(
@@ -483,9 +508,14 @@ class PdkPayjoinDatasource {
           processPsbt,
         );
       case ProvisionalProposalReceiveSession():
-        return _finalizeProposal(state.inner, persister, processPsbt);
+        return _finalizeProposal(
+          state.inner,
+          persister,
+          receiverModel,
+          processPsbt,
+        );
       case PayjoinProposalReceiveSession():
-        return _sendPayjoinProposal(state.inner, persister);
+        return _sendPayjoinProposal(state.inner, persister, receiverModel);
       case HasReplyableExceptionReceiveSession():
         throw StateError('Receive session has a replyable exception');
       case MonitorReceiveSession():
@@ -640,26 +670,30 @@ class PdkPayjoinDatasource {
           maxEffectiveFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb.toInt(),
         )
         .save(persister: persister);
-    return _finalizeProposal(next, persister, processPsbt);
+    return _finalizeProposal(next, persister, receiverModel, processPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _finalizeProposal(
     ProvisionalProposal inner,
     InMemoryJsonReceiverSessionPersister persister,
+    PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
   ) async {
     final next = inner
         .finalizeProposal(processPsbt: _ProcessPsbt(processPsbt))
         .save(persister: persister);
-    return _sendPayjoinProposal(next, persister);
+    return _sendPayjoinProposal(next, persister, receiverModel);
   }
 
   Future<({Monitor monitor, String psbt})> _sendPayjoinProposal(
     PayjoinProposal proposal,
     InMemoryJsonReceiverSessionPersister persister,
+    PayjoinReceiverModel receiverModel,
   ) async {
     Object? lastError;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+    for (final relay in PayjoinConstants.ohttpRelayUrlsForBip21(
+      receiverModel.pjUri,
+    )) {
       try {
         final req = proposal.createPostRequest(ohttpRelay: relay);
         final body = await postBytes(
@@ -773,6 +807,7 @@ class PdkPayjoinDatasource {
       final unchecked = await _getUncheckedOriginalPayload(
         state.inner,
         persister,
+        PayjoinConstants.ohttpRelayUrlsForBip21(receiverModel.pjUri),
       );
       if (unchecked == null) {
         _log.info('Receiver request not ready');
@@ -848,7 +883,11 @@ class PdkPayjoinDatasource {
       }
       if (state is! PollingForProposalSendSession) return;
 
-      final proposalPsbt = await _getProposalPsbt(state.inner, persister);
+      final proposalPsbt = await _getProposalPsbt(
+        state.inner,
+        persister,
+        PayjoinConstants.ohttpRelayUrlsForBip21(senderModel.uri),
+      );
       if (proposalPsbt == null) return;
 
       _log.info('[sender poll] proposal found for $senderLogRef');
@@ -881,9 +920,10 @@ class PdkPayjoinDatasource {
   Future<UncheckedOriginalPayload?> _getUncheckedOriginalPayload(
     Initialized initialized,
     InMemoryJsonReceiverSessionPersister persister,
+    List<String> ohttpRelays,
   ) async {
     Object? lastError;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+    for (final relay in ohttpRelays) {
       try {
         final poll = initialized.createPollRequest(ohttpRelay: relay);
         final body = await postBytes(
@@ -916,9 +956,10 @@ class PdkPayjoinDatasource {
   Future<String?> _getProposalPsbt(
     PollingForProposal polling,
     InMemoryJsonSenderSessionPersister persister,
+    List<String> ohttpRelays,
   ) async {
     Object? lastError;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+    for (final relay in ohttpRelays) {
       try {
         final poll = polling.createPollRequest(ohttpRelay: relay);
         final body = await postBytes(

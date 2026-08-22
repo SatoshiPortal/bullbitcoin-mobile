@@ -1,18 +1,70 @@
 import 'dart:math';
 
 abstract final class PayjoinConstants {
+  static const bullBitcoinDirectoryUrl = 'https://payjoin.bullbitcoin.com';
+  static const publicDirectoryUrl = 'https://payjo.in';
+
+  /// Payjoin directories in preference order: the Bull Bitcoin directory is
+  /// the default, and the public one is only used when it is unreachable
+  /// (see PdkPayjoinDatasource.fetchOhttpKeyRelayAndDirectory).
+  static const directoryUrls = [bullBitcoinDirectoryUrl, publicDirectoryUrl];
+
+  static const bullBitcoinOhttpRelayUrl = 'https://ohttp.bullbitcoin.com';
+
   static const ohttpRelayUrlsBase = [
+    bullBitcoinOhttpRelayUrl,
     'https://ohttp.achow101.com',
     'https://pj.bobspacebkk.com',
     'https://ohttp.cakewallet.com',
   ];
 
-  static List<String> get ohttpRelayUrls {
-    final relays = [...ohttpRelayUrlsBase]..shuffle(Random.secure());
+  /// The OHTTP relays allowed for a session on [directoryUrl], shuffled.
+  ///
+  /// HARD RULE: a relay run by the same operator as the directory must NEVER
+  /// be used — the OHTTP privacy model assumes the relay (which sees the
+  /// client IP) and the directory (which sees the payjoin mailbox) do not
+  /// collude, so pairing ohttp.bullbitcoin.com with payjoin.bullbitcoin.com
+  /// would let Bull Bitcoin link both ends on its own. Operator identity is
+  /// approximated by the registrable domain (last two host labels), so any
+  /// future *.bullbitcoin.com relay/directory pair stays excluded too. When
+  /// the directory cannot be determined, fail closed: the Bull Bitcoin relay
+  /// is dropped rather than risk pairing it with the Bull Bitcoin directory.
+  static List<String> ohttpRelayUrlsFor(String? directoryUrl) {
+    final directoryDomain = _registrableDomain(directoryUrl);
+    final bullBitcoinDomain = _registrableDomain(bullBitcoinDirectoryUrl)!;
+    final relays = [
+      for (final relay in ohttpRelayUrlsBase)
+        if (_registrableDomain(relay) != (directoryDomain ?? bullBitcoinDomain))
+          relay,
+    ]..shuffle(Random.secure());
     return relays;
   }
 
-  static const directoryUrl = 'https://payjo.in';
+  /// Relays allowed for the session behind [bip21]: the directory is whatever
+  /// the URI's `pj` endpoint points at. Used on every poll/post after session
+  /// creation, where the directory choice is already baked into the URI.
+  static List<String> ohttpRelayUrlsForBip21(String? bip21) {
+    return ohttpRelayUrlsFor(_pjEndpoint(bip21));
+  }
+
+  // BIP21 URIs are commonly uppercased wholesale for QR efficiency, so the
+  // `pj` key is matched case-insensitively.
+  static String? _pjEndpoint(String? bip21) {
+    final params = bip21 == null ? null : Uri.tryParse(bip21)?.queryParameters;
+    if (params == null) return null;
+    for (final entry in params.entries) {
+      if (entry.key.toLowerCase() == 'pj') return entry.value;
+    }
+    return null;
+  }
+
+  static String? _registrableDomain(String? url) {
+    final host = url == null ? null : Uri.tryParse(url)?.host.toLowerCase();
+    if (host == null || host.isEmpty) return null;
+    final parts = host.split('.');
+    return parts.length <= 2 ? host : parts.sublist(parts.length - 2).join('.');
+  }
+
   static const directoryPollingInterval = 5;
   static const defaultExpireAfterSec = 60 * 60 * 24;
   static const defaultMinAmountSat = 10000;
