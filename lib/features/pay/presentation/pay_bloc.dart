@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -68,6 +69,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._getOrderUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
+    required this._settingsFacade,
   }) : super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
@@ -108,6 +110,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetPayjoinUsecase _getPayjoinUsecase;
+  final SettingsFacade _settingsFacade;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -756,7 +759,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
   }
 
-  void _onPayjoinToggled(PayPayjoinToggled event, Emitter<PayState> emit) {
+  Future<void> _onPayjoinToggled(
+    PayPayjoinToggled event,
+    Emitter<PayState> emit,
+  ) async {
     final paymentState = _currentPaymentState;
     if (paymentState == null || paymentState.selectedWallet?.isLiquid == true) {
       return;
@@ -765,6 +771,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
     emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
+    await _settingsFacade.persistPayjoinTradingToggle(
+      event.enabled,
+      flow: 'pay',
+    );
   }
 
   // From Sell: Poll for order status

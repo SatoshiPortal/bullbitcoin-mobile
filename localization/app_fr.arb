@@ -4947,6 +4947,8 @@
   "settingsPayjoinTitle": "Payjoin",
   "settingsPayjoinPrivacyGainExplanation": "Le payjoin apporte un gain de confidentialité majeur contre l'analyse de la chaîne : il brise l'hypothèse selon laquelle toutes les entrées d'une transaction appartiennent à la même personne. La contrepartie est un risque : accepter un payjoin révèle un de vos UTXOs à votre contrepartie.",
   "settingsPayjoinV1DirectoryLeakExplanation": "Si votre contrepartie utilise une ancienne version du payjoin (v1) plutôt que la version actuelle (v2), ce même UTXO peut aussi être révélé au répertoire payjoin (payjoin directory), un relais tiers utilisé pour coordonner le payjoin.",
+  "settingsPayjoinTradingEnabledLabel": "Payjoin pour les transactions activé",
+  "settingsPayjoinTradingDescription": "Utilise payjoin lors de l'envoi ou de la réception de bitcoins pour les transactions Bull Bitcoin (achat, vente et paiement de factures). Indépendant du paramètre Payjoin ci-dessus : la plateforme Bull Bitcoin est déjà la contrepartie de la transaction.",
   "settingsPayjoinEnabledLabel": "Payjoin activé",
   "settingsPayjoinMinAmountTitle": "Montant minimum",
   "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin est refusé et le paiement est reçu normalement.",

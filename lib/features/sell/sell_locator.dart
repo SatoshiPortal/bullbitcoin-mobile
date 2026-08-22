@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -84,6 +85,7 @@ class SellLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<SellBloc>(
       () => SellBloc(
+        settingsFacade: locator<SettingsFacade>(),
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         createSellOrderUsecase: locator<CreateSellOrderUsecase>(),

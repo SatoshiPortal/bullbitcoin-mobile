@@ -47,6 +47,7 @@ void main() {
     String? originalTransactionId,
     String? proposalPsbt,
     String? transactionId,
+    bool isTrade = false,
   }) =>
       PayjoinModel.receiver(
             id: id,
@@ -63,6 +64,7 @@ void main() {
             amountSat: 50000,
             proposalPsbt: proposalPsbt,
             txId: transactionId,
+            isTrade: isTrade,
           )
           as PayjoinReceiverModel;
 
@@ -119,6 +121,7 @@ void main() {
           const PayjoinPolicyRow(
             id: 1,
             enabled: true,
+            tradingEnabled: true,
             minimumAmountSat: 10000,
             sessionLifetimeSeconds: 86400,
           ),
@@ -172,6 +175,7 @@ void main() {
         maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
         expireAfterSec: any(named: 'expireAfterSec'),
         amountSat: any(named: 'amountSat'),
+        isTrade: any(named: 'isTrade'),
       ),
     ).thenAnswer((_) async => model);
 
@@ -209,7 +213,133 @@ void main() {
         maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
         expireAfterSec: any(named: 'expireAfterSec'),
         amountSat: any(named: 'amountSat'),
+        isTrade: any(named: 'isTrade'),
       ),
+    );
+  });
+
+  group('independent trading switch', () {
+    test(
+      'trade receiver creation succeeds with payjoin disabled but trading on',
+      () async {
+        // defaults(): enabled=false, tradingEnabled=true — the shipped state.
+        await policy.save(PayjoinPolicy.defaults());
+        final model = receiver(isTrade: true);
+        when(
+          () => pdk.createReceiver(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            isTestnet: any(named: 'isTestnet'),
+            maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+            amountSat: any(named: 'amountSat'),
+            isTrade: any(named: 'isTrade'),
+          ),
+        ).thenAnswer((_) async => model);
+
+        final created = await engine.createPayjoinReceiver(
+          walletId: model.walletId,
+          address: model.address,
+          isTestnet: true,
+          maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
+          expireAfterSec: model.expireAfterSec,
+          amountSat: model.amountSat,
+          isTrade: true,
+        );
+
+        expect(created.id, model.id);
+        expect(await local.fetchReceiver(model.id), isNotNull);
+      },
+    );
+
+    test('trade receiver creation fails closed when trading is off, even with '
+        'payjoin enabled', () async {
+      await policy.save(
+        PayjoinPolicy.defaults().copyWith(enabled: true, tradingEnabled: false),
+      );
+
+      expect(
+        () => engine.createPayjoinReceiver(
+          walletId: 'wallet-1',
+          address: 'tb1qreceiver',
+          isTestnet: true,
+          maxFeeRateSatPerVb: BigInt.from(10000),
+          expireAfterSec: 3600,
+          isTrade: true,
+        ),
+        throwsStateError,
+      );
+    });
+
+    test(
+      'disabling payjoin settles non-trade receivers but leaves trade ones',
+      () async {
+        final regular = receiver(id: 'regular');
+        final trade = receiver(id: 'trade', isTrade: true);
+        await local.storeReceiver(regular);
+        await local.storeReceiver(trade);
+
+        await policy.setEnabled(false);
+        await engine.disableReceivers();
+
+        expect(await local.fetchReceiver(regular.id), isNull);
+        expect(await local.fetchReceiver(trade.id), isNotNull);
+      },
+    );
+
+    test('disabling trading settles trade receivers but leaves enabled-gated '
+        'ones', () async {
+      final regular = receiver(id: 'regular');
+      final trade = receiver(id: 'trade', isTrade: true);
+      await local.storeReceiver(regular);
+      await local.storeReceiver(trade);
+
+      await policy.setTradingEnabled(false);
+      await engine.disableReceivers();
+
+      expect(await local.fetchReceiver(regular.id), isNotNull);
+      expect(await local.fetchReceiver(trade.id), isNull);
+    });
+
+    test('settleAllReceivers ignores policy and settles everything', () async {
+      final regular = receiver(id: 'regular');
+      final trade = receiver(id: 'trade', isTrade: true);
+      await local.storeReceiver(regular);
+      await local.storeReceiver(trade);
+
+      await engine.settleAllReceivers();
+
+      expect(await local.fetchReceiver(regular.id), isNull);
+      expect(await local.fetchReceiver(trade.id), isNull);
+    });
+
+    test(
+      'startup resumes a trade receiver while payjoin is disabled',
+      () async {
+        final trade = receiver(id: 'trade', isTrade: true);
+        await local.storeReceiver(trade);
+        await policy.save(PayjoinPolicy.defaults());
+        when(() => pdk.startListeningForRequest(trade)).thenReturn(null);
+
+        await engine.resumePayjoinsOnStartup();
+
+        expect(await local.fetchReceiver(trade.id), isNotNull);
+        verify(() => pdk.startListeningForRequest(trade)).called(1);
+      },
+    );
+
+    test(
+      'startup removes an idle trade receiver while trading is disabled',
+      () async {
+        final trade = receiver(id: 'trade', isTrade: true);
+        await local.storeReceiver(trade);
+        await policy.setTradingEnabled(false);
+
+        await engine.resumePayjoinsOnStartup();
+
+        expect(await local.fetchReceiver(trade.id), isNull);
+        verifyNever(() => pdk.startListeningForRequest(trade));
+      },
     );
   });
 
@@ -267,6 +397,9 @@ void main() {
     await local.storeReceiver(idle);
     await local.storeReceiver(proposed);
 
+    // Production order: setEnabled(false) persists the policy BEFORE the
+    // sweep runs, and the sweep reads the policy to decide what to settle.
+    await policy.setEnabled(false);
     await engine.disableReceivers();
 
     expect(await local.fetchReceiver(idle.id), isNull);
@@ -551,6 +684,7 @@ void main() {
         ),
       ).thenThrow(StateError('electrum unavailable'));
 
+      await policy.setEnabled(false);
       await expectLater(engine.disableReceivers(), throwsStateError);
 
       expect(

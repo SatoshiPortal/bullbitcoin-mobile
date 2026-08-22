@@ -45,6 +45,11 @@ class PayjoinReceivers extends Table {
   BoolColumn get isExpired => boolean()();
   BoolColumn get isCompleted => boolean()();
   BoolColumn get isAborted => boolean()();
+  // Session created for a Bull Bitcoin exchange trade (buy order payout).
+  // Gated by PayjoinPolicies.tradingEnabled instead of enabled — see
+  // PayjoinEngine.isReceiverAllowed. Defaulted so pre-existing rows from
+  // schema 1 (all created through the enabled-gated flows) stay non-trade.
+  BoolColumn get isTrade => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -54,6 +59,10 @@ class PayjoinReceivers extends Table {
 class PayjoinPolicies extends Table {
   IntColumn get id => integer()();
   BoolColumn get enabled => boolean()();
+  // Payjoin for exchange trades; independent of `enabled` and defaults ON —
+  // see PayjoinPolicy.tradingEnabled.
+  BoolColumn get tradingEnabled =>
+      boolean().withDefault(const Constant(true))();
   IntColumn get minimumAmountSat => integer()();
   IntColumn get sessionLifetimeSeconds => integer()();
 
@@ -83,7 +92,7 @@ class PayjoinMigrations extends Table {
   ],
 )
 final class PayjoinDatabase extends _$PayjoinDatabase {
-  static const schema = 1;
+  static const schema = 2;
 
   PayjoinDatabase._(super.executor);
 
@@ -105,4 +114,18 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   @override
   int get schemaVersion => schema;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        // The column defaults do the data migration: the existing policy row
+        // gets tradingEnabled=true (the feature's default), and existing
+        // receiver rows get isTrade=false (they were all created through the
+        // enabled-gated flows).
+        await m.addColumn(payjoinPolicies, payjoinPolicies.tradingEnabled);
+        await m.addColumn(payjoinReceivers, payjoinReceivers.isTrade);
+      }
+    },
+  );
 }

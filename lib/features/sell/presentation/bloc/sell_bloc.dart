@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/liquid_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -73,6 +74,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._getWalletUtxosUsecase,
     required this._getOrderUsecase,
     required this._labelsFacade,
+    required this._settingsFacade,
     required this._labelCompletedSellOrderUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
@@ -123,6 +125,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetOrderUsecase _getOrderUsecase;
   final LabelsFacade _labelsFacade;
+  final SettingsFacade _settingsFacade;
   final LabelCompletedSellOrderUsecase _labelCompletedSellOrderUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
@@ -897,7 +900,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
   }
 
-  void _onPayjoinToggled(SellPayjoinToggled event, Emitter<SellState> emit) {
+  Future<void> _onPayjoinToggled(
+    SellPayjoinToggled event,
+    Emitter<SellState> emit,
+  ) async {
     final paymentState = _currentPaymentState;
     if (paymentState == null || paymentState.selectedWallet?.isLiquid == true) {
       return;
@@ -906,6 +912,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
       return;
     }
     emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
+    await _settingsFacade.persistPayjoinTradingToggle(
+      event.enabled,
+      flow: 'sell',
+    );
   }
 
   Future<void> _onPollOrderStatus(

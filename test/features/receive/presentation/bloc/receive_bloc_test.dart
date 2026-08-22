@@ -249,9 +249,10 @@ void main() {
     when(
       () => watchPayjoinEnabledChanges.execute(),
     ).thenAnswer((_) => payjoinEnabledChangeController.stream);
-    when(
-      () => getPayjoinPolicy.execute(),
-    ).thenAnswer((_) async => (enabled: true, minimumAmountSat: 10000));
+    when(() => getPayjoinPolicy.execute()).thenAnswer(
+      (_) async =>
+          (enabled: true, tradingEnabled: true, minimumAmountSat: 10000),
+    );
     watchPayjoinMinAmount = _MockWatchReceivePayjoinMinAmountUsecase();
     when(
       () => watchPayjoinMinAmount.execute(),
@@ -425,9 +426,10 @@ void main() {
   group('payjoin gated on the global setting', () {
     test('does NOT create a payjoin receiver session when payjoin is '
         'disabled globally', () async {
-      when(
-        () => getPayjoinPolicy.execute(),
-      ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async =>
+            (enabled: false, tradingEnabled: true, minimumAmountSat: 10000),
+      );
 
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -552,9 +554,10 @@ void main() {
     test('creates a payjoin receiver session as soon as the setting is '
         'flipped on, without needing to leave and re-enter the receive '
         'screen', () async {
-      when(
-        () => getPayjoinPolicy.execute(),
-      ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async =>
+            (enabled: false, tradingEnabled: true, minimumAmountSat: 10000),
+      );
       final createdPayjoin = _receiver();
       when(
         () => receiveWithPayjoin.execute(
@@ -603,9 +606,10 @@ void main() {
 
     test('does NOT create a session on enable if the wallet still has no '
         'balance', () async {
-      when(
-        () => getPayjoinPolicy.execute(),
-      ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async =>
+            (enabled: false, tradingEnabled: true, minimumAmountSat: 10000),
+      );
 
       final bloc = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
       addTearDown(bloc.close);

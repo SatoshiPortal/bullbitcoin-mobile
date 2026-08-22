@@ -32,6 +32,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
@@ -93,9 +94,12 @@ class _MockPayOrder extends Mock implements FiatPaymentOrder {}
 /// The confirmation path only ever runs from a [PayPaymentState] that earlier
 /// events built up. Seeding it directly keeps this test to the send path and
 /// avoids the order polling timer that order creation starts.
+class _MockSettingsFacade extends Mock implements SettingsFacade {}
+
 class _SeedablePayBloc extends PayBloc {
   _SeedablePayBloc({
     required super.getExchangeUserSummaryUsecase,
+    required super.settingsFacade,
     required super.placePayOrderUsecase,
     required super.refreshPayOrderUsecase,
     required super.prepareBitcoinSendUsecase,
@@ -291,6 +295,7 @@ void main() {
 
     bloc = _SeedablePayBloc(
       getExchangeUserSummaryUsecase: _MockGetUserSummary(),
+      settingsFacade: _MockSettingsFacade(),
       placePayOrderUsecase: _MockPlacePayOrder(),
       refreshPayOrderUsecase: refreshPayOrder,
       prepareBitcoinSendUsecase: prepareBitcoinSend,

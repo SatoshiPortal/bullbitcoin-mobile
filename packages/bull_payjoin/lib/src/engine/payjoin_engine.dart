@@ -6,6 +6,7 @@ import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
+import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_contract.dart';
@@ -234,9 +235,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isTrade = false,
   }) async {
     final initialPolicy = await _policy.load();
-    if (!initialPolicy.enabled) {
+    if (!_isReceiverPermitted(initialPolicy, isTrade: isTrade)) {
       throw StateError('Payjoin is disabled');
     }
 
@@ -247,6 +249,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       expireAfterSec: expireAfterSec,
       amountSat: amountSat,
+      isTrade: isTrade,
     );
 
     return _withSessionLock(model.id, () async {
@@ -260,7 +263,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         stored = true;
 
         final policy = await _policy.load();
-        if (!policy.enabled) {
+        if (!_isReceiverPermitted(policy, isTrade: isTrade)) {
           await _settleReceiverAfterDisable(model);
           settled = true;
           throw StateError('Payjoin was disabled while creating the receiver');
@@ -472,12 +475,41 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (settled != null) _payjoinStreamController.add(settled);
       });
 
+  /// Whether a receiver session of the given kind may exist under [policy]:
+  /// two INDEPENDENT switches, not a hierarchy. A trade session (a Bull
+  /// Bitcoin exchange buy-order payout) is governed solely by
+  /// [PayjoinPolicy.tradingEnabled]; every other session solely by
+  /// [PayjoinPolicy.enabled]. Every receiver-side policy gate (creation,
+  /// request arrival, disable sweep, startup resume) funnels through this so
+  /// the two settings can never bleed into each other's sessions.
+  static bool _isReceiverPermitted(
+    PayjoinPolicy policy, {
+    required bool isTrade,
+  }) => isTrade ? policy.tradingEnabled : policy.enabled;
+
   @override
   Future<void> disableReceivers() async {
+    // Settle only the sessions the CURRENT policy no longer permits: called
+    // after either switch flips off, so disabling `enabled` must not tear
+    // down live trade sessions (still covered by tradingEnabled) and vice
+    // versa. settleAllReceivers() bypasses this filter deliberately.
+    final policy = await _policy.load();
+    await _settleReceivers(
+      (receiver) => !_isReceiverPermitted(policy, isTrade: receiver.isTrade),
+    );
+  }
+
+  @override
+  Future<void> settleAllReceivers() => _settleReceivers((_) => true);
+
+  Future<void> _settleReceivers(
+    bool Function(PayjoinReceiverModel) shouldSettle,
+  ) async {
     final receivers = await _localPayjoinDatasource.fetchReceivers();
     Object? firstError;
     StackTrace? firstStackTrace;
     for (final receiver in receivers) {
+      if (!shouldSettle(receiver)) continue;
       try {
         await _withSessionLock(receiver.id, () async {
           final fresh = await _localPayjoinDatasource.fetchReceiver(
@@ -726,7 +758,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // probing our UTXO set to at least a real payment above the
       // threshold. See PayjoinConstants.defaultMinAmountSat.
       final policy = await _policy.load();
-      if (!policy.enabled) {
+      if (!_isReceiverPermitted(policy, isTrade: model.isTrade)) {
         _log.warning(
           'Payjoin request ${model.id} arrived after Payjoin was disabled; '
           'broadcasting the original transaction instead',
@@ -1217,7 +1249,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             receiver.id,
           );
           if (fresh == null || fresh.isCompleted || fresh.isAborted) return;
-          if (!policy.enabled) {
+          if (!_isReceiverPermitted(policy, isTrade: fresh.isTrade)) {
             await _settleReceiverAfterDisable(fresh);
             return;
           }
@@ -1301,7 +1333,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
-      if (!policy.enabled && model is PayjoinReceiverModel) {
+      if (model is PayjoinReceiverModel &&
+          !_isReceiverPermitted(policy, isTrade: model.isTrade)) {
         continue;
       }
       // Each session is independent: a bug or a transient failure resuming

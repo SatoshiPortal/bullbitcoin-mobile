@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
@@ -50,6 +51,8 @@ class _MockCancelAbandonedBuyPayjoinUsecase extends Mock
 class _MockGetBuyPayjoinEnabledUsecase extends Mock
     implements GetBuyPayjoinEnabledUsecase {}
 
+class _MockSettingsFacade extends Mock implements SettingsFacade {}
+
 class _SeedableBuyBloc extends BuyBloc {
   _SeedableBuyBloc({
     required super.getWalletsUsecase,
@@ -65,6 +68,7 @@ class _SeedableBuyBloc extends BuyBloc {
     required super.cancelAbandonedBuyPayjoinUsecase,
     required super.getBuyPayjoinEnabledUsecase,
     required super.labelCompletedBuyOrderUsecase,
+    required super.settingsFacade,
   });
 
   void seed(BuyState state) => emit(state);
@@ -99,6 +103,7 @@ void main() {
         cancelAbandonedBuyPayjoinUsecase: cancelAbandonedPayjoin,
         getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
         labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+        settingsFacade: _MockSettingsFacade(),
       );
       bloc.seed(BuyState(buyOrder: order));
 
@@ -107,4 +112,49 @@ void main() {
       verify(() => cancelAbandonedPayjoin.execute(order)).called(1);
     },
   );
+
+  test('the per-order payjoin toggle writes through to the global trading '
+      'setting', () async {
+    final settingsFacade = _MockSettingsFacade();
+    when(
+      () => settingsFacade.persistPayjoinTradingToggle(
+        any(),
+        flow: any(named: 'flow'),
+      ),
+    ).thenAnswer((_) async {});
+    final bloc = _SeedableBuyBloc(
+      getWalletsUsecase: _MockGetWalletsUsecase(),
+      getReceiveAddressUsecase: _MockGetReceiveAddressUsecase(),
+      getExchangeUserSummaryUsecase: _MockGetExchangeUserSummaryUsecase(),
+      confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+      createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+      refreshBuyOrderUsecase: _MockRefreshBuyOrderUsecase(),
+      getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+      convertSatsToCurrencyAmountUsecase:
+          _MockConvertSatsToCurrencyAmountUsecase(),
+      accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+      getSettingsUsecase: _MockGetSettingsUsecase(),
+      cancelAbandonedBuyPayjoinUsecase: _MockCancelAbandonedBuyPayjoinUsecase(),
+      getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+      labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+      settingsFacade: settingsFacade,
+    );
+    addTearDown(bloc.close);
+
+    bloc.add(const BuyEvent.payjoinToggled(false));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(bloc.state.isPayjoinEnabled, isFalse);
+    verify(
+      () => settingsFacade.persistPayjoinTradingToggle(false, flow: 'buy'),
+    ).called(1);
+
+    bloc.add(const BuyEvent.payjoinToggled(true));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(bloc.state.isPayjoinEnabled, isTrue);
+    verify(
+      () => settingsFacade.persistPayjoinTradingToggle(true, flow: 'buy'),
+    ).called(1);
+  });
 }

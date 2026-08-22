@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -43,6 +44,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._cancelAbandonedBuyPayjoinUsecase,
     required this._getBuyPayjoinEnabledUsecase,
     required this._labelCompletedBuyOrderUsecase,
+    required this._settingsFacade,
   }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -70,6 +72,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
   final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
+  final SettingsFacade _settingsFacade;
   final LabelCompletedBuyOrderUsecase _labelCompletedBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
@@ -101,7 +104,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           currencyInput: currencyInput,
           bitcoinUnit: settings.bitcoinUnit,
           balances: balances,
-          payjoinGloballyEnabled: payjoinEnabled,
+          isPayjoinEnabled: payjoinEnabled,
         ),
       );
 
@@ -347,8 +350,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     }
   }
 
-  void _onPayjoinToggled(_BuyPayjoinToggled event, Emitter<BuyState> emit) {
+  Future<void> _onPayjoinToggled(
+    _BuyPayjoinToggled event,
+    Emitter<BuyState> emit,
+  ) async {
     emit(state.copyWith(isPayjoinEnabled: event.enabled));
+    await _settingsFacade.persistPayjoinTradingToggle(
+      event.enabled,
+      flow: 'buy',
+    );
   }
 
   Future<void> _cancelAbandonedPayjoin(BuyOrder? order) async {

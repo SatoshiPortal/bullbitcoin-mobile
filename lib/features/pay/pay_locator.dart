@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -71,6 +72,7 @@ class PayLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<PayBloc>(
       () => PayBloc(
+        settingsFacade: locator<SettingsFacade>(),
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         placePayOrderUsecase: locator<PlacePayOrderUsecase>(),
         refreshPayOrderUsecase: locator<RefreshPayOrderUsecase>(),

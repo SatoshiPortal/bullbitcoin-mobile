@@ -34,6 +34,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok, Sats;
@@ -106,6 +107,8 @@ class _FakeLabel extends Fake implements Label {}
 /// The confirmation path only ever runs from a [SellPaymentState] that earlier
 /// events built up. Seeding it directly keeps this test to the send path and
 /// avoids the order polling timer that order creation starts.
+class _MockSettingsFacade extends Mock implements SettingsFacade {}
+
 class _SeedableSellBloc extends SellBloc {
   _SeedableSellBloc({
     required super.getExchangeUserSummaryUsecase,
@@ -129,6 +132,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.getWalletUtxosUsecase,
     required super.getOrderUsecase,
     required super.labelsFacade,
+    required super.settingsFacade,
     required super.labelCompletedSellOrderUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -322,6 +326,7 @@ void main() {
 
     bloc = _SeedableSellBloc(
       getExchangeUserSummaryUsecase: _MockGetUserSummary(),
+      settingsFacade: _MockSettingsFacade(),
       getSettingsUsecase: _MockGetSettings(),
       createSellOrderUsecase: _MockCreateSellOrder(),
       refreshSellOrderUsecase: refreshSellOrder,
