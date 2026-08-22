@@ -14,8 +14,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
@@ -27,7 +29,6 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockGetExchangeUserSummaryUsecase extends Mock
@@ -91,12 +92,15 @@ class _MockWallet extends Mock implements Wallet {}
 
 /// Exposes [emit] so a test can put the bloc on the state under test instead of
 /// driving the whole pay flow to get there.
-class _MockSettingsFacade extends Mock implements SettingsFacade {}
+class _MockGetPayjoinTradingEnabledUsecase extends Mock
+    implements GetPayjoinTradingEnabledUsecase {}
+
+class _MockSetPayjoinTradingEnabledUsecase extends Mock
+    implements SetPayjoinTradingEnabledUsecase {}
 
 class _SeedablePayBloc extends PayBloc {
   _SeedablePayBloc({
     required super.getExchangeUserSummaryUsecase,
-    required super.settingsFacade,
     required super.placePayOrderUsecase,
     required super.refreshPayOrderUsecase,
     required super.prepareBitcoinSendUsecase,
@@ -108,6 +112,8 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.getPayjoinTradingEnabledUsecase,
+    required super.setPayjoinTradingEnabledUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -173,7 +179,6 @@ void main() {
 
   _SeedablePayBloc buildBloc() => _SeedablePayBloc(
     getExchangeUserSummaryUsecase: _MockGetExchangeUserSummaryUsecase(),
-    settingsFacade: _MockSettingsFacade(),
     placePayOrderUsecase: _MockPlacePayOrderUsecase(),
     refreshPayOrderUsecase: _MockRefreshPayOrderUsecase(),
     prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
@@ -186,6 +191,8 @@ void main() {
     sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
     watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
     getPayjoinUsecase: _MockGetPayjoinUsecase(),
+    getPayjoinTradingEnabledUsecase: _MockGetPayjoinTradingEnabledUsecase(),
+    setPayjoinTradingEnabledUsecase: _MockSetPayjoinTradingEnabledUsecase(),
     getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
     calculateLiquidAbsoluteFeesUsecase:
         _MockCalculateLiquidAbsoluteFeesUsecase(),

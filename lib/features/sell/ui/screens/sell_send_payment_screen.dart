@@ -53,6 +53,11 @@ class SellSendPaymentScreen extends StatelessWidget {
           ? (bloc.state as SellPaymentState).isPayjoinEnabled
           : false,
     );
+    final isUpdatingPayjoin = context.select(
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).isUpdatingPayjoin
+          : false,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -188,13 +193,13 @@ class SellSendPaymentScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      context.loc.payjoinUseToggle,
+                      context.loc.settingsPayjoinTradingEnabledLabel,
                       style: context.font.bodyMedium,
                     ),
                   ),
                   BBSwitch(
                     value: isPayjoinEnabled,
-                    onChanged: isConfirmingPayment
+                    onChanged: isConfirmingPayment || isUpdatingPayjoin
                         ? null
                         : (enabled) => context.read<SellBloc>().add(
                             SellEvent.payjoinToggled(enabled),
@@ -402,6 +407,11 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is SellPaymentState &&
           (bloc.state as SellPaymentState).isPayinBroadcast,
     );
+    final isUpdatingPayjoin = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState &&
+          (bloc.state as SellPaymentState).isUpdatingPayjoin,
+    );
     final wallet = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
           ? (bloc.state as SellPaymentState).selectedWallet
@@ -416,7 +426,8 @@ class _BottomButtons extends StatelessWidget {
             label: context.loc.sellAdvancedSettings,
             // Changing coin selection or RBF mid-confirmation would rebuild the
             // transaction under the payment being sent.
-            disabled: isConfirmingPayment || isPayinBroadcast,
+            disabled:
+                isConfirmingPayment || isPayinBroadcast || isUpdatingPayjoin,
             onPressed: () {
               BlurredBottomSheet.show(
                 context: context,
@@ -435,7 +446,8 @@ class _BottomButtons extends StatelessWidget {
         ],
         BBButton.big(
           label: context.loc.sellSendPaymentContinue,
-          disabled: isConfirmingPayment || isPayinBroadcast,
+          disabled:
+              isConfirmingPayment || isPayinBroadcast || isUpdatingPayjoin,
           onPressed: onContinuePressed,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

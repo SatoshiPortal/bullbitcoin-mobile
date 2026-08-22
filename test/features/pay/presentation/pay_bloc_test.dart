@@ -19,8 +19,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
@@ -32,7 +34,6 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
@@ -94,12 +95,15 @@ class _MockPayOrder extends Mock implements FiatPaymentOrder {}
 /// The confirmation path only ever runs from a [PayPaymentState] that earlier
 /// events built up. Seeding it directly keeps this test to the send path and
 /// avoids the order polling timer that order creation starts.
-class _MockSettingsFacade extends Mock implements SettingsFacade {}
+class _MockGetPayjoinTradingEnabled extends Mock
+    implements GetPayjoinTradingEnabledUsecase {}
+
+class _MockSetPayjoinTradingEnabled extends Mock
+    implements SetPayjoinTradingEnabledUsecase {}
 
 class _SeedablePayBloc extends PayBloc {
   _SeedablePayBloc({
     required super.getExchangeUserSummaryUsecase,
-    required super.settingsFacade,
     required super.placePayOrderUsecase,
     required super.refreshPayOrderUsecase,
     required super.prepareBitcoinSendUsecase,
@@ -111,6 +115,8 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.getPayjoinTradingEnabledUsecase,
+    required super.setPayjoinTradingEnabledUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
@@ -170,6 +176,7 @@ void main() {
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
   late _MockGetPayjoin getPayjoin;
+  late _MockGetPayjoinTradingEnabled getPayjoinTradingEnabled;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockPayOrder payOrder;
   late _MockWallet wallet;
@@ -292,10 +299,13 @@ void main() {
     ).thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
     when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
+    getPayjoinTradingEnabled = _MockGetPayjoinTradingEnabled();
+    when(
+      () => getPayjoinTradingEnabled.execute(),
+    ).thenAnswer((_) async => true);
 
     bloc = _SeedablePayBloc(
       getExchangeUserSummaryUsecase: _MockGetUserSummary(),
-      settingsFacade: _MockSettingsFacade(),
       placePayOrderUsecase: _MockPlacePayOrder(),
       refreshPayOrderUsecase: refreshPayOrder,
       prepareBitcoinSendUsecase: prepareBitcoinSend,
@@ -307,6 +317,8 @@ void main() {
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
       getPayjoinUsecase: getPayjoin,
+      getPayjoinTradingEnabledUsecase: getPayjoinTradingEnabled,
+      setPayjoinTradingEnabledUsecase: _MockSetPayjoinTradingEnabled(),
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
@@ -324,6 +336,37 @@ void main() {
   tearDown(() => bloc.close());
 
   group('PayBloc — broadcast latch', () {
+    test('falls back to a plain payment when trading was disabled', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => payOrder.bip21URI).thenReturn(bip21);
+      when(
+        () => payOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(
+        () => getPayjoinTradingEnabled.execute(),
+      ).thenAnswer((_) async => false);
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await untilCalled(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      );
+
+      verifyNever(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      );
+      expect((bloc.state as PayPaymentState).isPayjoinEnabled, isFalse);
+    });
+
     test(
       'does not report success while a Payjoin is only requested',
       () async {

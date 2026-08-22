@@ -4897,6 +4897,7 @@
   "settingsPayjoinDirectoryLabel": "Payjoin-Verzeichnis",
   "settingsPayjoinTradingEnabledLabel": "Payjoin-Trading aktiviert",
   "settingsPayjoinTradingDescription": "Verwendet Payjoin beim Senden oder Empfangen von Bitcoin für Bull-Bitcoin-Trades (Kauf, Verkauf und Rechnungszahlungen). Unabhängig von der obigen Payjoin-Einstellung: die Bull-Bitcoin-Börse ist bereits die Gegenpartei des Trades.",
+  "payjoinTradingSettingUpdateError": "Die Payjoin-Trading-Einstellung konnte nicht aktualisiert werden. Versuche es erneut.",
   "settingsPayjoinEnabledLabel": "Payjoin aktiviert",
   "settingsPayjoinExpireDescription": "Legt fest, wie viele Sekunden eine Payjoin-Sitzung geöffnet bleibt, bevor zu einer regulären Zahlung gewechselt wird.",
   "settingsPayjoinExpireRangeError": "Der Wert muss zwischen {min} und {max} Sekunden liegen",

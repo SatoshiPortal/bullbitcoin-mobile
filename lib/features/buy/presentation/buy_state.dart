@@ -25,6 +25,7 @@ sealed class BuyState with _$BuyState {
     ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
     @Default(true) bool isPayjoinEnabled,
+    @Default(false) bool isUpdatingPayjoin,
     FeeOptions? accelerationNetworkFees,
     GetNetworkFeesException? getNetworkFeesException,
     ConvertSatsToCurrencyAmountException? convertSatsToCurrencyAmountException,
@@ -116,7 +117,7 @@ sealed class BuyState with _$BuyState {
       canOfferPayjoin && isPayjoinEnabled && amountSat != null;
 
   bool get canCreateOrder {
-    return isPositiveAmount && hasDestination;
+    return isPositiveAmount && hasDestination && !isUpdatingPayjoin;
   }
 
   double _truncateToDecimals(double value, int decimals) {

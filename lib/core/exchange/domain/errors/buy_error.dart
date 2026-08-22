@@ -22,6 +22,8 @@ sealed class BuyError with _$BuyError {
   const factory BuyError.orderNotFound() = OrderNotFoundBuyError;
   const factory BuyError.orderAlreadyConfirmed() =
       OrderAlreadyConfirmedBuyError;
+  const factory BuyError.payjoinSettingUpdateFailed() =
+      PayjoinSettingUpdateFailedBuyError;
   const factory BuyError.unexpected({required String message}) =
       UnexpectedBuyError;
 
@@ -35,6 +37,8 @@ sealed class BuyError with _$BuyError {
     insufficientFunds: () => context.loc.buyInsufficientFundsError,
     orderNotFound: () => context.loc.buyOrderNotFoundError,
     orderAlreadyConfirmed: () => context.loc.buyOrderAlreadyConfirmedError,
+    payjoinSettingUpdateFailed: () =>
+        context.loc.payjoinTradingSettingUpdateError,
     // The raw message is logged by the bloc; it is never fit to show to a user.
     unexpected: (_) => context.loc.buyUnexpectedError,
   );

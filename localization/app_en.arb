@@ -14174,6 +14174,10 @@
     "description": "Label next to the payjoin-for-trades switch (buy/sell/pay orders); independent of the global payjoin switch"
   },
   "settingsPayjoinTradingDescription": "Uses payjoin when sending or receiving bitcoin for Bull Bitcoin trades (buy, sell and bill payments). Independent of the Payjoin setting above: the Bull Bitcoin exchange is already the counterparty to the trade.",
+  "payjoinTradingSettingUpdateError": "Could not update the Payjoin trading setting. Try again.",
+  "@payjoinTradingSettingUpdateError": {
+    "description": "Shown when persisting the Payjoin trading preference fails."
+  },
   "@settingsPayjoinTradingDescription": {
     "description": "Explanation under the payjoin-for-trades switch"
   },

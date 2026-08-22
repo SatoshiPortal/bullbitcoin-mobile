@@ -28,6 +28,8 @@ sealed class PayError with _$PayError {
   /// operation, so the refreshed order is refused rather than paid.
   const factory PayError.depositAddressChanged() =
       DepositAddressChangedPayError;
+  const factory PayError.payjoinSettingUpdateFailed() =
+      PayjoinSettingUpdateFailedPayError;
   const factory PayError.unexpected({required String message}) =
       UnexpectedPayError;
 
@@ -42,6 +44,8 @@ sealed class PayError with _$PayError {
     orderNotFound: () => context.loc.payOrderNotFound,
     orderAlreadyConfirmed: () => context.loc.payOrderAlreadyConfirmed,
     depositAddressChanged: () => context.loc.payDepositAddressChangedError,
+    payjoinSettingUpdateFailed: () =>
+        context.loc.payjoinTradingSettingUpdateError,
     unexpected: (message) => message,
   );
 }

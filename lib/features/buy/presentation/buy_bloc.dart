@@ -21,7 +21,8 @@ import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/features/buy/domain/set_buy_payjoin_enabled_usecase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -43,8 +44,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._getSettingsUsecase,
     required this._cancelAbandonedBuyPayjoinUsecase,
     required this._getBuyPayjoinEnabledUsecase,
+    required this._setBuyPayjoinEnabledUsecase,
     required this._labelCompletedBuyOrderUsecase,
-    required this._settingsFacade,
   }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -55,7 +56,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyRefreshOrder>(_onRefreshOrder);
     on<_BuyConfirmOrder>(_onConfirmOrder);
-    on<_BuyPayjoinToggled>(_onPayjoinToggled);
+    on<_BuyPayjoinToggled>(_onPayjoinToggled, transformer: droppable());
     on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
     on<_BuyAccelerateTransactionConfirmed>(_onAccelerateTransactionConfirmed);
   }
@@ -72,7 +73,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
   final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
-  final SettingsFacade _settingsFacade;
+  final SetBuyPayjoinEnabledUsecase _setBuyPayjoinEnabledUsecase;
   final LabelCompletedBuyOrderUsecase _labelCompletedBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
@@ -216,6 +217,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyCreateOrder event,
     Emitter<BuyState> emit,
   ) async {
+    if (state.isUpdatingPayjoin) return;
     try {
       await _cancelAbandonedPayjoin(state.buyOrder);
       // Clear any previous exceptions and reset the buy order so that we create
@@ -354,11 +356,25 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyPayjoinToggled event,
     Emitter<BuyState> emit,
   ) async {
-    emit(state.copyWith(isPayjoinEnabled: event.enabled));
-    await _settingsFacade.persistPayjoinTradingToggle(
-      event.enabled,
-      flow: 'buy',
-    );
+    final previous = state.isPayjoinEnabled;
+    emit(state.copyWith(isUpdatingPayjoin: true, createOrderBuyError: null));
+    final failure = await _setBuyPayjoinEnabledUsecase.execute(event.enabled);
+    if (failure == null) {
+      emit(
+        state.copyWith(
+          isPayjoinEnabled: event.enabled,
+          isUpdatingPayjoin: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          isPayjoinEnabled: previous,
+          isUpdatingPayjoin: false,
+          createOrderBuyError: failure,
+        ),
+      );
+    }
   }
 
   Future<void> _cancelAbandonedPayjoin(BuyOrder? order) async {

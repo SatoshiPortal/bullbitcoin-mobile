@@ -124,8 +124,6 @@ class SettingsLocator {
     locator.registerLazySingleton<SettingsFacade>(
       () => SettingsFacade(
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
-        setPayjoinTradingEnabledUsecase:
-            locator<SetPayjoinTradingEnabledUsecase>(),
         watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
       ),
     );

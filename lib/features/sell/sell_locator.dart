@@ -14,11 +14,12 @@ import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecas
 import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -42,6 +43,12 @@ class SellLocator {
     );
     locator.registerFactory<GetPayjoinUsecase>(
       () => GetPayjoinUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<GetPayjoinTradingEnabledUsecase>(
+      () => GetPayjoinTradingEnabledUsecase(locator<PayjoinPolicyAccess>()),
+    );
+    locator.registerFactory<SetPayjoinTradingEnabledUsecase>(
+      () => SetPayjoinTradingEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
     locator.registerFactory<SendWithPayjoinUsecase>(
       () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
@@ -85,7 +92,6 @@ class SellLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<SellBloc>(
       () => SellBloc(
-        settingsFacade: locator<SettingsFacade>(),
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         createSellOrderUsecase: locator<CreateSellOrderUsecase>(),
@@ -101,6 +107,10 @@ class SellLocator {
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        getPayjoinTradingEnabledUsecase:
+            locator<GetPayjoinTradingEnabledUsecase>(),
+        setPayjoinTradingEnabledUsecase:
+            locator<SetPayjoinTradingEnabledUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),

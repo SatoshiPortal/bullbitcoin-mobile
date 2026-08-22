@@ -4949,6 +4949,7 @@
   "settingsPayjoinV1DirectoryLeakExplanation": "Si votre contrepartie utilise une ancienne version du payjoin (v1) plutôt que la version actuelle (v2), ce même UTXO peut aussi être révélé au répertoire payjoin (payjoin directory), un relais tiers utilisé pour coordonner le payjoin.",
   "settingsPayjoinTradingEnabledLabel": "Payjoin pour les transactions activé",
   "settingsPayjoinTradingDescription": "Utilise payjoin lors de l'envoi ou de la réception de bitcoins pour les transactions Bull Bitcoin (achat, vente et paiement de factures). Indépendant du paramètre Payjoin ci-dessus : la plateforme Bull Bitcoin est déjà la contrepartie de la transaction.",
+  "payjoinTradingSettingUpdateError": "Impossible de mettre à jour le paramètre Payjoin pour les transactions. Réessayez.",
   "settingsPayjoinEnabledLabel": "Payjoin activé",
   "settingsPayjoinMinAmountTitle": "Montant minimum",
   "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin est refusé et le paiement est reçu normalement.",
