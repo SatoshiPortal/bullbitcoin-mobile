@@ -37,9 +37,6 @@ class SettingsFacade {
     );
   }
 
-  Stream<bool> watchPayjoinTradingEnabled() =>
-      watchPayjoinPolicy().map((policy) => policy.tradingEnabled).distinct();
-
   Stream<int> watchPayjoinMinAmount() =>
       watchPayjoinPolicy().map((policy) => policy.minimumAmountSat).distinct();
 

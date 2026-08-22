@@ -4928,7 +4928,6 @@
   "payjoinBuyRegularSend": "Bitcoin per regulärer Transaktion an Ihre Wallet gesendet",
   "payjoinInProgress": "Payjoin wird durchgeführt…",
   "payjoinSucceeded": "Payjoin erfolgreich abgeschlossen",
-  "payjoinUseToggle": "Payjoin verwenden",
   "payjoinViaPayjoin": "über Payjoin",
   "payjoinViaRegularSend": "per regulärer Transaktion",
   "sellPaymentSentRefreshingOrder": "Zahlung gesendet, Ihre Bestellung wird aktualisiert…",

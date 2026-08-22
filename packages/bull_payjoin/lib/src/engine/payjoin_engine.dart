@@ -239,7 +239,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     final initialPolicy = await _policy.load();
     if (!_isReceiverPermitted(initialPolicy, isTrade: isTrade)) {
-      throw StateError('Payjoin is disabled');
+      throw StateError(
+        isTrade ? 'Payjoin trading is disabled' : 'Payjoin is disabled',
+      );
     }
 
     final model = await _pdkPayjoinDatasource.createReceiver(
@@ -266,7 +268,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (!_isReceiverPermitted(policy, isTrade: isTrade)) {
           await _settleReceiverAfterDisable(model);
           settled = true;
-          throw StateError('Payjoin was disabled while creating the receiver');
+          throw StateError(
+            isTrade
+                ? 'Payjoin trading was disabled while creating the receiver'
+                : 'Payjoin was disabled while creating the receiver',
+          );
         }
 
         return model.toEntity() as PayjoinReceiver;

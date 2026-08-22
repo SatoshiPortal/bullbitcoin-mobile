@@ -14385,10 +14385,6 @@
   "@payjoinViaRegularSend": {
     "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
   },
-  "payjoinUseToggle": "Use payjoin",
-  "@payjoinUseToggle": {
-    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
-  },
   "addressViewErrorWalletNotFound": "This wallet could not be found.",
   "@addressViewErrorWalletNotFound": {
     "description": "Shown when the wallet backing the addresses screen has no stored metadata"

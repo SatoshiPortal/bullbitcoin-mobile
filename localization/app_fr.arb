@@ -4987,7 +4987,6 @@
   "payjoinBuyRegularSend": "Bitcoin envoyé à votre portefeuille par une transaction ordinaire",
   "payjoinViaPayjoin": "via Payjoin",
   "payjoinViaRegularSend": "par une transaction ordinaire",
-  "payjoinUseToggle": "Utiliser Payjoin",
   "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
   "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
   "mnemonicPossibleLastWords": "{count} derniers mots possibles",

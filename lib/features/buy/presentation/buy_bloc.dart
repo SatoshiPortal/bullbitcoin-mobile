@@ -250,6 +250,14 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // endpoint can revise it afterwards. Everything else (an external
       // address, Liquid, an account outside the pilot) keeps placing the order
       // exactly as before.
+      // The trading setting can change from Settings or another flow while
+      // this screen is open, and a buy order cannot be revised after
+      // creation — re-sync the toggle with the persisted policy the same
+      // way pay/sell do at confirm time.
+      final tradingEnabled = await _getBuyPayjoinEnabledUsecase.execute();
+      if (!tradingEnabled && state.isPayjoinEnabled) {
+        emit(state.copyWith(isPayjoinEnabled: false));
+      }
       final usePayjoin = state.shouldUsePayjoin;
 
       final order = await _createBuyOrderUsecase.execute(
@@ -357,7 +365,18 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     Emitter<BuyState> emit,
   ) async {
     final previous = state.isPayjoinEnabled;
-    emit(state.copyWith(isUpdatingPayjoin: true, createOrderBuyError: null));
+    // Clear only a stale failure from a previous toggle attempt; an
+    // unrelated create-order error must survive a mere switch tap.
+    final retainedError =
+        state.createOrderBuyError is PayjoinSettingUpdateFailedBuyError
+        ? null
+        : state.createOrderBuyError;
+    emit(
+      state.copyWith(
+        isUpdatingPayjoin: true,
+        createOrderBuyError: retainedError,
+      ),
+    );
     final failure = await _setBuyPayjoinEnabledUsecase.execute(event.enabled);
     if (failure == null) {
       emit(

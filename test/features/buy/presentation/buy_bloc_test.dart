@@ -230,4 +230,45 @@ void main() {
       );
     },
   );
+
+  test(
+    'tapping the payjoin switch keeps an unrelated create-order error',
+    () async {
+      final setPayjoinEnabled = _MockSetBuyPayjoinEnabledUsecase();
+      when(
+        () => setPayjoinEnabled.execute(any()),
+      ).thenAnswer((_) async => null);
+      final bloc = _SeedableBuyBloc(
+        getWalletsUsecase: _MockGetWalletsUsecase(),
+        getReceiveAddressUsecase: _MockGetReceiveAddressUsecase(),
+        getExchangeUserSummaryUsecase: _MockGetExchangeUserSummaryUsecase(),
+        confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+        createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+        refreshBuyOrderUsecase: _MockRefreshBuyOrderUsecase(),
+        getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+        convertSatsToCurrencyAmountUsecase:
+            _MockConvertSatsToCurrencyAmountUsecase(),
+        accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+        getSettingsUsecase: _MockGetSettingsUsecase(),
+        cancelAbandonedBuyPayjoinUsecase:
+            _MockCancelAbandonedBuyPayjoinUsecase(),
+        getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+        setBuyPayjoinEnabledUsecase: setPayjoinEnabled,
+        labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+      );
+      addTearDown(bloc.close);
+      const orderError = BuyError.unexpected(message: 'amount too low');
+      bloc.seed(const BuyState(createOrderBuyError: orderError));
+
+      bloc.add(const BuyEvent.payjoinToggled(false));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isPayjoinEnabled, isFalse);
+      expect(
+        bloc.state.createOrderBuyError,
+        orderError,
+        reason: 'a switch tap must not clear an unrelated order error',
+      );
+    },
+  );
 }
