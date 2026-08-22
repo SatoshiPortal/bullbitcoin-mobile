@@ -19,7 +19,7 @@ import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart'
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/set_buy_payjoin_enabled_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -43,7 +43,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._accelerateBuyOrderUsecase,
     required this._getSettingsUsecase,
     required this._cancelAbandonedBuyPayjoinUsecase,
-    required this._getBuyPayjoinEnabledUsecase,
+    required this._getPayjoinTradingEnabledUsecase,
     required this._setBuyPayjoinEnabledUsecase,
     required this._labelCompletedBuyOrderUsecase,
   }) : super(const BuyState()) {
@@ -72,7 +72,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final CancelAbandonedBuyPayjoinUsecase _cancelAbandonedBuyPayjoinUsecase;
-  final GetBuyPayjoinEnabledUsecase _getBuyPayjoinEnabledUsecase;
+  final GetPayjoinTradingEnabledUsecase _getPayjoinTradingEnabledUsecase;
   final SetBuyPayjoinEnabledUsecase _setBuyPayjoinEnabledUsecase;
   final LabelCompletedBuyOrderUsecase _labelCompletedBuyOrderUsecase;
 
@@ -80,7 +80,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
       final settings = await _getSettingsUsecase.execute();
-      final payjoinEnabled = await _getBuyPayjoinEnabledUsecase.execute();
+      final payjoinEnabled = await _getPayjoinTradingEnabledUsecase.execute();
       final preferredCurrency = summary.currency ?? settings.currencyCode;
       final balances = summary.balances.fold<Map<String, double>>({}, (
         map,
@@ -252,13 +252,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // exactly as before.
       // The trading setting can change from Settings or another flow while
       // this screen is open, and a buy order cannot be revised after
-      // creation — re-sync the toggle with the persisted policy the same
-      // way pay/sell do at confirm time.
-      final tradingEnabled = await _getBuyPayjoinEnabledUsecase.execute();
+      // creation — re-sync the toggle with the persisted policy at confirm
+      // time, in both directions, so a setting changed elsewhere is what
+      // the order actually follows. The decision is carried by
+      // `tradingEnabled` itself; the emit only corrects the visible switch.
+      final tradingEnabled = await _getPayjoinTradingEnabledUsecase.execute();
       if (tradingEnabled != state.isPayjoinEnabled) {
         emit(state.copyWith(isPayjoinEnabled: tradingEnabled));
       }
-      final usePayjoin = state.shouldUsePayjoin;
+      final usePayjoin = tradingEnabled && state.shouldUsePayjoin;
 
       final order = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
@@ -390,7 +392,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         state.copyWith(
           isPayjoinEnabled: previous,
           isUpdatingPayjoin: false,
-          createOrderBuyError: failure,
+          // An unrelated create-order error keeps precedence over the toggle
+          // failure — the reverted switch is the toggle's own feedback.
+          createOrderBuyError: retainedError ?? failure,
         ),
       );
     }

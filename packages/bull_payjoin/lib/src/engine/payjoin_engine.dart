@@ -239,9 +239,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     final initialPolicy = await _policy.load();
     if (!_isReceiverPermitted(initialPolicy, isTrade: isTrade)) {
-      throw StateError(
-        isTrade ? 'Payjoin trading is disabled' : 'Payjoin is disabled',
-      );
+      // Log here: the runtime maps any throw to a fixed generic failure, so
+      // this is the only place the actual reason becomes observable.
+      final reason = isTrade
+          ? 'Payjoin trading is disabled'
+          : 'Payjoin is disabled';
+      _log.warning('Receiver creation refused: $reason');
+      throw StateError(reason);
     }
 
     final model = await _pdkPayjoinDatasource.createReceiver(
@@ -268,11 +272,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (!_isReceiverPermitted(policy, isTrade: isTrade)) {
           await _settleReceiverAfterDisable(model);
           settled = true;
-          throw StateError(
-            isTrade
-                ? 'Payjoin trading was disabled while creating the receiver'
-                : 'Payjoin was disabled while creating the receiver',
-          );
+          final reason = isTrade
+              ? 'Payjoin trading was disabled while creating the receiver'
+              : 'Payjoin was disabled while creating the receiver';
+          _log.warning('Receiver creation aborted: $reason');
+          throw StateError(reason);
         }
 
         return model.toEntity() as PayjoinReceiver;

@@ -11,8 +11,8 @@ import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_useca
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/set_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
@@ -39,9 +39,6 @@ class BuyLocator {
         locator<PayjoinSessions>(),
         locator<PayjoinReceiver>(),
       ),
-    );
-    locator.registerFactory<GetBuyPayjoinEnabledUsecase>(
-      () => GetBuyPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
     locator.registerFactory<SetBuyPayjoinEnabledUsecase>(
       () => SetBuyPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
@@ -70,7 +67,8 @@ class BuyLocator {
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         cancelAbandonedBuyPayjoinUsecase:
             locator<CancelAbandonedBuyPayjoinUsecase>(),
-        getBuyPayjoinEnabledUsecase: locator<GetBuyPayjoinEnabledUsecase>(),
+        getPayjoinTradingEnabledUsecase:
+            locator<GetPayjoinTradingEnabledUsecase>(),
         setBuyPayjoinEnabledUsecase: locator<SetBuyPayjoinEnabledUsecase>(),
         labelCompletedBuyOrderUsecase: locator<LabelCompletedBuyOrderUsecase>(),
       ),
