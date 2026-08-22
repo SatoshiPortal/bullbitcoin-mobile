@@ -30,6 +30,7 @@ PayjoinSession _senderPayjoin({
   String originalTxId = 'orig-txid',
   String? txId,
   int amountSat = 50000,
+  PayjoinOwnership? ownership,
 }) => PayjoinSenderSession(
   status: status,
   uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
@@ -40,9 +41,37 @@ PayjoinSession _senderPayjoin({
   createdAt: DateTime(2026),
   expiresAt: DateTime(2026, 1, 1, 0, 5),
   transactionId: txId,
+  ownership: ownership,
 );
 
 void main() {
+  test('exposes ownership only for the displayed payjoin proposal', () {
+    const ownership = PayjoinOwnership(
+      inputs: [PayjoinParty.sender, PayjoinParty.recipient],
+      outputs: [PayjoinParty.recipient, PayjoinParty.sender],
+    );
+    final payjoin = _senderPayjoin(txId: 'payjoin-txid', ownership: ownership);
+
+    expect(
+      Transaction(
+        walletTransaction: _walletTx(txId: 'payjoin-txid'),
+        payjoin: payjoin,
+      ).payjoinOwnershipFragment,
+      'pj=1:sr:rs',
+    );
+    expect(
+      Transaction(payjoin: payjoin).payjoinOwnershipFragment,
+      'pj=1:sr:rs',
+    );
+    expect(
+      Transaction(
+        walletTransaction: _walletTx(txId: 'orig-txid'),
+        payjoin: payjoin,
+      ).payjoinOwnershipFragment,
+      isNull,
+    );
+  });
+
   group('Transaction swap wallet direction', () {
     test('identifies Bitcoin to Liquid transfer wallets', () {
       final transaction = Transaction(

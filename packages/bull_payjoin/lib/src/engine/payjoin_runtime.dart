@@ -9,6 +9,7 @@ import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart';
 import 'package:bull_payjoin/src/domain/payjoin_requests.dart';
 import 'package:bull_payjoin/src/domain/payjoin_session.dart';
+import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as engine;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
 import 'package:bull_payjoin/src/engine/payjoin_fee_cap.dart';
@@ -643,6 +644,7 @@ PayjoinSession _toSession(engine.Payjoin value) {
       ? BitcoinNetwork.testnet
       : BitcoinNetwork.mainnet;
   final status = PayjoinStatus.values.byName(value.status.name);
+  final ownership = _deriveOwnership(value);
   return switch (value) {
     engine.PayjoinSender() => PayjoinSenderSession(
       status: status,
@@ -655,6 +657,7 @@ PayjoinSession _toSession(engine.Payjoin value) {
       originalTransactionId: value.originalTxId,
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
+      ownership: ownership,
     ),
     engine.PayjoinReceiver() => PayjoinReceiverSession(
       status: status,
@@ -669,6 +672,45 @@ PayjoinSession _toSession(engine.Payjoin value) {
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
       hasOriginalTransaction: value.originalTxBytes != null,
+      ownership: ownership,
     ),
   };
+}
+
+PayjoinOwnership? _deriveOwnership(engine.Payjoin payjoin) {
+  final proposalPsbt = payjoin.proposalPsbt;
+  final txId = payjoin.txId;
+  if (proposalPsbt == null || txId == null) return null;
+
+  try {
+    final proposal = BitcoinTx.fromPsbtSync(proposalPsbt);
+    if (proposal.txid != txId) return null;
+
+    final (original, bip21) = switch (payjoin) {
+      engine.PayjoinSender(:final originalPsbt, :final uri) => (
+        BitcoinTx.fromPsbtSync(originalPsbt),
+        uri,
+      ),
+      engine.PayjoinReceiver(:final originalTxBytes, :final pjUri) => (
+        originalTxBytes == null
+            ? null
+            : BitcoinTx.fromBytesSync(originalTxBytes),
+        pjUri,
+      ),
+    };
+    if (original == null || original.txid != payjoin.originalTxId) return null;
+
+    final paymentScript = paymentScriptFromBip21(
+      bip21,
+      isTestnet: payjoin.isTestnet,
+    );
+    if (paymentScript == null) return null;
+    return derivePayjoinOwnership(
+      original: original,
+      proposal: proposal,
+      paymentScript: paymentScript,
+    );
+  } catch (_) {
+    return null;
+  }
 }

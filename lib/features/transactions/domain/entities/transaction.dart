@@ -94,6 +94,20 @@ sealed class Transaction with _$Transaction {
     return pj.status;
   }
 
+  /// Returns ownership only when it describes the displayed payjoin proposal.
+  String? get payjoinOwnershipFragment {
+    final p = payjoin;
+    final ownership = p?.ownership;
+    if (p == null || !isBitcoin || ownership == null) {
+      return null;
+    }
+    if (p.txId == null || p.txId != txId) return null;
+
+    String codes(List<PayjoinParty> parties) =>
+        parties.map((party) => party == PayjoinParty.sender ? 's' : 'r').join();
+    return 'pj=1:${codes(ownership.inputs)}:${codes(ownership.outputs)}';
+  }
+
   /// The mining fee (sats) deducted from a completed payjoin receive,
   /// paying for the input the receiver contributed to the transaction
   /// (BIP78). `null` unless this is a payjoin actually reflected in a

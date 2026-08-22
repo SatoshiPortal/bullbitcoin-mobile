@@ -5,6 +5,15 @@ import 'package:primitives/primitives.dart';
 
 enum PayjoinStatus { started, requested, proposed, completed, aborted, expired }
 
+enum PayjoinParty { sender, recipient }
+
+final class PayjoinOwnership {
+  final List<PayjoinParty> inputs;
+  final List<PayjoinParty> outputs;
+
+  const PayjoinOwnership({required this.inputs, required this.outputs});
+}
+
 sealed class PayjoinSession {
   final PayjoinStatus status;
   final String id;
@@ -16,6 +25,7 @@ sealed class PayjoinSession {
   final String? originalTransactionId;
   final String? transactionId;
   final bool hasProposal;
+  final PayjoinOwnership? ownership;
 
   PayjoinSession({
     required this.status,
@@ -28,6 +38,7 @@ sealed class PayjoinSession {
     this.originalTransactionId,
     this.transactionId,
     this.hasProposal = false,
+    this.ownership,
   }) {
     if (id.trim().isEmpty) {
       throw ArgumentError.value(id, 'id', 'must not be blank');
@@ -92,6 +103,7 @@ final class PayjoinReceiverSession extends PayjoinSession {
     super.originalTransactionId,
     super.transactionId,
     super.hasProposal,
+    super.ownership,
   }) {
     if (payjoinUri.trim().isEmpty) {
       throw ArgumentError.value(payjoinUri, 'payjoinUri', 'must not be blank');
@@ -114,6 +126,7 @@ final class PayjoinSenderSession extends PayjoinSession {
     required super.originalTransactionId,
     super.transactionId,
     super.hasProposal,
+    super.ownership,
   }) : super(id: uri);
 
   String get uri => id;
