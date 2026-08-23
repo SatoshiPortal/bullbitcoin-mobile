@@ -4651,6 +4651,15 @@ class MempoolServers extends Table
     $customConstraints: 'NOT NULL DEFAULT 1 CHECK (enable_ssl IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
+  late final GeneratedColumn<int> validateDomain = GeneratedColumn<int>(
+    'validate_domain',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (validate_domain IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     url,
@@ -4658,6 +4667,7 @@ class MempoolServers extends Table
     isLiquid,
     isCustom,
     enableSsl,
+    validateDomain,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4690,6 +4700,10 @@ class MempoolServers extends Table
         DriftSqlType.int,
         data['${effectivePrefix}enable_ssl'],
       )!,
+      validateDomain: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}validate_domain'],
+      )!,
     );
   }
 
@@ -4713,12 +4727,14 @@ class MempoolServersData extends DataClass
   final int isLiquid;
   final int isCustom;
   final int enableSsl;
+  final int validateDomain;
   const MempoolServersData({
     required this.url,
     required this.isTestnet,
     required this.isLiquid,
     required this.isCustom,
     required this.enableSsl,
+    required this.validateDomain,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4728,6 +4744,7 @@ class MempoolServersData extends DataClass
     map['is_liquid'] = Variable<int>(isLiquid);
     map['is_custom'] = Variable<int>(isCustom);
     map['enable_ssl'] = Variable<int>(enableSsl);
+    map['validate_domain'] = Variable<int>(validateDomain);
     return map;
   }
 
@@ -4738,6 +4755,7 @@ class MempoolServersData extends DataClass
       isLiquid: Value(isLiquid),
       isCustom: Value(isCustom),
       enableSsl: Value(enableSsl),
+      validateDomain: Value(validateDomain),
     );
   }
 
@@ -4752,6 +4770,7 @@ class MempoolServersData extends DataClass
       isLiquid: serializer.fromJson<int>(json['isLiquid']),
       isCustom: serializer.fromJson<int>(json['isCustom']),
       enableSsl: serializer.fromJson<int>(json['enableSsl']),
+      validateDomain: serializer.fromJson<int>(json['validateDomain']),
     );
   }
   @override
@@ -4763,6 +4782,7 @@ class MempoolServersData extends DataClass
       'isLiquid': serializer.toJson<int>(isLiquid),
       'isCustom': serializer.toJson<int>(isCustom),
       'enableSsl': serializer.toJson<int>(enableSsl),
+      'validateDomain': serializer.toJson<int>(validateDomain),
     };
   }
 
@@ -4772,12 +4792,14 @@ class MempoolServersData extends DataClass
     int? isLiquid,
     int? isCustom,
     int? enableSsl,
+    int? validateDomain,
   }) => MempoolServersData(
     url: url ?? this.url,
     isTestnet: isTestnet ?? this.isTestnet,
     isLiquid: isLiquid ?? this.isLiquid,
     isCustom: isCustom ?? this.isCustom,
     enableSsl: enableSsl ?? this.enableSsl,
+    validateDomain: validateDomain ?? this.validateDomain,
   );
   MempoolServersData copyWithCompanion(MempoolServersCompanion data) {
     return MempoolServersData(
@@ -4786,6 +4808,9 @@ class MempoolServersData extends DataClass
       isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
       enableSsl: data.enableSsl.present ? data.enableSsl.value : this.enableSsl,
+      validateDomain: data.validateDomain.present
+          ? data.validateDomain.value
+          : this.validateDomain,
     );
   }
 
@@ -4796,14 +4821,21 @@ class MempoolServersData extends DataClass
           ..write('isTestnet: $isTestnet, ')
           ..write('isLiquid: $isLiquid, ')
           ..write('isCustom: $isCustom, ')
-          ..write('enableSsl: $enableSsl')
+          ..write('enableSsl: $enableSsl, ')
+          ..write('validateDomain: $validateDomain')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(url, isTestnet, isLiquid, isCustom, enableSsl);
+  int get hashCode => Object.hash(
+    url,
+    isTestnet,
+    isLiquid,
+    isCustom,
+    enableSsl,
+    validateDomain,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4812,7 +4844,8 @@ class MempoolServersData extends DataClass
           other.isTestnet == this.isTestnet &&
           other.isLiquid == this.isLiquid &&
           other.isCustom == this.isCustom &&
-          other.enableSsl == this.enableSsl);
+          other.enableSsl == this.enableSsl &&
+          other.validateDomain == this.validateDomain);
 }
 
 class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
@@ -4821,6 +4854,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
   final Value<int> isLiquid;
   final Value<int> isCustom;
   final Value<int> enableSsl;
+  final Value<int> validateDomain;
   final Value<int> rowid;
   const MempoolServersCompanion({
     this.url = const Value.absent(),
@@ -4828,6 +4862,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     this.isLiquid = const Value.absent(),
     this.isCustom = const Value.absent(),
     this.enableSsl = const Value.absent(),
+    this.validateDomain = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MempoolServersCompanion.insert({
@@ -4836,6 +4871,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     required int isLiquid,
     required int isCustom,
     this.enableSsl = const Value.absent(),
+    this.validateDomain = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : url = Value(url),
        isTestnet = Value(isTestnet),
@@ -4847,6 +4883,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     Expression<int>? isLiquid,
     Expression<int>? isCustom,
     Expression<int>? enableSsl,
+    Expression<int>? validateDomain,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4855,6 +4892,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
       if (isLiquid != null) 'is_liquid': isLiquid,
       if (isCustom != null) 'is_custom': isCustom,
       if (enableSsl != null) 'enable_ssl': enableSsl,
+      if (validateDomain != null) 'validate_domain': validateDomain,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4865,6 +4903,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     Value<int>? isLiquid,
     Value<int>? isCustom,
     Value<int>? enableSsl,
+    Value<int>? validateDomain,
     Value<int>? rowid,
   }) {
     return MempoolServersCompanion(
@@ -4873,6 +4912,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
       isLiquid: isLiquid ?? this.isLiquid,
       isCustom: isCustom ?? this.isCustom,
       enableSsl: enableSsl ?? this.enableSsl,
+      validateDomain: validateDomain ?? this.validateDomain,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4895,6 +4935,9 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     if (enableSsl.present) {
       map['enable_ssl'] = Variable<int>(enableSsl.value);
     }
+    if (validateDomain.present) {
+      map['validate_domain'] = Variable<int>(validateDomain.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4909,6 +4952,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
           ..write('isLiquid: $isLiquid, ')
           ..write('isCustom: $isCustom, ')
           ..write('enableSsl: $enableSsl, ')
+          ..write('validateDomain: $validateDomain, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

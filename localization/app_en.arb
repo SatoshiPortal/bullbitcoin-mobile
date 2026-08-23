@@ -15449,5 +15449,9 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "mempoolCustomServerValidateDomain": "Validate Domain",
+  "@mempoolCustomServerValidateDomain": {
+    "description": "Certificate validation switch for a custom mempool server."
   }
 }

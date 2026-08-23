@@ -36,6 +36,7 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
+    bool validateDomain = true,
   }) async {
     MempoolTorRoute? route;
     HttpClient? torClient;
@@ -50,7 +51,10 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
           if (route == null) {
             return const Err(MempoolValidationTorNotRunningFailure());
           }
-          torClient = _torHttpClientFactory.create(route.endpoint);
+          torClient = _torHttpClientFactory.create(
+            route.endpoint,
+            allowBadCertificate: !validateDomain,
+          );
         } on Exception catch (error, stackTrace) {
           log.severe(
             message: 'Tor route setup failed',
@@ -69,9 +73,12 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
           sendTimeout: _timeout,
         ),
       );
+      final adapter = dio.httpClientAdapter as IOHttpClientAdapter;
       if (torClient != null) {
-        (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () =>
-            torClient!;
+        adapter.createHttpClient = () => torClient!;
+      } else if (!validateDomain) {
+        adapter.createHttpClient = () =>
+            HttpClient()..badCertificateCallback = (_, _, _) => true;
       }
 
       // Use a simple endpoint to verify the server is a valid mempool instance.
