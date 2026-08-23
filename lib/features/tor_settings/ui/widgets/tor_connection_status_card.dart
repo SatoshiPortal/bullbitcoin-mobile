@@ -7,11 +7,15 @@ import 'package:bull_tor/tor.dart';
 class TorConnectionStatusCard extends StatelessWidget {
   final TorConnectionState connection;
   final String? routeLabel;
+  final String? readyTitle;
+  final String? readyDescription;
 
   const TorConnectionStatusCard({
     super.key,
     required this.connection,
     this.routeLabel,
+    this.readyTitle,
+    this.readyDescription,
   });
 
   /// Whether the blockage looks like the network filtering Tor traffic.
@@ -98,7 +102,7 @@ class TorConnectionStatusCard extends StatelessWidget {
     }
     switch (_status) {
       case _VisualStatus.online:
-        return context.loc.torSettingsStatusConnected;
+        return readyTitle ?? context.loc.torSettingsStatusConnected;
       case _VisualStatus.connecting:
         return context.loc.torSettingsStatusConnecting;
       case _VisualStatus.offline:
@@ -112,7 +116,7 @@ class TorConnectionStatusCard extends StatelessWidget {
     if (_looksCensored) return context.loc.torSettingsDescCensored;
     switch (_status) {
       case _VisualStatus.online:
-        return context.loc.torSettingsDescConnected;
+        return readyDescription ?? context.loc.torSettingsDescConnected;
       case _VisualStatus.connecting:
         return context.loc.torSettingsDescConnecting;
       case _VisualStatus.offline:

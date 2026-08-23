@@ -14693,6 +14693,7 @@
   "@settingsScreenPrivacyDisabledMessage": {
     "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
   },
+<<<<<<< HEAD
   "settingsSearchHint": "Search settings",
   "@settingsSearchHint": {
     "description": "Placeholder for the settings search field"
@@ -14828,5 +14829,13 @@
   "settingsSearchStartTyping": "Start typing to see results.",
   "@settingsSearchStartTyping": {
     "description": "Prompt shown before the user enters a settings search query."
+  },
+  "torSettingsExternalProxyReachable": "Proxy reachable",
+  "@torSettingsExternalProxyReachable": {
+    "description": "Status shown after the configured external SOCKS5 proxy accepts a connection."
+  },
+  "torSettingsExternalProxyReachableDescription": "The configured SOCKS5 proxy accepted a connection.",
+  "@torSettingsExternalProxyReachableDescription": {
+    "description": "Clarifies what Bull verified for an external proxy without claiming that Tor is fully bootstrapped."
   }
 }

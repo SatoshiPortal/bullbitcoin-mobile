@@ -5051,6 +5051,7 @@
   "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible.",
   "settingsScreenPrivacyTitle": "Confidentialité de l’écran",
   "settingsScreenPrivacyDisabledMessage": "Les captures d’écran sont désormais autorisées sur les écrans sensibles",
+<<<<<<< HEAD
   "settingsSearchHint": "Rechercher dans les réglages",
   "settingsSearchNoResults": "Aucun réglage trouvé.",
   "settingsSearchMempoolKeywords": "explorateur de blocs|estimation des frais|frais de transaction|API mempool",
@@ -5084,5 +5085,7 @@
   "settingsSearchTestnetCredentialsKeywords": "identifiants testnet|connexion testnet|nom d’utilisateur testnet|mot de passe testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "rapports de plantage|rapports de bogues|diagnostic|télémétrie|journaux d’erreurs",
   "settingsSearchScreenPrivacyKeywords": "captures d’écran|enregistrement d’écran|protection contre la capture|confidentialité",
-  "settingsSearchStartTyping": "Commencez à saisir pour voir les résultats."
+  "settingsSearchStartTyping": "Commencez à saisir pour voir les résultats.",
+  "torSettingsExternalProxyReachable": "Proxy accessible",
+  "torSettingsExternalProxyReachableDescription": "Le proxy SOCKS5 configuré a accepté une connexion."
 }

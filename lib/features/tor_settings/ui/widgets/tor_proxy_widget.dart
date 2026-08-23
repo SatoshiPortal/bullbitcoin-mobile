@@ -76,15 +76,17 @@ class TorProxyWidget extends StatelessWidget {
             ),
           ),
         ),
-        const Gap(16),
-        TorConnectionStatusCard(
-          connection: torState.embeddedConnection,
-          routeLabel: activeTransport == null
-              ? null
-              : context.loc.torSettingsActiveTransport(
-                  _transportLabel(context, activeTransport),
-                ),
-        ),
+        if (!useTorProxy) ...[
+          const Gap(16),
+          TorConnectionStatusCard(
+            connection: torState.embeddedConnection,
+            routeLabel: activeTransport == null
+                ? null
+                : context.loc.torSettingsActiveTransport(
+                    _transportLabel(context, activeTransport),
+                  ),
+          ),
+        ],
         const Gap(24),
         SettingsEntryItem(
           icon: Icons.security,
@@ -115,10 +117,20 @@ class TorProxyWidget extends StatelessWidget {
         if (showExternalStatus) ...[
           const Gap(16),
           if (useTorProxy)
-            TorConnectionStatusCard(connection: torState.connection),
+            TorConnectionStatusCard(
+              connection: torState.connection,
+              readyTitle: context.loc.torSettingsExternalProxyReachable,
+              readyDescription:
+                  context.loc.torSettingsExternalProxyReachableDescription,
+            ),
           if (torState.externalProxyAttempt != null) ...[
             const Gap(16),
-            TorConnectionStatusCard(connection: torState.externalProxyAttempt!),
+            TorConnectionStatusCard(
+              connection: torState.externalProxyAttempt!,
+              readyTitle: context.loc.torSettingsExternalProxyReachable,
+              readyDescription:
+                  context.loc.torSettingsExternalProxyReachableDescription,
+            ),
           ],
           const Gap(16),
           Card(
