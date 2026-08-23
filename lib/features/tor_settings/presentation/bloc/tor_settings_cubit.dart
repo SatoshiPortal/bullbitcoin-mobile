@@ -17,7 +17,6 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
     required this._getSettingsUsecase,
     required this._updateTorProxyUsecase,
     required this._updateTorTransportModeUsecase,
-    required this._ensureTorReadyUsecase,
     required this._watchTorConnectionUsecase,
     required this._resolveConfiguredExternalTorUsecase,
   }) : super(const TorSettingsState());
@@ -25,7 +24,6 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final UpdateTorProxyUsecase _updateTorProxyUsecase;
   final UpdateTorTransportModeUsecase _updateTorTransportModeUsecase;
-  final EnsureTorReadyUsecase _ensureTorReadyUsecase;
   final WatchTorConnectionUsecase _watchTorConnectionUsecase;
   final ResolveConfiguredExternalTorUsecase
   _resolveConfiguredExternalTorUsecase;
@@ -55,11 +53,9 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
         ),
       );
     });
-    final ensureTor = _ensureTorReadyUsecase.execute();
-    final verifyExternal = state.useTorProxy
-        ? checkConnectionStatus()
-        : Future<void>.value();
-    await Future.wait<void>([ensureTor, verifyExternal]);
+    if (state.useTorProxy) {
+      await checkConnectionStatus();
+    }
   }
 
   Future<bool> _loadSettings({int? generation}) async {

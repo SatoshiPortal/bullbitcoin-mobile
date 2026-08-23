@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/app_startup/data/wallet_startup_adapter.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
@@ -56,6 +57,7 @@ class AppStartupLocator {
       () => InitializeRequiredTorUsecase(
         locator<AppStartupWalletPort>(),
         locator<EnsureTorReadyUsecase>(),
+        locator<ResolveConfiguredExternalTorUsecase>(),
       ),
     );
 
