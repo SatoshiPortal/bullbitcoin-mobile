@@ -1,28 +1,38 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 class FeesDatasource {
   /// Builds the HTTP client for a resolved base URL. Injected so tests can
   /// supply a mock; defaults to a real Dio.
-  final Dio Function(String baseUrl) _dioBuilder;
+  final Dio Function(String baseUrl, bool validateDomain) _dioBuilder;
 
-  FeesDatasource({Dio Function(String baseUrl)? dioBuilder})
-    : _dioBuilder = dioBuilder ?? _defaultDioBuilder;
+  FeesDatasource({
+    Dio Function(String baseUrl, bool validateDomain)? dioBuilder,
+  }) : _dioBuilder = dioBuilder ?? _defaultDioBuilder;
 
-  static Dio _defaultDioBuilder(String baseUrl) => Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      sendTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 15),
-      followRedirects: false,
-      validateStatus: (status) => status == 200,
-    ),
-  );
+  static Dio _defaultDioBuilder(String baseUrl, bool validateDomain) {
+    final http = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 15),
+        followRedirects: false,
+        validateStatus: (status) => status == 200,
+      ),
+    );
+    if (!validateDomain) {
+      (http.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () =>
+          HttpClient()..badCertificateCallback = (_, _, _) => true;
+    }
+    return http;
+  }
 
   /// Fetches precise (sub-1 sat/vByte) fee rates from the mempool API.
   ///
@@ -34,9 +44,10 @@ class FeesDatasource {
   /// neither endpoint yields a usable response.
   Future<MempoolFeesModel> fetchBitcoinNetworkFees({
     required String baseUrl,
+    bool validateDomain = true,
   }) async {
     // Fees and mempool are application traffic and intentionally remain direct.
-    final http = _dioBuilder(baseUrl);
+    final http = _dioBuilder(baseUrl, validateDomain);
 
     final fees =
         await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??

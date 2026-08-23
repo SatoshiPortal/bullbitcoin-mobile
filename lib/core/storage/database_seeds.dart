@@ -148,6 +148,7 @@ class DatabaseSeeds {
         isLiquid: isLiquid,
         isCustom: false,
         enableSsl: true,
+        validateDomain: true,
       );
 
       await db.into(db.mempoolServers).insertOnConflictUpdate(server);

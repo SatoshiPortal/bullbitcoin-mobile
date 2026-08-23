@@ -7,6 +7,7 @@ class MempoolServerDto {
   final bool isTestnet;
   final bool isLiquid;
   final bool enableSsl;
+  final bool validateDomain;
   final MempoolServerStatus status;
 
   MempoolServerDto({
@@ -15,6 +16,7 @@ class MempoolServerDto {
     required this.isTestnet,
     required this.isLiquid,
     this.enableSsl = true,
+    this.validateDomain = true,
     this.status = MempoolServerStatus.unknown,
   });
 
@@ -25,6 +27,7 @@ class MempoolServerDto {
       isTestnet: entity.isTestnet,
       isLiquid: entity.isLiquid,
       enableSsl: entity.enableSsl,
+      validateDomain: entity.validateDomain,
     );
   }
 
@@ -36,6 +39,7 @@ class MempoolServerDto {
     bool? isTestnet,
     bool? isLiquid,
     bool? enableSsl,
+    bool? validateDomain,
     MempoolServerStatus? status,
   }) {
     return MempoolServerDto(
@@ -44,6 +48,7 @@ class MempoolServerDto {
       isTestnet: isTestnet ?? this.isTestnet,
       isLiquid: isLiquid ?? this.isLiquid,
       enableSsl: enableSsl ?? this.enableSsl,
+      validateDomain: validateDomain ?? this.validateDomain,
       status: status ?? this.status,
     );
   }
@@ -58,6 +63,7 @@ class MempoolServerDto {
           isTestnet == other.isTestnet &&
           isLiquid == other.isLiquid &&
           enableSsl == other.enableSsl &&
+          validateDomain == other.validateDomain &&
           status == other.status;
 
   @override
@@ -67,9 +73,10 @@ class MempoolServerDto {
       isTestnet.hashCode ^
       isLiquid.hashCode ^
       enableSsl.hashCode ^
+      validateDomain.hashCode ^
       status.hashCode;
 
   @override
   String toString() =>
-      'MempoolServerDto(url: $url, isCustom: $isCustom, isTestnet: $isTestnet, isLiquid: $isLiquid, enableSsl: $enableSsl, status: $status)';
+      'MempoolServerDto(url: $url, isCustom: $isCustom, isTestnet: $isTestnet, isLiquid: $isLiquid, enableSsl: $enableSsl, validateDomain: $validateDomain, status: $status)';
 }

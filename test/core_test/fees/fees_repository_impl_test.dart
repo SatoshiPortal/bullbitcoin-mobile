@@ -90,7 +90,10 @@ void main() {
       isLiquid: false,
     );
     when(
-      () => datasource.fetchBitcoinNetworkFees(baseUrl: any(named: 'baseUrl')),
+      () => datasource.fetchBitcoinNetworkFees(
+        baseUrl: any(named: 'baseUrl'),
+        validateDomain: any(named: 'validateDomain'),
+      ),
     ).thenAnswer((_) async => _fees);
   });
 
@@ -125,6 +128,7 @@ void main() {
     verify(
       () => datasource.fetchBitcoinNetworkFees(
         baseUrl: 'https://mempool.bullbitcoin.com',
+        validateDomain: true,
       ),
     ).called(1);
     verifyNever(() => serverRepository.fetchCustomServer(any()));
@@ -135,6 +139,7 @@ void main() {
       url: 'custom.example',
       network: network,
       isCustom: true,
+      validateDomain: false,
     );
     when(() => settingsRepository.fetchByNetwork(network)).thenAnswer(
       (_) async => Ok(
@@ -147,8 +152,10 @@ void main() {
     await repository.getNetworkFees(network: Network.bitcoinMainnet);
 
     verify(
-      () =>
-          datasource.fetchBitcoinNetworkFees(baseUrl: 'https://custom.example'),
+      () => datasource.fetchBitcoinNetworkFees(
+        baseUrl: 'https://custom.example',
+        validateDomain: false,
+      ),
     ).called(1);
     verifyNever(() => serverRepository.fetchDefaultServer(any()));
   });
@@ -174,6 +181,7 @@ void main() {
     verify(
       () => datasource.fetchBitcoinNetworkFees(
         baseUrl: 'https://default.example',
+        validateDomain: true,
       ),
     ).called(1);
   });
@@ -187,7 +195,10 @@ void main() {
       throwsA(isA<MempoolFeesException>()),
     );
     verifyNever(
-      () => datasource.fetchBitcoinNetworkFees(baseUrl: any(named: 'baseUrl')),
+      () => datasource.fetchBitcoinNetworkFees(
+        baseUrl: any(named: 'baseUrl'),
+        validateDomain: any(named: 'validateDomain'),
+      ),
     );
   });
 }

@@ -23,6 +23,7 @@ final class TorHttpClientFactory {
   HttpClient create(
     TorProxyEndpoint endpoint, {
     void Function(TorConnectFailure failure)? onConnectFailure,
+    bool allowBadCertificate = false,
   }) {
     // The proxy endpoint is loopback by product contract. The destination
     // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
@@ -45,7 +46,12 @@ final class TorHttpClientFactory {
       );
       final Future<Socket> socket =
           (uri.scheme == 'https'
-                  ? connection.then((value) => value.secure(uri.host))
+                  ? connection.then(
+                      (value) => value.secure(
+                        uri.host,
+                        onBadCertificate: allowBadCertificate ? (_) => true : null,
+                      ),
+                    )
                   : connection)
               .then(
                 (socket) => socket,
