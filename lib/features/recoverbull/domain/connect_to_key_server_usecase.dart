@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 /// Reaches the key server, retrying on a backoff.
 ///
@@ -27,12 +29,25 @@ class ConnectToKeyServerUsecase {
   /// The first attempt is immediate. Tor readiness is already awaited before
   /// this runs, so delaying it only added a second to every start, including
   /// the common case where the server answers at once.
-  Future<bool> execute({required void Function(int attempt) onAttempt}) async {
+  Future<Result<bool, RecoverBullCoreFailure>> execute({
+    required void Function(int attempt) onAttempt,
+  }) async {
     for (var attempt = 1; attempt <= maxAttempts; attempt++) {
       if (attempt > 1) await _wait(Duration(seconds: attempt - 1));
       onAttempt(attempt);
-      if (await _checkServerConnectionUsecase.execute()) return true;
+      final result = await _checkServerConnectionUsecase.execute();
+      switch (result) {
+        case Ok(value: true):
+          return const Ok(true);
+        case Ok():
+          break;
+        case Err(:final failure)
+            when failure is ExternalTorProxyUnavailableFailure:
+          return Err(failure);
+        case Err():
+          break;
+      }
     }
-    return false;
+    return const Ok(false);
   }
 }

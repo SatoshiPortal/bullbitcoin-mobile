@@ -272,14 +272,15 @@ class CheckAllServiceStatusUsecase {
     // Delegated rather than reimplemented: this is the same "can we reach the
     // key server over Tor" question the RecoverBull flow asks, and one answer
     // for both keeps the screen and the flow from disagreeing.
+    final result = await _checkServerConnectionUsecase.execute().timeout(
+      _torStatusTimeout,
+      onTimeout: () => const Ok(false),
+    );
     return status.copyWith(
-      status:
-          await _checkServerConnectionUsecase.execute().timeout(
-            _torStatusTimeout,
-            onTimeout: () => false,
-          )
-          ? ServiceStatus.online
-          : ServiceStatus.offline,
+      status: switch (result) {
+        Ok(value: true) => ServiceStatus.online,
+        _ => ServiceStatus.offline,
+      },
     );
   }
 

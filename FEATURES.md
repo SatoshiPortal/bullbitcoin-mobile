@@ -16,6 +16,7 @@ graph TB
     %% Feature modules
     SETTINGS[Settings]
     ELECTRUM_SETTINGS[Electrum Settings]
+    RECOVERBULL[RecoverBull]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -119,6 +120,7 @@ graph TB
     CORE --> TOR
     WALLETS --> TOR
     WALLETS --> ELECTRUM_SETTINGS
+    RECOVERBULL --> TOR
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE

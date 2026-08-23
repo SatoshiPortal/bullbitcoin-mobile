@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -64,8 +65,8 @@ class RecoverBullRouter {
           restoreVaultUsecase: locator<RestoreVaultUsecase>(),
           connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
           saveToGoogleDriveUsecase: locator<SaveVaultToGoogleDriveUsecase>(),
-          ensureTorReadyUsecase: locator<EnsureTorReadyUsecase>(),
-          retryTorConnectionUsecase: locator<RetryTorConnectionUsecase>(),
+          ensureRecoverBullTorSessionUsecase:
+              locator<EnsureRecoverBullTorSessionUsecase>(),
           walletBloc: context.read(),
           fetchLatestGoogleDriveVaultUsecase:
               locator<FetchLatestGoogleDriveVaultUsecase>(),

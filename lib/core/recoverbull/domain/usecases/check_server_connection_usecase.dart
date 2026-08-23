@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -12,20 +13,13 @@ class CheckServerConnectionUsecase {
     this._ensureTorSessionUsecase,
   );
 
-  /// `false` rather than a failure: this only answers "is the server
-  /// reachable right now", and every caller retries on its own schedule.
-  ///
-  /// Every `await` stays inside the `try`. Returning the repository call as a
-  /// future instead would chain it *outside* this block — an `async` function
-  /// completes a returned future after leaving the `try`, so the throw would
-  /// escape to the caller rather than become `false`.
-  Future<bool> execute() async {
+  Future<Result<bool, RecoverBullCoreFailure>> execute() async {
     try {
       final result = await _ensureTorSessionUsecase.execute();
       if (result case Ok(:final value)) {
         try {
           await _recoverBullRepository.checkConnection(value.endpoint);
-          return true;
+          return const Ok(true);
         } finally {
           // Without this the outer catch would turn a *successful* check into
           // `false` just because tearing the session down failed.
@@ -40,9 +34,10 @@ class CheckServerConnectionUsecase {
           }
         }
       }
-      return false;
-    } catch (_) {
-      return false;
+      if (result case Err(:final failure)) return Err(failure);
+      return const Ok(false);
+    } catch (error) {
+      return Err(KeyServerUnavailableFailure(error.toString()));
     }
   }
 }

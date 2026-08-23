@@ -80,6 +80,7 @@ class RecoverbullLocator {
       () => EnsureRecoverBullTorSessionUsecase(
         locator<Tor>().embedded,
         locator<SettingsRepository>(),
+        locator<VerifyExternalTorUsecase>(),
       ),
     );
     locator.registerFactory<CreateEncryptedVaultUsecase>(

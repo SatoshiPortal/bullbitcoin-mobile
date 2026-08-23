@@ -6,9 +6,11 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/tor_bull_mascot.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -451,6 +453,12 @@ class _Body extends StatelessWidget {
         if (_hasFailure)
           _FailurePanel(
             message: _failureMessage(context),
+            onOpenTorSettings:
+                state.failure is ExternalTorProxyUnavailableFailure
+                ? () => context.pushNamed(
+                    const TorSettingsFacade().settingsRouteName,
+                  )
+                : null,
             // A single event: `OnTorInitialization` chains to the server check
             // itself, and `restart` guarantees a stuck client is replaced rather
             // than adopted — which is what left a retry waiting on a dead
@@ -625,8 +633,13 @@ class _PhaseIcon extends StatelessWidget {
 class _FailurePanel extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
+  final VoidCallback? onOpenTorSettings;
 
-  const _FailurePanel({required this.message, required this.onRetry});
+  const _FailurePanel({
+    required this.message,
+    required this.onRetry,
+    this.onOpenTorSettings,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -648,6 +661,16 @@ class _FailurePanel extends StatelessWidget {
           textColor: context.appColors.surface,
           onPressed: onRetry,
         ),
+        if (onOpenTorSettings != null) ...[
+          const Gap(12),
+          BBButton.big(
+            label: context.loc.torSettingsTitle,
+            textStyle: context.font.headlineLarge,
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.onSurface,
+            onPressed: () => onOpenTorSettings!(),
+          ),
+        ],
       ],
     );
   }

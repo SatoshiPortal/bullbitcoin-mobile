@@ -21,18 +21,25 @@ import 'package:bull_tor/tor.dart';
 class EnsureRecoverBullTorSessionUsecase {
   final EmbeddedTor _embeddedTor;
   final SettingsRepository _settingsRepository;
+  final VerifyExternalTorUsecase _verifyExternalTorUsecase;
 
   const EnsureRecoverBullTorSessionUsecase(
     this._embeddedTor,
     this._settingsRepository,
+    this._verifyExternalTorUsecase,
   );
 
-  Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>> execute() async {
+  Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>> execute({
+    bool restartEmbedded = false,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       if (settings.useTorProxy) return _external(settings.torProxyPort);
 
-      return switch (await _embeddedTor.ensureReady()) {
+      final readiness = restartEmbedded
+          ? await _embeddedTor.retry()
+          : await _embeddedTor.ensureReady();
+      return switch (readiness) {
         TorReady(:final route) when route.source == TorSource.embedded =>
           _openSession(),
         TorUnavailable(:final failure) => Err(
@@ -57,20 +64,23 @@ class EnsureRecoverBullTorSessionUsecase {
     int port,
   ) async {
     try {
-      return Ok(
-        RecoverBullTorRoute(
-          TorProxyEndpoint(
-            host: InternetAddress.loopbackIPv4.address,
-            port: port,
-          ),
-          () async {},
-        ),
+      final endpoint = TorProxyEndpoint(
+        host: InternetAddress.loopbackIPv4.address,
+        port: port,
       );
+      final verification = await _verifyExternalTorUsecase.execute(endpoint);
+      if (verification case TorUnavailable(:final failure)) {
+        return Err(ExternalTorProxyUnavailableFailure(failure.logMessage));
+      }
+      if (verification is! TorReady) {
+        return const Err(ExternalTorProxyUnavailableFailure());
+      }
+      return Ok(RecoverBullTorRoute(verification.route, () async {}));
     } on ArgumentError catch (error) {
       // A port persisted outside 1-65535 would otherwise throw out of a
       // Result-returning use case. `RangeError` is an `ArgumentError`, so this
       // single clause covers the endpoint's two validation failures.
-      return Err(KeyServerUnavailableFailure(error.toString()));
+      return Err(ExternalTorProxyUnavailableFailure(error.toString()));
     }
   }
 
@@ -78,7 +88,17 @@ class EnsureRecoverBullTorSessionUsecase {
   _openSession() async {
     try {
       final session = await _embeddedTor.sessions.open();
-      return Ok(RecoverBullTorRoute(session.endpoint, session.close));
+      return Ok(
+        RecoverBullTorRoute(
+          TorRoute(
+            source: TorSource.embedded,
+            endpoint: session.endpoint,
+            evidence: TorReadinessEvidence.embeddedBootstrap,
+            transport: session.transport,
+          ),
+          session.close,
+        ),
+      );
     } on TorBackendException catch (error) {
       return Err(KeyServerUnavailableFailure(error.failure.logMessage));
     } catch (error) {

@@ -24,7 +24,15 @@ void main() {
 
   setUp(() {
     sessionClosed = false;
-    session = RecoverBullTorRoute(endpoint, () async => sessionClosed = true);
+    session = RecoverBullTorRoute(
+      TorRoute(
+        source: TorSource.embedded,
+        endpoint: endpoint,
+        evidence: TorReadinessEvidence.embeddedBootstrap,
+        transport: TorTransport.direct,
+      ),
+      () async => sessionClosed = true,
+    );
   });
 
   setUpAll(() => registerFallbackValue(endpoint));
@@ -39,7 +47,7 @@ void main() {
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
     when(() => repository.checkConnection(any())).thenAnswer((_) async {});
 
-    expect(await usecase.execute(), isTrue);
+    expect(await usecase.execute(), isA<Ok<bool, RecoverBullCoreFailure>>());
     verify(() => repository.checkConnection(endpoint)).called(1);
     expect(sessionClosed, isTrue);
   });
@@ -49,9 +57,27 @@ void main() {
       (_) async => const Err(KeyServerUnavailableFailure('tor down')),
     );
 
-    expect(await usecase.execute(), isFalse);
+    expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
     verifyNever(() => repository.checkConnection(any()));
   });
+
+  test(
+    'external proxy failure is typed and never contacts the server',
+    () async {
+      when(() => ensureSession.execute()).thenAnswer(
+        (_) async => const Err(ExternalTorProxyUnavailableFailure()),
+      );
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
+      expect(
+        (result as Err<bool, RecoverBullCoreFailure>).failure,
+        isA<ExternalTorProxyUnavailableFailure>(),
+      );
+      verifyNever(() => repository.checkConnection(any()));
+    },
+  );
 
   // Regression pin: the check used to return the repository call as a future
   // from inside its `try`, which chained the throw outside the block — the
@@ -62,7 +88,7 @@ void main() {
       () => repository.checkConnection(any()),
     ).thenThrow(Exception('key server unreachable'));
 
-    expect(await usecase.execute(), isFalse);
+    expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
     expect(sessionClosed, isTrue);
   });
 
@@ -72,7 +98,7 @@ void main() {
       () => repository.checkConnection(any()),
     ).thenAnswer((_) async => throw Exception('timeout'));
 
-    expect(await usecase.execute(), isFalse);
+    expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
     expect(sessionClosed, isTrue);
   });
 }
