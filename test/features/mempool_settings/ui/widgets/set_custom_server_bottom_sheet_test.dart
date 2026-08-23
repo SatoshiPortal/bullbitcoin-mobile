@@ -32,6 +32,10 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
       expect(find.text('Validate Domain'), findsOneWidget);
       expect(
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+        isFalse,
+      );
+      expect(
         tester.getTopLeft(find.textContaining('For local')).dy,
         lessThan(tester.getTopLeft(find.text('Validate Domain')).dy),
       );
