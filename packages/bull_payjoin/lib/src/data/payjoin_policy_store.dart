@@ -28,6 +28,7 @@ final class PayjoinPolicyStore {
       PayjoinPoliciesCompanion(
         enabled: Value(policy.enabled),
         tradingEnabled: Value(policy.tradingEnabled),
+        sendEnabled: Value(policy.sendEnabled),
         minimumAmountSat: Value(policy.minimumAmount.value.toInt()),
         sessionLifetimeSeconds: Value(policy.sessionLifetime.inSeconds),
       ),
@@ -46,6 +47,13 @@ final class PayjoinPolicyStore {
     await (_database.update(_database.payjoinPolicies)
           ..where((row) => row.id.equals(1)))
         .write(PayjoinPoliciesCompanion(tradingEnabled: Value(tradingEnabled)));
+    return load();
+  }
+
+  Future<PayjoinPolicy> setSendEnabled(bool sendEnabled) async {
+    await (_database.update(_database.payjoinPolicies)
+          ..where((row) => row.id.equals(1)))
+        .write(PayjoinPoliciesCompanion(sendEnabled: Value(sendEnabled)));
     return load();
   }
 
@@ -73,6 +81,7 @@ final class PayjoinPolicyStore {
     return PayjoinPolicy(
       enabled: row.enabled,
       tradingEnabled: row.tradingEnabled,
+      sendEnabled: row.sendEnabled,
       minimumAmount: Sats.fromInt(row.minimumAmountSat),
       sessionLifetime: Duration(seconds: row.sessionLifetimeSeconds),
     );

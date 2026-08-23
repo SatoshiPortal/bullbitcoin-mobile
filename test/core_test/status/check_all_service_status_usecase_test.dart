@@ -56,10 +56,13 @@ void main() {
     return (usecase, payjoinDiagnostics);
   }
 
-  test('Payjoin with both switches off is not probed or reported '
+  test('Payjoin with all switches off is not probed or reported '
       'offline', () async {
     final (usecase, payjoinDiagnostics) = build(
-      PayjoinPolicy.defaults().copyWith(tradingEnabled: false),
+      PayjoinPolicy.defaults().copyWith(
+        tradingEnabled: false,
+        sendEnabled: false,
+      ),
     );
 
     final status = await usecase.execute(network: Network.bitcoinMainnet);

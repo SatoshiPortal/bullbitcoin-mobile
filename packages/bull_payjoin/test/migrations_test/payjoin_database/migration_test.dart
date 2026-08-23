@@ -39,7 +39,7 @@ void main() {
   test('migration from v1 to v2 does not corrupt data', () async {
     // A schema-1 install's stored preference and sessions must survive the
     // upgrade unchanged, with the new columns landing on their defaults:
-    // tradingEnabled=true (the feature ships ON) and isTrade=false (every
+    // tradingEnabled=true and sendEnabled=true (both ship ON) and isTrade=false (every
     // pre-existing receiver was created through the enabled-gated flows).
     final oldPayjoinPoliciesData = <v1.PayjoinPoliciesData>[
       const v1.PayjoinPoliciesData(
@@ -54,6 +54,7 @@ void main() {
         id: 1,
         enabled: 1,
         tradingEnabled: 1,
+        sendEnabled: 1,
         minimumAmountSat: 12345,
         sessionLifetimeSeconds: 3600,
       ),

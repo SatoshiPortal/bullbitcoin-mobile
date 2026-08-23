@@ -70,6 +70,11 @@ abstract interface class PayjoinPolicyAccess {
   );
 
   @useResult
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  );
+
+  @useResult
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount);
 
   @useResult

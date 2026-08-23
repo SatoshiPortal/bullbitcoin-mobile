@@ -77,7 +77,14 @@ final class Schema2 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(id)'],
-      columns: [_column_23, _column_24, _column_25, _column_26, _column_27],
+      columns: [
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+      ],
       attachedDatabase: database,
     ),
     alias: null,
@@ -89,12 +96,12 @@ final class Schema2 extends i0.VersionedSchema {
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(name)'],
       columns: [
-        _column_28,
         _column_29,
         _column_30,
         _column_31,
         _column_32,
         _column_33,
+        _column_34,
       ],
       attachedDatabase: database,
     ),
@@ -369,6 +376,8 @@ class Shape2 extends i0.VersionedTable {
       columnsByName['enabled']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get tradingEnabled =>
       columnsByName['trading_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get sendEnabled =>
+      columnsByName['send_enabled']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get minimumAmountSat =>
       columnsByName['minimum_amount_sat']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get sessionLifetimeSeconds =>
@@ -403,13 +412,22 @@ i1.GeneratedColumn<int> _column_25(String aliasedName) =>
     );
 i1.GeneratedColumn<int> _column_26(String aliasedName) =>
     i1.GeneratedColumn<int>(
+      'send_enabled',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 1 CHECK (send_enabled IN (0, 1))',
+      defaultValue: const i1.CustomExpression('1'),
+    );
+i1.GeneratedColumn<int> _column_27(String aliasedName) =>
+    i1.GeneratedColumn<int>(
       'minimum_amount_sat',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_27(String aliasedName) =>
+i1.GeneratedColumn<int> _column_28(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'session_lifetime_seconds',
       aliasedName,
@@ -434,7 +452,7 @@ class Shape3 extends i0.VersionedTable {
       columnsByName['verification_digest']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<String> _column_28(String aliasedName) =>
+i1.GeneratedColumn<String> _column_29(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'name',
       aliasedName,
@@ -442,7 +460,7 @@ i1.GeneratedColumn<String> _column_28(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_29(String aliasedName) =>
+i1.GeneratedColumn<int> _column_30(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'completed_at',
       aliasedName,
@@ -450,7 +468,7 @@ i1.GeneratedColumn<int> _column_29(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_30(String aliasedName) =>
+i1.GeneratedColumn<int> _column_31(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'source_schema_version',
       aliasedName,
@@ -458,7 +476,7 @@ i1.GeneratedColumn<int> _column_30(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_31(String aliasedName) =>
+i1.GeneratedColumn<int> _column_32(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'sender_count',
       aliasedName,
@@ -466,7 +484,7 @@ i1.GeneratedColumn<int> _column_31(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_32(String aliasedName) =>
+i1.GeneratedColumn<int> _column_33(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'receiver_count',
       aliasedName,
@@ -474,7 +492,7 @@ i1.GeneratedColumn<int> _column_32(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_33(String aliasedName) =>
+i1.GeneratedColumn<String> _column_34(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'verification_digest',
       aliasedName,

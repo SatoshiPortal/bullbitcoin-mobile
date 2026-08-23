@@ -51,6 +51,7 @@ void main() {
           PayjoinPolicy(
             enabled: true,
             tradingEnabled: true,
+            sendEnabled: true,
             minimumAmount: PayjoinPolicy.minimumAllowedAmount,
             sessionLifetime: PayjoinPolicy.minimumSessionLifetime,
           ),

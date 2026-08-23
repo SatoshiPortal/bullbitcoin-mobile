@@ -444,6 +444,20 @@
             "dsl_features": []
           },
           {
+            "name": "send_enabled",
+            "getter_name": "sendEnabled",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"send_enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"send_enabled\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
             "name": "minimum_amount_sat",
             "getter_name": "minimumAmountSat",
             "moor_type": "int",
@@ -574,7 +588,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"payjoin_policies\" (\"id\" INTEGER NOT NULL, \"enabled\" INTEGER NOT NULL CHECK (\"enabled\" IN (0, 1)), \"trading_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"trading_enabled\" IN (0, 1)), \"minimum_amount_sat\" INTEGER NOT NULL, \"session_lifetime_seconds\" INTEGER NOT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"payjoin_policies\" (\"id\" INTEGER NOT NULL, \"enabled\" INTEGER NOT NULL CHECK (\"enabled\" IN (0, 1)), \"trading_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"trading_enabled\" IN (0, 1)), \"send_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"send_enabled\" IN (0, 1)), \"minimum_amount_sat\" INTEGER NOT NULL, \"session_lifetime_seconds\" INTEGER NOT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },

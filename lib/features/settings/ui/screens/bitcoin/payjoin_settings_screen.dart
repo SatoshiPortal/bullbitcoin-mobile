@@ -29,6 +29,25 @@ class PayjoinSettingsScreen extends StatefulWidget {
 class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
   bool _updating = false;
   bool _updatingTrading = false;
+  bool _updatingSend = false;
+
+  Future<void> _setPayjoinSendEnabled(bool enabled) async {
+    if (_updatingSend) return;
+    setState(() => _updatingSend = true);
+
+    final cubit = context.read<SettingsCubit>();
+    final result = await cubit.togglePayjoinSendEnabled(enabled);
+    result.fold((_) {}, (failure) {
+      log.warning(
+        'Failed to update Payjoin send from settings: ${failure.logMessage}',
+      );
+      if (mounted) {
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      }
+    });
+
+    if (mounted) setState(() => _updatingSend = false);
+  }
 
   Future<void> _setPayjoinTradingEnabled(bool enabled) async {
     if (_updatingTrading) return;
@@ -81,6 +100,9 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     final isTradingEnabled = context.select(
       (SettingsCubit cubit) => cubit.state.isPayjoinTradingEnabled,
     );
+    final isSendEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isPayjoinSendEnabled,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsPayjoinTitle)),
@@ -130,6 +152,28 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                   ),
                 ),
                 const Gap(16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BBText(
+                        context.loc.settingsPayjoinSendEnabledLabel,
+                        style: context.font.bodyLarge,
+                      ),
+                    ),
+                    BBSwitch(
+                      value: isSendEnabled,
+                      onChanged: _updatingSend ? null : _setPayjoinSendEnabled,
+                    ),
+                  ],
+                ),
+                const Gap(4),
+                BBText(
+                  context.loc.settingsPayjoinSendDescription,
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
+                  ),
+                ),
+                const Gap(16),
                 BorderedTappableTile(
                   onTap: () async {
                     await PayjoinDisclaimerDialog.show(context);
@@ -146,7 +190,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                     ],
                   ),
                 ),
-                if (isEnabled || isTradingEnabled) ...[
+                if (isEnabled || isTradingEnabled || isSendEnabled) ...[
                   const Gap(16),
                   BorderedTappableTile(
                     onTap: () => context.pushNamed(

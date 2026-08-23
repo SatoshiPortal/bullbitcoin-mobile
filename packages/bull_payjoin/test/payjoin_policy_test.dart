@@ -16,6 +16,7 @@ void main() {
       () => PayjoinPolicy(
         enabled: true,
         tradingEnabled: true,
+        sendEnabled: true,
         minimumAmount: Sats.fromInt(999),
         sessionLifetime: const Duration(minutes: 1),
       ),
@@ -28,6 +29,7 @@ void main() {
       () => PayjoinPolicy(
         enabled: true,
         tradingEnabled: true,
+        sendEnabled: true,
         minimumAmount: Sats.fromInt(1000),
         sessionLifetime: const Duration(seconds: 59),
       ),
@@ -40,6 +42,7 @@ void main() {
       () => PayjoinPolicy(
         enabled: true,
         tradingEnabled: true,
+        sendEnabled: true,
         minimumAmount: Sats.fromInt(1000),
         sessionLifetime: const Duration(seconds: 60, milliseconds: 1),
       ),

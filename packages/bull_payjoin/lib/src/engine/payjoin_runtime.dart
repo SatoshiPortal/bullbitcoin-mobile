@@ -216,6 +216,9 @@ abstract interface class _PayjoinRuntimeContract {
   Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
     bool tradingEnabled,
   );
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  );
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount);
   Future<Result<PayjoinPolicy, PayjoinFailure>> setSessionLifetime(
     Duration lifetime,
@@ -505,6 +508,22 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   }
 
   @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  ) async {
+    return _policyMutationLock.synchronized(() async {
+      try {
+        // No sweep on disable: sender sessions have no engine policy gate —
+        // once created the money is committed and the session must resolve.
+        // The switch only gates the creation of NEW sender sessions.
+        return Ok(await _policy.setSendEnabled(sendEnabled));
+      } catch (_) {
+        return const Err(PayjoinStorageFailure('Policy update failed'));
+      }
+    });
+  }
+
+  @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(
     Sats amount,
   ) async {
@@ -655,6 +674,11 @@ final class _PolicyRole implements PayjoinPolicyAccess {
   Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
     bool tradingEnabled,
   ) => _runtime.setTradingEnabled(tradingEnabled);
+
+  @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  ) => _runtime.setSendEnabled(sendEnabled);
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount) =>

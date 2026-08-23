@@ -63,6 +63,9 @@ class PayjoinPolicies extends Table {
   // see PayjoinPolicy.tradingEnabled.
   BoolColumn get tradingEnabled =>
       boolean().withDefault(const Constant(true))();
+  // Payjoin on regular sends; independent of both switches above and
+  // defaults ON — see PayjoinPolicy.sendEnabled.
+  BoolColumn get sendEnabled => boolean().withDefault(const Constant(true))();
   IntColumn get minimumAmountSat => integer()();
   IntColumn get sessionLifetimeSeconds => integer()();
 
@@ -124,6 +127,7 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
         // receiver rows get isTrade=false (they were all created through the
         // enabled-gated flows).
         await m.addColumn(payjoinPolicies, payjoinPolicies.tradingEnabled);
+        await m.addColumn(payjoinPolicies, payjoinPolicies.sendEnabled);
         await m.addColumn(payjoinReceivers, payjoinReceivers.isTrade);
       }
     },

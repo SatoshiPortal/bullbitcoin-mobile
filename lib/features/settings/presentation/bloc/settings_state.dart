@@ -24,6 +24,7 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.exchangeTestnetBasicAuthPassword;
   bool get isPayjoinEnabled => payjoinPolicy?.enabled ?? false;
   bool get isPayjoinTradingEnabled => payjoinPolicy?.tradingEnabled ?? true;
+  bool get isPayjoinSendEnabled => payjoinPolicy?.sendEnabled ?? true;
   int get payjoinMinAmountSat =>
       payjoinPolicy?.minimumAmount.value.toInt() ??
       PayjoinPolicy.defaults().minimumAmount.value.toInt();

@@ -130,9 +130,9 @@ class CheckAllServiceStatusUsecase {
           lastChecked: DateTime.now(),
         );
       }
-      // Trading payjoin (on by default) uses the relays too, so the status
-      // only reads `disabled` when BOTH switches are off.
-      if (!policy.enabled && !policy.tradingEnabled) {
+      // Trading and send payjoin (both on by default) use the relays too,
+      // so the status only reads `disabled` when ALL switches are off.
+      if (!policy.enabled && !policy.tradingEnabled && !policy.sendEnabled) {
         return ServiceStatusInfo(
           status: ServiceStatus.disabled,
           name: 'Payjoin',

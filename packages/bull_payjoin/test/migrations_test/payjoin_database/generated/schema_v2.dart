@@ -1526,6 +1526,15 @@ class PayjoinPolicies extends Table
     $customConstraints: 'NOT NULL DEFAULT 1 CHECK (trading_enabled IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
+  late final GeneratedColumn<int> sendEnabled = GeneratedColumn<int>(
+    'send_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (send_enabled IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
   late final GeneratedColumn<int> minimumAmountSat = GeneratedColumn<int>(
     'minimum_amount_sat',
     aliasedName,
@@ -1547,6 +1556,7 @@ class PayjoinPolicies extends Table
     id,
     enabled,
     tradingEnabled,
+    sendEnabled,
     minimumAmountSat,
     sessionLifetimeSeconds,
   ];
@@ -1572,6 +1582,10 @@ class PayjoinPolicies extends Table
       tradingEnabled: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}trading_enabled'],
+      )!,
+      sendEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}send_enabled'],
       )!,
       minimumAmountSat: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1600,12 +1614,14 @@ class PayjoinPoliciesData extends DataClass
   final int id;
   final int enabled;
   final int tradingEnabled;
+  final int sendEnabled;
   final int minimumAmountSat;
   final int sessionLifetimeSeconds;
   const PayjoinPoliciesData({
     required this.id,
     required this.enabled,
     required this.tradingEnabled,
+    required this.sendEnabled,
     required this.minimumAmountSat,
     required this.sessionLifetimeSeconds,
   });
@@ -1615,6 +1631,7 @@ class PayjoinPoliciesData extends DataClass
     map['id'] = Variable<int>(id);
     map['enabled'] = Variable<int>(enabled);
     map['trading_enabled'] = Variable<int>(tradingEnabled);
+    map['send_enabled'] = Variable<int>(sendEnabled);
     map['minimum_amount_sat'] = Variable<int>(minimumAmountSat);
     map['session_lifetime_seconds'] = Variable<int>(sessionLifetimeSeconds);
     return map;
@@ -1625,6 +1642,7 @@ class PayjoinPoliciesData extends DataClass
       id: Value(id),
       enabled: Value(enabled),
       tradingEnabled: Value(tradingEnabled),
+      sendEnabled: Value(sendEnabled),
       minimumAmountSat: Value(minimumAmountSat),
       sessionLifetimeSeconds: Value(sessionLifetimeSeconds),
     );
@@ -1639,6 +1657,7 @@ class PayjoinPoliciesData extends DataClass
       id: serializer.fromJson<int>(json['id']),
       enabled: serializer.fromJson<int>(json['enabled']),
       tradingEnabled: serializer.fromJson<int>(json['tradingEnabled']),
+      sendEnabled: serializer.fromJson<int>(json['sendEnabled']),
       minimumAmountSat: serializer.fromJson<int>(json['minimumAmountSat']),
       sessionLifetimeSeconds: serializer.fromJson<int>(
         json['sessionLifetimeSeconds'],
@@ -1652,6 +1671,7 @@ class PayjoinPoliciesData extends DataClass
       'id': serializer.toJson<int>(id),
       'enabled': serializer.toJson<int>(enabled),
       'tradingEnabled': serializer.toJson<int>(tradingEnabled),
+      'sendEnabled': serializer.toJson<int>(sendEnabled),
       'minimumAmountSat': serializer.toJson<int>(minimumAmountSat),
       'sessionLifetimeSeconds': serializer.toJson<int>(sessionLifetimeSeconds),
     };
@@ -1661,12 +1681,14 @@ class PayjoinPoliciesData extends DataClass
     int? id,
     int? enabled,
     int? tradingEnabled,
+    int? sendEnabled,
     int? minimumAmountSat,
     int? sessionLifetimeSeconds,
   }) => PayjoinPoliciesData(
     id: id ?? this.id,
     enabled: enabled ?? this.enabled,
     tradingEnabled: tradingEnabled ?? this.tradingEnabled,
+    sendEnabled: sendEnabled ?? this.sendEnabled,
     minimumAmountSat: minimumAmountSat ?? this.minimumAmountSat,
     sessionLifetimeSeconds:
         sessionLifetimeSeconds ?? this.sessionLifetimeSeconds,
@@ -1678,6 +1700,9 @@ class PayjoinPoliciesData extends DataClass
       tradingEnabled: data.tradingEnabled.present
           ? data.tradingEnabled.value
           : this.tradingEnabled,
+      sendEnabled: data.sendEnabled.present
+          ? data.sendEnabled.value
+          : this.sendEnabled,
       minimumAmountSat: data.minimumAmountSat.present
           ? data.minimumAmountSat.value
           : this.minimumAmountSat,
@@ -1693,6 +1718,7 @@ class PayjoinPoliciesData extends DataClass
           ..write('id: $id, ')
           ..write('enabled: $enabled, ')
           ..write('tradingEnabled: $tradingEnabled, ')
+          ..write('sendEnabled: $sendEnabled, ')
           ..write('minimumAmountSat: $minimumAmountSat, ')
           ..write('sessionLifetimeSeconds: $sessionLifetimeSeconds')
           ..write(')'))
@@ -1704,6 +1730,7 @@ class PayjoinPoliciesData extends DataClass
     id,
     enabled,
     tradingEnabled,
+    sendEnabled,
     minimumAmountSat,
     sessionLifetimeSeconds,
   );
@@ -1714,6 +1741,7 @@ class PayjoinPoliciesData extends DataClass
           other.id == this.id &&
           other.enabled == this.enabled &&
           other.tradingEnabled == this.tradingEnabled &&
+          other.sendEnabled == this.sendEnabled &&
           other.minimumAmountSat == this.minimumAmountSat &&
           other.sessionLifetimeSeconds == this.sessionLifetimeSeconds);
 }
@@ -1722,12 +1750,14 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
   final Value<int> id;
   final Value<int> enabled;
   final Value<int> tradingEnabled;
+  final Value<int> sendEnabled;
   final Value<int> minimumAmountSat;
   final Value<int> sessionLifetimeSeconds;
   const PayjoinPoliciesCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
     this.tradingEnabled = const Value.absent(),
+    this.sendEnabled = const Value.absent(),
     this.minimumAmountSat = const Value.absent(),
     this.sessionLifetimeSeconds = const Value.absent(),
   });
@@ -1735,6 +1765,7 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
     this.id = const Value.absent(),
     required int enabled,
     this.tradingEnabled = const Value.absent(),
+    this.sendEnabled = const Value.absent(),
     required int minimumAmountSat,
     required int sessionLifetimeSeconds,
   }) : enabled = Value(enabled),
@@ -1744,6 +1775,7 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
     Expression<int>? id,
     Expression<int>? enabled,
     Expression<int>? tradingEnabled,
+    Expression<int>? sendEnabled,
     Expression<int>? minimumAmountSat,
     Expression<int>? sessionLifetimeSeconds,
   }) {
@@ -1751,6 +1783,7 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
       if (id != null) 'id': id,
       if (enabled != null) 'enabled': enabled,
       if (tradingEnabled != null) 'trading_enabled': tradingEnabled,
+      if (sendEnabled != null) 'send_enabled': sendEnabled,
       if (minimumAmountSat != null) 'minimum_amount_sat': minimumAmountSat,
       if (sessionLifetimeSeconds != null)
         'session_lifetime_seconds': sessionLifetimeSeconds,
@@ -1761,6 +1794,7 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
     Value<int>? id,
     Value<int>? enabled,
     Value<int>? tradingEnabled,
+    Value<int>? sendEnabled,
     Value<int>? minimumAmountSat,
     Value<int>? sessionLifetimeSeconds,
   }) {
@@ -1768,6 +1802,7 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
       id: id ?? this.id,
       enabled: enabled ?? this.enabled,
       tradingEnabled: tradingEnabled ?? this.tradingEnabled,
+      sendEnabled: sendEnabled ?? this.sendEnabled,
       minimumAmountSat: minimumAmountSat ?? this.minimumAmountSat,
       sessionLifetimeSeconds:
           sessionLifetimeSeconds ?? this.sessionLifetimeSeconds,
@@ -1786,6 +1821,9 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
     if (tradingEnabled.present) {
       map['trading_enabled'] = Variable<int>(tradingEnabled.value);
     }
+    if (sendEnabled.present) {
+      map['send_enabled'] = Variable<int>(sendEnabled.value);
+    }
     if (minimumAmountSat.present) {
       map['minimum_amount_sat'] = Variable<int>(minimumAmountSat.value);
     }
@@ -1803,6 +1841,7 @@ class PayjoinPoliciesCompanion extends UpdateCompanion<PayjoinPoliciesData> {
           ..write('id: $id, ')
           ..write('enabled: $enabled, ')
           ..write('tradingEnabled: $tradingEnabled, ')
+          ..write('sendEnabled: $sendEnabled, ')
           ..write('minimumAmountSat: $minimumAmountSat, ')
           ..write('sessionLifetimeSeconds: $sessionLifetimeSeconds')
           ..write(')'))

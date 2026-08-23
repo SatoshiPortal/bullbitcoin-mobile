@@ -33,6 +33,7 @@ void main() {
         payjoin.PayjoinPolicy(
           enabled: enabled,
           tradingEnabled: true,
+          sendEnabled: true,
           minimumAmount: primitives.Sats.fromInt(10000),
           sessionLifetime: const Duration(hours: 24),
         ),
@@ -111,6 +112,7 @@ void main() {
         payjoin.PayjoinPolicy(
           enabled: true,
           tradingEnabled: true,
+          sendEnabled: true,
           minimumAmount: primitives.Sats.fromInt(10000),
           sessionLifetime: const Duration(hours: 24),
         ),

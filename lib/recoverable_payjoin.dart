@@ -267,6 +267,14 @@ final class _RecoverablePayjoinPolicy implements PayjoinPolicyAccess {
   }
 
   @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  ) async {
+    await _owner._readyForRoleCall();
+    return _owner._delegate.policy.setSendEnabled(sendEnabled);
+  }
+
+  @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(
     Sats amount,
   ) async {

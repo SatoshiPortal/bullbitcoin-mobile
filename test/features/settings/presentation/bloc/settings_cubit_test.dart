@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_send_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
@@ -58,6 +59,9 @@ class _MockSetPayjoinEnabledUsecase extends Mock
 class _MockSetPayjoinTradingEnabledUsecase extends Mock
     implements SetPayjoinTradingEnabledUsecase {}
 
+class _MockSetPayjoinSendEnabledUsecase extends Mock
+    implements SetPayjoinSendEnabledUsecase {}
+
 class _MockSetPayjoinMinAmountUsecase extends Mock
     implements SetPayjoinMinAmountUsecase {}
 
@@ -82,6 +86,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
     required super.setPayjoinTradingEnabledUsecase,
+    required super.setPayjoinSendEnabledUsecase,
     required super.watchPayjoinPolicyUsecase,
     required super.setPayjoinMinAmountUsecase,
     required super.setPayjoinExpireAfterSecUsecase,
@@ -117,6 +122,7 @@ void main() {
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: setPayjoinEnabled,
       setPayjoinTradingEnabledUsecase: _MockSetPayjoinTradingEnabledUsecase(),
+      setPayjoinSendEnabledUsecase: _MockSetPayjoinSendEnabledUsecase(),
       watchPayjoinPolicyUsecase: watchChanges,
       setPayjoinMinAmountUsecase: _MockSetPayjoinMinAmountUsecase(),
       setPayjoinExpireAfterSecUsecase: _MockSetPayjoinExpireAfterSecUsecase(),
