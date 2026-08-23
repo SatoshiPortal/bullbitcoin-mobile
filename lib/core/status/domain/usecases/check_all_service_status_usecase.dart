@@ -8,7 +8,8 @@ import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.da
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/tor/configured_external_tor.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
@@ -28,8 +29,7 @@ class CheckAllServiceStatusUsecase {
   final WalletRepository _walletRepository;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
   final CheckServerConnectionUsecase _checkServerConnectionUsecase;
-  final SettingsRepository _settingsRepository;
-  final Tor _tor;
+  final ResolveConfiguredExternalTorUsecase resolveConfiguredExternalTorUsecase;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -40,8 +40,7 @@ class CheckAllServiceStatusUsecase {
     required this._walletRepository,
     required this._ensureTorReadyUsecase,
     required this._checkServerConnectionUsecase,
-    required this._settingsRepository,
-    required this._tor,
+    required this.resolveConfiguredExternalTorUsecase,
   });
 
   Future<AllServicesStatus> execute({required Network network}) async {
@@ -248,25 +247,13 @@ class CheckAllServiceStatusUsecase {
     // An explicitly configured external proxy is authoritative even when this
     // wallet has no backup requiring embedded Tor. Only the disabled branch
     // consults wallet usage before probing embedded Tor.
-    final settings = await _settingsRepository.fetch();
-    if (settings.useTorProxy) {
-      final TorProxyEndpoint endpoint;
-      try {
-        endpoint = TorProxyEndpoint(
-          host: InternetAddress.loopbackIPv4.address,
-          port: settings.torProxyPort,
-        );
-      } on ArgumentError {
-        return status.copyWith(status: ServiceStatus.offline);
-      }
-      final external = await _tor.external.verify(endpoint);
-      return status.copyWith(
-        status: external is TorReady
-            ? ServiceStatus.online
-            : ServiceStatus.offline,
-      );
-    }
-    return status.copyWith(status: await _checkEmbeddedTorIfRequired());
+    return status.copyWith(
+      status: switch (await resolveConfiguredExternalTorUsecase.execute()) {
+        ConfiguredExternalTorReady() => ServiceStatus.online,
+        ConfiguredExternalTorUnavailable() => ServiceStatus.offline,
+        ConfiguredExternalTorDisabled() => await _checkEmbeddedTorIfRequired(),
+      },
+    );
   }
 
   Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {

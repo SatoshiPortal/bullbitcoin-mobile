@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.da
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/configured_external_tor.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,27 +34,10 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 class _MockEnsureTorReadyUsecase extends Mock
     implements EnsureTorReadyUsecase {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
-class _MockTor extends Mock implements Tor {}
-
-class _MockExternalTor extends Mock implements ExternalTor {}
-
-SettingsEntity _settings({required bool useTorProxy, int port = 9050}) =>
-    SettingsEntity(
-      environment: Environment.mainnet,
-      bitcoinUnit: BitcoinUnit.sats,
-      currencyCode: 'USD',
-      useTorProxy: useTorProxy,
-      torProxyPort: port,
-    );
+class _MockTorResolver extends Mock
+    implements ResolveConfiguredExternalTorUsecase {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(
-      TorProxyEndpoint(host: '127.0.0.1', port: 9050),
-    );
-  });
   test('disabled Payjoin is not probed or reported offline', () async {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final payjoinDiagnostics = _MockPayjoinDiagnostics();
@@ -65,12 +48,10 @@ void main() {
     when(
       payjoinPolicy.load,
     ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
-    final settingsRepository = _MockSettingsRepository();
-    final tor = _MockTor();
-    final external = _MockExternalTor();
-    when(() => settingsRepository.fetch())
-        .thenAnswer((_) async => _settings(useTorProxy: false));
-    when(() => tor.external).thenReturn(external);
+    final torResolver = _MockTorResolver();
+    when(
+      torResolver.execute,
+    ).thenAnswer((_) async => const ConfiguredExternalTorDisabled());
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: _MockElectrumConnectivityPort(),
       exchangeRateRepository: _MockExchangeRateRepository(),
@@ -80,8 +61,7 @@ void main() {
       walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
       checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
-      settingsRepository: settingsRepository,
-      tor: tor,
+      resolveConfiguredExternalTorUsecase: torResolver,
     );
 
     final status = await usecase.execute(network: Network.bitcoinMainnet);
@@ -96,14 +76,9 @@ void main() {
     () async {
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
-      final settingsRepository = _MockSettingsRepository();
-      final tor = _MockTor();
-      final external = _MockExternalTor();
-      when(() => settingsRepository.fetch())
-          .thenAnswer((_) async => _settings(useTorProxy: true));
-      when(() => tor.external).thenReturn(external);
-      when(() => external.verify(any())).thenAnswer(
-        (_) async => TorReady(
+      final resolver = _MockTorResolver();
+      when(resolver.execute).thenAnswer(
+        (_) async => ConfiguredExternalTorReady(
           TorRoute(
             source: TorSource.external,
             endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9050),
@@ -120,8 +95,7 @@ void main() {
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
         checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
-        settingsRepository: settingsRepository,
-        tor: tor,
+        resolveConfiguredExternalTorUsecase: resolver,
       );
 
       final status = await usecase.execute(network: Network.bitcoinMainnet);
@@ -136,16 +110,10 @@ void main() {
     () async {
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
-      final settingsRepository = _MockSettingsRepository();
-      final tor = _MockTor();
-      final external = _MockExternalTor();
-      when(() => settingsRepository.fetch())
-          .thenAnswer((_) async => _settings(useTorProxy: true));
-      when(() => tor.external).thenReturn(external);
-      when(() => external.verify(any())).thenAnswer(
-        (_) async => const TorUnavailable(
-          source: TorSource.external,
-          failure: TorExternalProxyUnavailableFailure(),
+      final resolver = _MockTorResolver();
+      when(resolver.execute).thenAnswer(
+        (_) async => const ConfiguredExternalTorUnavailable(
+          TorExternalProxyUnavailableFailure(),
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
@@ -157,8 +125,7 @@ void main() {
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
         checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
-        settingsRepository: settingsRepository,
-        tor: tor,
+        resolveConfiguredExternalTorUsecase: resolver,
       );
 
       final status = await usecase.execute(network: Network.bitcoinMainnet);
