@@ -54,9 +54,9 @@ class AddCustomServerUsecase {
         return const Err(ElectrumServerAlreadyExistsFailure());
       }
 
-      // Probe with the user's own validateDomain setting: accepting a
-      // certificate the sync would refuse saves a server that can never be
-      // used, and the failure only surfaces later as a broken sync.
+      // The timeout and retry policy still comes from the active settings.
+      // Domain validation is relaxed below because adding a custom server
+      // also persists that custom-server policy atomically.
       final ElectrumSettings electrumSettings;
       switch (await _electrumSettingsRepository.fetchByNetwork(
         server.network,
@@ -99,7 +99,7 @@ class AddCustomServerUsecase {
         final protocolStatus = await _serverStatusPort.checkElectrum(
           url: server.url,
           network: server.network,
-          validateDomain: electrumSettings.validateDomain,
+          validateDomain: false,
           timeout: effectiveTimeout,
           retry: electrumSettings.retry,
           proxyEndpoint: route?.endpoint,
@@ -111,9 +111,34 @@ class AddCustomServerUsecase {
         await route?.close();
       }
 
-      // Both checks passed — persist the server.
-      final saveResult = await _electrumServerRepository.save(server);
-      return saveResult.map((_) => ElectrumServerStatus.online);
+      switch (await _electrumServerRepository.save(server)) {
+        case Ok():
+          break;
+        case Err(:final failure):
+          return Err(failure);
+      }
+
+      if (electrumSettings.validateDomain) {
+        electrumSettings.update(newValidateDomain: false);
+        switch (await _electrumSettingsRepository.save(electrumSettings)) {
+          case Ok():
+            break;
+          case Err(:final failure):
+            final rollback = await _electrumServerRepository.delete(
+              url: server.url,
+            );
+            if (rollback case Err(:final failure)) {
+              log.severe(
+                message: 'Failed to roll back custom electrum server',
+                error: failure,
+                trace: StackTrace.current,
+              );
+            }
+            return Err(failure);
+        }
+      }
+
+      return const Ok(ElectrumServerStatus.online);
     } on OnionServerWithoutTorException catch (error, st) {
       log.severe(
         message: 'External Tor unavailable for custom onion server',
