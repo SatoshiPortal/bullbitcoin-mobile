@@ -101,4 +101,37 @@ void main() {
     expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
     expect(sessionClosed, isTrue);
   });
+
+  test('provided route is used without acquiring or closing it', () async {
+    when(() => repository.checkConnection(endpoint)).thenAnswer((_) async {});
+
+    final result = await usecase.execute(route: session);
+
+    expect(result, isA<Ok<bool, RecoverBullCoreFailure>>());
+    verifyNever(() => ensureSession.execute());
+    expect(sessionClosed, isFalse);
+  });
+
+  test('provided route remains open when the repository fails', () async {
+    when(
+      () => repository.checkConnection(endpoint),
+    ).thenThrow(Exception('server unavailable'));
+
+    final result = await usecase.execute(route: session);
+
+    expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
+    verifyNever(() => ensureSession.execute());
+    expect(sessionClosed, isFalse);
+  });
+
+  test('a close failure does not replace a successful owned check', () async {
+    session = RecoverBullTorRoute(
+      session.route,
+      () async => throw Exception('close failed'),
+    );
+    when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
+    when(() => repository.checkConnection(endpoint)).thenAnswer((_) async {});
+
+    expect(await usecase.execute(), isA<Ok<bool, RecoverBullCoreFailure>>());
+  });
 }

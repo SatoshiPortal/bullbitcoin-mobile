@@ -129,6 +129,7 @@ void main() {
     checkKeyServerConnectionUsecase: checkConnection,
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
       checkConnection,
+      ensureRecoverBullTorSession,
       wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
@@ -440,12 +441,23 @@ void main() {
           evidence: TorReadinessEvidence.embeddedBootstrap,
           transport: TorTransport.direct,
         );
+        final recoverBullRoute = RecoverBullTorRoute(route, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(
+            restartEmbedded: any(named: 'restartEmbedded'),
+          ),
+        ).thenAnswer((_) async => Ok(recoverBullRoute));
+        when(
+          () => checkConnection.execute(route: recoverBullRoute),
+        ).thenAnswer((_) async => const Ok(true));
 
         states.add(TorReady(route));
         await pumpEventQueue();
 
         expect(bloc.state.keyServerStatus, KeyServerStatus.online);
-        verify(() => checkConnection.execute()).called(greaterThanOrEqualTo(1));
+        verify(
+          () => checkConnection.execute(route: recoverBullRoute),
+        ).called(greaterThanOrEqualTo(1));
 
         await states.close();
         await bloc.close();

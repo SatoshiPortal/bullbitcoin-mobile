@@ -58,6 +58,7 @@ class RecoverBullRouter {
           // use case that is registered.
           connectToKeyServerUsecase: ConnectToKeyServerUsecase(
             locator<CheckServerConnectionUsecase>(),
+            locator<EnsureRecoverBullTorSessionUsecase>(),
           ),
           fetchVaultKeyFromServerUsecase:
               locator<FetchVaultKeyFromServerUsecase>(),
