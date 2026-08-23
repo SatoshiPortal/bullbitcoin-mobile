@@ -15,6 +15,10 @@ class _MockTorSessions extends Mock implements TorSessions {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
+class _MockTor extends Mock implements Tor {}
+
+class _MockExternalTor extends Mock implements ExternalTor {}
+
 class _FakeExternalTorPort implements ExternalTorPort {
   bool available = true;
 
@@ -37,6 +41,8 @@ void main() {
   late _MockEmbeddedTor embeddedTor;
   late _MockTorSessions sessions;
   late _MockSettingsRepository settingsRepository;
+  late _MockTor tor;
+  late _MockExternalTor externalTor;
   late _FakeExternalTorPort externalTorPort;
   late EnsureRecoverBullTorSessionUsecase usecase;
 
@@ -44,13 +50,39 @@ void main() {
     embeddedTor = _MockEmbeddedTor();
     sessions = _MockTorSessions();
     settingsRepository = _MockSettingsRepository();
+    tor = _MockTor();
+    externalTor = _MockExternalTor();
     externalTorPort = _FakeExternalTorPort();
     when(() => embeddedTor.sessions).thenReturn(sessions);
     when(() => settingsRepository.fetch()).thenAnswer((_) async => _settings());
+    when(() => tor.external).thenReturn(externalTor);
+    when(() => externalTor.verify(any())).thenAnswer((invocation) async {
+      final endpoint =
+          invocation.positionalArguments.single as TorProxyEndpoint;
+      if (!externalTorPort.available) {
+        return const TorUnavailable(
+          source: TorSource.external,
+          failure: TorExternalProxyUnavailableFailure(),
+        );
+      }
+      return TorReady(
+        TorRoute(
+          source: TorSource.external,
+          endpoint: endpoint,
+          evidence: TorReadinessEvidence.externalSocksHandshake,
+        ),
+      );
+    });
     usecase = EnsureRecoverBullTorSessionUsecase(
       embeddedTor,
       settingsRepository,
-      VerifyExternalTorUsecase(externalTorPort),
+      tor,
+    );
+  });
+
+  setUpAll(() {
+    registerFallbackValue(
+      TorProxyEndpoint(host: '127.0.0.1', port: 9050),
     );
   });
 
@@ -123,6 +155,18 @@ void main() {
     final route =
         (result as Ok<RecoverBullTorRoute, RecoverBullCoreFailure>).value;
     expect(route.endpoint.port, 19050);
+  });
+
+  test('fails closed for an invalid external proxy port', () async {
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => _settings(useTorProxy: true, torProxyPort: 0),
+    );
+
+    final result = await usecase.execute();
+
+    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    verifyNever(() => externalTor.verify(any()));
+    verifyNever(() => embeddedTor.ensureReady());
   });
 
   test(

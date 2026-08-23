@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -17,7 +17,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bull_tor/tor.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
@@ -38,8 +37,7 @@ class WalletLocator {
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
       () => GetExternalTorProxyStatusUsecase(
-        locator<SettingsRepository>(),
-        locator<VerifyExternalTorUsecase>(),
+        locator<ResolveConfiguredExternalTorUsecase>(),
       ),
     );
     // Bloc

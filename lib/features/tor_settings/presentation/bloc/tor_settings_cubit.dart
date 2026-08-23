@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/tor/configured_external_tor.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_proxy_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_transport_mode_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
     required this._updateTorTransportModeUsecase,
     required this._ensureTorReadyUsecase,
     required this._watchTorConnectionUsecase,
-    required this._verifyExternalTorUsecase,
+    required this._resolveConfiguredExternalTorUsecase,
   }) : super(const TorSettingsState());
 
   final GetSettingsUsecase _getSettingsUsecase;
@@ -26,7 +27,8 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   final UpdateTorTransportModeUsecase _updateTorTransportModeUsecase;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
   final WatchTorConnectionUsecase _watchTorConnectionUsecase;
-  final VerifyExternalTorUsecase _verifyExternalTorUsecase;
+  final ResolveConfiguredExternalTorUsecase
+  _resolveConfiguredExternalTorUsecase;
   StreamSubscription<TorConnectionState>? _connectionSubscription;
 
   /// Discards the answer of a check that a newer one has already superseded.
@@ -117,38 +119,25 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   Future<void> checkConnectionStatus() async {
     if (isClosed || !state.useTorProxy) return;
 
-    // Built before the emit on purpose: the constructor rejects an out-of-range
-    // port, and the repository layer does not validate what it stores. Emitting
-    // Connecting first would leave the card spinning forever on a corrupted or
-    // legacy value, with the throw unhandled because `init()` is fire-and-forget.
-    final TorProxyEndpoint endpoint;
-    try {
-      endpoint = TorProxyEndpoint(
-        host: InternetAddress.loopbackIPv4.address,
-        port: state.torProxyPort,
-      );
-    } on ArgumentError {
-      emit(
-        state.copyWith(
-          connection: const TorUnavailable(
-            source: TorSource.external,
-            failure: TorExternalProxyUnavailableFailure(),
-          ),
-        ),
-      );
-      return;
-    }
-
-    // Two overlapping checks race — change the port while a verify rides out its
-    // timeout and the older answer can land last, overwriting a newer one.
     final generation = ++_checkGeneration;
     emit(
       state.copyWith(
         connection: const TorConnecting(source: TorSource.external),
       ),
     );
-    final connection = await _verifyExternalTorUsecase.execute(endpoint);
+    final resolved = await _resolveConfiguredExternalTorUsecase.execute();
     if (isClosed || generation != _checkGeneration) return;
+    final connection = switch (resolved) {
+      ConfiguredExternalTorReady(:final route) => TorReady(route),
+      ConfiguredExternalTorUnavailable(:final failure) => TorUnavailable(
+        source: TorSource.external,
+        failure: failure,
+      ),
+      ConfiguredExternalTorDisabled() => const TorUnavailable(
+        source: TorSource.external,
+        failure: TorExternalProxyUnavailableFailure(),
+      ),
+    };
     emit(
       state.copyWith(
         connection: connection,

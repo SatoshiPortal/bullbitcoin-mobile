@@ -23,16 +23,16 @@ class LoadElectrumServerDataUsecase {
   final ElectrumSettingsRepository _electrumSettingsRepository;
   final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
-  final SettingsRepository _settingsRepository;
   final ElectrumTorSessionPort _torSessionPort;
+  final SettingsRepository _settingsRepository;
 
   const LoadElectrumServerDataUsecase({
     required this._electrumServerRepository,
     required this._electrumSettingsRepository,
     required this._environmentPort,
     required this._serverStatusPort,
-    required this._settingsRepository,
     required this._torSessionPort,
+    required this._settingsRepository,
   });
 
   @useResult
@@ -47,14 +47,12 @@ class LoadElectrumServerDataUsecase {
         isLiquid: isLiquid,
       );
 
-      // Fetch servers, settings, and app settings in parallel
-      final (serversResult, settingsResult, appSettings) = await (
+      final (serversResult, settingsResult) = await (
         _electrumServerRepository.fetchAll(
           isTestnet: environment.isTestnet,
           isLiquid: isLiquid,
         ),
         _electrumSettingsRepository.fetchByNetwork(network),
-        _settingsRepository.fetch(),
       ).wait;
 
       final List<ElectrumServer> servers;
@@ -76,6 +74,7 @@ class LoadElectrumServerDataUsecase {
         return const Err(ElectrumLoadFailure('No Electrum servers found'));
       }
 
+      final appSettings = await _settingsRepository.fetch();
       final serverStatusMap = <String, ElectrumServerStatus>{};
       await Future.wait(
         servers.map((server) async {
@@ -84,6 +83,7 @@ class LoadElectrumServerDataUsecase {
             route = await _torSessionPort.open(
               network: network,
               serverUrl: server.url,
+              isCustom: server.isCustom,
               externalProxyEnabled: appSettings.useTorProxy,
               externalProxyPort: appSettings.torProxyPort,
             );
@@ -91,7 +91,7 @@ class LoadElectrumServerDataUsecase {
               url: server.url,
               proxyEndpoint: route?.endpoint,
             );
-          } catch (_) {
+          } on Exception {
             serverStatusMap[server.url] = ElectrumServerStatus.offline;
           } finally {
             await route?.close();
@@ -105,8 +105,6 @@ class LoadElectrumServerDataUsecase {
           servers: servers.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
           serverStatuses: serverStatusMap,
           settings: ElectrumSettingsDto.fromDomain(settings),
-          useTorProxy: appSettings.useTorProxy,
-          torProxyPort: appSettings.torProxyPort,
         ),
       );
     } catch (e, st) {

@@ -104,8 +104,8 @@ class ElectrumLocator {
         electrumServerRepository: locator<ElectrumServerRepository>(),
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
-        settingsRepository: locator<SettingsRepository>(),
         torSessionPort: locator<ElectrumTorSessionPort>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<SetCustomServersPriorityUsecase>(
@@ -124,8 +124,8 @@ class ElectrumLocator {
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         environmentPort: locator<EnvironmentPort>(),
         serverStatusPort: locator<ServerStatusPort>(),
-        settingsRepository: locator<SettingsRepository>(),
         torSessionPort: locator<ElectrumTorSessionPort>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<SetAdvancedElectrumOptionsUsecase>(

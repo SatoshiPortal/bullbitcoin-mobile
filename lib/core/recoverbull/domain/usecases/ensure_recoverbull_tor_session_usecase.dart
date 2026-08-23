@@ -1,7 +1,7 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
+import 'dart:io';
+
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_tor/tor.dart';
@@ -21,12 +21,12 @@ import 'package:bull_tor/tor.dart';
 class EnsureRecoverBullTorSessionUsecase {
   final EmbeddedTor _embeddedTor;
   final SettingsRepository _settingsRepository;
-  final VerifyExternalTorUsecase _verifyExternalTorUsecase;
+  final Tor _tor;
 
   const EnsureRecoverBullTorSessionUsecase(
     this._embeddedTor,
     this._settingsRepository,
-    this._verifyExternalTorUsecase,
+    this._tor,
   );
 
   Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>> execute({
@@ -34,7 +34,25 @@ class EnsureRecoverBullTorSessionUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      if (settings.useTorProxy) return _external(settings.torProxyPort);
+      if (settings.useTorProxy) {
+        final TorProxyEndpoint endpoint;
+        try {
+          endpoint = TorProxyEndpoint(
+            host: InternetAddress.loopbackIPv4.address,
+            port: settings.torProxyPort,
+          );
+        } on ArgumentError {
+          return const Err(ExternalTorProxyUnavailableFailure());
+        }
+        switch (await _tor.external.verify(endpoint)) {
+          case TorReady(:final route):
+            return Ok(RecoverBullTorRoute(route, () async {}));
+          case TorUnavailable(:final failure):
+            return Err(ExternalTorProxyUnavailableFailure(failure.logMessage));
+          case _:
+            return const Err(ExternalTorProxyUnavailableFailure());
+        }
+      }
 
       final readiness = restartEmbedded
           ? await _embeddedTor.retry()
@@ -58,32 +76,6 @@ class EnsureRecoverBullTorSessionUsecase {
     }
   }
 
-  /// No circuit isolation to release, hence the no-op close: the proxy is not
-  /// ours to start or stop, and stopping it would break every other consumer.
-  Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>> _external(
-    int port,
-  ) async {
-    try {
-      final endpoint = TorProxyEndpoint(
-        host: InternetAddress.loopbackIPv4.address,
-        port: port,
-      );
-      final verification = await _verifyExternalTorUsecase.execute(endpoint);
-      if (verification case TorUnavailable(:final failure)) {
-        return Err(ExternalTorProxyUnavailableFailure(failure.logMessage));
-      }
-      if (verification is! TorReady) {
-        return const Err(ExternalTorProxyUnavailableFailure());
-      }
-      return Ok(RecoverBullTorRoute(verification.route, () async {}));
-    } on ArgumentError catch (error) {
-      // A port persisted outside 1-65535 would otherwise throw out of a
-      // Result-returning use case. `RangeError` is an `ArgumentError`, so this
-      // single clause covers the endpoint's two validation failures.
-      return Err(ExternalTorProxyUnavailableFailure(error.toString()));
-    }
-  }
-
   Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>>
   _openSession() async {
     try {
@@ -101,7 +93,7 @@ class EnsureRecoverBullTorSessionUsecase {
       );
     } on TorBackendException catch (error) {
       return Err(KeyServerUnavailableFailure(error.failure.logMessage));
-    } catch (error) {
+    } on Exception catch (error) {
       return Err(KeyServerUnavailableFailure(error.toString()));
     }
   }

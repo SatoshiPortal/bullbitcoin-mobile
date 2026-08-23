@@ -6,31 +6,30 @@ import 'package:bull_tor/tor.dart';
 enum ExternalTorProxyStatus { disabled, available, unavailable }
 
 class GetExternalTorProxyStatusUsecase {
-  GetExternalTorProxyStatusUsecase(
-    this._settingsRepository,
-    this._verifyExternalTorUsecase,
-  );
-
   final SettingsRepository _settingsRepository;
-  final VerifyExternalTorUsecase _verifyExternalTorUsecase;
+  final Tor _tor;
+
+  const GetExternalTorProxyStatusUsecase(this._settingsRepository, this._tor);
 
   Future<ExternalTorProxyStatus> execute() async {
-    final settings = await _settingsRepository.fetch();
-    if (!settings.useTorProxy) return ExternalTorProxyStatus.disabled;
-
-    final TorProxyEndpoint endpoint;
     try {
-      endpoint = TorProxyEndpoint(
-        host: InternetAddress.loopbackIPv4.address,
-        port: settings.torProxyPort,
-      );
-    } on ArgumentError {
+      final settings = await _settingsRepository.fetch();
+      if (!settings.useTorProxy) return ExternalTorProxyStatus.disabled;
+      final TorProxyEndpoint endpoint;
+      try {
+        endpoint = TorProxyEndpoint(
+          host: InternetAddress.loopbackIPv4.address,
+          port: settings.torProxyPort,
+        );
+      } on ArgumentError {
+        return ExternalTorProxyStatus.unavailable;
+      }
+      return switch (await _tor.external.verify(endpoint)) {
+        TorReady() => ExternalTorProxyStatus.available,
+        _ => ExternalTorProxyStatus.unavailable,
+      };
+    } on Exception {
       return ExternalTorProxyStatus.unavailable;
     }
-
-    final connection = await _verifyExternalTorUsecase.execute(endpoint);
-    return connection is TorReady
-        ? ExternalTorProxyStatus.available
-        : ExternalTorProxyStatus.unavailable;
   }
 }

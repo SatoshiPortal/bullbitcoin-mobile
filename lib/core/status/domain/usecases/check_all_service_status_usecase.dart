@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.da
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
@@ -27,6 +28,8 @@ class CheckAllServiceStatusUsecase {
   final WalletRepository _walletRepository;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
   final CheckServerConnectionUsecase _checkServerConnectionUsecase;
+  final SettingsRepository _settingsRepository;
+  final Tor _tor;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -37,6 +40,8 @@ class CheckAllServiceStatusUsecase {
     required this._walletRepository,
     required this._ensureTorReadyUsecase,
     required this._checkServerConnectionUsecase,
+    required this._settingsRepository,
+    required this._tor,
   });
 
   Future<AllServicesStatus> execute({required Network network}) async {
@@ -240,25 +245,44 @@ class CheckAllServiceStatusUsecase {
       lastChecked: DateTime.now(),
     );
 
-    if (!await _walletRepository.isTorRequired()) return status;
+    // An explicitly configured external proxy is authoritative even when this
+    // wallet has no backup requiring embedded Tor. Only the disabled branch
+    // consults wallet usage before probing embedded Tor.
+    final settings = await _settingsRepository.fetch();
+    if (settings.useTorProxy) {
+      final TorProxyEndpoint endpoint;
+      try {
+        endpoint = TorProxyEndpoint(
+          host: InternetAddress.loopbackIPv4.address,
+          port: settings.torProxyPort,
+        );
+      } on ArgumentError {
+        return status.copyWith(status: ServiceStatus.offline);
+      }
+      final external = await _tor.external.verify(endpoint);
+      return status.copyWith(
+        status: external is TorReady
+            ? ServiceStatus.online
+            : ServiceStatus.offline,
+      );
+    }
+    return status.copyWith(status: await _checkEmbeddedTorIfRequired());
+  }
 
-    // Bounded on purpose. Adopting a warm client answers immediately, but when
-    // the startup warm-up failed — launched offline, or Tor blocked — this call
-    // starts a fresh bootstrap, and every other row on the screen waits on it
-    // through the single `Future.wait`. A censored network can spend the whole
-    // direct budget and then the Snowflake one, so an unbounded wait here means
-    // minutes of a blank connectivity screen.
-    return status.copyWith(
-      status: switch (await _ensureTorReadyUsecase.execute().timeout(
+  Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
+    if (!await _walletRepository.isTorRequired()) return ServiceStatus.unknown;
+    return _checkEmbeddedTorConnection();
+  }
+
+  Future<ServiceStatus> _checkEmbeddedTorConnection() async =>
+      switch (await _ensureTorReadyUsecase.execute().timeout(
         _torStatusTimeout,
         onTimeout: () => const TorUninitialized(),
       )) {
         TorReady(:final route) when route.source == TorSource.embedded =>
           ServiceStatus.online,
         _ => ServiceStatus.offline,
-      },
-    );
-  }
+      };
 
   Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
     final status = ServiceStatusInfo(

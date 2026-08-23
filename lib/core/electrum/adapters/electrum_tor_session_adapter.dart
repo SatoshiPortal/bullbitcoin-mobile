@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bull_tor/tor.dart';
 
 final class ElectrumTorSessionAdapter implements ElectrumTorSessionPort {
@@ -14,19 +13,29 @@ final class ElectrumTorSessionAdapter implements ElectrumTorSessionPort {
   Future<ElectrumTorRoute?> open({
     required ElectrumServerNetwork network,
     required String serverUrl,
+    required bool isCustom,
     required bool externalProxyEnabled,
     required int externalProxyPort,
   }) async {
-    if (network.isLiquid || !ElectrumServerUrl(serverUrl).isOnion) return null;
+    if (network.isLiquid) return null;
+
+    if (!isCustom || !ElectrumServerUrl(serverUrl).isOnion) return null;
 
     if (externalProxyEnabled) {
-      return ElectrumTorRoute(
-        TorProxyEndpoint(
-          host: InternetAddress.loopbackIPv4.address,
+      final TorProxyEndpoint endpoint;
+      try {
+        endpoint = TorProxyEndpoint(
+          host: '127.0.0.1',
           port: externalProxyPort,
-        ),
-        () async {},
-      );
+        );
+      } on ArgumentError {
+        throw OnionServerWithoutTorException(serverUrl);
+      }
+      return switch (await _tor().external.verify(endpoint)) {
+        TorReady(:final route) => ElectrumTorRoute(route.endpoint, () async {}),
+        TorUnavailable() => throw OnionServerWithoutTorException(serverUrl),
+        _ => throw OnionServerWithoutTorException(serverUrl),
+      };
     }
 
     final session = await _tor().embedded.sessions.open();

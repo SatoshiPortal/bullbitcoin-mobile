@@ -16,6 +16,7 @@ abstract interface class ElectrumTorSessionPort {
   Future<ElectrumTorRoute?> open({
     required ElectrumServerNetwork network,
     required String serverUrl,
+    required bool isCustom,
     required bool externalProxyEnabled,
     required int externalProxyPort,
   });
