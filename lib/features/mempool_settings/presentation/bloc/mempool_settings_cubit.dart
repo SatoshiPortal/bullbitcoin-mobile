@@ -86,7 +86,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   Future<bool> setCustomServer(
     String url, {
     bool enableSsl = true,
-    bool validateDomain = true,
+    bool validateDomain = false,
   }) async {
     emit(state.copyWith(isSavingServer: true, failure: null));
 

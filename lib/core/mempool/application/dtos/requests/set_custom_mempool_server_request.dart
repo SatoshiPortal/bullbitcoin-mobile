@@ -8,6 +8,6 @@ class SetCustomMempoolServerRequest {
     required this.url,
     required this.isLiquid,
     this.enableSsl = true,
-    this.validateDomain = true,
+    this.validateDomain = false,
   });
 }

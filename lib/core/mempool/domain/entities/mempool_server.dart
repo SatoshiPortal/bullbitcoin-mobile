@@ -24,7 +24,7 @@ class MempoolServer {
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
-    bool validateDomain = true,
+    bool validateDomain = false,
   }) {
     final parsed = MempoolUrlParser.tryParse(url);
     if (parsed == null) {
