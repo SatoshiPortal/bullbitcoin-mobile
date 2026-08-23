@@ -11,11 +11,26 @@ class TorSettingsScreen extends StatefulWidget {
   State<TorSettingsScreen> createState() => _TorSettingsScreenState();
 }
 
-class _TorSettingsScreenState extends State<TorSettingsScreen> {
+class _TorSettingsScreenState extends State<TorSettingsScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     context.read<TorSettingsCubit>().init();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<TorSettingsCubit>().onAppResumed();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

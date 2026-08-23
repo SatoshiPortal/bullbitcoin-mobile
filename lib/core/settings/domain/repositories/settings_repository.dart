@@ -48,6 +48,8 @@ abstract class SettingsRepository {
 
   Future<void> setTorProxyPort(int port);
 
+  Future<void> setTorProxy({required bool enabled, required int port});
+
   Future<void> setTorTransportMode(TorTransportMode mode);
 
   Future<void> setLastSuccessfulTorTransport(TorTransport transport);

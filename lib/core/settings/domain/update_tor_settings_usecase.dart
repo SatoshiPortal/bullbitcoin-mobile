@@ -9,7 +9,9 @@ class UpdateTorSettingsUsecase {
     required bool useTorProxy,
     required int torProxyPort,
   }) async {
-    await _settingsRepository.setUseTorProxy(useTorProxy);
-    await _settingsRepository.setTorProxyPort(torProxyPort);
+    await _settingsRepository.setTorProxy(
+      enabled: useTorProxy,
+      port: torProxyPort,
+    );
   }
 }

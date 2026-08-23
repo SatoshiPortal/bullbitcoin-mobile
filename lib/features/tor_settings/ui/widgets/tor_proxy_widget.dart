@@ -19,6 +19,8 @@ class TorProxyWidget extends StatelessWidget {
     final torState = context.watch<TorSettingsCubit>().state;
     final useTorProxy = torState.useTorProxy;
     final torProxyPort = torState.torProxyPort;
+    final showExternalStatus =
+        useTorProxy || torState.externalProxyAttempt != null;
     final activeTransport = switch (torState.embeddedConnection) {
       TorReady(:final route) => route.transport,
       TorConnecting(:final transport) => transport,
@@ -110,9 +112,14 @@ class TorProxyWidget extends StatelessWidget {
           ),
         ),
 
-        if (useTorProxy) ...[
+        if (showExternalStatus) ...[
           const Gap(16),
-          TorConnectionStatusCard(connection: torState.connection),
+          if (useTorProxy)
+            TorConnectionStatusCard(connection: torState.connection),
+          if (torState.externalProxyAttempt != null) ...[
+            const Gap(16),
+            TorConnectionStatusCard(connection: torState.externalProxyAttempt!),
+          ],
           const Gap(16),
           Card(
             child: SettingsEntryItem(
