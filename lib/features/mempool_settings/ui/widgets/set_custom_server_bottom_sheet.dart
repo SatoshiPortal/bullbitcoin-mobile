@@ -58,13 +58,13 @@ class _SetCustomServerBottomSheetState
   String? _errorMessage;
   bool _enableSsl = true;
   bool _sslAutoDetected = false;
-  bool _validateDomain = true;
+  bool _validateDomain = false;
 
   @override
   void initState() {
     super.initState();
     _urlController = TextEditingController(text: widget.initialUrl ?? '');
-    _validateDomain = widget.initialValidateDomain ?? true;
+    _validateDomain = widget.initialValidateDomain ?? false;
     if (widget.initialEnableSsl != null) {
       _enableSsl = widget.initialEnableSsl!;
       _sslAutoDetected = false;
