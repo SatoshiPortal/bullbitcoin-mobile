@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_tor/tor.dart';
 
-abstract class SettingsRepository {
+abstract interface class SettingsRepository {
   Stream<String> get currencyChangeStream;
 
   Future<void> close();
