@@ -15,6 +15,7 @@ graph TB
 
     %% Feature modules
     SETTINGS[Settings]
+    ELECTRUM_SETTINGS[Electrum Settings]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -116,6 +117,8 @@ graph TB
     SWAPS --> LABELS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
+    WALLETS --> TOR
+    WALLETS --> ELECTRUM_SETTINGS
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE

@@ -1,7 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,11 +46,16 @@ class HomeWarnings extends StatelessWidget {
               for (final warning in serverWarning) ...[
                 const Gap(5),
                 InfoCard(
-                  title: warning.title,
-                  description: warning.description,
+                  title: homeWarningTitle(context, warning),
+                  description: homeWarningDescription(context, warning),
                   tagColor: context.appColors.error,
                   bgColor: context.appColors.errorContainer,
-                  onTap: () => context.pushNamed(warning.actionRoute),
+                  onTap: () => context.pushNamed(switch (warning.action) {
+                    WalletWarningAction.electrumSettings =>
+                      const ElectrumSettingsFacade().settingsRouteName,
+                    WalletWarningAction.torSettings =>
+                      const TorSettingsFacade().settingsRouteName,
+                  }),
                 ),
               ],
             ],
@@ -56,3 +65,17 @@ class HomeWarnings extends StatelessWidget {
     );
   }
 }
+
+String homeWarningTitle(BuildContext context, WalletWarning warning) =>
+    switch (warning.action) {
+      WalletWarningAction.torSettings =>
+        context.loc.torSettingsExternalProxyUnavailable,
+      WalletWarningAction.electrumSettings => warning.title,
+    };
+
+String homeWarningDescription(BuildContext context, WalletWarning warning) =>
+    switch (warning.action) {
+      WalletWarningAction.torSettings =>
+        context.loc.torSettingsExternalProxyUnavailableDescription,
+      WalletWarningAction.electrumSettings => warning.description,
+    };
