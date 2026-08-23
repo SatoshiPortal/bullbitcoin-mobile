@@ -30,6 +30,11 @@ void main() {
       "39'/0'/12'/103'",
     });
     expect(
+      registry.reservedPaths,
+      registry.reservations.map((item) => item.path).toSet(),
+    );
+    expect(registry.reservedPathPrefixes, {"1608'/0'/"});
+    expect(
       () => registry.reservedWalletSeedIndices.add(104),
       throwsA(isA<UnsupportedError>()),
     );
@@ -39,11 +44,21 @@ void main() {
     );
   });
 
+  test('recognizes the dynamic RecoverBull vault-key namespace', () {
+    expect(registry.isRecoverbullVaultKeyPath("1608'/0'/0'"), isTrue);
+    expect(registry.isRecoverbullVaultKeyPath("1608'/0'/2147483646'"), isTrue);
+    expect(registry.isReservedPath("1608'/0'/586053381'"), isTrue);
+    expect(registry.isRecoverbullVaultKeyPath("1608'/0'/05'"), isFalse);
+    expect(registry.isRecoverbullVaultKeyPath("1608'/1'/5'"), isFalse);
+    expect(registry.isRecoverbullVaultKeyPath("1608'/0'/2147483647'"), isFalse);
+  });
+
   test('separates user Nostr identities from the app-owned range', () {
     expect(registry.nostrUserKeyPath(1), "128002'/1'/1'");
     expect(registry.nostrUserKeyIdentity("128002'/99'/1'"), 99);
     expect(registry.isNostrUserKeyPath("128002'/200'/1'"), isTrue);
     expect(registry.nostrUserKeyIdentity("128002'/100'/1'"), isNull);
+    expect(registry.nostrUserKeyIdentity("128002'/05'/1'"), isNull);
     expect(() => registry.nostrUserKeyPath(100), throwsArgumentError);
     expect(
       registry.reservationByExactPath("1642'/0'/1'")?.id,

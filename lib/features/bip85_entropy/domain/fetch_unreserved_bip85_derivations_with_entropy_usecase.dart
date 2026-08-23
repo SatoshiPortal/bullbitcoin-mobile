@@ -21,6 +21,8 @@ class FetchUnreservedBip85DerivationsWithEntropyUsecase {
       Bip85Failure
     >
   >
-  execute() =>
-      _fetchAll.execute(excludedPaths: _registry.reservedWalletSeedPaths);
+  execute() => _fetchAll.execute(
+    excludedPaths: _registry.reservedPaths,
+    excludedPathPrefixes: _registry.reservedPathPrefixes,
+  );
 }

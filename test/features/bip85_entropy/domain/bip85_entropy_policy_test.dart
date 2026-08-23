@@ -80,10 +80,13 @@ void main() {
     expect(excluded, registry.reservedWalletSeedIndices);
   });
 
-  test('entropy listing hides every reserved wallet path', () async {
+  test('entropy listing hides every reserved path and namespace', () async {
     final fetch = _FetchDerivations();
     when(
-      () => fetch.execute(excludedPaths: any(named: 'excludedPaths')),
+      () => fetch.execute(
+        excludedPaths: any(named: 'excludedPaths'),
+        excludedPathPrefixes: any(named: 'excludedPathPrefixes'),
+      ),
     ).thenAnswer((_) async => const Ok([]));
 
     final result = await FetchUnreservedBip85DerivationsWithEntropyUsecase(
@@ -92,13 +95,13 @@ void main() {
     ).execute();
     expect(result, isA<Ok>());
 
-    final excluded =
-        verify(
-              () => fetch.execute(
-                excludedPaths: captureAny(named: 'excludedPaths'),
-              ),
-            ).captured.single
-            as Set<String>;
-    expect(excluded, registry.reservedWalletSeedPaths);
+    final captured = verify(
+      () => fetch.execute(
+        excludedPaths: captureAny(named: 'excludedPaths'),
+        excludedPathPrefixes: captureAny(named: 'excludedPathPrefixes'),
+      ),
+    ).captured;
+    expect(captured[0], registry.reservedPaths);
+    expect(captured[1], registry.reservedPathPrefixes);
   });
 }

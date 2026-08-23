@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/features/bip85_registry/domain/bip85_reservation.dart';
 import 'package:bb_mobile/features/bip85_registry/domain/bip85_reservations.dart';
 
@@ -22,6 +23,32 @@ class Bip85RegistryFacade {
   Set<String> get reservedWalletSeedPaths => Set.unmodifiable(
     reservations.where((item) => item.isWalletSeed).map((item) => item.path),
   );
+  Set<String> get reservedPaths =>
+      Set.unmodifiable(reservations.map((item) => item.path));
+  Set<String> get reservedPathPrefixes =>
+      Set.unmodifiable({RecoverbullBip85Utils.vaultKeyPathPrefix});
+
+  bool isReservedPath(String path) {
+    final candidate = path.trim();
+    return reservationByExactPath(candidate) != null ||
+        isRecoverbullVaultKeyPath(candidate);
+  }
+
+  bool isRecoverbullVaultKeyPath(String path) {
+    final candidate = path.trim();
+    if (!candidate.startsWith(RecoverbullBip85Utils.vaultKeyPathPrefix)) {
+      return false;
+    }
+    final indexText = candidate.substring(
+      RecoverbullBip85Utils.vaultKeyPathPrefix.length,
+    );
+    if (!indexText.endsWith("'")) return false;
+    final index = int.tryParse(indexText.substring(0, indexText.length - 1));
+    return index != null &&
+        index >= 0 &&
+        index <= RecoverbullBip85Utils.maxVaultKeyIndex &&
+        candidate == '${RecoverbullBip85Utils.vaultKeyPathPrefix}$index\'';
+  }
 
   int get nostrApplicationNumber => Bip85Reservations.nostrApplicationNumber;
   String get nostrUserKeyReservationId =>
@@ -59,12 +86,13 @@ class Bip85RegistryFacade {
     final identity = middle.endsWith("'")
         ? int.tryParse(middle.substring(0, middle.length - 1))
         : null;
-    return identity != null &&
-            identity >= nostrUserIdentityStart &&
-            identity <= nostrUserIdentityEnd &&
-            !isNostrAppReservedIdentity(identity)
-        ? identity
-        : null;
+    if (identity == null ||
+        identity < nostrUserIdentityStart ||
+        identity > nostrUserIdentityEnd ||
+        isNostrAppReservedIdentity(identity)) {
+      return null;
+    }
+    return nostrUserKeyPath(identity) == path.trim() ? identity : null;
   }
 
   bool isNostrUserKeyPath(String path) {

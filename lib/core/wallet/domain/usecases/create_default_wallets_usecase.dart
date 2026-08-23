@@ -129,7 +129,7 @@ class CreateDefaultWalletsUsecase {
       final error = InconsistentWalletStateException(fingerprint: fingerprint);
       log.severe(
         message: 'Default wallet records exist without their seed',
-        error: error,
+        error: error.runtimeType,
         trace: StackTrace.current,
       );
       throw error;

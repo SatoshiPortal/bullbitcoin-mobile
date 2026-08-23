@@ -26,7 +26,10 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       Bip85Failure
     >
   >
-  execute({Set<String> excludedPaths = const {}}) async {
+  execute({
+    Set<String> excludedPaths = const {},
+    Set<String> excludedPathPrefixes = const {},
+  }) async {
     try {
       final defaultSeed = await _getDefaultSeedUsecase.execute();
       final xprvBase58 = Bip32Derivation.getCanonicalRootXprvFromSeed(
@@ -44,6 +47,7 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
                 // wallet in its place.
                 final key = bip32.Bip32Keys.fromBase58(xprvBase58);
                 return !excludedPaths.contains(e.path) &&
+                    !excludedPathPrefixes.any(e.path.startsWith) &&
                     e.xprvFingerprint.toLowerCase() ==
                         hex.encode(key.fingerprint).toLowerCase();
               })

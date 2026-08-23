@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 extension Bip85FailureL10n on Bip85Failure {
   String toTranslated(BuildContext context) => switch (this) {
     Bip85NoDefaultWalletFailure() => context.loc.bip85NoDefaultWalletError,
+    Bip85DefaultWalletAmbiguousFailure() => context.loc.oopsSomethingWentWrong,
     Bip85DerivationFailure() => context.loc.oopsSomethingWentWrong,
     Bip85DerivationConflictFailure() => context.loc.oopsSomethingWentWrong,
     Bip85StorageFailure() => context.loc.oopsSomethingWentWrong,

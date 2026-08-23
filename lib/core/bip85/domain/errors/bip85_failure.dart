@@ -8,6 +8,10 @@ final class Bip85NoDefaultWalletFailure extends Bip85Failure {
   const Bip85NoDefaultWalletFailure([super.logMessage]);
 }
 
+final class Bip85DefaultWalletAmbiguousFailure extends Bip85Failure {
+  const Bip85DefaultWalletAmbiguousFailure([super.logMessage]);
+}
+
 final class Bip85DerivationFailure extends Bip85Failure {
   const Bip85DerivationFailure([super.logMessage]);
 }

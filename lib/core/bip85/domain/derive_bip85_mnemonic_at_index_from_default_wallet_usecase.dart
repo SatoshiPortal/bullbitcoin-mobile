@@ -45,6 +45,9 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
         onlyBitcoin: true,
       );
       if (defaults.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
+      if (defaults.length > 1) {
+        return const Err(Bip85DefaultWalletAmbiguousFailure());
+      }
 
       final wallet = defaults.first;
       final seed = await _seeds.get(wallet.masterFingerprint);
@@ -73,6 +76,11 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
 
       if (existing != null &&
           existing.xprvFingerprint == wallet.masterFingerprint.toLowerCase()) {
+        if (existing.status != Bip85Status.active) {
+          return const Err(
+            Bip85DerivationConflictFailure('Reserved BIP85 path is not active'),
+          );
+        }
         if (existing.application != Bip85Application.bip39 ||
             existing.alias != alias) {
           return const Err(

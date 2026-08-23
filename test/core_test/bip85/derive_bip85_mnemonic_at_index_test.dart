@@ -126,6 +126,46 @@ void main() {
     expect(_value(stored)?.xprvFingerprint, wallet.masterFingerprint);
     expect(_value(stored)?.alias, 'BTCPay');
   });
+
+  test('rejects an ambiguous default-wallet trust root', () async {
+    when(
+      () => wallets.getWallets(
+        environment: Environment.mainnet,
+        onlyDefaults: true,
+        onlyBitcoin: true,
+      ),
+    ).thenAnswer((_) async => [wallet, wallet]);
+
+    final result = await usecase.execute(
+      index: 100,
+      alias: 'BTCPay',
+      environment: Environment.mainnet,
+    );
+
+    expect(result, isA<Err<dynamic, Bip85Failure>>());
+    expect((result as Err).failure, isA<Bip85DefaultWalletAmbiguousFailure>());
+    verifyNever(() => seeds.get(any()));
+  });
+
+  test('does not silently reuse a revoked reservation', () async {
+    final first = await usecase.execute(
+      index: 100,
+      alias: 'BTCPay',
+      environment: Environment.mainnet,
+    );
+    final stored = await repository.fetch(_value(first).derivation);
+    final revoked = await repository.revoke(_value(stored)!);
+
+    final result = await usecase.execute(
+      index: 100,
+      alias: 'BTCPay',
+      environment: Environment.mainnet,
+    );
+
+    expect(revoked, isA<Ok<dynamic, Bip85Failure>>());
+    expect(result, isA<Err<dynamic, Bip85Failure>>());
+    expect((result as Err).failure, isA<Bip85DerivationConflictFailure>());
+  });
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) => switch (result) {
