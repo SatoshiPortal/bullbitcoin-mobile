@@ -83,13 +83,18 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     }
   }
 
-  Future<bool> setCustomServer(String url, {bool enableSsl = true}) async {
+  Future<bool> setCustomServer(
+    String url, {
+    bool enableSsl = true,
+    bool validateDomain = true,
+  }) async {
     emit(state.copyWith(isSavingServer: true, failure: null));
 
     final request = SetCustomMempoolServerRequest(
       url: url,
       isLiquid: state.isLiquid,
       enableSsl: enableSsl,
+      validateDomain: validateDomain,
     );
 
     switch (await _setCustomServerUsecase.execute(request)) {
@@ -163,6 +168,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       url: server.url,
       network: network,
       enableSsl: server.enableSsl,
+      validateDomain: server.validateDomain,
     )).fold((_) => true, (_) => false);
 
     final finalServer = server.copyWith(

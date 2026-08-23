@@ -12,17 +12,20 @@ import 'package:bull_ui/bull_ui.dart'
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
   final bool? initialEnableSsl;
+  final bool? initialValidateDomain;
 
   const SetCustomServerBottomSheet({
     super.key,
     this.initialUrl,
     this.initialEnableSsl,
+    this.initialValidateDomain,
   });
 
   static Future<bool?> show(
     BuildContext context, {
     String? initialUrl,
     bool? initialEnableSsl,
+    bool? initialValidateDomain,
   }) {
     final cubit = context.read<MempoolSettingsCubit>();
 
@@ -33,6 +36,7 @@ class SetCustomServerBottomSheet extends StatefulWidget {
         child: SetCustomServerBottomSheet(
           initialUrl: initialUrl,
           initialEnableSsl: initialEnableSsl,
+          initialValidateDomain: initialValidateDomain,
         ),
       ),
     );
@@ -52,11 +56,13 @@ class _SetCustomServerBottomSheetState
   String? _errorMessage;
   bool _enableSsl = true;
   bool _sslAutoDetected = false;
+  bool _validateDomain = true;
 
   @override
   void initState() {
     super.initState();
     _urlController = TextEditingController(text: widget.initialUrl ?? '');
+    _validateDomain = widget.initialValidateDomain ?? true;
     if (widget.initialEnableSsl != null) {
       _enableSsl = widget.initialEnableSsl!;
       _sslAutoDetected = false;
@@ -105,6 +111,7 @@ class _SetCustomServerBottomSheetState
     final success = await context.read<MempoolSettingsCubit>().setCustomServer(
       url,
       enableSsl: _enableSsl,
+      validateDomain: _validateDomain,
     );
 
     if (!mounted) return;
@@ -136,7 +143,7 @@ class _SetCustomServerBottomSheetState
           padding: EdgeInsets.only(bottom: bottomInset),
           child: Form(
             key: _formKey,
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,6 +302,24 @@ class _SetCustomServerBottomSheetState
                       textAlign: TextAlign.start,
                     ),
                   ),
+                  if (_enableSsl) ...[
+                    const Gap(8),
+                    SwitchListTile.adaptive(
+                      shape: const RoundedRectangleBorder(
+                        side: BorderSide.none,
+                      ),
+                      tileColor: context.appColors.transparent,
+                      title: Text(
+                        context.loc.electrumValidateDomain,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                      value: _validateDomain,
+                      onChanged: (value) {
+                        setState(() => _validateDomain = value);
+                      },
+                    ),
+                    const Gap(8),
+                  ],
                   if (_errorMessage != null) ...[
                     const Gap(16),
                     Container(
