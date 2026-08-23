@@ -43,9 +43,8 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
         defaultWallet.masterFingerprint,
       );
 
-      final xprv = Bip32Derivation.getXprvFromSeed(
+      final xprv = Bip32Derivation.getCanonicalRootXprvFromSeed(
         defaultSeed.bytes,
-        defaultWallet.network,
       );
 
       const application = Bip85Application.hex;
@@ -66,10 +65,12 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
     } catch (e, st) {
       log.severe(
         message: 'DeriveNextBip85HexFromDefaultWalletUsecase failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return const Err(
+        Bip85UnexpectedFailure('BIP85 next-hex derivation failed'),
+      );
     }
   }
 }

@@ -30,10 +30,10 @@ class Bip85Repository {
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.deriveHex failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85DerivationFailure(e.toString()));
+      return const Err(Bip85DerivationFailure('BIP85 hex derivation failed'));
     }
   }
 
@@ -56,30 +56,75 @@ class Bip85Repository {
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.deriveMnemonic failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85DerivationFailure(e.toString()));
+      return const Err(
+        Bip85DerivationFailure('BIP85 mnemonic derivation failed'),
+      );
+    }
+  }
+
+  @useResult
+  Future<Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure>>
+  deriveMnemonicPreview({
+    required String xprvBase58,
+    required bip39.MnemonicLength length,
+    required int index,
+  }) async {
+    try {
+      return Ok(
+        _datasource.deriveMnemonicPreview(
+          xprvBase58: xprvBase58,
+          length: length,
+          index: index,
+        ),
+      );
+    } catch (error, trace) {
+      log.severe(
+        message: 'Bip85Repository.deriveMnemonicPreview failed',
+        error: error.runtimeType,
+        trace: trace,
+      );
+      return const Err(Bip85DerivationFailure('BIP85 mnemonic preview failed'));
+    }
+  }
+
+  @useResult
+  Future<Result<Bip85DerivationEntity?, Bip85Failure>> fetch(
+    String path,
+  ) async {
+    try {
+      return Ok((await _datasource.fetch(path))?.toEntity());
+    } catch (error, trace) {
+      log.severe(
+        message: 'Bip85Repository.fetch failed',
+        error: error.runtimeType,
+        trace: trace,
+      );
+      return const Err(Bip85StorageFailure('BIP85 derivation lookup failed'));
     }
   }
 
   @useResult
   Future<Result<int, Bip85Failure>> fetchNextIndexForApplication(
-    Bip85Application application,
-  ) async {
+    Bip85Application application, {
+    Set<int> excludedIndices = const {},
+  }) async {
     try {
       final applicationColumn = Bip85ApplicationColumn.fromEntity(application);
       final index = await _datasource.fetchNextIndexForApplication(
         applicationColumn,
+        excludedIndices: excludedIndices,
       );
       return Ok(index);
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.fetchNextIndexForApplication failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85StorageFailure(e.toString()));
+      return const Err(Bip85StorageFailure('BIP85 index lookup failed'));
     }
   }
 
@@ -91,10 +136,10 @@ class Bip85Repository {
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.fetchAll failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85StorageFailure(e.toString()));
+      return const Err(Bip85StorageFailure('BIP85 derivation listing failed'));
     }
   }
 
@@ -106,8 +151,12 @@ class Bip85Repository {
       await _datasource.revoke(derivation.path);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'Bip85Repository.revoke failed', error: e, trace: st);
-      return Err(Bip85StorageFailure(e.toString()));
+      log.severe(
+        message: 'Bip85Repository.revoke failed',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return const Err(Bip85StorageFailure('BIP85 revocation failed'));
     }
   }
 
@@ -121,10 +170,10 @@ class Bip85Repository {
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.activate failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85StorageFailure(e.toString()));
+      return const Err(Bip85StorageFailure('BIP85 activation failed'));
     }
   }
 
@@ -137,8 +186,12 @@ class Bip85Repository {
       await _datasource.alias(derivation.path, alias);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'Bip85Repository.alias failed', error: e, trace: st);
-      return Err(Bip85StorageFailure(e.toString()));
+      log.severe(
+        message: 'Bip85Repository.alias failed',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return const Err(Bip85StorageFailure('BIP85 alias update failed'));
     }
   }
 }

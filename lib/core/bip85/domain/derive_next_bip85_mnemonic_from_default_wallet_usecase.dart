@@ -28,6 +28,7 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   execute({
     bip39.MnemonicLength length = bip39.MnemonicLength.words12,
     String? alias,
+    Set<int> excludedIndices = const {},
   }) async {
     try {
       // Derive from the default wallet of the environment the app is actually
@@ -45,14 +46,14 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
         defaultWallet.masterFingerprint,
       );
 
-      final xprv = Bip32Derivation.getXprvFromSeed(
+      final xprv = Bip32Derivation.getCanonicalRootXprvFromSeed(
         defaultSeed.bytes,
-        defaultWallet.network,
       );
 
       const application = Bip85Application.bip39;
       final indexResult = await _bip85Repository.fetchNextIndexForApplication(
         application,
+        excludedIndices: excludedIndices,
       );
       switch (indexResult) {
         case Err(:final failure):
@@ -68,10 +69,12 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
     } catch (e, st) {
       log.severe(
         message: 'DeriveNextBip85MnemonicFromDefaultWalletUsecase failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return const Err(
+        Bip85UnexpectedFailure('BIP85 next-mnemonic derivation failed'),
+      );
     }
   }
 }

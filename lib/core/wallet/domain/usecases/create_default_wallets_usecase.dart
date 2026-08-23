@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/inconsistent_wallet_state_exception.dart';
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
@@ -41,7 +42,14 @@ class CreateDefaultWalletsUsecase {
       );
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
-      if (hasBitcoin && hasLiquid) return existing;
+      if (hasBitcoin && hasLiquid) {
+        await _restoreOrRequireSeeds(
+          existing,
+          mnemonicWords: mnemonicWords,
+          passphrase: passphrase,
+        );
+        return existing;
+      }
 
       final isGenerated = mnemonicWords == null;
       final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
@@ -91,8 +99,40 @@ class CreateDefaultWalletsUsecase {
       }
 
       return [...existing, ...created];
+    } on InconsistentWalletStateException {
+      rethrow;
     } catch (e) {
       throw CreateDefaultWalletsException(e.toString());
+    }
+  }
+
+  Future<void> _restoreOrRequireSeeds(
+    List<Wallet> wallets, {
+    List<String>? mnemonicWords,
+    String? passphrase,
+  }) async {
+    for (final fingerprint
+        in wallets.map((wallet) => wallet.masterFingerprint).toSet()) {
+      if (await _seedRepository.exists(fingerprint)) continue;
+      if (mnemonicWords != null &&
+          _seedRepository.fingerprintFor(
+                mnemonicWords: mnemonicWords,
+                passphrase: passphrase,
+              ) ==
+              fingerprint) {
+        await _seedRepository.createFromMnemonic(
+          mnemonicWords: mnemonicWords,
+          passphrase: passphrase,
+        );
+        continue;
+      }
+      final error = InconsistentWalletStateException(fingerprint: fingerprint);
+      log.severe(
+        message: 'Default wallet records exist without their seed',
+        error: error,
+        trace: StackTrace.current,
+      );
+      throw error;
     }
   }
 }

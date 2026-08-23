@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/bip85_entropy/bip85_home_page.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/can_access_bip85_entropy_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,10 @@ class Bip85EntropyRouter {
       GoRoute(
         name: Bip85EntropyRoute.bip85Home.name,
         path: Bip85EntropyRoute.bip85Home.path,
+        redirect: (context, state) async =>
+            await locator<CanAccessBip85EntropyUsecase>().execute()
+            ? null
+            : '/wallet',
         builder: (context, state) => const Bip85HomePage(),
         routes: const [],
       ),

@@ -7,6 +7,12 @@ const payjoinLabelSystem = 'payjoin';
 const selfSpendLabelSystem = 'self-spend';
 const exchangeBuyLabelSystem = 'exchange_buy';
 const exchangeSellLabelSystem = 'exchange_sell';
+const invoiceLabelSystem = 'invoice';
+const automaticFallbackLabelSystem = 'automatic-fallback';
+const lightningAddressLabelSystem = 'lightning-address';
+const paymentPageLabelSystem = 'payment-page';
+const posLabelSystem = 'point-of-sale';
+const btcpayLabelSystem = 'btcpay';
 
 enum LabelTypeColumn { tx, address, pubkey, input, output, xpub }
 

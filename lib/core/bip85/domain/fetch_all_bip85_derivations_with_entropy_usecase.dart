@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dar
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:meta/meta.dart';
 import 'package:convert/convert.dart';
@@ -27,12 +26,11 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       Bip85Failure
     >
   >
-  execute() async {
+  execute({Set<String> excludedPaths = const {}}) async {
     try {
       final defaultSeed = await _getDefaultSeedUsecase.execute();
-      final xprvBase58 = Bip32Derivation.getXprvFromSeed(
+      final xprvBase58 = Bip32Derivation.getCanonicalRootXprvFromSeed(
         defaultSeed.bytes,
-        Network.bitcoinMainnet,
       );
 
       switch (await _bip85Repository.fetchAll()) {
@@ -45,8 +43,9 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
                 // no longer available, never show a value derived from another
                 // wallet in its place.
                 final key = bip32.Bip32Keys.fromBase58(xprvBase58);
-                return e.xprvFingerprint.toLowerCase() ==
-                    hex.encode(key.fingerprint).toLowerCase();
+                return !excludedPaths.contains(e.path) &&
+                    e.xprvFingerprint.toLowerCase() ==
+                        hex.encode(key.fingerprint).toLowerCase();
               })
               .map((e) {
                 final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
@@ -61,10 +60,10 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
     } catch (e, st) {
       log.severe(
         message: 'FetchAllBip85DerivationsWithEntropyUsecase failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return const Err(Bip85UnexpectedFailure('BIP85 entropy lookup failed'));
     }
   }
 }
