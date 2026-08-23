@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,11 +21,11 @@ void main() {
   });
 
   late _MockRemote remote;
-  late RecoverBullRepository repository;
+  late RecoverBullRepositoryImpl repository;
 
   setUp(() {
     remote = _MockRemote();
-    repository = RecoverBullRepository(
+    repository = RecoverBullRepositoryImpl(
       remoteDatasource: remote,
       recoverbullSettingsDatasource: _MockSettings(),
     );

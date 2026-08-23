@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -26,6 +26,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_u
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -68,7 +69,7 @@ class RecoverbullLocator {
     );
 
     locator.registerLazySingleton<RecoverBullRepository>(
-      () => RecoverBullRepository(
+      () => RecoverBullRepositoryImpl(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
       ),

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';

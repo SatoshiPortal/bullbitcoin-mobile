@@ -11,22 +11,32 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 import 'package:bull_tor/tor.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 
 /// Data boundary for the RecoverBull key server and vault crypto. Catches the
 /// foreign exceptions the datasources/SDK throw, logs the raw reason, and
 /// returns a [RecoverBullCoreFailure] — no exception crosses this boundary.
-class RecoverBullRepository {
-  final RecoverBullRemoteDatasource remoteDatasource;
-  final RecoverbullSettingsDatasource recoverbullSettingsDatasource;
+class RecoverBullRepositoryImpl implements RecoverBullRepository {
+  final RecoverBullRemoteDatasource _remoteDatasource;
+  final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
 
-  RecoverBullRepository({
-    required this.remoteDatasource,
-    required this.recoverbullSettingsDatasource,
-  });
+  factory RecoverBullRepositoryImpl({
+    required RecoverBullRemoteDatasource remoteDatasource,
+    required RecoverbullSettingsDatasource recoverbullSettingsDatasource,
+  }) => RecoverBullRepositoryImpl._(
+    remoteDatasource,
+    recoverbullSettingsDatasource,
+  );
+
+  RecoverBullRepositoryImpl._(
+    this._remoteDatasource,
+    this._recoverbullSettingsDatasource,
+  );
 
   /// Builds an encrypted vault file for [plaintext] under [vaultKey] and stamps
   /// the BIP85 [derivationPath] into it. (Assembly lives here, not in the
   /// use-case.)
+  @override
   Result<EncryptedVault, RecoverBullCoreFailure> createVault({
     required String vaultKey,
     required String plaintext,
@@ -54,6 +64,7 @@ class RecoverBullRepository {
 
   /// Decrypts [vault] with [vaultKey] and decodes it into a [DecryptedVault].
   /// Wrong key / corrupt data surface as a failure, never an exception.
+  @override
   Result<DecryptedVault, RecoverBullCoreFailure> restoreVault({
     required EncryptedVault vault,
     required String vaultKey,
@@ -78,6 +89,7 @@ class RecoverBullRepository {
     }
   }
 
+  @override
   Future<Result<Null, RecoverBullCoreFailure>> storeVaultKey(
     String identifier,
     String password,
@@ -86,7 +98,7 @@ class RecoverBullRepository {
     TorProxyEndpoint endpoint,
   ) async {
     try {
-      await remoteDatasource.store(
+      await _remoteDatasource.store(
         convert.hex.decode(_normalizeHex(identifier)),
         utf8.encode(password),
         convert.hex.decode(_normalizeHex(salt)),
@@ -113,6 +125,7 @@ class RecoverBullRepository {
     }
   }
 
+  @override
   Future<Result<String, RecoverBullCoreFailure>> fetchVaultKey(
     String identifier,
     String password,
@@ -120,7 +133,7 @@ class RecoverBullRepository {
     TorProxyEndpoint endpoint,
   ) async {
     try {
-      final vaultKey = await remoteDatasource.fetch(
+      final vaultKey = await _remoteDatasource.fetch(
         convert.hex.decode(_normalizeHex(identifier)),
         utf8.encode(password),
         convert.hex.decode(_normalizeHex(salt)),
@@ -146,13 +159,14 @@ class RecoverBullRepository {
     }
   }
 
+  @override
   Future<void> trashVaultKey(
     String identifier,
     String password,
     String salt,
     TorProxyEndpoint endpoint,
   ) async {
-    await remoteDatasource.trash(
+    await _remoteDatasource.trash(
       convert.hex.decode(_normalizeHex(identifier)),
       utf8.encode(password),
       convert.hex.decode(_normalizeHex(salt)),
@@ -164,24 +178,29 @@ class RecoverBullRepository {
   /// otherwise. Kept throwing (not Result) on purpose so the shared status
   /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
   /// into the bool — is unaffected by the Result migration.
+  @override
   Future<void> checkConnection(TorProxyEndpoint endpoint) async {
-    await remoteDatasource.checkConnection(endpoint);
+    await _remoteDatasource.checkConnection(endpoint);
   }
 
+  @override
   Future<Uri> fetchUrl() async {
-    return await recoverbullSettingsDatasource.fetch();
+    return await _recoverbullSettingsDatasource.fetch();
   }
 
+  @override
   Future<void> storeUrl(Uri url) async {
-    await recoverbullSettingsDatasource.store(url);
+    await _recoverbullSettingsDatasource.store(url);
   }
 
+  @override
   Future<void> allowPermission(bool isGranted) async {
-    await recoverbullSettingsDatasource.allowPermission(isGranted);
+    await _recoverbullSettingsDatasource.allowPermission(isGranted);
   }
 
+  @override
   Future<bool> fetchPermission() async {
-    return await recoverbullSettingsDatasource.fetchPermission();
+    return await _recoverbullSettingsDatasource.fetchPermission();
   }
 
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
