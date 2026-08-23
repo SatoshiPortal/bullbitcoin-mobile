@@ -96,12 +96,12 @@ dependencies:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
       ref: 92925c959f219fa4dfd0fe0f40392ddf868e2774
   flutter_zxing: ^2.2.1
-  webview_cookie_manager:
-    git:
-      url: https://github.com/fryette/webview_cookie_manager.git
-      ref: e03954491a6952e04d7fceeae4c4d074392c0fe2
-  webview_flutter: ^4.13.0
+  webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10
+  webview_flutter_linux:
+    git:
+      url: https://github.com/basantagoswami/webview_flutter_linux.git
+      ref: 0cae2b66f68ebf426fba81c3fb43347d2c5f0345
   webview_flutter_wkwebview: ^3.23.4
   async: ^2.11.0
   drift: ^2.29.0
