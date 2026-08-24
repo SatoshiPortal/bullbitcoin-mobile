@@ -6,6 +6,7 @@ final class BitcoinPsbtInputReview {
   final BigInt amountSat;
   final BitcoinPolicyKeychain? keychain;
   final Set<String> localDescriptorKeyIds;
+  final Set<String> satisfiedPreimageKeys;
   final int sequence;
   final Set<String> signedDescriptorKeyIds;
 
@@ -14,9 +15,11 @@ final class BitcoinPsbtInputReview {
     required this.amountSat,
     required this.keychain,
     Set<String> localDescriptorKeyIds = const {},
+    Set<String> satisfiedPreimageKeys = const {},
     required this.sequence,
     Set<String> signedDescriptorKeyIds = const {},
   }) : localDescriptorKeyIds = Set.unmodifiable(localDescriptorKeyIds),
+       satisfiedPreimageKeys = Set.unmodifiable(satisfiedPreimageKeys),
        signedDescriptorKeyIds = Set.unmodifiable(signedDescriptorKeyIds) {
     if (outpoint.isEmpty) throw ArgumentError.value(outpoint, 'outpoint');
     if (amountSat < BigInt.zero) {
@@ -58,6 +61,7 @@ final class BitcoinPsbtReview {
   final List<BitcoinPsbtOutputReview> outputs;
   final BigInt feeSat;
   final int estimatedTransactionVsize;
+  final bool isFinalized;
   final int lockTime;
   final int version;
 
@@ -67,6 +71,7 @@ final class BitcoinPsbtReview {
     required List<BitcoinPsbtOutputReview> outputs,
     required this.feeSat,
     required this.estimatedTransactionVsize,
+    this.isFinalized = false,
     required this.lockTime,
     required this.version,
   }) : inputs = List.unmodifiable(inputs),
@@ -129,6 +134,15 @@ final class BitcoinPsbtReview {
         for (final input in inputs)
           input.outpoint: Set.unmodifiable(input.signedDescriptorKeyIds),
       });
+
+  Set<String> get satisfiedPreimageKeys {
+    if (inputs.isEmpty) return const {};
+    return Set.unmodifiable(
+      inputs
+          .map((input) => input.satisfiedPreimageKeys)
+          .reduce((satisfied, next) => satisfied.intersection(next)),
+    );
+  }
 
   bool get hasTimingConstraint =>
       _hasAbsoluteTimingConstraint ||

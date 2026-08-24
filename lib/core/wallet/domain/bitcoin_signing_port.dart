@@ -31,6 +31,7 @@ abstract interface class BitcoinSigningPort {
     String psbt, {
     required String walletId,
     bool requireLocalOrigin = true,
+    bool allowSpentWalletInputs = false,
   });
 
   @useResult
