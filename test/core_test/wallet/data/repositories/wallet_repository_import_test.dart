@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -20,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -62,6 +64,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_FakeWalletMetadataModel());
+    registerFallbackValue(Signer.none);
     registerFallbackValue(
       const WalletModel.publicBdk(
         id: 'fallback',
@@ -165,6 +168,14 @@ void main() {
     ).thenAnswer((_) async => _zeroBalance);
     when(metadataDatasource.fetchAll).thenAnswer((_) async => []);
     when(() => metadataDatasource.store(any())).thenAnswer((_) async {});
+    when(
+      () => metadataDatasource.updateSignerDevice(
+        walletId: any(named: 'walletId'),
+        signerId: any(named: 'signerId'),
+        signer: any(named: 'signer'),
+        signerDevice: any(named: 'signerDevice'),
+      ),
+    ).thenAnswer((_) async => true);
   });
 
   test('imports descriptors with structured signer metadata', () async {
@@ -226,6 +237,80 @@ void main() {
     expect(wallet.isWatchOnly, isFalse);
     expect(wallet.hasLocalSigner, isTrue);
     expect(wallet.hasRemoteSigner, isTrue);
+  });
+
+  test('updates an external signer device without changing its keys', () async {
+    final signer = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.remote,
+      signerDevice: SignerDeviceEntity.ledgerFlex,
+    );
+    final metadata = WalletMetadataModel(
+      id: 'wallet-id',
+      network: Network.bitcoinMainnet,
+      signers: [signer.toModel()],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _multipathDescriptor,
+      isDefault: false,
+    );
+    when(
+      () => metadataDatasource.fetch('wallet-id'),
+    ).thenAnswer((_) async => metadata);
+
+    final wallet = await repository.updateSignerDevice(
+      walletId: 'wallet-id',
+      signerId: signer.id,
+      signerDevice: SignerDeviceEntity.jade,
+    );
+
+    verify(
+      () => metadataDatasource.updateSignerDevice(
+        walletId: 'wallet-id',
+        signerId: signer.id,
+        signer: Signer.remote,
+        signerDevice: SignerDevice.jade,
+      ),
+    ).called(1);
+    expect(wallet.signers.single.descriptorKeys, signer.descriptorKeys);
+    expect(wallet.signers.single.signerDevice, SignerDeviceEntity.jade);
+  });
+
+  test('does not reclassify the Bull on-device signer', () async {
+    final signer = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.local,
+    );
+    final metadata = WalletMetadataModel(
+      id: 'wallet-id',
+      network: Network.bitcoinMainnet,
+      signers: [signer.toModel()],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _multipathDescriptor,
+      isDefault: false,
+    );
+    when(
+      () => metadataDatasource.fetch('wallet-id'),
+    ).thenAnswer((_) async => metadata);
+
+    await expectLater(
+      repository.updateSignerDevice(
+        walletId: 'wallet-id',
+        signerId: signer.id,
+        signerDevice: SignerDeviceEntity.jade,
+      ),
+      throwsA(isA<WalletSignerDeviceUpdateException>()),
+    );
+
+    verifyNever(
+      () => metadataDatasource.updateSignerDevice(
+        walletId: any(named: 'walletId'),
+        signerId: any(named: 'signerId'),
+        signer: any(named: 'signer'),
+        signerDevice: any(named: 'signerDevice'),
+      ),
+    );
   });
 
   test('applies one signer annotation to each xpub with its fingerprint', () async {

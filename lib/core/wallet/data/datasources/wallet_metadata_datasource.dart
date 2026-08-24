@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:drift/drift.dart';
@@ -70,16 +71,40 @@ class WalletMetadataDatasource {
     ];
   });
 
-  Future<void> updateSyncedAt(String walletId, DateTime syncedAt) async {
-    await (_sqlite.update(_sqlite.walletMetadatas)
-          ..where((row) => row.id.equals(walletId)))
-        .write(WalletMetadatasCompanion(syncedAt: Value(syncedAt)));
-  }
-
   Future<void> delete(String walletId) async {
     await _sqlite.managers.walletMetadatas
         .filter((row) => row.id(walletId))
         .delete();
+  }
+
+  Future<bool> updateSignerDevice({
+    required String walletId,
+    required String signerId,
+    required Signer signer,
+    required SignerDevice? signerDevice,
+  }) async {
+    final updatedRows =
+        await (_sqlite.update(_sqlite.walletSigners)..where(
+              (row) => row.walletId.equals(walletId) & row.id.equals(signerId),
+            ))
+            .write(
+              WalletSignersCompanion(
+                signer: Value(signer),
+                signerDevice: Value(signerDevice),
+              ),
+            );
+    return updatedRows == 1;
+  }
+
+  Future<bool> updateSyncedAt({
+    required String walletId,
+    required DateTime syncedAt,
+  }) async {
+    final updatedRows =
+        await (_sqlite.update(_sqlite.walletMetadatas)
+              ..where((row) => row.id.equals(walletId)))
+            .write(WalletMetadatasCompanion(syncedAt: Value(syncedAt)));
+    return updatedRows == 1;
   }
 
   Future<List<WalletSignerRow>> _fetchSigners(String walletId) async {
