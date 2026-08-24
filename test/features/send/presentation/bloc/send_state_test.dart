@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -69,15 +70,17 @@ void main() {
     network: Network.bitcoinMainnet,
     signers: [
       WalletSigner.single(
-        masterFingerprint: '00000000',
+        masterFingerprint: '',
         xpubFingerprint: '00000000',
         xpub: '',
+        derivationPath: "m/84'/0'/0'",
+        descriptorPath: standardSingleSignatureDescriptorPath,
         signer: SignerEntity.local,
         signerDevice: null,
       ),
     ],
     scriptType: ScriptType.bip84,
-    publicDescriptor: '',
+    publicDescriptor: 'wpkh(xpub/<0;1>/*)',
     balanceSat: BigInt.from(100000),
   );
 
@@ -86,7 +89,7 @@ void main() {
     network: Network.liquidMainnet,
     signers: [
       WalletSigner.single(
-        masterFingerprint: '00000000',
+        masterFingerprint: '',
         xpubFingerprint: '00000000',
         xpub: '',
         signer: SignerEntity.local,
@@ -431,6 +434,135 @@ void main() {
     },
   );
 
+  group('SendState fiat input', () {
+    test('remains fiat while its exchange rate is unavailable', () {
+      const state = SendState(amount: '12.50', inputAmountCurrencyCode: 'USD');
+
+      expect(state.isInputAmountFiat, isTrue);
+      expect(state.inputAmountSat, 0);
+    });
+
+    test('does not interpret an unknown currency as bitcoin', () {
+      const state = SendState(amount: '12.50');
+
+      expect(state.isInputAmountFiat, isFalse);
+      expect(state.inputAmountSat, 0);
+    });
+
+    test('converts an explicit bitcoin amount', () {
+      const state = SendState(amount: '1', inputAmountCurrencyCode: 'BTC');
+
+      expect(state.isInputAmountFiat, isFalse);
+      expect(state.inputAmountSat, 100000000);
+    });
+  });
+
+  group('SendState.requiresExternalBitcoinSigning', () {
+    test('routes a mobile wallet to confirmation', () {
+      final state = SendState(selectedWallet: bitcoinWallet());
+
+      expect(state.requiresExternalBitcoinSigning, isFalse);
+    });
+
+    test('routes a hardware wallet to external signing', () {
+      final wallet = bitcoinWallet().copyWith(
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: '',
+            xpubFingerprint: '00000000',
+            xpub: '',
+            signer: SignerEntity.remote,
+            signerDevice: SignerDeviceEntity.ledgerNanoX,
+          ),
+        ],
+      );
+      final state = SendState(selectedWallet: wallet);
+
+      expect(state.requiresExternalBitcoinSigning, isTrue);
+    });
+
+    test('uses the analyzed policy when local signatures are insufficient', () {
+      final wallet = bitcoinWallet().copyWith(
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: '',
+            xpubFingerprint: '00000000',
+            xpub: '',
+            signer: SignerEntity.remote,
+            signerDevice: SignerDeviceEntity.ledgerNanoX,
+          ),
+        ],
+      );
+      final signature = BitcoinSignaturePolicyNode(
+        id: 'signature',
+        key: BitcoinPolicyKey(
+          kind: BitcoinPolicyKeyKind.fingerprint,
+          value: '00000000',
+        ),
+      );
+      final policy = BitcoinWalletPolicy(
+        external: BitcoinSpendingPolicy(root: signature, requiresPath: false),
+        internal: BitcoinSpendingPolicy(root: signature, requiresPath: false),
+      );
+      final state = SendState(
+        selectedWallet: wallet,
+        bitcoinSigningPlan: BitcoinSigningPlan.fromPolicy(
+          policy: policy,
+          signers: wallet.signers,
+        ),
+      );
+
+      expect(state.requiresExternalBitcoinSigning, isTrue);
+    });
+  });
+
+  group('SendState hashlock requirements', () {
+    final hashlock = BitcoinHashlockPolicyNode(
+      id: 'hashlock',
+      type: BitcoinHashlockType.sha256,
+      hash: List.filled(32, '00').join(),
+    );
+    final policy = BitcoinWalletPolicy(
+      external: BitcoinSpendingPolicy(root: hashlock, requiresPath: false),
+      internal: BitcoinSpendingPolicy(root: hashlock, requiresPath: false),
+    );
+
+    SendState state({Set<String> preimages = const {}}) => SendState(
+      selectedWallet: bitcoinWallet(),
+      paymentRequest: const PaymentRequest.bip21(
+        network: Network.bitcoinMainnet,
+        uri: 'bitcoin:bc1qtest?pj=https://payjo.in',
+        address: 'bc1qtest',
+        pj: 'https://payjo.in',
+      ),
+      payjoinGloballyEnabled: true,
+      bitcoinSigningPlan: BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: const [],
+      ),
+      satisfiedBitcoinPolicyPreimages: preimages,
+    );
+
+    test('blocks confirmation until the selected path has its preimage', () {
+      final missing = state();
+
+      expect(missing.requiredBitcoinPolicyHashlocks, [hashlock]);
+      expect(missing.requiresBitcoinPolicyPreimage, isTrue);
+      expect(missing.disableConfirmSend, isTrue);
+
+      final ready = state(
+        preimages: {'${hashlock.type.name}:${hashlock.hash}'},
+      );
+
+      expect(ready.requiresBitcoinPolicyPreimage, isFalse);
+      expect(ready.disableConfirmSend, isFalse);
+    });
+
+    test('disables payjoin for a hashlock policy', () {
+      expect(state().isPayjoinAvailable, isFalse);
+    });
+  });
+
   group('SendState.willAttemptPayjoin', () {
     Bip21PaymentRequest bip21WithPj({String pj = 'https://payjo.in'}) =>
         PaymentRequest.bip21(
@@ -481,6 +613,45 @@ void main() {
       expect(state.willAttemptPayjoin, isFalse);
     });
 
+    test('false for an arbitrary descriptor wallet', () {
+      final wallet = bitcoinWallet().copyWith(
+        scriptType: null,
+        publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
+      );
+      final state = SendState(
+        paymentRequest: bip21WithPj(),
+        payjoinGloballyEnabled: true,
+        selectedWallet: wallet,
+        bitcoinSigningPlan: BitcoinSigningPlan.fromPolicy(
+          policy: BitcoinWalletPolicy(
+            external: BitcoinSpendingPolicy(
+              root: BitcoinSignaturePolicyNode(
+                id: 'key',
+                key: BitcoinPolicyKey(
+                  kind: BitcoinPolicyKeyKind.fingerprint,
+                  value: '00000000',
+                ),
+              ),
+              requiresPath: false,
+            ),
+            internal: BitcoinSpendingPolicy(
+              root: BitcoinSignaturePolicyNode(
+                id: 'key',
+                key: BitcoinPolicyKey(
+                  kind: BitcoinPolicyKeyKind.fingerprint,
+                  value: '00000000',
+                ),
+              ),
+              requiresPath: false,
+            ),
+          ),
+          signers: wallet.signers,
+        ),
+      );
+
+      expect(state.isPayjoinAvailable, isFalse);
+    });
+
     test('false for a non-BIP21 payment request', () {
       final state = SendState(
         paymentRequest: const PaymentRequest.bitcoin(
@@ -522,7 +693,7 @@ void main() {
           network: Network.bitcoinMainnet,
           signers: [
             WalletSigner.single(
-              masterFingerprint: '00000000',
+              masterFingerprint: '',
               xpubFingerprint: '00000000',
               xpub: '',
               signer: SignerEntity.remote,

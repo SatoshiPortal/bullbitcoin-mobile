@@ -4,18 +4,21 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -24,8 +27,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -35,10 +38,14 @@ import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_us
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/apply_bitcoin_policy_preimages_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_bitcoin_policy_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/restore_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -49,6 +56,11 @@ import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_us
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_policy_preimage_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/save_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -123,6 +135,18 @@ class _MockWatchFinishedWalletSyncsUsecase extends Mock
 
 class _MockSignBitcoinTxUsecase extends Mock implements SignBitcoinTxUsecase {}
 
+class _MockGetBitcoinSigningPlanUsecase extends Mock
+    implements GetBitcoinSigningPlanUsecase {}
+
+class _MockValidateBitcoinPolicyPreimageUsecase extends Mock
+    implements ValidateBitcoinPolicyPreimageUsecase {}
+
+class _MockApplyBitcoinPolicyPreimagesUsecase extends Mock
+    implements ApplyBitcoinPolicyPreimagesUsecase {}
+
+class _MockProcessBitcoinSignerResultUsecase extends Mock
+    implements ProcessBitcoinSignerResultUsecase {}
+
 class _MockSignLiquidTxUsecase extends Mock implements SignLiquidTxUsecase {}
 
 class _MockBroadcastBitcoinTransactionUsecase extends Mock
@@ -161,8 +185,20 @@ class _MockCheckLiquidConsolidationUsecase extends Mock
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
-class _MockProcessBitcoinSignerResultUsecase extends Mock
-    implements ProcessBitcoinSignerResultUsecase {}
+class _MockSavePendingBitcoinTransactionUsecase extends Mock
+    implements SavePendingBitcoinTransactionUsecase {}
+
+class _MockGetPendingBitcoinTransactionUsecase extends Mock
+    implements GetPendingBitcoinTransactionUsecase {}
+
+class _MockDeletePendingBitcoinTransactionUsecase extends Mock
+    implements DeletePendingBitcoinTransactionUsecase {}
+
+class _MockValidatePendingBitcoinTransactionUsecase extends Mock
+    implements ValidatePendingBitcoinTransactionUsecase {}
+
+class _MockRestorePendingBitcoinTransactionUsecase extends Mock
+    implements RestorePendingBitcoinTransactionUsecase {}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -174,6 +210,7 @@ class _FakeNewLabel extends Fake implements NewLabel {}
 /// `signTransaction` → `_watchPayjoin` code path.
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
+    super.wallet,
     required super.labelsFacade,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
@@ -198,6 +235,10 @@ class _TestableSendCubit extends SendCubit {
     required super.updatePaidSendSwapUsecase,
     required super.watchFinishedWalletSyncsUsecase,
     required super.signBitcoinTxUsecase,
+    required super.getBitcoinSigningPlanUsecase,
+    required super.resolveBitcoinPolicyUsecase,
+    required super.validateBitcoinPolicyPreimageUsecase,
+    required super.applyBitcoinPolicyPreimagesUsecase,
     required super.processBitcoinSignerResultUsecase,
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTxUsecase,
@@ -212,6 +253,11 @@ class _TestableSendCubit extends SendCubit {
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
+    required super.savePendingBitcoinTransactionUsecase,
+    required super.getPendingBitcoinTransactionUsecase,
+    required super.restorePendingBitcoinTransactionUsecase,
+    required super.deletePendingBitcoinTransactionUsecase,
+    required super.validatePendingBitcoinTransactionUsecase,
     super.parsePaymentRequest,
   });
 
@@ -223,52 +269,46 @@ Wallet _bitcoinLocalWallet() => Wallet(
   network: Network.bitcoinMainnet,
   signers: [
     WalletSigner.single(
-      masterFingerprint: '00000000',
+      masterFingerprint: '',
       xpubFingerprint: '00000000',
       xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
       signer: SignerEntity.local,
       signerDevice: null,
     ),
   ],
   scriptType: ScriptType.bip84,
-  publicDescriptor: '',
+  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
   balanceSat: BigInt.from(1000000),
 );
 
-ProcessedBitcoinPsbt _processedPsbt(String psbt, {bool isFinalized = true}) {
-  final key = BitcoinPolicyKey(
-    kind: BitcoinPolicyKeyKind.fingerprint,
-    value: '00000000',
-  );
-  BitcoinSpendingPolicy spendingPolicy() => BitcoinSpendingPolicy(
-    requiresPath: false,
-    root: BitcoinSignaturePolicyNode(id: 'local', key: key),
-  );
-  final wallet = _bitcoinLocalWallet();
-  return ProcessedBitcoinPsbt(
-    psbt: psbt,
-    isFinalized: isFinalized,
-    txSize: 100,
-    absoluteFeesSat: 0,
-    signingPlan: BitcoinSigningPlan.fromPolicy(
-      policy: BitcoinWalletPolicy(
-        external: spendingPolicy(),
-        internal: spendingPolicy(),
-      ),
-      signers: wallet.signers,
+Wallet _descriptorWallet() => Wallet(
+  origin: 'descriptor-wallet',
+  network: Network.bitcoinMainnet,
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '11111111',
+      xpubFingerprint: '11111111',
+      xpub: 'xpub',
+      descriptorPath: '/0/*',
+      signer: SignerEntity.remote,
+      signerDevice: null,
     ),
-  );
-}
+  ],
+  scriptType: null,
+  publicDescriptor: 'wsh(pk(xpub/0/*))',
+  balanceSat: BigInt.from(1000000),
+);
 
 Wallet _liquidWallet({required int balanceSat}) => Wallet(
   origin: 'w-liquid',
   network: Network.liquidMainnet,
   signers: [
     WalletSigner.single(
-      masterFingerprint: '00000000',
+      masterFingerprint: '',
       xpubFingerprint: '00000000',
       xpub: '',
-      derivationPath: "m/84'/1776'/0'",
       signer: SignerEntity.local,
       signerDevice: null,
     ),
@@ -283,11 +323,9 @@ Wallet _bitcoinWallet({required int balanceSat}) => Wallet(
   network: Network.bitcoinMainnet,
   signers: [
     WalletSigner.single(
-      masterFingerprint: '00000000',
+      masterFingerprint: '',
       xpubFingerprint: '00000000',
       xpub: '',
-      derivationPath: "m/84'/0'/0'",
-      descriptorPath: standardSingleSignatureDescriptorPath,
       signer: SignerEntity.local,
       signerDevice: null,
     ),
@@ -317,6 +355,91 @@ FeeOptions _feeOptions() => const FeeOptions(
   slow: RelativeFee(25),
   minRelay: RelativeFee(25),
 );
+
+BitcoinWalletPolicy _mandatoryRelativeTimelockPolicy() {
+  BitcoinSpendingPolicy spendingPolicy() => BitcoinSpendingPolicy(
+    root: BitcoinThresholdPolicyNode(
+      id: 'root',
+      threshold: 2,
+      children: [
+        BitcoinSignaturePolicyNode(
+          id: 'signature',
+          key: BitcoinPolicyKey(
+            kind: BitcoinPolicyKeyKind.fingerprint,
+            value: '00000000',
+          ),
+        ),
+        BitcoinRelativeTimelockPolicyNode(id: 'relative', value: 10),
+      ],
+    ),
+    requiresPath: false,
+  );
+
+  return BitcoinWalletPolicy(
+    external: spendingPolicy(),
+    internal: spendingPolicy(),
+  );
+}
+
+BitcoinWalletPolicy _mandatoryHashlockPolicy() {
+  BitcoinSpendingPolicy spendingPolicy() => BitcoinSpendingPolicy(
+    root: BitcoinThresholdPolicyNode(
+      id: 'root',
+      threshold: 2,
+      children: [
+        BitcoinSignaturePolicyNode(
+          id: 'signature',
+          key: BitcoinPolicyKey(
+            kind: BitcoinPolicyKeyKind.fingerprint,
+            value: '00000000',
+          ),
+        ),
+        BitcoinHashlockPolicyNode(
+          id: 'hashlock',
+          type: BitcoinHashlockType.sha256,
+          hash: List.filled(32, '11').join(),
+        ),
+      ],
+    ),
+    requiresPath: false,
+  );
+
+  return BitcoinWalletPolicy(
+    external: spendingPolicy(),
+    internal: spendingPolicy(),
+  );
+}
+
+BitcoinWalletPolicy _selectableThresholdPolicy(List<WalletSigner> signers) {
+  String fingerprint(WalletSigner signer) =>
+      signer.descriptorKeys.single.masterFingerprint.isNotEmpty
+      ? signer.descriptorKeys.single.masterFingerprint
+      : signer.descriptorKeys.single.xpubFingerprint;
+
+  BitcoinSpendingPolicy spendingPolicy() => BitcoinSpendingPolicy(
+    root: BitcoinThresholdPolicyNode(
+      id: 'root',
+      threshold: 2,
+      requiresPath: true,
+      children: [
+        for (final signer in signers)
+          BitcoinSignaturePolicyNode(
+            id: fingerprint(signer),
+            key: BitcoinPolicyKey(
+              kind: BitcoinPolicyKeyKind.fingerprint,
+              value: fingerprint(signer),
+            ),
+          ),
+      ],
+    ),
+    requiresPath: true,
+  );
+
+  return BitcoinWalletPolicy(
+    external: spendingPolicy(),
+    internal: spendingPolicy(),
+  );
+}
 
 Bip21PaymentRequest _payjoinBip21() =>
     const PaymentRequest.bip21(
@@ -369,6 +492,12 @@ void main() {
   late _MockUpdatePaidSendSwapUsecase updatePaidSendSwapUsecase;
   late _MockWatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase;
   late _MockSignBitcoinTxUsecase signBitcoinTxUsecase;
+  late _MockGetBitcoinSigningPlanUsecase getBitcoinSigningPlanUsecase;
+  late _MockValidateBitcoinPolicyPreimageUsecase
+  validateBitcoinPolicyPreimageUsecase;
+  late _MockApplyBitcoinPolicyPreimagesUsecase
+  applyBitcoinPolicyPreimagesUsecase;
+  late _MockProcessBitcoinSignerResultUsecase processBitcoinSignerResultUsecase;
   late _MockSignLiquidTxUsecase signLiquidTxUsecase;
   late _MockBroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase;
   late _MockBroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase;
@@ -384,13 +513,24 @@ void main() {
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
-  late _MockProcessBitcoinSignerResultUsecase processBitcoinSignerResultUsecase;
+  late _MockGetSendPayjoinEnabledUsecase getSendPayjoinEnabledUsecase;
+  late _MockSavePendingBitcoinTransactionUsecase
+  savePendingBitcoinTransactionUsecase;
+  late _MockGetPendingBitcoinTransactionUsecase
+  getPendingBitcoinTransactionUsecase;
+  late _MockDeletePendingBitcoinTransactionUsecase
+  deletePendingBitcoinTransactionUsecase;
+  late _MockValidatePendingBitcoinTransactionUsecase
+  validatePendingBitcoinTransactionUsecase;
 
   late StreamController<PayjoinSession> payjoinEvents;
 
   _TestableSendCubit buildCubit({
+    Wallet? wallet,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
+    RestorePendingBitcoinTransactionUsecase? restorePendingTransactionUsecase,
   }) => _TestableSendCubit(
+    wallet: wallet,
     labelsFacade: labelsFacade,
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
@@ -415,6 +555,12 @@ void main() {
     updatePaidSendSwapUsecase: updatePaidSendSwapUsecase,
     watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
     signBitcoinTxUsecase: signBitcoinTxUsecase,
+    getBitcoinSigningPlanUsecase: getBitcoinSigningPlanUsecase,
+    resolveBitcoinPolicyUsecase: ResolveBitcoinPolicyUsecase(
+      getBitcoinSigningPlanUsecase,
+    ),
+    validateBitcoinPolicyPreimageUsecase: validateBitcoinPolicyPreimageUsecase,
+    applyBitcoinPolicyPreimagesUsecase: applyBitcoinPolicyPreimagesUsecase,
     processBitcoinSignerResultUsecase: processBitcoinSignerResultUsecase,
     signLiquidTxUsecase: signLiquidTxUsecase,
     broadcastBitcoinTxUsecase: broadcastBitcoinTxUsecase,
@@ -428,7 +574,25 @@ void main() {
     previewBitcoinFeeUsecase: previewBitcoinFeeUsecase,
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
-    getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
+    getSendPayjoinEnabledUsecase: getSendPayjoinEnabledUsecase,
+    savePendingBitcoinTransactionUsecase: savePendingBitcoinTransactionUsecase,
+    getPendingBitcoinTransactionUsecase: getPendingBitcoinTransactionUsecase,
+    restorePendingBitcoinTransactionUsecase:
+        restorePendingTransactionUsecase ??
+        RestorePendingBitcoinTransactionUsecase(
+          getPendingBitcoinTransactionUsecase,
+          getWalletUsecase,
+          getWalletUtxosUsecase,
+          detectBitcoinStringUsecase,
+          validatePendingBitcoinTransactionUsecase,
+          getBitcoinSigningPlanUsecase,
+          calculateBitcoinAbsoluteFeesUsecase,
+          convertSatsUsecase,
+        ),
+    deletePendingBitcoinTransactionUsecase:
+        deletePendingBitcoinTransactionUsecase,
+    validatePendingBitcoinTransactionUsecase:
+        validatePendingBitcoinTransactionUsecase,
     parsePaymentRequest: parsePaymentRequest,
   );
 
@@ -453,15 +617,38 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_FakeNewLabel());
+    registerFallbackValue(
+      PendingBitcoinTransaction(
+        id: 'fallback',
+        walletId: 'fallback-wallet',
+        stage: PendingBitcoinTransactionStage.draft,
+        recipient: '',
+        amount: '',
+        amountCurrencyCode: '',
+        sendMax: false,
+        feeSelection: FeeSelection.fastest,
+        replaceByFee: true,
+        createdAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      ),
+    );
     registerFallbackValue(_bitcoinLocalWallet());
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(
       const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
     );
-    registerFallbackValue(BitcoinSignerResultKind.detect);
-    registerFallbackValue(const BitcoinPolicySelection.empty());
     // For any(named: 'feeRate') on the prepare-send stubs.
     registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
+    registerFallbackValue(
+      BitcoinPolicyPath(
+        external: const {},
+        internal: const {},
+        requiresRelativeTimelock: false,
+      ),
+    );
+    registerFallbackValue(<BitcoinPolicyPreimage>[]);
+    registerFallbackValue(const BitcoinPolicySelection.empty());
+    registerFallbackValue(<String>{});
   });
 
   setUp(() {
@@ -489,6 +676,13 @@ void main() {
     updatePaidSendSwapUsecase = _MockUpdatePaidSendSwapUsecase();
     watchFinishedWalletSyncsUsecase = _MockWatchFinishedWalletSyncsUsecase();
     signBitcoinTxUsecase = _MockSignBitcoinTxUsecase();
+    getBitcoinSigningPlanUsecase = _MockGetBitcoinSigningPlanUsecase();
+    validateBitcoinPolicyPreimageUsecase =
+        _MockValidateBitcoinPolicyPreimageUsecase();
+    applyBitcoinPolicyPreimagesUsecase =
+        _MockApplyBitcoinPolicyPreimagesUsecase();
+    processBitcoinSignerResultUsecase =
+        _MockProcessBitcoinSignerResultUsecase();
     signLiquidTxUsecase = _MockSignLiquidTxUsecase();
     broadcastBitcoinTxUsecase = _MockBroadcastBitcoinTransactionUsecase();
     broadcastLiquidTxUsecase = _MockBroadcastLiquidTransactionUsecase();
@@ -504,9 +698,15 @@ void main() {
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
-    processBitcoinSignerResultUsecase =
-        _MockProcessBitcoinSignerResultUsecase();
-
+    getSendPayjoinEnabledUsecase = _MockGetSendPayjoinEnabledUsecase();
+    savePendingBitcoinTransactionUsecase =
+        _MockSavePendingBitcoinTransactionUsecase();
+    getPendingBitcoinTransactionUsecase =
+        _MockGetPendingBitcoinTransactionUsecase();
+    deletePendingBitcoinTransactionUsecase =
+        _MockDeletePendingBitcoinTransactionUsecase();
+    validatePendingBitcoinTransactionUsecase =
+        _MockValidatePendingBitcoinTransactionUsecase();
     payjoinEvents = StreamController<PayjoinSession>.broadcast();
 
     // Benign default stubs for everything the payjoin branch (or its
@@ -554,6 +754,647 @@ void main() {
     await cubit.signTransaction();
     return cubit;
   }
+
+  group('SendCubit resumable Bitcoin transactions', () {
+    test('keeps descriptor wallets available for Send', () async {
+      final descriptorWallet = _descriptorWallet();
+      when(
+        () => getWalletsUsecase.execute(),
+      ).thenAnswer((_) async => [descriptorWallet]);
+      when(
+        () => getAvailableCurrenciesUsecase.execute(),
+      ).thenAnswer((_) async => []);
+      when(() => getSettingsUsecase.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(
+        () => getSendPayjoinEnabledUsecase.execute(),
+      ).thenAnswer((_) async => false);
+      when(
+        () => convertSatsUsecase.execute(
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer((_) async => 1);
+      when(() => convertSatsUsecase.execute()).thenAnswer((_) async => 1);
+      when(
+        () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
+      ).thenAnswer((_) async => _feeOptions());
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.loadWalletWithRatesAndFees();
+
+      expect(cubit.state.wallets, [descriptorWallet]);
+    });
+
+    test('requires recipient input and uses the preselected wallet', () async {
+      final wallet = _bitcoinLocalWallet();
+      final cubit = buildCubit(wallet: wallet);
+      addTearDown(cubit.close);
+      late PendingBitcoinTransaction saved;
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer((invocation) async {
+        saved =
+            invocation.positionalArguments.single as PendingBitcoinTransaction;
+        return Ok(saved);
+      });
+
+      expect(await cubit.saveDraft(), isFalse);
+      verifyNever(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      );
+
+      cubit.setStateForTest(
+        cubit.state.copyWith(copiedRawPaymentRequest: 'bc1qincomplete'),
+      );
+      expect(await cubit.saveDraft(), isTrue);
+
+      expect(saved.walletId, wallet.id);
+      expect(cubit.state.selectedWallet, wallet);
+    });
+
+    test('reopens a saved draft with incomplete recipient text', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final wallet = _bitcoinLocalWallet();
+      final stored = PendingBitcoinTransaction(
+        id: 'draft-id',
+        walletId: wallet.id,
+        stage: PendingBitcoinTransactionStage.draft,
+        label: 'August payment',
+        recipient: 'bc1qincomplete',
+        amount: '12.50',
+        amountCurrencyCode: 'USD',
+        sendMax: true,
+        feeSelection: FeeSelection.custom,
+        customFee: NetworkFee.relativeFromSatPerVbyte(3),
+        replaceByFee: false,
+        payjoinOptedOut: true,
+        createdAt: DateTime.utc(2026, 8, 14),
+        updatedAt: DateTime.utc(2026, 8, 14),
+      );
+      when(
+        () => getPendingBitcoinTransactionUsecase.execute(stored.id),
+      ).thenAnswer((_) async => Ok(stored));
+      when(
+        () => detectBitcoinStringUsecase.execute(data: stored.recipient),
+      ).thenThrow('Invalid payment request');
+      when(
+        () => convertSatsUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => 1.25);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) => const Stream.empty());
+      cubit.setStateForTest(SendState(wallets: [wallet]));
+
+      expect(await cubit.loadPendingTransaction(stored.id), isTrue);
+
+      expect(cubit.state.pendingTransactionId, stored.id);
+      expect(cubit.state.isDraftSaved, isTrue);
+      expect(cubit.state.copiedRawPaymentRequest, stored.recipient);
+      expect(cubit.state.paymentRequest, isNull);
+      expect(cubit.state.amount, stored.amount);
+      expect(cubit.state.inputAmountCurrencyCode, stored.amountCurrencyCode);
+      expect(cubit.state.fiatCurrencyCode, 'USD');
+      expect(cubit.state.exchangeRate, 1.25);
+      expect(cubit.state.sendMax, isTrue);
+      expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+      expect(cubit.state.customFee, stored.customFee);
+      expect(cubit.state.replaceByFee, isFalse);
+      expect(cubit.state.payjoinOptedOut, isTrue);
+      expect(cubit.state.sendType, SendType.bitcoin);
+      expect(cubit.state.step, SendStep.address);
+    });
+
+    test(
+      'does not emit when pending restoration finishes after close',
+      () async {
+        final restore = _MockRestorePendingBitcoinTransactionUsecase();
+        final pending =
+            Completer<Result<RestoredPendingBitcoinTransaction, SendFailure>>();
+        when(
+          () => restore.execute('draft-id'),
+        ).thenAnswer((_) => pending.future);
+        final cubit = buildCubit(restorePendingTransactionUsecase: restore);
+
+        final loading = cubit.loadPendingTransaction('draft-id');
+        await pumpEventQueue();
+        await cubit.close();
+        pending.complete(const Err(SendStoredTransactionInvalidFailure()));
+
+        expect(await loading, isFalse);
+      },
+    );
+
+    test('keeps a resumed draft wallet after address confirmation', () async {
+      final wallet = _bitcoinLocalWallet();
+      final otherWallet = wallet.copyWith(origin: 'other-wallet');
+      const request = PaymentRequest.bitcoin(
+        address: 'bc1qrecipient',
+        isTestnet: false,
+      );
+      final fees = FeeOptions(
+        fastest: NetworkFee.relativeFromSatPerVbyte(2),
+        economic: NetworkFee.relativeFromSatPerVbyte(1),
+        slow: NetworkFee.relativeFromSatPerVbyte(0.5),
+        minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
+      );
+      when(
+        () => bestWalletUsecase.execute(
+          wallets: [wallet, otherWallet],
+          request: request,
+          amountSat: null,
+        ),
+      ).thenReturn(otherWallet);
+      when(
+        () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
+      ).thenAnswer((_) async => fees);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          wallets: [wallet, otherWallet],
+          selectedWallet: wallet,
+          isWalletManuallySelected: true,
+          paymentRequest: request,
+        ),
+      );
+
+      await cubit.continueOnAddressConfirmed();
+
+      expect(cubit.state.selectedWallet, wallet);
+      expect(cubit.state.isWalletManuallySelected, isTrue);
+      expect(cubit.state.step, SendStep.amount);
+    });
+
+    test('restores the parsed recipient when signing restarts', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final wallet = _bitcoinLocalWallet();
+      const address = 'bc1qrecipient';
+      const request = PaymentRequest.bitcoin(
+        address: address,
+        isTestnet: false,
+      );
+      when(
+        () => detectBitcoinStringUsecase.execute(data: address),
+      ).thenAnswer((_) async => request);
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer((invocation) async {
+        final transaction =
+            invocation.positionalArguments.single as PendingBitcoinTransaction;
+        return Ok(transaction);
+      });
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.signing,
+          selectedWallet: wallet,
+          copiedRawPaymentRequest: address,
+          amount: '50000',
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          unsignedPsbt: 'cHNidP8=',
+          signedBitcoinPsbt: 'cHNidP8=',
+          pendingTransactionId: 'pending-id',
+          pendingTransactionCreatedAt: DateTime.utc(2026, 8, 14),
+          isSigningSession: true,
+        ),
+      );
+
+      expect(await cubit.restartSigningAsDraft(), isTrue);
+
+      expect(cubit.state.paymentRequest, request);
+      expect(cubit.state.sendType, SendType.bitcoin);
+      expect(cubit.state.step, SendStep.amount);
+      expect(cubit.state.isSigningSession, isFalse);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+    });
+
+    test(
+      'waits for explicit save and preserves edits made during that save',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final firstSave =
+            Completer<Result<PendingBitcoinTransaction, SendFailure>>();
+        final saved = <PendingBitcoinTransaction>[];
+        when(
+          () => savePendingBitcoinTransactionUsecase.execute(
+            any(),
+            expectedRevision: any(named: 'expectedRevision'),
+          ),
+        ).thenAnswer((invocation) {
+          final transaction =
+              invocation.positionalArguments.single
+                  as PendingBitcoinTransaction;
+          saved.add(transaction);
+          if (saved.length == 1) return firstSave.future;
+          return Future.value(Ok(transaction));
+        });
+        cubit.setStateForTest(
+          SendState(
+            sendType: SendType.bitcoin,
+            selectedWallet: _bitcoinLocalWallet(),
+            copiedRawPaymentRequest: 'bc1qrecipient',
+            amount: '50000',
+            inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          ),
+        );
+
+        cubit.noteChanged('Initial label');
+        await Future<void>.delayed(const Duration(milliseconds: 550));
+        verifyNever(
+          () => savePendingBitcoinTransactionUsecase.execute(
+            any(),
+            expectedRevision: any(named: 'expectedRevision'),
+          ),
+        );
+
+        final explicitSave = cubit.saveDraft();
+        await pumpEventQueue();
+        cubit.noteChanged('Updated label');
+        firstSave.complete(Ok(saved.first));
+        expect(await explicitSave, isTrue);
+        await Future<void>.delayed(const Duration(milliseconds: 550));
+
+        expect(saved.map((transaction) => transaction.label), [
+          'Initial label',
+          'Updated label',
+        ]);
+        expect(cubit.state.isDraftSaved, isTrue);
+        expect(cubit.state.hasUnsavedDraftChanges, isFalse);
+      },
+    );
+
+    test('persists signing progress and derives its stored stage', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final saved = <PendingBitcoinTransaction>[];
+      final expectedRevisions = <int?>[];
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer((invocation) async {
+        final transaction =
+            invocation.positionalArguments.single as PendingBitcoinTransaction;
+        saved.add(transaction);
+        expectedRevisions.add(
+          invocation.namedArguments[#expectedRevision] as int?,
+        );
+        return Ok(transaction);
+      });
+      final createdAt = DateTime.utc(2026, 8, 14);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.signing,
+          sendType: SendType.bitcoin,
+          selectedWallet: _bitcoinLocalWallet(),
+          copiedRawPaymentRequest: 'bc1qrecipient',
+          amount: '50000',
+          confirmedAmountSat: 50000,
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          unsignedPsbt: 'cHNidP8=',
+          pendingTransactionId: 'pending-id',
+          pendingTransactionCreatedAt: createdAt,
+          isSigningSession: true,
+        ),
+      );
+
+      expect(await cubit.persistSigningSession(), isTrue);
+      cubit.setStateForTest(
+        cubit.state.copyWith(signedBitcoinPsbt: 'cHNidP8='),
+      );
+      expect(await cubit.persistSigningSession(), isTrue);
+
+      expect(saved.map((transaction) => transaction.stage), [
+        PendingBitcoinTransactionStage.needsSignatures,
+        PendingBitcoinTransactionStage.readyToBroadcast,
+      ]);
+      expect(expectedRevisions, [null, saved.first.revision]);
+      expect(
+        saved.every((transaction) => transaction.psbt == 'cHNidP8='),
+        isTrue,
+      );
+      expect(
+        saved.every((transaction) => transaction.createdAt == createdAt),
+        isTrue,
+      );
+    });
+
+    test('reloads the saved draft after a revision conflict', () async {
+      final wallet = _bitcoinLocalWallet();
+      final updatedAt = DateTime.utc(2026, 8, 14, 1);
+      final authoritative = PendingBitcoinTransaction(
+        id: 'pending-id',
+        walletId: wallet.id,
+        stage: PendingBitcoinTransactionStage.draft,
+        label: 'Saved elsewhere',
+        recipient: 'bc1qauthoritative',
+        amount: '',
+        amountCurrencyCode: '',
+        sendMax: false,
+        feeSelection: FeeSelection.fastest,
+        replaceByFee: true,
+        createdAt: DateTime.utc(2026, 8, 14),
+        updatedAt: updatedAt,
+      );
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(SendPendingTransactionChangedFailure()),
+      );
+      when(
+        () => getPendingBitcoinTransactionUsecase.execute(authoritative.id),
+      ).thenAnswer((_) async => Ok(authoritative));
+      when(
+        () => detectBitcoinStringUsecase.execute(data: authoritative.recipient),
+      ).thenThrow('Incomplete payment request');
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) => const Stream.empty());
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          wallets: [wallet],
+          selectedWallet: wallet,
+          pendingTransactionId: authoritative.id,
+          pendingTransactionCreatedAt: authoritative.createdAt,
+          isDraftSaved: true,
+          hasUnsavedDraftChanges: true,
+          copiedRawPaymentRequest: 'bc1qlocal',
+          label: 'Local edit',
+        ),
+      );
+
+      expect(await cubit.saveDraft(), isFalse);
+
+      expect(cubit.state.label, authoritative.label);
+      expect(cubit.state.hasUnsavedDraftChanges, isFalse);
+      expect(cubit.state.persistingPendingTransaction, isFalse);
+      expect(cubit.state.failure, isA<SendPendingTransactionChangedFailure>());
+    });
+
+    test('can resave a loaded draft deleted during a conflict', () async {
+      final wallet = _bitcoinLocalWallet();
+      final stored = PendingBitcoinTransaction(
+        id: 'pending-id',
+        walletId: wallet.id,
+        stage: PendingBitcoinTransactionStage.draft,
+        recipient: 'bc1qincomplete',
+        amount: '',
+        amountCurrencyCode: '',
+        sendMax: false,
+        feeSelection: FeeSelection.fastest,
+        replaceByFee: true,
+        createdAt: DateTime.utc(2026, 8, 14),
+        updatedAt: DateTime.utc(2026, 8, 14),
+        revision: 3,
+      );
+      var saveCount = 0;
+      final expectedRevisions = <int?>[];
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer((invocation) async {
+        expectedRevisions.add(
+          invocation.namedArguments[#expectedRevision] as int?,
+        );
+        if (saveCount++ == 0) {
+          return const Err(SendPendingTransactionChangedFailure());
+        }
+        return Ok(
+          invocation.positionalArguments.single as PendingBitcoinTransaction,
+        );
+      });
+      var lookupCount = 0;
+      when(
+        () => getPendingBitcoinTransactionUsecase.execute('pending-id'),
+      ).thenAnswer((_) async {
+        if (lookupCount++ == 0) {
+          return Ok<PendingBitcoinTransaction?, SendFailure>(stored);
+        }
+        return const Ok<PendingBitcoinTransaction?, SendFailure>(null);
+      });
+      when(
+        () => detectBitcoinStringUsecase.execute(data: stored.recipient),
+      ).thenThrow('Incomplete payment request');
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) => const Stream.empty());
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(SendState(wallets: [wallet]));
+
+      expect(await cubit.loadPendingTransaction(stored.id), isTrue);
+      cubit.setStateForTest(
+        cubit.state.copyWith(
+          copiedRawPaymentRequest: 'bc1qlocal',
+          hasUnsavedDraftChanges: true,
+        ),
+      );
+
+      expect(await cubit.saveDraft(), isFalse);
+
+      expect(cubit.state.pendingTransactionId, isNull);
+      expect(cubit.state.isDraftSaved, isFalse);
+      expect(cubit.state.hasUnsavedDraftChanges, isTrue);
+      expect(cubit.state.persistingPendingTransaction, isFalse);
+      expect(cubit.state.failure, isA<SendPendingTransactionChangedFailure>());
+
+      expect(await cubit.saveDraft(), isTrue);
+      expect(expectedRevisions, [stored.revision, null]);
+    });
+
+    test('keeps draft identity when conflict restoration fails', () async {
+      final wallet = _bitcoinLocalWallet();
+      final stored = PendingBitcoinTransaction(
+        id: 'pending-id',
+        walletId: wallet.id,
+        stage: PendingBitcoinTransactionStage.draft,
+        recipient: 'bc1qrecipient',
+        amount: '',
+        amountCurrencyCode: '',
+        sendMax: false,
+        feeSelection: FeeSelection.fastest,
+        replaceByFee: true,
+        createdAt: DateTime.utc(2026, 8, 14),
+        updatedAt: DateTime.utc(2026, 8, 14),
+      );
+      final restore = _MockRestorePendingBitcoinTransactionUsecase();
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(SendPendingTransactionChangedFailure()),
+      );
+      when(
+        () => getPendingBitcoinTransactionUsecase.execute(stored.id),
+      ).thenAnswer(
+        (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
+      );
+      when(
+        () => restore.execute(stored.id),
+      ).thenAnswer((_) async => const Err(SendUnexpectedFailure()));
+      final cubit = buildCubit(restorePendingTransactionUsecase: restore);
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          selectedWallet: wallet,
+          pendingTransactionId: stored.id,
+          isDraftSaved: true,
+          hasUnsavedDraftChanges: true,
+          copiedRawPaymentRequest: stored.recipient,
+        ),
+      );
+
+      expect(await cubit.saveDraft(), isFalse);
+
+      expect(cubit.state.pendingTransactionId, stored.id);
+      expect(cubit.state.isDraftSaved, isTrue);
+      expect(cubit.state.persistingPendingTransaction, isFalse);
+      expect(cubit.state.failure, isA<SendUnexpectedFailure>());
+    });
+
+    test('can recreate a signing session deleted during a conflict', () async {
+      final wallet = _bitcoinLocalWallet();
+      var saveCount = 0;
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer((invocation) async {
+        if (saveCount++ == 0) {
+          return const Err(SendPendingTransactionChangedFailure());
+        }
+        return Ok(
+          invocation.positionalArguments.single as PendingBitcoinTransaction,
+        );
+      });
+      when(
+        () => getPendingBitcoinTransactionUsecase.execute('pending-id'),
+      ).thenAnswer(
+        (_) async => const Ok<PendingBitcoinTransaction?, SendFailure>(null),
+      );
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.signing,
+          sendType: SendType.bitcoin,
+          selectedWallet: wallet,
+          copiedRawPaymentRequest: 'bc1qrecipient',
+          amount: '50000',
+          confirmedAmountSat: 50000,
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          unsignedPsbt: 'cHNidP8=',
+          pendingTransactionId: 'pending-id',
+          isSigningSession: true,
+        ),
+      );
+
+      expect(await cubit.persistSigningSession(), isFalse);
+      expect(cubit.state.pendingTransactionId, isNull);
+      expect(cubit.state.isSigningSession, isTrue);
+
+      expect(await cubit.persistSigningSession(), isTrue);
+      expect(cubit.state.pendingTransactionId, isNotNull);
+      expect(cubit.state.persistingPendingTransaction, isFalse);
+    });
+
+    test('keeps hashlock signing sessions out of ordinary storage', () async {
+      final wallet = _bitcoinLocalWallet();
+      final policy = _mandatoryHashlockPolicy();
+      final plan = BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: wallet.signers,
+        inputKeychains: const {BitcoinPolicyKeychain.external},
+      );
+      final hashlock = policy
+          .requiredHashlocks(const BitcoinPolicySelection.empty())
+          .single;
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.confirm,
+          sendType: SendType.bitcoin,
+          selectedWallet: wallet,
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1qrecipient',
+            isTestnet: false,
+          ),
+          amount: '50000',
+          confirmedAmountSat: 50000,
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          unsignedPsbt: 'cHNidP8=',
+          bitcoinSigningPlan: plan,
+          bitcoinPolicySelection: const BitcoinPolicySelection.empty(),
+          satisfiedBitcoinPolicyPreimages: {
+            '${hashlock.type.name}:${hashlock.hash}',
+          },
+        ),
+      );
+
+      expect(await cubit.continueToBitcoinSigning(), isTrue);
+
+      expect(cubit.state.step, SendStep.signing);
+      expect(cubit.state.isSigningSession, isFalse);
+      verifyNever(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      );
+
+      expect(await cubit.restartSigningAsDraft(), isTrue);
+      expect(cubit.state.step, SendStep.amount);
+      expect(cubit.state.isDraftSaved, isFalse);
+      expect(cubit.state.satisfiedBitcoinPolicyPreimages, isEmpty);
+      verifyNever(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      );
+    });
+  });
 
   group('SendCubit._watchPayjoin', () {
     test(
@@ -735,236 +1576,70 @@ void main() {
       confirmedAmountSat: 50000,
     );
 
-    test('a signer result that fails verification is not stored', () async {
+    test('refuses a signed transaction that fails verification', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(hardwareSignReadyState());
       when(
         () => processBitcoinSignerResultUsecase.execute(
           result: 'deadbeef',
-          kind: BitcoinSignerResultKind.detect,
+          kind: BitcoinSignerResultKind.transaction,
           currentPsbt: 'cHNidP8=',
           wallet: any(named: 'wallet'),
-          selection: const BitcoinPolicySelection.empty(),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
         ),
       ).thenAnswer(
         (_) async => const Err(
-          BitcoinSigningFailure(BitcoinSigningFailureKind.invalidPsbt),
+          BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
         ),
       );
 
-      await cubit.updateBitcoinSignerResult('deadbeef');
+      await cubit.updateSignedBitcoinTx('deadbeef');
 
-      expect(cubit.state.signedBitcoinTx, isNull);
-      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+      expect(
+        cubit.state.signedBitcoinTx,
+        isNull,
+        reason: 'a tampered transaction must never reach the broadcast path',
+      );
+      expect(cubit.state.failure, isA<SendTransactionSigningFailure>());
     });
 
-    test('a verified raw transaction is stored', () async {
+    test('a signed transaction passing the output check is stored', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(hardwareSignReadyState());
+
       when(
         () => processBitcoinSignerResultUsecase.execute(
           result: 'deadbeef',
-          kind: BitcoinSignerResultKind.detect,
+          kind: BitcoinSignerResultKind.transaction,
           currentPsbt: 'cHNidP8=',
           wallet: any(named: 'wallet'),
-          selection: const BitcoinPolicySelection.empty(),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
         ),
       ).thenAnswer(
         (_) async => const Ok(
-          ProcessedBitcoinTransaction(transaction: 'deadbeef', txSize: 100),
+          ProcessedBitcoinTransaction(transaction: 'deadbeef', txSize: 0),
         ),
       );
 
-      await cubit.updateBitcoinSignerResult('deadbeef');
+      await cubit.updateSignedBitcoinTx('deadbeef');
 
       expect(cubit.state.signedBitcoinTx, 'deadbeef');
       expect(cubit.state.failure, isNull);
-    });
-
-    test(
-      'a transaction rebuild immediately drops the previous signer result',
-      () async {
-        final remoteWallet = _bitcoinLocalWallet().copyWith(
-          signers: [
-            WalletSigner.single(
-              masterFingerprint: '00000000',
-              xpubFingerprint: '00000000',
-              xpub: '',
-              signer: SignerEntity.remote,
-              signerDevice: null,
-            ),
-          ],
-        );
-        final fees = FeeOptions(
-          fastest: NetworkFee.relativeFromSatPerVbyte(10),
-          economic: NetworkFee.relativeFromSatPerVbyte(5),
-          slow: NetworkFee.relativeFromSatPerVbyte(2),
-          minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
-        );
-        final utxos = Completer<List<WalletUtxo>>();
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: 'w1'),
-        ).thenAnswer((_) => utxos.future);
-        when(
-          () => prepareBitcoinSendUsecase.execute(
-            walletId: 'w1',
-            address: 'bc1qdestination',
-            networkFee: fees.fastest,
-            amountSat: 50000,
-            replaceByFee: true,
-            selectedInputs: const [],
-            drain: false,
-          ),
-        ).thenAnswer(
-          (_) async =>
-              (unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false),
-        );
-        when(
-          () => calculateBitcoinAbsoluteFeesUsecase.execute(
-            psbt: 'new-unsigned-psbt',
-          ),
-        ).thenAnswer((_) async => 100);
-        final cubit = buildCubit();
-        addTearDown(cubit.close);
-        cubit.setStateForTest(
-          hardwareSignReadyState().copyWith(
-            selectedWallet: remoteWallet,
-            paymentRequest: const PaymentRequest.bitcoin(
-              address: 'bc1qdestination',
-              isTestnet: false,
-            ),
-            signedBitcoinPsbt: 'old-signed-psbt',
-            hasExternalBitcoinSignerResult: true,
-            bitcoinFeesList: fees,
-            liquidFeesList: fees,
-          ),
-        );
-
-        final rebuilding = cubit.createTransaction();
-
-        expect(cubit.state.unsignedPsbt, isNull);
-        expect(cubit.state.signedBitcoinPsbt, isNull);
-        expect(cubit.state.hasExternalBitcoinSignerResult, isFalse);
-
-        utxos.complete(const []);
-        await rebuilding;
-      },
-    );
-
-    test('a validated signer PSBT is stored as a PSBT', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      cubit.setStateForTest(hardwareSignReadyState());
-      when(
+      verify(
         () => processBitcoinSignerResultUsecase.execute(
-          result: 'signed-psbt',
-          kind: BitcoinSignerResultKind.detect,
+          result: 'deadbeef',
+          kind: BitcoinSignerResultKind.transaction,
           currentPsbt: 'cHNidP8=',
           wallet: any(named: 'wallet'),
-          selection: const BitcoinPolicySelection.empty(),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
         ),
-      ).thenAnswer((_) async => Ok(_processedPsbt('combined-psbt')));
-
-      final accepted = await cubit.updateBitcoinSignerResult('signed-psbt');
-
-      expect(accepted, isTrue);
-      expect(cubit.state.signedBitcoinPsbt, 'combined-psbt');
-      expect(cubit.state.signedBitcoinTx, isNull);
-      expect(cubit.state.failure, isNull);
+      ).called(1);
     });
-
-    test('a partial signer PSBT does not enter the broadcast path', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      cubit.setStateForTest(hardwareSignReadyState());
-      when(
-        () => processBitcoinSignerResultUsecase.execute(
-          result: 'partial-psbt',
-          kind: BitcoinSignerResultKind.detect,
-          currentPsbt: 'cHNidP8=',
-          wallet: any(named: 'wallet'),
-          selection: const BitcoinPolicySelection.empty(),
-        ),
-      ).thenAnswer(
-        (_) async => Ok(_processedPsbt('partial-psbt', isFinalized: false)),
-      );
-
-      final accepted = await cubit.updateBitcoinSignerResult('partial-psbt');
-
-      expect(accepted, isFalse);
-      expect(cubit.state.signedBitcoinPsbt, isNull);
-      expect(cubit.state.signedBitcoinTx, isNull);
-      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
-    });
-
-    test('a slower signer result cannot replace a newer one', () async {
-      final older =
-          Completer<
-            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
-          >();
-      final newer =
-          Completer<
-            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
-          >();
-      when(
-        () => processBitcoinSignerResultUsecase.execute(
-          result: any(named: 'result'),
-          kind: BitcoinSignerResultKind.detect,
-          currentPsbt: 'cHNidP8=',
-          wallet: any(named: 'wallet'),
-          selection: const BitcoinPolicySelection.empty(),
-        ),
-      ).thenAnswer((invocation) {
-        final result = invocation.namedArguments[#result] as String;
-        return result == 'older' ? older.future : newer.future;
-      });
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      cubit.setStateForTest(hardwareSignReadyState());
-
-      final olderRequest = cubit.updateBitcoinSignerResult('older');
-      final newerRequest = cubit.updateBitcoinSignerResult('newer');
-      newer.complete(Ok(_processedPsbt('newer-psbt')));
-      expect(await newerRequest, isTrue);
-      older.complete(Ok(_processedPsbt('older-psbt')));
-
-      expect(await olderRequest, isFalse);
-      expect(cubit.state.signedBitcoinPsbt, 'newer-psbt');
-    });
-
-    test(
-      'closing during transaction verification discards the result',
-      () async {
-        final verification =
-            Completer<
-              Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
-            >();
-        when(
-          () => processBitcoinSignerResultUsecase.execute(
-            result: 'deadbeef',
-            kind: BitcoinSignerResultKind.detect,
-            currentPsbt: 'cHNidP8=',
-            wallet: any(named: 'wallet'),
-            selection: const BitcoinPolicySelection.empty(),
-          ),
-        ).thenAnswer((_) => verification.future);
-        final cubit = buildCubit();
-        cubit.setStateForTest(hardwareSignReadyState());
-
-        final signing = cubit.updateBitcoinSignerResult('deadbeef');
-        await cubit.close();
-        verification.complete(
-          const Ok(
-            ProcessedBitcoinTransaction(transaction: 'deadbeef', txSize: 100),
-          ),
-        );
-
-        expect(await signing, isFalse);
-        expect(cubit.state.signedBitcoinTx, isNull);
-      },
-    );
 
     test('a valid retry clears the previous verification error', () async {
       final cubit = buildCubit();
@@ -974,26 +1649,28 @@ void main() {
       when(
         () => processBitcoinSignerResultUsecase.execute(
           result: any(named: 'result'),
-          kind: BitcoinSignerResultKind.detect,
+          kind: BitcoinSignerResultKind.transaction,
           currentPsbt: 'cHNidP8=',
           wallet: any(named: 'wallet'),
-          selection: const BitcoinPolicySelection.empty(),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
         ),
       ).thenAnswer((_) async {
         attempts++;
-        return attempts == 1
-            ? const Err(
-                BitcoinSigningFailure(BitcoinSigningFailureKind.invalidPsbt),
-              )
-            : const Ok(
-                ProcessedBitcoinTransaction(transaction: 'valid', txSize: 100),
-              );
+        if (attempts == 1) {
+          return const Err(
+            BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
+          );
+        }
+        return const Ok(
+          ProcessedBitcoinTransaction(transaction: 'valid', txSize: 0),
+        );
       });
 
-      expect(await cubit.updateBitcoinSignerResult('tampered'), isFalse);
-      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+      expect(await cubit.updateSignedBitcoinTx('tampered'), isFalse);
+      expect(cubit.state.failure, isA<SendTransactionSigningFailure>());
 
-      expect(await cubit.updateBitcoinSignerResult('valid'), isTrue);
+      expect(await cubit.updateSignedBitcoinTx('valid'), isTrue);
       expect(cubit.state.signedBitcoinTx, 'valid');
       expect(cubit.state.failure, isNull);
     });
@@ -1007,17 +1684,18 @@ void main() {
           hardwareSignReadyState().copyWith(unsignedPsbt: null),
         );
 
-        await cubit.updateBitcoinSignerResult('deadbeef');
+        await cubit.updateSignedBitcoinTx('deadbeef');
 
         expect(cubit.state.signedBitcoinTx, isNull);
         expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
         verifyNever(
           () => processBitcoinSignerResultUsecase.execute(
             result: any(named: 'result'),
-            kind: any(named: 'kind'),
+            kind: BitcoinSignerResultKind.transaction,
             currentPsbt: any(named: 'currentPsbt'),
             wallet: any(named: 'wallet'),
             selection: any(named: 'selection'),
+            satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
           ),
         );
       },
@@ -1141,6 +1819,43 @@ void main() {
       expect(stored.reference, 'broadcast-txid');
       expect(stored.label, 'coffee');
     });
+
+    test(
+      'returns to confirmation and retries an ambiguous broadcast',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        var attempts = 0;
+        when(
+          () => broadcastBitcoinTxUsecase.execute(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+          ),
+        ).thenAnswer((_) async {
+          attempts++;
+          throw BroadcastTransactionException('connection closed');
+        });
+        cubit.setStateForTest(
+          plainSignedState().copyWith(step: SendStep.confirm),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+        expect(cubit.state.step, SendStep.confirm);
+        expect(
+          cubit.state.failure,
+          isA<SendTransactionConfirmationFailure>().having(
+            (failure) => failure.isBroadcastFailure,
+            'isBroadcastFailure',
+            isTrue,
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(attempts, 2);
+        expect(cubit.state.step, SendStep.confirm);
+      },
+    );
   });
 
   group('SendCubit payment request input', () {
@@ -1255,61 +1970,9 @@ void main() {
       );
     });
   });
-
   // A shortfall used to show "Build Failed", the same message as a dead
   // Electrum server or a bad address.
   group('SendCubit.createTransaction shortfalls', () {
-    for (final scenario in [
-      (
-        exception: SelectedBitcoinCoinsUnavailableException(),
-        failure: isA<SendSelectedCoinsUnavailableFailure>(),
-      ),
-      (
-        exception: SelectedBitcoinCoinsInsufficientException(),
-        failure: isA<SendSelectedCoinsInsufficientFailure>(),
-      ),
-    ]) {
-      test('maps ${scenario.exception.runtimeType}', () async {
-        final cubit = buildCubit();
-        addTearDown(cubit.close);
-        final selected = _utxo(amountSat: 1000);
-        when(
-          () => prepareBitcoinSendUsecase.execute(
-            walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-            networkFee: any(named: 'networkFee'),
-            amountSat: any(named: 'amountSat'),
-            drain: any(named: 'drain'),
-            selectedInputs: any(named: 'selectedInputs'),
-            replaceByFee: any(named: 'replaceByFee'),
-          ),
-        ).thenThrow(scenario.exception);
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async => [selected]);
-        cubit.setStateForTest(
-          SendState(
-            step: SendStep.amount,
-            sendType: SendType.bitcoin,
-            selectedWallet: _bitcoinWallet(balanceSat: 20000),
-            paymentRequest: const PaymentRequest.bitcoin(
-              address: 'bc1-address',
-              isTestnet: false,
-            ),
-            amount: '500',
-            inputAmountCurrencyCode: 'sats',
-            liquidFeesList: _feeOptions(),
-            bitcoinFeesList: _feeOptions(),
-            selectedUtxos: [selected],
-          ),
-        );
-
-        await cubit.onAmountConfirmed();
-
-        expect(cubit.state.failure, scenario.failure);
-      });
-    }
-
     test(
       'a shortfall at build time is an insufficient-balance failure',
       () async {
@@ -1361,6 +2024,23 @@ void main() {
     test('with hand-picked coins the message stays generic', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
+      final wallet = _bitcoinWallet(balanceSat: 20000);
+      final plan = BitcoinSigningPlan.fromPolicy(
+        policy: _mandatoryRelativeTimelockPolicy(),
+        signers: wallet.signers,
+      );
+      when(
+        () => getBitcoinSigningPlanUsecase.execute(
+          wallet: wallet,
+          selection: const BitcoinPolicySelection.empty(),
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          plan: plan,
+          maturity: const BitcoinPolicyMaturity.empty(),
+          review: null,
+        )),
+      );
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: any(named: 'walletId'),
@@ -1370,6 +2050,7 @@ void main() {
           drain: any(named: 'drain'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
+          policyPath: any(named: 'policyPath'),
         ),
       ).thenThrow(InsufficientFundsException('needed 5000, available 1000'));
       final selected = _utxo(amountSat: 1000);
@@ -1382,7 +2063,7 @@ void main() {
         SendState(
           step: SendStep.amount,
           sendType: SendType.bitcoin,
-          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          selectedWallet: wallet,
           paymentRequest: const PaymentRequest.bitcoin(
             address: 'bc1-address',
             isTestnet: false,
@@ -1409,6 +2090,23 @@ void main() {
     test('with frozen coins the message stays generic', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
+      final wallet = _bitcoinWallet(balanceSat: 20000);
+      final plan = BitcoinSigningPlan.fromPolicy(
+        policy: _mandatoryRelativeTimelockPolicy(),
+        signers: wallet.signers,
+      );
+      when(
+        () => getBitcoinSigningPlanUsecase.execute(
+          wallet: wallet,
+          selection: const BitcoinPolicySelection.empty(),
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          plan: plan,
+          maturity: const BitcoinPolicyMaturity.empty(),
+          review: null,
+        )),
+      );
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: any(named: 'walletId'),
@@ -1418,6 +2116,7 @@ void main() {
           drain: any(named: 'drain'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
+          policyPath: any(named: 'policyPath'),
         ),
       ).thenThrow(InsufficientFundsException('needed 10000, available 5000'));
       when(
@@ -1427,7 +2126,7 @@ void main() {
         SendState(
           step: SendStep.amount,
           sendType: SendType.bitcoin,
-          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          selectedWallet: wallet,
           paymentRequest: const PaymentRequest.bitcoin(
             address: 'bc1-address',
             isTestnet: false,
@@ -1448,6 +2147,625 @@ void main() {
         cubit.state.failure,
         isNot(isA<SendInsufficientFundsForFeesFailure>()),
       );
+    });
+  });
+
+  test('uses mandatory relative-timelock maturity in fee previews', () async {
+    final wallet = _bitcoinLocalWallet();
+    final maturity = BitcoinPolicyMaturity(
+      tipHeight: 100,
+      medianTimePast: null,
+      utxos: [
+        BitcoinPolicyUtxoMaturity(
+          outpoint: 'mature:0',
+          keychain: BitcoinPolicyKeychain.external,
+          amountSat: BigInt.from(50000),
+          confirmations: 10,
+        ),
+      ],
+    );
+    final plan = BitcoinSigningPlan.fromPolicy(
+      policy: _mandatoryRelativeTimelockPolicy(),
+      signers: wallet.signers,
+    );
+    final fee = NetworkFee.relativeFromSatPerVbyte(2);
+    when(
+      () => previewBitcoinFeeUsecase.execute(
+        walletId: wallet.id,
+        address: 'bc1qrecipient',
+        amountSat: 10000,
+        networkFee: fee,
+        replaceByFee: true,
+        selectedInputs: const [],
+        drain: false,
+        policyPath: any(named: 'policyPath'),
+      ),
+    ).thenAnswer((_) async => const BitcoinFeePreviewSlot());
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    cubit.setStateForTest(
+      SendState(
+        sendType: SendType.bitcoin,
+        selectedWallet: wallet,
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        confirmedAmountSat: 10000,
+        bitcoinSigningPlan: plan,
+        bitcoinPolicyMaturity: maturity,
+      ),
+    );
+
+    await cubit.previewBitcoinCustomFee(fee);
+
+    final capturedPath =
+        verify(
+              () => previewBitcoinFeeUsecase.execute(
+                walletId: wallet.id,
+                address: 'bc1qrecipient',
+                amountSat: 10000,
+                networkFee: fee,
+                replaceByFee: true,
+                selectedInputs: const [],
+                drain: false,
+                policyPath: captureAny(named: 'policyPath'),
+              ),
+            ).captured.single
+            as BitcoinPolicyPath;
+    expect(capturedPath.requiresRelativeTimelock, isTrue);
+    expect(capturedPath.eligibleExternalOutpoints, {'mature:0'});
+  });
+
+  test(
+    'forwards maturity constraints for a mandatory relative timelock',
+    () async {
+      final wallet = _bitcoinLocalWallet();
+      final policy = _mandatoryRelativeTimelockPolicy();
+      final maturity = BitcoinPolicyMaturity(
+        tipHeight: 100,
+        medianTimePast: null,
+        utxos: [
+          BitcoinPolicyUtxoMaturity(
+            outpoint: 'mature:0',
+            keychain: BitcoinPolicyKeychain.external,
+            amountSat: BigInt.from(50000),
+            confirmations: 10,
+          ),
+          BitcoinPolicyUtxoMaturity(
+            outpoint: 'immature:0',
+            keychain: BitcoinPolicyKeychain.external,
+            amountSat: BigInt.from(50000),
+            confirmations: 9,
+          ),
+        ],
+      );
+      final plan = BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: wallet.signers,
+      );
+      final fees = FeeOptions(
+        fastest: NetworkFee.relativeFromSatPerVbyte(2),
+        economic: NetworkFee.relativeFromSatPerVbyte(1),
+        slow: NetworkFee.relativeFromSatPerVbyte(0.5),
+        minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
+      );
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => getBitcoinSigningPlanUsecase.execute(
+          wallet: wallet,
+          selection: const BitcoinPolicySelection.empty(),
+        ),
+      ).thenAnswer(
+        (_) async => Ok((plan: plan, maturity: maturity, review: null)),
+      );
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: wallet.id,
+          address: 'bc1qrecipient',
+          networkFee: fees.fastest,
+          amountSat: 10000,
+          replaceByFee: true,
+          selectedInputs: const [],
+          drain: false,
+          policyPath: any(named: 'policyPath'),
+        ),
+      ).thenAnswer(
+        (_) async => (unsignedPsbt: 'prepared', txSize: 100, isToSelf: false),
+      );
+      when(
+        () => applyBitcoinPolicyPreimagesUsecase.execute(
+          psbt: 'prepared',
+          preimages: any(named: 'preimages'),
+        ),
+      ).thenAnswer((_) async => const Ok('prepared'));
+      when(
+        () => getBitcoinSigningPlanUsecase.execute(
+          wallet: wallet,
+          psbt: 'prepared',
+          selection: const BitcoinPolicySelection.empty(),
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          plan: plan,
+          maturity: const BitcoinPolicyMaturity.empty(),
+          review: null,
+        )),
+      );
+      when(
+        () => calculateBitcoinAbsoluteFeesUsecase.execute(psbt: 'prepared'),
+      ).thenAnswer((_) async => 1000);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          sendType: SendType.bitcoin,
+          selectedWallet: wallet,
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1qrecipient',
+            isTestnet: false,
+          ),
+          confirmedAmountSat: 10000,
+          bitcoinFeesList: fees,
+          liquidFeesList: fees,
+        ),
+      );
+
+      await cubit.createTransaction();
+
+      final capturedPath =
+          verify(
+                () => prepareBitcoinSendUsecase.execute(
+                  walletId: wallet.id,
+                  address: 'bc1qrecipient',
+                  networkFee: fees.fastest,
+                  amountSat: 10000,
+                  replaceByFee: true,
+                  selectedInputs: const [],
+                  drain: false,
+                  policyPath: captureAny(named: 'policyPath'),
+                ),
+              ).captured.single
+              as BitcoinPolicyPath;
+      expect(capturedPath.external, isEmpty);
+      expect(capturedPath.requiresRelativeTimelock, isTrue);
+      expect(capturedPath.eligibleExternalOutpoints, {'mature:0'});
+      expect(capturedPath.eligibleInternalOutpoints, isEmpty);
+    },
+  );
+
+  group('SendCubit spending path changes', () {
+    late Wallet wallet;
+    late BitcoinWalletPolicy policy;
+    late BitcoinPolicySelection previousSelection;
+    late BitcoinPolicySelection requestedSelection;
+    late BitcoinSigningPlan previousPlan;
+    late BitcoinSigningPlan candidatePlan;
+    late BitcoinSigningPlan mergedPlan;
+    late FeeOptions fees;
+
+    setUp(() {
+      final signers = [
+        _bitcoinLocalWallet().signers.single,
+        WalletSigner.single(
+          id: 'signer-1',
+          descriptorKeyId: 'key-1',
+          masterFingerprint: '22222222',
+          xpubFingerprint: '22222222',
+          xpub: 'remote-2',
+          signer: SignerEntity.remote,
+          signerDevice: null,
+        ),
+        WalletSigner.single(
+          id: 'signer-2',
+          descriptorKeyId: 'key-2',
+          masterFingerprint: '33333333',
+          xpubFingerprint: '33333333',
+          xpub: 'remote-3',
+          signer: SignerEntity.remote,
+          signerDevice: null,
+        ),
+      ];
+      wallet = _bitcoinLocalWallet().copyWith(signers: signers);
+      policy = _selectableThresholdPolicy(signers);
+      final selector = policy
+          .pathSelectors(const BitcoinPolicySelection.empty())
+          .single;
+      previousSelection = policy.select(
+        current: const BitcoinPolicySelection.empty(),
+        requirement: selector,
+        selectedIndices: const {0, 1},
+      );
+      requestedSelection = policy.select(
+        current: const BitcoinPolicySelection.empty(),
+        requirement: selector,
+        selectedIndices: const {0, 2},
+      );
+      previousPlan = BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: signers,
+        selection: previousSelection,
+        signedDescriptorKeyIdsByKeychain: const {
+          BitcoinPolicyKeychain.external: {'key-0'},
+        },
+        inputKeychains: const {BitcoinPolicyKeychain.external},
+      );
+      candidatePlan = BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: signers,
+        selection: requestedSelection,
+        inputKeychains: const {BitcoinPolicyKeychain.external},
+      );
+      mergedPlan = BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: signers,
+        selection: requestedSelection,
+        signedDescriptorKeyIdsByKeychain: const {
+          BitcoinPolicyKeychain.external: {'key-0'},
+        },
+        inputKeychains: const {BitcoinPolicyKeychain.external},
+      );
+      fees = FeeOptions(
+        fastest: NetworkFee.relativeFromSatPerVbyte(2),
+        economic: NetworkFee.relativeFromSatPerVbyte(1),
+        slow: NetworkFee.relativeFromSatPerVbyte(0.5),
+        minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
+      );
+      when(
+        () => getBitcoinSigningPlanUsecase.execute(
+          wallet: wallet,
+          selection: requestedSelection,
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          plan: candidatePlan,
+          maturity: const BitcoinPolicyMaturity.empty(),
+          review: null,
+        )),
+      );
+      when(
+        () => getBitcoinSigningPlanUsecase.execute(
+          wallet: wallet,
+          psbt: 'candidate',
+          selection: requestedSelection,
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          plan: candidatePlan,
+          maturity: const BitcoinPolicyMaturity.empty(),
+          review: null,
+        )),
+      );
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: wallet.id,
+          address: 'bc1qrecipient',
+          networkFee: fees.fastest,
+          amountSat: 10000,
+          replaceByFee: true,
+          selectedInputs: const [],
+          drain: false,
+          policyPath: any(named: 'policyPath'),
+        ),
+      ).thenAnswer(
+        (_) async => (unsignedPsbt: 'candidate', txSize: 100, isToSelf: false),
+      );
+      when(
+        () => applyBitcoinPolicyPreimagesUsecase.execute(
+          psbt: 'candidate',
+          preimages: any(named: 'preimages'),
+        ),
+      ).thenAnswer((_) async => const Ok('candidate'));
+      when(
+        () => calculateBitcoinAbsoluteFeesUsecase.execute(psbt: 'candidate'),
+      ).thenAnswer((_) async => 1000);
+    });
+
+    SendState state() => SendState(
+      sendType: SendType.bitcoin,
+      selectedWallet: wallet,
+      paymentRequest: const PaymentRequest.bitcoin(
+        address: 'bc1qrecipient',
+        isTestnet: false,
+      ),
+      confirmedAmountSat: 10000,
+      bitcoinFeesList: fees,
+      liquidFeesList: fees,
+      unsignedPsbt: 'signed-current',
+      bitcoinSigningPlan: previousPlan,
+      bitcoinPolicySelection: previousSelection,
+    );
+
+    test(
+      'preserves signatures when the unsigned transaction is unchanged',
+      () async {
+        when(
+          () => processBitcoinSignerResultUsecase.execute(
+            result: 'signed-current',
+            kind: BitcoinSignerResultKind.psbt,
+            currentPsbt: 'candidate',
+            wallet: wallet,
+            selection: requestedSelection,
+            satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok(
+            ProcessedBitcoinPsbt(
+              psbt: 'merged',
+              isFinalized: false,
+              txSize: 100,
+              absoluteFeesSat: 1000,
+              signingPlan: mergedPlan,
+            ),
+          ),
+        );
+        final cubit = buildCubit()..setStateForTest(state());
+        addTearDown(cubit.close);
+
+        final restart = await cubit.applyBitcoinPolicySelection(
+          requestedSelection,
+        );
+
+        expect(restart, isNull);
+        expect(cubit.state.unsignedPsbt, 'merged');
+        expect(cubit.state.bitcoinSigningPlan, same(mergedPlan));
+      },
+    );
+
+    test(
+      'keeps the signed PSBT until a changed transaction is confirmed',
+      () async {
+        when(
+          () => processBitcoinSignerResultUsecase.execute(
+            result: 'signed-current',
+            kind: BitcoinSignerResultKind.psbt,
+            currentPsbt: 'candidate',
+            wallet: wallet,
+            selection: requestedSelection,
+            satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err(
+            BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
+          ),
+        );
+        final cubit = buildCubit()..setStateForTest(state());
+        addTearDown(cubit.close);
+
+        final restart = await cubit.applyBitcoinPolicySelection(
+          requestedSelection,
+        );
+
+        expect(restart, same(requestedSelection));
+        expect(cubit.state.unsignedPsbt, 'signed-current');
+        expect(cubit.state.bitcoinSigningPlan, same(previousPlan));
+      },
+    );
+  });
+
+  group('SendCubit navigation while preparing a transaction', () {
+    test('does not leave confirmation during build or signing', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      for (final state in [
+        const SendState(step: SendStep.confirm, buildingTransaction: true),
+        const SendState(step: SendStep.confirm, signingTransaction: true),
+      ]) {
+        cubit.setStateForTest(state);
+        cubit.backClicked();
+
+        expect(cubit.state.step, SendStep.confirm);
+      }
+    });
+  });
+
+  group('SendCubit external signing results', () {
+    test('a slower signer result cannot replace a newer one', () async {
+      final older =
+          Completer<
+            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
+          >();
+      final newer =
+          Completer<
+            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
+          >();
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: any(named: 'result'),
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'prepared-psbt',
+          wallet: any(named: 'wallet'),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+        ),
+      ).thenAnswer((invocation) {
+        final result = invocation.namedArguments[#result] as String;
+        return result == 'older' ? older.future : newer.future;
+      });
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          unsignedPsbt: 'prepared-psbt',
+          selectedWallet: _bitcoinLocalWallet(),
+        ),
+      );
+
+      final olderRequest = cubit.applyExternalBitcoinSigningResult('older');
+      final newerRequest = cubit.applyExternalBitcoinSigningResult('newer');
+      newer.complete(
+        const Ok(
+          ProcessedBitcoinTransaction(transaction: 'newer', txSize: 100),
+        ),
+      );
+      expect(await newerRequest, isTrue);
+      older.complete(
+        const Ok(
+          ProcessedBitcoinTransaction(transaction: 'older', txSize: 100),
+        ),
+      );
+
+      expect(await olderRequest, isFalse);
+      expect(cubit.state.signedBitcoinTx, 'newer');
+    });
+
+    test('a transaction edit discards an in-flight signer result', () async {
+      final signerResult =
+          Completer<
+            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
+          >();
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'signed-transaction',
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'prepared-psbt',
+          wallet: any(named: 'wallet'),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+        ),
+      ).thenAnswer((_) => signerResult.future);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          unsignedPsbt: 'prepared-psbt',
+          selectedWallet: _bitcoinLocalWallet(),
+        ),
+      );
+
+      final signing = cubit.applyExternalBitcoinSigningResult(
+        'signed-transaction',
+      );
+      await cubit.amountChanged(amount: '1', isMax: true);
+      signerResult.complete(
+        const Ok(
+          ProcessedBitcoinTransaction(transaction: 'stale', txSize: 100),
+        ),
+      );
+
+      expect(await signing, isFalse);
+      expect(cubit.state.signedBitcoinTx, isNull);
+    });
+
+    test('accepts a verified final raw transaction', () async {
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'signed-transaction',
+          kind: BitcoinSignerResultKind.transaction,
+          currentPsbt: 'prepared-psbt',
+          wallet: any(named: 'wallet'),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok(
+          ProcessedBitcoinTransaction(
+            transaction: 'verified-transaction',
+            txSize: 141,
+          ),
+        ),
+      );
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          unsignedPsbt: 'prepared-psbt',
+          selectedWallet: _bitcoinLocalWallet(),
+        ),
+      );
+
+      await cubit.applyFinalBitcoinTransaction('signed-transaction');
+
+      expect(cubit.state.signedBitcoinTx, 'verified-transaction');
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      expect(cubit.state.bitcoinTxSize, 141);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('rejects a final raw transaction that fails verification', () async {
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'different-transaction',
+          kind: BitcoinSignerResultKind.transaction,
+          currentPsbt: 'prepared-psbt',
+          wallet: any(named: 'wallet'),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(
+          BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
+        ),
+      );
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          unsignedPsbt: 'prepared-psbt',
+          selectedWallet: _bitcoinLocalWallet(),
+        ),
+      );
+
+      await cubit.applyFinalBitcoinTransaction('different-transaction');
+
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.failure, isA<SendTransactionSigningFailure>());
+      expect(cubit.state.signingTransaction, isFalse);
+    });
+
+    test('rolls back a signature that could not be persisted', () async {
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'signed-transaction',
+          kind: BitcoinSignerResultKind.transaction,
+          currentPsbt: 'prepared-psbt',
+          wallet: any(named: 'wallet'),
+          selection: any(named: 'selection'),
+          satisfiedPreimageKeys: any(named: 'satisfiedPreimageKeys'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok(
+          ProcessedBitcoinTransaction(
+            transaction: 'verified-transaction',
+            txSize: 141,
+          ),
+        ),
+      );
+      when(
+        () => savePendingBitcoinTransactionUsecase.execute(
+          any(),
+          expectedRevision: any(named: 'expectedRevision'),
+        ),
+      ).thenAnswer((_) async => const Err(SendPersistenceFailure()));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.signing,
+          sendType: SendType.bitcoin,
+          selectedWallet: _bitcoinLocalWallet(),
+          copiedRawPaymentRequest: 'bc1qrecipient',
+          amount: '50000',
+          confirmedAmountSat: 50000,
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          unsignedPsbt: 'prepared-psbt',
+          pendingTransactionId: 'pending-id',
+          pendingTransactionCreatedAt: DateTime.utc(2026, 8, 14),
+          isSigningSession: true,
+        ),
+      );
+
+      final accepted = await cubit.applyFinalBitcoinTransaction(
+        'signed-transaction',
+      );
+
+      expect(accepted, isFalse);
+      expect(cubit.state.unsignedPsbt, 'prepared-psbt');
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.failure, isA<SendPersistenceFailure>());
     });
   });
 }
