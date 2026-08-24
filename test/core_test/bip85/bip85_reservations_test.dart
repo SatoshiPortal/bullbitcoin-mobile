@@ -49,7 +49,10 @@ void main() {
       isTrue,
     );
     expect(Bip85Reservations.isReservedPath("1608'/0'/586053381'"), isTrue);
-    expect(Bip85Reservations.isRecoverbullVaultKeyPath("1608'/0'/05'"), isFalse);
+    expect(
+      Bip85Reservations.isRecoverbullVaultKeyPath("1608'/0'/05'"),
+      isFalse,
+    );
     expect(Bip85Reservations.isRecoverbullVaultKeyPath("1608'/1'/5'"), isFalse);
     expect(
       Bip85Reservations.isRecoverbullVaultKeyPath("1608'/0'/2147483647'"),

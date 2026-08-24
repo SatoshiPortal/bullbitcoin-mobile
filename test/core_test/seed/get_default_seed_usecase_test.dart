@@ -33,10 +33,7 @@ void main() {
   });
 
   test('returns the verified seed without loading wallet balances', () async {
-    final seed = Seed.bytes(
-      bytes: bytes,
-      masterFingerprint: fingerprint,
-    );
+    final seed = Seed.bytes(bytes: bytes, masterFingerprint: fingerprint);
     when(
       () => wallets.getDefaultBitcoinWalletFingerprints(
         environment: Environment.mainnet,
@@ -71,11 +68,10 @@ void main() {
   });
 
   test('rejects seed bytes that do not match the wallet fingerprint', () async {
-    final otherBytes = Uint8List.fromList(List.generate(16, (index) => index + 1));
-    final seed = Seed.bytes(
-      bytes: otherBytes,
-      masterFingerprint: fingerprint,
+    final otherBytes = Uint8List.fromList(
+      List.generate(16, (index) => index + 1),
     );
+    final seed = Seed.bytes(bytes: otherBytes, masterFingerprint: fingerprint);
     when(
       () => wallets.getDefaultBitcoinWalletFingerprints(
         environment: Environment.mainnet,

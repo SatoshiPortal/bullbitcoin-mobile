@@ -122,54 +122,58 @@ void main() {
     );
   });
 
-  test('rolls back new wallets and their newly stored seed on failure', () async {
-    when(
-      () => wallets.findMatchingDeterministicWallet(
-        seed: any(named: 'seed'),
-        spec: any(named: 'spec'),
-      ),
-    ).thenAnswer((_) async => null);
-    when(() => seeds.exists(any())).thenAnswer((_) async => false);
-    when(
-      () => seeds.createFromMnemonic(
-        mnemonicWords: any(named: 'mnemonicWords'),
-        passphrase: any(named: 'passphrase'),
-      ),
-    ).thenAnswer((_) async => fallbackSeed);
-    when(
-      () => wallets.createWallet(
-        seed: any(named: 'seed'),
-        network: _bitcoin.network,
-        scriptType: _bitcoin.scriptType,
-        label: _bitcoin.label,
-        isDefault: _bitcoin.isDefault,
-        sync: _bitcoin.sync,
-      ),
-    ).thenAnswer((_) async => _wallet(_bitcoin));
-    when(
-      () => wallets.createWallet(
-        seed: any(named: 'seed'),
-        network: _liquid.network,
-        scriptType: _liquid.scriptType,
-        label: _liquid.label,
-        isDefault: _liquid.isDefault,
-        sync: _liquid.sync,
-      ),
-    ).thenThrow(Exception('create failed'));
-    when(
-      () => wallets.deleteWallet(walletId: 'bitcoin-wallet'),
-    ).thenAnswer((_) async {});
-    when(() => seeds.delete(any())).thenAnswer((_) async => const Ok(null));
+  test(
+    'rolls back new wallets and their newly stored seed on failure',
+    () async {
+      when(
+        () => wallets.findMatchingDeterministicWallet(
+          seed: any(named: 'seed'),
+          spec: any(named: 'spec'),
+        ),
+      ).thenAnswer((_) async => null);
+      when(() => seeds.exists(any())).thenAnswer((_) async => false);
+      when(
+        () => seeds.createFromMnemonic(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => fallbackSeed);
+      when(
+        () => wallets.createWallet(
+          seed: any(named: 'seed'),
+          network: _bitcoin.network,
+          scriptType: _bitcoin.scriptType,
+          label: _bitcoin.label,
+          isDefault: _bitcoin.isDefault,
+          sync: _bitcoin.sync,
+        ),
+      ).thenAnswer((_) async => _wallet(_bitcoin));
+      when(
+        () => wallets.createWallet(
+          seed: any(named: 'seed'),
+          network: _liquid.network,
+          scriptType: _liquid.scriptType,
+          label: _liquid.label,
+          isDefault: _liquid.isDefault,
+          sync: _liquid.sync,
+        ),
+      ).thenThrow(Exception('create failed'));
+      when(
+        () => wallets.deleteWallet(walletId: 'bitcoin-wallet'),
+      ).thenAnswer((_) async {});
+      when(() => seeds.delete(any())).thenAnswer((_) async => const Ok(null));
 
-    final result = await usecase.execute(_request);
+      final result = await usecase.execute(_request);
 
-    expect(result, isA<Err<dynamic, DeterministicWalletFailure>>());
-    expect((result as Err).failure, isA<DeterministicWalletOperationFailure>());
-    verify(
-      () => wallets.deleteWallet(walletId: 'bitcoin-wallet'),
-    ).called(1);
-    verify(() => seeds.delete(any())).called(1);
-  });
+      expect(result, isA<Err<dynamic, DeterministicWalletFailure>>());
+      expect(
+        (result as Err).failure,
+        isA<DeterministicWalletOperationFailure>(),
+      );
+      verify(() => wallets.deleteWallet(walletId: 'bitcoin-wallet')).called(1);
+      verify(() => seeds.delete(any())).called(1);
+    },
+  );
 
   test('preserves a reserved-path conflict as a distinct failure', () async {
     when(
