@@ -397,6 +397,55 @@ void main() {
       );
     });
 
+    test('maps a reused key beside another account from the same seed', () {
+      final account0 = deriveSignerKeysAtAccount(
+        testMnemonics.first,
+        account: 0,
+      );
+      final account1 = deriveSignerKeysAtAccount(
+        testMnemonics.first,
+        account: 1,
+      );
+      final descriptor = twoPathDescriptor(
+        'tr(${account0.externalPublic},{pk(${account0.externalPublic}),pk(${account1.externalPublic})})',
+        'tr(${account0.internalPublic},{pk(${account0.internalPublic}),pk(${account1.internalPublic})})',
+      );
+      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+        descriptor: descriptor,
+        isTestnet: true,
+      );
+      final descriptorKeys = [
+        for (final (index, key) in parsed.keys.indexed)
+          WalletDescriptorKeyModel(
+            id: 'key-$index',
+            signerId: 'signer-$index',
+            masterFingerprint: key.masterFingerprint,
+            xpubFingerprint: key.xpubFingerprint,
+            xpub: key.xpub,
+            derivationPath: key.derivationPath,
+          ),
+      ];
+
+      final policy = BitcoinWalletPolicyMapper.toEntity(
+        datasource.analyzePolicy(
+          wallet:
+              WalletModel.publicBdk(
+                    id: 'same-seed-accounts',
+                    descriptor: descriptor,
+                    isTestnet: true,
+                  )
+                  as PublicBdkWalletModel,
+          descriptorKeys: descriptorKeys,
+        ),
+      );
+
+      expect(_signatureKeyValues(policy.external.root), [
+        'key-0',
+        'key-0',
+        'key-1',
+      ]);
+    });
+
     test('decodes time-based relative timelocks', () {
       const oneTimeUnit = (1 << 22) + 1;
       final policy = analyzePolicy(

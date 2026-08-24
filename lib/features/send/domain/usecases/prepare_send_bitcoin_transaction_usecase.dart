@@ -35,6 +35,7 @@ class PrepareSendBitcoinTransactionUsecase {
     final hasSelection = selectedInputs?.isNotEmpty ?? false;
     return result.mapErr(
       (failure) => switch (failure) {
+        BitcoinSigningFailure(kind: BitcoinSigningFailureKind.unsupportedPolicyPath) => const SendUnsupportedPolicyPathFailure(),
         WalletSelectedInputsUnavailableFailure() =>
           SendSelectedCoinsUnavailableFailure(failure.logMessage),
         WalletNoSpendableInputsFailure() =>

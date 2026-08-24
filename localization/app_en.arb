@@ -16358,5 +16358,13 @@
   "@walletAddressTypeTaproot": {
     "description": "Address type for Taproot descriptor wallets"
   },
-  "walletAddressTypeTaproot": "Taproot"
+  "walletAddressTypeTaproot": "Taproot",
+  "@sendErrorUnsupportedPolicyPath": {
+    "description": "Error shown when Bull cannot unambiguously construct the selected Taproot spending path"
+  },
+  "@psbtSigningUnsupportedSpendMode": {
+    "description": "Shown when a PSBT combines Taproot input spend modes that Bull cannot safely sign in one operation."
+  },
+  "psbtSigningUnsupportedSpendMode": "This PSBT mixes Taproot key-path and script-path inputs, which Bull cannot sign together yet.",
+  "sendErrorUnsupportedPolicyPath": "This Taproot spending option isn’t supported yet. Choose another option."
 }
