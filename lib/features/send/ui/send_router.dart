@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/send/request_identifier/request_identifier_cu
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_screen.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,17 +23,14 @@ class SendRouter {
       final wallet =
           args?.wallet ??
           (state.extra is Wallet ? state.extra! as Wallet : null);
-      return BlocProvider(
-        create: (_) => locator<SendCubit>(
-          param1: wallet,
-          param2: (
-            args: args,
-            spWalletLabel: args?.isSpMode == true
-                ? context.loc.walletSpTitle
-                : null,
-          ),
-        )..loadWalletWithRatesAndFees(),
-        child: const SendScreen(),
+      return _SendRouteView(
+        key: state.pageKey,
+        wallet: wallet,
+        args: args,
+        pendingTransactionId: args?.pendingTransactionId,
+        spWalletLabel: args?.isSpMode == true
+            ? context.loc.walletSpTitle
+            : null,
       );
     },
     routes: [
@@ -46,4 +44,57 @@ class SendRouter {
       ),
     ],
   );
+}
+
+class _SendRouteView extends StatefulWidget {
+  final Wallet? wallet;
+  final SendRouteArgs? args;
+  final String? pendingTransactionId;
+  final String? spWalletLabel;
+
+  const _SendRouteView({
+    super.key,
+    this.wallet,
+    this.args,
+    this.pendingTransactionId,
+    this.spWalletLabel,
+  });
+
+  @override
+  State<_SendRouteView> createState() => _SendRouteViewState();
+}
+
+class _SendRouteViewState extends State<_SendRouteView> {
+  late final SendCubit _cubit;
+  late final Future<void> _initialization;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = locator<SendCubit>(
+      param1: widget.wallet,
+      param2: (args: widget.args, spWalletLabel: widget.spWalletLabel),
+    );
+    _initialization = _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _cubit.loadWalletWithRatesAndFees();
+    if (widget.pendingTransactionId case final id?) {
+      await _cubit.loadPendingTransaction(id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final child = widget.pendingTransactionId == null
+        ? const SendScreen()
+        : FutureBuilder<void>(
+            future: _initialization,
+            builder: (_, snapshot) => snapshot.connectionState == .done
+                ? const SendScreen()
+                : const SendLoadingScreen(),
+          );
+    return BlocProvider(lazy: false, create: (_) => _cubit, child: child);
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -18,8 +19,11 @@ void main() {
       ),
     );
 
-    final buttons = tester.widgetList<BBButton>(find.byType(BBButton)).toList();
-    expect(buttons, hasLength(2));
-    expect(buttons.last.disabled, isFalse);
+    final label = tester
+        .element(find.byType(WalletBottomButtons))
+        .loc
+        .walletButtonSend;
+    final send = tester.widget<BBButton>(find.widgetWithText(BBButton, label));
+    expect(send.disabled, isFalse);
   });
 }

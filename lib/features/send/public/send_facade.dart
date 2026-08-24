@@ -1,16 +1,28 @@
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 
+export '../domain/pending_bitcoin_transaction.dart';
 export '../domain/send_failure.dart';
 export 'send_route.dart';
 export 'send_route_args.dart';
 
 class SendFacade {
   final VerifySignedTxUsecase _verifySignedTxUsecase;
+  final WatchPendingBitcoinTransactionsUsecase
+  _watchPendingBitcoinTransactionsUsecase;
+  final DeletePendingBitcoinTransactionUsecase
+  _deletePendingBitcoinTransactionUsecase;
 
-  const SendFacade(this._verifySignedTxUsecase);
+  const SendFacade(
+    this._verifySignedTxUsecase,
+    this._watchPendingBitcoinTransactionsUsecase,
+    this._deletePendingBitcoinTransactionUsecase,
+  );
 
   @useResult
   Future<Result<void, SendFailure>> verifySignedTransaction({
@@ -21,5 +33,16 @@ class SendFacade {
     unsignedPsbt: unsignedPsbt,
     signedTransaction: signedTransaction,
     isPsbt: isPsbt,
+  );
+
+  Stream<Result<PendingBitcoinTransactionSnapshot, SendFailure>> watchPending(
+    String walletId,
+  ) => _watchPendingBitcoinTransactionsUsecase.execute(walletId);
+
+  Future<Result<void, SendFailure>> deletePending(
+    PendingBitcoinTransaction transaction,
+  ) => _deletePendingBitcoinTransactionUsecase.execute(
+    transaction.id,
+    expectedRevision: transaction.revision,
   );
 }
