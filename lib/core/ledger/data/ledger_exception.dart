@@ -14,14 +14,6 @@ final class PermissionDeniedLedgerException extends LedgerException {
   const PermissionDeniedLedgerException();
 }
 
-final class NoDevicesFoundLedgerException extends LedgerException {
-  const NoDevicesFoundLedgerException();
-}
-
-final class MultipleDevicesFoundLedgerException extends LedgerException {
-  const MultipleDevicesFoundLedgerException();
-}
-
 final class DeviceNotFoundLedgerException extends LedgerException {
   const DeviceNotFoundLedgerException();
 }

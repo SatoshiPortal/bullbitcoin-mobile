@@ -34,6 +34,44 @@ void main() {
     repository = LedgerDeviceRepositoryImpl(datasource: datasource);
   });
 
+  group('LedgerDeviceRepositoryImpl (scan policy)', () {
+    test('turns an empty scan into a no-devices failure', () async {
+      when(
+        () => datasource.scanDevices(deviceType: any(named: 'deviceType')),
+      ).thenAnswer((_) async => <LedgerDeviceModel>[]);
+
+      final result = await repository.scanDevices();
+
+      expect((result as Err).failure, isA<LedgerNoDevicesFoundFailure>());
+    });
+
+    test('turns an ambiguous scan into a multiple-devices failure', () async {
+      when(
+        () => datasource.scanDevices(deviceType: any(named: 'deviceType')),
+      ).thenAnswer(
+        (_) async => [
+          device.toModel(),
+          device.copyWith(id: 'device-2').toModel(),
+        ],
+      );
+
+      final result = await repository.scanDevices();
+
+      expect((result as Err).failure, isA<LedgerMultipleDevicesFoundFailure>());
+    });
+
+    test('returns the single device on an unambiguous scan', () async {
+      when(
+        () => datasource.scanDevices(deviceType: any(named: 'deviceType')),
+      ).thenAnswer((_) async => [device.toModel()]);
+
+      final result = await repository.scanDevices();
+
+      expect(result, isA<Ok<List<LedgerDeviceEntity>, LedgerFailure>>());
+      expect((result as Ok).value, hasLength(1));
+    });
+  });
+
   group('LedgerDeviceRepositoryImpl (the sanitization boundary)', () {
     test('maps an uninitialized transport to a no-connection failure, '
         'not a generic one', () async {

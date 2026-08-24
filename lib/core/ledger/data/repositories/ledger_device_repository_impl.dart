@@ -17,11 +17,29 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   @override
   Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
     SignerDeviceEntity? deviceType,
-  }) {
-    return _guard(() async {
-      final models = await _datasource.scanDevices(deviceType: deviceType);
-      return models.map((model) => model.toEntity()).toList();
-    });
+  }) async {
+    final scanned = await _guard(
+      () => _datasource.scanDevices(deviceType: deviceType),
+    );
+    // The datasource reports what it saw. Requiring exactly one device is this
+    // layer's policy, so it is decided here instead of being thrown from the
+    // datasource and renamed on the way back up.
+    return switch (scanned) {
+      Err(:final failure) => Err<List<LedgerDeviceEntity>, LedgerFailure>(
+        failure,
+      ),
+      Ok(:final value) when value.isEmpty =>
+        const Err<List<LedgerDeviceEntity>, LedgerFailure>(
+          LedgerNoDevicesFoundFailure(),
+        ),
+      Ok(:final value) when value.length > 1 =>
+        const Err<List<LedgerDeviceEntity>, LedgerFailure>(
+          LedgerMultipleDevicesFoundFailure(),
+        ),
+      Ok(:final value) => Ok<List<LedgerDeviceEntity>, LedgerFailure>(
+        value.map((model) => model.toEntity()).toList(),
+      ),
+    };
   }
 
   @override
@@ -115,10 +133,6 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       return Ok(await op());
     } on PermissionDeniedLedgerException {
       return const Err(LedgerPermissionDeniedFailure());
-    } on NoDevicesFoundLedgerException {
-      return const Err(LedgerNoDevicesFoundFailure());
-    } on MultipleDevicesFoundLedgerException {
-      return const Err(LedgerMultipleDevicesFoundFailure());
     } on DeviceNotFoundLedgerException {
       return const Err(LedgerDeviceNotFoundFailure());
     } on NoActiveConnectionLedgerException {
@@ -128,10 +142,6 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     } on InvalidMagicBytesLedgerException {
       return const Err(LedgerInvalidPsbtFailure());
     } on ConnectionTypeNotInitializedLedgerException {
-      // The transport for this device was never initialized (its scan did not
-      // run or did not complete), so there is nothing to talk to. That is the
-      // same situation as a missing connection from the user's point of view —
-      // and "no connection available" is actionable, unlike a generic "oops".
       return const Err(
         LedgerNoConnectionFailure('connection type not initialized'),
       );

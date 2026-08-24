@@ -131,15 +131,9 @@ class LedgerDeviceDatasource {
       return LedgerDeviceModel.fromLedgerDevice(device);
     }).toList();
 
-    if (deviceModels.isEmpty) {
-      throw const NoDevicesFoundLedgerException();
+    if (devices.length == 1) {
+      _cachedDevice = devices.first;
     }
-
-    if (deviceModels.length > 1) {
-      throw const MultipleDevicesFoundLedgerException();
-    }
-
-    _cachedDevice = devices.first;
     return deviceModels;
   }
 
