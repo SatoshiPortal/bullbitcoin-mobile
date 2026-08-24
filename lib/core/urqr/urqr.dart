@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bs58check/bs58check.dart' as base58;
+import 'package:bull_logger/bull_logger.dart';
 import 'package:cbor/cbor.dart';
 import 'package:satoshifier/satoshifier.dart';
 import 'package:ur/ur.dart';
@@ -12,18 +13,35 @@ class UrQrGenerator {
   static List<String> generatePsbtUr(String psbt, {int fragmentLength = 100}) {
     final psbtBytes = base64.decode(psbt);
     final cryptoPsbt = CryptoPsbt.fromPayload(psbtBytes);
-    final ur = cryptoPsbt.toUR();
-    final encoder = UREncoder(ur, fragmentLength);
+    return _encode(cryptoPsbt.toUR(), fragmentLength);
+  }
 
+  static List<String> generateBytesUr(
+    String value, {
+    int fragmentLength = 100,
+  }) {
+    try {
+      final payload = cbor.encode(CborBytes(utf8.encode(value)));
+      return _encode(UR('bytes', Uint8List.fromList(payload)), fragmentLength);
+    } catch (e) {
+      log.severe(
+        message: 'Failed to generate bytes UR',
+        error: e,
+        trace: StackTrace.current,
+      );
+      return [];
+    }
+  }
+
+  static List<String> _encode(UR ur, int fragmentLength) {
+    final encoder = UREncoder(ur, fragmentLength);
     final parts = <String>[];
     while (!encoder.isComplete) {
       if (parts.length == UrQrReader.maxMultipartParts) {
         throw UrSequenceLimitExceeded();
       }
-      final part = encoder.nextPart();
-      parts.add(part);
+      parts.add(encoder.nextPart());
     }
-
     return parts;
   }
 }

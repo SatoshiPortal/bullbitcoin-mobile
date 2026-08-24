@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
+import 'package:bb_mobile/features/settings/domain/wallet_registration.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_detail_fields.dart';
@@ -84,6 +85,24 @@ class WalletDetailsScreen extends StatelessWidget {
                   else
                     _SingleSignerWalletDetails(wallet: wallet),
                   const Gap(32),
+                  if (wallet.isBitcoin &&
+                      wallet.signers.any(
+                        (signer) =>
+                            signer.signerDevice?.supportsWalletRegistration ??
+                            false,
+                      )) ...[
+                    BBButton.big(
+                      label: context.loc.walletRegistrationTitle,
+                      onPressed: () => context.pushNamed(
+                        SettingsRoute.walletRegistration.name,
+                        pathParameters: {'walletId': wallet.id},
+                      ),
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
+                      iconData: Icons.devices_other,
+                    ),
+                    const Gap(16),
+                  ],
                   BBButton.big(
                     label: context.loc.addressViewAddressesTitle,
                     onPressed: () => context.pushNamed(

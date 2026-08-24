@@ -22,8 +22,10 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_export_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_registration_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
@@ -267,6 +269,26 @@ class SettingsRouter {
               ],
               child: WalletDetailsScreen(walletId: walletId),
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: SettingsRoute.walletRegistration.path,
+        name: SettingsRoute.walletRegistration.name,
+        builder: (context, state) {
+          final walletId = state.pathParameters['walletId']!;
+          final wallet = context
+              .read<WalletBloc>()
+              .state
+              .wallets
+              .where((wallet) => wallet.id == walletId)
+              .firstOrNull;
+          if (wallet == null) {
+            return const WalletRegistrationWalletNotFoundScreen();
+          }
+          return BlocProvider(
+            create: (_) => locator<WalletRegistrationCubit>()..load(wallet),
+            child: WalletRegistrationScreen(wallet: wallet),
           );
         },
       ),

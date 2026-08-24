@@ -100,30 +100,36 @@ class Bbqr {
   }
 
   static Future<List<String>> splitPsbt(String psbt) async {
-    // check if the PSBT is valid, will throw if not
+    // Check if the PSBT is valid; construction throws otherwise.
     final parsedPsbt = bdk.Psbt(psbtBase64: normalizeBitcoinPsbt(psbt));
-    final validPstb = parsedPsbt.serialize();
-    final psbtBytes = base64.decode(validPstb);
+    final psbtBytes = base64.decode(parsedPsbt.serialize());
+    return _split(psbtBytes, bbqr.FileType.psbt);
+  }
 
-    // The more we split the easier it is to scan the QR code.
-    var minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);
-    if (minSplitNumber < BigInt.from(1)) minSplitNumber = BigInt.from(1);
+  static Future<List<String>> splitText(String text) =>
+      _split(utf8.encode(text), bbqr.FileType.unicodeText);
+
+  static Future<List<String>> _split(
+    List<int> bytes,
+    bbqr.FileType fileType,
+  ) async {
+    // Smaller BBQR parts are easier for scanners to resolve.
+    var minSplitNumber = BigInt.from(bytes.length ~/ 1000);
+    if (minSplitNumber < BigInt.one) minSplitNumber = BigInt.one;
 
     final defaultOptions = await bbqr.SplitOptions.default_();
-    final bbqrOptions = bbqr.SplitOptions(
+    final options = bbqr.SplitOptions(
       minVersion: defaultOptions.minVersion,
       maxVersion: defaultOptions.maxVersion,
       encoding: defaultOptions.encoding,
       maxSplitNumber: defaultOptions.maxSplitNumber,
       minSplitNumber: minSplitNumber,
     );
-
     final split = await bbqr.Split.tryFromData(
-      bytes: psbtBytes,
-      fileType: bbqr.FileType.psbt,
-      options: bbqrOptions,
+      bytes: bytes,
+      fileType: fileType,
+      options: options,
     );
-
     return split.parts;
   }
 }
