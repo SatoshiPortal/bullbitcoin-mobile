@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,9 +18,13 @@ class _MockLedgerDeviceDatasource extends Mock
 class _MockLedgerWalletPolicyHmacDatasource extends Mock
     implements LedgerWalletPolicyHmacDatasource {}
 
+class _MockBitcoinDescriptorPort extends Mock
+    implements BitcoinDescriptorPort {}
+
 void main() {
   late _MockLedgerDeviceDatasource datasource;
   late _MockLedgerWalletPolicyHmacDatasource hmacDatasource;
+  late _MockBitcoinDescriptorPort bitcoinDescriptorPort;
   late LedgerDeviceRepositoryImpl repository;
 
   const device = LedgerDeviceEntity(
@@ -37,9 +42,11 @@ void main() {
   setUp(() {
     datasource = _MockLedgerDeviceDatasource();
     hmacDatasource = _MockLedgerWalletPolicyHmacDatasource();
+    bitcoinDescriptorPort = _MockBitcoinDescriptorPort();
     repository = LedgerDeviceRepositoryImpl(
       datasource: datasource,
       hmacDatasource: hmacDatasource,
+      bitcoinDescriptorPort: bitcoinDescriptorPort,
     );
   });
 
