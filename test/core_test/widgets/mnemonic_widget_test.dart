@@ -29,6 +29,7 @@ Future<void> pumpWidget(
   bool allowAutoFillWords = false,
   bool allowMultipleMnemonicLength = true,
   bool allowPassphrase = false,
+  bool allowLabel = false,
   String? externalError,
   required void Function(Mnemonic) onSubmit,
 }) async {
@@ -47,7 +48,7 @@ Future<void> pumpWidget(
           onSubmit: onSubmit,
           allowAutoFillWords: allowAutoFillWords,
           allowMultipleMnemonicLength: allowMultipleMnemonicLength,
-          allowLabel: false,
+          allowLabel: allowLabel,
           allowPassphrase: allowPassphrase,
           externalError: externalError,
         ),
@@ -57,6 +58,15 @@ Future<void> pumpWidget(
 }
 
 Finder wordField(int index) => find.byType(TextField).at(index);
+
+/// A labelled input's inner [TextField], found by its placeholder — the label
+/// itself is a sibling widget, not part of the field.
+TextField fieldByHint(WidgetTester tester, String hint) =>
+    tester.widget<TextField>(
+      find.byWidgetPredicate(
+        (widget) => widget is TextField && widget.decoration?.hintText == hint,
+      ),
+    );
 
 /// A key on the in-app keyboard, scoped so the letter is matched on the
 /// keyboard and not in a field or a suggestion chip.
@@ -518,22 +528,35 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('the passphrase field stays out of the IME suggestion caches', (
+    testWidgets('the passphrase field takes the value exactly as typed', (
       tester,
     ) async {
       await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
 
-      // The passphrase is key material too: the OS keyboard may serve it, but
-      // its autocorrect and prediction caches must never see the value.
-      final field = tester.widget<TextField>(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is TextField &&
-              widget.decoration?.hintText == 'Optional Passphrase',
-        ),
-      );
-      expect(field.enableSuggestions, isFalse);
+      final field = fieldByHint(tester, 'Optional Passphrase');
+
+      // The passphrase feeds seed derivation character by character, so iOS
+      // must not reformat it into a different wallet.
+      expect(field.smartQuotesType, SmartQuotesType.disabled);
+      expect(field.smartDashesType, SmartDashesType.disabled);
+
+      // It is key material too: the OS keyboard may serve it, but its
+      // autocorrect and prediction caches must never see the value.
       expect(field.autocorrect, isFalse);
+      expect(field.enableSuggestions, isFalse);
+    });
+
+    testWidgets('a non-secret labelled input keeps the platform defaults', (
+      tester,
+    ) async {
+      await pumpWidget(tester, allowLabel: true, onSubmit: (_) {});
+
+      // The hardening is opt-in: ordinary text still types normally.
+      final field = fieldByHint(tester, 'Required');
+      expect(field.smartQuotesType, SmartQuotesType.enabled);
+      expect(field.smartDashesType, SmartDashesType.enabled);
+      expect(field.enableSuggestions, isTrue);
+      expect(field.autocorrect, isTrue);
     });
   });
 

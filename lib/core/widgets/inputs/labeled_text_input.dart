@@ -15,6 +15,11 @@ class LabeledTextInput extends StatelessWidget {
   final bool enableSuggestions;
   final bool autocorrect;
 
+  /// iOS Smart Punctuation, on by default. Disable both when the value must
+  /// survive exactly as typed.
+  final SmartQuotesType? smartQuotesType;
+  final SmartDashesType? smartDashesType;
+
   const LabeledTextInput({
     super.key,
     required this.label,
@@ -24,6 +29,8 @@ class LabeledTextInput extends StatelessWidget {
     this.maxLines,
     this.enableSuggestions = true,
     this.autocorrect = true,
+    this.smartQuotesType,
+    this.smartDashesType,
   });
 
   @override
@@ -72,6 +79,8 @@ class LabeledTextInput extends StatelessWidget {
             maxLines: maxLines,
             enableSuggestions: enableSuggestions,
             autocorrect: autocorrect,
+            smartQuotesType: smartQuotesType,
+            smartDashesType: smartDashesType,
           ),
         ),
       ],

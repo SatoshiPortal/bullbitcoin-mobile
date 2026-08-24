@@ -30,6 +30,8 @@ class BullInputText extends StatefulWidget {
     this.obscure = false,
     this.enableSuggestions = true,
     this.autocorrect = true,
+    this.smartQuotesType,
+    this.smartDashesType,
     this.style,
     this.hideBorder = false,
     this.maxLines,
@@ -89,6 +91,12 @@ class BullInputText extends StatefulWidget {
   /// the IME's suggestion and autocorrect caches must never see the value.
   final bool enableSuggestions;
   final bool autocorrect;
+
+  /// iOS Smart Punctuation, which rewrites `'` as `’` and `--` as `—`.
+  /// Left null, [TextField] enables it (unless [obscure]). Disable both when
+  /// the value must survive exactly as typed.
+  final SmartQuotesType? smartQuotesType;
+  final SmartDashesType? smartDashesType;
 
   /// Maximum lines.
   final int? maxLines;
@@ -182,6 +190,8 @@ class _BullInputTextState extends State<BullInputText> {
       enableIMEPersonalizedLearning: false,
       enableSuggestions: widget.enableSuggestions,
       autocorrect: widget.autocorrect,
+      smartQuotesType: widget.smartQuotesType,
+      smartDashesType: widget.smartDashesType,
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
       maxLines: effectiveMaxLines,
