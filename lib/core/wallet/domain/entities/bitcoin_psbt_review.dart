@@ -108,15 +108,6 @@ final class BitcoinPsbtReview {
   Set<String> get outpoints =>
       Set.unmodifiable(inputs.map((input) => input.outpoint));
 
-  Set<String> get signedDescriptorKeyIds {
-    if (inputs.isEmpty) return const {};
-    return Set.unmodifiable(
-      inputs
-          .map((input) => input.signedDescriptorKeyIds)
-          .reduce((signed, next) => signed.intersection(next)),
-    );
-  }
-
   Map<BitcoinPolicyKeychain, Set<String>>
   get signedDescriptorKeyIdsByKeychain => Map.unmodifiable({
     for (final keychain in BitcoinPolicyKeychain.values)

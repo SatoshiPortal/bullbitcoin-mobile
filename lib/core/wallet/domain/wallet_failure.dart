@@ -15,6 +15,7 @@ enum BitcoinSigningFailureKind {
   missingUtxo,
   frozenUtxo,
   unsupportedSighash,
+  unsupportedSpendMode,
   unsupportedPolicyPath,
   incomplete,
   unexpected,

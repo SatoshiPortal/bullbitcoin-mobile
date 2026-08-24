@@ -42,13 +42,23 @@ class BitcoinPsbtReviewMapper {
     required List<WalletDescriptorKeyModel> descriptorKeys,
     required Set<String> localSignerIds,
   }) {
+    final relevantOriginSources = input.originKeySources.where(
+      (source) =>
+          source.tapLeafHash == null ||
+          input.tapLeafHashes.contains(source.tapLeafHash),
+    );
     final originKeyIds = _resolveKeyIds(
-      input.originKeySources,
+      relevantOriginSources,
       descriptorKeys,
       keychain: input.keychain,
     );
+    final relevantSignedSources = input.signedKeySources.where(
+      (source) =>
+          source.tapLeafHash == null ||
+          input.tapLeafHashes.contains(source.tapLeafHash),
+    );
     final signedKeyIds = _resolveKeyIds(
-      input.signedKeySources,
+      relevantSignedSources,
       descriptorKeys,
       keychain: input.keychain,
     );
@@ -74,7 +84,7 @@ class BitcoinPsbtReviewMapper {
   }
 
   static Set<String> _resolveKeyIds(
-    List<BitcoinPsbtKeySourceRecord> sources,
+    Iterable<BitcoinPsbtKeySourceRecord> sources,
     List<WalletDescriptorKeyModel> keys, {
     required BitcoinPolicyKeychainModel? keychain,
   }) => Set.unmodifiable({
@@ -86,6 +96,7 @@ class BitcoinPsbtReviewMapper {
           fingerprint: source.fingerprint,
           derivationPath: source.derivationPath,
           keychain: keychain,
+          isXOnly: source.isXOnly,
         ))
           key.id,
   });
