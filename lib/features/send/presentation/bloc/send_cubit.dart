@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -2608,7 +2609,8 @@ class SendCubit extends Cubit<SendState>
       result: signerResult,
       kind: kind,
       currentPsbt: unsignedPsbt,
-      walletId: wallet.id,
+      wallet: wallet,
+      selection: const BitcoinPolicySelection.empty(),
     );
     if (!_isCurrentBitcoinSignerResult(
       generation: generation,
@@ -2632,6 +2634,17 @@ class SendCubit extends Cubit<SendState>
           ),
         );
         return false;
+    }
+    if (verified case ProcessedBitcoinPsbt(isFinalized: false)) {
+      emit(
+        state.copyWith(
+          signedBitcoinPsbt: null,
+          signedBitcoinTx: null,
+          hasExternalBitcoinSignerResult: false,
+          failure: const SendTransactionConfirmationFailure(),
+        ),
+      );
+      return false;
     }
     final signedTransaction = switch (verified) {
       ProcessedBitcoinPsbt(:final psbt) => psbt,

@@ -143,3 +143,17 @@ final class PendingBitcoinTransaction {
     signersNeeded: signersNeeded ?? this.signersNeeded,
   );
 }
+
+final class PendingBitcoinTransactionSnapshot {
+  final List<PendingBitcoinTransaction> transactions;
+  final int invalidCount;
+
+  PendingBitcoinTransactionSnapshot({
+    required Iterable<PendingBitcoinTransaction> transactions,
+    this.invalidCount = 0,
+  }) : transactions = List.unmodifiable(transactions) {
+    if (invalidCount < 0) {
+      throw ArgumentError.value(invalidCount, 'invalidCount');
+    }
+  }
+}

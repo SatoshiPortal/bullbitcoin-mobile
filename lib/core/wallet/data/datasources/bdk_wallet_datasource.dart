@@ -760,6 +760,7 @@ class BdkWalletDatasource {
                   : BitcoinPolicyKeychainModel.internal,
               originKeySources: originKeySources,
               outpoint: '${previousOutput.txid}:${previousOutput.vout}',
+              satisfiedPreimageKeys: _satisfiedPreimageKeys(input),
               sequence: transactionInputs[index].sequence,
               signedKeySources: signedKeySources,
             ));
@@ -812,6 +813,7 @@ class BdkWalletDatasource {
                   .toList(),
               wallet: wallet,
             ),
+            isFinalized: psbtInputs.every(_isFinalizedInput),
             lockTime: transaction.lockTime(),
             version: transaction.version(),
           );
@@ -833,6 +835,7 @@ class BdkWalletDatasource {
     required PublicBdkWalletModel wallet,
     Set<String> frozenOutpoints = const {},
     String? replacingTxid,
+    bool allowSpentWalletInputs = false,
   }) async {
     final psbt = _parsePsbt(psbtBase64);
     try {
@@ -866,6 +869,7 @@ class BdkWalletDatasource {
             final localOutput = outputs[outpoint];
             if (localOutput == null ||
                 (localOutput.isSpent &&
+                    !allowSpentWalletInputs &&
                     !replacedOutpoints.contains(outpoint))) {
               throw const BitcoinPsbtMissingUtxoException();
             }
@@ -1712,6 +1716,51 @@ int _completedTransactionVsize({
 
 bool _isFinalizedInput(bdk.Input input) =>
     input.finalScriptSig != null || input.finalScriptWitness != null;
+
+Set<String> _satisfiedPreimageKeys(bdk.Input input) {
+  final keys = <String>{
+    for (final entry in input.sha256Preimages.entries)
+      if (_sameBytes(
+        hex.decode(entry.key),
+        _preimageHash(bitcoin_base.PsbtInputSha256.fromPreImage(entry.value)),
+      ))
+        'sha256:${entry.key.toLowerCase()}',
+    for (final entry in input.hash256Preimages.entries)
+      if (_sameBytes(
+        hex.decode(entry.key),
+        _preimageHash(bitcoin_base.PsbtInputHash256.fromPreImage(entry.value)),
+      ))
+        'hash256:${entry.key.toLowerCase()}',
+    for (final entry in input.ripemd160Preimages.entries)
+      if (_sameBytes(
+        hex.decode(entry.key),
+        _preimageHash(
+          bitcoin_base.PsbtInputRipemd160.fromPreImage(entry.value),
+        ),
+      ))
+        'ripemd160:${entry.key.toLowerCase()}',
+    for (final entry in input.hash160Preimages.entries)
+      if (_sameBytes(
+        hex.decode(entry.key),
+        _preimageHash(bitcoin_base.PsbtInputHash160.fromPreImage(entry.value)),
+      ))
+        'hash160:${entry.key.toLowerCase()}',
+  };
+
+  for (final item in input.finalScriptWitness ?? const []) {
+    if (item.length != 32) continue;
+    keys.addAll(_preimageCommitmentKeys(item));
+  }
+
+  return Set.unmodifiable(keys);
+}
+
+Set<String> _preimageCommitmentKeys(List<int> preimage) => {
+  'sha256:${hex.encode(_preimageHash(bitcoin_base.PsbtInputSha256.fromPreImage(preimage)))}',
+  'hash256:${hex.encode(_preimageHash(bitcoin_base.PsbtInputHash256.fromPreImage(preimage)))}',
+  'ripemd160:${hex.encode(_preimageHash(bitcoin_base.PsbtInputRipemd160.fromPreImage(preimage)))}',
+  'hash160:${hex.encode(_preimageHash(bitcoin_base.PsbtInputHash160.fromPreImage(preimage)))}',
+};
 
 void _rejectFinalizedInputs(List<bdk.Input> inputs) {
   if (inputs.any(_isFinalizedInput)) {
