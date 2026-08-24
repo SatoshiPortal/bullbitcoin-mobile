@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
+import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
@@ -136,20 +136,10 @@ class _SignerDeviceField extends StatelessWidget {
       children: [
         BBText(label, style: context.font.titleMedium),
         const Gap(8),
-        BBDropdown<SignerDeviceEntity?>(
-          key: ValueKey('$fingerprint:${signer.signerDevice?.name}'),
+        SignerDeviceDropdown(
+          key: ValueKey(signer.id),
           value: signer.signerDevice,
-          items: [null, ...SignerDeviceEntity.values]
-              .map(
-                (device) => DropdownMenuItem<SignerDeviceEntity?>(
-                  value: device,
-                  child: BBText(
-                    device?.displayName ?? context.loc.importWatchOnlyUnknown,
-                    style: context.font.headlineSmall,
-                  ),
-                ),
-              )
-              .toList(),
+          unknownLabel: context.loc.importWatchOnlyUnknown,
           onChanged: onChanged,
         ),
       ],

@@ -1,7 +1,9 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
@@ -125,6 +127,10 @@ class _SingleSignerWalletDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final key = wallet.singleDescriptorKey!;
     final derivationPath = key.derivationPath ?? wallet.derivationPath;
+    final signer = wallet.singleSigner!;
+    final isUpdatingSignerDevice = context.select(
+      (WalletDetailsCubit cubit) => cubit.state.isUpdatingSignerDevice,
+    );
     return Column(
       crossAxisAlignment: .stretch,
       children: [
@@ -166,15 +172,35 @@ class _SingleSignerWalletDetails extends StatelessWidget {
           ),
         ],
         const Gap(18),
-        WalletDetailInfoField(
-          label: context.loc.walletDetailsSignerLabel,
-          value: wallet.singleSigner!.signer.displayName,
-        ),
-        if (wallet.singleSigner!.signerDevice case final device?) ...[
-          const Gap(18),
+        if (signer.signer == SignerEntity.local || !wallet.isBitcoin) ...[
           WalletDetailInfoField(
-            label: context.loc.walletDetailsSignerDeviceLabel,
-            value: device.displayName,
+            label: context.loc.walletDetailsSignerLabel,
+            value: signer.signer.displayName,
+          ),
+          if (signer.signerDevice case final device?) ...[
+            const Gap(18),
+            WalletDetailInfoField(
+              label: context.loc.walletDetailsSignerDeviceLabel,
+              value: device.displayName,
+            ),
+          ],
+        ] else ...[
+          BBText(
+            context.loc.walletDetailsSignerDeviceLabel,
+            style: context.font.bodyMedium,
+          ),
+          const Gap(8),
+          SignerDeviceDropdown(
+            value: signer.signerDevice,
+            unknownLabel: context.loc.importWatchOnlyUnknown,
+            onChanged: isUpdatingSignerDevice
+                ? null
+                : (device) =>
+                      context.read<WalletDetailsCubit>().updateSignerDevice(
+                        walletId: wallet.id,
+                        signerId: signer.id,
+                        signerDevice: device,
+                      ),
           ),
         ],
       ],
@@ -234,7 +260,18 @@ class _DescriptorWalletDetails extends StatelessWidget {
         ),
         if (wallet.signers.isNotEmpty) ...[
           const Gap(28),
-          WalletSignerDetails(signers: wallet.signers),
+          WalletSignerDetails(
+            signers: wallet.signers,
+            isUpdatingSignerDevice: policyState.isUpdatingSignerDevice,
+            onSignerDeviceChanged: wallet.isBitcoin
+                ? (signer, device) =>
+                      context.read<WalletDetailsCubit>().updateSignerDevice(
+                        walletId: wallet.id,
+                        signerId: signer.id,
+                        signerDevice: device,
+                      )
+                : null,
+          ),
         ],
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -23,6 +24,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_expor
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
@@ -222,6 +224,25 @@ class SettingsRouter {
             },
             child: MultiBlocListener(
               listeners: [
+                BlocListener<WalletDetailsCubit, WalletDetailsState>(
+                  listenWhen: (previous, current) =>
+                      previous.updatedWallet != current.updatedWallet,
+                  listener: (context, state) {
+                    if (state.updatedWallet case final wallet?) {
+                      context.read<WalletBloc>().add(WalletUpdated(wallet));
+                    }
+                  },
+                ),
+                BlocListener<WalletDetailsCubit, WalletDetailsState>(
+                  listenWhen: (previous, current) =>
+                      previous.signerUpdateFailure !=
+                          current.signerUpdateFailure &&
+                      current.signerUpdateFailure != null,
+                  listener: (context, state) => SnackBarUtils.showSnackBar(
+                    context,
+                    state.signerUpdateFailure!.toTranslated(context),
+                  ),
+                ),
                 BlocListener<WalletBloc, WalletState>(
                   listenWhen: (previous, current) {
                     return previous.wallets.length > current.wallets.length;
