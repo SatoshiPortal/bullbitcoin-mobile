@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,7 +53,11 @@ class TransactionDetailsTable extends StatelessWidget {
     );
 
     final swap = transaction?.swap;
-    final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
+    final orderSwap = transaction?.orderSwap;
+    final toAddress =
+        swap?.receiveAddress ??
+        transaction?.orderSwapDestinationAddress ??
+        transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = transaction?.payjoinSenderFeeSat ?? walletTransaction?.feeSat;
@@ -113,14 +118,19 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
-            label: transaction?.isIncoming == true
+            label: transaction?.isReceivingWallet(wallet?.id) == true
                 ? context.loc.transactionDetailLabelToWallet
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
         if (counterpartWalletLabel.isNotEmpty && !recovered)
           DetailsTableItem(
-            label: transaction?.isOutgoing == true
+            label:
+                transaction?.isReceivingWallet(
+                      counterpartWallet?.id,
+                      isCounterpart: true,
+                    ) ==
+                    true
                 ? context.loc.transactionDetailLabelToWallet
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: counterpartWalletLabel,
@@ -176,7 +186,7 @@ class TransactionDetailsTable extends StatelessWidget {
                       ConvertAmount.satsToBtc(amountReceived),
                     ).toUpperCase(),
             ),
-          if (transaction?.isOutgoing == true && swap == null)
+          if (transaction?.isOutgoing == true && transaction?.isSwap != true)
             DetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
               displayValue: bitcoinUnit == BitcoinUnit.sats
@@ -196,6 +206,50 @@ class TransactionDetailsTable extends StatelessWidget {
                 'MMM d, y, h:mm a',
               ).format(walletTransaction.confirmationTime!),
             ),
+        ],
+        if (orderSwap != null) ...[
+          if (orderSwap.order != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelOrderNumber,
+              displayValue: orderSwap.order!.orderNumber.toString(),
+              copyValue: orderSwap.order!.orderNumber.toString(),
+            ),
+          DetailsTableItem(
+            label: context.loc.transactionDetailLabelPayinAmount,
+            displayValue: FormatAmount.sats(
+              orderSwap.order?.payinAmountSat.toInt() ??
+                  orderSwap.requestedAmountSat.toInt(),
+            ).toUpperCase(),
+          ),
+          if (orderSwap.order != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelPayoutAmount,
+              displayValue: FormatAmount.sats(
+                orderSwap.order!.payoutAmountSat.toInt(),
+              ).toUpperCase(),
+            ),
+          if (txFee != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelTransactionFee,
+              displayValue: FormatAmount.sats(txFee).toUpperCase(),
+            ),
+          if (orderSwap.order != null) ...[
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelPayinStatus,
+              displayValue: orderSwap.order!.payinStatus
+                  .toTranslatedOrderStatus(context),
+            ),
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelOrderStatus,
+              displayValue: orderSwap.order!.orderStatus
+                  .toTranslatedOrderStatus(context),
+            ),
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelPayoutStatus,
+              displayValue: orderSwap.order!.payoutStatus
+                  .toTranslatedOrderStatus(context),
+            ),
+          ],
         ],
         // Order info
         if (transaction?.isOrder == true) ...[
@@ -771,7 +825,7 @@ class TransactionDetailsTable extends StatelessWidget {
             label: swap.isChainSwap
                 ? context.loc.transactionDetailLabelTransferId
                 : context.loc.transactionDetailLabelSwapId,
-            displayValue: swap.id,
+            displayValue: StringFormatting.truncateMiddle(swap.id),
             copyValue: swap.id,
           ),
           DetailsTableItem(

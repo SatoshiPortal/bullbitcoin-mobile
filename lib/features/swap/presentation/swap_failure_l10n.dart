@@ -1,0 +1,39 @@
+import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:flutter/widgets.dart';
+
+extension SwapFailureL10n on SwapFailure {
+  String toTranslated(BuildContext context) => switch (this) {
+    SwapAmountOutOfBoundsFailure(
+      limitAmountSat: final limit?,
+      isMinimum: true,
+    ) =>
+      context.loc.swapErrorAmountBelowMinimum(limit.toString()),
+    SwapAmountOutOfBoundsFailure(
+      limitAmountSat: final limit?,
+      isMinimum: false,
+    ) =>
+      context.loc.swapErrorAmountAboveMaximum(limit.toString()),
+    SwapNoPaymentOptionFailure(:final inNetwork?, :final outNetwork?) =>
+      context.loc.swapErrorRouteUnavailable(
+        inNetwork.toTranslated(context),
+        outNetwork.toTranslated(context),
+      ),
+    SwapNoPaymentOptionFailure() =>
+      context.loc.swapErrorRouteUnavailableGeneric,
+    SwapAmountOutOfBoundsFailure() ||
+    SwapValidationFailure() ||
+    SwapOrderNotFoundFailure() ||
+    SwapOrderExpiredFailure() ||
+    SwapCreationUnknownFailure() ||
+    SwapOrderMismatchFailure() ||
+    SwapInvalidStateFailure() ||
+    SwapProviderFailure() ||
+    SwapStorageFailure() ||
+    SwapUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    SwapRateLimitedFailure(:final retryAfter) =>
+      context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
+    SwapNetworkFailure() || SwapTimeoutFailure() => context.loc.payNetworkError,
+  };
+}

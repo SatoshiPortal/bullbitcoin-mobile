@@ -24,7 +24,14 @@ class MempoolFeesModel {
   });
 
   factory MempoolFeesModel.fromJson(Map<String, dynamic> json) {
-    double parse(String key) => (json[key] as num).toDouble();
+    double parse(String key) {
+      final value = (json[key] as num).toDouble();
+      if (!value.isFinite) {
+        throw FormatException('Invalid fee value for $key');
+      }
+      return value;
+    }
+
     return MempoolFeesModel(
       fastestFee: parse('fastestFee'),
       halfHourFee: parse('halfHourFee'),

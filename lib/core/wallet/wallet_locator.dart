@@ -64,6 +64,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
+        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
       ),
     );
 

@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/payjoin_setup.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
@@ -9,6 +11,7 @@ import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/announcements/announcements_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
+import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
@@ -36,7 +39,11 @@ import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
+import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -54,6 +61,8 @@ class AppLocator {
     SqliteDatabase database, {
     String? payjoinDatabasePath,
     bool startPayjoinRecovery = true,
+    bool startOrderSwapWatcher = true,
+    bool startAutoswapWatcher = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -77,7 +86,36 @@ class AppLocator {
       startRecovery: startPayjoinRecovery,
     );
 
-    SyncLocator.setup(locator);
+    SyncLocator.setup(
+      locator,
+      syncSwapsOutcome: () async {
+        final result = await locator<RefreshOrderSwapsUsecase>().execute();
+        switch (result) {
+          case Ok(:final value):
+            final rateLimited = value.failures
+                .whereType<SwapRateLimitedFailure>()
+                .firstOrNull;
+            if (rateLimited != null) {
+              return SyncOutcome.rateLimited(
+                retryAfter: rateLimited.retryAfter,
+                failure: _SwapSyncException(rateLimited.runtimeType),
+              );
+            }
+            return value.pollableOrderCount == 0
+                ? const SyncOutcome.idle()
+                : const SyncOutcome.active();
+          case Err(:final failure):
+            return failure is SwapRateLimitedFailure
+                ? SyncOutcome.rateLimited(
+                    retryAfter: failure.retryAfter,
+                    failure: _SwapSyncException(failure.runtimeType),
+                  )
+                : SyncOutcome.rateLimited(
+                    failure: _SwapSyncException(failure.runtimeType),
+                  );
+        }
+      },
+    );
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup(locator);
@@ -100,11 +138,21 @@ class AppLocator {
     CoinsLocator.setup(locator);
     ConsolidationLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
-    AnnouncementsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
+    AutoSwapLocator.setup(locator);
+    AnnouncementsLocator.setup(locator);
+    // Lifecycle side effect lives in the composition root, not in DI
+    // registration: the background handler opts out via
+    // [startOrderSwapWatcher] so polling only runs in the foreground app.
+    if (startOrderSwapWatcher) {
+      locator<OrderSwapWatcher>().start();
+    }
+    if (startAutoswapWatcher) {
+      locator<AutoswapWatcher>().start();
+    }
 
     ExchangeLocator.setup(locator);
     ExchangeSettingsLocator.setup(locator);
@@ -116,7 +164,6 @@ class AppLocator {
     StatusCheckLocator.setup(locator);
 
     FundExchangeLocator.setup(locator);
-    AutoSwapLocator.setup(locator);
     AddressViewLocator.setup(locator);
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
@@ -126,4 +173,10 @@ class AppLocator {
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
   }
+}
+
+final class _SwapSyncException implements Exception {
+  final Type failureType;
+
+  const _SwapSyncException(this.failureType);
 }

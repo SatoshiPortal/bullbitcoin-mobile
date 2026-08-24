@@ -10,6 +10,8 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
+import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
@@ -68,6 +70,12 @@ class SellLocator {
       ),
     );
 
+    locator.registerFactory<LabelCompletedSellOrderUsecase>(
+      () => LabelCompletedSellOrderUsecase(
+        transactionsFacade: locator<TransactionsFacade>(),
+      ),
+    );
+
     locator.registerFactory<GetAddressAtIndexUsecase>(
       () => GetAddressAtIndexUsecase(walletAddressRepository: locator()),
     );
@@ -102,6 +110,8 @@ class SellLocator {
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
+        labelCompletedSellOrderUsecase:
+            locator<LabelCompletedSellOrderUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),

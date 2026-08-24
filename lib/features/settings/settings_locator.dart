@@ -13,24 +13,19 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
-    locator.registerFactory<SwapRestoreCubit>(
-      () =>
-          SwapRestoreCubit(restoreSwapsUsecase: locator<RestoreSwapsUsecase>()),
-    );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
@@ -75,6 +70,12 @@ class SettingsLocator {
 
     locator.registerFactory<SetErrorReportingUsecase>(
       () => SetErrorReportingUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<SetScreenCaptureProtectionUsecase>(
+      () => SetScreenCaptureProtectionUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
@@ -141,6 +142,8 @@ class SettingsLocator {
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
+        setScreenCaptureProtectionUsecase:
+            locator<SetScreenCaptureProtectionUsecase>(),
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),

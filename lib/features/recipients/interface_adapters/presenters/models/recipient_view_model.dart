@@ -138,19 +138,21 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         if (label != null && label!.isNotEmpty) return label!;
         return null;
 
+      // ownerName is often absent for the SINPE types (#2529), so fall all the
+      // way back to the account identifier rather than showing nothing.
       case RecipientType.sinpeIbanUsd:
-        if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
       case RecipientType.sinpeIbanCrc:
         if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
         if (label != null && label!.isNotEmpty) return label!;
+        if (iban != null && iban!.isNotEmpty) return iban!;
         return null;
 
       case RecipientType.sinpeMovilCrc:
         if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
         if (label != null && label!.isNotEmpty) return label!;
+        if (phoneNumber != null && phoneNumber!.isNotEmpty) {
+          return phoneNumber!;
+        }
         return null;
       case RecipientType.bankAccountArgentina:
         if (name != null && name!.isNotEmpty) return name!;

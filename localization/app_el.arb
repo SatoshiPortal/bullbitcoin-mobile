@@ -1631,10 +1631,6 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "torSettingsInfoDescription": "• • · Το Tor proxy ισχύει μόνο για το Bitcoin (δεν είναι ρευστό)\n• • · Το προεπιλεγμένο λιμάνι Orbot είναι 9050\nΒεβαιωθείτε ότι το Orbot τρέχει πριν επιτρέψει\n• • · Η σύνδεση μπορεί να είναι πιο αργή μέσω Tor",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "Bitcoin διεύθυνση",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -4118,10 +4114,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Δεν λαμβάνει πρόταση payjoin από τον παραλήπτη?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "Επιλέξτε \"Connect Wallet\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
@@ -6202,10 +6194,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Στείλε δίκτυο Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "Ένα λάθος συνέβη",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -7981,10 +7969,6 @@
   "bitboxActionVerifyAddressButton": "Verify Address",
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
-  },
-  "torSettingsInfoTitle": "Σημαντικές πληροφορίες",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
   },
   "importColdcardInstructionsStep7": "Στην κινητή συσκευή σας, πατήστε \"ανοιχτή κάμερα\"",
   "@importColdcardInstructionsStep7": {
@@ -12551,5 +12535,40 @@
   "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
   "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
-  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά."
+  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
+  "coreSwapsStatusNotStarted": "Δεν ξεκίνησε",
+  "coreSwapsStatusAwaitingPayment": "Αναμονή πληρωμής",
+  "coreSwapsStatusAwaitingConfirmation": "Αναμονή επιβεβαίωσης",
+  "coreSwapsStatusUnderReview": "Υπό εξέταση",
+  "coreSwapsStatusRejected": "Απορρίφθηκε",
+  "coreSwapsStatusCanceled": "Ακυρώθηκε",
+  "coreSwapsStatusPaymentDeadlineExpired": "Η προθεσμία πληρωμής έληξε",
+  "coreSwapsStatusScheduled": "Προγραμματισμένο",
+  "coreSwapsStatusAwaitingClaim": "Αναμονή διεκδίκησης",
+  "coreSwapsStatusUnknown": "Άγνωστο",
+  "sendSwapExpiredTitle": "Η παραγγελία έληξε",
+  "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας.",
+  "torSettingsStatusCensored": "Η σύνδεση φαίνεται φιλτραρισμένη",
+  "torSettingsDescCensored": "Το Tor δεν μπόρεσε να φτάσει στο δίκτυο. Αυτό συνήθως σημαίνει ότι η σύνδεση φιλτράρεται.",
+  "torSettingsBootstrapProgress": "Σύνδεση… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Λήψη πληροφοριών δικτύου",
+  "recoverbullLongestStep": "Αυτό είναι το πιο χρονοβόρο βήμα. Η πρώτη εκκίνηση μπορεί να ξεπεράσει το ένα λεπτό.",
+  "recoverbullTorOffline": "Φαίνεται ότι δεν υπάρχει σύνδεση στο διαδίκτυο.",
+  "recoverbullTorClockSkewed": "Το ρολόι της συσκευής είναι λάθος, οπότε το Tor δεν μπορεί να επαληθεύσει τα πιστοποιητικά των κόμβων. Ελέγξτε την ημερομηνία και την ώρα.",
+  "recoverbullTorCantStart": "Το Tor δεν μπόρεσε να συνδεθεί αυτή τη στιγμή. Δοκιμάστε ξανά.",
+  "recoverbullServerUnreachableTorOk": "Το Tor λειτουργεί, αλλά ο διακομιστής αντιγράφων δεν απάντησε. Αμέσως μετά την πρώτη εκκίνηση μπορεί να χρειαστεί λίγη ώρα.",
+  "torSettingsEmbeddedTitle": "Ενσωματωμένο Tor",
+  "torSettingsEmbeddedDescription": "Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion. Η υπόλοιπη κίνηση της εφαρμογής παραμένει άμεση.",
+  "torSettingsTransportMode": "Μέθοδος σύνδεσης",
+  "torSettingsModeAutomatic": "Αυτόματα",
+  "torSettingsModeDirect": "Άμεση",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Δοκιμάζει πρώτα άμεση σύνδεση Tor και χρησιμοποιεί το Snowflake αν το δίκτυο φαίνεται να μπλοκάρει το Tor.",
+  "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
+  "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
+  "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
+  "torSettingsExternalProxyTitle": "Εξωτερικός διαμεσολαβητής Tor (για προχωρημένους)",
+  "torSettingsExternalProxyDescription": "Όταν είναι ενεργό, οι διακομιστές Bitcoin Electrum και τα κρυπτογραφημένα αντίγραφα ασφαλείας περνούν μέσω του Orbot στη ρυθμισμένη θύρα αντί του ενσωματωμένου Tor. Το Liquid δεν δρομολογείται ποτέ μέσω αυτού.",
+  "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
+  "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες"
 }

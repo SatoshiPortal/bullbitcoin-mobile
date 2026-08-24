@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
@@ -15,12 +16,14 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyDescriptorUsecase _importWatchOnlyDescriptorUsecase;
   final ImportWatchOnlyXpubUsecase _importWatchOnlyXpubUsecase;
   final ParseWatchOnlyInputUsecase _parseWatchOnlyInputUsecase;
+  final SettingsRepository _settingsRepository;
 
   ImportWatchOnlyCubit({
     WatchOnlyWalletEntity? watchOnlyWallet,
     required this._importWatchOnlyDescriptorUsecase,
     required this._importWatchOnlyXpubUsecase,
     required this._parseWatchOnlyInputUsecase,
+    required this._settingsRepository,
   }) : super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
   void init() {
@@ -45,6 +48,11 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     }
     if (wallet.label.isEmpty) {
       emit(state.copyWith(failure: const LabelRequiredFailure()));
+      return;
+    }
+    final settings = await _settingsRepository.fetch();
+    if (wallet.network.isMainnet != settings.environment.isMainnet) {
+      emit(state.copyWith(failure: const NetworkMismatchFailure()));
       return;
     }
 

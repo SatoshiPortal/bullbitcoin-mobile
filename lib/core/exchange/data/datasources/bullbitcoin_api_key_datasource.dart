@@ -24,7 +24,7 @@ class BullbitcoinApiKeyDatasource {
     } catch (e) {
       log.severe(
         message: 'Error storing API key',
-        error: e,
+        error: 'API key storage failed',
         trace: StackTrace.current,
       );
       rethrow;
@@ -46,7 +46,7 @@ class BullbitcoinApiKeyDatasource {
     } catch (e) {
       log.severe(
         message: 'Error retrieving API key',
-        error: e,
+        error: 'API key retrieval failed',
         trace: StackTrace.current,
       );
       return null;
@@ -61,7 +61,7 @@ class BullbitcoinApiKeyDatasource {
     } catch (e) {
       log.severe(
         message: 'Error deleting API key',
-        error: e,
+        error: 'API key deletion failed',
         trace: StackTrace.current,
       );
       rethrow;

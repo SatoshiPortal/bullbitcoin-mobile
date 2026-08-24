@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -16,16 +14,19 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -47,8 +48,8 @@ class _MockGetReceiveAddressUsecase extends Mock
 class _MockGetAddressAtIndexUsecase extends Mock
     implements GetAddressAtIndexUsecase {}
 
-class _MockCreateReceiveSwapUsecase extends Mock
-    implements CreateReceiveSwapUsecase {}
+class _MockCreateReceiveOrderSwapUsecase extends Mock
+    implements CreateReceiveOrderSwapUsecase {}
 
 class _MockReceiveWithPayjoinUsecase extends Mock
     implements ReceiveWithPayjoinUsecase {}
@@ -61,13 +62,12 @@ class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 class _MockWatchWalletTransactionByAddressUsecase extends Mock
     implements WatchWalletTransactionByAddressUsecase {}
 
-class _MockWatchSwapUsecase extends Mock implements WatchSwapUsecase {}
+class _MockWatchReceiveOrderSwapUsecase extends Mock
+    implements WatchReceiveOrderSwapUsecase {}
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class _MockLabel extends Mock implements Label {}
-
-class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
 
 class _MockWatchReceivePayjoinEnabledUsecase extends Mock
     implements WatchReceivePayjoinEnabledUsecase {}
@@ -80,6 +80,50 @@ class _MockSetReceivePayjoinEnabledUsecase extends Mock
 
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
+
+class _LateOrderSwapStream
+    extends Stream<Result<OrderSwapRecord, ReceiveFailure>> {
+  void Function(Result<OrderSwapRecord, ReceiveFailure>)? _onData;
+
+  void emit(OrderSwapRecord record) => _onData?.call(Ok(record));
+
+  @override
+  StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>> listen(
+    void Function(Result<OrderSwapRecord, ReceiveFailure> event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    _onData = onData;
+    return _NoopSubscription<Result<OrderSwapRecord, ReceiveFailure>>();
+  }
+}
+
+class _NoopSubscription<T> implements StreamSubscription<T> {
+  @override
+  Future<void> cancel() async {}
+
+  @override
+  void onData(void Function(T data)? handleData) {}
+
+  @override
+  void onError(Function? handleError) {}
+
+  @override
+  void onDone(void Function()? handleDone) {}
+
+  @override
+  void pause([Future<void>? resumeSignal]) {}
+
+  @override
+  void resume() {}
+
+  @override
+  bool get isPaused => false;
+
+  @override
+  Future<E> asFuture<E>([E? futureValue]) async => futureValue as E;
+}
 
 // Defaults to a confirmed balance: most tests in this file are about the
 // isPayjoinEnabled/proposal-state gating, not the balance one. The
@@ -151,11 +195,14 @@ void main() {
   late _MockGetReceivePayjoinPolicyUsecase getPayjoinPolicy;
   late _MockSetReceivePayjoinEnabledUsecase setPayjoinEnabled;
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
+  late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
+  late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
   late StreamController<bool> payjoinEnabledChangeController;
   late StreamController<int> payjoinMinAmountChangeController;
 
   setUpAll(() {
     registerFallbackValue(_receiver());
+    registerFallbackValue(_testWallet());
   });
 
   ReceiveBloc buildBloc({Wallet? wallet}) => ReceiveBloc(
@@ -165,14 +212,13 @@ void main() {
     convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
     getReceiveAddressUsecase: getReceiveAddress,
     getAddressAtIndexUsecase: _MockGetAddressAtIndexUsecase(),
-    createReceiveSwapUsecase: _MockCreateReceiveSwapUsecase(),
+    createReceiveOrderSwapUsecase: createOrderSwap,
     receiveWithPayjoinUsecase: receiveWithPayjoin,
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
     watchPayjoinUsecase: watchPayjoin,
     watchWalletTransactionByAddressUsecase: watchWalletTransaction,
-    watchSwapUsecase: _MockWatchSwapUsecase(),
+    watchReceiveOrderSwapUsecase: watchOrderSwap,
     labelsFacade: labels,
-    getSwapLimitsUsecase: _MockGetSwapLimitsUsecase(),
     watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
     watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
     getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
@@ -193,6 +239,8 @@ void main() {
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
+    createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
+    watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
     labels = _MockLabelsFacade();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
     getPayjoinPolicy = _MockGetReceivePayjoinPolicyUsecase();
@@ -263,35 +311,47 @@ void main() {
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
-    test('does NOT broadcast the original once a proposal has been sent: '
-        'the sender owns finalizing/broadcasting the payjoin tx, and a '
-        'manual lower-fee rebroadcast would race/replace it', () async {
-      // The session already sent a proposal (proposalPsbt != null).
-      final proposedPayjoin = _receiver(
-        status: PayjoinStatus.proposed,
-        originalTxBytes: Uint8List.fromList([1, 2, 3]),
-        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      );
-      when(
-        () => receiveWithPayjoin.execute(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-        ),
-      ).thenAnswer((_) async => proposedPayjoin);
+    test(
+      'allows the guarded fallback after a proposal has been sent',
+      () async {
+        // The session already sent a proposal (proposalPsbt != null).
+        final proposedPayjoin = _receiver(
+          status: PayjoinStatus.proposed,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => proposedPayjoin);
+        final completedPayjoin = _receiver(
+          status: PayjoinStatus.aborted,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => broadcastOriginalTransaction.execute(any()),
+        ).thenAnswer((_) async => completedPayjoin);
 
-      final bloc = buildBloc();
-      addTearDown(bloc.close);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
 
-      bloc.add(const ReceiveBitcoinStarted(null));
-      await Future<void>.delayed(Duration.zero);
-      expect(bloc.state.payjoin, proposedPayjoin);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state.payjoin, proposedPayjoin);
 
-      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
-      await Future<void>.delayed(Duration.zero);
+        bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+        await Future<void>.delayed(Duration.zero);
 
-      verifyNever(() => broadcastOriginalTransaction.execute(any()));
-      expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
-    });
+        verify(
+          () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
+        ).called(1);
+        expect(bloc.state.payjoin, completedPayjoin);
+        expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+      },
+    );
 
     test('broadcasts the original when a request was received but no '
         'proposal went out yet (the legitimate manual fallback)', () async {
@@ -329,6 +389,37 @@ void main() {
       expect(bloc.state.payjoin, completedPayjoin);
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
+
+    test(
+      'does not surface an error when fallback becomes unavailable',
+      () async {
+        final proposedPayjoin = _receiver(
+          status: PayjoinStatus.proposed,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => proposedPayjoin);
+        when(
+          () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
+        ).thenThrow(BroadcastOriginalTransactionUnavailableException());
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+
+        bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.error, isNull);
+        expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+      },
+    );
   });
 
   group('payjoin gated on the global setting', () {
@@ -640,6 +731,66 @@ void main() {
     });
   });
 
+  test('ignores an in-flight order swap update after close', () async {
+    final record = _receiveOrderSwapRecord();
+    final lateStream = _LateOrderSwapStream();
+    when(
+      () => createOrderSwap.execute(
+        wallet: any(named: 'wallet'),
+        amountSat: 1000,
+        note: any(named: 'note'),
+      ),
+    ).thenAnswer((_) async => Ok(record));
+    when(
+      () => watchOrderSwap.execute(record.localId),
+    ).thenAnswer((_) => lateStream);
+    final bloc = buildBloc(wallet: _testWallet(network: Network.liquidTestnet));
+
+    bloc.add(const ReceiveLightningStarted());
+    await pumpEventQueue();
+    bloc.add(const ReceiveAmountInputChanged('1000'));
+    bloc.add(const ReceiveAmountConfirmed());
+    await pumpEventQueue();
+    await bloc.close();
+
+    expect(() => lateStream.emit(record), returnsNormally);
+  });
+
+  test(
+    'ignores a second Lightning confirmation while creation is in flight',
+    () async {
+      final creation = Completer<Result<OrderSwapRecord, ReceiveFailure>>();
+      when(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).thenAnswer((_) => creation.future);
+      final bloc = buildBloc(
+        wallet: _testWallet(network: Network.liquidTestnet),
+      );
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveLightningStarted());
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+
+      verify(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).called(1);
+      creation.complete(const Err(ReceiveSwapUnavailableFailure()));
+    },
+  );
+
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
     // created once), so a receive entered from a liquid wallet must not
@@ -756,3 +907,39 @@ void main() {
     });
   });
 }
+
+OrderSwapRecord _receiveOrderSwapRecord() => OrderSwapRecord(
+  localId: 'local-1',
+  purpose: OrderSwapPurpose.receiveLightning,
+  environment: OrderSwapEnvironment.testnet,
+  inNetwork: OrderSwapNetwork.lightning,
+  outNetwork: OrderSwapNetwork.liquid,
+  isInAmountFixed: true,
+  requestedAmountSat: BigInt.from(1000),
+  destinationWalletId: 'w1',
+  destination: 'tlq1destination',
+  fallback: 'tlq1destination',
+  order: OrderSwap(
+    orderId: 'order-1',
+    orderNumber: 1,
+    inNetwork: OrderSwapNetwork.lightning,
+    outNetwork: OrderSwapNetwork.liquid,
+    payinAmountSat: BigInt.from(1000),
+    payoutAmountSat: BigInt.from(900),
+    payinCurrency: 'BTCLN',
+    payoutCurrency: 'LBTC',
+    payinMethod: 'Lightning',
+    payoutMethod: 'Liquid',
+    orderType: 'Swap',
+    orderStatus: 'In_pending',
+    payinStatus: 'Awaiting payment',
+    payoutStatus: 'Not started',
+    messageCode: 'PAYMENT_NOT_DETECTED',
+    lightningInvoice: 'lntb-invoice',
+    liquidAddress: 'tlq1destination',
+    createdAt: DateTime.utc(2026),
+    confirmationDeadline: DateTime.utc(2026, 1, 1, 0, 5),
+  ),
+  createdAt: DateTime.utc(2026),
+  localStatus: OrderSwapLocalStatus.awaitingUserConfirmation,
+);

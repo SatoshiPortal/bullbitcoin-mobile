@@ -9,6 +9,8 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 extension AnnouncementNavigation on Announcement {
   SettingsRoute get route => switch (id) {
     AnnouncementId.payjoinPrivacy => SettingsRoute.payjoinSettings,
-    AnnouncementId.autoswapActive => SettingsRoute.autoswapSettings,
+    AnnouncementId.appUpdateRequired => throw UnsupportedError(
+      'The app update announcement does not navigate',
+    ),
   };
 }

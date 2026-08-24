@@ -138,6 +138,13 @@ class PaySendPaymentScreen extends StatelessWidget {
               value: order?.orderNumber.toString(),
               copyValue: order?.orderNumber.toString(),
             ),
+            // The payin goes to this address: showing it is the user's only
+            // way to notice if it ever changed under them.
+            _DetailRow(
+              title: context.loc.payDepositAddress,
+              value: order?.toAddress,
+              copyValue: order?.toAddress,
+            ),
             if (order?.paymentDescription != null &&
                 order!.paymentDescription!.isNotEmpty)
               _DetailRow(

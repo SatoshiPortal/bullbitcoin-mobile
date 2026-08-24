@@ -37,6 +37,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -219,12 +220,14 @@ class BullBitcoinWalletApp extends StatefulWidget {
 
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
+  late final tor.TorLifecycleController _torLifecycleController;
   // final router = AppRouter.router;
 
   @override
   void initState() {
     super.initState();
 
+    _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     // Initialize the AppLifecycleListener class and pass callbacks
     _listener = AppLifecycleListener(onStateChange: _onStateChanged);
   }
@@ -236,6 +239,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
     }
+    _torLifecycleController.dispose();
 
     super.dispose();
   }

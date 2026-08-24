@@ -4,13 +4,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
 /// Payjoin advanced settings, on their own page (product decision
 /// 2026-07-26 — not an expand/collapse section): the minimum-receive-amount
@@ -23,7 +22,7 @@ import 'package:bull_ui/bull_ui.dart' show Gap;
 /// persisted value exactly once in [initState] — deliberately NOT re-synced
 /// from [SettingsCubit] on every rebuild, so navigating away and back can
 /// never reset a custom value the user already typed. Note the controller +
-/// `value:` mirror handed to [BBInputText]: its didUpdateWidget resyncs the
+/// `value:` mirror handed to [BullInputText]: its didUpdateWidget resyncs the
 /// text when `value` diverges from the controller, so `value` must always be
 /// read from the controller itself at build time — never from a stale
 /// snapshot.
@@ -179,7 +178,7 @@ class _PayjoinAdvancedSettingsScreenState
                     style: context.font.bodyLarge,
                   ),
                   const Gap(8),
-                  BBInputText(
+                  BullInputText(
                     value: _minAmountController.text,
                     controller: _minAmountController,
                     focusNode: _minAmountNode,
@@ -208,7 +207,7 @@ class _PayjoinAdvancedSettingsScreenState
                     style: context.font.bodyLarge,
                   ),
                   const Gap(8),
-                  BBInputText(
+                  BullInputText(
                     value: _expireController.text,
                     controller: _expireController,
                     focusNode: _expireNode,

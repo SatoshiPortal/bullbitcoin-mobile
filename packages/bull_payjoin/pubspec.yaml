@@ -12,14 +12,18 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/bull_sdk
   crypto: ^3.0.7
   dio: ^5.9.0
   drift: ^2.29.0
   freezed_annotation: ^3.1.0
   meta: ^1.17.0
-  payjoin: ^0.2.1+payjoin-1.0.0-rc.8
+  payjoin:
+    git:
+      url: https://github.com/SatoshiPortal/payjoin-rust
+      ref: 51da8ed79ee57536f4be223a01e6ecb163986f28
+      path: payjoin-ffi/dart
   primitives:
   sqlite3: ^2.9.4
   synchronized: ^3.4.0

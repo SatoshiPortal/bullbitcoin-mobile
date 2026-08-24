@@ -43,6 +43,28 @@ Future<void> main({bool isInitialized = false}) async {
 
   late Wallet receiverWallet;
   late Wallet senderWallet;
+  bool? previousPayjoinEnabled;
+
+  /// Fee rate for every transaction this fixture broadcasts, in sat/vB.
+  ///
+  /// This used to be 1000. Nothing needed it: none of the assertions below wait
+  /// for a confirmation — the happy path waits for `PayjoinStatus.completed`,
+  /// which is the protocol exchange, not a block. What it did do was burn the
+  /// fixture wallets. A ~250 vB payjoin plus two drain-consolidations cost on
+  /// the order of half a million sats per run, on every run, of every PR in the
+  /// repository. The wallets emptied faster than anyone could refill them, and
+  /// once the balance fell just below what the next transaction needed, this
+  /// test failed and turned every open PR red — the failure that sent us
+  /// looking here in the first place was 341 sats short.
+  ///
+  /// Verified against mempool.space on 2026-08-10: testnet3 and testnet4 both
+  /// report 1 sat/vB across every tier, `fastestFee` included, so there is no
+  /// backlog to outbid. 10 leaves a wide margin anyway, because testnet3 mines
+  /// in bursts — the 20-minute difficulty reset makes block intervals erratic —
+  /// and a transaction left unconfirmed between runs is what would corrupt the
+  /// next run's UTXO set. Ten times the fastest recommendation buys that safety
+  /// for a few hundred sats.
+  const testnetFeeRate = 10.0;
 
   Future<void> consolidateUtxos(String walletId) async {
     final utxos = await utxoRepository.getWalletUtxos(walletId: walletId);
@@ -54,7 +76,7 @@ Future<void> main({bool isInitialized = false}) async {
       walletId: walletId,
       address: address.address,
       drain: true,
-      networkFee: NetworkFee.relativeFromSatPerVbyte(1000),
+      networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
     final signed = await signBitcoinTx.execute(
       psbt: prepared.unsignedPsbt,
@@ -81,43 +103,21 @@ Future<void> main({bool isInitialized = false}) async {
       receiverMnemonic != null &&
       receiverMnemonic.isNotEmpty &&
       senderMnemonic != null &&
-      senderMnemonic.isNotEmpty;
+      senderMnemonic.isNotEmpty &&
+      Platform.environment['RUN_FUNDED_PAYJOIN_TEST'] == 'true';
   const fixtureSkip =
-      'requires TEST_ALICE_MNEMONIC and TEST_BOB_MNEMONIC (funded testnet wallets)';
+      'requires a PR to main or a manually dispatched CI run with funded testnet wallets';
 
-  setUpAll(() async {
-    await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
-    final enabled = await policy.setEnabled(true);
-    if (enabled case Err(:final failure)) throw failure;
-
-    final receiverSeed = await seedRepository.createFromMnemonic(
-      mnemonicWords: receiverMnemonic!.split(' '),
-    );
-    final senderSeed = await seedRepository.createFromMnemonic(
-      mnemonicWords: senderMnemonic!.split(' '),
-    );
-    receiverWallet = await walletRepository.createWallet(
-      seed: receiverSeed,
-      network: Network.bitcoinTestnet,
-      scriptType: ScriptType.bip84,
-    );
-    senderWallet = await walletRepository.createWallet(
-      seed: senderSeed,
-      network: Network.bitcoinTestnet,
-      scriptType: ScriptType.bip84,
-    );
-  });
-
+  // Belongs to this file's own Bull.init above, not to the fixtures, so it
+  // stays at the root scope and runs even when the funded group is skipped.
+  // A no-op under all_test.dart, which calls main(isInitialized: true) and
+  // therefore leaves payjoinDirectory null.
   tearDownAll(() async {
     if (payjoinDirectory == null) return;
     if (locator.isRegistered<PayjoinLifecycle>()) {
       await locator<PayjoinLifecycle>().dispose();
     }
     await payjoinDirectory.delete(recursive: true);
-  });
-
-  setUp(() async {
-    await walletRepository.getWallets(sync: true);
   });
 
   test(
@@ -147,111 +147,167 @@ Future<void> main({bool isInitialized = false}) async {
         'selection bug',
   );
 
-  test(
-    'funded testnet wallets complete a Payjoin',
-    skip: hasFixtures ? null : fixtureSkip,
-    () async {
-      receiverWallet = (await walletRepository.getWallet(receiverWallet.id))!;
-      senderWallet = (await walletRepository.getWallet(senderWallet.id))!;
-      expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
-      expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
-
-      await consolidateUtxos(receiverWallet.id);
-      await consolidateUtxos(senderWallet.id);
-
-      final address = await addressRepository.generateNewReceiveAddress(
-        walletId: receiverWallet.id,
-      );
-      final receiverResult = await receiverRole.start(
-        StartPayjoinReceiver(
-          walletId: receiverWallet.id,
-          network: BitcoinNetwork.testnet,
-          address: address.address,
-          amount: Sats.fromInt(10000),
-        ),
-      );
-      final receiver = switch (receiverResult) {
-        Ok(:final value) => value,
+  // The skip has to sit on the group, not on each test: a group whose tests
+  // are individually skipped still runs its setUpAll and tearDownAll, whereas
+  // a skipped group runs neither. Verified against package:test 1.31.
+  //
+  // This also keeps shared funded wallets out of concurrent pull-request jobs.
+  // Every such job otherwise derives the same BIP84 account and broadcasts
+  // consolidation transactions from the same UTXOs, causing RBF conflicts.
+  // The workflow enables this group for delivery PRs to main or manual runs,
+  // not for every branch in a concurrent develop stack.
+  //
+  // Scoping the hooks to the group also stops them leaking into the other
+  // seven aggregated files, which previously inherited this setUp and paid a
+  // full wallet sync before every one of their tests.
+  group('funded testnet Payjoin', () {
+    setUpAll(() async {
+      await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
+      final currentPolicy = await policy.load();
+      previousPayjoinEnabled = switch (currentPolicy) {
+        Ok(:final value) => value.enabled,
         Err(:final failure) => throw failure,
       };
-      final uri = Uri.parse(receiver.pjUri);
-      expect(uri.scheme, 'bitcoin');
-      expect(uri.path, address.address);
-      expect(uri.queryParameters, contains('pj'));
+      final enabled = await policy.setEnabled(true);
+      if (enabled case Err(:final failure)) throw failure;
 
-      const feeRate = 1000.0;
-      final prepared = await prepareBitcoinSend.execute(
-        walletId: senderWallet.id,
-        address: address.address,
-        amountSat: 10000,
-        networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
+      final receiverSeed = await seedRepository.createFromMnemonic(
+        mnemonicWords: receiverMnemonic!.split(' '),
       );
-      final senderResult = await senderRole.start(
-        StartPayjoinSender(
-          walletId: senderWallet.id,
-          network: BitcoinNetwork.testnet,
-          bip21Uri: receiver.pjUri,
-          unsignedOriginalPsbt: prepared.unsignedPsbt,
-          amount: Sats.fromInt(10000),
-          feeRate: FeeRate(feeRate),
-        ),
+      final senderSeed = await seedRepository.createFromMnemonic(
+        mnemonicWords: senderMnemonic!.split(' '),
       );
-      final sender = switch (senderResult) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw failure,
-      };
+      receiverWallet = await walletRepository.createWallet(
+        seed: receiverSeed,
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+      );
+      senderWallet = await walletRepository.createWallet(
+        seed: senderSeed,
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+      );
+    });
 
-      final completed = await sessions
-          .watch(sessionIds: {sender.id})
-          .where(
-            (result) => switch (result) {
-              Ok(:final value) => value.status == PayjoinStatus.completed,
-              Err() => false,
-            },
-          )
-          .first
-          .timeout(const Duration(seconds: 300));
-      expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
-    },
-    timeout: const Timeout(Duration(seconds: 330)),
-  );
+    tearDownAll(() async {
+      try {
+        if (previousPayjoinEnabled case final enabled?) {
+          final restored = await policy.setEnabled(enabled);
+          if (restored case Err(:final failure)) throw failure;
+        }
+      } finally {
+        await locator<SetEnvironmentUsecase>().execute(Environment.mainnet);
+      }
+    });
 
-  test(
-    'a receiver expires when no sender submits a request',
-    skip: hasFixtures ? null : fixtureSkip,
-    () async {
-      final address = await addressRepository.generateNewReceiveAddress(
-        walletId: receiverWallet.id,
-      );
-      final receiverResult = await receiverRole.start(
-        StartPayjoinReceiver(
+    setUp(() async {
+      await walletRepository.getWallets(sync: true);
+    });
+
+    test(
+      'funded testnet wallets complete a Payjoin',
+      () async {
+        receiverWallet = (await walletRepository.getWallet(receiverWallet.id))!;
+        senderWallet = (await walletRepository.getWallet(senderWallet.id))!;
+        expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
+        expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
+
+        await consolidateUtxos(receiverWallet.id);
+        await consolidateUtxos(senderWallet.id);
+
+        final address = await addressRepository.generateNewReceiveAddress(
           walletId: receiverWallet.id,
-          network: BitcoinNetwork.testnet,
-          address: address.address,
-          amount: Sats.fromInt(10000),
-          expiresAt: DateTime.now().add(
-            PayjoinPolicy.minimumSessionLifetime + const Duration(seconds: 1),
+        );
+        final receiverResult = await receiverRole.start(
+          StartPayjoinReceiver(
+            walletId: receiverWallet.id,
+            network: BitcoinNetwork.testnet,
+            address: address.address,
+            amount: Sats.fromInt(10000),
           ),
-        ),
-      );
-      final receiver = switch (receiverResult) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw failure,
-      };
+        );
+        final receiver = switch (receiverResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw failure,
+        };
+        final uri = Uri.parse(receiver.pjUri);
+        expect(uri.scheme, 'bitcoin');
+        expect(uri.path, address.address);
+        expect(uri.queryParameters, contains('pj'));
 
-      final expired = await sessions
-          .watch(sessionIds: {receiver.id})
-          .where(
-            (result) => switch (result) {
-              Ok(:final value) => value.status == PayjoinStatus.expired,
-              Err() => false,
-            },
-          )
-          .first
-          .timeout(const Duration(seconds: 240));
+        const feeRate = testnetFeeRate;
+        final prepared = await prepareBitcoinSend.execute(
+          walletId: senderWallet.id,
+          address: address.address,
+          amountSat: 10000,
+          networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
+        );
+        final senderResult = await senderRole.start(
+          StartPayjoinSender(
+            walletId: senderWallet.id,
+            network: BitcoinNetwork.testnet,
+            bip21Uri: receiver.pjUri,
+            unsignedOriginalPsbt: prepared.unsignedPsbt,
+            amount: Sats.fromInt(10000),
+            feeRate: FeeRate(feeRate),
+          ),
+        );
+        final sender = switch (senderResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw failure,
+        };
 
-      expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
-    },
-    timeout: const Timeout(Duration(seconds: 270)),
-  );
+        final completed = await sessions
+            .watch(sessionIds: {sender.id})
+            .where(
+              (result) => switch (result) {
+                Ok(:final value) => value.status == PayjoinStatus.completed,
+                Err() => false,
+              },
+            )
+            .first
+            .timeout(const Duration(seconds: 300));
+        expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
+      },
+      timeout: const Timeout(Duration(seconds: 330)),
+    );
+
+    test(
+      'a receiver expires when no sender submits a request',
+      () async {
+        final address = await addressRepository.generateNewReceiveAddress(
+          walletId: receiverWallet.id,
+        );
+        final receiverResult = await receiverRole.start(
+          StartPayjoinReceiver(
+            walletId: receiverWallet.id,
+            network: BitcoinNetwork.testnet,
+            address: address.address,
+            amount: Sats.fromInt(10000),
+            expiresAt: DateTime.now().add(
+              PayjoinPolicy.minimumSessionLifetime + const Duration(seconds: 1),
+            ),
+          ),
+        );
+        final receiver = switch (receiverResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw failure,
+        };
+
+        final expired = await sessions
+            .watch(sessionIds: {receiver.id})
+            .where(
+              (result) => switch (result) {
+                Ok(:final value) => value.status == PayjoinStatus.expired,
+                Err() => false,
+              },
+            )
+            .first
+            .timeout(const Duration(seconds: 240));
+
+        expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
+      },
+      timeout: const Timeout(Duration(seconds: 270)),
+    );
+  }, skip: hasFixtures ? null : fixtureSkip);
 }

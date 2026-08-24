@@ -48,6 +48,10 @@ final class PayjoinBroadcastFailure extends PayjoinFailure {
   const PayjoinBroadcastFailure([super.logMessage]);
 }
 
+final class PayjoinFallbackUnavailableFailure extends PayjoinFailure {
+  const PayjoinFallbackUnavailableFailure([super.logMessage]);
+}
+
 final class PayjoinUnexpectedFailure extends PayjoinFailure {
   const PayjoinUnexpectedFailure([super.logMessage]);
 }

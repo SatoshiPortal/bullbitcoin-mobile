@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -13,6 +14,7 @@ sealed class Transaction with _$Transaction {
     WalletTransaction? walletTransaction,
     Swap? swap,
     PayjoinSession? payjoin,
+    OrderSwapRecord? orderSwap,
     Order? order,
   }) = _Transaction;
   const Transaction._();
@@ -20,37 +22,51 @@ sealed class Transaction with _$Transaction {
   String? get txId =>
       walletTransaction?.txId ??
       swap?.txId ??
+      orderSwap?.canonicalWalletTransactionId ??
       payjoin?.txId ??
       order?.transactionId;
   bool get isTestnet =>
       walletTransaction?.isTestnet ??
       swap?.environment.isTestnet ??
+      (orderSwap == null
+          ? null
+          : orderSwap!.environment == OrderSwapEnvironment.testnet) ??
       payjoin?.isTestnet ??
       order?.isTestnet ??
       false;
   bool get isBitcoin =>
       walletTransaction?.isBitcoin ??
       swap?.isBitcoin ??
+      (orderSwap == null
+          ? null
+          : orderSwap!.canonicalWalletNetwork == OrderSwapNetwork.bitcoin) ??
       payjoin?.isBitcoin ??
       order?.isBitcoin ??
       false;
   bool get isLiquid =>
       walletTransaction?.isLiquid ??
       swap?.isLiquid ??
+      (orderSwap == null
+          ? null
+          : orderSwap!.canonicalWalletNetwork == OrderSwapNetwork.liquid) ??
       payjoin?.isLiquid ??
       order?.isLiquid ??
       false;
   String? get toAddress => walletTransaction?.toAddress ?? order?.toAddress;
+  String? get orderSwapDestinationAddress =>
+      orderSwap?.outNetwork == OrderSwapNetwork.lightning
+      ? null
+      : orderSwap?.destination;
 
   bool get isBroadcasted => walletTransaction != null;
-  bool get isSwap => swap != null;
-  bool get isOngoingSwap => isSwap && swap != null && !swap!.status.isTerminal;
+  bool get isSwap => swap != null || orderSwap != null;
+  bool get isOngoingSwap =>
+      (swap != null && !swap!.status.isTerminal) ||
+      (orderSwap != null && !orderSwap!.localStatus.isTerminal);
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>
       isOngoingPayjoin && payjoin is PayjoinReceiverSession;
-  bool get isOngoingPayjoinSender =>
-      isOngoingPayjoin && payjoin is PayjoinSenderSession;
 
   /// The payjoin status to DISPLAY, derived from what actually happened
   /// on-chain rather than from the session row alone. The session's
@@ -141,16 +157,39 @@ sealed class Transaction with _$Transaction {
       ? walletTransaction!.isOutgoing
       : swap?.isLnSendSwap == true ||
             swap?.isChainSwap == true ||
+            orderSwap?.sourceWalletId != null ||
             payjoin is PayjoinSenderSession;
   bool get isIncoming =>
       walletTransaction?.isIncoming ??
       swap?.isLnReceiveSwap == true ||
           swap?.isChainSwap == true ||
+          orderSwap?.destinationWalletId != null ||
           payjoin is PayjoinReceiverSession ||
           order?.isIncoming == true;
 
-  bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
-  bool get isChainSwap => isSwap && swap!.isChainSwap;
+  bool get isLnSwap =>
+      (swap != null && (swap!.isLnReceiveSwap || swap!.isLnSendSwap)) ||
+      orderSwap?.inNetwork == OrderSwapNetwork.lightning ||
+      orderSwap?.outNetwork == OrderSwapNetwork.lightning;
+  bool get isChainSwap =>
+      (swap?.isChainSwap ?? false) || (orderSwap != null && !isLnSwap);
+  bool get isLiquidToBitcoinSwap =>
+      swap?.type == SwapType.liquidToBitcoin ||
+      (orderSwap?.inNetwork == OrderSwapNetwork.liquid &&
+          orderSwap?.outNetwork == OrderSwapNetwork.bitcoin);
+  // Internal swaps are outgoing from one wallet and incoming to the other.
+  bool isReceivingWallet(String? walletId, {bool isCounterpart = false}) {
+    final orderSwap = this.orderSwap;
+    if (walletId != null && orderSwap != null) {
+      return orderSwap.destinationWalletId == walletId &&
+          orderSwap.sourceWalletId != walletId;
+    }
+    final swap = this.swap;
+    if (walletId != null && swap is ChainSwap) {
+      return swap.receiveWalletId == walletId && swap.sendWalletId != walletId;
+    }
+    return isCounterpart ? isOutgoing : isIncoming;
+  }
 
   DateTime? get timestamp =>
       // Completed swaps are displayed (and should sort) by when they finished,
@@ -158,6 +197,8 @@ sealed class Transaction with _$Transaction {
       // (created long ago) lands far down the list under its old creation time.
       swap?.completionTime ??
       swap?.creationTime ??
+      orderSwap?.order?.completedAt ??
+      orderSwap?.createdAt ??
       payjoin?.createdAt ??
       order?.createdAt ??
       walletTransaction?.confirmationTime;
@@ -174,6 +215,11 @@ sealed class Transaction with _$Transaction {
   /// (amount sent for outgoing, received for incoming; an external chain swap
   /// shows the received amount). Returns [amountSat] when this isn't a swap.
   int get swapDisplayAmountSat {
+    final exchangeSwap = orderSwap;
+    if (exchangeSwap != null) {
+      return exchangeSwap.order?.payoutAmountSat.toInt() ??
+          exchangeSwap.requestedAmountSat.toInt();
+    }
     final s = swap;
     if (s == null || s.recovered) return amountSat;
     if (s is ChainSwap && s.receiveWalletId == null) {
@@ -188,13 +234,21 @@ sealed class Transaction with _$Transaction {
   /// separate to preserve existing display; converge if product wants them
   /// identical.
   int get swapListAmountSat {
+    final exchangeSwap = orderSwap;
+    if (exchangeSwap != null) {
+      return exchangeSwap.order?.payoutAmountSat.toInt() ??
+          exchangeSwap.requestedAmountSat.toInt();
+    }
     final s = swap;
     if (s == null) return amountSat;
     return s.recovered ? amountSat : s.amountSat;
   }
 
   String get walletId =>
-      walletTransaction?.walletId ?? swap?.walletId ?? payjoin!.walletId;
+      walletTransaction?.walletId ??
+      swap?.walletId ??
+      orderSwap?.canonicalWalletId ??
+      payjoin!.walletId;
 
   List<Label>? get labels => walletTransaction?.labels;
 }

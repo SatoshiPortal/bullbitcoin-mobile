@@ -40,6 +40,11 @@ final class _UnavailablePayjoinSender implements PayjoinSender {
   ) async => Err(_failure);
 
   @override
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(
+    String sessionId,
+  ) async => Err(_failure);
+
+  @override
   Future<Result<PayjoinSenderSession, PayjoinFailure>> start(
     StartPayjoinSender request,
   ) async => Err(_failure);

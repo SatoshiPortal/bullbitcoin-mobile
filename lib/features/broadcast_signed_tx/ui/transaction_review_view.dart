@@ -251,7 +251,9 @@ class _SummarySection extends StatelessWidget {
         _InfoRow(
           label: context.loc.coreScreensNetworkFeesLabel,
           child: BBText(
-            '${_formatSats(transaction.feeSat)} sats',
+            transaction.feeSat != null
+                ? '${_formatSats(transaction.feeSat!)} sats'
+                : context.loc.mempoolServerStatusUnknown,
             style: context.font.bodyLarge,
             color: context.appColors.secondary,
             textAlign: TextAlign.end,

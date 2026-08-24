@@ -1019,7 +1019,6 @@
   "transactionNoteHint": "টোকা",
   "transactionNoteSaveButton": "সংৰক্ষণ কৰক",
   "transactionNoteUpdateButton": "আপডেট কৰক",
-  "transactionPayjoinNoProposal": "প্ৰাপকৰ পৰা payjoin প্ৰস্তাৱ পোৱা নাই?",
   "transactionPayjoinSendWithout": "Payjoin অবিহনে প্ৰেৰণ কৰক",
   "transactionSwapProgressInitiated": "আৰম্ভ হৈছে",
   "transactionSwapProgressPaymentMade": "পৰিশোধ\nকৰা হৈছে",
@@ -2865,10 +2864,6 @@
   "transferFeeLabel": "Transfer ফি",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
-  },
-  "sendNetworkFeesLabel": "প্ৰেৰণ নেটৱৰ্ক ফি",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
   },
   "confirmButtonLabel": "নিশ্চিত কৰক",
   "@confirmButtonLabel": {
@@ -8602,14 +8597,6 @@
   "@torSettingsDescUnknown": {
     "description": "Description when Tor status is unknown"
   },
-  "torSettingsInfoTitle": "গুৰুত্বপূৰ্ণ তথ্য",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
-  "torSettingsInfoDescription": "• Tor proxy কেৱল Bitcoin-ত প্ৰযোজ্য (Liquid-ত নহয়)\n• ডিফল্ট Orbot port হৈছে 9050\n• সামৰ্থ্য কৰাৰ আগতে Orbot চলি আছে নিশ্চিত কৰক\n• Tor-ৰ জৰিয়তে সংযোগ লেহেমীয়া হ'ব পাৰে",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "withdrawSuccessTitle": "উত্তোলন আৰম্ভ হৈছে",
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"
@@ -9621,5 +9608,40 @@
   "receivePayjoinAwaitingFunds": "Payjoin সক্ৰিয় কৰা হৈছে, কিন্তু এই ৱালেটত এতিয়াও অৱদান দিবলৈ কোনো বেলেঞ্চ নাই। আপুনি ধন লাভ কৰিলেই ই সক্ৰিয় হ’ব।",
   "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
-  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "coreSwapsStatusNotStarted": "আৰম্ভ হোৱা নাই",
+  "coreSwapsStatusAwaitingPayment": "পৰিশোধৰ অপেক্ষাত",
+  "coreSwapsStatusAwaitingConfirmation": "নিশ্চিতকৰণৰ অপেক্ষাত",
+  "coreSwapsStatusUnderReview": "পৰ্যালোচনাধীন",
+  "coreSwapsStatusRejected": "প্ৰত্যাখ্যাত",
+  "coreSwapsStatusCanceled": "বাতিল",
+  "coreSwapsStatusPaymentDeadlineExpired": "পৰিশোধৰ সময়সীমা শেষ",
+  "coreSwapsStatusScheduled": "নিৰ্ধাৰিত",
+  "coreSwapsStatusAwaitingClaim": "দাবীৰ অপেক্ষাত",
+  "coreSwapsStatusUnknown": "অজ্ঞাত",
+  "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
+  "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
+  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
+  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
+  "torSettingsBootstrapProgress": "সংযোগ কৰি আছে… {percent}%",
+  "recoverbullPhaseNetworkInfo": "নেটৱৰ্কৰ তথ্য সংগ্ৰহ কৰি আছে",
+  "recoverbullLongestStep": "এইটোৱেই আটাইতকৈ দীঘলীয়া পদক্ষেপ। প্ৰথমবাৰ আৰম্ভ হ'বলৈ এক মিনিটতকৈ বেছি সময় লাগিব পাৰে।",
+  "recoverbullTorOffline": "ইণ্টাৰনেট সংযোগ নথকা যেন লাগিছে।",
+  "recoverbullTorClockSkewed": "আপোনাৰ ডিভাইচৰ ঘড়ী ভুল, সেয়েহে Tor-এ ৰিলে প্ৰমাণপত্ৰ পৰীক্ষা কৰিব নোৱাৰে। তাৰিখ আৰু সময়ৰ ছেটিং চাওক।",
+  "recoverbullTorCantStart": "এতিয়া Tor সংযোগ কৰিব পৰা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recoverbullServerUnreachableTorOk": "Tor কাম কৰি আছে, কিন্তু বেকআপ ছাৰ্ভাৰে সঁহাৰি দিয়া নাই। প্ৰথমবাৰ আৰম্ভ কৰাৰ পিছত ইয়াত অলপ সময় লাগিব পাৰে।",
+  "torSettingsEmbeddedTitle": "অন্তৰ্নিহিত Tor",
+  "torSettingsEmbeddedDescription": "অন্তৰ্নিহিত Tor ব্যৱহাৰ কৰে RecoverBull আৰু Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে। এপৰ বাকী ট্ৰেফিক পোনপটীয়াকৈয়ে থাকে।",
+  "torSettingsTransportMode": "সংযোগৰ পদ্ধতি",
+  "torSettingsModeAutomatic": "স্বয়ংক্ৰিয়",
+  "torSettingsModeDirect": "পোনপটীয়া",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
+  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
+  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
+  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
+  "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্ৰক্সী (উন্নত)",
+  "torSettingsExternalProxyDescription": "সক্ৰিয় কৰিলে, Bitcoin Electrum ছাৰ্ভাৰ আৰু এনক্ৰিপ্ট কৰা বেকআপসমূহ অন্তৰ্নিহিত Tor-ৰ পৰিবৰ্তে নিৰ্ধাৰিত পৰ্টত Orbot-ৰ মাজেদি যায়। Liquid কেতিয়াও ইয়াৰ মাজেদি নাযায়।",
+  "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
+  "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে"
 }

@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 Future<void> showLogsShareSheet({
@@ -58,15 +61,30 @@ Future<void> shareLogsAsText(List<String> logs) async {
   );
 }
 
+Future<void> shareLogsAsFile(List<String> logs) async {
+  final path = p.join(
+    (await getTemporaryDirectory()).path,
+    _timestampedLogFileName(),
+  );
+  await File(path).writeAsString(logs.join('\n'));
+  await SharePlus.instance.share(
+    ShareParams(files: [XFile(path)], subject: 'bull_logs.tsv'),
+  );
+}
+
 /// Returns true if the file was saved, false if the user cancelled.
 Future<bool> exportLogsAsFile(List<String> logs) async {
+  final result = await FilePicker.platform.saveFile(
+    bytes: utf8.encode(logs.join('\n')),
+    fileName: _timestampedLogFileName(),
+  );
+  return result != null;
+}
+
+String _timestampedLogFileName() {
   final timestamp = DateTime.now()
       .toIso8601String()
       .replaceAll(':', '-')
       .replaceAll('.', '-');
-  final result = await FilePicker.platform.saveFile(
-    bytes: utf8.encode(logs.join('\n')),
-    fileName: 'bull_logs_$timestamp.tsv',
-  );
-  return result != null;
+  return 'bull_logs_$timestamp.tsv';
 }

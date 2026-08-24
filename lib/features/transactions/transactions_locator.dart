@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -21,11 +20,17 @@ import 'package:bb_mobile/features/transactions/application/ports/transaction_ex
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -50,9 +55,24 @@ class TransactionsLocator {
       () => LabelExchangeOrdersUsecase(
         labelsFacade: locator<LabelsFacade>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+      ),
+    );
+    locator.registerFactory<TransactionsFacade>(
+      () => TransactionsFacade(
+        labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
       ),
     );
 
+    locator.registerFactory<GetTransactionOrderSwapsUsecase>(
+      () => GetTransactionOrderSwapsUsecase(locator<SwapFacade>()),
+    );
+    locator.registerFactory<GetTransactionOrderSwapUsecase>(
+      () => GetTransactionOrderSwapUsecase(locator<SwapFacade>()),
+    );
+    locator.registerFactory<WatchTransactionOrderSwapUsecase>(
+      () => WatchTransactionOrderSwapUsecase(locator<SwapFacade>()),
+    );
     locator.registerFactory<GetTransactionsUsecase>(
       () => GetTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -69,6 +89,14 @@ class TransactionsLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
+        getTransactionOrderSwapsUsecase:
+            locator<GetTransactionOrderSwapsUsecase>(),
+      ),
+    );
+
+    locator.registerFactory<RefreshTransactionLabelsUsecase>(
+      () => RefreshTransactionLabelsUsecase(
+        labelsFacade: locator<LabelsFacade>(),
       ),
     );
 
@@ -94,6 +122,8 @@ class TransactionsLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
+        getTransactionOrderSwapsUsecase:
+            locator<GetTransactionOrderSwapsUsecase>(),
       ),
     );
   }
@@ -115,6 +145,8 @@ class TransactionsLocator {
         walletId: walletId,
         exchangeOnly: exchangeOnly ?? false,
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),
+        refreshTransactionLabelsUsecase:
+            locator<RefreshTransactionLabelsUsecase>(),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:
@@ -132,6 +164,8 @@ class TransactionsLocator {
         getWalletUsecase: locator<GetWalletUsecase>(),
         getTransactionsByTxIdUsecase: locator<GetTransactionsByTxIdUsecase>(),
         getWalletTransactionUsecase: locator<GetWalletTransactionUsecase>(),
+        getTransactionOrderSwapUsecase:
+            locator<GetTransactionOrderSwapUsecase>(),
         watchWalletTransactionByTxIdUsecase:
             locator<WatchWalletTransactionByTxIdUsecase>(),
         getSwapUsecase: locator<GetSwapUsecase>(),
@@ -140,10 +174,11 @@ class TransactionsLocator {
         getOrderUsecase: locator<GetOrderUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
+        watchTransactionOrderSwapUsecase:
+            locator<WatchTransactionOrderSwapUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
-        processSwapUsecase: locator<ProcessSwapUsecase>(),
       ),
     );
   }

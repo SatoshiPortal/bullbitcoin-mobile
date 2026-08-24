@@ -7,9 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class OngoingSwapsWidget extends StatelessWidget {
-  const OngoingSwapsWidget({super.key, required this.ongoingSwaps});
+  const OngoingSwapsWidget({
+    super.key,
+    required this.ongoingSwaps,
+    required this.onDetailsClosed,
+  });
 
   final List<Transaction> ongoingSwaps;
+  final VoidCallback onDetailsClosed;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +74,7 @@ class OngoingSwapsWidget extends StatelessWidget {
           return Column(
             crossAxisAlignment: .start,
             children: [
-              TxListItem(tx: tx),
+              TxListItem(tx: tx, onDetailsClosed: onDetailsClosed),
               const Gap(8),
             ],
           );

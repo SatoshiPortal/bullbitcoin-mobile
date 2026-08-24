@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/app_unlock_failure_l10n.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
@@ -25,6 +24,9 @@ class PinCodeUnlockScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => locator<AppUnlockBloc>()..add(const AppUnlockStarted()),
       child: BlocListener<AppUnlockBloc, AppUnlockState>(
+        listenWhen: (previous, current) =>
+            previous.timeoutSeconds != current.timeoutSeconds ||
+            previous.status != current.status,
         listener: (context, state) async {
           if (state.status == AppUnlockStatus.failure) {
             if (state.failure case final failure?) {
@@ -106,7 +108,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                               (state.pinCode, state.obscurePinCode),
                           builder: (context, data) {
                             final (pinCode, obscurePinCode) = data;
-                            return BBInputText(
+                            return BullInputText(
                               value: pinCode,
                               obscure: obscurePinCode,
                               onRightTap: () => context
@@ -130,12 +132,29 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                         BlocSelector<
                           AppUnlockBloc,
                           AppUnlockState,
-                          (bool, int)
+                          (bool, int, int)
                         >(
-                          selector: (state) =>
-                              (state.showError, state.failedAttempts),
+                          selector: (state) => (
+                            state.showError,
+                            state.failedAttempts,
+                            state.timeoutSeconds,
+                          ),
                           builder: (context, data) {
-                            final (showError, failedAttempts) = data;
+                            final (showError, failedAttempts, timeoutSeconds) =
+                                data;
+                            // During a cooldown the countdown replaces the
+                            // incorrect-PIN line: the last attempt was never
+                            // verified, so calling it incorrect would leak
+                            // nothing but confuse the user.
+                            if (timeoutSeconds > 0) {
+                              return Text(
+                                context.loc.appUnlockTryAgainIn(timeoutSeconds),
+                                textAlign: .start,
+                                style: context.font.labelSmall?.copyWith(
+                                  color: context.appColors.error,
+                                ),
+                              );
+                            }
                             return showError && failedAttempts > 0
                                 ? Text(
                                     context.loc.appUnlockIncorrectPinError(
@@ -159,15 +178,22 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: DialPad(
-                  disableFeedback: true,
-                  onlyDigits: true,
-                  onNumberPressed: (value) => context.read<AppUnlockBloc>().add(
-                    AppUnlockPinCodeNumberAdded(int.parse(value)),
-                  ),
-                  onBackspacePressed: () => context.read<AppUnlockBloc>().add(
-                    const AppUnlockPinCodeNumberRemoved(),
-                  ),
+                child: BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
+                  selector: (state) =>
+                      state.timeoutSeconds == 0 && !state.isVerifying,
+                  builder: (context, padEnabled) {
+                    return DialPad(
+                      disableFeedback: true,
+                      onlyDigits: true,
+                      enabled: padEnabled,
+                      onNumberPressed: (value) => context
+                          .read<AppUnlockBloc>()
+                          .add(AppUnlockPinCodeNumberAdded(int.parse(value))),
+                      onBackspacePressed: () => context
+                          .read<AppUnlockBloc>()
+                          .add(const AppUnlockPinCodeNumberRemoved()),
+                    );
+                  },
                 ),
               ),
               const Gap(16),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
@@ -14,16 +16,15 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
-import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bull_tor/tor.dart' as tor;
 
 part 'bloc.freezed.dart';
 part 'event.dart';
@@ -36,17 +37,26 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final SaveVaultToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
+
+  /// Single-shot: the pre-flight check before storing a vault key, where the
+  /// user is already committed and a retry budget would only delay the error.
   final CheckServerConnectionUsecase _checkKeyServerConnectionUsecase;
+
+  /// Retrying: the connecting screen, where a cold onion lookup is expected to
+  /// need more than one try.
+  final ConnectToKeyServerUsecase _connectToKeyServerUsecase;
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
-  final InitTorUsecase _initializeTorUsecase;
+  final tor.EnsureTorReadyUsecase _ensureTorReadyUsecase;
+  final tor.RetryTorConnectionUsecase _retryTorConnectionUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
   final UpdateLatestEncryptedVaultTestUsecase
   _updateLatestEncryptedVaultTestUsecase;
-  final TorStatusUsecase _torStatusUsecase;
-  final TorConfigPort _torConfigPort;
+  final tor.WatchTorConnectionUsecase _watchTorConnectionUsecase;
+
+  StreamSubscription<tor.TorConnectionState>? _torSubscription;
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
@@ -56,52 +66,106 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._createEncryptedVaultUsecase,
     required this._storeVaultKeyIntoServerUsecase,
     required this._checkKeyServerConnectionUsecase,
+    required this._connectToKeyServerUsecase,
     required this._fetchVaultKeyFromServerUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
     required this._connectToGoogleDriveUsecase,
     required this._saveToGoogleDriveUsecase,
-    required this._initializeTorUsecase,
+    required this._ensureTorReadyUsecase,
+    required this._retryTorConnectionUsecase,
     required this._walletBloc,
     required this._fetchLatestGoogleDriveVaultUsecase,
     required this._updateLatestEncryptedVaultTestUsecase,
-    required this._torStatusUsecase,
-    required this._torConfigPort,
+    required this._watchTorConnectionUsecase,
   }) : super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
     on<OnVaultPasswordSet>(_onVaultPasswordSet);
     on<OnVaultCreation>(_onVaultCreation);
     on<OnVaultDecryption>(_onVaultDecryption);
-    on<OnServerCheck>(_onServerCheck);
-    on<OnTorInitialization>(_onTorInitialization);
+    on<OnServerCheck>(_onServerCheck, transformer: droppable());
+    on<OnTorInitialization>(_onTorInitialization, transformer: droppable());
     on<OnClearError>(_onClearError);
+    on<_OnTorConnectionChanged>(_onTorConnectionChanged);
+
+    // Tor readiness is pushed, so follow it for as long as this flow is open.
+    // Taking a single snapshot in `_onServerCheck` reported whatever the status
+    // happened to be at T=0 — during a cold start that is "not ready", which
+    // the UI rendered as a Tor failure while bootstrap was still running, and
+    // it never updated once Tor came up.
+    _torSubscription = _watchTorConnectionUsecase.execute().listen(
+      (state) => add(_OnTorConnectionChanged(state)),
+    );
+  }
+
+  @override
+  Future<void> close() async {
+    await _torSubscription?.cancel();
+    return super.close();
+  }
+
+  Future<void> _onTorConnectionChanged(
+    _OnTorConnectionChanged event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    // Arti's directory fraction is not monotonic after traffic becomes usable:
+    // a background refresh can report Connecting again while the established
+    // SOCKS route remains valid. RecoverBull only needs that route, so keep its
+    // local readiness latched until Tor reports an actual blockage or a
+    // terminal state. A diagnostic means this is not a benign refresh.
+    final next = event.state;
+    if (state.torConnection is tor.TorReady &&
+        next is tor.TorConnecting &&
+        next.diagnostic == null) {
+      return;
+    }
+    emit(state.copyWith(torConnection: next));
+
+    // The stale-generation arm of `_onTorInitialization` returns without
+    // dispatching a server check, so readiness that arrives through this stream
+    // instead of through that call would otherwise never trigger one — leaving
+    // the screen on "waiting" with no failure and no retry. Picking it up here
+    // is what closes that dead end.
+    if (next is tor.TorReady &&
+        state.keyServerStatus == KeyServerStatus.unknown) {
+      add(const OnServerCheck());
+    }
   }
 
   Future<void> _onTorInitialization(
     OnTorInitialization event,
     Emitter<RecoverBullState> emit,
   ) async {
-    // Tor is a separate core domain that still throws; the bloc is its boundary.
-    try {
-      final externalTorConfig = await _torConfigPort
-          .getAvailableExternalTorConfig();
-
-      if (externalTorConfig == null) {
-        await _initializeTorUsecase.execute();
-      } else {
-        log.info('Using external Tor proxy on port ${externalTorConfig.port}');
-      }
-
-      add(const OnServerCheck());
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      emit(
-        state.copyWith(
-          failure: const TorNotStartedFailure(),
-          keyServerStatus: KeyServerStatus.offline,
-        ),
-      );
+    emit(
+      state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
+    );
+    final connection = event.restart
+        ? await _retryTorConnectionUsecase.execute()
+        : await _ensureTorReadyUsecase.execute();
+    if (isClosed) return;
+    switch (connection) {
+      case tor.TorReady(:final route):
+        log.info(
+          'Using ${route.source.name} Tor on port ${route.endpoint.port}',
+        );
+        emit(state.copyWith(torConnection: connection));
+        add(const OnServerCheck());
+      case tor.TorUnavailable(:final failure):
+        log.severe(
+          error: failure.logMessage ?? failure.runtimeType.toString(),
+          trace: StackTrace.current,
+        );
+        emit(
+          state.copyWith(
+            failure: const TorNotStartedFailure(),
+            keyServerStatus: KeyServerStatus.offline,
+          ),
+        );
+      case tor.TorUninitialized() || tor.TorStopped() || tor.TorConnecting():
+        // A newer retry generation replaced this operation. Its stream owns the
+        // current state; the stale handler must not publish a failure.
+        return;
     }
   }
 
@@ -109,22 +173,29 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnServerCheck event,
     Emitter<RecoverBullState> emit,
   ) async {
-    // _torStatusUsecase (tor domain) still throws; the bloc is its boundary.
     try {
-      final torStatus = await _torStatusUsecase.execute();
-      emit(state.copyWith(torStatus: torStatus));
+      // `torStatus` is not emitted here: it is driven by the subscription set
+      // up in the constructor. Emitting a snapshot at this point is what made a
+      // healthy cold start look like a Tor failure.
+      const retries = ConnectToKeyServerUsecase.maxAttempts;
+      emit(
+        state.copyWith(
+          failure: null,
+          keyServerStatus: KeyServerStatus.connecting,
+          keyServerAttempt: 0,
+          keyServerAttempts: retries,
+        ),
+      );
 
-      emit(state.copyWith(keyServerStatus: KeyServerStatus.connecting));
-
-      var isConnected = false;
-      const retries = 3;
-      int attempt = 1;
-      for (; attempt <= retries; attempt++) {
-        final delay = Duration(seconds: attempt);
-        await Future.delayed(delay);
-        isConnected = await _checkKeyServerConnectionUsecase.execute();
-        if (isConnected) break;
-      }
+      final isConnected = await _connectToKeyServerUsecase.execute(
+        // Published before the call, so the screen shows which attempt is
+        // actually in flight rather than which one already failed. Guarded:
+        // the backoff outlives the screen when the user navigates away.
+        onAttempt: (attempt) {
+          if (isClosed) return;
+          emit(state.copyWith(keyServerAttempt: attempt));
+        },
+      );
 
       if (!isConnected) {
         log.severe(
@@ -138,13 +209,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           ),
         );
       } else {
-        log.fine('Recoverbull server ready after $attempt attempts');
-        emit(
-          state.copyWith(
-            keyServerStatus: KeyServerStatus.online,
-            torStatus: TorStatus.online,
-          ),
+        log.fine(
+          'Recoverbull server ready after ${state.keyServerAttempt} attempts',
         );
+        // Tor's status is not forced here. It used to be set to `online` on
+        // this path, which asserted Tor's health from the key server's reply;
+        // the readiness stream is the only thing that knows, and the screen
+        // latches it.
+        emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);

@@ -17,6 +17,7 @@ abstract class ReceiveState with _$ReceiveState {
     int? confirmedAmountSat,
     WalletAddress? bitcoinAddress,
     LnReceiveSwap? lightningSwap,
+    OrderSwapRecord? orderSwap,
     SwapLimits? swapLimits,
     WalletAddress? liquidAddress,
     @Default('') String note,
@@ -36,6 +37,7 @@ abstract class ReceiveState with _$ReceiveState {
     ReceivePayjoinException? receivePayjoinException,
     WalletTransaction? tx,
     Object? error,
+    ReceiveFailure? failure,
     AmountException? amountException,
     @Default(false) bool creatingSwap,
   }) = _ReceiveState;
@@ -87,7 +89,8 @@ abstract class ReceiveState with _$ReceiveState {
       paymentRequest.isEmpty ? addressOrInvoiceOnly : paymentRequest;
 
   String get lightningInvoiceNormalized {
-    final invoice = lightningSwap?.invoice;
+    final invoice =
+        orderSwap?.order?.lightningInvoice ?? lightningSwap?.invoice;
 
     if (invoice == null) return '';
 
@@ -218,8 +221,9 @@ abstract class ReceiveState with _$ReceiveState {
         // and the user can choose to broadcast it.
         return payjoin != null && payjoin!.status == PayjoinStatus.requested;
       case ReceiveType.lightning:
-        return lightningSwap != null &&
-            lightningSwap!.status == SwapStatus.paid;
+        return orderSwap?.localStatus ==
+                OrderSwapLocalStatus.payoutInProgress ||
+            (lightningSwap != null && lightningSwap!.status == SwapStatus.paid);
       case ReceiveType.liquid:
         return false;
       case _:
@@ -232,14 +236,22 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.bitcoin:
         return tx != null;
       case ReceiveType.lightning:
-        return lightningSwap != null &&
-            lightningSwap!.status == SwapStatus.completed;
+        return orderSwap?.localStatus == OrderSwapLocalStatus.completed ||
+            (lightningSwap != null &&
+                lightningSwap!.status == SwapStatus.completed);
       case ReceiveType.liquid:
         return tx != null;
       case _:
         return false;
     }
   }
+
+  bool get hasTerminalOrderSwapFailure => switch (orderSwap?.localStatus) {
+    OrderSwapLocalStatus.expired ||
+    OrderSwapLocalStatus.failed ||
+    OrderSwapLocalStatus.refunded => true,
+    _ => false,
+  };
 
   /// Whether the payjoin flow owns navigation for this receive, so the
   /// shell's generic "payment received → transaction details" listener must
@@ -399,15 +411,46 @@ abstract class ReceiveState with _$ReceiveState {
 
   LnReceiveSwap? get getSwap {
     if (type == ReceiveType.lightning) {
-      return lightningSwap;
+      return orderSwap == null ? lightningSwap : _orderSwapAsLegacyReceiveSwap;
     }
 
     return null;
   }
 
+  LnReceiveSwap get _orderSwapAsLegacyReceiveSwap {
+    final record = orderSwap!;
+    final order = record.order!;
+    final feeSat = order.payinAmountSat - order.payoutAmountSat;
+    return Swap.lnReceive(
+          id: order.orderId,
+          keyIndex: 0,
+          type: SwapType.lightningToLiquid,
+          status: switch (record.localStatus) {
+            OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+            OrderSwapLocalStatus.completed => SwapStatus.completed,
+            OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+            OrderSwapLocalStatus.expired => SwapStatus.expired,
+            OrderSwapLocalStatus.failed => SwapStatus.failed,
+            _ => SwapStatus.pending,
+          },
+          environment: record.environment == OrderSwapEnvironment.testnet
+              ? Environment.testnet
+              : Environment.mainnet,
+          creationTime: record.createdAt,
+          receiveWalletId: record.destinationWalletId!,
+          invoice: order.lightningInvoice!,
+          receiveAddress: record.destination,
+          receiveTxid: order.liquidTransactionId,
+          fees: SwapFees(boltzFee: feeSat.toInt()),
+          completionTime: order.completedAt,
+        )
+        as LnReceiveSwap;
+  }
+
   String get address => switch (type) {
     ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
-    ReceiveType.lightning => lightningSwap?.receiveAddress ?? '',
+    ReceiveType.lightning =>
+      orderSwap?.destination ?? lightningSwap?.receiveAddress ?? '',
     ReceiveType.liquid => liquidAddress?.address ?? '',
     _ => '',
   };
@@ -415,13 +458,18 @@ abstract class ReceiveState with _$ReceiveState {
   String get abbreviatedAddress => StringFormatting.truncateMiddle(address);
 
   String get txId => switch (type) {
-    ReceiveType.lightning => lightningSwap?.receiveTxid ?? '',
+    ReceiveType.lightning =>
+      orderSwap?.order?.liquidTransactionId ?? lightningSwap?.receiveTxid ?? '',
     _ => tx?.txId ?? '',
   };
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
 
-  Transaction get transaction =>
-      Transaction(walletTransaction: tx, swap: lightningSwap, payjoin: payjoin);
+  Transaction get transaction => Transaction(
+    walletTransaction: tx,
+    swap: lightningSwap,
+    orderSwap: orderSwap,
+    payjoin: payjoin,
+  );
 }
 
 class AmountException extends BullException {

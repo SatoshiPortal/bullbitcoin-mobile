@@ -6,11 +6,11 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:bull_tor/tor.dart';
 
 /// Data boundary for the RecoverBull key server and vault crypto. Catches the
 /// foreign exceptions the datasources/SDK throw, logs the raw reason, and
@@ -18,12 +18,10 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 class RecoverBullRepository {
   final RecoverBullRemoteDatasource remoteDatasource;
   final RecoverbullSettingsDatasource recoverbullSettingsDatasource;
-  final TorConfigPort torConfigPort;
 
   RecoverBullRepository({
     required this.remoteDatasource,
     required this.recoverbullSettingsDatasource,
-    required this.torConfigPort,
   });
 
   /// Builds an encrypted vault file for [plaintext] under [vaultKey] and stamps
@@ -43,8 +41,14 @@ class RecoverBullRepository {
       mapBackup['path'] = derivationPath;
       return Ok(EncryptedVault(file: json.encode(mapBackup)));
     } catch (e, st) {
-      log.severe(message: 'createVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'createVault failed',
+        error: 'Vault processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
+      );
     }
   }
 
@@ -63,8 +67,14 @@ class RecoverBullRepository {
       final decoded = json.decode(plaintext) as Map<String, dynamic>;
       return Ok(DecryptedVault.fromJson(decoded));
     } catch (e, st) {
-      log.severe(message: 'restoreVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'restoreVault failed',
+        error: 'Vault processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
+      );
     }
   }
 
@@ -73,23 +83,33 @@ class RecoverBullRepository {
     String password,
     String salt,
     String vaultKey,
+    TorProxyEndpoint endpoint,
   ) async {
     try {
-      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
       await remoteDatasource.store(
         convert.hex.decode(_normalizeHex(identifier)),
         utf8.encode(password),
         convert.hex.decode(_normalizeHex(salt)),
         convert.hex.decode(_normalizeHex(vaultKey)),
-        externalProxy: externalProxy,
+        endpoint: endpoint,
       );
       return const Ok(null);
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(message: 'storeVaultKey failed', error: e, trace: st);
+      log.severe(
+        message: 'storeVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(message: 'storeVaultKey failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'storeVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
     }
   }
 
@@ -97,22 +117,32 @@ class RecoverBullRepository {
     String identifier,
     String password,
     String salt,
+    TorProxyEndpoint endpoint,
   ) async {
     try {
-      final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
       final vaultKey = await remoteDatasource.fetch(
         convert.hex.decode(_normalizeHex(identifier)),
         utf8.encode(password),
         convert.hex.decode(_normalizeHex(salt)),
-        externalProxy: externalProxy,
+        endpoint: endpoint,
       );
       return Ok(convert.hex.encode(vaultKey));
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(message: 'fetchVaultKey failed', error: e, trace: st);
+      log.severe(
+        message: 'fetchVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(message: 'fetchVaultKey failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'fetchVaultKey failed',
+        error: 'Vault key processing failed',
+        trace: st,
+      );
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
     }
   }
 
@@ -120,13 +150,13 @@ class RecoverBullRepository {
     String identifier,
     String password,
     String salt,
+    TorProxyEndpoint endpoint,
   ) async {
-    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.trash(
       convert.hex.decode(_normalizeHex(identifier)),
       utf8.encode(password),
       convert.hex.decode(_normalizeHex(salt)),
-      externalProxy: externalProxy,
+      endpoint: endpoint,
     );
   }
 
@@ -134,9 +164,8 @@ class RecoverBullRepository {
   /// otherwise. Kept throwing (not Result) on purpose so the shared status
   /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
   /// into the bool — is unaffected by the Result migration.
-  Future<void> checkConnection() async {
-    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
-    await remoteDatasource.checkConnection(externalProxy: externalProxy);
+  Future<void> checkConnection(TorProxyEndpoint endpoint) async {
+    await remoteDatasource.checkConnection(endpoint);
   }
 
   Future<Uri> fetchUrl() async {

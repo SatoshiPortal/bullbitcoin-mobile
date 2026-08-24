@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,17 @@ import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TxListItem extends StatelessWidget {
-  const TxListItem({super.key, required this.tx});
+  const TxListItem({
+    super.key,
+    required this.tx,
+    required this.onDetailsClosed,
+  });
 
   final Transaction tx;
+
+  /// Called when the details screen this row opened is closed, so the list
+  /// can pick up anything edited there — labels, in particular.
+  final VoidCallback onDetailsClosed;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +51,7 @@ class TxListItem extends StatelessWidget {
         : isLnSwap
         ? context.loc.transactionNetworkLightning
         : isChainSwap
-        ? tx.swap!.type == SwapType.liquidToBitcoin
+        ? tx.isLiquidToBitcoinSwap
               ? context.loc.transactionSwapLiquidToBitcoin
               : context.loc.transactionSwapBitcoinToLiquid
         : tx.isBitcoin
@@ -53,8 +62,12 @@ class TxListItem extends StatelessWidget {
         : <Label>[];
     final date = tx.isSwap
         ? (!tx.isOngoingSwap
-              ? (tx.swap?.completionTime != null
-                    ? timeago.format(tx.swap!.completionTime!)
+              ? (tx.swap?.completionTime != null ||
+                        tx.orderSwap?.order?.completedAt != null
+                    ? timeago.format(
+                        tx.swap?.completionTime ??
+                            tx.orderSwap!.order!.completedAt!,
+                      )
                     : null)
               : null)
         : isOrderType
@@ -67,34 +80,39 @@ class TxListItem extends StatelessWidget {
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat = isOrderType && tx.order!.displaysFiatAmount;
     return InkWell(
-      onTap: () {
-        if (tx.walletTransaction != null) {
-          context.pushNamed(
+      onTap: () async {
+        if (tx.orderSwap != null) {
+          await context.pushNamed(
+            TransactionsRoute.orderSwapTransactionDetails.name,
+            pathParameters: {'localId': tx.orderSwap!.localId},
+          );
+        } else if (tx.walletTransaction != null) {
+          await context.pushNamed(
             TransactionsRoute.transactionDetails.name,
             pathParameters: {'txId': tx.walletTransaction!.txId},
             queryParameters: {'walletId': tx.walletTransaction!.walletId},
           );
-          return;
         } else if (tx.swap != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.swapTransactionDetails.name,
             pathParameters: {'swapId': tx.swap!.id},
             queryParameters: {'walletId': tx.swap!.walletId},
           );
-          return;
         } else if (tx.payjoin != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.payjoinTransactionDetails.name,
             pathParameters: {'payjoinId': tx.payjoin!.id},
           );
-          return;
         } else if (tx.order != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.orderTransactionDetails.name,
             pathParameters: {'orderId': tx.order!.orderId},
           );
+        } else {
           return;
         }
+
+        onDetailsClosed();
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8.0),
@@ -203,7 +221,11 @@ class TxListItem extends StatelessWidget {
                   )
                 else if (tx.isSwap &&
                     (tx.swap?.completionTime != null ||
-                        tx.swap?.status == SwapStatus.completed))
+                        tx.swap?.status == SwapStatus.completed ||
+                        tx.orderSwap?.localStatus ==
+                            OrderSwapLocalStatus.completed ||
+                        tx.orderSwap?.localStatus ==
+                            OrderSwapLocalStatus.refunded))
                   Row(
                     children: [
                       BBText(

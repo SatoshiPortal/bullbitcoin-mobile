@@ -11,7 +11,14 @@ class MempoolServerStorageDatasource {
   Future<void> store(MempoolServerModel server) async {
     try {
       final row = server.toSqlite();
-      await _sqlite.into(_sqlite.mempoolServers).insertOnConflictUpdate(row);
+      await _sqlite.transaction(() async {
+        await _sqlite.managers.mempoolServers
+            .filter((f) => f.isLiquid(server.isLiquid))
+            .filter((f) => f.isTestnet(server.isTestnet))
+            .filter((f) => f.isCustom(true))
+            .delete();
+        await _sqlite.into(_sqlite.mempoolServers).insert(row);
+      });
 
       log.fine('Successfully stored/updated mempool server: ${server.url}');
     } catch (e) {
@@ -27,7 +34,11 @@ class MempoolServerStorageDatasource {
   Future<MempoolServerModel?> fetchCustomServerByNetwork(
     MempoolServerNetwork network,
   ) async {
-    return _fetchServerByNetwork(network, isCustom: true);
+    try {
+      return _fetchServerByNetwork(network, isCustom: true);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<MempoolServerModel?> fetchDefaultServerByNetwork(

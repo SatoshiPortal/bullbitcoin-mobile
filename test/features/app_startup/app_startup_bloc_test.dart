@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,9 +26,8 @@ class _MockCheckLegacyInstallUsecase extends Mock
 
 class _MockCheckBackupUsecase extends Mock implements CheckBackupUsecase {}
 
-class _MockIsTorRequiredUsecase extends Mock implements IsTorRequiredUsecase {}
-
-class _MockInitTorUsecase extends Mock implements InitTorUsecase {}
+class _MockInitializeRequiredTorUsecase extends Mock
+    implements InitializeRequiredTorUsecase {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +43,7 @@ void main() {
   late _MockCheckPinCodeExistsUsecase checkPinCodeExists;
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockCheckLegacyInstallUsecase checkLegacyInstall;
-  late _MockIsTorRequiredUsecase isTorRequired;
+  late _MockInitializeRequiredTorUsecase initializeRequiredTor;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -52,8 +51,7 @@ void main() {
     checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
     checkLegacyInstallUsecase: checkLegacyInstall,
     checkBackupUsecase: _MockCheckBackupUsecase(),
-    isTorRequiredUsecase: isTorRequired,
-    initTorUsecase: _MockInitTorUsecase(),
+    initializeRequiredTorUsecase: initializeRequiredTor,
   );
 
   setUp(() {
@@ -61,10 +59,11 @@ void main() {
     checkPinCodeExists = _MockCheckPinCodeExistsUsecase();
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     checkLegacyInstall = _MockCheckLegacyInstallUsecase();
-    isTorRequired = _MockIsTorRequiredUsecase();
+    initializeRequiredTor = _MockInitializeRequiredTorUsecase();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
-    when(() => isTorRequired.execute()).thenAnswer((_) async => false);
+    // No encrypted backup in these fixtures, so Tor is never warmed.
+    when(() => initializeRequiredTor.execute()).thenAnswer((_) async => null);
   });
 
   test(
@@ -115,6 +114,27 @@ void main() {
       // The legacy check must not even run: current seeds are not
       // legacy-format and would be missing from the backup screen.
       verifyNever(() => checkLegacyInstall.execute());
+    },
+  );
+
+  test(
+    'stays on splash when the keychain is locked before first unlock',
+    () async {
+      when(() => checkDefaultWallets.execute()).thenAnswer((_) async => true);
+      when(
+        () => checkPinCodeExists.execute(),
+      ).thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const AppStartupStarted());
+      await bloc.stream.firstWhere(
+        (state) => state is AppStartupLoadingInProgress,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state, isA<AppStartupLoadingInProgress>());
+      verify(() => checkPinCodeExists.execute()).called(1);
     },
   );
 

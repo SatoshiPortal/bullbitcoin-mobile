@@ -1,11 +1,11 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.13.0+200
+version: 6.13.0+214
 
 environment:
   sdk: "3.12.2"
-  flutter: "3.44.2"
+  flutter: "3.44.9"
 workspace:
   - packages/bull_payjoin
   - packages/bull_ui
@@ -14,6 +14,8 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/bull_tor
+  - packages/screen_privacy
 
 dependencies:
   flutter:
@@ -21,6 +23,8 @@ dependencies:
   bull_payjoin:
   bull_ui:
   primitives:
+  bull_tor:
+  screen_privacy:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -39,6 +43,7 @@ dependencies:
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
   qr_flutter: ^4.1.0
+  decimal: ^3.2.4
   dio: ^5.9.0
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
@@ -48,21 +53,20 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
-  no_screenshot: ^1.1.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7
@@ -90,7 +94,7 @@ dependencies:
   recoverbull:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: 9fd986d652a9c92492300249a46bf34b74043a65
+      ref: 92925c959f219fa4dfd0fe0f40392ddf868e2774
   flutter_zxing: ^2.2.1
   webview_cookie_manager:
     git:
@@ -112,7 +116,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 62977e2f5159458d79ec8089dc853a8edcb84458
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -129,10 +133,6 @@ dependencies:
       ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
   bitcoin_base: ^7.0.0
   socks5_proxy: ^2.1.1
-  tor:
-    git:
-      url: https://github.com/Foundation-Devices/tor
-      ref: b92e2bc5a404367298b6016f171df29d1aae66d0
   meta: ^1.17.0
   workmanager: ^0.9.0
   path: ^1.9.1

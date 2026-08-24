@@ -118,6 +118,7 @@ class Bip329LabelsPage extends StatelessWidget {
 
                         if (result != null && result.files.isNotEmpty) {
                           final file = File(result.files.first.path!);
+                          if (file.lengthSync() > 1024 * 1024) return;
                           final data = await file.readAsString();
                           await cubit.importLabels(
                             format: LabelFormat.bip329,

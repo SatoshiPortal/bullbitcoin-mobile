@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
@@ -230,9 +230,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                             ExchangeRoute.exchangeLoginForSupport.name,
                           );
                         } else {
-                          context.goNamed(
-                            ExchangeSupportChatRoute.supportChat.name,
-                          );
+                          context.goNamed(ExchangeSupportChatFacade.routeName);
                         }
                       },
                       child: Column(

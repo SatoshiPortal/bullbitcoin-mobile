@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
@@ -7,10 +8,14 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repo
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:socks5_proxy/socks_client.dart';
 
 class FeesDatasource {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
   final MempoolSettingsRepository _mempoolSettingsRepository;
+  final SettingsRepository? _settingsRepository;
 
   /// Builds the HTTP client for a resolved base URL. Injected so tests can
   /// supply a mock; defaults to a real Dio. The base URL is only known at
@@ -21,11 +26,50 @@ class FeesDatasource {
   FeesDatasource({
     required this._getActiveMempoolServerUsecase,
     required this._mempoolSettingsRepository,
+    this._settingsRepository,
     Dio Function(String baseUrl)? dioBuilder,
   }) : _dioBuilder = dioBuilder ?? _defaultDioBuilder;
 
-  static Dio _defaultDioBuilder(String baseUrl) =>
-      Dio(BaseOptions(baseUrl: baseUrl));
+  static Dio _defaultDioBuilder(String baseUrl) => Dio(
+    BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
+      followRedirects: false,
+      validateStatus: (status) => status == 200,
+    ),
+  );
+
+  Future<Dio> _buildHttp(String baseUrl) async {
+    final http = _dioBuilder(baseUrl);
+    final settings = _settingsRepository == null
+        ? null
+        : await _settingsRepository.fetch();
+    if (settings?.useTorProxy == true) {
+      final proxyPort = settings!.torProxyPort;
+      final adapter = IOHttpClientAdapter(
+        createHttpClient: () {
+          final client = HttpClient();
+          // `HttpClient.findProxy` only understands the PAC vocabulary
+          // (`DIRECT` / `PROXY host:port`); a `SOCKS5 …` directive is not a
+          // proxy configuration at all and leaves every request failing.
+          // Route the sockets through a real SOCKS5 client instead, the same
+          // way TorDatasource does.
+          SocksTCPClient.assignToHttpClient(client, [
+            ProxySettings(
+              InternetAddress.loopbackIPv4,
+              proxyPort,
+              password: null,
+            ),
+          ]);
+          return client;
+        },
+      );
+      http.httpClientAdapter = adapter;
+    }
+    return http;
+  }
 
   /// Fetches precise (sub-1 sat/vByte) fee rates from the mempool API.
   ///
@@ -68,15 +112,13 @@ class FeesDatasource {
           : 'https://${ApiServiceConstants.bbMempoolUrlPath}';
     }
 
-    final http = _dioBuilder(baseUrl);
+    final http = await _buildHttp(baseUrl);
 
     final fees =
         await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
         await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
     if (fees == null) {
-      throw MempoolFeesException(
-        'No mempool fee endpoint available at $baseUrl',
-      );
+      throw MempoolFeesException('No mempool fee endpoint available');
     }
 
     return fees;

@@ -1896,10 +1896,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor प्रॉक्सी केवल बिटकॉइन पर लागू होता है (तरल नहीं)\n• डिफ़ॉल्ट Orbot बंदरगाह 9050 है\n• सुनिश्चित करें कि ऑर्बोट सक्षम होने से पहले चल रहा है\n• Tor के माध्यम से कनेक्शन धीमा हो सकता है",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "Bitcoin पता",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -4867,10 +4863,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "प्राप्तकर्ता से Payjoin प्रस्ताव नहीं मिल रहा?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "\"कनेक्ट वॉलेट\" चुनें",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
@@ -7374,10 +7366,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "नेटवर्क शुल्क भेजें",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "त्रुटि हुई",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -9597,10 +9585,6 @@
   "bitboxActionVerifyAddressButton": "पता सत्यापित करें",
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
-  },
-  "torSettingsInfoTitle": "महत्वपूर्ण जानकारी",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
   },
   "importColdcardInstructionsStep7": "अपने मोबाइल डिवाइस पर \"ओपन कैमरा\" टैप करें",
   "@importColdcardInstructionsStep7": {
@@ -12741,5 +12725,40 @@
   "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
   "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
-  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।"
+  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "coreSwapsStatusNotStarted": "शुरू नहीं हुआ",
+  "coreSwapsStatusAwaitingPayment": "भुगतान की प्रतीक्षा",
+  "coreSwapsStatusAwaitingConfirmation": "पुष्टि की प्रतीक्षा",
+  "coreSwapsStatusUnderReview": "समीक्षाधीन",
+  "coreSwapsStatusRejected": "अस्वीकृत",
+  "coreSwapsStatusCanceled": "रद्द",
+  "coreSwapsStatusPaymentDeadlineExpired": "भुगतान की समय-सीमा समाप्त",
+  "coreSwapsStatusScheduled": "निर्धारित",
+  "coreSwapsStatusAwaitingClaim": "दावे की प्रतीक्षा",
+  "coreSwapsStatusUnknown": "अज्ञात",
+  "sendSwapExpiredTitle": "ऑर्डर समाप्त हो गया",
+  "sendSwapExpiredMessage": "कोई भी राशि भेजे जाने से पहले ही यह ऑर्डर समाप्त हो गया। आपके वॉलेट से कुछ भी नहीं भेजा गया।",
+  "torSettingsStatusCensored": "कनेक्शन फ़िल्टर किया हुआ लगता है",
+  "torSettingsDescCensored": "Tor नेटवर्क तक नहीं पहुँच सका। आमतौर पर इसका मतलब है कि कनेक्शन फ़िल्टर किया जा रहा है।",
+  "torSettingsBootstrapProgress": "कनेक्ट हो रहा है… {percent}%",
+  "recoverbullPhaseNetworkInfo": "नेटवर्क जानकारी प्राप्त की जा रही है",
+  "recoverbullLongestStep": "यह सबसे लंबा चरण है। पहली बार शुरू होने में एक मिनट से अधिक लग सकता है।",
+  "recoverbullTorOffline": "ऐसा लगता है कि इंटरनेट कनेक्शन नहीं है।",
+  "recoverbullTorClockSkewed": "आपके डिवाइस की घड़ी गलत है, इसलिए Tor रिले प्रमाणपत्र सत्यापित नहीं कर सकता। दिनांक और समय सेटिंग जाँचें।",
+  "recoverbullTorCantStart": "Tor अभी कनेक्ट नहीं हो सका। कृपया फिर कोशिश करें।",
+  "recoverbullServerUnreachableTorOk": "Tor काम कर रहा है, लेकिन बैकअप सर्वर ने उत्तर नहीं दिया। पहली बार शुरू करने के तुरंत बाद इसमें कुछ समय लग सकता है।",
+  "torSettingsEmbeddedTitle": "अंतर्निहित Tor",
+  "torSettingsEmbeddedDescription": "अंतर्निहित Tor का उपयोग RecoverBull और Bitcoin Electrum के .onion सर्वर करते हैं। ऐप का बाकी ट्रैफ़िक सीधा रहता है।",
+  "torSettingsTransportMode": "कनेक्शन विधि",
+  "torSettingsModeAutomatic": "स्वचालित",
+  "torSettingsModeDirect": "सीधा",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "पहले सीधा Tor कनेक्शन आज़माता है और यदि नेटवर्क Tor को रोकता प्रतीत हो तो Snowflake का उपयोग करता है।",
+  "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
+  "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
+  "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
+  "torSettingsExternalProxyTitle": "बाहरी Tor प्रॉक्सी (उन्नत)",
+  "torSettingsExternalProxyDescription": "सक्षम होने पर, Bitcoin Electrum सर्वर और एन्क्रिप्टेड बैकअप अंतर्निहित Tor के बजाय कॉन्फ़िगर किए गए पोर्ट पर Orbot से गुजरते हैं। Liquid कभी इससे नहीं जाता।",
+  "settingsScreenPrivacyTitle": "स्क्रीन गोपनीयता",
+  "settingsScreenPrivacyDisabledMessage": "अब संवेदनशील स्क्रीन पर स्क्रीनशॉट लेने की अनुमति है"
 }

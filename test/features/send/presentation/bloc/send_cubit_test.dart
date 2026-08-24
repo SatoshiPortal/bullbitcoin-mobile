@@ -8,12 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -24,20 +19,29 @@ import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -87,17 +91,28 @@ class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 class _MockCreateSendSwapUsecase extends Mock
     implements CreateSendSwapUsecase {}
 
+class _MockGetSendSwapQuoteUsecase extends Mock
+    implements GetSendSwapQuoteUsecase {}
+
+class _MockCreateSendCrossChainSwapUsecase extends Mock
+    implements CreateSendCrossChainSwapUsecase {}
+
+class _MockGetSendCrossChainQuoteUsecase extends Mock
+    implements GetSendCrossChainQuoteUsecase {}
+
+class _MockResolveLightningAddressUsecase extends Mock
+    implements ResolveLightningAddressUsecase {}
+
+class _MockUpdateSendSwapPayinUsecase extends Mock
+    implements UpdateSendSwapPayinUsecase {}
+
+class _MockWatchSendSwapUsecase extends Mock implements WatchSendSwapUsecase {}
+
 class _MockUpdatePaidSendSwapUsecase extends Mock
     implements UpdatePaidSendSwapUsecase {}
 
-class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
-
-class _MockWatchSwapUsecase extends Mock implements WatchSwapUsecase {}
-
 class _MockWatchFinishedWalletSyncsUsecase extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
-
-class _MockDecodeInvoiceUsecase extends Mock implements DecodeInvoiceUsecase {}
 
 class _MockSignBitcoinTxUsecase extends Mock implements SignBitcoinTxUsecase {}
 
@@ -115,20 +130,17 @@ class _MockCalculateLiquidAbsoluteFeesUsecase extends Mock
 class _MockCalculateLiquidPsetSizeUsecase extends Mock
     implements CalculateLiquidPsetSizeUsecase {}
 
-class _MockCreateChainSwapToExternalUsecase extends Mock
-    implements CreateChainSwapToExternalUsecase {}
-
 class _MockWatchWalletTransactionByTxIdUsecase extends Mock
     implements WatchWalletTransactionByTxIdUsecase {}
 
 class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
 
-class _MockUpdateSendSwapLockupFeesUsecase extends Mock
-    implements UpdateSendSwapLockupFeesUsecase {}
-
 class _MockVerifyChainSwapAmountSendUsecase extends Mock
     implements VerifyChainSwapAmountSendUsecase {}
+
+class _MockVerifyExchangePayinUsecase extends Mock
+    implements VerifyExchangePayinUsecase {}
 
 class _MockPreviewBitcoinFeeUsecase extends Mock
     implements PreviewBitcoinFeeUsecase {}
@@ -141,6 +153,9 @@ class _MockCheckLiquidConsolidationUsecase extends Mock
 
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
+
+class _MockVerifySignedTxUsecase extends Mock
+    implements VerifySignedTxUsecase {}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -167,26 +182,30 @@ class _TestableSendCubit extends SendCubit {
     required super.getWalletsUsecase,
     required super.getWalletUsecase,
     required super.createSendSwapUsecase,
+    required super.getSendSwapQuoteUsecase,
+    required super.createSendCrossChainSwapUsecase,
+    required super.getSendCrossChainQuoteUsecase,
+    required super.resolveLightningAddressUsecase,
+    required super.updateSendSwapPayinUsecase,
+    required super.watchSendSwapUsecase,
     required super.updatePaidSendSwapUsecase,
-    required super.getSwapLimitsUsecase,
-    required super.watchSwapUsecase,
     required super.watchFinishedWalletSyncsUsecase,
-    required super.decodeInvoiceUsecase,
     required super.signBitcoinTxUsecase,
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTxUsecase,
     required super.broadcastLiquidTxUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateLiquidPsetSizeUsecase,
-    required super.createChainSwapToExternalUsecase,
     required super.watchWalletTransactionByTxIdUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
-    required super.updateSendSwapLockupFeesUsecase,
     required super.verifyChainSwapAmountSendUsecase,
+    required super.verifyExchangePayinUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
+    required super.verifySignedTxUsecase,
+    super.parsePaymentRequest,
   });
 
   void setStateForTest(SendState state) => emit(state);
@@ -247,11 +266,14 @@ void main() {
   late _MockGetWalletsUsecase getWalletsUsecase;
   late _MockGetWalletUsecase getWalletUsecase;
   late _MockCreateSendSwapUsecase createSendSwapUsecase;
+  late _MockGetSendSwapQuoteUsecase getSendSwapQuoteUsecase;
+  late _MockCreateSendCrossChainSwapUsecase createSendCrossChainSwapUsecase;
+  late _MockGetSendCrossChainQuoteUsecase getSendCrossChainQuoteUsecase;
+  late _MockResolveLightningAddressUsecase resolveLightningAddressUsecase;
+  late _MockUpdateSendSwapPayinUsecase updateSendSwapPayinUsecase;
+  late _MockWatchSendSwapUsecase watchSendSwapUsecase;
   late _MockUpdatePaidSendSwapUsecase updatePaidSendSwapUsecase;
-  late _MockGetSwapLimitsUsecase getSwapLimitsUsecase;
-  late _MockWatchSwapUsecase watchSwapUsecase;
   late _MockWatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase;
-  late _MockDecodeInvoiceUsecase decodeInvoiceUsecase;
   late _MockSignBitcoinTxUsecase signBitcoinTxUsecase;
   late _MockSignLiquidTxUsecase signLiquidTxUsecase;
   late _MockBroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase;
@@ -259,20 +281,22 @@ void main() {
   late _MockCalculateLiquidAbsoluteFeesUsecase
   calculateLiquidAbsoluteFeesUsecase;
   late _MockCalculateLiquidPsetSizeUsecase calculateLiquidPsetSizeUsecase;
-  late _MockCreateChainSwapToExternalUsecase createChainSwapToExternalUsecase;
   late _MockWatchWalletTransactionByTxIdUsecase
   watchWalletTransactionByTxIdUsecase;
   late _MockCalculateBitcoinAbsoluteFeesUsecase
   calculateBitcoinAbsoluteFeesUsecase;
-  late _MockUpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase;
   late _MockVerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase;
+  late _MockVerifyExchangePayinUsecase verifyExchangePayinUsecase;
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
+  late _MockVerifySignedTxUsecase verifySignedTxUsecase;
 
   late StreamController<PayjoinSession> payjoinEvents;
 
-  _TestableSendCubit buildCubit() => _TestableSendCubit(
+  _TestableSendCubit buildCubit({
+    Future<PaymentRequest> Function(String)? parsePaymentRequest,
+  }) => _TestableSendCubit(
     labelsFacade: labelsFacade,
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
@@ -288,26 +312,30 @@ void main() {
     getWalletsUsecase: getWalletsUsecase,
     getWalletUsecase: getWalletUsecase,
     createSendSwapUsecase: createSendSwapUsecase,
+    getSendSwapQuoteUsecase: getSendSwapQuoteUsecase,
+    createSendCrossChainSwapUsecase: createSendCrossChainSwapUsecase,
+    getSendCrossChainQuoteUsecase: getSendCrossChainQuoteUsecase,
+    resolveLightningAddressUsecase: resolveLightningAddressUsecase,
+    updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
+    watchSendSwapUsecase: watchSendSwapUsecase,
     updatePaidSendSwapUsecase: updatePaidSendSwapUsecase,
-    getSwapLimitsUsecase: getSwapLimitsUsecase,
-    watchSwapUsecase: watchSwapUsecase,
     watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
-    decodeInvoiceUsecase: decodeInvoiceUsecase,
     signBitcoinTxUsecase: signBitcoinTxUsecase,
     signLiquidTxUsecase: signLiquidTxUsecase,
     broadcastBitcoinTxUsecase: broadcastBitcoinTxUsecase,
     broadcastLiquidTxUsecase: broadcastLiquidTxUsecase,
     calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
     calculateLiquidPsetSizeUsecase: calculateLiquidPsetSizeUsecase,
-    createChainSwapToExternalUsecase: createChainSwapToExternalUsecase,
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxIdUsecase,
     calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinAbsoluteFeesUsecase,
-    updateSendSwapLockupFeesUsecase: updateSendSwapLockupFeesUsecase,
     verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
+    verifyExchangePayinUsecase: verifyExchangePayinUsecase,
     previewBitcoinFeeUsecase: previewBitcoinFeeUsecase,
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
+    verifySignedTxUsecase: verifySignedTxUsecase,
+    parsePaymentRequest: parsePaymentRequest,
   );
 
   /// Precondition state that makes [SendState.willAttemptPayjoin] true and
@@ -331,6 +359,11 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_FakeNewLabel());
+    registerFallbackValue(_bitcoinLocalWallet());
+    registerFallbackValue(BigInt.zero);
+    registerFallbackValue(
+      const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
+    );
   });
 
   setUp(() {
@@ -349,11 +382,14 @@ void main() {
     getWalletsUsecase = _MockGetWalletsUsecase();
     getWalletUsecase = _MockGetWalletUsecase();
     createSendSwapUsecase = _MockCreateSendSwapUsecase();
+    getSendSwapQuoteUsecase = _MockGetSendSwapQuoteUsecase();
+    createSendCrossChainSwapUsecase = _MockCreateSendCrossChainSwapUsecase();
+    getSendCrossChainQuoteUsecase = _MockGetSendCrossChainQuoteUsecase();
+    resolveLightningAddressUsecase = _MockResolveLightningAddressUsecase();
+    updateSendSwapPayinUsecase = _MockUpdateSendSwapPayinUsecase();
+    watchSendSwapUsecase = _MockWatchSendSwapUsecase();
     updatePaidSendSwapUsecase = _MockUpdatePaidSendSwapUsecase();
-    getSwapLimitsUsecase = _MockGetSwapLimitsUsecase();
-    watchSwapUsecase = _MockWatchSwapUsecase();
     watchFinishedWalletSyncsUsecase = _MockWatchFinishedWalletSyncsUsecase();
-    decodeInvoiceUsecase = _MockDecodeInvoiceUsecase();
     signBitcoinTxUsecase = _MockSignBitcoinTxUsecase();
     signLiquidTxUsecase = _MockSignLiquidTxUsecase();
     broadcastBitcoinTxUsecase = _MockBroadcastBitcoinTransactionUsecase();
@@ -361,16 +397,24 @@ void main() {
     calculateLiquidAbsoluteFeesUsecase =
         _MockCalculateLiquidAbsoluteFeesUsecase();
     calculateLiquidPsetSizeUsecase = _MockCalculateLiquidPsetSizeUsecase();
-    createChainSwapToExternalUsecase = _MockCreateChainSwapToExternalUsecase();
     watchWalletTransactionByTxIdUsecase =
         _MockWatchWalletTransactionByTxIdUsecase();
     calculateBitcoinAbsoluteFeesUsecase =
         _MockCalculateBitcoinAbsoluteFeesUsecase();
-    updateSendSwapLockupFeesUsecase = _MockUpdateSendSwapLockupFeesUsecase();
     verifyChainSwapAmountSendUsecase = _MockVerifyChainSwapAmountSendUsecase();
+    verifyExchangePayinUsecase = _MockVerifyExchangePayinUsecase();
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
+    verifySignedTxUsecase = _MockVerifySignedTxUsecase();
+    // A hardware signer that returns what it was asked to sign: the default
+    // is acceptance, tests that need a tampered device re-stub it.
+    when(
+      () => verifySignedTxUsecase.execute(
+        unsignedPsbt: any(named: 'unsignedPsbt'),
+        signedTxHex: any(named: 'signedTxHex'),
+      ),
+    ).thenAnswer((_) async {});
 
     payjoinEvents = StreamController<PayjoinSession>.broadcast();
 
@@ -421,6 +465,50 @@ void main() {
   }
 
   group('SendCubit._watchPayjoin', () {
+    test(
+      'confirm starts payjoin even when the regular PSBT was pre-signed',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.sending);
+        expect(cubit.state.payjoinSender?.status, PayjoinStatus.requested);
+        verify(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: 'w1',
+            isTestnet: false,
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: 'cHNidP8=',
+            amountSat: 50000,
+            networkFeesSatPerVb: 2,
+          ),
+        ).called(1);
+        verifyNever(
+          () => broadcastBitcoinTxUsecase.execute(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+          ),
+        );
+      },
+    );
+
     test('a completed PayjoinSender (real payjoin, txId set) resolves the flow '
         'to success with the payjoin txid, syncs the wallet and stores the '
         'user label on that final txid', () async {
@@ -474,9 +562,10 @@ void main() {
       await pumpEventQueue();
 
       expect(cubit.state.step, SendStep.confirm);
-      expect(cubit.state.confirmTransactionException, isNotNull);
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
       expect(
-        cubit.state.confirmTransactionException!.isBroadcastFailure,
+        (cubit.state.failure! as SendTransactionConfirmationFailure)
+            .isBroadcastFailure,
         isTrue,
       );
       // The key C7 clear: both must be nulled so broadcastTransaction's
@@ -501,7 +590,361 @@ void main() {
         expect(cubit.state.payjoinSender!.status, PayjoinStatus.proposed);
         expect(cubit.state.step, stepBefore);
         expect(cubit.state.step, isNot(SendStep.success));
-        expect(cubit.state.confirmTransactionException, isNull);
+        expect(cubit.state.failure, isNull);
+      },
+    );
+  });
+
+  group('SendCubit — hardware-signer transaction verification', () {
+    SendState hardwareSignReadyState() => SendState(
+      step: SendStep.confirm,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinLocalWallet(),
+      unsignedPsbt: 'cHNidP8=',
+      confirmedAmountSat: 50000,
+    );
+
+    test('audit reproducer: a signed transaction that fails verification is '
+        'refused, never stored for broadcast', () async {
+      // Before the fix, updateSignedBitcoinTx stored the device-returned
+      // bytes verbatim and onConfirmTransactionClicked broadcast them
+      // unchecked, while the confirm screen kept showing the pre-signing
+      // address and amount.
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      when(
+        () => verifySignedTxUsecase.execute(
+          unsignedPsbt: any(named: 'unsignedPsbt'),
+          signedTxHex: any(named: 'signedTxHex'),
+        ),
+      ).thenThrow(
+        VerifySignedTxException('The signed transaction does not match'),
+      );
+
+      await cubit.updateSignedBitcoinTx('deadbeef');
+
+      expect(
+        cubit.state.signedBitcoinTx,
+        isNull,
+        reason: 'a tampered transaction must never reach the broadcast path',
+      );
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+    });
+
+    test('a signed transaction passing the output check is stored', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+
+      await cubit.updateSignedBitcoinTx('deadbeef');
+
+      expect(cubit.state.signedBitcoinTx, 'deadbeef');
+      expect(cubit.state.failure, isNull);
+      verify(
+        () => verifySignedTxUsecase.execute(
+          unsignedPsbt: 'cHNidP8=',
+          signedTxHex: 'deadbeef',
+        ),
+      ).called(1);
+    });
+
+    test('a valid retry clears the previous verification error', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      var attempts = 0;
+      when(
+        () => verifySignedTxUsecase.execute(
+          unsignedPsbt: any(named: 'unsignedPsbt'),
+          signedTxHex: any(named: 'signedTxHex'),
+        ),
+      ).thenAnswer((_) async {
+        attempts++;
+        if (attempts == 1) {
+          throw VerifySignedTxException(
+            'The signed transaction does not match',
+          );
+        }
+      });
+
+      expect(await cubit.updateSignedBitcoinTx('tampered'), isFalse);
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+
+      expect(await cubit.updateSignedBitcoinTx('valid'), isTrue);
+      expect(cubit.state.signedBitcoinTx, 'valid');
+      expect(cubit.state.failure, isNull);
+    });
+
+    test(
+      'a signed transaction with no unsigned PSBT in state is refused',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          hardwareSignReadyState().copyWith(unsignedPsbt: null),
+        );
+
+        await cubit.updateSignedBitcoinTx('deadbeef');
+
+        expect(cubit.state.signedBitcoinTx, isNull);
+        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+        verifyNever(
+          () => verifySignedTxUsecase.execute(
+            unsignedPsbt: any(named: 'unsignedPsbt'),
+            signedTxHex: any(named: 'signedTxHex'),
+          ),
+        );
+      },
+    );
+  });
+
+  group('SendCubit.onAmountConfirmed note handling', () {
+    /// A Lightning send whose invoice carries a description. The description is
+    /// the only record of what the payment was for, and the note is what ends
+    /// up as a label on the sender's own transaction — so an empty note takes
+    /// the description rather than dropping it. A note the user typed always
+    /// wins over the description.
+    SendState lightningReadyState({String label = ''}) => SendState(
+      step: SendStep.confirm,
+      sendType: SendType.lightning,
+      selectedWallet: _bitcoinLocalWallet(),
+      paymentRequest: const PaymentRequest.bolt11(
+        invoice: 'lnbc1-invoice',
+        amountSat: 50000,
+        paymentHash: 'hash',
+        description: 'Order 123456',
+        expiresAt: 0,
+        isTestnet: false,
+      ),
+      label: label,
+    );
+
+    /// Stops `onAmountConfirmed` right after the emit under test: the quote
+    /// lookup is the next call and returning an error makes it bail out.
+    void stubQuoteFailure() {
+      when(
+        () => getSendSwapQuoteUsecase.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: any(named: 'amountSat'),
+        ),
+      ).thenAnswer((_) async => const Err(SendInvoiceExpiredFailure()));
+    }
+
+    test('an empty note is seeded with the invoice description', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubQuoteFailure();
+      cubit.setStateForTest(lightningReadyState());
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.lightningInvoice, isNotNull);
+      expect(cubit.state.label, 'Order 123456');
+    });
+
+    test('a note the user typed overrides the invoice description', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubQuoteFailure();
+      cubit.setStateForTest(lightningReadyState(label: 'coffee'));
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.label, 'coffee');
+    });
+  });
+
+  group('SendCubit.broadcastTransaction - BIP21 advertising pj without an '
+      'attempted payjoin', () {
+    SendState plainSignedState({String label = ''}) => SendState(
+      step: SendStep.sending,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinLocalWallet(),
+      paymentRequest: _payjoinBip21(),
+      payjoinGloballyEnabled: false,
+      isToSelf: false,
+      signedBitcoinPsbt: 'signed-psbt',
+      label: label,
+    );
+
+    void stubBroadcast() {
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+        ),
+      ).thenAnswer((_) async => 'broadcast-txid');
+    }
+
+    test(
+      'broadcasts the signed transaction and succeeds with its txid',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubBroadcast();
+        cubit.setStateForTest(plainSignedState());
+
+        await cubit.broadcastTransaction();
+
+        verify(
+          () => broadcastBitcoinTxUsecase.execute('signed-psbt', isPsbt: true),
+        ).called(1);
+        expect(cubit.state.txId, 'broadcast-txid');
+        expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.failure, isNull);
+      },
+    );
+
+    test('with a user label, stores the label on the broadcast txid', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubBroadcast();
+      cubit.setStateForTest(plainSignedState(label: 'coffee'));
+
+      await cubit.broadcastTransaction();
+
+      verify(
+        () => broadcastBitcoinTxUsecase.execute('signed-psbt', isPsbt: true),
+      ).called(1);
+      expect(cubit.state.txId, 'broadcast-txid');
+      expect(cubit.state.step, SendStep.success);
+      expect(cubit.state.failure, isNull);
+      final stored =
+          verify(() => labelsFacade.store(captureAny())).captured.single
+              as NewLabel;
+      expect(stored.reference, 'broadcast-txid');
+      expect(stored.label, 'coffee');
+    });
+  });
+
+  group('SendCubit.onChangedText stale detection results', () {
+    const oldText = 'old payment request';
+    const newText = 'new payment request';
+    const oldPaymentRequest = PaymentRequest.bitcoin(
+      address: 'old-address',
+      isTestnet: true,
+    );
+    const newPaymentRequest = PaymentRequest.bitcoin(
+      address: 'new-address',
+      isTestnet: true,
+    );
+
+    test('ignores an old success that resolves after a new success', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == oldText ? oldResult.future : newResult.future;
+      });
+
+      final oldInput = cubit.onChangedText(oldText);
+      final newInput = cubit.onChangedText(newText);
+      newResult.complete(newPaymentRequest);
+      await newInput;
+      oldResult.complete(oldPaymentRequest);
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, newText);
+      expect(cubit.state.paymentRequest, newPaymentRequest);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('ignores an old error that resolves after a new success', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == oldText ? oldResult.future : newResult.future;
+      });
+
+      final oldInput = cubit.onChangedText(oldText);
+      final newInput = cubit.onChangedText(newText);
+      newResult.complete(newPaymentRequest);
+      await newInput;
+      oldResult.completeError(StateError('old parse failed'));
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, newText);
+      expect(cubit.state.paymentRequest, newPaymentRequest);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('ignores an old success that resolves after a scan', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: oldText),
+      ).thenAnswer((_) => oldResult.future);
+
+      final oldInput = cubit.onChangedText(oldText);
+      await cubit.onScannedPaymentRequest('scanned payment request', null);
+      oldResult.complete(oldPaymentRequest);
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, 'scanned payment request');
+      expect(cubit.state.paymentRequest, isNull);
+    });
+
+    test(
+      'ignores a stale scan after a newer paste during Lightning parsing',
+      () async {
+        final parsing = Completer<PaymentRequest>();
+        final cubit = buildCubit(parsePaymentRequest: (_) => parsing.future);
+        addTearDown(cubit.close);
+        when(
+          () => detectBitcoinStringUsecase.execute(data: 'new payment request'),
+        ).thenAnswer(
+          (_) async => const PaymentRequest.bitcoin(
+            address: 'new-address',
+            isTestnet: true,
+          ),
+        );
+        when(
+          () => bestWalletUsecase.execute(
+            wallets: any(named: 'wallets'),
+            request: any(named: 'request'),
+            amountSat: any(named: 'amountSat'),
+          ),
+        ).thenReturn(_bitcoinLocalWallet());
+        const bip21 = PaymentRequest.bip21(
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:old-address?lightning=old-invoice',
+          address: 'old-address',
+          lightning: 'old-invoice',
+        );
+
+        final oldScan = cubit.onScannedPaymentRequest('old scan', bip21);
+        await Future<void>.delayed(Duration.zero);
+        await cubit.onChangedText('new payment request');
+        parsing.complete(
+          PaymentRequest.bolt11(
+            invoice: 'stale-invoice',
+            amountSat: 1000,
+            paymentHash: 'stale-hash',
+            expiresAt: DateTime(2030).millisecondsSinceEpoch ~/ 1000,
+            isTestnet: true,
+          ),
+        );
+        await oldScan;
+
+        expect(cubit.state.copiedRawPaymentRequest, 'new payment request');
+        expect(
+          cubit.state.paymentRequest,
+          const PaymentRequest.bitcoin(address: 'new-address', isTestnet: true),
+        );
+        expect(cubit.state.selectedWallet, isNull);
+        expect(cubit.state.step, SendStep.address);
+        expect(cubit.state.loadingBestWallet, isFalse);
       },
     );
   });

@@ -7,10 +7,19 @@ class BroadcastOriginalTransactionUsecase {
 
   const BroadcastOriginalTransactionUsecase(this._sender);
 
+  Future<bool> canExecute(PayjoinSession payjoin) async {
+    return switch (await _sender.canBroadcastOriginal(payjoin.id)) {
+      Ok(:final value) => value,
+      Err() => false,
+    };
+  }
+
   Future<PayjoinSession> execute(PayjoinSession payjoin) async {
     final result = await _sender.broadcastOriginal(payjoin.id);
     return switch (result) {
       Ok(:final value) => value,
+      Err(failure: PayjoinFallbackUnavailableFailure()) =>
+        throw BroadcastOriginalTransactionUnavailableException(),
       Err() => throw BroadcastOriginalTransactionException(
         'Failed to broadcast original transaction',
       ),
@@ -20,4 +29,9 @@ class BroadcastOriginalTransactionUsecase {
 
 class BroadcastOriginalTransactionException extends BullException {
   BroadcastOriginalTransactionException(super.message);
+}
+
+class BroadcastOriginalTransactionUnavailableException extends BullException {
+  BroadcastOriginalTransactionUnavailableException()
+    : super('Original transaction is no longer available for broadcast');
 }

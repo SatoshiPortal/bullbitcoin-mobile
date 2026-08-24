@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/report.dart';
+import 'package:bull_tor/tor.dart';
 
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
@@ -34,8 +35,11 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool isDevModeEnabled,
     required bool useTorProxy,
     required int torProxyPort,
+    TorTransportMode torTransportMode = TorTransportMode.automatic,
+    TorTransport? lastSuccessfulTorTransport,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
+    bool screenCaptureProtectionEnabled = true,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
   }) async {
@@ -51,8 +55,11 @@ class SettingsRepository implements domain.SettingsRepository {
         isDevModeEnabled: isDevModeEnabled,
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
+        torTransportMode: torTransportMode,
+        lastSuccessfulTorTransport: lastSuccessfulTorTransport,
         themeMode: themeMode,
         isErrorReportingEnabled: isErrorReportingEnabled,
+        screenCaptureProtectionEnabled: screenCaptureProtectionEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
         exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
       ),
@@ -73,8 +80,11 @@ class SettingsRepository implements domain.SettingsRepository {
       isDevModeEnabled: s.isDevModeEnabled,
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
+      torTransportMode: s.torTransportMode,
+      lastSuccessfulTorTransport: s.lastSuccessfulTorTransport,
       themeMode: s.themeMode,
       isErrorReportingEnabled: s.isErrorReportingEnabled,
+      screenCaptureProtectionEnabled: s.screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
     );
@@ -127,6 +137,16 @@ class SettingsRepository implements domain.SettingsRepository {
   }
 
   @override
+  Future<void> setTorTransportMode(TorTransportMode mode) async {
+    await _settingsDatasource.setTorTransportMode(mode);
+  }
+
+  @override
+  Future<void> setLastSuccessfulTorTransport(TorTransport transport) async {
+    await _settingsDatasource.setLastSuccessfulTorTransport(transport);
+  }
+
+  @override
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _settingsDatasource.setThemeMode(themeMode);
   }
@@ -148,5 +168,10 @@ class SettingsRepository implements domain.SettingsRepository {
     // Sync [Report]'s boot-time mirror so the next cold start's Sentry
     // init can seed consent before the locator is available.
     await Report.updateConsent(enabled);
+  }
+
+  @override
+  Future<void> setScreenCaptureProtectionEnabled(bool enabled) async {
+    await _settingsDatasource.setScreenCaptureProtectionEnabled(enabled);
   }
 }

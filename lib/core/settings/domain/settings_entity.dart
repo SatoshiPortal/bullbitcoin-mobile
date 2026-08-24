@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bull_tor/tor.dart';
 
 part 'settings_entity.freezed.dart';
 
@@ -141,8 +142,11 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? isDevModeEnabled,
     @Default(false) bool useTorProxy,
     @Default(9050) int torProxyPort,
+    @Default(TorTransportMode.automatic) TorTransportMode torTransportMode,
+    TorTransport? lastSuccessfulTorTransport,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
+    @Default(true) bool screenCaptureProtectionEnabled,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;

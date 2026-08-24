@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
@@ -245,6 +246,9 @@ void main() {
     when(() => payOrder.payinAmount).thenReturn(0.001);
     when(() => payOrder.payoutCurrency).thenReturn('CAD');
     when(() => payOrder.bitcoinAddress).thenReturn(payinAddress);
+    // The deposit-address pinning compares orders through this getter; the
+    // default order carries the creation-time address.
+    when(() => payOrder.toAddress).thenReturn(payinAddress);
     // The post-broadcast completion only succeeds once the exchange sees the
     // payin; default to seen, tests that need otherwise re-stub it.
     when(() => payOrder.payinStatus).thenReturn(OrderPayinStatus.inProgress);
@@ -618,7 +622,10 @@ void main() {
     test('a price refresh cannot overwrite a confirmation in flight', () async {
       final refresh = Completer<FiatPaymentOrder>();
       when(
-        () => refreshPayOrder.execute(orderId: any(named: 'orderId')),
+        () => refreshPayOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
       ).thenAnswer((_) => refresh.future);
 
       bloc.add(const PayEvent.orderRefreshTimePassed());
@@ -661,6 +668,52 @@ void main() {
       final state = bloc.state as PayPaymentState;
       expect(state.payinBroadcastTxid, expectedTxid);
       expect(state.isConfirmingPayment, isTrue);
+    });
+
+    test('an old order poll cannot overwrite a replacement order', () async {
+      final poll = Completer<Order>();
+      when(
+        () => getOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) => poll.future);
+      when(
+        () => payOrder.payinStatus,
+      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      final replacementOrder = _MockPayOrder();
+      when(() => replacementOrder.orderId).thenReturn('order-2');
+      when(() => replacementOrder.toAddress).thenReturn(payinAddress);
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await untilCalled(() => getOrder.execute(orderId: 'order-1'));
+      bloc.seed(paymentState().copyWith(payOrder: replacementOrder));
+      poll.complete(payOrder);
+      await pumpEventQueue();
+
+      final state = bloc.state as PayPaymentState;
+      expect(state.payOrder, same(replacementOrder));
+    });
+
+    test('poll and screen update share one in-flight order request', () async {
+      final request = Completer<Order>();
+      var requestCount = 0;
+      when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer((
+        _,
+      ) {
+        requestCount++;
+        return request.future;
+      });
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await untilCalled(() => getOrder.execute(orderId: any(named: 'orderId')));
+
+      bloc.add(const PayEvent.updateOrderStatus(orderId: 'order-1'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(requestCount, 1);
+
+      request.complete(payOrder);
+      await pumpEventQueue();
+
+      expect(requestCount, 2);
     });
 
     test('absolute custom fees pass their actual rate to Payjoin', () async {
@@ -1042,5 +1095,156 @@ void main() {
         expect(selection.isCreatingPayOrder, isFalse);
       },
     );
+  });
+
+  group('PayBloc — deposit address pinning', () {
+    /// A refresh response whose deposit address differs from the one the
+    /// order was created with. Stands in for a compromised backend or a
+    /// MITM rewriting the exchange API response.
+    _MockPayOrder tamperedOrder() {
+      final order = _MockPayOrder();
+      when(() => order.orderId).thenReturn('order-1');
+      when(() => order.payinAmount).thenReturn(0.001);
+      when(() => order.payoutCurrency).thenReturn('CAD');
+      when(
+        () => order.toAddress,
+      ).thenReturn('bc1qattacker00000000000000000000000000000');
+      return order;
+    }
+
+    test('audit reproducer: a refreshed order carrying a different deposit '
+        'address is refused, never adopted', () async {
+      // Before the fix, _onOrderRefreshTimePassed replaced the whole order
+      // unconditionally and the confirm screen never showed the address, so
+      // a tampered refresh silently redirected the payin.
+      when(
+        () => refreshPayOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
+      ).thenThrow(const PayError.depositAddressChanged());
+
+      bloc.add(const PayEvent.orderRefreshTimePassed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final state = bloc.state as PayPaymentState;
+      expect(
+        state.payOrder,
+        same(payOrder),
+        reason:
+            'a refreshed order with a different deposit address must never '
+            'replace the order the payin is built from',
+      );
+      expect(state.error, isA<DepositAddressChangedPayError>());
+    });
+
+    test(
+      'a refreshed order carrying the same deposit address is adopted',
+      () async {
+        final refreshedOrder = _MockPayOrder();
+        when(() => refreshedOrder.orderId).thenReturn('order-1');
+        // A new price lock moves the payin amount — that part of the refresh
+        // must keep working.
+        when(() => refreshedOrder.payinAmount).thenReturn(0.002);
+        when(() => refreshedOrder.payoutCurrency).thenReturn('CAD');
+        when(() => refreshedOrder.toAddress).thenReturn(payinAddress);
+        when(
+          () => refreshPayOrder.execute(
+            orderId: any(named: 'orderId'),
+            expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          ),
+        ).thenAnswer((_) async => refreshedOrder);
+
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        final state = bloc.state as PayPaymentState;
+        expect(state.payOrder, same(refreshedOrder));
+        expect(state.error, isNull);
+      },
+    );
+
+    test('a polled order carrying a different deposit address is refused '
+        'while the payment is still unsigned', () async {
+      // The periodic order poll is a second adoption path for a tampered
+      // order: it merges the fetched order into the live payment state.
+      final tampered = tamperedOrder();
+      when(
+        () => tampered.payinStatus,
+      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      when(
+        () => getOrder.execute(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) async => tampered);
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final state = bloc.state as PayPaymentState;
+      expect(state.payOrder, same(payOrder));
+      expect(state.error, isA<DepositAddressChangedPayError>());
+    });
+
+    test(
+      'a changed address is refused even when the poll reports progress',
+      () async {
+        final tampered = tamperedOrder();
+        when(
+          () => tampered.payinStatus,
+        ).thenReturn(OrderPayinStatus.inProgress);
+        when(
+          () => getOrder.execute(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => tampered);
+
+        bloc.add(const PayEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        expect(bloc.state, isA<PayPaymentState>());
+        expect(
+          (bloc.state as PayPaymentState).error,
+          isA<DepositAddressChangedPayError>(),
+        );
+      },
+    );
+
+    test('after a refused refresh, the payin still targets the creation-time '
+        'address', () async {
+      when(
+        () => refreshPayOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
+      ).thenThrow(const PayError.depositAddressChanged());
+
+      bloc.add(const PayEvent.orderRefreshTimePassed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(
+        (bloc.state as PayPaymentState).error,
+        isA<DepositAddressChangedPayError>(),
+      );
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+
+      final builtAddresses = verify(
+        () => prepareBitcoinSend.execute(
+          walletId: any(named: 'walletId'),
+          address: captureAny(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).captured;
+      expect(
+        builtAddresses,
+        everyElement(payinAddress),
+        reason:
+            'the payin must only ever pay the address the order was created '
+            'with',
+      );
+
+      // Let the confirmation settle so nothing emits after tearDown closes.
+      await Future<void>.delayed(const Duration(seconds: 6));
+    }, timeout: const Timeout(Duration(seconds: 60)));
   });
 }

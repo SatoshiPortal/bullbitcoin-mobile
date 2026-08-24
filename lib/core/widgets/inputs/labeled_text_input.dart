@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
 class LabeledTextInput extends StatelessWidget {
   final String label;
@@ -11,6 +10,11 @@ class LabeledTextInput extends StatelessWidget {
   final Function(String)? onChanged;
   final int? maxLines;
 
+  /// Both default to true. Set them false for secrets: the IME's suggestion
+  /// and autocorrect caches must never see the value.
+  final bool enableSuggestions;
+  final bool autocorrect;
+
   const LabeledTextInput({
     super.key,
     required this.label,
@@ -18,6 +22,8 @@ class LabeledTextInput extends StatelessWidget {
     required this.onChanged,
     this.hint = '',
     this.maxLines,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
   });
 
   @override
@@ -47,7 +53,7 @@ class LabeledTextInput extends StatelessWidget {
               ),
             ],
           ),
-          child: BBInputText(
+          child: BullInputText(
             value: value,
             onChanged: onChanged ?? (_) {},
             disabled: onChanged == null,
@@ -64,6 +70,8 @@ class LabeledTextInput extends StatelessWidget {
             hint: hint,
             hideBorder: true,
             maxLines: maxLines,
+            enableSuggestions: enableSuggestions,
+            autocorrect: autocorrect,
           ),
         ),
       ],

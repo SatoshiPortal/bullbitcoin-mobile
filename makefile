@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -23,6 +23,12 @@ clean:
 deps:
 	@echo "🏃 Fetch dependencies (enforce pubspec.lock)"
 	@fvm flutter pub get --enforce-lockfile
+	@fvm dart tools/prepare_payjoin_dependency.dart
+
+# Git checkouts omit the generated binding; the published archive is the SHA-pinned oracle.
+# Use `dart` rather than `dart run` intentionally: prepare the source before native build hooks run.
+prepare-payjoin-dependency:
+	@fvm dart tools/prepare_payjoin_dependency.dart
 
 # Intentionally re-resolve from scratch: deletes the lockfiles and lets pub pick
 # fresh versions (and, for branch refs, fresh commits). Use only when you mean to
@@ -31,6 +37,7 @@ deps-update:
 	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock + ios/Podfile.lock)"
 	@rm -f pubspec.lock ios/Podfile.lock
 	@fvm flutter pub get
+	@fvm dart tools/prepare_payjoin_dependency.dart
 
 # Melos workspace bootstrap (pub get across the workspace + package linking).
 # Wraps `fvm dart run melos` so the pinned SDK (.fvmrc) is used — never bare
@@ -97,6 +104,23 @@ ios-sqlite-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
+
+ios-release:
+	@if [ "$$(uname)" != "Darwin" ]; then echo "iOS releases require macOS"; exit 1; fi
+	@case "$(BUILD_NUMBER)" in ''|*[!0-9]*|0) echo "BUILD_NUMBER must be a positive integer"; exit 1;; esac
+	@echo "Building App Store IPA (build $(BUILD_NUMBER))"
+# pubspec's `default-flavor: production` exists for the Android product flavors,
+# but Flutter applies it to every platform: with no --flavor on the command line
+# it still resolves one, then looks for a matching Xcode scheme. iOS ships a
+# single unflavored Runner scheme, so the build aborts with a misleading "You
+# must specify a --flavor option". Drop the key for the duration of the build and
+# restore it whatever happens. The only visible effect is `appFlavor` being null
+# instead of 'production', which the app reads in exactly one place, to draw the
+# beta banner (lib/main.dart).
+	@backup="$$(mktemp)"; cp pubspec.yaml "$$backup" \
+	  && trap 'cp "$$backup" pubspec.yaml; rm -f "$$backup"' EXIT INT TERM \
+	  && grep -v '^[[:space:]]*default-flavor:' "$$backup" > pubspec.yaml \
+	  && fvm flutter build ipa --release --build-number "$(BUILD_NUMBER)" $(if $(EXPORT_OPTIONS_PLIST),--export-options-plist "$(EXPORT_OPTIONS_PLIST)")
 
 # Container runtime — default podman, override with CONTAINER=docker for
 # environments without podman.
@@ -254,7 +278,7 @@ android: container-app
 # read the live pin out of bull-app. Keep in sync with the `channel` in
 # bdk-dart's native/rust-toolchain.toml (bdk_dart is transitive via bull_sdk).
 BDK_RUST_VERSION ?= 1.85.1
-TRACKED_RUST_LIBS := libbdk_dart_ffi.so libtor.so libpayjoin_flutter.so librust_lib_bull_sdk.so
+TRACKED_RUST_LIBS := libbdk_dart_ffi.so libonion.so libpayjoin_flutter.so librust_lib_bull_sdk.so
 verify-rustc-pins:
 	@command -v strings >/dev/null 2>&1 || { echo "❌ 'strings' (binutils) not found — cannot verify rustc pins. Install binutils; failing closed rather than skipping the check (a skipped check must never read as green)."; exit 1; }
 	@tmpdir=$$(mktemp -d); \
@@ -278,7 +302,7 @@ verify-rustc-pins:
 			name=$$(basename "$$so"); \
 			case "$$name" in \
 				libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
-				libtor.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
+				libonion.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
 				*) expected="" ;; \
 			esac; \
 			embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \

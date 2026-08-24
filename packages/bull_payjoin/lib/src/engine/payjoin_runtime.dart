@@ -196,6 +196,7 @@ abstract interface class _PayjoinRuntimeContract {
     StartPayjoinReceiver request,
   );
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id);
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id);
   Future<Result<void, PayjoinFailure>> cancel(String id);
   Future<Result<void, PayjoinFailure>> disableAll();
   Future<Result<PayjoinSession?, PayjoinFailure>> byId(String id);
@@ -324,13 +325,24 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       if (current == null) {
         return const Err(PayjoinSessionNotFoundFailure('Session not found'));
       }
-      final updated = await _engine.tryBroadcastOriginalTransaction(current);
-      if (updated == null) {
-        return const Err(PayjoinBroadcastFailure('Broadcast failed'));
-      }
-      return Ok(_toSession(updated));
+      return (await _engine.tryBroadcastOriginalTransaction(
+        current,
+      )).map(_toSession);
     } catch (_) {
       return const Err(PayjoinBroadcastFailure('Broadcast failed'));
+    }
+  }
+
+  @override
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(
+    String sessionId,
+  ) async {
+    try {
+      return Ok(await _engine.canManuallyBroadcastOriginal(sessionId));
+    } catch (_) {
+      return const Err(
+        PayjoinUnavailableFailure('Could not check fallback availability'),
+      );
     }
   }
 
@@ -538,6 +550,10 @@ final class _SenderRole implements PayjoinSender {
   @override
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id) =>
       _runtime.broadcastOriginal(id);
+
+  @override
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id) =>
+      _runtime.canBroadcastOriginal(id);
 }
 
 final class _ReceiverRole implements PayjoinReceiver {

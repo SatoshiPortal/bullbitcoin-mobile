@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 
 sealed class AutoswapFailure extends Failure {
   const AutoswapFailure([super.logMessage]);
@@ -44,4 +45,66 @@ final class AutoswapFeeThresholdTooHighFailure extends AutoswapFailure {
   final int maximumPercent;
 
   const AutoswapFeeThresholdTooHighFailure(this.maximumPercent);
+}
+
+final class AutoswapDisabledFailure extends AutoswapFailure {
+  const AutoswapDisabledFailure();
+}
+
+final class AutoswapInvalidSettingsFailure extends AutoswapFailure {
+  final AutoSwapSettingsViolation violation;
+
+  const AutoswapInvalidSettingsFailure(this.violation);
+}
+
+final class AutoswapNoWalletFailure extends AutoswapFailure {
+  const AutoswapNoWalletFailure();
+}
+
+final class AutoswapUnsupportedWalletFailure extends AutoswapFailure {
+  const AutoswapUnsupportedWalletFailure();
+}
+
+final class AutoswapInsufficientBalanceFailure extends AutoswapFailure {
+  final int? currentBalanceSats;
+  final int? requiredThresholdSats;
+
+  const AutoswapInsufficientBalanceFailure({
+    this.currentBalanceSats,
+    this.requiredThresholdSats,
+  });
+}
+
+final class AutoswapFeeLimitExceededFailure extends AutoswapFailure {
+  final double feePercent;
+  final double thresholdPercent;
+
+  const AutoswapFeeLimitExceededFailure({
+    required this.feePercent,
+    required this.thresholdPercent,
+  });
+}
+
+final class AutoswapProviderFailure extends AutoswapFailure {
+  const AutoswapProviderFailure([super.logMessage]);
+}
+
+final class AutoswapExecutionFailure extends AutoswapFailure {
+  const AutoswapExecutionFailure([super.logMessage]);
+}
+
+final class AutoswapPendingFailure extends AutoswapFailure {
+  const AutoswapPendingFailure();
+}
+
+final class AutoswapPayinMismatchFailure extends AutoswapFailure {
+  const AutoswapPayinMismatchFailure();
+}
+
+final class AutoswapTargetBalanceFailure extends AutoswapFailure {
+  const AutoswapTargetBalanceFailure();
+}
+
+final class AutoswapAmountOutOfBoundsFailure extends AutoswapFailure {
+  const AutoswapAmountOutOfBoundsFailure();
 }

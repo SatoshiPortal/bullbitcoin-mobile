@@ -6340,10 +6340,6 @@
   "@payOpenChannelRequired": {
     "description": "Message indicating a new Lightning channel is needed"
   },
-  "sendNetworkFeesLabel": "Enviar taxas de rede",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "sendErrorAmountExceedsMaximum": "O montante excede o montante máximo de swap",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
@@ -11049,10 +11045,6 @@
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
   },
-  "transactionPayjoinNoProposal": "Não receber uma proposta payjoin do receptor?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "backupKeySeparationWarning": "É importante que você não salve a chave de backup no mesmo lugar onde você salva seu arquivo de backup. Sempre armazená-los em dispositivos separados ou provedores de nuvem separados.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -11590,10 +11582,6 @@
   "walletAutoTransferBlockButton": "Bloco",
   "@walletAutoTransferBlockButton": {
     "description": "Button to block auto-transfer until next execution"
-  },
-  "torSettingsInfoTitle": "Informação Importante",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
   },
   "withdrawOwnershipMyAccount": "Esta é a minha conta",
   "@withdrawOwnershipMyAccount": {
@@ -12486,7 +12474,6 @@
   "priceFailedToLoad": "Falha ao carregar o preço",
   "statusScreenTryAgain": "Tente novamente",
   "statusScreenContinue": "Continue",
-  "torSettingsInfoDescription": "• O proxy Tor se aplica apenas ao Bitcoin (não ao Liquid)\n• A porta padrão do Orbot é 9050\n• Certifique-se de que o Orbot esteja em execução antes de ativar\n• A conexão pode ficar mais lenta através do Tor",
   "noteVisibleToSenderNotice": "Esta nota ficará visível para o destinatário do seu QR ou fatura.",
   "viewerAddressTab": "Endereço",
   "viewerPaymentUriTab": "URI de pagamento",
@@ -12548,5 +12535,40 @@
   "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Ele será ativado assim que você receber fundos.",
   "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
-  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente."
+  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
+  "coreSwapsStatusNotStarted": "Não iniciado",
+  "coreSwapsStatusAwaitingPayment": "Aguardando pagamento",
+  "coreSwapsStatusAwaitingConfirmation": "Aguardando confirmação",
+  "coreSwapsStatusUnderReview": "Em análise",
+  "coreSwapsStatusRejected": "Rejeitado",
+  "coreSwapsStatusCanceled": "Cancelado",
+  "coreSwapsStatusPaymentDeadlineExpired": "Prazo de pagamento expirado",
+  "coreSwapsStatusScheduled": "Agendado",
+  "coreSwapsStatusAwaitingClaim": "Aguardando resgate",
+  "coreSwapsStatusUnknown": "Desconhecido",
+  "sendSwapExpiredTitle": "Ordem expirada",
+  "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira.",
+  "torSettingsStatusCensored": "A conexão parece filtrada",
+  "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isso costuma indicar que a conexão está sendo filtrada.",
+  "torSettingsBootstrapProgress": "Conectando… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Obtendo informações da rede",
+  "recoverbullLongestStep": "Esta é a etapa mais longa. Uma primeira inicialização pode levar mais de um minuto.",
+  "recoverbullTorOffline": "Parece não haver conexão com a internet.",
+  "recoverbullTorClockSkewed": "O relógio do dispositivo está errado, então o Tor não consegue verificar os certificados dos relays. Confira a data e a hora.",
+  "recoverbullTorCantStart": "O Tor não conseguiu conectar agora. Tente novamente.",
+  "recoverbullServerUnreachableTorOk": "O Tor está funcionando, mas o servidor de backup não respondeu. Logo após a primeira inicialização isso pode levar um momento.",
+  "torSettingsEmbeddedTitle": "Tor integrado",
+  "torSettingsEmbeddedDescription": "O Tor integrado é usado pelo RecoverBull e pelos servidores Bitcoin Electrum .onion. O restante do tráfego do app continua direto.",
+  "torSettingsTransportMode": "Método de conexão",
+  "torSettingsModeAutomatic": "Automático",
+  "torSettingsModeDirect": "Direta",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Tenta primeiro uma conexão Tor direta e usa o Snowflake se a rede parecer bloquear o Tor.",
+  "torSettingsModeDirectDescription": "Conecta-se diretamente à rede Tor, sem pluggable transport.",
+  "torSettingsModeSnowflakeDescription": "Usa proxies voluntários do Snowflake para alcançar o Tor a partir de uma rede filtrada.",
+  "torSettingsActiveTransport": "Transporte ativo: {transport}",
+  "torSettingsExternalProxyTitle": "Proxy Tor externo (avançado)",
+  "torSettingsExternalProxyDescription": "Quando ativado, os servidores Bitcoin Electrum e os backups criptografados passam pelo Orbot na porta configurada em vez do Tor integrado. O Liquid nunca é roteado por ele.",
+  "settingsScreenPrivacyTitle": "Privacidade da tela",
+  "settingsScreenPrivacyDisabledMessage": "Agora as capturas de tela são permitidas em telas sensíveis"
 }

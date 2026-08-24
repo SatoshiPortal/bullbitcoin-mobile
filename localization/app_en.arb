@@ -3058,10 +3058,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "Not receiving a payjoin proposal from the receiver?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "Send without payjoin",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"
@@ -6175,10 +6171,6 @@
   "transferFeeLabel": "Transfer Fee",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
-  },
-  "sendNetworkFeesLabel": "Send Network Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
   },
   "confirmButtonLabel": "Confirm",
   "@confirmButtonLabel": {
@@ -12301,14 +12293,6 @@
   "@torSettingsDescUnknown": {
     "description": "Description when Tor status is unknown"
   },
-  "torSettingsInfoTitle": "Important Information",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
-  "torSettingsInfoDescription": "• Tor proxy only applies to Bitcoin (not Liquid)\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connection may be slower through Tor",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "withdrawSuccessTitle": "Withdrawal Initiated",
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"
@@ -12668,7 +12652,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends minimized error reports containing app version, device and operating-system metadata, and a random installation identifier when something breaks. Wallet and transaction payloads are removed.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },
@@ -14441,5 +14425,260 @@
   "legacyBackupNoSeedsMessage": "No recovery phrase could be read from this install. Do NOT delete the app — contact support first.",
   "@legacyBackupNoSeedsMessage": {
     "description": "Warning shown when a legacy install has no readable seed"
+  },
+  "sellDepositAddress": "Deposit address",
+  "@sellDepositAddress": {
+    "description": "Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "payDepositAddress": "Deposit address",
+  "@payDepositAddress": {
+    "description": "Pay confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "sellDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@sellDepositAddressChangedError": {
+    "description": "Sell: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "payDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@payDepositAddressChangedError": {
+    "description": "Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "appUnlockTryAgainIn": "Too many failed attempts. Try again in {seconds} s.",
+  "@appUnlockTryAgainIn": {
+    "description": "Shown on the unlock screen while a brute-force cooldown is running; the dial pad is disabled for its duration",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "sendUnconfidentialLiquidWarning": "Public amount",
+  "@sendUnconfidentialLiquidWarning": {
+    "description": "Liquid send confirm: warning title when the destination address does not support Confidential Transactions"
+  },
+  "sendUnconfidentialLiquidWarningDescription": "This Liquid address does not support Confidential Transactions. The amount you send will be publicly visible on the blockchain.",
+  "@sendUnconfidentialLiquidWarningDescription": {
+    "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
+  },
+  "swapUnderReviewTitle": "Transfer under review",
+  "@swapUnderReviewTitle": {
+    "description": "Title shown when a swap payin requires manual review"
+  },
+  "swapUnderReviewDescription": "This transfer requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
+  "@swapUnderReviewDescription": {
+    "description": "Explanation and no-KYC guidance for a swap under review"
+  },
+  "swapUnderReviewContactSupport": "Contact support",
+  "@swapUnderReviewContactSupport": {
+    "description": "Button opening support for a swap under review"
+  },
+  "swapUnderReviewSupportMessage": "Transfer under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "@swapUnderReviewSupportMessage": {
+    "description": "Prefilled support message containing swap identifiers",
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      },
+      "requestId": {
+        "type": "String"
+      },
+      "orderNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "swapErrorRateLimited": "Too many requests. Please wait {seconds} seconds and try again.",
+  "@swapErrorRateLimited": {
+    "description": "Error shown when the swap provider rate limits a request",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "coreSwapsStatusNotStarted": "Not started",
+  "@coreSwapsStatusNotStarted": {
+    "description": "Order status label: the payin or payout has not begun."
+  },
+  "coreSwapsStatusAwaitingPayment": "Awaiting payment",
+  "@coreSwapsStatusAwaitingPayment": {
+    "description": "Order status label: waiting for the user to pay."
+  },
+  "coreSwapsStatusAwaitingConfirmation": "Awaiting confirmation",
+  "@coreSwapsStatusAwaitingConfirmation": {
+    "description": "Order status label: waiting for confirmation."
+  },
+  "coreSwapsStatusUnderReview": "Under review",
+  "@coreSwapsStatusUnderReview": {
+    "description": "Order status label: the payment is being reviewed."
+  },
+  "coreSwapsStatusRejected": "Rejected",
+  "@coreSwapsStatusRejected": {
+    "description": "Order status label: the order was rejected."
+  },
+  "coreSwapsStatusCanceled": "Canceled",
+  "@coreSwapsStatusCanceled": {
+    "description": "Order status label: the order was canceled."
+  },
+  "coreSwapsStatusPaymentDeadlineExpired": "Payment deadline expired",
+  "@coreSwapsStatusPaymentDeadlineExpired": {
+    "description": "Order status label: the pay-in deadline lapsed."
+  },
+  "coreSwapsStatusScheduled": "Scheduled",
+  "@coreSwapsStatusScheduled": {
+    "description": "Order status label: the payout is scheduled."
+  },
+  "coreSwapsStatusAwaitingClaim": "Awaiting claim",
+  "@coreSwapsStatusAwaitingClaim": {
+    "description": "Order status label: the payout is waiting to be claimed."
+  },
+  "coreSwapsStatusUnknown": "Unknown",
+  "@coreSwapsStatusUnknown": {
+    "description": "Order status label: status not recognized."
+  },
+  "sendSwapExpiredTitle": "Order Expired",
+  "@sendSwapExpiredTitle": {
+    "description": "Title on the send result screen when a swap order expired before any funds were sent."
+  },
+  "sendSwapExpiredMessage": "This order expired before any funds were sent. Nothing was sent from your wallet.",
+  "@sendSwapExpiredMessage": {
+    "description": "Message on the send result screen when a swap order expired before any funds were sent, so there is nothing to refund."
+  },
+  "announcementAppUpdateRequiredTitle": "Update BULL",
+  "@announcementAppUpdateRequiredTitle": {
+    "description": "Title for the wallet home announcement shown when swap services require an app update"
+  },
+  "announcementAppUpdateRequiredDescription": "To use the Lightning payment and swap service, please update the BULL mobile app with the new version.",
+  "@announcementAppUpdateRequiredDescription": {
+    "description": "Description shown after the swap API reports that this app version is no longer supported"
+  },
+  "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
+  "@mempoolErrorNetworkMismatch": {
+    "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
+  },
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
+  "@transactionPayjoinFallbackProcessing": {
+    "description": "Status shown while broadcasting a payjoin fallback transaction"
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsBootstrapProgress": "Connecting… {percent}%",
+  "@torSettingsBootstrapProgress": {
+    "description": "Bootstrap progress percentage while Tor is connecting.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "@torSettingsEmbeddedTitle": {
+    "description": "Heading for embedded Tor settings"
+  },
+  "torSettingsEmbeddedDescription": "Embedded Tor is used by RecoverBull and Bitcoin Electrum .onion servers. Other app traffic remains direct.",
+  "@torSettingsEmbeddedDescription": {
+    "description": "Explains which traffic uses embedded Tor"
+  },
+  "torSettingsTransportMode": "Connection method",
+  "@torSettingsTransportMode": {
+    "description": "Label for the embedded Tor transport selector"
+  },
+  "torSettingsModeAutomatic": "Automatic",
+  "@torSettingsModeAutomatic": {
+    "description": "Automatic Tor transport mode label"
+  },
+  "torSettingsModeDirect": "Direct",
+  "@torSettingsModeDirect": {
+    "description": "Direct Tor transport mode label"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsExternalProxyTitle": "External Tor proxy (advanced)",
+  "@torSettingsExternalProxyTitle": {
+    "description": "Heading for the optional Orbot override"
+  },
+  "torSettingsExternalProxyDescription": "When enabled, Bitcoin Electrum servers and encrypted backups go through Orbot at the configured port instead of embedded Tor. Liquid is never routed through it.",
+  "@torSettingsExternalProxyDescription": {
+    "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
+  },
+  "recoverbullPhaseNetworkInfo": "Retrieving network information",
+  "@recoverbullPhaseNetworkInfo": {
+    "description": "Caption shown while Tor downloads directory information. Covers the whole directory phase, which is 85% of bootstrap."
+  },
+  "recoverbullLongestStep": "This is the longest step. A first start can take over a minute.",
+  "@recoverbullLongestStep": {
+    "description": "Reassurance shown once bootstrap has been running a while without visible progress."
+  },
+  "recoverbullTorOffline": "There seems to be no internet connection.",
+  "@recoverbullTorOffline": {
+    "description": "Shown when Tor reports the device has no TCP connectivity. Hedged wording: the upstream diagnostic is best-effort."
+  },
+  "recoverbullTorClockSkewed": "Your device clock is off, so Tor cannot verify relay certificates. Check your date and time settings.",
+  "@recoverbullTorClockSkewed": {
+    "description": "Shown when Tor reports clock skew, which breaks certificate validation. Actionable: the user can fix the clock."
+  },
+  "recoverbullTorCantStart": "Tor could not connect right now. Please try again.",
+  "@recoverbullTorCantStart": {
+    "description": "Generic Tor bootstrap failure, for blockages with no actionable cause."
+  },
+  "recoverbullServerUnreachableTorOk": "Tor is working, but the backup server did not answer. This can take a moment right after a first start.",
+  "@recoverbullServerUnreachableTorOk": {
+    "description": "Shown when Tor is up but the RecoverBull onion service did not answer, so the failure is localised to the server."
+  },
+  "swapErrorRouteUnavailable": "{fromNetwork} to {toNetwork} is not available.",
+  "@swapErrorRouteUnavailable": {
+    "description": "Shown when the exchange rejects a swap because no payment option/route exists for it (API ERR_ORD_PO404), naming the source and destination networks.",
+    "placeholders": {
+      "fromNetwork": {
+        "type": "String"
+      },
+      "toNetwork": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRouteUnavailableGeneric": "This swap is not available.",
+  "@swapErrorRouteUnavailableGeneric": {
+    "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
+  },
+  "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
+  "@mnemonicShuffleKeyboardHint": {
+    "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
+  },
+  "settingsScreenPrivacyTitle": "Screen Privacy",
+  "@settingsScreenPrivacyTitle": {
+    "description": "Settings entry title for the screen-capture/screenshot protection toggle on sensitive screens"
+  },
+  "settingsScreenPrivacyDisabledMessage": "Screenshots are now allowed on sensitive screens",
+  "@settingsScreenPrivacyDisabledMessage": {
+    "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
   }
 }

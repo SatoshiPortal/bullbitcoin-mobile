@@ -1,15 +1,17 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ExchangeSupportLoginScreen extends StatelessWidget {
-  const ExchangeSupportLoginScreen({super.key});
+  final ExchangeSupportChatDraft? draft;
+
+  const ExchangeSupportLoginScreen({super.key, this.draft});
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +120,7 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                                   context.goNamed(
                                     ExchangeRoute.exchangeAuth.name,
                                     queryParameters: {'from': 'support'},
+                                    extra: draft,
                                   );
                                 },
                                 bgColor: context.appColors.primary,
@@ -225,7 +228,7 @@ class _DisabledMessageInput extends StatelessWidget {
             const Gap(8),
             Expanded(
               child: IgnorePointer(
-                child: BBInputText(
+                child: BullInputText(
                   value: '',
                   hint: context.loc.exchangeSupportChatInputHint,
                   maxLines: 1,

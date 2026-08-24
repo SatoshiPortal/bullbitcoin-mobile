@@ -2436,10 +2436,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "Receiver se payjoin proposal nahi aa raha?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "transactionPayjoinSendWithout": "Payjoin ke bina bhejo",
   "@transactionPayjoinSendWithout": {
     "description": "Button label to send transaction without payjoin"
@@ -4996,10 +4992,6 @@
   "transferFeeLabel": "Transfer Fee",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
-  },
-  "sendNetworkFeesLabel": "Bhejne ki Network Fees",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
   },
   "confirmButtonLabel": "Confirm Karo",
   "@confirmButtonLabel": {
@@ -10746,14 +10738,6 @@
   "@torSettingsDescUnknown": {
     "description": "Description when Tor status is unknown"
   },
-  "torSettingsInfoTitle": "Zaroori Jaankari",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
-  "torSettingsInfoDescription": "• Tor proxy sirf Bitcoin par apply hota hai (Liquid par nahi)\n• Default Orbot port 9050 hai\n• Enable karne se pehle Orbot chal raha hona chahiye\n• Tor ke zariye connection slow ho sakta hai",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "withdrawSuccessTitle": "Withdrawal Shuru Hua",
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"
@@ -12942,5 +12926,40 @@
   "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
   "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
-  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein."
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
+  "coreSwapsStatusNotStarted": "Shuru nahi hua",
+  "coreSwapsStatusAwaitingPayment": "Bhugtan ka intezaar",
+  "coreSwapsStatusAwaitingConfirmation": "Pushti ka intezaar",
+  "coreSwapsStatusUnderReview": "Samiksha mein",
+  "coreSwapsStatusRejected": "Asvikrit",
+  "coreSwapsStatusCanceled": "Radd",
+  "coreSwapsStatusPaymentDeadlineExpired": "Bhugtan ki samay-seema samapt",
+  "coreSwapsStatusScheduled": "Nirdharit",
+  "coreSwapsStatusAwaitingClaim": "Dawe ka intezaar",
+  "coreSwapsStatusUnknown": "Agyaat",
+  "sendSwapExpiredTitle": "Order Khatam Ho Gaya",
+  "sendSwapExpiredMessage": "Koi bhi rashi bheje jaane se pehle hi yeh order khatam ho gaya. Aapke wallet se kuch bhi nahi bheja gaya.",
+  "torSettingsStatusCensored": "Connection filtered lag raha hai",
+  "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
+  "torSettingsBootstrapProgress": "Connect ho raha hai… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Network ki jaankari li ja rahi hai",
+  "recoverbullLongestStep": "Yeh sabse lamba step hai. Pehli baar shuru hone mein ek minute se zyada lag sakta hai.",
+  "recoverbullTorOffline": "Lagta hai internet connection nahi hai.",
+  "recoverbullTorClockSkewed": "Aapke device ki ghadi galat hai, isliye Tor relay certificates verify nahi kar pa raha. Date aur time settings check karein.",
+  "recoverbullTorCantStart": "Tor abhi connect nahi ho paaya. Kripya dobara koshish karein.",
+  "recoverbullServerUnreachableTorOk": "Tor chal raha hai, lekin backup server ne jawab nahi diya. Pehli baar shuru karne ke turant baad ismein thoda samay lag sakta hai.",
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "torSettingsEmbeddedDescription": "Embedded Tor ka istemal RecoverBull aur Bitcoin Electrum ke .onion servers karte hain. App ka baaki traffic seedha rehta hai.",
+  "torSettingsTransportMode": "Connection ka tarika",
+  "torSettingsModeAutomatic": "Automatic",
+  "torSettingsModeDirect": "Direct",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Pehle seedha Tor connection try karta hai, aur agar network Tor ko block karta lage to Snowflake istemal karta hai.",
+  "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
+  "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "torSettingsExternalProxyTitle": "Bahari Tor proxy (advanced)",
+  "torSettingsExternalProxyDescription": "Enable karne par, Bitcoin Electrum ke .onion servers embedded Tor ki jagah configure kiye gaye port par Orbot ka istemal karte hain.",
+  "settingsScreenPrivacyTitle": "Screen Privacy",
+  "settingsScreenPrivacyDisabledMessage": "Ab sanvedansheel screen par screenshot lene ki anumati hai"
 }

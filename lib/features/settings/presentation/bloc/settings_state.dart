@@ -18,6 +18,8 @@ sealed class SettingsState with _$SettingsState {
   bool? get isDevModeEnabled => storedSettings?.isDevModeEnabled;
   bool get isErrorReportingEnabled =>
       storedSettings?.isErrorReportingEnabled ?? false;
+  bool get screenCaptureProtectionEnabled =>
+      storedSettings?.screenCaptureProtectionEnabled ?? true;
   String? get exchangeTestnetBasicAuthUsername =>
       storedSettings?.exchangeTestnetBasicAuthUsername;
   String? get exchangeTestnetBasicAuthPassword =>

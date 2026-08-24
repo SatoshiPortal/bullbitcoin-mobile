@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environmen
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
@@ -154,10 +155,18 @@ class ElectrumSettingsBloc
           status: value,
           priority: priority,
         );
+        // Custom servers (self-hosted, Tailscale, etc.) commonly present a
+        // certificate that fails strict domain validation, so switching to
+        // one disables it automatically.
+        final updatedAdvancedOptions = await _setValidateDomain(
+          network: network,
+          validateDomain: false,
+        );
         emit(
           state.copyWith(
             customServers: [...state.customServers, newServer],
             isAddingCustomServer: false,
+            advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
           ),
         );
       case Err(:final failure):
@@ -249,19 +258,33 @@ class ElectrumSettingsBloc
       state.copyWith(isDeletingCustomServer: true, electrumServersError: null),
     );
 
-    final sortedServers = state.getServersSortedByPriority(isCustom: true);
+    final isTestnet = state.environment == ElectrumEnvironment.testnet;
+    final network = ElectrumServerNetwork.fromEnvironment(
+      isTestnet: isTestnet,
+      isLiquid: state.isLiquid,
+    );
 
     switch (await _deleteCustomServerUsecase.execute(
       DeleteCustomServerRequest(url: event.server.url),
     )) {
       case Ok():
-        final updatedCustomServers = sortedServers
+        // Re-derive from the latest state, not a pre-await snapshot: a
+        // custom server added concurrently while this delete was in flight
+        // must not be dropped from the list, and must not be missed by the
+        // validateDomain "last custom server" check below.
+        final updatedCustomServers = state.customServers
             .where((s) => s.url != event.server.url)
             .toList();
+        // Deleting the last custom server falls back to the default
+        // servers, so domain validation is re-enabled for them.
+        final updatedAdvancedOptions = updatedCustomServers.isEmpty
+            ? await _setValidateDomain(network: network, validateDomain: true)
+            : null;
         emit(
           state.copyWith(
             customServers: updatedCustomServers,
             isDeletingCustomServer: false,
+            advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
           ),
         );
       case Err(:final failure):
@@ -369,6 +392,42 @@ class ElectrumSettingsBloc
   ) async {
     // Just remove the state error here, the UI will reset the fields itself
     emit(state.copyWith(advancedOptionsError: null));
+  }
+
+  // Auto-toggles validateDomain to match the active server tier (off for
+  // custom, on for defaults). Best-effort: the server list change already
+  // succeeded, so a failure here is logged rather than surfaced as an
+  // add/delete-server error. Returns null when nothing changed.
+  Future<ElectrumAdvancedOptionsViewModel?> _setValidateDomain({
+    required ElectrumServerNetwork network,
+    required bool validateDomain,
+  }) async {
+    final current = state.advancedOptions;
+    if (current == null || current.validateDomain == validateDomain) {
+      return null;
+    }
+
+    final request = SetAdvancedElectrumOptionsRequest(
+      options: ElectrumSettingsDto(
+        stopGap: current.stopGap,
+        timeout: current.timeout,
+        retry: current.retry,
+        validateDomain: validateDomain,
+        socks5: current.socks5,
+        network: network,
+      ),
+    );
+
+    switch (await _setAdvancedElectrumOptionsUsecase.execute(request)) {
+      case Ok():
+        return current.copyWith(validateDomain: validateDomain);
+      case Err(:final failure):
+        log.warning(
+          'Failed to auto-toggle validateDomain to $validateDomain',
+          error: failure,
+        );
+        return null;
+    }
   }
 
   // Lift a core failure into the server-list feature failure for the add flow.

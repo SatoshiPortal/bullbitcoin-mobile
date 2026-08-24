@@ -29,6 +29,8 @@ extension MempoolFailureL10n on MempoolFailure {
       context.loc.mempoolErrorServerError,
     MempoolValidationInvalidResponseFailure() =>
       context.loc.mempoolErrorInvalidResponse,
+    MempoolValidationNetworkMismatchFailure() =>
+      context.loc.mempoolErrorNetworkMismatch,
     MempoolUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

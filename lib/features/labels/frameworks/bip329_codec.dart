@@ -3,9 +3,12 @@ import 'package:bb_mobile/features/labels/domain/decoded_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/new_label.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
 import 'package:bip329_labels/bip329_labels.dart' as bip329;
 
 class Bip329LabelsCodec {
+  static const maxImportBytes = 1024 * 1024;
+
   /// Serializes [labels] to BIP329 JSONL, projecting freeze state onto output
   /// records: an output whose `txid:vout` is in [frozen] is emitted with
   /// `spendable: false` and `origin` = the freezing wallet (BIP380 key origin),
@@ -73,6 +76,7 @@ class Bip329LabelsCodec {
   }
 
   DecodedLabels decode(String input) {
+    if (input.length > maxImportBytes) throw 'Labels file exceeds 1 MiB';
     var bip329Labels = <bip329.Bip329Label>[];
     try {
       bip329Labels = bip329.Bip329Label.fromJsonLines(input);
@@ -162,6 +166,9 @@ String? _walletIdFromBip329Origin(String? origin) {
 }
 
 NewLabel _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
+  if (LabelSystem.isSystemLabel(bip329Label.label)) {
+    throw LabelValidationException('Reserved system label name');
+  }
   return switch (bip329Label) {
     bip329.TxLabel() => NewLabel(
       type: LabelType.transaction,

@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
@@ -22,13 +22,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
@@ -43,7 +37,7 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
@@ -82,9 +76,9 @@ enum SettingsRoute {
   bitcoinSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),
+  autoswapSettings('autoswap-settings'),
   appSettings('app-settings'),
   theme('theme'),
-  autoswapSettings('autoswap-settings'),
   swapRestore('swap-restore'),
   swapRescue('swap-rescue'),
   btcMap('btc-map');
@@ -197,26 +191,9 @@ class SettingsRouter {
         builder: (context, state) => const PayjoinAdvancedSettingsScreen(),
       ),
       GoRoute(
-        name: SettingsRoute.swapRestore.name,
-        path: SettingsRoute.swapRestore.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<SwapRestoreCubit>()..restore(),
-          child: const SwapRestoreScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.swapRescue.name,
-        path: SettingsRoute.swapRescue.path,
-        builder: (context, state) {
-          final restorable = state.extra! as RestorableSwap;
-          return BlocProvider(
-            create: (_) => SwapRescueCubit(
-              rescueSwapUsecase: locator<RescueSwapUsecase>(),
-              restored: restorable.swap,
-            ),
-            child: SwapRescueDetailsScreen(restorable: restorable),
-          );
-        },
+        name: SettingsRoute.autoswapSettings.name,
+        path: SettingsRoute.autoswapSettings.path,
+        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,
@@ -243,11 +220,6 @@ class SettingsRouter {
           BackupSettingsSettingsRouter.route,
           TestWalletBackupRouter.route,
         ],
-      ),
-      GoRoute(
-        name: SettingsRoute.autoswapSettings.name,
-        path: SettingsRoute.autoswapSettings.path,
-        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         path: SettingsRoute.walletDetailsWalletList.path,
@@ -279,14 +251,14 @@ class SettingsRouter {
                   ),
                   BlocListener<WalletBloc, WalletState>(
                     listenWhen: (previous, current) {
-                      // Listen for wallet deletion error to show an alert dialog
+                      // Listen for wallet deletion error to show a sheet.
                       return previous.walletDeletionError == null &&
                           current.walletDeletionError != null;
                     },
                     listener: (context, state) {
-                      BlurredDialog.show(
-                        context: context,
-                        builder: (_) => const FailedWalletDeletionAlertDialog(),
+                      WalletDeletionFailedSheet.show(
+                        context,
+                        error: state.walletDeletionError!,
                       );
                     },
                   ),
@@ -319,7 +291,7 @@ class SettingsRouter {
         name: SettingsRoute.allSeedView.name,
         builder: (context, state) => BlocProvider(
           create: (_) => locator<AllSeedViewCubit>(),
-          child: const AllSeedViewScreen(),
+          child: const AllSeedViewScreen(appUnlockFacade: AppUnlockFacade()),
         ),
       ),
       GoRoute(

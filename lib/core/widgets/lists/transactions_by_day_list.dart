@@ -12,6 +12,7 @@ class TransactionsByDayList extends StatelessWidget {
   const TransactionsByDayList({
     super.key,
     required this.transactionsByDay,
+    required this.onDetailsClosed,
     this.ongoingSwaps,
     this.errorMessage,
     this.sliver = false,
@@ -20,6 +21,10 @@ class TransactionsByDayList extends StatelessWidget {
   final Map<int, List<Transaction>>? transactionsByDay;
   final List<Transaction>? ongoingSwaps;
   final String? errorMessage;
+
+  /// Called when a row's details screen is closed, so the owner can pick up
+  /// anything edited there — labels, in particular.
+  final VoidCallback onDetailsClosed;
 
   /// When true, returns Sliver* widgets so the list can live inside a
   /// CustomScrollView and share the parent's scroll/refresh gesture.
@@ -92,7 +97,10 @@ class TransactionsByDayList extends StatelessWidget {
       Widget itemBuilder(BuildContext context, int index) {
         // Show ongoing swaps section at the top
         if (ongoingSwaps != null && ongoingSwaps!.isNotEmpty && index == 0) {
-          return OngoingSwapsWidget(ongoingSwaps: ongoingSwaps!);
+          return OngoingSwapsWidget(
+            ongoingSwaps: ongoingSwaps!,
+            onDetailsClosed: onDetailsClosed,
+          );
         }
 
         // Adjust index if we have ongoing swaps
@@ -124,7 +132,9 @@ class TransactionsByDayList extends StatelessWidget {
               ),
             ),
             const Gap(16),
-            ...txs.map((tx) => TxListItem(tx: tx)),
+            ...txs.map(
+              (tx) => TxListItem(tx: tx, onDetailsClosed: onDetailsClosed),
+            ),
             const Gap(16),
           ],
         );

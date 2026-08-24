@@ -55,4 +55,7 @@ sealed class TransferEvent with _$TransferEvent {
   /// modal can render real per-preset fees instead of rate × vsize.
   const factory TransferEvent.presetFeesPreviewRequested() =
       TransferPresetFeesPreviewRequested;
+  const factory TransferEvent.orderSwapUpdated(
+    Result<OrderSwapRecord, SwapFailure> result,
+  ) = TransferOrderSwapUpdated;
 }

@@ -28,6 +28,8 @@ class BullInputText extends StatefulWidget {
     this.onlyPaste = false,
     this.onlyNumbers = false,
     this.obscure = false,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
     this.style,
     this.hideBorder = false,
     this.maxLines,
@@ -82,6 +84,11 @@ class BullInputText extends StatefulWidget {
 
   /// Obscures the text (e.g. for secrets).
   final bool obscure;
+
+  /// Both default to true. Set them false for secrets (a BIP39 passphrase):
+  /// the IME's suggestion and autocorrect caches must never see the value.
+  final bool enableSuggestions;
+  final bool autocorrect;
 
   /// Maximum lines.
   final int? maxLines;
@@ -143,8 +150,12 @@ class _BullInputTextState extends State<BullInputText> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    // Numeric and obscured fields are never legitimately multiline, so they
+    // default to a single line instead of Flutter's unlimited `null`.
+    final effectiveMaxLines =
+        widget.maxLines ?? (widget.obscure || widget.onlyNumbers ? 1 : null);
     final shouldPreventNewlines =
-        widget.maxLines != null && widget.maxLines! <= 2;
+        effectiveMaxLines != null && effectiveMaxLines <= 2;
 
     return TextField(
       key: widget.uiKey,
@@ -169,9 +180,11 @@ class _BullInputTextState extends State<BullInputText> {
       obscureText: widget.obscure,
       obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
       enableIMEPersonalizedLearning: false,
+      enableSuggestions: widget.enableSuggestions,
+      autocorrect: widget.autocorrect,
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
-      maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
+      maxLines: effectiveMaxLines,
       style:
           widget.style ??
           Theme.of(context).textTheme.headlineSmall?.copyWith(

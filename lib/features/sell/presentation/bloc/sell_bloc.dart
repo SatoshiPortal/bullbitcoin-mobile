@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
@@ -72,6 +73,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._getWalletUtxosUsecase,
     required this._getOrderUsecase,
     required this._labelsFacade,
+    required this._labelCompletedSellOrderUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
   }) : super(const SellState.initial()) {
@@ -121,6 +123,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetOrderUsecase _getOrderUsecase;
   final LabelsFacade _labelsFacade;
+  final LabelCompletedSellOrderUsecase _labelCompletedSellOrderUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   Timer? _pollingTimer;
@@ -452,6 +455,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     try {
       final refreshedOrder = await _refreshSellOrderUsecase.execute(
         orderId: paymentState.sellOrder.orderId,
+        expectedDepositAddress: paymentState.sellOrder.toAddress,
       );
 
       // A confirmation may have started while the refresh was in flight, so
@@ -922,6 +926,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
           return;
         }
         await _labelPayjoinSellTransaction(latestOrder, null);
+        // The explicit order-completion event is the only legitimate writer
+        // of privileged exchange labels (issue #2624).
+        await _labelCompletedSellOrderUsecase.execute(order: latestOrder);
         if (!latestOrder.payjoinOutcome.isOngoing) _stopPolling();
         emit(sellSuccessState.copyWith(sellOrder: latestOrder));
       } catch (e) {
@@ -945,6 +952,22 @@ class SellBloc extends Bloc<SellEvent, SellState>
         return;
       }
 
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (!current.isPayinBroadcast) {
+        try {
+          validateSellOrderDepositAddress(
+            order: latestOrder,
+            expectedDepositAddress: current.sellOrder.toAddress,
+          );
+        } on DepositAddressChangedSellError catch (error, stackTrace) {
+          log.severe(error: error, trace: stackTrace);
+          _stopPolling();
+          emit(current.copyWith(error: error, isPolling: false));
+          return;
+        }
+      }
+
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -953,10 +976,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
         _stopPolling();
         await _labelPayjoinSellTransaction(
           latestOrder,
-          sellPaymentState.selectedWallet?.id,
+          current.selectedWallet?.id,
         );
         emit(
-          sellPaymentState
+          current
               .copyWith(sellOrder: latestOrder, isPolling: false)
               .toSuccessState(sellOrder: latestOrder),
         );
@@ -965,8 +988,6 @@ class SellBloc extends Bloc<SellEvent, SellState>
         // so it routinely spans the broadcast. Emitting the pre-await snapshot
         // would drop the latch and re-arm Confirm (#2522), so merge into the
         // current state instead.
-        final current = _currentPaymentState;
-        if (current == null) return;
         emit(current.copyWith(sellOrder: latestOrder, isPolling: true));
       }
     } catch (e) {

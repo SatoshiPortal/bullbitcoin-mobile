@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/electrum/adapters/electrum_servers_adapter.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_tor/tor.dart';
 
 class _MockServerRepository extends Mock implements ElectrumServerRepository {}
 
@@ -17,6 +19,8 @@ class _MockSettingsRepository extends Mock
     implements ElectrumSettingsRepository {}
 
 class _MockAppSettingsRepository extends Mock implements SettingsRepository {}
+
+class _MockTorSessionPort extends Mock implements ElectrumTorSessionPort {}
 
 const _network = ElectrumServerNetwork.bitcoinMainnet;
 const _liquidNetwork = ElectrumServerNetwork.liquidMainnet;
@@ -58,6 +62,7 @@ void main() {
   late _MockServerRepository serverRepo;
   late _MockSettingsRepository settingsRepo;
   late _MockAppSettingsRepository appSettingsRepo;
+  late _MockTorSessionPort torSessionPort;
   late ElectrumServersAdapter adapter;
 
   setUpAll(() {
@@ -68,10 +73,20 @@ void main() {
     serverRepo = _MockServerRepository();
     settingsRepo = _MockSettingsRepository();
     appSettingsRepo = _MockAppSettingsRepository();
+    torSessionPort = _MockTorSessionPort();
+    when(
+      () => torSessionPort.open(
+        network: any(named: 'network'),
+        serverUrl: any(named: 'serverUrl'),
+        externalProxyEnabled: any(named: 'externalProxyEnabled'),
+        externalProxyPort: any(named: 'externalProxyPort'),
+      ),
+    ).thenAnswer((_) async => null);
     adapter = ElectrumServersAdapter(
       serverRepository: serverRepo,
       settingsRepository: settingsRepo,
       appSettingsRepository: appSettingsRepo,
+      torSessionPort: torSessionPort,
     );
   });
 
@@ -254,7 +269,116 @@ void main() {
       },
     );
 
-    test('Tor enabled on Bitcoin → injects 127.0.0.1:<port>', () async {
+    test('an onion server uses the resolved isolated Tor route', () async {
+      var closed = false;
+      when(
+        () => torSessionPort.open(
+          network: _network,
+          serverUrl: 'ssl://hidden.onion:50002',
+          externalProxyEnabled: true,
+          externalProxyPort: 9050,
+        ),
+      ).thenAnswer(
+        (_) async => ElectrumTorRoute(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41234),
+          () async => closed = true,
+        ),
+      );
+      stub(
+        servers: [_server('ssl://hidden.onion:50002')],
+        settings: _settings(),
+        appSettings: _appSettings(useTorProxy: true, torProxyPort: 9050),
+      );
+
+      late final String? socks5;
+      await adapter.runWithFallback<void>(
+        network: _network,
+        operation: (connection) async {
+          socks5 = connection.socks5;
+        },
+      );
+
+      expect(socks5, '127.0.0.1:41234');
+      expect(closed, isTrue);
+    });
+
+    test(
+      'does not turn a successful operation into a failure if close throws',
+      () async {
+        when(
+          () => torSessionPort.open(
+            network: _network,
+            serverUrl: 'ssl://hidden.onion:50002',
+            externalProxyEnabled: true,
+            externalProxyPort: 9050,
+          ),
+        ).thenAnswer(
+          (_) async => ElectrumTorRoute(
+            TorProxyEndpoint(host: '127.0.0.1', port: 41234),
+            () async => throw StateError('close failed'),
+          ),
+        );
+        stub(
+          servers: [
+            _server('ssl://hidden.onion:50002'),
+            _server('ssl://fallback:50002'),
+          ],
+          settings: _settings(),
+          appSettings: _appSettings(useTorProxy: true, torProxyPort: 9050),
+        );
+
+        final attempted = <String>[];
+        final result = await adapter.runWithFallback<String>(
+          network: _network,
+          operation: (connection) async {
+            attempted.add(connection.url);
+            return 'ok';
+          },
+        );
+
+        expect(result, 'ok');
+        expect(attempted, ['ssl://hidden.onion:50002']);
+      },
+    );
+
+    // A failed embedded bootstrap makes one onion server unusable, not the whole
+    // set. Before this, the raw error escaped a caller that narrowed
+    // `isTransient` to its own type, so the healthy clearnet default next in the
+    // set was never tried and connectivity reported offline.
+    test('a failing Tor route skips to the next server', () async {
+      when(
+        () => torSessionPort.open(
+          network: _network,
+          serverUrl: 'ssl://hidden.onion:50002',
+          externalProxyEnabled: false,
+          externalProxyPort: 9050,
+        ),
+      ).thenThrow(Exception('embedded Tor never bootstrapped'));
+      stub(
+        servers: [
+          _server('ssl://hidden.onion:50002'),
+          _server('ssl://fallback:50002'),
+        ],
+        settings: _settings(),
+        appSettings: _appSettings(),
+      );
+
+      final attempted = <String>[];
+      await adapter.runWithFallback<void>(
+        network: _network,
+        operation: (connection) async => attempted.add(connection.url),
+        // Narrowed to a type this adapter never throws, which is what makes the
+        // regression visible: the route error must still be treated as transient.
+        isTransient: (error) => error is FormatException,
+      );
+
+      expect(attempted, ['ssl://fallback:50002']);
+    });
+
+    // The Tor proxy setting has always been documented as applying to Bitcoin,
+    // not to onion servers only. The default Electrum servers are clearnet, so
+    // they are exactly what a user hides their IP from by enabling Orbot.
+    test('Orbot enabled routes a clearnet Bitcoin server too', () async {
       stub(
         servers: [_server('ssl://a:50002')],
         settings: _settings(),
@@ -272,7 +396,25 @@ void main() {
       expect(socks5, '127.0.0.1:9150');
     });
 
-    test('Tor enabled but persisted socks5 set → persisted wins', () async {
+    test('Orbot disabled leaves a clearnet Bitcoin server direct', () async {
+      stub(
+        servers: [_server('ssl://a:50002')],
+        settings: _settings(),
+        appSettings: _appSettings(),
+      );
+
+      late final String? socks5;
+      await adapter.runWithFallback<void>(
+        network: _network,
+        operation: (connection) async {
+          socks5 = connection.socks5;
+        },
+      );
+
+      expect(socks5, isNull);
+    });
+
+    test('a persisted custom SOCKS setting remains available', () async {
       stub(
         servers: [_server('ssl://a:50002')],
         settings: _settings(socks5: 'proxy.example:9999'),
@@ -290,7 +432,7 @@ void main() {
       expect(socks5, 'proxy.example:9999');
     });
 
-    test('Tor enabled on Liquid → socks5 is NOT applied', () async {
+    test('Orbot enabled is not applied to Liquid Electrum', () async {
       when(
         () => serverRepo.fetchActiveServers(network: any(named: 'network')),
       ).thenAnswer(
@@ -320,5 +462,81 @@ void main() {
 
       expect(socks5, isNull);
     });
+
+    test(
+      'a Liquid onion server is skipped, never contacted directly',
+      () async {
+        // LWK exposes no SOCKS parameter, so no route can be built for a Liquid
+        // onion server. Handing it to the operation anyway would leak the
+        // hidden-service name to the device's DNS resolver.
+        when(
+          () => serverRepo.fetchActiveServers(network: any(named: 'network')),
+        ).thenAnswer(
+          (_) async => Ok([
+            ElectrumServer.existing(
+              url: 'ssl://hidden.onion:50002',
+              network: _liquidNetwork,
+              isCustom: true,
+              priority: 0,
+            ),
+          ]),
+        );
+        when(
+          () => settingsRepo.fetchByNetwork(any()),
+        ).thenAnswer((_) async => Ok(_settings()));
+        when(
+          () => appSettingsRepo.fetch(),
+        ).thenAnswer((_) async => _appSettings());
+
+        var reached = false;
+        await expectLater(
+          adapter.runWithFallback<void>(
+            network: _liquidNetwork,
+            operation: (_) async => reached = true,
+          ),
+          throwsA(isA<AllElectrumServersFailedException>()),
+        );
+
+        expect(reached, isFalse, reason: 'no connection may be attempted');
+      },
+    );
+
+    test(
+      'an unroutable onion server does not stop the rest of the set',
+      () async {
+        when(
+          () => serverRepo.fetchActiveServers(network: any(named: 'network')),
+        ).thenAnswer(
+          (_) async => Ok([
+            ElectrumServer.existing(
+              url: 'ssl://hidden.onion:50002',
+              network: _liquidNetwork,
+              isCustom: true,
+              priority: 0,
+            ),
+            ElectrumServer.existing(
+              url: 'ssl://liquid.example:50002',
+              network: _liquidNetwork,
+              isCustom: true,
+              priority: 1,
+            ),
+          ]),
+        );
+        when(
+          () => settingsRepo.fetchByNetwork(any()),
+        ).thenAnswer((_) async => Ok(_settings()));
+        when(
+          () => appSettingsRepo.fetch(),
+        ).thenAnswer((_) async => _appSettings());
+
+        final reached = <String>[];
+        await adapter.runWithFallback<void>(
+          network: _liquidNetwork,
+          operation: (connection) async => reached.add(connection.url),
+        );
+
+        expect(reached, ['ssl://liquid.example:50002']);
+      },
+    );
   });
 }

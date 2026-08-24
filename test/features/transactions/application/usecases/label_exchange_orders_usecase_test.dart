@@ -1,6 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,9 +16,13 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class _MockListAllOrdersUsecase extends Mock implements ListAllOrdersUsecase {}
 
+class _MockWalletTransactionRepository extends Mock
+    implements WalletTransactionRepository {}
+
 void main() {
   late _MockLabelsFacade labelsFacade;
   late _MockListAllOrdersUsecase listAllOrdersUsecase;
+  late _MockWalletTransactionRepository walletTransactionRepository;
   late LabelExchangeOrdersUsecase usecase;
 
   setUpAll(() {
@@ -24,9 +34,47 @@ void main() {
   setUp(() {
     labelsFacade = _MockLabelsFacade();
     listAllOrdersUsecase = _MockListAllOrdersUsecase();
+    walletTransactionRepository = _MockWalletTransactionRepository();
     usecase = LabelExchangeOrdersUsecase(
       labelsFacade: labelsFacade,
       listAllOrdersUsecase: listAllOrdersUsecase,
+      walletTransactionRepository: walletTransactionRepository,
+    );
+
+    // The wallet really did receive this payout: labels are only written on
+    // references it owns.
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        txId: any(named: 'txId'),
+        walletId: any(named: 'walletId'),
+        toAddress: any(named: 'toAddress'),
+        environment: any(named: 'environment'),
+        sync: any(named: 'sync'),
+      ),
+    ).thenAnswer(
+      (_) async => [
+        WalletTransaction(
+          walletId: 'wallet-1',
+          network: Network.bitcoinMainnet,
+          direction: WalletTransactionDirection.incoming,
+          status: WalletTransactionStatus.confirmed,
+          txId: 'buy-txid',
+          amountSat: 100000,
+          feeSat: 0,
+          vsize: 141,
+          inputs: const [],
+          outputs: [
+            TransactionOutput.bitcoin(
+              txId: 'buy-txid',
+              vout: 0,
+              isOwn: true,
+              scriptPubkey: Uint8List(0),
+              address: 'bc1qbuy',
+            ),
+          ],
+          isRbf: false,
+        ),
+      ],
     );
   });
 
@@ -78,7 +126,7 @@ void main() {
       );
       when(() => labelsFacade.store(any())).thenAnswer(storeLabel);
 
-      await usecase.execute(orders: [buyOrder()]);
+      await usecase.execute(orders: [buyOrder()], explicitCompletion: true);
 
       final stored = verify(
         () => labelsFacade.store(captureAny()),
@@ -118,7 +166,7 @@ void main() {
     );
     when(() => labelsFacade.store(any())).thenAnswer(storeLabel);
 
-    await usecase.execute(orders: [buyOrder()]);
+    await usecase.execute(orders: [buyOrder()], explicitCompletion: true);
 
     final stored = verify(
       () => labelsFacade.store(captureAny()),

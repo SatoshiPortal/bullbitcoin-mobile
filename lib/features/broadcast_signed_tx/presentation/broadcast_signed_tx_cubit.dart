@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,11 +46,8 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
           final tx = psbt.combine(other: signedPsbt);
 
-          // TODO: Check if we can't just do tx.finalize() here to get the finalized psbt
-          final finalPsbt = Psbt.deserialize(tx.extractTx().serialize());
-
-          final builder = PsbtBuilder.fromPsbt(finalPsbt);
-          finalTx = builder.finalizeAll().toHex();
+          tx.finalize();
+          finalTx = hex.encode(tx.extractTx().serialize());
         }
 
         emit(
@@ -97,6 +95,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
       final uriString = match.group(1)!;
       final pushTx = Uri.parse(uriString);
+      if (pushTx.scheme != 'https') {
+        throw FormatException('PushTx URI must use HTTPS');
+      }
       final fragmentParams = Uri.splitQueryString(pushTx.fragment);
 
       if (fragmentParams.isEmpty ||
@@ -107,9 +108,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       }
 
       final txBase64Url = base64Url.normalize(fragmentParams['t']!);
-      final _ = base64Url.normalize(fragmentParams['c']!);
+      final checksum = base64Url.normalize(fragmentParams['c']!);
 
-      final txBytesHex = hex.encode(base64Url.decode(txBase64Url));
+      final txBytes = base64Url.decode(txBase64Url);
+      final expectedChecksum = base64Url.encode(
+        sha256.convert(txBytes).bytes.sublist(0, 4),
+      );
+      if (checksum != expectedChecksum) {
+        throw FormatException('Invalid PushTx checksum');
+      }
+      final txBytesHex = hex.encode(txBytes);
 
       await tryParseTransaction(txBytesHex);
 
@@ -124,8 +132,13 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     if (state.pushTxUri == null) return;
 
     try {
-      await launchUrl(state.pushTxUri!, mode: LaunchMode.externalApplication);
-      emit(state.copyWith(isBroadcasted: true));
+      final launched = await launchUrl(
+        state.pushTxUri!,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        throw Exception('Unable to open PushTx URI');
+      }
     } catch (e, st) {
       log.warning('Failed to open PushTx URI', error: e, trace: st);
       emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));

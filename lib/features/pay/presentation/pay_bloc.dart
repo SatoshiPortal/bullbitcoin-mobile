@@ -119,6 +119,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   Timer? _pollingTimer;
+  bool _isOrderRequestInFlight = false;
+  String? _pendingOrderStatusUpdateId;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
   String? _activePayjoinSessionId;
 
@@ -467,6 +469,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     try {
       final refreshedOrder = await _refreshPayOrderUsecase.execute(
         orderId: paymentState.payOrder.orderId,
+        expectedDepositAddress: paymentState.payOrder.toAddress,
       );
 
       final current = _currentPaymentState;
@@ -771,12 +774,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayPollOrderStatus event,
     Emitter<PayState> emit,
   ) async {
-    final payPaymentState = _currentPaymentState;
-    if (payPaymentState == null) return;
+    if (_isOrderRequestInFlight) return;
+    _isOrderRequestInFlight = true;
 
     try {
+      final payPaymentState = _currentPaymentState;
+      if (payPaymentState == null) return;
+      final requestedOrderId = payPaymentState.payOrder.orderId;
+
       final latestOrder = await _getOrderUsecase.execute(
-        orderId: payPaymentState.payOrder.orderId,
+        orderId: requestedOrderId,
       );
 
       if (latestOrder is! FiatPaymentOrder) {
@@ -788,6 +795,23 @@ class PayBloc extends Bloc<PayEvent, PayState>
         return;
       }
 
+      final current = _currentPaymentState;
+      if (current == null) return;
+      if (current.payOrder.orderId != requestedOrderId) return;
+      if (!current.isPayinBroadcast) {
+        try {
+          validatePayOrderDepositAddress(
+            order: latestOrder,
+            expectedDepositAddress: current.payOrder.toAddress,
+          );
+        } on DepositAddressChangedPayError catch (error, stackTrace) {
+          log.severe(error: error, trace: stackTrace);
+          _stopPolling();
+          emit(current.copyWith(error: error, isPolling: false));
+          return;
+        }
+      }
+
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -795,17 +819,22 @@ class PayBloc extends Bloc<PayEvent, PayState>
           payinStatus == OrderPayinStatus.completed) {
         _stopPolling();
         emit(
-          payPaymentState
+          current
               .copyWith(payOrder: latestOrder, isPolling: false)
               .toSuccessState(payOrder: latestOrder),
         );
       } else {
-        final current = _currentPaymentState;
-        if (current == null) return;
         emit(current.copyWith(payOrder: latestOrder, isPolling: true));
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
+    } finally {
+      _isOrderRequestInFlight = false;
+      final pendingOrderId = _pendingOrderStatusUpdateId;
+      _pendingOrderStatusUpdateId = null;
+      if (pendingOrderId != null && !emit.isDone) {
+        await _refreshOrderStatusForSuccess(pendingOrderId, emit);
+      }
     }
   }
 
@@ -873,28 +902,55 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayUpdateOrderStatus event,
     Emitter<PayState> emit,
   ) async {
-    try {
-      final orderSummary = await _getOrderUsecase.execute(
-        orderId: event.orderId,
-      );
+    if (_isOrderRequestInFlight) {
+      _pendingOrderStatusUpdateId = event.orderId;
+      return;
+    }
 
-      // Update the order in the current state if we're in success state
-      if (state is PaySuccessState) {
-        final currentState = state as PaySuccessState;
-        // Convert Order to FiatPaymentOrder if needed
-        if (orderSummary is FiatPaymentOrder) {
-          emit(currentState.copyWith(payOrder: orderSummary));
-        } else {
-          log.severe(
-            error:
-                'Expected FiatPaymentOrder for order ${event.orderId} but received ${orderSummary.runtimeType}',
-            trace: StackTrace.current,
-          );
+    await _refreshOrderStatusForSuccess(event.orderId, emit);
+  }
+
+  Future<void> _refreshOrderStatusForSuccess(
+    String initialOrderId,
+    Emitter<PayState> emit,
+  ) async {
+    var orderId = initialOrderId;
+
+    while (true) {
+      _isOrderRequestInFlight = true;
+
+      try {
+        final orderSummary = await _getOrderUsecase.execute(orderId: orderId);
+
+        // Update the order in the current state if we're in success state
+        if (state is PaySuccessState) {
+          final currentState = state as PaySuccessState;
+          // Convert Order to FiatPaymentOrder if needed
+          if (orderSummary is FiatPaymentOrder) {
+            emit(currentState.copyWith(payOrder: orderSummary));
+          } else {
+            log.severe(
+              error:
+                  'Expected FiatPaymentOrder for order $orderId but received ${orderSummary.runtimeType}',
+              trace: StackTrace.current,
+            );
+          }
         }
+      } catch (e) {
+        log.severe(error: e, trace: StackTrace.current);
+        // Don't emit error state for refresh failures in success screen
+      } finally {
+        _isOrderRequestInFlight = false;
       }
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      // Don't emit error state for refresh failures in success screen
+
+      if (emit.isDone) {
+        _pendingOrderStatusUpdateId = null;
+        return;
+      }
+      final pendingOrderId = _pendingOrderStatusUpdateId;
+      _pendingOrderStatusUpdateId = null;
+      if (pendingOrderId == null) return;
+      orderId = pendingOrderId;
     }
   }
 

@@ -1,13 +1,19 @@
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart';
 
 /// Implements [WalletFreezePort] over the freeze datasource. The only place the
 /// labels feature touches `core/wallet`'s freeze storage.
 class WalletFreezeAdapter implements WalletFreezePort {
   final FrozenWalletUtxoDatasource _datasource;
+  final WalletUtxoRepository _walletUtxoRepository;
 
-  WalletFreezeAdapter({required this._datasource});
+  WalletFreezeAdapter({
+    required this._datasource,
+    required this._walletUtxoRepository,
+  });
 
   @override
   Future<List<({String walletId, String txId, int vout})>> getAllFrozen() =>
@@ -31,5 +37,27 @@ class WalletFreezeAdapter implements WalletFreezePort {
         outpoints: entry.value,
       );
     }
+  }
+
+  @override
+  Future<List<({String txId, int vout})>> getOwnedOutpoints({
+    required String walletId,
+  }) async {
+    final utxos = await _walletUtxoRepository.getWalletUtxos(
+      walletId: walletId,
+    );
+    return [
+      for (final u in utxos)
+        switch (u) {
+          BitcoinWalletUtxo(:final txId, :final vout) => (
+            txId: txId,
+            vout: vout,
+          ),
+          LiquidWalletUtxo(:final txId, :final vout) => (
+            txId: txId,
+            vout: vout,
+          ),
+        },
+    ];
   }
 }

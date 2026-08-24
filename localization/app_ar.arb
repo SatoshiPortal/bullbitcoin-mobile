@@ -1778,10 +1778,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• لا ينطبق هذا إلا على بيتكوين (ليس السائل)\n• ميناء أوربوت المغلق 9050\n• Ensure Orbot is running before enabling\n• الاتصال قد يكون أبطأ من خلال تور",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "عنوان بيتكوين",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -4576,10 +4572,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "ألا تتلقى اقتراحاً من المستلم؟?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "payAddRecipient": "مستفيد",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
@@ -6885,10 +6877,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "إرسال رسوم الشبكة",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "وقع خطأ",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -8950,10 +8938,6 @@
   "bitboxActionVerifyAddressButton": "تصحيح العنوان",
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
-  },
-  "torSettingsInfoTitle": "معلومات هامة",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
   },
   "importColdcardInstructionsStep7": "على جهازك المحمول، اضغطي \"كاميرا مفتوحة\"",
   "@importColdcardInstructionsStep7": {
@@ -12554,5 +12538,40 @@
   "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
   "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
-  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى."
+  "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
+  "coreSwapsStatusNotStarted": "لم يبدأ",
+  "coreSwapsStatusAwaitingPayment": "في انتظار الدفع",
+  "coreSwapsStatusAwaitingConfirmation": "في انتظار التأكيد",
+  "coreSwapsStatusUnderReview": "قيد المراجعة",
+  "coreSwapsStatusRejected": "مرفوض",
+  "coreSwapsStatusCanceled": "ملغى",
+  "coreSwapsStatusPaymentDeadlineExpired": "انتهت مهلة الدفع",
+  "coreSwapsStatusScheduled": "مجدول",
+  "coreSwapsStatusAwaitingClaim": "في انتظار المطالبة",
+  "coreSwapsStatusUnknown": "غير معروف",
+  "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
+  "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك.",
+  "torSettingsStatusCensored": "يبدو أن الاتصال مُرشَّح",
+  "torSettingsDescCensored": "تعذّر على Tor الوصول إلى الشبكة. غالبًا ما يعني هذا أن الاتصال يخضع للترشيح.",
+  "torSettingsBootstrapProgress": "جارٍ الاتصال… {percent}%",
+  "recoverbullPhaseNetworkInfo": "جارٍ جلب معلومات الشبكة",
+  "recoverbullLongestStep": "هذه أطول خطوة. قد يستغرق التشغيل الأول أكثر من دقيقة.",
+  "recoverbullTorOffline": "يبدو أنه لا يوجد اتصال بالإنترنت.",
+  "recoverbullTorClockSkewed": "ساعة جهازك غير مضبوطة، لذا لا يستطيع Tor التحقق من شهادات المُرحِّلات. تحقق من إعدادات التاريخ والوقت.",
+  "recoverbullTorCantStart": "تعذّر على Tor الاتصال الآن. أعد المحاولة.",
+  "recoverbullServerUnreachableTorOk": "يعمل Tor، لكن خادم النسخ الاحتياطي لم يستجب. قد يستغرق ذلك لحظة بعد التشغيل الأول مباشرة.",
+  "torSettingsEmbeddedTitle": "Tor المدمج",
+  "torSettingsEmbeddedDescription": "يُستخدم Tor المدمج من قِبل RecoverBull وخوادم Bitcoin Electrum التي تنتهي بـ .onion. تبقى بقية حركة التطبيق مباشرة.",
+  "torSettingsTransportMode": "طريقة الاتصال",
+  "torSettingsModeAutomatic": "تلقائي",
+  "torSettingsModeDirect": "مباشر",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "يجرّب اتصالًا مباشرًا بـ Tor أولًا، ويستخدم Snowflake إذا بدا أن الشبكة تحجب Tor.",
+  "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
+  "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
+  "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
+  "torSettingsExternalProxyTitle": "وكيل Tor خارجي (متقدم)",
+  "torSettingsExternalProxyDescription": "عند التفعيل، تمر خوادم Bitcoin Electrum والنسخ الاحتياطية المشفَّرة عبر Orbot على المنفذ المُعد بدلاً من Tor المدمج. لا يتم توجيه Liquid عبره أبداً.",
+  "settingsScreenPrivacyTitle": "خصوصية الشاشة",
+  "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة"
 }

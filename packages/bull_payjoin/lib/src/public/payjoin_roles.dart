@@ -15,6 +15,9 @@ abstract interface class PayjoinSender {
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(
     String sessionId,
   );
+
+  @useResult
+  Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String sessionId);
 }
 
 abstract interface class PayjoinReceiver {

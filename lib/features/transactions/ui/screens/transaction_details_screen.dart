@@ -15,7 +15,8 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/broadcast_payjoin_original_tx_button.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/order_swap_status_description.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_progress_indicator.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_description.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
@@ -51,16 +52,6 @@ class TransactionDetailsScreen extends StatelessWidget {
     final wallet = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.wallet,
     );
-    // The single source of truth this button's visibility must agree with —
-    // see Payjoin.canManuallyBroadcastOriginal's doc comment. Deriving both
-    // from the same getter as the cubit's own guard means the button can
-    // never be shown for a session where tapping it would just silently
-    // no-op (observed live before this was unified: a stale-looking button
-    // let a tap through that re-broadcast an already-completed session).
-    final canManuallyBroadcastOriginal = context.select(
-      (TransactionDetailsCubit bloc) =>
-          bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
-    );
     final isBroadcastingPayjoinOriginalTx = context.select(
       (TransactionDetailsCubit bloc) =>
           bloc.state.isBroadcastingPayjoinOriginalTx,
@@ -71,8 +62,10 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOngoingSwap = tx?.isOngoingSwap;
     final isOrderType = tx?.isOrder == true;
     final walletTransaction = tx?.walletTransaction;
+    final payjoin = tx?.payjoin;
     final swap = tx?.swap;
-    final isChainSwap = swap?.isChainSwap ?? false;
+    final orderSwap = tx?.orderSwap;
+    final isChainSwap = tx?.isChainSwap ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -153,6 +146,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                             SwapStatusDescription(swap: swap),
                             const Gap(16),
                           ],
+                          if (isOngoingSwap == true && orderSwap != null) ...[
+                            OrderSwapStatusDescription(orderSwap: orderSwap),
+                            const Gap(16),
+                          ],
                           if (isOrderType &&
                               tx?.isBuyOrder == true &&
                               tx?.order != null &&
@@ -194,11 +191,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                             ),
                           ],
                           const Gap(16),
-                          if (tx?.isOngoingPayjoinSender == true &&
-                              canManuallyBroadcastOriginal) ...[
-                            const SenderBroadcastPayjoinOriginalTxButton(),
-                            const Gap(24),
-                          ],
+                          if (payjoin != null)
+                            BroadcastPayjoinOriginalTxButton(payjoin: payjoin),
                           if (isLoading)
                             const LoadingLineContent(height: 40)
                           else
@@ -244,7 +238,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                               walletTransaction?.isBitcoin == true &&
                               wallet?.signsLocally == true &&
                               tx?.txId != null &&
-                              swap == null)
+                              tx?.isSwap != true)
                             BBButton.big(
                               label: context.loc.transactionDetailAccelerate,
                               onPressed: () {

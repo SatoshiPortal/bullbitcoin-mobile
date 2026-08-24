@@ -21,8 +21,10 @@ class DatabaseSeeds {
             isDevModeEnabled: false,
             useTorProxy: false,
             torProxyPort: 9050,
+            torTransportMode: 'automatic',
             themeMode: 'system',
             isErrorReportingEnabled: false,
+            screenCaptureProtectionEnabled: true,
           ),
         );
   }

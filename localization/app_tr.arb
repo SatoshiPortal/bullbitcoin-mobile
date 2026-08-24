@@ -1888,10 +1888,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• • Tor sadece Bitcoin için geçerlidir (orijin değil)\n• • Varsayılan Orbot limanı 9050\n• Emin Orbot daha önce çalışıyor\n• • Bağlantı, Tor aracılığıyla daha yavaş olabilir",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "Bitcoin adresi",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -4847,10 +4843,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Alıcıdan bir payjoin teklifi almamak değil mi?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "\"Connect Wallet\" seçin",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
@@ -7324,10 +7316,6 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "sendNetworkFeesLabel": "Network Fees Gönder",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
-  },
   "electrumUnknownError": "Bir hata oluştu",
   "@electrumUnknownError": {
     "description": "Generic error message for unknown errors"
@@ -9522,10 +9510,6 @@
   "bitboxActionVerifyAddressButton": "Verify Address",
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
-  },
-  "torSettingsInfoTitle": "Önemli Bilgiler",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
   },
   "importColdcardInstructionsStep7": "Mobil cihazınızda, \"open kamera\" tıklayın",
   "@importColdcardInstructionsStep7": {
@@ -12551,5 +12535,40 @@
   "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
   "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
-  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin."
+  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
+  "coreSwapsStatusNotStarted": "Başlatılmadı",
+  "coreSwapsStatusAwaitingPayment": "Ödeme bekleniyor",
+  "coreSwapsStatusAwaitingConfirmation": "Onay bekleniyor",
+  "coreSwapsStatusUnderReview": "İnceleniyor",
+  "coreSwapsStatusRejected": "Reddedildi",
+  "coreSwapsStatusCanceled": "İptal edildi",
+  "coreSwapsStatusPaymentDeadlineExpired": "Ödeme süresi doldu",
+  "coreSwapsStatusScheduled": "Planlandı",
+  "coreSwapsStatusAwaitingClaim": "Talep bekleniyor",
+  "coreSwapsStatusUnknown": "Bilinmiyor",
+  "sendSwapExpiredTitle": "Sipariş Süresi Doldu",
+  "sendSwapExpiredMessage": "Bu siparişin süresi, herhangi bir fon gönderilmeden önce doldu. Cüzdanınızdan hiçbir şey gönderilmedi.",
+  "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
+  "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
+  "torSettingsBootstrapProgress": "Bağlanıyor… %{percent}",
+  "recoverbullPhaseNetworkInfo": "Ağ bilgileri alınıyor",
+  "recoverbullLongestStep": "Bu en uzun adımdır. İlk başlatma bir dakikadan uzun sürebilir.",
+  "recoverbullTorOffline": "İnternet bağlantısı yok gibi görünüyor.",
+  "recoverbullTorClockSkewed": "Cihazınızın saati yanlış, bu yüzden Tor aktarıcı sertifikalarını doğrulayamıyor. Tarih ve saat ayarlarını kontrol edin.",
+  "recoverbullTorCantStart": "Tor şu anda bağlanamadı. Lütfen tekrar deneyin.",
+  "recoverbullServerUnreachableTorOk": "Tor çalışıyor ancak yedek sunucusu yanıt vermedi. İlk başlatmanın hemen ardından bu biraz zaman alabilir.",
+  "torSettingsEmbeddedTitle": "Gömülü Tor",
+  "torSettingsEmbeddedDescription": "Gömülü Tor, RecoverBull ve Bitcoin Electrum .onion sunucuları tarafından kullanılır. Uygulamanın diğer trafiği doğrudan kalır.",
+  "torSettingsTransportMode": "Bağlantı yöntemi",
+  "torSettingsModeAutomatic": "Otomatik",
+  "torSettingsModeDirect": "Doğrudan",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Önce doğrudan Tor bağlantısını dener; ağ Tor'u engelliyor görünüyorsa Snowflake kullanır.",
+  "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
+  "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
+  "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
+  "torSettingsExternalProxyTitle": "Harici Tor vekili (gelişmiş)",
+  "torSettingsExternalProxyDescription": "Etkinleştirildiğinde Bitcoin Electrum sunucuları ve şifreli yedekler, gömülü Tor yerine yapılandırılan porttaki Orbot üzerinden geçer. Liquid asla bunun üzerinden yönlendirilmez.",
+  "settingsScreenPrivacyTitle": "Ekran gizliliği",
+  "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor"
 }

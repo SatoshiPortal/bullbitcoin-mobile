@@ -82,4 +82,70 @@ void main() {
       },
     );
   });
+
+  group('lockout timestamp', () {
+    test('setLockedUntil persists the epoch milliseconds', () async {
+      when(
+        () => storage.saveValue(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final lockedUntil = DateTime.fromMillisecondsSinceEpoch(1786000000000);
+      final result = await repository.setLockedUntil(lockedUntil);
+
+      expect(result, isA<Ok<void, AppUnlockFailure>>());
+      verify(
+        () => storage.saveValue(
+          key: 'unlockLockedUntilKey',
+          value: '1786000000000',
+        ),
+      ).called(1);
+    });
+
+    test('setLockedUntil(null) deletes the key', () async {
+      when(() => storage.deleteValue(any())).thenAnswer((_) async {});
+
+      final result = await repository.setLockedUntil(null);
+
+      expect(result, isA<Ok<void, AppUnlockFailure>>());
+      verify(() => storage.deleteValue('unlockLockedUntilKey')).called(1);
+    });
+
+    test('getLockedUntil parses the stored epoch', () async {
+      when(
+        () => storage.getValue('unlockLockedUntilKey'),
+      ).thenAnswer((_) async => '1786000000000');
+
+      final result = await repository.getLockedUntil();
+
+      expect(result, isA<Ok<DateTime?, AppUnlockFailure>>());
+      expect(
+        (result as Ok).value,
+        DateTime.fromMillisecondsSinceEpoch(1786000000000),
+      );
+    });
+
+    test('getLockedUntil returns null when nothing is stored', () async {
+      when(
+        () => storage.getValue('unlockLockedUntilKey'),
+      ).thenAnswer((_) async => null);
+
+      final result = await repository.getLockedUntil();
+
+      expect((result as Ok).value, isNull);
+    });
+
+    test('getLockedUntil returns Err when storage throws', () async {
+      when(
+        () => storage.getValue('unlockLockedUntilKey'),
+      ).thenThrow(Exception('storage error'));
+
+      final result = await repository.getLockedUntil();
+
+      expect(result, isA<Err<DateTime?, AppUnlockFailure>>());
+      expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
+    });
+  });
 }

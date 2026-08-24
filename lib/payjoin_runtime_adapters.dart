@@ -117,6 +117,13 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
 
   @override
   void write(PayjoinLogEvent event) {
+    // Lifecycle info events are periodic recovery/polling noise. Keep warnings
+    // and severe lifecycle events, plus all session-specific info events.
+    if (event.code == PayjoinLogCode.lifecycle &&
+        (event.level == PayjoinLogLevel.debug ||
+            event.level == PayjoinLogLevel.info)) {
+      return;
+    }
     final message =
         'Payjoin ${event.code.name}'
         '${event.sessionRef == null ? '' : ' ${event.sessionRef}'}';
