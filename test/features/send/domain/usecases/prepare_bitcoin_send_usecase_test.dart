@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -226,6 +227,35 @@ void main() {
       );
     },
   );
+
+  test('unsupported policy paths are rethrown unchanged', () async {
+    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(
+      () => payjoin.reservedOutpoints(),
+    ).thenAnswer((_) async => const Ok(<Outpoint>{}));
+    when(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).thenThrow(const UnsupportedBitcoinPolicyPathException());
+
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        address: address,
+        networkFee: networkFee,
+        amountSat: 50000,
+      ),
+      throwsA(isA<UnsupportedBitcoinPolicyPathException>()),
+    );
+  });
 
   test(
     'user-frozen ∪ payjoin-derived are merged + deduped into unspendable',

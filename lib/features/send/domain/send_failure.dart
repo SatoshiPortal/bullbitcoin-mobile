@@ -86,6 +86,10 @@ final class SendTransactionSigningFailure extends SendFailure {
   const SendTransactionSigningFailure([super.logMessage]);
 }
 
+final class SendUnsupportedPolicyPathFailure extends SendFailure {
+  const SendUnsupportedPolicyPathFailure([super.logMessage]);
+}
+
 final class SendTransactionConfirmationFailure extends SendFailure {
   final bool isBroadcastFailure;
 

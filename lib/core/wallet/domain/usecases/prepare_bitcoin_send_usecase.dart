@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Outpoint;
 
@@ -81,6 +82,8 @@ class PrepareBitcoinSendUsecase {
     } on InsufficientFundsException {
       rethrow;
     } on BitcoinCoinSelectionException {
+      rethrow;
+    } on UnsupportedBitcoinPolicyPathException {
       rethrow;
     } catch (e) {
       throw PrepareBitcoinSendException(e.toString());

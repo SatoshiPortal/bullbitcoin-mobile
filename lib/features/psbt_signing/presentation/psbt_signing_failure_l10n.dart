@@ -14,6 +14,8 @@ extension PsbtSigningFailureL10n on PsbtSigningFailure {
     PsbtSigningFrozenUtxoFailure() => context.loc.psbtSigningFrozenUtxo,
     PsbtSigningUnsupportedSighashFailure() =>
       context.loc.psbtSigningUnsupportedSighash,
+    PsbtSigningUnsupportedSpendModeFailure() =>
+      context.loc.psbtSigningUnsupportedSpendMode,
     PsbtSigningNoSignatureAddedFailure() =>
       context.loc.psbtSigningNoSignatureAdded,
     PsbtSigningUnexpectedFailure() => context.loc.oopsSomethingWentWrong,

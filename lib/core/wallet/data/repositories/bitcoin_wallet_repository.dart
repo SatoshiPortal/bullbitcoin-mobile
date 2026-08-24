@@ -144,13 +144,19 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final descriptorKeys = metadata.signers
         .expand((signer) => signer.descriptorKeys)
         .toList();
-    return [
-      for (final descriptorKey in descriptorKeys)
-        if (policyKeys.any(
-          (policyKey) => policyKey.matches(descriptorKey.toEntity()),
-        ))
-          descriptorKey,
-    ];
+    final matched = <WalletDescriptorKeyModel>[];
+    for (final policyKey in policyKeys) {
+      final matches = descriptorKeys.where(
+        (key) => policyKey.matches(key.toEntity()),
+      );
+      if (matches.isEmpty) {
+        throw StateError('Selected policy key does not match the descriptor');
+      }
+      for (final match in matches) {
+        if (!matched.any((key) => key.id == match.id)) matched.add(match);
+      }
+    }
+    return matched;
   }
 
   @override
@@ -705,4 +711,6 @@ BitcoinSigningFailureKind _signingFailureKind(
   BitcoinPsbtFrozenUtxoException() => BitcoinSigningFailureKind.frozenUtxo,
   BitcoinPsbtUnsupportedSighashException() =>
     BitcoinSigningFailureKind.unsupportedSighash,
+  BitcoinPsbtUnsupportedSpendModeException() =>
+    BitcoinSigningFailureKind.unsupportedSpendMode,
 };

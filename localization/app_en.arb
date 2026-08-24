@@ -15296,6 +15296,10 @@
   "@psbtSigningUnsupportedSighash": {
     "description": "Error shown when a PSBT uses an unsupported signature hash mode."
   },
+  "psbtSigningUnsupportedSpendMode": "This PSBT mixes Taproot key-path and script-path inputs, which Bull cannot sign together yet.",
+  "@psbtSigningUnsupportedSpendMode": {
+    "description": "Shown when a PSBT combines Taproot input spend modes that Bull cannot safely sign in one operation."
+  },
   "psbtSigningWalletMismatch": "This PSBT does not belong to the selected wallet.",
   "@psbtSigningWalletMismatch": {
     "description": "Error shown when a PSBT does not belong to the selected wallet."
@@ -15385,6 +15389,10 @@
   "psbtSigningFrozenUtxo": "This PSBT spends a frozen coin. Unfreeze it before signing.",
   "@psbtSigningFrozenUtxo": {
     "description": "Shown when standalone PSBT signing is blocked because an input coin is frozen"
+  },
+  "sendErrorUnsupportedPolicyPath": "This Taproot spending option isn’t supported yet. Choose another option.",
+  "@sendErrorUnsupportedPolicyPath": {
+    "description": "Error shown when Bull cannot unambiguously construct the selected Taproot spending path"
   },
   "sendLoadingTransaction": "Loading transaction...",
   "@sendLoadingTransaction": {

@@ -40,6 +40,8 @@ extension SendFailureL10n on SendFailure {
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     SendTransactionBuildFailure() => context.loc.sendErrorBuildFailed,
     SendTransactionSigningFailure() => context.loc.sendErrorConfirmationFailed,
+    SendUnsupportedPolicyPathFailure() =>
+      context.loc.sendErrorUnsupportedPolicyPath,
     SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed

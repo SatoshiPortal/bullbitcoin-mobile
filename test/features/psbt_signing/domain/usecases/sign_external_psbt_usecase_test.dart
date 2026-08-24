@@ -101,4 +101,31 @@ void main() {
       ),
     );
   });
+
+  test('rejects mixed Taproot input spend modes', () async {
+    final port = _MockBitcoinSigningPort();
+    final review = psbtSigningReview(
+      policy: singleLocalPolicy(),
+      wallet: psbtSigningWallet(includeRemoteSigner: false),
+      transaction: psbtReview(),
+    );
+    when(
+      () => port.signPsbt('unsigned', walletId: 'wallet', tryFinalize: false),
+    ).thenAnswer(
+      (_) async => const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedSpendMode),
+      ),
+    );
+
+    final result = await SignExternalPsbtUsecase(port).execute(review);
+
+    expect(
+      result,
+      isA<Err<PsbtSigningResult, PsbtSigningFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<PsbtSigningUnsupportedSpendModeFailure>(),
+      ),
+    );
+  });
 }
