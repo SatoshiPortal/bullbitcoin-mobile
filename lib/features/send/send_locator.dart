@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
@@ -86,9 +87,13 @@ class SendLocator {
     locator.registerFactory<SignBitcoinTxUsecase>(
       () => SignBitcoinTxUsecase(locator<BitcoinSigningPort>()),
     );
+    locator.registerFactory<GetBitcoinSigningPlanUsecase>(
+      () => GetBitcoinSigningPlanUsecase(locator<BitcoinSigningPort>()),
+    );
     locator.registerFactory<ProcessBitcoinSignerResultUsecase>(
       () => ProcessBitcoinSignerResultUsecase(
         locator<SignBitcoinTxUsecase>(),
+        locator<GetBitcoinSigningPlanUsecase>(),
         locator<BitcoinSigningPort>(),
       ),
     );

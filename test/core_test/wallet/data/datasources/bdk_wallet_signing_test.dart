@@ -1194,6 +1194,27 @@ void main() {
       expect(verified.transaction, transaction);
       expect(verified.txSize, greaterThan(0));
 
+      final changedVersion = hex.decode(transaction);
+      changedVersion[0] ^= 0x01;
+      final substitutedInput = hex.decode(transaction);
+      // version (4), SegWit marker/flag (2), input count (1), then prevout.
+      substitutedInput[7] ^= 0x01;
+      final changedLocktime = hex.decode(transaction);
+      changedLocktime[changedLocktime.length - 1] ^= 0x01;
+      for (final changedTransaction in [
+        changedVersion,
+        substitutedInput,
+        changedLocktime,
+      ]) {
+        expect(
+          () => datasource.verifyFinalTransaction(
+            psbtBase64: unsignedPsbt,
+            transactionHex: hex.encode(changedTransaction),
+          ),
+          throwsFormatException,
+        );
+      }
+
       final differentPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
@@ -1354,6 +1375,15 @@ void main() {
         ).input().single.sha256Preimages.values.single,
         hex.decode(preimageHex),
       );
+      final preimageReview = await datasource.inspectPsbt(
+        withPreimage,
+        wallet: wallet,
+        walletFingerprints: {signers[0].fingerprint},
+      );
+      expect(preimageReview.isFinalized, isFalse);
+      expect(preimageReview.inputs.single.satisfiedPreimageKeys, {
+        'sha256:$hash',
+      });
       final signed = datasource.signPsbtWithDescriptor(
         withPreimage,
         descriptor: twoPathDescriptor(externalPrivate, internalPrivate),
@@ -1361,10 +1391,15 @@ void main() {
       );
 
       expect(signed.isFinalized, isTrue);
-      await datasource.inspectPsbt(
+      final finalizedReview = await datasource.inspectPsbt(
         signed.psbt,
         wallet: wallet,
         walletFingerprints: {signers[0].fingerprint},
+      );
+      expect(finalizedReview.isFinalized, isTrue);
+      expect(
+        finalizedReview.inputs.single.satisfiedPreimageKeys,
+        contains('sha256:$hash'),
       );
       final finalizedPsbt = bdk.Psbt(psbtBase64: signed.psbt);
       try {

@@ -50,7 +50,20 @@ void main() {
         },
       );
 
-      expect(() => policy.buildPath(selection), throwsStateError);
+      expect(() => policy.buildPath(selection), throwsArgumentError);
+    });
+
+    test('rejects a stored selection outside the policy bounds', () {
+      final policy = delayedPolicy(
+        BitcoinRelativeTimelockPolicyNode(id: 'delay', value: 10),
+      );
+      final selection = BitcoinPolicySelection(
+        choices: const {
+          'external:root': [2],
+        },
+      );
+
+      expect(() => policy.pathRequirements(selection), throwsArgumentError);
     });
 
     test('tracks relative path maturity per UTXO', () {

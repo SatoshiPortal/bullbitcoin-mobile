@@ -221,11 +221,13 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     String psbt, {
     required String walletId,
     bool requireLocalOrigin = true,
+    bool allowSpentWalletInputs = false,
   }) => _guardSigning(
     () => _reviewPsbt(
       psbt,
       walletId: walletId,
       requireLocalOrigin: requireLocalOrigin,
+      allowSpentWalletInputs: allowSpentWalletInputs,
     ),
   );
 
@@ -233,6 +235,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     String psbt, {
     required String walletId,
     bool requireLocalOrigin = true,
+    bool allowSpentWalletInputs = false,
   }) async {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
@@ -245,7 +248,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       throw const BitcoinPsbtMissingLocalOriginException();
     }
 
-    await _validateWalletPsbtInputs(psbt: psbt, wallet: wallet);
+    await _validateWalletPsbtInputs(
+      psbt: psbt,
+      wallet: wallet,
+      allowSpentWalletInputs: allowSpentWalletInputs,
+    );
     final model = await _bdkWallet.inspectPsbt(
       psbt,
       wallet: wallet,
@@ -608,6 +615,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String psbt,
     required PublicBdkWalletModel wallet,
     String? replacingTxid,
+    bool allowSpentWalletInputs = false,
   }) async {
     final frozenRows = await _frozenUtxos.getAllFrozen();
     final frozenOutpoints = {
@@ -618,6 +626,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         psbt,
         wallet: wallet,
         frozenOutpoints: frozenOutpoints,
+        allowSpentWalletInputs: allowSpentWalletInputs,
       );
     } else {
       await _bdkWallet.validateWalletPsbtInputs(
@@ -625,6 +634,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         wallet: wallet,
         frozenOutpoints: frozenOutpoints,
         replacingTxid: replacingTxid,
+        allowSpentWalletInputs: allowSpentWalletInputs,
       );
     }
   }
