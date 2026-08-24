@@ -56,5 +56,8 @@ extension SendFailureL10n on SendFailure {
           ? context.loc.sendErrorBroadcastFailed
           : context.loc.sendErrorConfirmationFailed,
     SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    SendPersistenceFailure() ||
+    SendPendingTransactionChangedFailure() ||
+    SendStoredTransactionInvalidFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

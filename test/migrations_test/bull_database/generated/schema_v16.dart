@@ -10871,6 +10871,1338 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
   }
 }
 
+class SendTransactions extends Table
+    with TableInfo<SendTransactions, SendTransactionsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactions(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> stage = GeneratedColumn<String>(
+    'stage',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> recipient = GeneratedColumn<String>(
+    'recipient',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> amount = GeneratedColumn<String>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> amountCurrencyCode =
+      GeneratedColumn<String>(
+        'amount_currency_code',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<int> sendMax = GeneratedColumn<int>(
+    'send_max',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (send_max IN (0, 1))',
+  );
+  late final GeneratedColumn<String> feeSelection = GeneratedColumn<String>(
+    'fee_selection',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> customFeeKind = GeneratedColumn<String>(
+    'custom_fee_kind',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> customFeeValue = GeneratedColumn<int>(
+    'custom_fee_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> replaceByFee = GeneratedColumn<int>(
+    'replace_by_fee',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (replace_by_fee IN (0, 1))',
+  );
+  late final GeneratedColumn<int> payjoinOptedOut = GeneratedColumn<int>(
+    'payjoin_opted_out',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (payjoin_opted_out IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<String> psbt = GeneratedColumn<String>(
+    'psbt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> finalTransaction = GeneratedColumn<String>(
+    'final_transaction',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    walletId,
+    stage,
+    label,
+    recipient,
+    amount,
+    amountCurrencyCode,
+    sendMax,
+    feeSelection,
+    customFeeKind,
+    customFeeValue,
+    replaceByFee,
+    payjoinOptedOut,
+    psbt,
+    finalTransaction,
+    createdAt,
+    updatedAt,
+    revision,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transactions';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SendTransactionsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      stage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stage'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      recipient: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}amount'],
+      )!,
+      amountCurrencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}amount_currency_code'],
+      )!,
+      sendMax: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}send_max'],
+      )!,
+      feeSelection: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fee_selection'],
+      )!,
+      customFeeKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_fee_kind'],
+      ),
+      customFeeValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}custom_fee_value'],
+      ),
+      replaceByFee: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}replace_by_fee'],
+      )!,
+      payjoinOptedOut: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payjoin_opted_out'],
+      )!,
+      psbt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}psbt'],
+      ),
+      finalTransaction: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}final_transaction'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactions createAlias(String alias) {
+    return SendTransactions(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(id)',
+    'FOREIGN KEY(wallet_id)REFERENCES wallet_metadatas(id)ON DELETE CASCADE',
+    'CHECK(stage IN (\'draft\', \'needsSignatures\', \'readyToBroadcast\'))',
+    'CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN (\'absolute\', \'relative\'))',
+    'CHECK((custom_fee_kind IS NULL)=(custom_fee_value IS NULL))',
+    'CHECK(stage = \'draft\' OR psbt IS NOT NULL)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionsData extends DataClass
+    implements Insertable<SendTransactionsData> {
+  final String id;
+  final String walletId;
+  final String stage;
+  final String? label;
+  final String recipient;
+  final String amount;
+  final String amountCurrencyCode;
+  final int sendMax;
+  final String feeSelection;
+  final String? customFeeKind;
+  final int? customFeeValue;
+  final int replaceByFee;
+  final int payjoinOptedOut;
+  final String? psbt;
+  final String? finalTransaction;
+  final String createdAt;
+  final String updatedAt;
+  final int revision;
+  const SendTransactionsData({
+    required this.id,
+    required this.walletId,
+    required this.stage,
+    this.label,
+    required this.recipient,
+    required this.amount,
+    required this.amountCurrencyCode,
+    required this.sendMax,
+    required this.feeSelection,
+    this.customFeeKind,
+    this.customFeeValue,
+    required this.replaceByFee,
+    required this.payjoinOptedOut,
+    this.psbt,
+    this.finalTransaction,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['wallet_id'] = Variable<String>(walletId);
+    map['stage'] = Variable<String>(stage);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    map['recipient'] = Variable<String>(recipient);
+    map['amount'] = Variable<String>(amount);
+    map['amount_currency_code'] = Variable<String>(amountCurrencyCode);
+    map['send_max'] = Variable<int>(sendMax);
+    map['fee_selection'] = Variable<String>(feeSelection);
+    if (!nullToAbsent || customFeeKind != null) {
+      map['custom_fee_kind'] = Variable<String>(customFeeKind);
+    }
+    if (!nullToAbsent || customFeeValue != null) {
+      map['custom_fee_value'] = Variable<int>(customFeeValue);
+    }
+    map['replace_by_fee'] = Variable<int>(replaceByFee);
+    map['payjoin_opted_out'] = Variable<int>(payjoinOptedOut);
+    if (!nullToAbsent || psbt != null) {
+      map['psbt'] = Variable<String>(psbt);
+    }
+    if (!nullToAbsent || finalTransaction != null) {
+      map['final_transaction'] = Variable<String>(finalTransaction);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    return map;
+  }
+
+  SendTransactionsCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionsCompanion(
+      id: Value(id),
+      walletId: Value(walletId),
+      stage: Value(stage),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      recipient: Value(recipient),
+      amount: Value(amount),
+      amountCurrencyCode: Value(amountCurrencyCode),
+      sendMax: Value(sendMax),
+      feeSelection: Value(feeSelection),
+      customFeeKind: customFeeKind == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customFeeKind),
+      customFeeValue: customFeeValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customFeeValue),
+      replaceByFee: Value(replaceByFee),
+      payjoinOptedOut: Value(payjoinOptedOut),
+      psbt: psbt == null && nullToAbsent ? const Value.absent() : Value(psbt),
+      finalTransaction: finalTransaction == null && nullToAbsent
+          ? const Value.absent()
+          : Value(finalTransaction),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      revision: Value(revision),
+    );
+  }
+
+  factory SendTransactionsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionsData(
+      id: serializer.fromJson<String>(json['id']),
+      walletId: serializer.fromJson<String>(json['walletId']),
+      stage: serializer.fromJson<String>(json['stage']),
+      label: serializer.fromJson<String?>(json['label']),
+      recipient: serializer.fromJson<String>(json['recipient']),
+      amount: serializer.fromJson<String>(json['amount']),
+      amountCurrencyCode: serializer.fromJson<String>(
+        json['amountCurrencyCode'],
+      ),
+      sendMax: serializer.fromJson<int>(json['sendMax']),
+      feeSelection: serializer.fromJson<String>(json['feeSelection']),
+      customFeeKind: serializer.fromJson<String?>(json['customFeeKind']),
+      customFeeValue: serializer.fromJson<int?>(json['customFeeValue']),
+      replaceByFee: serializer.fromJson<int>(json['replaceByFee']),
+      payjoinOptedOut: serializer.fromJson<int>(json['payjoinOptedOut']),
+      psbt: serializer.fromJson<String?>(json['psbt']),
+      finalTransaction: serializer.fromJson<String?>(json['finalTransaction']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'walletId': serializer.toJson<String>(walletId),
+      'stage': serializer.toJson<String>(stage),
+      'label': serializer.toJson<String?>(label),
+      'recipient': serializer.toJson<String>(recipient),
+      'amount': serializer.toJson<String>(amount),
+      'amountCurrencyCode': serializer.toJson<String>(amountCurrencyCode),
+      'sendMax': serializer.toJson<int>(sendMax),
+      'feeSelection': serializer.toJson<String>(feeSelection),
+      'customFeeKind': serializer.toJson<String?>(customFeeKind),
+      'customFeeValue': serializer.toJson<int?>(customFeeValue),
+      'replaceByFee': serializer.toJson<int>(replaceByFee),
+      'payjoinOptedOut': serializer.toJson<int>(payjoinOptedOut),
+      'psbt': serializer.toJson<String?>(psbt),
+      'finalTransaction': serializer.toJson<String?>(finalTransaction),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+    };
+  }
+
+  SendTransactionsData copyWith({
+    String? id,
+    String? walletId,
+    String? stage,
+    Value<String?> label = const Value.absent(),
+    String? recipient,
+    String? amount,
+    String? amountCurrencyCode,
+    int? sendMax,
+    String? feeSelection,
+    Value<String?> customFeeKind = const Value.absent(),
+    Value<int?> customFeeValue = const Value.absent(),
+    int? replaceByFee,
+    int? payjoinOptedOut,
+    Value<String?> psbt = const Value.absent(),
+    Value<String?> finalTransaction = const Value.absent(),
+    String? createdAt,
+    String? updatedAt,
+    int? revision,
+  }) => SendTransactionsData(
+    id: id ?? this.id,
+    walletId: walletId ?? this.walletId,
+    stage: stage ?? this.stage,
+    label: label.present ? label.value : this.label,
+    recipient: recipient ?? this.recipient,
+    amount: amount ?? this.amount,
+    amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
+    sendMax: sendMax ?? this.sendMax,
+    feeSelection: feeSelection ?? this.feeSelection,
+    customFeeKind: customFeeKind.present
+        ? customFeeKind.value
+        : this.customFeeKind,
+    customFeeValue: customFeeValue.present
+        ? customFeeValue.value
+        : this.customFeeValue,
+    replaceByFee: replaceByFee ?? this.replaceByFee,
+    payjoinOptedOut: payjoinOptedOut ?? this.payjoinOptedOut,
+    psbt: psbt.present ? psbt.value : this.psbt,
+    finalTransaction: finalTransaction.present
+        ? finalTransaction.value
+        : this.finalTransaction,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+  );
+  SendTransactionsData copyWithCompanion(SendTransactionsCompanion data) {
+    return SendTransactionsData(
+      id: data.id.present ? data.id.value : this.id,
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      stage: data.stage.present ? data.stage.value : this.stage,
+      label: data.label.present ? data.label.value : this.label,
+      recipient: data.recipient.present ? data.recipient.value : this.recipient,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      amountCurrencyCode: data.amountCurrencyCode.present
+          ? data.amountCurrencyCode.value
+          : this.amountCurrencyCode,
+      sendMax: data.sendMax.present ? data.sendMax.value : this.sendMax,
+      feeSelection: data.feeSelection.present
+          ? data.feeSelection.value
+          : this.feeSelection,
+      customFeeKind: data.customFeeKind.present
+          ? data.customFeeKind.value
+          : this.customFeeKind,
+      customFeeValue: data.customFeeValue.present
+          ? data.customFeeValue.value
+          : this.customFeeValue,
+      replaceByFee: data.replaceByFee.present
+          ? data.replaceByFee.value
+          : this.replaceByFee,
+      payjoinOptedOut: data.payjoinOptedOut.present
+          ? data.payjoinOptedOut.value
+          : this.payjoinOptedOut,
+      psbt: data.psbt.present ? data.psbt.value : this.psbt,
+      finalTransaction: data.finalTransaction.present
+          ? data.finalTransaction.value
+          : this.finalTransaction,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionsData(')
+          ..write('id: $id, ')
+          ..write('walletId: $walletId, ')
+          ..write('stage: $stage, ')
+          ..write('label: $label, ')
+          ..write('recipient: $recipient, ')
+          ..write('amount: $amount, ')
+          ..write('amountCurrencyCode: $amountCurrencyCode, ')
+          ..write('sendMax: $sendMax, ')
+          ..write('feeSelection: $feeSelection, ')
+          ..write('customFeeKind: $customFeeKind, ')
+          ..write('customFeeValue: $customFeeValue, ')
+          ..write('replaceByFee: $replaceByFee, ')
+          ..write('payjoinOptedOut: $payjoinOptedOut, ')
+          ..write('psbt: $psbt, ')
+          ..write('finalTransaction: $finalTransaction, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    walletId,
+    stage,
+    label,
+    recipient,
+    amount,
+    amountCurrencyCode,
+    sendMax,
+    feeSelection,
+    customFeeKind,
+    customFeeValue,
+    replaceByFee,
+    payjoinOptedOut,
+    psbt,
+    finalTransaction,
+    createdAt,
+    updatedAt,
+    revision,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionsData &&
+          other.id == this.id &&
+          other.walletId == this.walletId &&
+          other.stage == this.stage &&
+          other.label == this.label &&
+          other.recipient == this.recipient &&
+          other.amount == this.amount &&
+          other.amountCurrencyCode == this.amountCurrencyCode &&
+          other.sendMax == this.sendMax &&
+          other.feeSelection == this.feeSelection &&
+          other.customFeeKind == this.customFeeKind &&
+          other.customFeeValue == this.customFeeValue &&
+          other.replaceByFee == this.replaceByFee &&
+          other.payjoinOptedOut == this.payjoinOptedOut &&
+          other.psbt == this.psbt &&
+          other.finalTransaction == this.finalTransaction &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.revision == this.revision);
+}
+
+class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
+  final Value<String> id;
+  final Value<String> walletId;
+  final Value<String> stage;
+  final Value<String?> label;
+  final Value<String> recipient;
+  final Value<String> amount;
+  final Value<String> amountCurrencyCode;
+  final Value<int> sendMax;
+  final Value<String> feeSelection;
+  final Value<String?> customFeeKind;
+  final Value<int?> customFeeValue;
+  final Value<int> replaceByFee;
+  final Value<int> payjoinOptedOut;
+  final Value<String?> psbt;
+  final Value<String?> finalTransaction;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> revision;
+  final Value<int> rowid;
+  const SendTransactionsCompanion({
+    this.id = const Value.absent(),
+    this.walletId = const Value.absent(),
+    this.stage = const Value.absent(),
+    this.label = const Value.absent(),
+    this.recipient = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.amountCurrencyCode = const Value.absent(),
+    this.sendMax = const Value.absent(),
+    this.feeSelection = const Value.absent(),
+    this.customFeeKind = const Value.absent(),
+    this.customFeeValue = const Value.absent(),
+    this.replaceByFee = const Value.absent(),
+    this.payjoinOptedOut = const Value.absent(),
+    this.psbt = const Value.absent(),
+    this.finalTransaction = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionsCompanion.insert({
+    required String id,
+    required String walletId,
+    required String stage,
+    this.label = const Value.absent(),
+    required String recipient,
+    required String amount,
+    required String amountCurrencyCode,
+    required int sendMax,
+    required String feeSelection,
+    this.customFeeKind = const Value.absent(),
+    this.customFeeValue = const Value.absent(),
+    required int replaceByFee,
+    this.payjoinOptedOut = const Value.absent(),
+    this.psbt = const Value.absent(),
+    this.finalTransaction = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.revision = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       walletId = Value(walletId),
+       stage = Value(stage),
+       recipient = Value(recipient),
+       amount = Value(amount),
+       amountCurrencyCode = Value(amountCurrencyCode),
+       sendMax = Value(sendMax),
+       feeSelection = Value(feeSelection),
+       replaceByFee = Value(replaceByFee),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SendTransactionsData> custom({
+    Expression<String>? id,
+    Expression<String>? walletId,
+    Expression<String>? stage,
+    Expression<String>? label,
+    Expression<String>? recipient,
+    Expression<String>? amount,
+    Expression<String>? amountCurrencyCode,
+    Expression<int>? sendMax,
+    Expression<String>? feeSelection,
+    Expression<String>? customFeeKind,
+    Expression<int>? customFeeValue,
+    Expression<int>? replaceByFee,
+    Expression<int>? payjoinOptedOut,
+    Expression<String>? psbt,
+    Expression<String>? finalTransaction,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? revision,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (walletId != null) 'wallet_id': walletId,
+      if (stage != null) 'stage': stage,
+      if (label != null) 'label': label,
+      if (recipient != null) 'recipient': recipient,
+      if (amount != null) 'amount': amount,
+      if (amountCurrencyCode != null)
+        'amount_currency_code': amountCurrencyCode,
+      if (sendMax != null) 'send_max': sendMax,
+      if (feeSelection != null) 'fee_selection': feeSelection,
+      if (customFeeKind != null) 'custom_fee_kind': customFeeKind,
+      if (customFeeValue != null) 'custom_fee_value': customFeeValue,
+      if (replaceByFee != null) 'replace_by_fee': replaceByFee,
+      if (payjoinOptedOut != null) 'payjoin_opted_out': payjoinOptedOut,
+      if (psbt != null) 'psbt': psbt,
+      if (finalTransaction != null) 'final_transaction': finalTransaction,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? walletId,
+    Value<String>? stage,
+    Value<String?>? label,
+    Value<String>? recipient,
+    Value<String>? amount,
+    Value<String>? amountCurrencyCode,
+    Value<int>? sendMax,
+    Value<String>? feeSelection,
+    Value<String?>? customFeeKind,
+    Value<int?>? customFeeValue,
+    Value<int>? replaceByFee,
+    Value<int>? payjoinOptedOut,
+    Value<String?>? psbt,
+    Value<String?>? finalTransaction,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? revision,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionsCompanion(
+      id: id ?? this.id,
+      walletId: walletId ?? this.walletId,
+      stage: stage ?? this.stage,
+      label: label ?? this.label,
+      recipient: recipient ?? this.recipient,
+      amount: amount ?? this.amount,
+      amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
+      sendMax: sendMax ?? this.sendMax,
+      feeSelection: feeSelection ?? this.feeSelection,
+      customFeeKind: customFeeKind ?? this.customFeeKind,
+      customFeeValue: customFeeValue ?? this.customFeeValue,
+      replaceByFee: replaceByFee ?? this.replaceByFee,
+      payjoinOptedOut: payjoinOptedOut ?? this.payjoinOptedOut,
+      psbt: psbt ?? this.psbt,
+      finalTransaction: finalTransaction ?? this.finalTransaction,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (stage.present) {
+      map['stage'] = Variable<String>(stage.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (recipient.present) {
+      map['recipient'] = Variable<String>(recipient.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<String>(amount.value);
+    }
+    if (amountCurrencyCode.present) {
+      map['amount_currency_code'] = Variable<String>(amountCurrencyCode.value);
+    }
+    if (sendMax.present) {
+      map['send_max'] = Variable<int>(sendMax.value);
+    }
+    if (feeSelection.present) {
+      map['fee_selection'] = Variable<String>(feeSelection.value);
+    }
+    if (customFeeKind.present) {
+      map['custom_fee_kind'] = Variable<String>(customFeeKind.value);
+    }
+    if (customFeeValue.present) {
+      map['custom_fee_value'] = Variable<int>(customFeeValue.value);
+    }
+    if (replaceByFee.present) {
+      map['replace_by_fee'] = Variable<int>(replaceByFee.value);
+    }
+    if (payjoinOptedOut.present) {
+      map['payjoin_opted_out'] = Variable<int>(payjoinOptedOut.value);
+    }
+    if (psbt.present) {
+      map['psbt'] = Variable<String>(psbt.value);
+    }
+    if (finalTransaction.present) {
+      map['final_transaction'] = Variable<String>(finalTransaction.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionsCompanion(')
+          ..write('id: $id, ')
+          ..write('walletId: $walletId, ')
+          ..write('stage: $stage, ')
+          ..write('label: $label, ')
+          ..write('recipient: $recipient, ')
+          ..write('amount: $amount, ')
+          ..write('amountCurrencyCode: $amountCurrencyCode, ')
+          ..write('sendMax: $sendMax, ')
+          ..write('feeSelection: $feeSelection, ')
+          ..write('customFeeKind: $customFeeKind, ')
+          ..write('customFeeValue: $customFeeValue, ')
+          ..write('replaceByFee: $replaceByFee, ')
+          ..write('payjoinOptedOut: $payjoinOptedOut, ')
+          ..write('psbt: $psbt, ')
+          ..write('finalTransaction: $finalTransaction, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SendTransactionInputs extends Table
+    with TableInfo<SendTransactionInputs, SendTransactionInputsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactionInputs(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> txId = GeneratedColumn<String>(
+    'tx_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> vout = GeneratedColumn<int>(
+    'vout',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [transactionId, txId, vout];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transaction_inputs';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {transactionId, txId, vout};
+  @override
+  SendTransactionInputsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionInputsData(
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      txId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tx_id'],
+      )!,
+      vout: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vout'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactionInputs createAlias(String alias) {
+    return SendTransactionInputs(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(transaction_id, tx_id, vout)',
+    'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionInputsData extends DataClass
+    implements Insertable<SendTransactionInputsData> {
+  final String transactionId;
+  final String txId;
+  final int vout;
+  const SendTransactionInputsData({
+    required this.transactionId,
+    required this.txId,
+    required this.vout,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['tx_id'] = Variable<String>(txId);
+    map['vout'] = Variable<int>(vout);
+    return map;
+  }
+
+  SendTransactionInputsCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionInputsCompanion(
+      transactionId: Value(transactionId),
+      txId: Value(txId),
+      vout: Value(vout),
+    );
+  }
+
+  factory SendTransactionInputsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionInputsData(
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      txId: serializer.fromJson<String>(json['txId']),
+      vout: serializer.fromJson<int>(json['vout']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'transactionId': serializer.toJson<String>(transactionId),
+      'txId': serializer.toJson<String>(txId),
+      'vout': serializer.toJson<int>(vout),
+    };
+  }
+
+  SendTransactionInputsData copyWith({
+    String? transactionId,
+    String? txId,
+    int? vout,
+  }) => SendTransactionInputsData(
+    transactionId: transactionId ?? this.transactionId,
+    txId: txId ?? this.txId,
+    vout: vout ?? this.vout,
+  );
+  SendTransactionInputsData copyWithCompanion(
+    SendTransactionInputsCompanion data,
+  ) {
+    return SendTransactionInputsData(
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      txId: data.txId.present ? data.txId.value : this.txId,
+      vout: data.vout.present ? data.vout.value : this.vout,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionInputsData(')
+          ..write('transactionId: $transactionId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(transactionId, txId, vout);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionInputsData &&
+          other.transactionId == this.transactionId &&
+          other.txId == this.txId &&
+          other.vout == this.vout);
+}
+
+class SendTransactionInputsCompanion
+    extends UpdateCompanion<SendTransactionInputsData> {
+  final Value<String> transactionId;
+  final Value<String> txId;
+  final Value<int> vout;
+  final Value<int> rowid;
+  const SendTransactionInputsCompanion({
+    this.transactionId = const Value.absent(),
+    this.txId = const Value.absent(),
+    this.vout = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionInputsCompanion.insert({
+    required String transactionId,
+    required String txId,
+    required int vout,
+    this.rowid = const Value.absent(),
+  }) : transactionId = Value(transactionId),
+       txId = Value(txId),
+       vout = Value(vout);
+  static Insertable<SendTransactionInputsData> custom({
+    Expression<String>? transactionId,
+    Expression<String>? txId,
+    Expression<int>? vout,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (txId != null) 'tx_id': txId,
+      if (vout != null) 'vout': vout,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionInputsCompanion copyWith({
+    Value<String>? transactionId,
+    Value<String>? txId,
+    Value<int>? vout,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionInputsCompanion(
+      transactionId: transactionId ?? this.transactionId,
+      txId: txId ?? this.txId,
+      vout: vout ?? this.vout,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (txId.present) {
+      map['tx_id'] = Variable<String>(txId.value);
+    }
+    if (vout.present) {
+      map['vout'] = Variable<int>(vout.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionInputsCompanion(')
+          ..write('transactionId: $transactionId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SendTransactionPolicyChoices extends Table
+    with
+        TableInfo<
+          SendTransactionPolicyChoices,
+          SendTransactionPolicyChoicesData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactionPolicyChoices(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> node = GeneratedColumn<String>(
+    'node',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> optionIndex = GeneratedColumn<int>(
+    'option_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [transactionId, node, optionIndex];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transaction_policy_choices';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {transactionId, node, optionIndex};
+  @override
+  SendTransactionPolicyChoicesData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionPolicyChoicesData(
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      node: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}node'],
+      )!,
+      optionIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}option_index'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactionPolicyChoices createAlias(String alias) {
+    return SendTransactionPolicyChoices(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(transaction_id, node, option_index)',
+    'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionPolicyChoicesData extends DataClass
+    implements Insertable<SendTransactionPolicyChoicesData> {
+  final String transactionId;
+  final String node;
+  final int optionIndex;
+  const SendTransactionPolicyChoicesData({
+    required this.transactionId,
+    required this.node,
+    required this.optionIndex,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['node'] = Variable<String>(node);
+    map['option_index'] = Variable<int>(optionIndex);
+    return map;
+  }
+
+  SendTransactionPolicyChoicesCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionPolicyChoicesCompanion(
+      transactionId: Value(transactionId),
+      node: Value(node),
+      optionIndex: Value(optionIndex),
+    );
+  }
+
+  factory SendTransactionPolicyChoicesData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionPolicyChoicesData(
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      node: serializer.fromJson<String>(json['node']),
+      optionIndex: serializer.fromJson<int>(json['optionIndex']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'transactionId': serializer.toJson<String>(transactionId),
+      'node': serializer.toJson<String>(node),
+      'optionIndex': serializer.toJson<int>(optionIndex),
+    };
+  }
+
+  SendTransactionPolicyChoicesData copyWith({
+    String? transactionId,
+    String? node,
+    int? optionIndex,
+  }) => SendTransactionPolicyChoicesData(
+    transactionId: transactionId ?? this.transactionId,
+    node: node ?? this.node,
+    optionIndex: optionIndex ?? this.optionIndex,
+  );
+  SendTransactionPolicyChoicesData copyWithCompanion(
+    SendTransactionPolicyChoicesCompanion data,
+  ) {
+    return SendTransactionPolicyChoicesData(
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      node: data.node.present ? data.node.value : this.node,
+      optionIndex: data.optionIndex.present
+          ? data.optionIndex.value
+          : this.optionIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionPolicyChoicesData(')
+          ..write('transactionId: $transactionId, ')
+          ..write('node: $node, ')
+          ..write('optionIndex: $optionIndex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(transactionId, node, optionIndex);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionPolicyChoicesData &&
+          other.transactionId == this.transactionId &&
+          other.node == this.node &&
+          other.optionIndex == this.optionIndex);
+}
+
+class SendTransactionPolicyChoicesCompanion
+    extends UpdateCompanion<SendTransactionPolicyChoicesData> {
+  final Value<String> transactionId;
+  final Value<String> node;
+  final Value<int> optionIndex;
+  final Value<int> rowid;
+  const SendTransactionPolicyChoicesCompanion({
+    this.transactionId = const Value.absent(),
+    this.node = const Value.absent(),
+    this.optionIndex = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionPolicyChoicesCompanion.insert({
+    required String transactionId,
+    required String node,
+    required int optionIndex,
+    this.rowid = const Value.absent(),
+  }) : transactionId = Value(transactionId),
+       node = Value(node),
+       optionIndex = Value(optionIndex);
+  static Insertable<SendTransactionPolicyChoicesData> custom({
+    Expression<String>? transactionId,
+    Expression<String>? node,
+    Expression<int>? optionIndex,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (node != null) 'node': node,
+      if (optionIndex != null) 'option_index': optionIndex,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionPolicyChoicesCompanion copyWith({
+    Value<String>? transactionId,
+    Value<String>? node,
+    Value<int>? optionIndex,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionPolicyChoicesCompanion(
+      transactionId: transactionId ?? this.transactionId,
+      node: node ?? this.node,
+      optionIndex: optionIndex ?? this.optionIndex,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (node.present) {
+      map['node'] = Variable<String>(node.value);
+    }
+    if (optionIndex.present) {
+      map['option_index'] = Variable<int>(optionIndex.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionPolicyChoicesCompanion(')
+          ..write('transactionId: $transactionId, ')
+          ..write('node: $node, ')
+          ..write('optionIndex: $optionIndex, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV16 extends GeneratedDatabase {
   DatabaseAtV16(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -10896,6 +12228,11 @@ class DatabaseAtV16 extends GeneratedDatabase {
   late final DismissedAnnouncements dismissedAnnouncements =
       DismissedAnnouncements(this);
   late final OrderSwaps orderSwaps = OrderSwaps(this);
+  late final SendTransactions sendTransactions = SendTransactions(this);
+  late final SendTransactionInputs sendTransactionInputs =
+      SendTransactionInputs(this);
+  late final SendTransactionPolicyChoices sendTransactionPolicyChoices =
+      SendTransactionPolicyChoices(this);
   late final Index orderSwapsRequestId = Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -10924,6 +12261,14 @@ class DatabaseAtV16 extends GeneratedDatabase {
     'order_swaps_local_payin_txid',
     'CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)',
   );
+  late final Index sendTransactionsWallet = Index(
+    'send_transactions_wallet',
+    'CREATE INDEX send_transactions_wallet ON send_transactions (wallet_id)',
+  );
+  late final Index sendTransactionsUpdatedAt = Index(
+    'send_transactions_updated_at',
+    'CREATE INDEX send_transactions_updated_at ON send_transactions (updated_at)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -10949,6 +12294,9 @@ class DatabaseAtV16 extends GeneratedDatabase {
     frozenUtxos,
     dismissedAnnouncements,
     orderSwaps,
+    sendTransactions,
+    sendTransactionInputs,
+    sendTransactionPolicyChoices,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,
@@ -10956,6 +12304,8 @@ class DatabaseAtV16 extends GeneratedDatabase {
     orderSwapsBitcoinTxid,
     orderSwapsLiquidTxid,
     orderSwapsLocalPayinTxid,
+    sendTransactionsWallet,
+    sendTransactionsUpdatedAt,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -10979,6 +12329,29 @@ class DatabaseAtV16 extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('wallet_descriptor_keys', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'wallet_metadatas',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('send_transactions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'send_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('send_transaction_inputs', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'send_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('send_transaction_policy_choices', kind: UpdateKind.delete),
+      ],
     ),
   ]);
   @override
