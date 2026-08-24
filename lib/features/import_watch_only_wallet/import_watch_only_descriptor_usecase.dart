@@ -25,9 +25,6 @@ class ImportWatchOnlyDescriptorUsecase {
         signers: watchOnlyDescriptor.signers,
       );
       return Ok(wallet);
-    } on UnsupportedTaprootDescriptorException catch (_, st) {
-      log.warning('Taproot descriptor import is not supported', trace: st);
-      return const Err(TaprootUnsupportedFailure());
     } on Exception catch (_, st) {
       // Descriptor parser errors can contain key material.
       log.warning('Failed to import watch-only descriptor', trace: st);

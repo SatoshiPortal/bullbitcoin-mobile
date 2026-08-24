@@ -66,9 +66,6 @@ class ParseWatchOnlyInputUsecase {
         normalizedInput,
         preferredNetwork: network,
       );
-    } on UnsupportedTaprootDescriptorException catch (_, st) {
-      log.warning('Taproot descriptor import is not supported', trace: st);
-      return const Err(TaprootUnsupportedFailure());
     } on UnsupportedFixedPublicKeyDescriptorException catch (_, st) {
       log.warning(
         'Fixed public key descriptor import is not supported',
