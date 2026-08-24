@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
 typedef PreparedBitcoinSend = ({
@@ -131,6 +132,8 @@ class PrepareBitcoinSendUsecase {
       );
     } on InsufficientFundsException {
       return const Err(WalletInsufficientFundsFailure());
+    } on UnsupportedBitcoinPolicyPathException {
+      return const Err(BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath));
     } on Exception catch (error, trace) {
       log.warning(
         'Bitcoin transaction preparation failed',
