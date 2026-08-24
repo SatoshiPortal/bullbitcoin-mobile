@@ -22,6 +22,9 @@ final class BitcoinPolicySelection {
   BitcoinPolicySelection({required Map<String, List<int>> choices})
     : choices = Map<String, List<int>>.unmodifiable(
         choices.map((key, value) {
+          if (!_selectionKeyPattern.hasMatch(key)) {
+            throw ArgumentError.value(key, 'choices');
+          }
           if (value.any((index) => index < 0) ||
               value.toSet().length != value.length) {
             throw ArgumentError.value(value, key);
@@ -64,6 +67,8 @@ final class BitcoinPolicySelection {
     );
   }
 }
+
+final _selectionKeyPattern = RegExp(r'^(external|internal):root(?:/[0-9]+)*$');
 
 final class BitcoinPolicyPath {
   final Map<String, List<int>> external;

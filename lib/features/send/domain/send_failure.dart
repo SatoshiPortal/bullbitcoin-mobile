@@ -144,3 +144,15 @@ final class SendPayjoinPausedFailure extends SendFailure {
 final class SendConsolidationRequiredFailure extends SendFailure {
   const SendConsolidationRequiredFailure([super.logMessage]);
 }
+
+final class SendPersistenceFailure extends SendFailure {
+  const SendPersistenceFailure([super.logMessage]);
+}
+
+final class SendPendingTransactionChangedFailure extends SendFailure {
+  const SendPendingTransactionChangedFailure([super.logMessage]);
+}
+
+final class SendStoredTransactionInvalidFailure extends SendFailure {
+  const SendStoredTransactionInvalidFailure([super.logMessage]);
+}
