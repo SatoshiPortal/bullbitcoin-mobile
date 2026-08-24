@@ -840,7 +840,11 @@ void _collectPath({
   final List<int> childIndices = node.requiresSelection
       ? selection.choiceFor(keychain: keychain, nodePath: nodePath)!
       : List<int>.generate(node.children.length, (index) => index);
-  if (node.requiresSelection) path[node.id] = childIndices;
+  if (node.requiresPath) {
+    path[node.id] = [
+      for (final index in childIndices) node.pathChildIndices[index],
+    ];
+  }
   for (final index in childIndices) {
     _collectPath(
       node: node.children[index],

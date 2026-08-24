@@ -15606,10 +15606,6 @@
   "@importWatchOnlyErrorFixedPublicKeyUnsupported": {
     "description": "Error shown when a descriptor contains a fixed public key instead of an extended public key"
   },
-  "importWatchOnlyErrorTaprootUnsupported": "Taproot descriptors aren’t supported yet.",
-  "@importWatchOnlyErrorTaprootUnsupported": {
-    "description": "Error shown when a user tries to import a Taproot descriptor"
-  },
   "walletSignerLabelWithFingerprint": "Signer {index} · {fingerprint}",
   "@walletSignerLabelWithFingerprint": {
     "description": "Label identifying a wallet signer by position and fingerprint",
@@ -16434,5 +16430,9 @@
   "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
   "@sendPendingTransactionsInvalid": {
     "description": "Warning shown when one or more saved transactions are invalid."
+  },
+  "walletAddressTypeTaproot": "Taproot",
+  "@walletAddressTypeTaproot": {
+    "description": "Address type for Taproot descriptor wallets"
   }
 }

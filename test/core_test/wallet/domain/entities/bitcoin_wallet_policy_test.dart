@@ -2,6 +2,32 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('rejects invalid threshold child mappings', () {
+    List<BitcoinPolicyNode> children() => [
+      BitcoinRelativeTimelockPolicyNode(id: 'first', value: 1),
+      BitcoinRelativeTimelockPolicyNode(id: 'second', value: 2),
+    ];
+
+    expect(
+      () => BitcoinThresholdPolicyNode(
+        id: 'duplicate',
+        threshold: 1,
+        children: children(),
+        pathChildIndices: const [0, 0],
+      ),
+      throwsArgumentError,
+    );
+    expect(
+      () => BitcoinThresholdPolicyNode(
+        id: 'negative',
+        threshold: 1,
+        children: children(),
+        pathChildIndices: const [-1, 1],
+      ),
+      throwsArgumentError,
+    );
+  });
+
   group('BitcoinWalletPolicy maturity', () {
     test('rejects duplicate and out-of-range path choices', () {
       final policy = thresholdPolicy();

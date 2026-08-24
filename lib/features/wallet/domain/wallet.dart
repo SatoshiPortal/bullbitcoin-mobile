@@ -161,6 +161,7 @@ abstract class Wallet with _$Wallet {
     if (isLiquid) {
       return 'Confidential Segwit';
     }
+    if (publicDescriptor.toLowerCase().startsWith('tr(')) return 'Taproot';
 
     return switch (scriptType) {
       ScriptType.bip84 => 'Native Segwit',

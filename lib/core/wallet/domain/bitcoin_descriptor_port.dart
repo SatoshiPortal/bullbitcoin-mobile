@@ -23,11 +23,6 @@ abstract interface class BitcoinDescriptorPort {
   });
 }
 
-final class UnsupportedTaprootDescriptorException extends FormatException {
-  const UnsupportedTaprootDescriptorException()
-    : super('Taproot descriptors are not supported');
-}
-
 final class UnsupportedFixedPublicKeyDescriptorException
     extends FormatException {
   const UnsupportedFixedPublicKeyDescriptorException()
