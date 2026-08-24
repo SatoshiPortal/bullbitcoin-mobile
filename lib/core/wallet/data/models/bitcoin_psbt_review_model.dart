@@ -10,6 +10,7 @@ typedef BitcoinPsbtInputReviewRecord = ({
   BigInt amountSat,
   BitcoinPolicyKeychainModel? keychain,
   List<BitcoinPsbtKeySourceRecord> originKeySources,
+  Set<String> satisfiedPreimageKeys,
   List<BitcoinPsbtKeySourceRecord> signedKeySources,
   String outpoint,
   int sequence,
@@ -29,6 +30,7 @@ final class BitcoinPsbtReviewModel {
   final List<BitcoinPsbtOutputReviewRecord> outputs;
   final BigInt feeSat;
   final int estimatedTransactionVsize;
+  final bool isFinalized;
   final int lockTime;
   final int version;
 
@@ -38,6 +40,7 @@ final class BitcoinPsbtReviewModel {
     required List<BitcoinPsbtOutputReviewRecord> outputs,
     required this.feeSat,
     required this.estimatedTransactionVsize,
+    required this.isFinalized,
     required this.lockTime,
     required this.version,
   }) : inputs = List.unmodifiable(inputs),

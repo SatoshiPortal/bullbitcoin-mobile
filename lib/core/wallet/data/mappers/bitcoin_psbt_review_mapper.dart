@@ -32,6 +32,7 @@ class BitcoinPsbtReviewMapper {
     ],
     feeSat: model.feeSat,
     estimatedTransactionVsize: model.estimatedTransactionVsize,
+    isFinalized: model.isFinalized,
     lockTime: model.lockTime,
     version: model.version,
   );
@@ -66,6 +67,7 @@ class BitcoinPsbtReviewMapper {
         null => null,
       },
       localDescriptorKeyIds: localKeyIds,
+      satisfiedPreimageKeys: input.satisfiedPreimageKeys,
       sequence: input.sequence,
       signedDescriptorKeyIds: signedKeyIds,
     );
