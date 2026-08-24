@@ -19,6 +19,8 @@ sealed class PsbtSigningFailure extends Failure {
       const PsbtSigningFrozenUtxoFailure(),
     BitcoinSigningFailureKind.unsupportedSighash =>
       const PsbtSigningUnsupportedSighashFailure(),
+    BitcoinSigningFailureKind.unsupportedSpendMode =>
+      const PsbtSigningUnsupportedSpendModeFailure(),
     BitcoinSigningFailureKind.incomplete =>
       const PsbtSigningNoSignatureAddedFailure(),
     BitcoinSigningFailureKind.unsupportedPolicyPath ||
@@ -53,6 +55,10 @@ final class PsbtSigningFrozenUtxoFailure extends PsbtSigningFailure {
 
 final class PsbtSigningUnsupportedSighashFailure extends PsbtSigningFailure {
   const PsbtSigningUnsupportedSighashFailure([super.logMessage]);
+}
+
+final class PsbtSigningUnsupportedSpendModeFailure extends PsbtSigningFailure {
+  const PsbtSigningUnsupportedSpendModeFailure([super.logMessage]);
 }
 
 final class PsbtSigningNoSignatureAddedFailure extends PsbtSigningFailure {
