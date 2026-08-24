@@ -53,6 +53,8 @@ extension SendFailureL10n on SendFailure {
     SendExchangeOrderMismatchFailure() =>
       context.loc.sendErrorExchangeOrderMismatch,
     SendTransactionSigningFailure() => context.loc.sendErrorConfirmationFailed,
+    SendUnsupportedPolicyPathFailure() =>
+      context.loc.sendErrorUnsupportedPolicyPath,
     SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed

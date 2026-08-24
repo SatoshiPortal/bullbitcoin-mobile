@@ -4,6 +4,8 @@ typedef BitcoinPsbtKeySourceRecord = ({
   String publicKey,
   String? fingerprint,
   String? derivationPath,
+  bool isXOnly,
+  String? tapLeafHash,
 });
 
 typedef BitcoinPsbtInputReviewRecord = ({
@@ -12,6 +14,7 @@ typedef BitcoinPsbtInputReviewRecord = ({
   List<BitcoinPsbtKeySourceRecord> originKeySources,
   Set<String> satisfiedPreimageKeys,
   List<BitcoinPsbtKeySourceRecord> signedKeySources,
+  Set<String> tapLeafHashes,
   String outpoint,
   int sequence,
 });
