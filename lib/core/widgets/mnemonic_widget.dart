@@ -217,6 +217,12 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                       // IME's suggestion and autocorrect caches.
                       enableSuggestions: false,
                       autocorrect: false,
+                      // iOS Smart Punctuation turns `'` into `’`, which
+                      // would derive a different wallet. Disable it here
+                      // rather than cleaning up the submitted value: `’`
+                      // can be a real passphrase character.
+                      smartQuotesType: SmartQuotesType.disabled,
+                      smartDashesType: SmartDashesType.disabled,
                     ),
                   ],
 
