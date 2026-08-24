@@ -2658,6 +2658,329 @@
     {
       "id": 20,
       "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transactions",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "stage",
+            "getter_name": "stage",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "label",
+            "getter_name": "label",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recipient",
+            "getter_name": "recipient",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount",
+            "getter_name": "amount",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_currency_code",
+            "getter_name": "amountCurrencyCode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "send_max",
+            "getter_name": "sendMax",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"send_max\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"send_max\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fee_selection",
+            "getter_name": "feeSelection",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "custom_fee_kind",
+            "getter_name": "customFeeKind",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "custom_fee_value",
+            "getter_name": "customFeeValue",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "replace_by_fee",
+            "getter_name": "replaceByFee",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"replace_by_fee\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"replace_by_fee\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payjoin_opted_out",
+            "getter_name": "payjoinOptedOut",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"payjoin_opted_out\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"payjoin_opted_out\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "psbt",
+            "getter_name": "psbt",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "final_transaction",
+            "getter_name": "finalTransaction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "revision",
+            "getter_name": "revision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
+          "CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast'))",
+          "CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative'))",
+          "CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL))",
+          "CHECK(stage = 'draft' OR psbt IS NOT NULL)"
+        ],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        20
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transaction_inputs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "transaction_id",
+            "getter_name": "transactionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "tx_id",
+            "getter_name": "txId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "vout",
+            "getter_name": "vout",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "transaction_id",
+          "tx_id",
+          "vout"
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "references": [
+        20
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transaction_policy_choices",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "transaction_id",
+            "getter_name": "transactionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "node",
+            "getter_name": "node",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "option_index",
+            "getter_name": "optionIndex",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "transaction_id",
+          "node",
+          "option_index"
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "references": [
         19
       ],
       "type": "index",
@@ -2675,7 +2998,7 @@
       }
     },
     {
-      "id": 21,
+      "id": 24,
       "references": [
         19
       ],
@@ -2694,7 +3017,7 @@
       }
     },
     {
-      "id": 22,
+      "id": 25,
       "references": [
         19
       ],
@@ -2713,7 +3036,7 @@
       }
     },
     {
-      "id": 23,
+      "id": 26,
       "references": [
         19
       ],
@@ -2732,7 +3055,7 @@
       }
     },
     {
-      "id": 24,
+      "id": 27,
       "references": [
         19
       ],
@@ -2751,7 +3074,7 @@
       }
     },
     {
-      "id": 25,
+      "id": 28,
       "references": [
         19
       ],
@@ -2770,7 +3093,7 @@
       }
     },
     {
-      "id": 26,
+      "id": 29,
       "references": [
         19
       ],
@@ -2783,6 +3106,44 @@
         "columns": [
           {
             "column": "local_payin_transaction_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "references": [
+        20
+      ],
+      "type": "index",
+      "data": {
+        "on": 20,
+        "name": "send_transactions_wallet",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "wallet_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "references": [
+        20
+      ],
+      "type": "index",
+      "data": {
+        "on": 20,
+        "name": "send_transactions_updated_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "updated_at",
             "order_by": null
           }
         ]
@@ -2971,6 +3332,33 @@
       ]
     },
     {
+      "name": "send_transactions",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transactions\" (\"id\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"stage\" TEXT NOT NULL, \"label\" TEXT NULL, \"recipient\" TEXT NOT NULL, \"amount\" TEXT NOT NULL, \"amount_currency_code\" TEXT NOT NULL, \"send_max\" INTEGER NOT NULL CHECK (\"send_max\" IN (0, 1)), \"fee_selection\" TEXT NOT NULL, \"custom_fee_kind\" TEXT NULL, \"custom_fee_value\" INTEGER NULL, \"replace_by_fee\" INTEGER NOT NULL CHECK (\"replace_by_fee\" IN (0, 1)), \"payjoin_opted_out\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_opted_out\" IN (0, 1)), \"psbt\" TEXT NULL, \"final_transaction\" TEXT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast')), CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative')), CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL)), CHECK(stage = 'draft' OR psbt IS NOT NULL));"
+        }
+      ]
+    },
+    {
+      "name": "send_transaction_inputs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_inputs\" (\"transaction_id\" TEXT NOT NULL, \"tx_id\" TEXT NOT NULL, \"vout\" INTEGER NOT NULL, PRIMARY KEY (\"transaction_id\", \"tx_id\", \"vout\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "send_transaction_policy_choices",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_policy_choices\" (\"transaction_id\" TEXT NOT NULL, \"node\" TEXT NOT NULL, \"option_index\" INTEGER NOT NULL, PRIMARY KEY (\"transaction_id\", \"node\", \"option_index\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
       "name": "order_swaps_request_id",
       "sql": [
         {
@@ -3030,6 +3418,24 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)"
+        }
+      ]
+    },
+    {
+      "name": "send_transactions_wallet",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX send_transactions_wallet ON send_transactions (wallet_id)"
+        }
+      ]
+    },
+    {
+      "name": "send_transactions_updated_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX send_transactions_updated_at ON send_transactions (updated_at)"
         }
       ]
     }
