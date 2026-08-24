@@ -14324,6 +14324,30 @@
   "@hardwareWalletAddressMismatch": {
     "description": "Shown when hardware-wallet address verification returns a different address."
   },
+  "bitboxRegisterWalletPolicyTitle": "Register on BitBox02",
+  "@bitboxRegisterWalletPolicyTitle": {
+    "description": "Title for registering a descriptor wallet policy on BitBox02."
+  },
+  "bitboxRegisterWalletPolicyButton": "Register wallet",
+  "@bitboxRegisterWalletPolicyButton": {
+    "description": "Button that starts BitBox02 wallet-policy registration."
+  },
+  "bitboxRegisterWalletPolicyProcessing": "Registering wallet",
+  "@bitboxRegisterWalletPolicyProcessing": {
+    "description": "Status while BitBox02 registers a wallet policy."
+  },
+  "bitboxRegisterWalletPolicyProcessingSubtext": "Review the wallet policy on your BitBox02 and confirm it.",
+  "@bitboxRegisterWalletPolicyProcessingSubtext": {
+    "description": "Instructions while BitBox02 registers a wallet policy."
+  },
+  "bitboxRegisterWalletPolicySuccess": "Wallet registered",
+  "@bitboxRegisterWalletPolicySuccess": {
+    "description": "Success title after BitBox02 wallet-policy registration."
+  },
+  "bitboxRegisterWalletPolicySuccessSubtext": "This wallet is ready for address verification and signing on BitBox02.",
+  "@bitboxRegisterWalletPolicySuccessSubtext": {
+    "description": "Success explanation after BitBox02 wallet-policy registration."
+  },
   "ledgerRegisterWalletPolicyTitle": "Register on Ledger",
   "@ledgerRegisterWalletPolicyTitle": {
     "description": "Title for registering a BIP388 wallet policy on Ledger."
