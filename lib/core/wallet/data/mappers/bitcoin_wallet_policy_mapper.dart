@@ -11,16 +11,22 @@ class BitcoinWalletPolicyMapper {
     bdk.Policy? externalKeyIdentities,
     bdk.Policy? internalKeyIdentities,
     required List<WalletDescriptorKeyModel> descriptorKeys,
+    Set<String> unspendablePolicyKeyIdentifiers = const {},
+    bool isTaproot = false,
   }) => BitcoinWalletPolicyModel(
     external: _spendingPolicy(
       external,
       externalKeyIdentities ?? external,
       _PolicyKeyResolver(descriptorKeys),
+      unspendablePolicyKeyIdentifiers,
+      isTaproot: isTaproot,
     ),
     internal: _spendingPolicy(
       internal,
       internalKeyIdentities ?? internal,
       _PolicyKeyResolver(descriptorKeys),
+      unspendablePolicyKeyIdentifiers,
+      isTaproot: isTaproot,
     ),
   );
 
@@ -34,10 +40,62 @@ class BitcoinWalletPolicyMapper {
     bdk.Policy policy,
     bdk.Policy keyIdentities,
     _PolicyKeyResolver keys,
-  ) => BitcoinSpendingPolicyModel(
-    root: _node(policy, keyIdentities, keys),
-    requiresPath: policy.requiresPath(),
-  );
+    Set<String> unspendablePolicyKeyIdentifiers, {
+    required bool isTaproot,
+  }) {
+    final identifiers = unspendablePolicyKeyIdentifiers
+        .map((identifier) => identifier.toLowerCase())
+        .toSet();
+    var root = _withoutUnspendableInternalKey(
+      _node(policy, keyIdentities, keys),
+      identifiers,
+    );
+    final requiresTaprootChoice =
+        isTaproot &&
+        root.type == BitcoinPolicyNodeModelType.threshold &&
+        root.threshold == 1 &&
+        root.children.length > 1;
+    if (requiresTaprootChoice) {
+      root = BitcoinPolicyNodeModel(
+        id: root.id,
+        type: root.type,
+        threshold: root.threshold,
+        requiresPath: true,
+        children: root.children,
+        pathChildIndices: root.pathChildIndices,
+      );
+    }
+    return BitcoinSpendingPolicyModel(
+      root: root,
+      requiresPath: policy.requiresPath() || requiresTaprootChoice,
+    );
+  }
+
+  static BitcoinPolicyNodeModel _withoutUnspendableInternalKey(
+    BitcoinPolicyNodeModel root,
+    Set<String> identifiers,
+  ) {
+    if (identifiers.isEmpty ||
+        root.type != BitcoinPolicyNodeModelType.threshold ||
+        root.threshold != 1) {
+      return root;
+    }
+    final spendable = [
+      for (final (index, child) in root.children.indexed)
+        if (child.type != BitcoinPolicyNodeModelType.signature ||
+            !identifiers.contains(child.key?.value.toLowerCase()))
+          (child: child, pathIndex: root.pathChildIndices[index]),
+    ];
+    if (spendable.length == root.children.length) return root;
+    return BitcoinPolicyNodeModel(
+      id: root.id,
+      type: root.type,
+      threshold: spendable.length == 1 ? 1 : root.threshold,
+      requiresPath: true,
+      children: spendable.map((entry) => entry.child).toList(),
+      pathChildIndices: spendable.map((entry) => entry.pathIndex).toList(),
+    );
+  }
 
   static BitcoinPolicyNodeModel _node(
     bdk.Policy policy,
@@ -271,6 +329,7 @@ class BitcoinWalletPolicyMapper {
           threshold: model.threshold!,
           requiresPath: model.requiresPath,
           children: model.children.map(_nodeEntity).toList(),
+          pathChildIndices: model.pathChildIndices,
         ),
       };
 
@@ -312,7 +371,13 @@ final class _PolicyKeyResolver {
       ifAbsent: () => 0,
     );
     if (offset >= matches.length) {
-      throw StateError('Policy contains an unmatched descriptor key');
+      if (matches.length == 1) {
+        return BitcoinPolicyKeyModel(
+          type: BitcoinPolicyKeyModelType.descriptorKey,
+          value: matches.single.id,
+        );
+      }
+      throw const UnsupportedBitcoinPolicyPathException();
     }
     final match = matches[offset];
     return BitcoinPolicyKeyModel(

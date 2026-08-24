@@ -79,24 +79,6 @@ void main() {
         same(wallet),
       );
     });
-
-    test('maps Taproot rejection to TaprootUnsupportedFailure', () async {
-      when(
-        () => descriptorPort.importDescriptor(
-          descriptor: entity.descriptor,
-          network: entity.network,
-          label: entity.label,
-          signers: entity.signers,
-        ),
-      ).thenThrow(const UnsupportedTaprootDescriptorException());
-
-      final result = await usecase.execute(watchOnlyDescriptor: entity);
-
-      expect(result, isA<Err<Wallet, ImportWatchOnlyFailure>>());
-      final failure = (result as Err<Wallet, ImportWatchOnlyFailure>).failure;
-      expect(failure, isA<TaprootUnsupportedFailure>());
-      expect(failure.logMessage, isNull);
-    });
   });
 }
 
