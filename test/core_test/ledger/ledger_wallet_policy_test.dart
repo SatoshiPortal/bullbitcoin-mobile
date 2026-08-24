@@ -11,6 +11,8 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -25,6 +27,8 @@ class _MockDatasource extends Mock implements LedgerDeviceDatasource {}
 class _MockHmacDatasource extends Mock
     implements LedgerWalletPolicyHmacDatasource {}
 
+class _MockDescriptorPort extends Mock implements BitcoinDescriptorPort {}
+
 const _device = LedgerDeviceEntity(
   id: 'ledger-1',
   name: 'Nano X',
@@ -36,6 +40,13 @@ const _xpub =
     'xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7';
 const _otherXpub =
     'tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ';
+const _unspendableInternalTpub =
+    'tpubD6NzVbkrYhZ4WN8Bo3ctMrx2y6tPVNfjjgUdvRfHaCvm2sikpbhp3edE5wRXjtUZTpVeUkSLCqqikz1KF18b4Ra6FnMpT6wygdamccSAUkh';
+const _taprootPolicyDescriptor =
+    'tr($_unspendableInternalTpub/<0;1>/*,'
+    "multi_a(2,[73c5da0a/48'/1'/0'/2']tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ/<0;1>/*,"
+    "[b8688df1/48'/1'/0'/2']tpubDEfobrrtptRTbKf4gysDhoabneABDTAcdj3Vbn4XwPsLE2pmqpizSPRG6zHsbAMuiSgWmWPsYCLHTKTPpyrGJ5rAoTpKoQNZcxodiPf2tSJ/<0;1>/*,"
+    "[28645006/48'/1'/0'/2']tpubDEwqCvJxKwKWX9xvRe48uofWJn1Y89Jn8UeH1Efrjb1UEVjUDy3URYTiqWaVCW7WdvHrL8XrSihHEhTwv5H3VDJoakjuCHiAnr6xcF2Xm4s/<0;1>/*))";
 
 void main() {
   test('builds a BIP388 policy for nested SegWit multisig', () {
@@ -44,33 +55,63 @@ void main() {
       nestedMultisig: true,
     );
 
-    final policy = LedgerWalletPolicyAdapter.fromWallet(wallet);
+    final policy = LedgerWalletPolicyAdapter.fromWallet(
+      wallet,
+      descriptorPolicyKeys: _policyAnalysis(wallet).policyKeys,
+    );
 
     expect(policy.name, 'Policy wallet');
     expect(policy.descriptorTemplate, 'sh(wsh(sortedmulti(1,@0/**)))');
     expect(policy.keys, ["[aabbccdd/48'/0'/0'/2']$_xpub"]);
   });
 
-  test('derives key suffixes into the Ledger policy key', () {
-    final wallet = _policyWallet(
-      SignerDeviceEntity.ledgerNanoX,
-      keySuffix: '/5',
-    );
+  test('maps only Ledger-supported derivation roles', () {
+    final key = '[aabbccdd/48h/0h/0h/2h]$_xpub/5';
+    final wallet =
+        _policyWallet(SignerDeviceEntity.ledgerNanoX, keySuffix: '/5').copyWith(
+          publicDescriptor:
+              'wsh(or_d(pk($key/<0;1>/*),'
+              'and_v(v:older(10),pk($key/<2;3>/*))))',
+        );
     final derivedXpub = Bip32Derivation.getBip32Xpub(
       _xpub,
     ).derivePath('5').toBase58();
 
-    final policy = LedgerWalletPolicyAdapter.fromWallet(wallet);
+    final policy = LedgerWalletPolicyAdapter.fromWallet(
+      wallet,
+      descriptorPolicyKeys: _policyAnalysis(wallet).policyKeys,
+    );
 
     expect(wallet.supportsLedgerWalletPolicy, isTrue);
-    expect(policy.descriptorTemplate, 'wsh(pk(@0/**))');
+    expect(
+      policy.descriptorTemplate,
+      'wsh(or_d(pk(@0/**),'
+      'and_v(v:older(10),pk(@0/<2;3>/*))))',
+    );
     expect(policy.keys, ["[aabbccdd/48'/0'/0'/2'/5]$derivedXpub"]);
+    final descriptorPolicyKeys = _policyAnalysis(wallet).policyKeys;
+
+    for (final unsupportedDescriptor in ['wsh(pk($key/<0;1>/2/*))']) {
+      final unsupported = wallet.copyWith(
+        publicDescriptor: unsupportedDescriptor,
+      );
+      expect(
+        () => LedgerWalletPolicyAdapter.fromWallet(
+          unsupported,
+          descriptorPolicyKeys: descriptorPolicyKeys,
+        ),
+        throwsFormatException,
+      );
+    }
   });
 
   test('reuses a Ledger key across disjoint BIP389 branch pairs', () {
     final wallet = _disjointRolePolicyWallet(SignerDeviceEntity.ledgerNanoX);
 
-    final policy = LedgerWalletPolicyAdapter.fromWallet(wallet);
+    final policy = LedgerWalletPolicyAdapter.fromWallet(
+      wallet,
+      descriptorPolicyKeys: wallet.descriptorKeys,
+    );
 
     expect(
       policy.descriptorTemplate,
@@ -85,12 +126,14 @@ void main() {
       'wsh(or_d(pk($origin/<0;1>/*),pk($origin/<0;1>/*)))',
       'wsh(or_d(pk($origin/<0;1>/*),pk($origin/<1;2>/*)))',
     ]) {
-      final wallet = _policyWallet(
-        SignerDeviceEntity.ledgerNanoX,
-      ).copyWith(publicDescriptor: descriptor);
+      final baseWallet = _policyWallet(SignerDeviceEntity.ledgerNanoX);
+      final wallet = baseWallet.copyWith(publicDescriptor: descriptor);
 
       expect(
-        () => LedgerWalletPolicyAdapter.fromWallet(wallet),
+        () => LedgerWalletPolicyAdapter.fromWallet(
+          wallet,
+          descriptorPolicyKeys: baseWallet.descriptorKeys,
+        ),
         throwsFormatException,
       );
     }
@@ -101,18 +144,37 @@ void main() {
 
     expect(wallet.supportsWalletPolicySigner(wallet.signers.first), isTrue);
     expect(
-      LedgerWalletPolicyAdapter.fromWallet(wallet).keys.last,
+      LedgerWalletPolicyAdapter.fromWallet(
+        wallet,
+        descriptorPolicyKeys: _policyAnalysis(wallet).policyKeys,
+      ).keys.last,
       Bip32Derivation.getBip32Xpub(_otherXpub).toBase58(),
     );
+  });
+
+  test('keeps an unspendable internal key in the Ledger policy only', () {
+    final wallet = _taprootPolicyWallet();
+
+    final policy = LedgerWalletPolicyAdapter.fromWallet(
+      wallet,
+      descriptorPolicyKeys: _policyAnalysis(wallet).policyKeys,
+    );
+
+    expect(policy.descriptorTemplate, 'tr(@0/**,multi_a(2,@1/**,@2/**,@3/**))');
+    expect(policy.keys, hasLength(4));
+    expect(policy.keys.first, _unspendableInternalTpub);
+    expect(wallet.signers, hasLength(3));
   });
 
   group('LedgerDeviceRepositoryImpl', () {
     late _MockDatasource datasource;
     late _MockHmacDatasource hmacDatasource;
+    late _MockDescriptorPort descriptorPort;
     late LedgerDeviceRepositoryImpl repository;
 
     setUpAll(() {
       registerFallbackValue(_device.toModel());
+      registerFallbackValue(Network.bitcoinMainnet);
       registerFallbackValue(
         WalletPolicy('Fallback', 'wpkh(@0/**)', ["[aabbccdd/84'/0'/0']$_xpub"]),
       );
@@ -121,9 +183,21 @@ void main() {
     setUp(() {
       datasource = _MockDatasource();
       hmacDatasource = _MockHmacDatasource();
+      descriptorPort = _MockDescriptorPort();
+      when(
+        () => descriptorPort.analyzeBitcoinPolicyDescriptor(
+          descriptor: any(named: 'descriptor'),
+          network: any(named: 'network'),
+        ),
+      ).thenAnswer((invocation) {
+        final descriptor = invocation.namedArguments[#descriptor] as String;
+        final network = invocation.namedArguments[#network] as Network;
+        return _policyAnalysisDescriptor(descriptor, network: network);
+      });
       repository = LedgerDeviceRepositoryImpl(
         datasource: datasource,
         hmacDatasource: hmacDatasource,
+        bitcoinDescriptorPort: descriptorPort,
       );
     });
 
@@ -189,6 +263,42 @@ void main() {
           hmac: hmac,
         ),
       ).called(1);
+    });
+
+    test('rejects Taproot before the safe Bitcoin app version', () async {
+      final wallet = _taprootKeyPathPolicyWallet();
+      when(
+        () => datasource.getBitcoinAppVersion(any()),
+      ).thenAnswer((_) async => '2.2.0');
+
+      final result = await repository.registerWalletPolicy(
+        _device,
+        wallet: wallet,
+      );
+
+      expect(
+        (result as Err).failure,
+        isA<LedgerBitcoinAppUpdateRequiredFailure>(),
+      );
+      verifyNever(() => datasource.getMasterFingerprint(any()));
+    });
+
+    test('requires NUMS recognition for a dummy internal key', () async {
+      final wallet = _taprootPolicyWallet();
+      when(
+        () => datasource.getBitcoinAppVersion(any()),
+      ).thenAnswer((_) async => '2.2.1');
+
+      final result = await repository.registerWalletPolicy(
+        _device,
+        wallet: wallet,
+      );
+
+      expect(
+        (result as Err).failure,
+        isA<LedgerBitcoinAppUpdateRequiredFailure>(),
+      );
+      verifyNever(() => datasource.getMasterFingerprint(any()));
     });
 
     test('maps unsupported firmware to an unsupported policy error', () async {
@@ -431,5 +541,85 @@ Wallet _policyWalletWithOriginlessSigner() {
   );
 }
 
-String _policyId(Wallet wallet) =>
-    hex.encode(LedgerWalletPolicyAdapter.fromWallet(wallet).id);
+Wallet _taprootKeyPathPolicyWallet() {
+  final key = '[aabbccdd/48h/0h/0h/2h]$_xpub/<0;1>/*';
+  return Wallet(
+    origin: 'taproot-key-path-wallet',
+    label: 'Taproot key path',
+    network: Network.bitcoinMainnet,
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: 'aabbccdd',
+        xpubFingerprint: '',
+        xpub: _xpub,
+        derivationPath: _accountPath,
+        signer: SignerEntity.remote,
+        signerDevice: SignerDeviceEntity.ledgerNanoX,
+      ),
+    ],
+    scriptType: null,
+    publicDescriptor: 'tr($key)',
+    balanceSat: BigInt.zero,
+  );
+}
+
+Wallet _taprootPolicyWallet() {
+  final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+    descriptor: _taprootPolicyDescriptor,
+    isTestnet: true,
+  );
+  return Wallet(
+    origin: 'taproot-policy-wallet',
+    label: 'Taproot policy',
+    network: Network.bitcoinTestnet,
+    signers: [
+      for (final (index, key) in parsed.keys.indexed)
+        WalletSigner.single(
+          id: 'signer-$index',
+          descriptorKeyId: 'key-$index',
+          masterFingerprint: key.masterFingerprint,
+          xpubFingerprint: key.xpubFingerprint,
+          xpub: key.xpub,
+          derivationPath: key.derivationPath,
+          signer: SignerEntity.remote,
+          signerDevice: index == 0 ? SignerDeviceEntity.ledgerNanoX : null,
+        ),
+    ],
+    scriptType: null,
+    publicDescriptor: _taprootPolicyDescriptor,
+    balanceSat: BigInt.zero,
+  );
+}
+
+({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
+_policyAnalysis(Wallet wallet) =>
+    _policyAnalysisDescriptor(wallet.publicDescriptor, network: wallet.network);
+
+String _policyId(Wallet wallet) => hex.encode(
+  LedgerWalletPolicyAdapter.fromWallet(
+    wallet,
+    descriptorPolicyKeys: _policyAnalysis(wallet).policyKeys,
+  ).id,
+);
+
+({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
+_policyAnalysisDescriptor(String descriptor, {required Network network}) {
+  final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+    descriptor: descriptor,
+    isTestnet: network.isTestnet,
+  );
+  return (
+    policyKeys: [
+      for (final (index, key) in parsed.policyKeys.indexed)
+        WalletDescriptorKey(
+          id: 'policy-key-$index',
+          signerId: 'policy-signer-$index',
+          masterFingerprint: key.masterFingerprint,
+          xpubFingerprint: key.xpubFingerprint,
+          xpub: key.xpub,
+          derivationPath: key.derivationPath,
+        ),
+    ],
+    hasUnspendablePolicyKey: parsed.unspendablePolicyKeyIdentifiers.isNotEmpty,
+  );
+}

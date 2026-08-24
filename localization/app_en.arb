@@ -11441,6 +11441,10 @@
   "@ledgerErrorBitcoinAppNotOpen": {
     "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
   },
+  "ledgerErrorBitcoinAppUpdateRequired": "Update the Bitcoin app on your Ledger and try again.",
+  "@ledgerErrorBitcoinAppUpdateRequired": {
+    "description": "Error shown when the connected Ledger Bitcoin app is too old for the wallet policy"
+  },
   "ledgerErrorMissingPsbt": "PSBT is required for signing",
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"

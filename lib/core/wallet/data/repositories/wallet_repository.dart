@@ -174,6 +174,24 @@ class WalletRepository
   }
 
   @override
+  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
+  analyzeBitcoinPolicyDescriptor({
+    required String descriptor,
+    required Network network,
+  }) {
+    _requireBitcoinNetwork(network);
+    final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      isTestnet: network.isTestnet,
+    );
+    return (
+      policyKeys: _descriptorKeys(parsed.policyKeys),
+      hasUnspendablePolicyKey:
+          parsed.unspendablePolicyKeyIdentifiers.isNotEmpty,
+    );
+  }
+
+  @override
   Future<Wallet> importDescriptor({
     required String descriptor,
     required Network network,
