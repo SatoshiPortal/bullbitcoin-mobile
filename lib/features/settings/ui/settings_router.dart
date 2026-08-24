@@ -36,7 +36,9 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
@@ -48,45 +50,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-enum SettingsRoute {
-  settings('/settings'),
-  pinCode('pin-code'),
-  language('language'),
-  currency('currency'),
-  backupSettings('backup-settings'),
-  walletDetailsWalletList('wallet-details'),
-  walletDetailsSelectedWallet(':walletId'),
-  walletOptions(':walletId/options'),
-  walletAddresses(':walletId/addresses'),
-  logs('logs'),
-  allSeedView('seed-viewer'),
-  experimental('experimental-settings'),
-  exchangeAccount('exchange-account'),
-  exchangeSettings('exchange-settings'),
-  exchangeAccountInfo('exchange-account-info'),
-  exchangeSecurity('exchange-security'),
-  exchangeBitcoinWallets('exchange-bitcoin-wallets'),
-  exchangeAppSettings('exchange-app-settings'),
-  exchangeFileUpload('exchange-file-upload'),
-  exchangeStatistics('exchange-statistics'),
-  exchangeTransactions('exchange-transactions'),
-  exchangeLegacyTransactions('exchange-legacy-transactions'),
-  exchangeReferrals('exchange-referrals'),
-  exchangeLogout('exchange-logout'),
-  bitcoinSettings('bitcoin-settings'),
-  payjoinSettings('payjoin-settings'),
-  payjoinAdvancedSettings('payjoin-advanced-settings'),
-  autoswapSettings('autoswap-settings'),
-  appSettings('app-settings'),
-  theme('theme'),
-  swapRestore('swap-restore'),
-  swapRescue('swap-rescue'),
-  btcMap('btc-map');
-
-  final String path;
-
-  const SettingsRoute(this.path);
-}
+export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
   static final route = GoRoute(
@@ -97,6 +61,11 @@ class SettingsRouter {
       child: const AllSettingsScreen(),
     ),
     routes: [
+      GoRoute(
+        name: SettingsRoute.search.name,
+        path: SettingsRoute.search.path,
+        builder: (context, state) => const SettingsSearchScreen(),
+      ),
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
         path: SettingsRoute.exchangeAccount.path,

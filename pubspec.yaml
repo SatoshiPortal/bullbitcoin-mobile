@@ -75,6 +75,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  # Unicode NFD, so settings search can fold diacritics away: a French user
+  # typing "securite" has to find "Sécurité". Already resolved in the tree as a
+  # transitive dependency; declared here because we now import it directly.
+  unorm_dart: ^0.3.2
   bip85_entropy: ^1.0.2
   # 2.2.0 is a floor, not a convenience: below it the encoder emitted
   # `amount=1e-8` for sub-100-sat amounts (invalid BIP21) and the decoder
