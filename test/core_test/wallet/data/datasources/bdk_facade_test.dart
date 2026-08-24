@@ -252,18 +252,48 @@ void main() {
       expect(parsed.keys.single.xpub, signers.first.xpub.split(']').last);
     });
 
-    test('rejects Taproot descriptors explicitly', () {
+    test('accepts a two-path Taproot key-path descriptor', () {
       final descriptor = bdk.Descriptor.newTr(
         key: signers.first.externalPublic,
         script: null,
       ).toString();
 
+      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+        descriptor: descriptor,
+        isTestnet: true,
+      );
+
+      expect(parsed.descriptor, contains('/<0;1>/*'));
+      expect(parsed.keys, hasLength(1));
+      expect(parsed.policyKeys, hasLength(1));
+      expect(parsed.unspendablePolicyKeyIdentifiers, isEmpty);
+    });
+
+    test('accepts the BIP341 unspendable Taproot internal key', () {
+      const bip341NumsKey =
+          '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0';
+      final key = signers.first.externalPublic.replaceAll('/0/*', '/<0;1>/*');
+
+      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+        descriptor: 'tr($bip341NumsKey,pk($key))',
+        isTestnet: true,
+      );
+
+      expect(parsed.keys, hasLength(1));
+      expect(parsed.policyKeys, hasLength(1));
+      expect(parsed.unspendablePolicyKeyIdentifiers, isNotEmpty);
+    });
+
+    test('rejects an unspendable Taproot key without a script tree', () {
+      const bip341NumsKey =
+          '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0';
+
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
-          descriptor: descriptor,
+          descriptor: 'tr($bip341NumsKey)',
           isTestnet: true,
         ),
-        throwsA(isA<UnsupportedTaprootDescriptorException>()),
+        throwsFormatException,
       );
     });
 

@@ -133,16 +133,28 @@ final class BitcoinThresholdPolicyNode extends BitcoinPolicyNode {
   final int threshold;
   final List<BitcoinPolicyNode> children;
   final bool requiresPath;
+  final List<int> pathChildIndices;
 
   BitcoinThresholdPolicyNode({
     required super.id,
     required this.threshold,
     required List<BitcoinPolicyNode> children,
     this.requiresPath = false,
-  }) : children = List.unmodifiable(children) {
+    List<int>? pathChildIndices,
+  }) : children = List.unmodifiable(children),
+       pathChildIndices = List.unmodifiable(
+         pathChildIndices ?? List.generate(children.length, (index) => index),
+       ) {
     if (children.isEmpty) throw ArgumentError.value(children, 'children');
     if (threshold < 1 || threshold > children.length) {
       throw ArgumentError.value(threshold, 'threshold');
+    }
+    if (this.pathChildIndices.length != children.length) {
+      throw ArgumentError.value(pathChildIndices, 'pathChildIndices');
+    }
+    if (this.pathChildIndices.any((index) => index < 0) ||
+        this.pathChildIndices.toSet().length != children.length) {
+      throw ArgumentError.value(pathChildIndices, 'pathChildIndices');
     }
   }
 

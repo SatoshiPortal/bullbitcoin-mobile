@@ -34,6 +34,7 @@ final class BitcoinPolicyNodeModel {
   final int? threshold;
   final bool requiresPath;
   final List<BitcoinPolicyNodeModel> children;
+  final List<int> pathChildIndices;
 
   BitcoinPolicyNodeModel({
     required this.id,
@@ -44,7 +45,15 @@ final class BitcoinPolicyNodeModel {
     this.threshold,
     this.requiresPath = false,
     List<BitcoinPolicyNodeModel> children = const [],
-  }) : children = List.unmodifiable(children);
+    List<int>? pathChildIndices,
+  }) : children = List.unmodifiable(children),
+       pathChildIndices = List.unmodifiable(
+         pathChildIndices ?? List.generate(children.length, (index) => index),
+       ) {
+    if (this.pathChildIndices.length != children.length) {
+      throw ArgumentError.value(pathChildIndices, 'pathChildIndices');
+    }
+  }
 }
 
 final class BitcoinSpendingPolicyModel {

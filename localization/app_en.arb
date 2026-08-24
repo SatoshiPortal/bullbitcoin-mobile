@@ -15801,9 +15801,6 @@
     }
   },
   "importWatchOnlyBullMobileDevice": "Bull Wallet (this device)",
-  "@importWatchOnlyErrorTaprootUnsupported": {
-    "description": "Error shown when a user tries to import a Taproot descriptor"
-  },
   "importWatchOnlyChangePathTitle": "Change path",
   "@importWatchOnlyErrorSignerOriginRequired": {
     "description": "Shown when a hardware-wallet xpub is missing the key origin needed for signing."
@@ -15811,7 +15808,6 @@
   "@importWatchOnlyChangePathTitle": {
     "description": "Title shown when Bull infers the change branch from a receive-only descriptor"
   },
-  "importWatchOnlyErrorTaprootUnsupported": "Taproot descriptors aren’t supported yet.",
   "@walletSignerLabelWithFingerprint": {
     "description": "Label identifying a wallet signer by position and fingerprint",
     "placeholders": {
@@ -16621,5 +16617,9 @@
   "@sendPendingTransactionsInvalid": {
     "description": "Warning shown when one or more saved transactions are invalid."
   },
-  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded."
+  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
+  "walletAddressTypeTaproot": "Taproot",
+  "@walletAddressTypeTaproot": {
+    "description": "Address type for Taproot descriptor wallets"
+  }
 }

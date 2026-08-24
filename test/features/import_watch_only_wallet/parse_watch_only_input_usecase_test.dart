@@ -595,25 +595,6 @@ void main() {
       );
     });
 
-    test('maps Taproot input to TaprootUnsupportedFailure', () async {
-      const input = 'tr(xpub/<0;1>/*)';
-      when(
-        () => descriptorPort.parseBitcoinDescriptor(
-          descriptor: input,
-          network: Network.bitcoinMainnet,
-        ),
-      ).thenThrow(const UnsupportedTaprootDescriptorException());
-
-      final result = await usecase.execute(input);
-
-      expect(result, isA<Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>>());
-      final failure =
-          (result as Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
-              .failure;
-      expect(failure, isA<TaprootUnsupportedFailure>());
-      expect(failure.logMessage, isNull);
-    });
-
     test('maps fixed public keys to their unsupported failure', () async {
       const fixedPublicKey =
           '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
