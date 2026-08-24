@@ -23,6 +23,13 @@ extension BitBoxFailureL10n on BitBoxFailure {
     OperationCancelledBitBoxFailure() =>
       context.loc.bitboxErrorOperationCancelled,
     InvalidParametersBitBoxFailure() => context.loc.bitboxErrorOperationFailed,
+    WalletSignerMismatchBitBoxFailure() =>
+      context.loc.hardwareWalletSignerMismatch,
+    AddressMismatchBitBoxFailure() => context.loc.hardwareWalletAddressMismatch,
+    UnsupportedWalletPolicyBitBoxFailure() =>
+      context.loc.hardwareWalletPolicyUnsupported,
+    WalletPolicyNotRegisteredBitBoxFailure() =>
+      context.loc.hardwareWalletPolicyNotRegistered,
     BitBoxUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }
