@@ -14308,6 +14308,83 @@
   "@mnemonicShuffleKeyboardHint": {
     "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
   },
+  "walletRegistrationTitle": "Register on external device",
+  "@walletRegistrationTitle": {
+    "description": "Title and wallet-details action for exporting a wallet policy to an external signing device"
+  },
+  "walletRegistrationDescription": "Choose a device to register this wallet’s spending policy.",
+  "@walletRegistrationDescription": {
+    "description": "Description shown above device-specific wallet registration exports"
+  },
+  "walletRegistrationDeviceAction": "Register on {device}",
+  "@walletRegistrationDeviceAction": {
+    "description": "Action label for exporting wallet registration data for a device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationAvailable": "Registration export available",
+  "@walletRegistrationAvailable": {
+    "description": "Subtitle for a device with an available registration export"
+  },
+  "walletRegistrationUnavailable": "Not available for this wallet",
+  "@walletRegistrationUnavailable": {
+    "description": "Subtitle for a device that cannot register the current wallet policy"
+  },
+  "walletRegistrationNoDevices": "No supported registration devices are assigned to this wallet.",
+  "@walletRegistrationNoDevices": {
+    "description": "Message shown when a wallet has no assigned device that supports registration export"
+  },
+  "walletRegistrationScanDescription": "On {device}, choose the option to import a wallet, then scan this QR.",
+  "@walletRegistrationScanDescription": {
+    "description": "Instructions for scanning a wallet registration QR on a device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationFileDescription": "{device} does not scan wallet registration QR codes. Send it via NFC or share the file.",
+  "@walletRegistrationFileDescription": {
+    "description": "Instructions for a device that imports wallet registration data from a file",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationShareFile": "Share registration file",
+  "@walletRegistrationShareFile": {
+    "description": "Button label for sharing a wallet registration file"
+  },
+  "walletRegistrationReviewNotice": "Review the wallet policy on the device before confirming it.",
+  "@walletRegistrationReviewNotice": {
+    "description": "Security notice shown with wallet registration exports"
+  },
+  "walletRegistrationUnsupportedPolicy": "{device} does not support this wallet policy through this registration method.",
+  "@walletRegistrationUnsupportedPolicy": {
+    "description": "Message explaining that a device registration format cannot represent the wallet policy",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationUnsupportedKeyOrigins": "This wallet uses key origins that {device}’s registration format cannot represent.",
+  "@walletRegistrationUnsupportedKeyOrigins": {
+    "description": "Message explaining that device registration cannot represent the descriptor key origins",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationQrError": "Could not create the registration QR.",
+  "@walletRegistrationQrError": {
+    "description": "Error shown when a wallet registration QR cannot be generated"
+  },
   "hardwareWalletSignerMismatch": "The connected device does not match this wallet signer.",
   "@hardwareWalletSignerMismatch": {
     "description": "Shown when a connected hardware wallet has a different fingerprint or account key."
@@ -14323,6 +14400,10 @@
   "hardwareWalletAddressMismatch": "The address shown by the device does not match Bull.",
   "@hardwareWalletAddressMismatch": {
     "description": "Shown when hardware-wallet address verification returns a different address."
+  },
+  "walletRegistrationConnectDevice": "Connect the device to register",
+  "@walletRegistrationConnectDevice": {
+    "description": "Subtitle for connected hardware-wallet registration actions."
   },
   "bitboxRegisterWalletPolicyTitle": "Register on BitBox02",
   "@bitboxRegisterWalletPolicyTitle": {
@@ -14375,6 +14456,19 @@
   "ledgerErrorMissingWalletPolicy": "Wallet policy details are missing.",
   "@ledgerErrorMissingWalletPolicy": {
     "description": "Shown when a Ledger wallet-policy route was opened without its required request."
+  },
+  "walletRegistrationShareNfc": "Send via NFC",
+  "@walletRegistrationShareNfc": {
+    "description": "Button label for sending wallet registration data to a Coldcard over NFC"
+  },
+  "walletRegistrationShareNfcTitle": "Tap your {device} to send the wallet registration via NFC",
+  "@walletRegistrationShareNfcTitle": {
+    "description": "NFC write sheet title for sending wallet registration data to a Coldcard",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
   },
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "@settingsScreenPrivacyTitle": {
