@@ -32,6 +32,7 @@ class SecureStorageKeyPrefixConstants {
   // Fresh key (the old `swap_key_index_` was seeded high by a now-removed bug);
   // this resets the per-network swap index counter to 0.
   static const swapKeyIndex = 'swap_master_key_index_';
+  static const ledgerWalletPolicyHmac = 'ledger_wallet_policy_hmac_';
 }
 
 class AssetConstants {

@@ -14308,6 +14308,50 @@
   "@mnemonicShuffleKeyboardHint": {
     "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
   },
+  "hardwareWalletSignerMismatch": "The connected device does not match this wallet signer.",
+  "@hardwareWalletSignerMismatch": {
+    "description": "Shown when a connected hardware wallet has a different fingerprint or account key."
+  },
+  "hardwareWalletPolicyUnsupported": "This hardware wallet does not support this wallet policy.",
+  "@hardwareWalletPolicyUnsupported": {
+    "description": "Shown when a device or firmware cannot register or use the selected wallet policy."
+  },
+  "hardwareWalletPolicyNotRegistered": "Register this wallet on the device before continuing.",
+  "@hardwareWalletPolicyNotRegistered": {
+    "description": "Shown when address verification or signing requires prior device registration."
+  },
+  "hardwareWalletAddressMismatch": "The address shown by the device does not match Bull.",
+  "@hardwareWalletAddressMismatch": {
+    "description": "Shown when hardware-wallet address verification returns a different address."
+  },
+  "ledgerRegisterWalletPolicyTitle": "Register on Ledger",
+  "@ledgerRegisterWalletPolicyTitle": {
+    "description": "Title for registering a BIP388 wallet policy on Ledger."
+  },
+  "ledgerRegisterWalletPolicyButton": "Register wallet",
+  "@ledgerRegisterWalletPolicyButton": {
+    "description": "Button that starts Ledger wallet-policy registration."
+  },
+  "ledgerRegisterWalletPolicyProcessing": "Registering wallet",
+  "@ledgerRegisterWalletPolicyProcessing": {
+    "description": "Status while Ledger registers a wallet policy."
+  },
+  "ledgerRegisterWalletPolicyProcessingSubtext": "Review the wallet policy on your Ledger and confirm it.",
+  "@ledgerRegisterWalletPolicyProcessingSubtext": {
+    "description": "Instructions while Ledger registers a wallet policy."
+  },
+  "ledgerRegisterWalletPolicySuccess": "Wallet registered",
+  "@ledgerRegisterWalletPolicySuccess": {
+    "description": "Success title after Ledger wallet-policy registration."
+  },
+  "ledgerRegisterWalletPolicySuccessSubtext": "This wallet is ready for address verification and signing on Ledger.",
+  "@ledgerRegisterWalletPolicySuccessSubtext": {
+    "description": "Success explanation after Ledger wallet-policy registration."
+  },
+  "ledgerErrorMissingWalletPolicy": "Wallet policy details are missing.",
+  "@ledgerErrorMissingWalletPolicy": {
+    "description": "Shown when a Ledger wallet-policy route was opened without its required request."
+  },
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "@settingsScreenPrivacyTitle": {
     "description": "Settings entry title for the screen-capture/screenshot protection toggle on sensitive screens"
