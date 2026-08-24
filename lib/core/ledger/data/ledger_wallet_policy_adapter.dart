@@ -4,7 +4,18 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
 
 abstract final class LedgerWalletPolicyAdapter {
-  static WalletPolicy fromWallet(Wallet wallet) {
+  static String? minimumBitcoinAppVersion(
+    Wallet wallet, {
+    required bool hasUnspendablePolicyKey,
+  }) {
+    if (!wallet.publicDescriptor.toLowerCase().startsWith('tr(')) return null;
+    return hasUnspendablePolicyKey ? '2.2.2' : '2.2.1';
+  }
+
+  static WalletPolicy fromWallet(
+    Wallet wallet, {
+    required List<WalletDescriptorKey> descriptorPolicyKeys,
+  }) {
     if (!wallet.supportsLedgerWalletPolicy) {
       throw const FormatException('Unsupported Ledger wallet policy');
     }
@@ -16,7 +27,7 @@ abstract final class LedgerWalletPolicyAdapter {
     for (final atom in _descriptorAtoms(template)) {
       final key = _LedgerPolicyKey.tryParse(atom, wallet: wallet);
       if (key == null) continue;
-      if (!wallet.descriptorKeys.any(key.matches)) {
+      if (!descriptorPolicyKeys.any(key.matchesDescriptorKey)) {
         throw const FormatException('Descriptor key is missing from policy');
       }
       var index = policyKeyIndexes[key.keyInfo];
@@ -145,7 +156,7 @@ final class _LedgerPolicyKey {
     );
   }
 
-  bool matches(WalletDescriptorKey key) =>
+  bool matchesDescriptorKey(WalletDescriptorKey key) =>
       key.masterFingerprint.toLowerCase() == masterFingerprint &&
       _normalizePath(key.derivationPath) == _normalizePath(derivationPath) &&
       key.xpub == xpub;

@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/verify_wallet_address_ledg
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:get_it/get_it.dart';
 
 class LedgerLocator {
@@ -36,6 +37,7 @@ class LedgerLocator {
       () => LedgerDeviceRepositoryImpl(
         datasource: locator<LedgerDeviceDatasource>(),
         hmacDatasource: locator<LedgerWalletPolicyHmacDatasource>(),
+        bitcoinDescriptorPort: locator<BitcoinDescriptorPort>(),
       ),
     );
   }

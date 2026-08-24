@@ -46,3 +46,7 @@ final class WalletPolicyNotRegisteredLedgerException extends LedgerException {
 final class WalletAddressMismatchLedgerException extends LedgerException {
   const WalletAddressMismatchLedgerException();
 }
+
+final class BitcoinAppUpdateRequiredLedgerException extends LedgerException {
+  const BitcoinAppUpdateRequiredLedgerException();
+}
