@@ -1,9 +1,11 @@
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
+import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
 import 'package:go_router/go_router.dart';
 
 enum LedgerRoute {
   importLedger('/ledger-import'),
+  ledgerRegisterWalletPolicy('/ledger-register-wallet-policy'),
   ledgerSignTransaction('/ledger-sign-transaction'),
   ledgerVerifyAddress('/ledger-verify-address');
 
@@ -21,13 +23,26 @@ class LedgerRouter {
           const LedgerActionScreen(action: LedgerAction.importWallet()),
     ),
     GoRoute(
+      name: LedgerRoute.ledgerRegisterWalletPolicy.name,
+      path: LedgerRoute.ledgerRegisterWalletPolicy.path,
+      builder: (context, state) {
+        final request = state.extra as RegisterLedgerWalletPolicyRequest;
+        return LedgerActionScreen(
+          action: const LedgerAction.registerWalletPolicy(),
+          parameters: LedgerRouteParams(walletPolicy: request),
+        );
+      },
+    ),
+    GoRoute(
       name: LedgerRoute.ledgerSignTransaction.name,
       path: LedgerRoute.ledgerSignTransaction.path,
       builder: (context, state) {
-        final extra = state.extra as LedgerRouteParams?;
+        final extra = state.extra;
         return LedgerActionScreen(
           action: const LedgerAction.signTransaction(),
-          parameters: extra,
+          parameters: extra is SignLedgerWalletPolicyRequest
+              ? LedgerRouteParams(walletPolicy: extra)
+              : extra as LedgerRouteParams?,
         );
       },
     ),
@@ -35,10 +50,12 @@ class LedgerRouter {
       name: LedgerRoute.ledgerVerifyAddress.name,
       path: LedgerRoute.ledgerVerifyAddress.path,
       builder: (context, state) {
-        final extra = state.extra as LedgerRouteParams?;
+        final extra = state.extra;
         return LedgerActionScreen(
           action: const LedgerAction.verifyAddress(),
-          parameters: extra,
+          parameters: extra is VerifyLedgerWalletPolicyAddressRequest
+              ? LedgerRouteParams(walletPolicy: extra)
+              : extra as LedgerRouteParams?,
         );
       },
     ),
