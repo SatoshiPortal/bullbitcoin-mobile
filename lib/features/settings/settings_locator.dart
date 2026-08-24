@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amou
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/update_wallet_signer_device_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
@@ -150,6 +151,9 @@ class SettingsLocator {
     locator.registerFactory<GetWalletPolicyUsecase>(
       () => GetWalletPolicyUsecase(bitcoinSigningPort: locator()),
     );
+    locator.registerFactory<UpdateWalletSignerDeviceUsecase>(
+      () => UpdateWalletSignerDeviceUsecase(walletSignerDevicePort: locator()),
+    );
 
     locator.registerLazySingleton<SettingsFacade>(
       () => SettingsFacade(
@@ -198,7 +202,10 @@ class SettingsLocator {
       () => SigningKeyExportCubit(exportSigningKeyUsecase: locator()),
     );
     locator.registerFactory<WalletDetailsCubit>(
-      () => WalletDetailsCubit(getWalletPolicyUsecase: locator()),
+      () => WalletDetailsCubit(
+        getWalletPolicyUsecase: locator(),
+        updateWalletSignerDeviceUsecase: locator(),
+      ),
     );
   }
 }
