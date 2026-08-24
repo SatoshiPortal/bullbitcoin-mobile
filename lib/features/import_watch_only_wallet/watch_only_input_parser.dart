@@ -74,8 +74,6 @@ class WatchOnlyInputParser {
 
     try {
       return parse(preferredNetwork);
-    } on UnsupportedTaprootDescriptorException {
-      rethrow;
     } on UnsupportedFixedPublicKeyDescriptorException {
       rethrow;
     } on Exception catch (error, stackTrace) {
@@ -84,8 +82,6 @@ class WatchOnlyInputParser {
           : Network.bitcoinTestnet;
       try {
         return parse(otherNetwork);
-      } on UnsupportedTaprootDescriptorException {
-        rethrow;
       } on UnsupportedFixedPublicKeyDescriptorException {
         rethrow;
       } on Exception {

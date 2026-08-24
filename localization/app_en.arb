@@ -3478,6 +3478,10 @@
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
   },
+  "walletAddressTypeTaproot": "Taproot",
+  "@walletAddressTypeTaproot": {
+    "description": "Address type for Taproot descriptor wallets"
+  },
   "walletAddressTypeNestedSegwit": "Nested Segwit",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
@@ -14888,10 +14892,6 @@
   "importWatchOnlyErrorFixedPublicKeyUnsupported": "This descriptor contains fixed public keys, which Bull does not support yet. Use extended public keys for every signer.",
   "@importWatchOnlyErrorFixedPublicKeyUnsupported": {
     "description": "Error shown when a descriptor contains a fixed public key instead of an extended public key"
-  },
-  "importWatchOnlyErrorTaprootUnsupported": "Taproot descriptors aren’t supported yet.",
-  "@importWatchOnlyErrorTaprootUnsupported": {
-    "description": "Error shown when a user tries to import a Taproot descriptor"
   },
   "importWatchOnlyErrorSignerOriginRequired": "This hardware signer export is missing its fingerprint and account path. Export a descriptor or an account xpub with key origin information.",
   "@importWatchOnlyErrorSignerOriginRequired": {

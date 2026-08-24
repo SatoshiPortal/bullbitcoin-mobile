@@ -355,6 +355,48 @@ void main() {
       );
     });
 
+    test('maps one descriptor key reused across Taproot leaves', () {
+      final descriptor = twoPathDescriptor(
+        'tr(${signers[1].externalPublic},{pk(${signers[0].externalPublic}),and_v(v:pk(${signers[0].externalPublic}),older(1000))})',
+        'tr(${signers[1].internalPublic},{pk(${signers[0].internalPublic}),and_v(v:pk(${signers[0].internalPublic}),older(1000))})',
+      );
+      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+        descriptor: descriptor,
+        isTestnet: true,
+      );
+      final descriptorKeys = [
+        for (final (index, key) in parsed.keys.indexed)
+          WalletDescriptorKeyModel(
+            id: 'key-$index',
+            signerId: 'signer-$index',
+            masterFingerprint: key.masterFingerprint,
+            xpubFingerprint: key.xpubFingerprint,
+            xpub: key.xpub,
+            derivationPath: key.derivationPath,
+          ),
+      ];
+
+      final policy = BitcoinWalletPolicyMapper.toEntity(
+        datasource.analyzePolicy(
+          wallet:
+              WalletModel.publicBdk(
+                    id: 'reused-taproot-key',
+                    descriptor: descriptor,
+                    isTestnet: true,
+                  )
+                  as PublicBdkWalletModel,
+          descriptorKeys: descriptorKeys,
+        ),
+      );
+
+      expect(
+        _signatureKeyValues(
+          policy.external.root,
+        ).where((value) => value == 'key-1'),
+        hasLength(2),
+      );
+    });
+
     test('decodes time-based relative timelocks', () {
       const oneTimeUnit = (1 << 22) + 1;
       final policy = analyzePolicy(
