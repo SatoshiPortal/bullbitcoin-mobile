@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usec
 import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,8 +29,15 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
 
   @override
   Future<void> close() async {
-    await _disposeLedgerConnectionsUsecase.execute();
+    _logTeardown(await _disposeLedgerConnectionsUsecase.execute(), 'dispose');
     await super.close();
+  }
+
+  void _logTeardown(Result<void, LedgerFailure> result, String step) {
+    result.fold(
+      (_) {},
+      (failure) => log.warning('Ledger $step failed: ${failure.runtimeType}'),
+    );
   }
 
   /// Runs [operation] after scanning for and connecting to a device. Every step
@@ -39,7 +47,10 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     Future<Result<T, LedgerFailure>> Function() operation,
   ) async {
     if (state.connectedDevice != null) {
-      await _disconnectLedgerDeviceUsecase.execute(state.connectedDevice!);
+      _logTeardown(
+        await _disconnectLedgerDeviceUsecase.execute(state.connectedDevice!),
+        'disconnect',
+      );
     }
 
     emit(state.copyWith(status: LedgerOperationStatus.scanning, failure: null));

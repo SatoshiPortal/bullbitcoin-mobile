@@ -46,8 +46,12 @@ void main() {
     disconnect = _MockDisconnectLedgerDeviceUsecase();
     disposeConnections = _MockDisposeLedgerConnectionsUsecase();
 
-    when(() => disposeConnections.execute()).thenAnswer((_) async {});
-    when(() => disconnect.execute(any())).thenAnswer((_) async {});
+    when(
+      () => disposeConnections.execute(),
+    ).thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
+    when(
+      () => disconnect.execute(any()),
+    ).thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
   });
 
   LedgerOperationCubit buildCubit() => LedgerOperationCubit(

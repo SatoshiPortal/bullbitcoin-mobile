@@ -106,29 +106,26 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   }
 
   @override
-  Future<void> disconnectConnection(LedgerDeviceEntity device) async {
-    try {
-      await _datasource.disconnectConnection(device.toModel());
-    } catch (e) {
-      log.warning('Error disconnecting Ledger device', error: e);
-    }
-  }
+  Future<Result<void, LedgerFailure>> disconnectConnection(
+    LedgerDeviceEntity device,
+  ) => _guard(
+    () => _datasource.disconnectConnection(device.toModel()),
+    isCleanup: true,
+  );
 
   @override
-  Future<void> dispose() async {
-    try {
-      await _datasource.dispose();
-    } catch (e) {
-      log.warning('Error disposing Ledger datasource', error: e);
-    }
-  }
+  Future<Result<void, LedgerFailure>> dispose() =>
+      _guard(() => _datasource.dispose(), isCleanup: true);
 
   /// The single try/catch boundary for the ledger domain. Runs [op], logs the
   /// raw reason, and maps every thrown thing to a typed [LedgerFailure] — no
   /// raw text ever escapes this method. The `on ...LedgerException` arms map
   /// the datasource's semantic signals; the trailing `catch` interprets raw
   /// device/SDK errors (APDU codes) and falls back to a generic failure.
-  Future<Result<T, LedgerFailure>> _guard<T>(Future<T> Function() op) async {
+  Future<Result<T, LedgerFailure>> _guard<T>(
+    Future<T> Function() op, {
+    bool isCleanup = false,
+  }) async {
     try {
       return Ok(await op());
     } on PermissionDeniedLedgerException {
@@ -147,7 +144,9 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       );
     } catch (e, st) {
       final failure = _interpretRawError(e);
-      if (failure is LedgerUnexpectedFailure) {
+      if (isCleanup) {
+        log.warning('Ledger cleanup failed', error: e, trace: st);
+      } else if (failure is LedgerUnexpectedFailure) {
         log.severe(message: 'Ledger operation failed', error: e, trace: st);
       } else {
         log.warning('Ledger operation failed', error: e, trace: st);

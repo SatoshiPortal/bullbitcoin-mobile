@@ -42,6 +42,11 @@ abstract interface class LedgerDeviceRepository {
     required ScriptType scriptType,
   });
 
-  Future<void> disconnectConnection(LedgerDeviceEntity device);
-  Future<void> dispose();
+  @useResult
+  Future<Result<void, LedgerFailure>> disconnectConnection(
+    LedgerDeviceEntity device,
+  );
+
+  @useResult
+  Future<Result<void, LedgerFailure>> dispose();
 }
