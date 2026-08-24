@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/settings_search_sheet.dart';
+import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
@@ -28,12 +28,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
   void initState() {
     super.initState();
     context.read<ServiceStatusCubit>().checkStatus();
-  }
-
-  Future<void> _openSettingsSearch(List<SettingsItem> items) async {
-    final item = await SettingsSearchSheet.show(context: context, items: items);
-    if (item == null || !mounted) return;
-    item.open(context);
   }
 
   @override
@@ -65,7 +59,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             color: context.appColors.secondary,
             iconSize: 32,
             icon: const Icon(Icons.search),
-            onPressed: () => _openSettingsSearch(items),
+            onPressed: () => context.pushNamed(SettingsRoute.search.name),
           ),
         ],
       ),

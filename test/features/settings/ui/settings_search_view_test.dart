@@ -1,15 +1,17 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/settings_search_sheet.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/settings_search_view.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('stays empty until typing then shows matching item and path', (
+  testWidgets('stays empty until typing, then shows the item and its path', (
     tester,
   ) async {
-    await tester.pumpWidget(_TestApp(home: _EmbeddedSearch(items: _items())));
+    await tester.pumpWidget(
+      _TestApp(home: SettingsSearchView(items: _items())),
+    );
     await tester.pump();
 
     expect(find.text('Start typing to see results.'), findsOneWidget);
@@ -23,19 +25,93 @@ void main() {
     await tester.pump();
 
     expect(find.text('Start typing to see results.'), findsNothing);
-    expect(find.byTooltip('Clear text'), findsOneWidget);
     expect(find.text('Tor Settings'), findsOneWidget);
     expect(find.text('Settings → App Settings → Tor Settings'), findsOneWidget);
     expect(find.text('Mempool Server'), findsNothing);
   });
 
-  testWidgets('returns the shared item when a result is tapped', (
+  testWidgets('reports when nothing matches', (tester) async {
+    await tester.pumpWidget(
+      _TestApp(home: SettingsSearchView(items: _items())),
+    );
+    await tester.pump();
+
+    await tester.enterText(
+      find.byKey(const Key('settings-search-field')),
+      'nothing here',
+    );
+    await tester.pump();
+
+    expect(find.text('No settings found.'), findsOneWidget);
+  });
+
+  testWidgets('clearing the field returns to the empty state', (tester) async {
+    await tester.pumpWidget(
+      _TestApp(home: SettingsSearchView(items: _items())),
+    );
+    await tester.pump();
+
+    await tester.enterText(
+      find.byKey(const Key('settings-search-field')),
+      'tor',
+    );
+    await tester.pump();
+    expect(find.text('Tor Settings'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('settings-search-clear')));
+    await tester.pump();
+
+    expect(find.text('Tor Settings'), findsNothing);
+    expect(find.text('Start typing to see results.'), findsOneWidget);
+  });
+
+  testWidgets('the clear button only exists while there is a query', (
     tester,
   ) async {
-    await tester.pumpWidget(_TestApp(home: _SearchLauncher(items: _items())));
+    await tester.pumpWidget(
+      _TestApp(home: SettingsSearchView(items: _items())),
+    );
+    await tester.pump();
 
-    await tester.tap(find.text('Open search'));
-    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('settings-search-clear')), findsNothing);
+
+    await tester.enterText(
+      find.byKey(const Key('settings-search-field')),
+      'tor',
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('settings-search-clear')), findsOneWidget);
+  });
+
+  testWidgets('a result opens over the search, which back returns to', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _TestApp(
+        home: SettingsSearchView(
+          items: [
+            SettingsItem(
+              id: SettingsItemId.tor,
+              section: SettingsItemSection.app,
+              title: 'Tor Settings',
+              path: const ['Settings', 'App Settings', 'Tor Settings'],
+              icon: IconData(0),
+              open: (context) => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Tor')),
+                    body: const Text('Tor Settings screen'),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+
     await tester.enterText(
       find.byKey(const Key('settings-search-field')),
       'tor',
@@ -44,51 +120,29 @@ void main() {
     await tester.tap(find.text('Tor Settings'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Selected: tor'), findsOneWidget);
-  });
+    expect(find.text('Tor Settings screen'), findsOneWidget);
 
-  testWidgets('keeps a fixed height while search results change', (
-    tester,
-  ) async {
-    await tester.pumpWidget(_TestApp(home: _SearchLauncher(items: _items())));
-
-    await tester.tap(find.text('Open search'));
+    await tester.pageBack();
     await tester.pumpAndSettle();
 
-    final sheet = find.byKey(const Key('settings-search-sheet-content'));
-    final initialHeight = tester.getSize(sheet).height;
-
-    await tester.enterText(
-      find.byKey(const Key('settings-search-field')),
-      'tor',
-    );
-    await tester.pump();
-    expect(tester.getSize(sheet).height, initialHeight);
-
-    await tester.enterText(
-      find.byKey(const Key('settings-search-field')),
-      'missing',
-    );
-    await tester.pump();
-    expect(tester.getSize(sheet).height, initialHeight);
-
-    await tester.tap(find.byTooltip('Clear text'));
-    await tester.pump();
-    expect(tester.getSize(sheet).height, initialHeight);
+    // The search survived the trip, query included: AOSP keeps the results
+    // underneath the destination instead of dismissing them.
+    expect(find.text('Tor Settings screen'), findsNothing);
+    expect(find.text('Settings → App Settings → Tor Settings'), findsOneWidget);
   });
 
   testWidgets('uses a left-pointing breadcrumb in RTL locales', (tester) async {
     await tester.pumpWidget(
       _TestApp(
         locale: const Locale('ar'),
-        home: _EmbeddedSearch(
+        home: SettingsSearchView(
           items: [
             SettingsItem(
               id: SettingsItemId.tor,
               section: SettingsItemSection.app,
               title: 'إعدادات Tor',
               path: const ['الإعدادات', 'إعدادات التطبيق', 'إعدادات Tor'],
-              icon: Icons.vpn_lock,
+              icon: IconData(0),
               open: (_) {},
             ),
           ],
@@ -116,7 +170,7 @@ List<SettingsItem> _items() => [
     section: SettingsItemSection.app,
     title: 'Tor Settings',
     path: const ['Settings', 'App Settings', 'Tor Settings'],
-    icon: Icons.vpn_lock,
+    icon: IconData(0),
     open: (_) {},
   ),
   SettingsItem(
@@ -124,7 +178,7 @@ List<SettingsItem> _items() => [
     section: SettingsItemSection.bitcoin,
     title: 'Mempool Server',
     path: const ['Settings', 'Bitcoin Settings', 'Mempool Server'],
-    icon: Icons.memory,
+    icon: IconData(0),
     open: (_) {},
   ),
 ];
@@ -143,52 +197,6 @@ class _TestApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
       home: home,
-    );
-  }
-}
-
-class _EmbeddedSearch extends StatelessWidget {
-  final List<SettingsItem> items;
-
-  const _EmbeddedSearch({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: SettingsSearchSheet(items: items));
-  }
-}
-
-class _SearchLauncher extends StatefulWidget {
-  final List<SettingsItem> items;
-
-  const _SearchLauncher({required this.items});
-
-  @override
-  State<_SearchLauncher> createState() => _SearchLauncherState();
-}
-
-class _SearchLauncherState extends State<_SearchLauncher> {
-  SettingsItem? _selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          TextButton(
-            onPressed: () async {
-              final selected = await SettingsSearchSheet.show(
-                context: context,
-                items: widget.items,
-              );
-              if (!mounted) return;
-              setState(() => _selected = selected);
-            },
-            child: const Text('Open search'),
-          ),
-          if (_selected != null) Text('Selected: ${_selected!.id.name}'),
-        ],
-      ),
     );
   }
 }

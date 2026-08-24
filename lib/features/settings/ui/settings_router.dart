@@ -36,6 +36,7 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
@@ -60,6 +61,11 @@ class SettingsRouter {
       child: const AllSettingsScreen(),
     ),
     routes: [
+      GoRoute(
+        name: SettingsRoute.search.name,
+        path: SettingsRoute.search.path,
+        builder: (context, state) => const SettingsSearchScreen(),
+      ),
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
         path: SettingsRoute.exchangeAccount.path,
