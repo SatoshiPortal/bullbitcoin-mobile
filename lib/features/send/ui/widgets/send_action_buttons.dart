@@ -8,8 +8,10 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
+import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
+import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -54,6 +56,11 @@ class BitcoinSigningSection extends StatelessWidget {
     final visibleSigners = signingComplete
         ? const <WalletSigner>[]
         : plan.eligibleSigners;
+    final hasConnectedDeviceSigner = visibleSigners.any(
+      (signer) =>
+          !state.isBitcoinSignerSigned(signer) &&
+          (state.selectedWallet?.supportsWalletPolicySigner(signer) ?? false),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,6 +82,17 @@ class BitcoinSigningSection extends StatelessWidget {
         for (final (index, signer) in visibleSigners.indexed) ...[
           _BitcoinSignerTile(signer: signer),
           if (index != visibleSigners.length - 1) const Gap(8),
+        ],
+        if (hasConnectedDeviceSigner) ...[
+          const Gap(12),
+          ShowPsbtButton(
+            outlined: true,
+            disabled:
+                state.signingTransaction ||
+                state.persistingPendingTransaction ||
+                state.isSigningConflict ||
+                !state.isSigningPolicyReady,
+          ),
         ],
       ],
     );
@@ -103,6 +121,9 @@ class _BitcoinSignerTile extends StatelessWidget {
         : signer.signerDevice?.displayName ??
               context.loc.walletDetailsExternalSignerLabel;
     final fingerprint = signer.displayFingerprint;
+    final wallet = state.selectedWallet;
+    final usesConnectedDevice =
+        wallet?.supportsWalletPolicySigner(signer) ?? false;
 
     return BorderedTappableTile(
       onTap: canAct ? () => _sign(context) : null,
@@ -139,6 +160,8 @@ class _BitcoinSignerTile extends StatelessWidget {
                 ? context.loc.sendSignerSigned
                 : signer.signer == SignerEntity.local
                 ? context.loc.sendSignerSign
+                : usesConnectedDevice
+                ? context.loc.sendSignerSign
                 : context.loc.psbtFlowSharePsbt,
             style: context.font.bodySmall?.copyWith(
               fontWeight: FontWeight.w500,
@@ -158,6 +181,47 @@ class _BitcoinSignerTile extends StatelessWidget {
       return;
     }
 
+    final state = context.read<SendCubit>().state;
+    final wallet = state.selectedWallet;
+    final psbt = state.unsignedPsbt;
+    if (wallet != null &&
+        psbt != null &&
+        wallet.supportsWalletPolicySigner(signer) &&
+        signer.signerDevice?.isLedger == true) {
+      const facade = LedgerFacade();
+      final result = await context.pushNamed<String>(
+        facade.signWalletPolicyRouteName,
+        extra: SignLedgerWalletPolicyRequest(
+          wallet: wallet,
+          signerId: signer.id,
+          psbt: psbt,
+          requestedDeviceType: signer.signerDevice!,
+        ),
+      );
+      if (result != null && context.mounted) {
+        await context.read<SendCubit>().applyExternalBitcoinPsbt(result);
+      }
+      return;
+    }
+    if (wallet != null &&
+        psbt != null &&
+        wallet.supportsWalletPolicySigner(signer) &&
+        signer.signerDevice?.isBitBox == true) {
+      const facade = BitBoxFacade();
+      final result = await context.pushNamed<String>(
+        facade.signWalletPolicyRouteName,
+        extra: SignBitBoxWalletPolicyRequest(
+          wallet: wallet,
+          signerId: signer.id,
+          psbt: psbt,
+        ),
+      );
+      if (result != null && context.mounted) {
+        await context.read<SendCubit>().applyExternalBitcoinPsbt(result);
+      }
+      return;
+    }
+
     final result = await context.pushNamed<String>(
       PsbtFlowRoutes.show.name,
       extra: (
@@ -173,8 +237,15 @@ class _BitcoinSignerTile extends StatelessWidget {
 
 class ShowPsbtButton extends StatelessWidget {
   final WalletSigner? signer;
+  final bool outlined;
+  final bool disabled;
 
-  const ShowPsbtButton({super.key, this.signer});
+  const ShowPsbtButton({
+    super.key,
+    this.signer,
+    this.outlined = false,
+    this.disabled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -195,8 +266,14 @@ class ShowPsbtButton extends StatelessWidget {
           );
         }
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
+      bgColor: outlined
+          ? context.appColors.surface
+          : context.appColors.secondary,
+      textColor: outlined
+          ? context.appColors.secondary
+          : context.appColors.onSecondary,
+      outlined: outlined,
+      disabled: disabled || unsignedPsbt == null,
     );
   }
 }
