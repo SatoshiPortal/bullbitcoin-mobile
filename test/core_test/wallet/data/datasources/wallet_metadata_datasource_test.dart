@@ -103,7 +103,7 @@ void main() {
     final syncedAt = DateTime.utc(2026, 8, 26);
     await datasource.store(metadata);
 
-    await datasource.updateSyncedAt(metadata.id, syncedAt);
+    await datasource.updateSyncedAt(walletId: metadata.id, syncedAt: syncedAt);
 
     expect(
       await datasource.fetch(metadata.id),
@@ -148,6 +148,25 @@ void main() {
       stored.signers.single.descriptorKeys.map((key) => key.descriptorPath),
       ['', '/1/<0;1>/*'],
     );
+  });
+
+  test('updates only the selected signer device annotation', () async {
+    final metadata = _multisigMetadata();
+    await datasource.store(metadata);
+
+    final didUpdate = await datasource.updateSignerDevice(
+      walletId: metadata.id,
+      signerId: _hardware.id,
+      signer: Signer.remote,
+      signerDevice: SignerDevice.ledgerFlex,
+    );
+
+    final stored = await datasource.fetch(metadata.id);
+    expect(didUpdate, isTrue);
+    expect(stored!.signers[1].signerDevice, SignerDevice.ledgerFlex);
+    expect(stored.signers[0], _mobile);
+    expect(stored.signers[2], _server);
+    expect(stored.publicDescriptor, metadata.publicDescriptor);
   });
 
   test('deletes signers and descriptor keys with wallet metadata', () async {

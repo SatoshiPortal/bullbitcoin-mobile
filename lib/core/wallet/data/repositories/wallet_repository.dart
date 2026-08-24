@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exceptio
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -24,11 +25,13 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
 
-class WalletRepository implements BitcoinDescriptorPort {
+class WalletRepository
+    implements BitcoinDescriptorPort, WalletSignerDevicePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -340,6 +343,48 @@ class WalletRepository implements BitcoinDescriptorPort {
     );
   }
 
+  @override
+  Future<Wallet> updateSignerDevice({
+    required String walletId,
+    required String signerId,
+    required SignerDeviceEntity? signerDevice,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw const WalletSignerDeviceUpdateException();
+
+    final signerIndex = metadata.signers.indexWhere(
+      (signer) => signer.id == signerId,
+    );
+    if (signerIndex == -1) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+
+    final signer = metadata.signers[signerIndex].toEntity();
+    if (signer.signer == SignerEntity.local) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+
+    final updatedSigner = signer
+        .copyWith(
+          signer: SignerEntity.remote,
+          signerDevice: signerDevice,
+          clearSignerDevice: signerDevice == null,
+        )
+        .toModel();
+    final updatedSigners = [...metadata.signers];
+    updatedSigners[signerIndex] = updatedSigner;
+    final updatedMetadata = metadata.copyWith(signers: updatedSigners);
+    final balance = await _getBalance(updatedMetadata);
+    final didUpdate = await _walletMetadataDatasource.updateSignerDevice(
+      walletId: walletId,
+      signerId: signerId,
+      signer: updatedSigner.signer,
+      signerDevice: updatedSigner.signerDevice,
+    );
+    if (!didUpdate) throw const WalletSignerDeviceUpdateException();
+    return _toWallet(updatedMetadata, balance);
+  }
+
   Future<WalletBalances> getWalletBalances({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
@@ -407,7 +452,10 @@ class WalletRepository implements BitcoinDescriptorPort {
   ]);
 
   Future<void> _updateWalletSyncTime(String walletId) async {
-    await _walletMetadataDatasource.updateSyncedAt(walletId, DateTime.now());
+    await _walletMetadataDatasource.updateSyncedAt(
+      walletId: walletId,
+      syncedAt: DateTime.now(),
+    );
   }
 
   Future<BalanceModel> _getBalance(
