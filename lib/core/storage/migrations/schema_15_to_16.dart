@@ -135,11 +135,17 @@ class Schema15To16 {
         );
       }
 
+      await m.createTable(schema16.sendTransactions);
+      await m.createTable(schema16.sendTransactionInputs);
+      await m.createTable(schema16.sendTransactionPolicyChoices);
+      await m.createIndex(schema16.sendTransactionsWallet);
+      await m.createIndex(schema16.sendTransactionsUpdatedAt);
+
       final foreignKeyViolations = await m.database
           .customSelect('PRAGMA foreign_key_check')
           .get();
       if (foreignKeyViolations.isNotEmpty) {
-        throw StateError('The v16 wallet migration violated a foreign key');
+        throw StateError('The v16 migration violated a foreign key');
       }
 
       // Keep the version marker in the same atomic transaction as the schema
