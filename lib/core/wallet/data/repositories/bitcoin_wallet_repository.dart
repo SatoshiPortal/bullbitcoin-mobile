@@ -23,7 +23,9 @@ import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_policy_maturity_mappe
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_psbt_review_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:primitives/primitives.dart'
@@ -168,6 +170,12 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
             .toList(),
         selectedOnly: selectedOnly,
+        requiredDescriptorKeys: policyPath == null
+            ? null
+            : (
+                external: _requiredDescriptorKeys(metadata, policyPath.requiredExternalKeys),
+                internal: _requiredDescriptorKeys(metadata, policyPath.requiredInternalKeys),
+              ),
         // Default to RBF-enabled, matching both the datasource default and
         // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
         // RBF for any caller omitting the flag — harmless while
@@ -197,6 +205,22 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       );
       return const Err(WalletTransactionBuildFailure());
     }
+  }
+
+  List<WalletDescriptorKeyModel> _requiredDescriptorKeys(
+    WalletMetadataModel metadata,
+    Set<BitcoinPolicyKey> policyKeys,
+  ) {
+    final descriptorKeys = metadata.signers
+        .expand((signer) => signer.descriptorKeys)
+        .toList();
+    return [
+      for (final descriptorKey in descriptorKeys)
+        if (policyKeys.any(
+          (policyKey) => policyKey.matches(descriptorKey.toEntity()),
+        ))
+          descriptorKey,
+    ];
   }
 
   @override

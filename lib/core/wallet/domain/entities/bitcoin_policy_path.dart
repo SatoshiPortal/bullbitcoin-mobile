@@ -74,6 +74,8 @@ final class BitcoinPolicyPath {
   final Map<String, List<int>> external;
   final Map<String, List<int>> internal;
   final bool requiresRelativeTimelock;
+  final Set<BitcoinPolicyKey> requiredExternalKeys;
+  final Set<BitcoinPolicyKey> requiredInternalKeys;
   final Set<String>? eligibleExternalOutpoints;
   final Set<String>? eligibleInternalOutpoints;
 
@@ -81,6 +83,8 @@ final class BitcoinPolicyPath {
     required Map<String, List<int>> external,
     required Map<String, List<int>> internal,
     required this.requiresRelativeTimelock,
+    Set<BitcoinPolicyKey> requiredExternalKeys = const {},
+    Set<BitcoinPolicyKey> requiredInternalKeys = const {},
     Set<String>? eligibleExternalOutpoints,
     Set<String>? eligibleInternalOutpoints,
   }) : external = Map<String, List<int>>.unmodifiable({
@@ -91,6 +95,8 @@ final class BitcoinPolicyPath {
          for (final entry in internal.entries)
            entry.key: List<int>.unmodifiable(entry.value),
        }),
+       requiredExternalKeys = Set.unmodifiable(requiredExternalKeys),
+       requiredInternalKeys = Set.unmodifiable(requiredInternalKeys),
        eligibleExternalOutpoints = eligibleExternalOutpoints == null
            ? null
            : Set.unmodifiable(eligibleExternalOutpoints),

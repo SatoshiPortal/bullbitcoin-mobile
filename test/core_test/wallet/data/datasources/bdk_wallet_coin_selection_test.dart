@@ -9,15 +9,18 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -33,6 +36,9 @@ final class _TestPathProvider extends PathProviderPlatform {
   @override
   Future<String?> getApplicationDocumentsPath() async => path;
 }
+
+String _alternativeDescriptor(List<String> keys) =>
+    'wsh(or_d(pk(${keys[0]}),pk(${keys[1]})))';
 
 final class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -262,6 +268,105 @@ void main() {
         wallet: walletModel,
       ),
       throwsA(isA<InvalidBitcoinPsbtException>()),
+    );
+  });
+
+  test('keeps only selected policy key origins in a built PSBT', () async {
+    final signers = testMnemonics.take(2).map(deriveSignerKeys).toList();
+    final externalDescriptor = _alternativeDescriptor(
+      signers.map((signer) => signer.externalPublic).toList(),
+    );
+    final internalDescriptor = _alternativeDescriptor(
+      signers.map((signer) => signer.internalPublic).toList(),
+    );
+    final walletModel =
+        WalletModel.publicBdk(
+              id: 'selected-policy-origins',
+              descriptor: twoPathDescriptor(
+                externalDescriptor,
+                internalDescriptor,
+              ),
+              isTestnet: true,
+            )
+            as PublicBdkWalletModel;
+    final descriptorKeys = [
+      for (final (index, signer) in signers.indexed)
+        walletSignerModel(
+          id: 'signer-$index',
+          descriptorKeyId: 'key-$index',
+          masterFingerprint: signer.fingerprint,
+          xpubFingerprint: signer.fingerprint,
+          xpub: signer.xpub.split(']').last,
+          derivationPath: "m/48'/1'/0'/2'",
+          signer: Signer.remote,
+          signerDevice: null,
+        ).descriptorKeys.single,
+    ];
+    final datasource = BdkWalletDatasource();
+    final policy = BitcoinWalletPolicyMapper.toEntity(
+      datasource.analyzePolicy(
+        wallet: walletModel,
+        descriptorKeys: descriptorKeys,
+      ),
+    );
+    var selection = const BitcoinPolicySelection.empty();
+    while (policy.pathRequirements(selection).isNotEmpty) {
+      final requirement = policy.pathRequirements(selection).first;
+      selection = policy.select(
+        current: selection,
+        requirement: requirement,
+        selectedIndices: {0},
+      );
+    }
+    final policyPath = policy.buildPath(selection);
+
+    final wallet = await BdkFacade.createWallet(walletModel);
+    final receivingAddress = wallet.peekAddress(
+      keychain: bdk.KeychainKind.external_,
+      index: 0,
+    );
+    wallet.applyUnconfirmedTxs(
+      unconfirmedTxs: [
+        bdk.UnconfirmedTx(
+          tx: fundingTransaction(receivingAddress.address.scriptPubkey()),
+          lastSeen: 1,
+        ),
+      ],
+    );
+    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    wallet.dispose();
+    final recipientWallet = BdkFacade.createEphemeralDescriptorWallet(
+      descriptor: twoPathDescriptor(externalDescriptor, internalDescriptor),
+      isTestnet: true,
+    );
+    final recipient = recipientWallet.peekAddress(
+      keychain: bdk.KeychainKind.external_,
+      index: 1,
+    );
+    recipientWallet.dispose();
+
+    final psbtBase64 = await datasource.buildPsbt(
+      wallet: walletModel,
+      address: recipient.address.toString(),
+      amountSat: 50000,
+      networkFee: const NetworkFee.absolute(1000),
+      policyPath: policyPath,
+      requiredDescriptorKeys: (
+        external: [descriptorKeys.first],
+        internal: [descriptorKeys.first],
+      ),
+    );
+    final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
+    final origins = psbt.input
+        .getInputs<bitcoin_base.PsbtInputBip32DerivationPath>(
+          0,
+          bitcoin_base.PsbtInputTypes.bip32DerivationPath,
+        );
+
+    expect(origins, hasLength(1));
+    expect(
+      hex.encode(origins!.single.fingerprint),
+      descriptorKeys.first.masterFingerprint,
     );
   });
 
