@@ -102,6 +102,25 @@ final class BitcoinPsbtReview {
   BigInt get recipientAmountSat =>
       recipients.fold(BigInt.zero, (total, output) => total + output.amountSat);
 
+  /// Includes self-payments, whose recipient is also a wallet-owned output.
+  BigInt? amountSentTo(String address) {
+    final normalized = address.toLowerCase();
+    final isBech32 =
+        normalized.startsWith('bc1') ||
+        normalized.startsWith('tb1') ||
+        normalized.startsWith('bcrt1');
+    final matching = outputs.where(
+      (output) =>
+          output.address == address ||
+          (isBech32 && output.address?.toLowerCase() == normalized),
+    );
+    if (matching.isEmpty) return null;
+    return matching.fold<BigInt>(
+      BigInt.zero,
+      (amount, output) => amount + output.amountSat,
+    );
+  }
+
   double get estimatedFeeRateSatPerVbyte =>
       feeSat.toDouble() / estimatedTransactionVsize;
 

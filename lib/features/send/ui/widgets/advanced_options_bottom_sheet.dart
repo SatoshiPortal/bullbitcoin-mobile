@@ -18,6 +18,10 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
     final isRBFEnabled = context.select(
       (SendCubit cubit) => cubit.state.replaceByFee,
     );
+    final requiresRelativeTimelock = context.select(
+      (SendCubit cubit) =>
+          cubit.state.bitcoinPolicyPathRequiresRelativeTimelock,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -58,8 +62,11 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               ),
               Switch(
                 value: isRBFEnabled,
-                onChanged: (val) async =>
-                    await context.read<SendCubit>().replaceByFeeChanged(val),
+                onChanged: requiresRelativeTimelock
+                    ? null
+                    : (val) async => await context
+                          .read<SendCubit>()
+                          .replaceByFeeChanged(val),
               ),
             ],
           ),

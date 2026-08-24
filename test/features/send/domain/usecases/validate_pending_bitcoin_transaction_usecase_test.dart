@@ -56,6 +56,7 @@ void main() {
         psbt: 'cHNidP8=',
         selection: const BitcoinPolicySelection.empty(),
         allowSpentWalletInputs: true,
+        allowFrozenWalletInputs: true,
       ),
     ).thenAnswer((_) async => Ok(_details(_review())));
   });
@@ -108,6 +109,7 @@ void main() {
           psbt: 'cHNidP8=',
           selection: const BitcoinPolicySelection.empty(),
           allowSpentWalletInputs: true,
+          allowFrozenWalletInputs: true,
         ),
       ).thenAnswer(
         (_) async => Ok(_details(_review(recipient: 'tb1qdifferent'))),
@@ -130,6 +132,7 @@ void main() {
         psbt: 'cHNidP8=',
         selection: const BitcoinPolicySelection.empty(),
         allowSpentWalletInputs: true,
+        allowFrozenWalletInputs: true,
       ),
     ).thenAnswer(
       (_) async => Ok(_details(_review(recipientWalletOwned: true))),
@@ -146,6 +149,35 @@ void main() {
     expect(result, isA<Ok<PendingBitcoinTransaction, SendFailure>>());
   });
 
+  test(
+    'keeps a frozen-input session visible as a conflict until unfrozen',
+    () async {
+      var frozen = true;
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
+      ).thenAnswer((_) async => [_utxo.copyWith(isFrozen: frozen)]);
+      when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
+        (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)),
+      );
+
+      final blocked = await usecase.execute(_pendingTransaction);
+      expect(
+        (blocked as Ok<PendingBitcoinTransaction, SendFailure>)
+            .value
+            .isConflict,
+        isTrue,
+      );
+      frozen = false;
+      final resumed = await usecase.execute(_pendingTransaction);
+      expect(
+        (resumed as Ok<PendingBitcoinTransaction, SendFailure>)
+            .value
+            .isConflict,
+        isFalse,
+      );
+    },
+  );
+
   test('accepts an uppercase Bech32 recipient from the stored draft', () async {
     when(
       () => getSigningPlanUsecase.execute(
@@ -153,6 +185,7 @@ void main() {
         psbt: 'cHNidP8=',
         selection: const BitcoinPolicySelection.empty(),
         allowSpentWalletInputs: true,
+        allowFrozenWalletInputs: true,
       ),
     ).thenAnswer(
       (_) async => Ok(_details(_review(recipient: 'TB1QRECIPIENT'))),
@@ -178,6 +211,7 @@ void main() {
           psbt: 'cHNidP8=',
           selection: const BitcoinPolicySelection.empty(),
           allowSpentWalletInputs: true,
+          allowFrozenWalletInputs: true,
         ),
       ).thenAnswer((_) async => Ok(_details(_review(isFinalized: true))));
       when(

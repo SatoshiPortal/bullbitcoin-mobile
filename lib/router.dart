@@ -64,6 +64,7 @@ class AppRouter {
     // error-reporting scope (consent-gated) rather than perf tracing.
     observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
     routes: [
+      GoRoute(path: '/', redirect: (_, _) => WalletRoute.walletHome.path),
       ShellRoute(
         notifyRootObserver: true,
         builder: (context, state, child) {

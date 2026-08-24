@@ -144,6 +144,10 @@ final class BitcoinSigningPlan {
         ),
       );
 
+  bool get hasSignatures =>
+      signedDescriptorKeyIdsByKeychain.values.any((ids) => ids.isNotEmpty) ||
+      signedDescriptorKeyIdsByOutpoint.values.any((ids) => ids.isNotEmpty);
+
   bool get requiresExternalSigning {
     if (isSatisfied) return false;
     final localSignerIds = {

@@ -241,12 +241,14 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String walletId,
     bool requireLocalOrigin = true,
     bool allowSpentWalletInputs = false,
+    bool allowFrozenWalletInputs = false,
   }) => _guardSigning(
     () => _reviewPsbt(
       psbt,
       walletId: walletId,
       requireLocalOrigin: requireLocalOrigin,
       allowSpentWalletInputs: allowSpentWalletInputs,
+      allowFrozenWalletInputs: allowFrozenWalletInputs,
     ),
   );
 
@@ -255,6 +257,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String walletId,
     bool requireLocalOrigin = true,
     bool allowSpentWalletInputs = false,
+    bool allowFrozenWalletInputs = false,
   }) async {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
@@ -271,6 +274,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       psbt: psbt,
       wallet: wallet,
       allowSpentWalletInputs: allowSpentWalletInputs,
+      allowFrozenWalletInputs: allowFrozenWalletInputs,
     );
     final model = await _bdkWallet.inspectPsbt(
       psbt,
@@ -635,6 +639,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required PublicBdkWalletModel wallet,
     String? replacingTxid,
     bool allowSpentWalletInputs = false,
+    bool allowFrozenWalletInputs = false,
   }) async {
     final frozenRows = await _frozenUtxos.getAllFrozen();
     final frozenOutpoints = {
@@ -643,7 +648,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     await _bdkWallet.validateWalletPsbtInputs(
       psbt,
       wallet: wallet,
-      frozenOutpoints: frozenOutpoints,
+      frozenOutpoints: allowFrozenWalletInputs ? const {} : frozenOutpoints,
       replacingTxid: replacingTxid,
       allowSpentWalletInputs: allowSpentWalletInputs,
     );
