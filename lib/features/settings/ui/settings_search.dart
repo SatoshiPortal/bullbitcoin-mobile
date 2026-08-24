@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:unorm_dart/unorm_dart.dart' as unorm;
 
 List<SettingsItem> searchSettings(Iterable<SettingsItem> items, String query) {
   final normalizedQuery = _normalize(query);
@@ -35,8 +36,34 @@ int? _score(SettingsItem item, String query) {
   return null;
 }
 
-String _normalize(String value) => value
-    .toLowerCase()
-    .replaceAll(RegExp(r'[_\-–—]+'), ' ')
-    .replaceAll(RegExp(r'\s+'), ' ')
+/// Combining marks left behind by the canonical decomposition below.
+final _combiningMarks = RegExp(r'[\u0300-\u036f]');
+
+/// Apostrophes a soft keyboard produces, versus the one a user actually types.
+final _apostrophes = RegExp('[\u2018\u2019\u02bc\u00b4`]');
+
+final _separators = RegExp(r'[_\-–—]+');
+
+final _whitespace = RegExp(r'\s+');
+
+/// Folds a title, a keyword or a query down to what a comparison should see.
+///
+/// Decomposing to NFD and dropping the combining marks is what makes the search
+/// accent-insensitive: `Sécurité` and `securite` both collapse to `securite`, so
+/// a user who does not reach for the accented key still finds the setting. NFD
+/// covers every script the app ships, which a hand-written Latin table would
+/// not — Vietnamese and Greek carry diacritics just as French does.
+///
+/// Applied to both sides of every comparison, so the folding stays symmetric.
+///
+/// Known limit: `ä` folds to `a`, not to the `ae` some German users type. The
+/// two cannot both be reached by a single normalization, and dropping the
+/// diaeresis is what a phone keyboard makes easy.
+String _normalize(String value) => unorm
+    .nfd(value.toLowerCase())
+    .replaceAll(_combiningMarks, '')
+    .replaceAll('ß', 'ss')
+    .replaceAll(_apostrophes, "'")
+    .replaceAll(_separators, ' ')
+    .replaceAll(_whitespace, ' ')
     .trim();

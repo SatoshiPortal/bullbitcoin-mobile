@@ -1,7 +1,9 @@
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:bb_mobile/generated/l10n/localization_as.dart';
+import 'package:bb_mobile/generated/l10n/localization_de.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
+import 'package:bb_mobile/generated/l10n/localization_fr.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -162,6 +164,55 @@ void main() {
       expect(credentials.isSuperuser, isFalse);
     });
 
+    test('matches a French title typed without its accents', () {
+      final results = searchSettings(_frenchItems(), 'securite');
+
+      expect(
+        results.map((item) => item.id),
+        contains(SettingsItemId.securityPin),
+      );
+    });
+
+    test('matches a German title typed without its umlaut', () {
+      final results = searchSettings(_germanItems(), 'wahrung');
+
+      expect(results.map((item) => item.id), contains(SettingsItemId.currency));
+    });
+
+    test('matches a typographic apostrophe typed as a straight quote', () {
+      final results = searchSettings(
+        _frenchItems(),
+        "confidentialite de l'ecran",
+      );
+
+      expect(
+        results.map((item) => item.id),
+        contains(SettingsItemId.screenPrivacy),
+      );
+    });
+
+    test('folds the German sharp s to a double s', () {
+      final items = [
+        SettingsItem(
+          id: SettingsItemId.currency,
+          section: SettingsItemSection.app,
+          title: 'Große Beträge',
+          path: const ['Einstellungen', 'Große Beträge'],
+          icon: IconData(0),
+          open: (_) {},
+        ),
+      ];
+
+      expect(
+        searchSettings(items, 'grosse betrage').map((item) => item.id),
+        contains(SettingsItemId.currency),
+      );
+    });
+
+    test('still reports no match for a query nothing contains', () {
+      expect(searchSettings(_frenchItems(), 'zzz'), isEmpty);
+    });
+
     test('every item id has one authoritative registry entry', () {
       final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
 
@@ -184,5 +235,21 @@ List<SettingsItem> _englishItems({
     exchangeTitle: localization.settingsExchangeSettingsTitle,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
+  );
+}
+
+List<SettingsItem> _frenchItems() {
+  final localization = AppLocalizationsFr();
+  return buildSettingsItems(
+    localization: localization,
+    exchangeTitle: localization.settingsExchangeSettingsTitle,
+  );
+}
+
+List<SettingsItem> _germanItems() {
+  final localization = AppLocalizationsDe();
+  return buildSettingsItems(
+    localization: localization,
+    exchangeTitle: localization.settingsExchangeSettingsTitle,
   );
 }
