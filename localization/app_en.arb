@@ -16192,5 +16192,9 @@
   },
   "@sendAuthorizeTransaction": {
     "description": "Title for the transaction authorization selector"
+  },
+  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
+  "@sendPendingTransactionsInvalid": {
+    "description": "Warning shown when one or more saved transactions are invalid."
   }
 }

@@ -33,15 +33,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+typedef WalletDetailFeatureSliverBuilder =
+    Widget Function(BuildContext context, Wallet wallet);
+
 class WalletDetailScreen extends StatelessWidget {
   const WalletDetailScreen({
     super.key,
     required this.walletId,
     required this.onOpenCoins,
+    this.featureSliverBuilder,
   });
 
   final String walletId;
   final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
+  final WalletDetailFeatureSliverBuilder? featureSliverBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -135,6 +140,8 @@ class WalletDetailScreen extends StatelessWidget {
                         ),
                       ),
                     const SliverToBoxAdapter(child: Gap(16)),
+                    if (featureSliverBuilder case final builder?)
+                      builder(context, wallet),
                     const WalletDetailTxsList(sliver: true),
                   ],
                 ),

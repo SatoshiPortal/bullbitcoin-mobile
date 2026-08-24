@@ -40,6 +40,7 @@ class WalletRouter {
   static GoRoute walletDetailRoute({
     required Future<void> Function(BuildContext context, Wallet wallet)
     onOpenCoins,
+    WalletDetailFeatureSliverBuilder? featureSliverBuilder,
   }) => GoRoute(
     name: WalletRoute.walletDetail.name,
     path: WalletRoute.walletDetail.path,
@@ -48,7 +49,11 @@ class WalletRouter {
       if (walletId == null) {
         return const SizedBox.shrink();
       }
-      return WalletDetailScreen(walletId: walletId, onOpenCoins: onOpenCoins);
+      return WalletDetailScreen(
+        walletId: walletId,
+        onOpenCoins: onOpenCoins,
+        featureSliverBuilder: featureSliverBuilder,
+      );
     },
   );
 }
