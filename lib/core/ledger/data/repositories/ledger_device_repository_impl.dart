@@ -12,20 +12,24 @@ import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
 
 class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   final LedgerDeviceDatasource _datasource;
   final LedgerWalletPolicyHmacDatasource _hmacDatasource;
+  final BitcoinDescriptorPort _descriptorPort;
 
   LedgerDeviceRepositoryImpl({
     required this._datasource,
     required this._hmacDatasource,
-  });
+    required BitcoinDescriptorPort bitcoinDescriptorPort,
+  }) : _descriptorPort = bitcoinDescriptorPort;
 
   @override
   Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
@@ -125,8 +129,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   }) => _guard(() async {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
-    final walletPolicy = _walletPolicy(wallet);
+    final descriptor = _analyzePolicyDescriptor(wallet);
+    final walletPolicy = _walletPolicy(wallet, descriptor.policyKeys);
     final policyId = hex.encode(walletPolicy.id);
+    await _ensureSupportedFirmware(
+      model,
+      wallet: wallet,
+      hasUnspendablePolicyKey: descriptor.hasUnspendablePolicyKey,
+    );
     final signer = await _matchWalletSigner(model, wallet: wallet);
     final hmac = await _datasource.registerWalletPolicy(
       model,
@@ -149,8 +159,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   }) => _guard(() async {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
-    final walletPolicy = _walletPolicy(wallet);
+    final descriptor = _analyzePolicyDescriptor(wallet);
+    final walletPolicy = _walletPolicy(wallet, descriptor.policyKeys);
     final policyId = hex.encode(walletPolicy.id);
+    await _ensureSupportedFirmware(
+      model,
+      wallet: wallet,
+      hasUnspendablePolicyKey: descriptor.hasUnspendablePolicyKey,
+    );
     final signer = await _matchWalletSigner(
       model,
       wallet: wallet,
@@ -175,8 +191,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   }) => _guard(() async {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
-    final walletPolicy = _walletPolicy(wallet);
+    final descriptor = _analyzePolicyDescriptor(wallet);
+    final walletPolicy = _walletPolicy(wallet, descriptor.policyKeys);
     final policyId = hex.encode(walletPolicy.id);
+    await _ensureSupportedFirmware(
+      model,
+      wallet: wallet,
+      hasUnspendablePolicyKey: descriptor.hasUnspendablePolicyKey,
+    );
     final signer = await _matchWalletSigner(model, wallet: wallet);
     final hmac = await _registeredHmac(wallet.id, signer.id, policyId);
     final verifiedAddress = await _datasource.verifyWalletAddress(
@@ -232,8 +254,36 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     throw const DeviceMismatchLedgerException();
   }
 
-  WalletPolicy _walletPolicy(Wallet wallet) =>
-      LedgerWalletPolicyAdapter.fromWallet(wallet);
+  Future<void> _ensureSupportedFirmware(
+    LedgerDeviceModel device, {
+    required Wallet wallet,
+    required bool hasUnspendablePolicyKey,
+  }) async {
+    final minimumVersion = LedgerWalletPolicyAdapter.minimumBitcoinAppVersion(
+      wallet,
+      hasUnspendablePolicyKey: hasUnspendablePolicyKey,
+    );
+    if (minimumVersion == null) return;
+    final currentVersion = await _datasource.getBitcoinAppVersion(device);
+    if (_versionIsBefore(currentVersion, minimumVersion)) {
+      throw const BitcoinAppUpdateRequiredLedgerException();
+    }
+  }
+
+  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
+  _analyzePolicyDescriptor(Wallet wallet) =>
+      _descriptorPort.analyzeBitcoinPolicyDescriptor(
+        descriptor: wallet.publicDescriptor,
+        network: wallet.network,
+      );
+
+  WalletPolicy _walletPolicy(
+    Wallet wallet,
+    List<WalletDescriptorKey> policyKeys,
+  ) => LedgerWalletPolicyAdapter.fromWallet(
+    wallet,
+    descriptorPolicyKeys: policyKeys,
+  );
 
   Future<Uint8List> _registeredHmac(
     String walletId,
@@ -260,6 +310,24 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   static bool _sameXpub(String first, String second) =>
       Bip32Derivation.getBip32Xpub(first).toBase58() ==
       Bip32Derivation.getBip32Xpub(second).toBase58();
+
+  static bool _versionIsBefore(String current, String minimum) {
+    final currentParts = _versionParts(current);
+    final minimumParts = _versionParts(minimum)!;
+    if (currentParts == null) return true;
+    for (var index = 0; index < minimumParts.length; index++) {
+      if (currentParts[index] != minimumParts[index]) {
+        return currentParts[index] < minimumParts[index];
+      }
+    }
+    return false;
+  }
+
+  static List<int>? _versionParts(String version) {
+    final match = RegExp(r'^(\d+)\.(\d+)\.(\d+)$').firstMatch(version);
+    if (match == null) return null;
+    return [for (var index = 1; index <= 3; index++) int.parse(match[index]!)];
+  }
 
   @override
   Future<Result<void, LedgerFailure>> disconnectConnection(
@@ -300,6 +368,8 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       return const Err(LedgerWalletPolicyNotRegisteredFailure());
     } on WalletAddressMismatchLedgerException {
       return const Err(LedgerAddressMismatchFailure());
+    } on BitcoinAppUpdateRequiredLedgerException {
+      return const Err(LedgerBitcoinAppUpdateRequiredFailure());
     } on FormatException catch (error) {
       return Err(LedgerUnsupportedWalletPolicyFailure(error.toString()));
     } on ConnectionTypeNotInitializedLedgerException {
