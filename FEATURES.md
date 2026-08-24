@@ -216,6 +216,7 @@ graph TB
     PIN_CODE --> CORE
     PSBT_FLOW --> BROADCAST_SIGNED_TX
     SETTINGS --> PSBT_SIGNING
+    SETTINGS --> HW_WALLETS
     RECEIVE --> BULL_PAYJOIN
     RECEIVE -->|public targeted routine sync| WALLETS
     RECEIVE --> SETTINGS

@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_registration_options_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
@@ -39,6 +40,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/update_wallet_signer
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
@@ -202,6 +204,9 @@ class SettingsLocator {
     locator.registerFactory<UpdateWalletSignerDeviceUsecase>(
       () => UpdateWalletSignerDeviceUsecase(walletSignerDevicePort: locator()),
     );
+    locator.registerFactory<GetWalletRegistrationOptionsUsecase>(
+      () => GetWalletRegistrationOptionsUsecase(bitcoinSigningPort: locator()),
+    );
 
     locator.registerLazySingleton<SettingsFacade>(
       () => SettingsFacade(
@@ -254,6 +259,9 @@ class SettingsLocator {
         getWalletPolicyUsecase: locator(),
         updateWalletSignerDeviceUsecase: locator(),
       ),
+    );
+    locator.registerFactory<WalletRegistrationCubit>(
+      () => WalletRegistrationCubit(locator()),
     );
   }
 }
