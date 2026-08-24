@@ -38,6 +38,7 @@ class _SigningTestBdkWalletDatasource extends BdkWalletDatasource {
     required PublicBdkWalletModel wallet,
     Set<String> frozenOutpoints = const {},
     String? replacingTxid,
+    bool allowSpentWalletInputs = false,
   }) async {}
 }
 

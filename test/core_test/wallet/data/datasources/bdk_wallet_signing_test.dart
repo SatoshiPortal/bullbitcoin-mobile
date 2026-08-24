@@ -1411,6 +1411,15 @@ void main() {
         ).input().single.sha256Preimages.values.single,
         hex.decode(preimageHex),
       );
+      final preimageReview = await datasource.inspectPsbt(
+        withPreimage,
+        wallet: wallet,
+        walletFingerprints: {signers[0].fingerprint},
+      );
+      expect(preimageReview.isFinalized, isFalse);
+      expect(preimageReview.inputs.single.satisfiedPreimageKeys, {
+        'sha256:$hash',
+      });
       final signed = datasource.signPsbtWithDescriptor(
         withPreimage,
         descriptor: twoPathDescriptor(externalPrivate, internalPrivate),
@@ -1418,10 +1427,15 @@ void main() {
       );
 
       expect(signed.isFinalized, isTrue);
-      await datasource.inspectPsbt(
+      final finalizedReview = await datasource.inspectPsbt(
         signed.psbt,
         wallet: wallet,
         walletFingerprints: {signers[0].fingerprint},
+      );
+      expect(finalizedReview.isFinalized, isTrue);
+      expect(
+        finalizedReview.inputs.single.satisfiedPreimageKeys,
+        contains('sha256:$hash'),
       );
       final finalizedPsbt = bdk.Psbt(psbtBase64: signed.psbt);
       try {

@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
@@ -309,6 +310,31 @@ Wallet _bitcoinLocalWallet() => Wallet(
   balanceSat: BigInt.from(1000000),
 );
 
+ProcessedBitcoinPsbt _processedPsbt(String psbt, {bool isFinalized = true}) {
+  final key = BitcoinPolicyKey(
+    kind: BitcoinPolicyKeyKind.fingerprint,
+    value: '00000000',
+  );
+  BitcoinSpendingPolicy spendingPolicy() => BitcoinSpendingPolicy(
+    requiresPath: false,
+    root: BitcoinSignaturePolicyNode(id: 'local', key: key),
+  );
+  final wallet = _bitcoinLocalWallet();
+  return ProcessedBitcoinPsbt(
+    psbt: psbt,
+    isFinalized: isFinalized,
+    txSize: 100,
+    absoluteFeesSat: 0,
+    signingPlan: BitcoinSigningPlan.fromPolicy(
+      policy: BitcoinWalletPolicy(
+        external: spendingPolicy(),
+        internal: spendingPolicy(),
+      ),
+      signers: wallet.signers,
+    ),
+  );
+}
+
 Wallet _liquidWallet({required int balanceSat}) => Wallet(
   origin: 'w-liquid',
   network: Network.liquidMainnet,
@@ -588,6 +614,7 @@ void main() {
       const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
     );
     registerFallbackValue(BitcoinSignerResultKind.detect);
+    registerFallbackValue(const BitcoinPolicySelection.empty());
     // For any(named: 'feeRate') on the prepare-send stubs.
     registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
     registerFallbackValue(<BitcoinTransactionRecipient>[]);
@@ -4673,7 +4700,8 @@ void main() {
           result: 'deadbeef',
           kind: BitcoinSignerResultKind.detect,
           currentPsbt: 'cHNidP8=',
-          walletId: 'w1',
+          wallet: any(named: 'wallet'),
+          selection: const BitcoinPolicySelection.empty(),
         ),
       ).thenAnswer(
         (_) async => const Err(
@@ -4696,7 +4724,8 @@ void main() {
           result: 'deadbeef',
           kind: BitcoinSignerResultKind.detect,
           currentPsbt: 'cHNidP8=',
-          walletId: 'w1',
+          wallet: any(named: 'wallet'),
+          selection: const BitcoinPolicySelection.empty(),
         ),
       ).thenAnswer(
         (_) async => const Ok(
@@ -4789,12 +4818,10 @@ void main() {
           result: 'signed-psbt',
           kind: BitcoinSignerResultKind.detect,
           currentPsbt: 'cHNidP8=',
-          walletId: 'w1',
+          wallet: any(named: 'wallet'),
+          selection: const BitcoinPolicySelection.empty(),
         ),
-      ).thenAnswer(
-        (_) async =>
-            const Ok(ProcessedBitcoinPsbt(psbt: 'combined-psbt', txSize: 100)),
-      );
+      ).thenAnswer((_) async => Ok(_processedPsbt('combined-psbt')));
 
       final accepted = await cubit.updateBitcoinSignerResult('signed-psbt');
 
@@ -4802,6 +4829,30 @@ void main() {
       expect(cubit.state.signedBitcoinPsbt, 'combined-psbt');
       expect(cubit.state.signedBitcoinTx, isNull);
       expect(cubit.state.failure, isNull);
+    });
+
+    test('a partial signer PSBT does not enter the broadcast path', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'partial-psbt',
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'cHNidP8=',
+          wallet: any(named: 'wallet'),
+          selection: const BitcoinPolicySelection.empty(),
+        ),
+      ).thenAnswer(
+        (_) async => Ok(_processedPsbt('partial-psbt', isFinalized: false)),
+      );
+
+      final accepted = await cubit.updateBitcoinSignerResult('partial-psbt');
+
+      expect(accepted, isFalse);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
     });
 
     test('a slower signer result cannot replace a newer one', () async {
@@ -4818,7 +4869,8 @@ void main() {
           result: any(named: 'result'),
           kind: BitcoinSignerResultKind.detect,
           currentPsbt: 'cHNidP8=',
-          walletId: 'w1',
+          wallet: any(named: 'wallet'),
+          selection: const BitcoinPolicySelection.empty(),
         ),
       ).thenAnswer((invocation) {
         final result = invocation.namedArguments[#result] as String;
@@ -4830,13 +4882,9 @@ void main() {
 
       final olderRequest = cubit.updateBitcoinSignerResult('older');
       final newerRequest = cubit.updateBitcoinSignerResult('newer');
-      newer.complete(
-        const Ok(ProcessedBitcoinPsbt(psbt: 'newer-psbt', txSize: 100)),
-      );
+      newer.complete(Ok(_processedPsbt('newer-psbt')));
       expect(await newerRequest, isTrue);
-      older.complete(
-        const Ok(ProcessedBitcoinPsbt(psbt: 'older-psbt', txSize: 100)),
-      );
+      older.complete(Ok(_processedPsbt('older-psbt')));
 
       expect(await olderRequest, isFalse);
       expect(cubit.state.signedBitcoinPsbt, 'newer-psbt');
@@ -4854,7 +4902,8 @@ void main() {
             result: 'deadbeef',
             kind: BitcoinSignerResultKind.detect,
             currentPsbt: 'cHNidP8=',
-            walletId: 'w1',
+            wallet: any(named: 'wallet'),
+            selection: const BitcoinPolicySelection.empty(),
           ),
         ).thenAnswer((_) => verification.future);
         final cubit = buildCubit();
@@ -4883,7 +4932,8 @@ void main() {
           result: any(named: 'result'),
           kind: BitcoinSignerResultKind.detect,
           currentPsbt: 'cHNidP8=',
-          walletId: 'w1',
+          wallet: any(named: 'wallet'),
+          selection: const BitcoinPolicySelection.empty(),
         ),
       ).thenAnswer((_) async {
         attempts++;
@@ -4922,7 +4972,8 @@ void main() {
             result: any(named: 'result'),
             kind: any(named: 'kind'),
             currentPsbt: any(named: 'currentPsbt'),
-            walletId: any(named: 'walletId'),
+            wallet: any(named: 'wallet'),
+            selection: any(named: 'selection'),
           ),
         );
       },
