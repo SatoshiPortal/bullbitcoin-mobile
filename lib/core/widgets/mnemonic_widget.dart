@@ -805,8 +805,10 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             language: widget.language,
           ),
           canBackspace: prefix.isNotEmpty,
+          canAdvance: _canLeaveField(prefix),
           onLetter: _onKeyLetter,
           onBackspace: _onKeyBackspace,
+          onEnter: _onKeyEnter,
           shuffleActive: _paranoid.value,
           onToggleShuffle: _toggleParanoid,
           shuffleHint: context.loc.mnemonicShuffleKeyboardHint,
@@ -818,6 +820,35 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void _focusNext(int nextIndex) {
     if (nextIndex >= 0 && nextIndex < _focusNodes.length) {
       FocusScope.of(context).requestFocus(_focusNodes[nextIndex]);
+    }
+  }
+
+  /// Whether [word] is a wordlist entry rather than a prefix of one.
+  ///
+  /// Against the whole wordlist even on the last field: narrowing to the
+  /// checksum candidates would swallow a transcription error, as
+  /// [_maybeAutoFill] explains.
+  bool _isWholeWord(String word) => widget.language.list.contains(word);
+
+  /// A field can be left once it is finished, or if it was never started. A
+  /// half-typed prefix is neither: leaving it parks a fragment that reads like
+  /// a word.
+  bool _canLeaveField(String word) => word.isEmpty || _isWholeWord(word);
+
+  /// The keyboard's counterpart to tapping the next field. Never writes to the
+  /// sentence.
+  ///
+  /// Re-checks the live text like [_onKeyLetter] does: `enabled` is captured at
+  /// build time, so a tap racing that frame would still land here.
+  void _onKeyEnter() {
+    final index = _activeField.value;
+    if (index == null) return;
+    if (!_canLeaveField(widget.controllers[index].text.trim())) return;
+    // Last word: dismiss rather than wrap, like the auto fill and a chip tap.
+    if (index == widget.controllers.length - 1) {
+      _focusNodes[index].unfocus();
+    } else {
+      _focusNext(index + 1);
     }
   }
 
