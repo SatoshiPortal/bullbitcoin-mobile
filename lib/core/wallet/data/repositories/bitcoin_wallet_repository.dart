@@ -17,7 +17,9 @@ import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_policy_maturity_mappe
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_psbt_review_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
@@ -118,9 +120,37 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       // Match BDK's default RBF sequence when callers omit the flag.
       replaceByFee: replaceByFee ?? true,
       policyPath: policyPath,
+      requiredDescriptorKeys: policyPath == null
+          ? null
+          : (
+              external: _requiredDescriptorKeys(
+                context.metadata,
+                policyPath.requiredExternalKeys,
+              ),
+              internal: _requiredDescriptorKeys(
+                context.metadata,
+                policyPath.requiredInternalKeys,
+              ),
+            ),
     );
 
     return psbt;
+  }
+
+  List<WalletDescriptorKeyModel> _requiredDescriptorKeys(
+    WalletMetadataModel metadata,
+    Set<BitcoinPolicyKey> policyKeys,
+  ) {
+    final descriptorKeys = metadata.signers
+        .expand((signer) => signer.descriptorKeys)
+        .toList();
+    return [
+      for (final descriptorKey in descriptorKeys)
+        if (policyKeys.any(
+          (policyKey) => policyKey.matches(descriptorKey.toEntity()),
+        ))
+          descriptorKey,
+    ];
   }
 
   @override

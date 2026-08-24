@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_descriptor_key_matcher.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_policy_maturity_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_psbt_review_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_wallet_policy_model.dart';
@@ -246,6 +247,11 @@ class BdkWalletDatasource {
     List<WalletUtxoModel>? selected,
     bool replaceByFee = true,
     BitcoinPolicyPath? policyPath,
+    ({
+      List<WalletDescriptorKeyModel> external,
+      List<WalletDescriptorKeyModel> internal,
+    })?
+    requiredDescriptorKeys,
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
@@ -423,7 +429,28 @@ class BdkWalletDatasource {
       }
     }
 
-    return psbt.serialize();
+    final serialized = psbt.serialize();
+    if (requiredDescriptorKeys == null) return serialized;
+
+    final transaction = psbt.extractTx();
+    try {
+      final keychainsByOutpoint = {
+        for (final utxo in unspents)
+          '${utxo.outpoint.txid}:${utxo.outpoint.vout}': utxo.keychain,
+      };
+      final inputKeychains = [
+        for (final input in transaction.input())
+          keychainsByOutpoint['${input.previousOutput.txid}:${input.previousOutput.vout}'] ??
+              (throw StateError('Built transaction contains an unknown input')),
+      ];
+      return _retainSelectedSegwitKeyOrigins(
+        serialized,
+        inputKeychains: inputKeychains,
+        requiredDescriptorKeys: requiredDescriptorKeys,
+      );
+    } finally {
+      transaction.dispose();
+    }
   }
 
   int decodeTxSize(String psbtString, {required PublicBdkWalletModel wallet}) {
@@ -1617,6 +1644,46 @@ bdk.Psbt _parsePsbt(String psbtBase64) {
   } on Exception {
     throw const InvalidBitcoinPsbtException();
   }
+}
+
+String _retainSelectedSegwitKeyOrigins(
+  String psbtBase64, {
+  required List<bdk.KeychainKind> inputKeychains,
+  required ({
+    List<WalletDescriptorKeyModel> external,
+    List<WalletDescriptorKeyModel> internal,
+  })
+  requiredDescriptorKeys,
+}) {
+  final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
+  if (psbt.input.length != inputKeychains.length) {
+    throw StateError('Input keychains do not match the PSBT');
+  }
+
+  for (final (index, keychain) in inputKeychains.indexed) {
+    final policyKeychain = keychain == bdk.KeychainKind.external_
+        ? BitcoinPolicyKeychainModel.external
+        : BitcoinPolicyKeychainModel.internal;
+    final requiredKeys = keychain == bdk.KeychainKind.external_
+        ? requiredDescriptorKeys.external
+        : requiredDescriptorKeys.internal;
+    final entries = psbt.input.entries[index].where((entry) {
+      if (entry case final bitcoin_base.PsbtInputBip32DerivationPath origin) {
+        return requiredKeys.any(
+          (key) => walletDescriptorKeyMatches(
+            key: key,
+            keychain: policyKeychain,
+            publicKey: hex.encode(origin.publicKey),
+            fingerprint: hex.encode(origin.fingerprint),
+            derivationPath: origin.path,
+          ),
+        );
+      }
+      return true;
+    }).toList();
+    psbt.input.replaceInput(index, entries);
+  }
+  return psbt.toBase64();
 }
 
 int _completedTransactionVsize({
