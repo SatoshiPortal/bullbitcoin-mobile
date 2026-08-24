@@ -130,6 +130,7 @@ graph TB
     SELL --> TX_HISTORY
     SEND --> CONSOLIDATION
     SEND --> FEES
+    SEND --> HW_WALLETS
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
     SEND --> SP
