@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:convert/convert.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.dart';
+import 'package:bb_mobile/core/ledger/data/datasources/ledger_wallet_policy_hmac_datasource.dart';
+import 'package:bb_mobile/core/ledger/data/ledger_wallet_policy_adapter.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
@@ -8,11 +13,19 @@ import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_reposito
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:ledger_bitcoin/ledger_bitcoin.dart';
 
 class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   final LedgerDeviceDatasource _datasource;
+  final LedgerWalletPolicyHmacDatasource _hmacDatasource;
 
-  LedgerDeviceRepositoryImpl({required this._datasource});
+  LedgerDeviceRepositoryImpl({
+    required this._datasource,
+    required this._hmacDatasource,
+  });
 
   @override
   Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
@@ -106,6 +119,149 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   }
 
   @override
+  Future<Result<void, LedgerFailure>> registerWalletPolicy(
+    LedgerDeviceEntity device, {
+    required Wallet wallet,
+  }) => _guard(() async {
+    _ensureSupportedPolicy(wallet);
+    final model = device.toModel();
+    final walletPolicy = _walletPolicy(wallet);
+    final policyId = hex.encode(walletPolicy.id);
+    final signer = await _matchWalletSigner(model, wallet: wallet);
+    final hmac = await _datasource.registerWalletPolicy(
+      model,
+      walletPolicy: walletPolicy,
+    );
+    await _hmacDatasource.save(
+      walletId: wallet.id,
+      signerId: signer.id,
+      policyId: policyId,
+      hmac: hmac,
+    );
+  });
+
+  @override
+  Future<Result<String, LedgerFailure>> signWalletPsbt(
+    LedgerDeviceEntity device, {
+    required Wallet wallet,
+    required String signerId,
+    required String psbt,
+  }) => _guard(() async {
+    _ensureSupportedPolicy(wallet);
+    final model = device.toModel();
+    final walletPolicy = _walletPolicy(wallet);
+    final policyId = hex.encode(walletPolicy.id);
+    final signer = await _matchWalletSigner(
+      model,
+      wallet: wallet,
+      signerId: signerId,
+    );
+    final hmac = await _registeredHmac(wallet.id, signer.id, policyId);
+    return _datasource.signWalletPsbt(
+      model,
+      walletPolicy: walletPolicy,
+      walletHmac: hmac,
+      psbt: psbt,
+    );
+  });
+
+  @override
+  Future<Result<bool, LedgerFailure>> verifyWalletAddress(
+    LedgerDeviceEntity device, {
+    required Wallet wallet,
+    required String address,
+    required BitcoinPolicyKeychain keychain,
+    required int index,
+  }) => _guard(() async {
+    _ensureSupportedPolicy(wallet);
+    final model = device.toModel();
+    final walletPolicy = _walletPolicy(wallet);
+    final policyId = hex.encode(walletPolicy.id);
+    final signer = await _matchWalletSigner(model, wallet: wallet);
+    final hmac = await _registeredHmac(wallet.id, signer.id, policyId);
+    final verifiedAddress = await _datasource.verifyWalletAddress(
+      model,
+      walletPolicy: walletPolicy,
+      walletHmac: hmac,
+      keychain: keychain,
+      index: index,
+    );
+    if (verifiedAddress != address) {
+      throw const WalletAddressMismatchLedgerException();
+    }
+    return true;
+  });
+
+  Future<WalletSigner> _matchWalletSigner(
+    LedgerDeviceModel device, {
+    required Wallet wallet,
+    String? signerId,
+  }) async {
+    final fingerprint = (await _datasource.getMasterFingerprint(
+      device,
+    )).toLowerCase();
+    final candidates = wallet.signers.where(
+      (signer) =>
+          signer.signerDevice?.isLedger == true &&
+          (signerId == null || signer.id == signerId),
+    );
+    for (final signer in candidates) {
+      if (signer.descriptorKeys.any(
+        (key) => key.masterFingerprint.toLowerCase() != fingerprint,
+      )) {
+        continue;
+      }
+      var matches = true;
+      for (final key in signer.descriptorKeys) {
+        final path = key.derivationPath;
+        if (path == null || key.xpub.isEmpty) {
+          matches = false;
+          break;
+        }
+        final xpub = await _datasource.getWalletPolicyXpub(
+          device,
+          derivationPath: path,
+        );
+        if (!_sameXpub(xpub, key.xpub)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) return signer;
+    }
+    throw const DeviceMismatchLedgerException();
+  }
+
+  WalletPolicy _walletPolicy(Wallet wallet) =>
+      LedgerWalletPolicyAdapter.fromWallet(wallet);
+
+  Future<Uint8List> _registeredHmac(
+    String walletId,
+    String signerId,
+    String policyId,
+  ) async {
+    final hmac = await _hmacDatasource.get(
+      walletId: walletId,
+      signerId: signerId,
+      policyId: policyId,
+    );
+    if (hmac == null) {
+      throw const WalletPolicyNotRegisteredLedgerException();
+    }
+    return hmac;
+  }
+
+  static void _ensureSupportedPolicy(Wallet wallet) {
+    if (!wallet.supportsLedgerWalletPolicy) {
+      throw const UnsupportedWalletPolicyLedgerException();
+    }
+  }
+
+  static bool _sameXpub(String first, String second) =>
+      Bip32Derivation.getBip32Xpub(first).toBase58() ==
+      Bip32Derivation.getBip32Xpub(second).toBase58();
+
+  @override
   Future<Result<void, LedgerFailure>> disconnectConnection(
     LedgerDeviceEntity device,
   ) => _guard(
@@ -138,6 +294,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       return const Err(LedgerDeviceMismatchFailure());
     } on InvalidMagicBytesLedgerException {
       return const Err(LedgerInvalidPsbtFailure());
+    } on UnsupportedWalletPolicyLedgerException {
+      return const Err(LedgerUnsupportedWalletPolicyFailure());
+    } on WalletPolicyNotRegisteredLedgerException {
+      return const Err(LedgerWalletPolicyNotRegisteredFailure());
+    } on WalletAddressMismatchLedgerException {
+      return const Err(LedgerAddressMismatchFailure());
+    } on FormatException catch (error) {
+      return Err(LedgerUnsupportedWalletPolicyFailure(error.toString()));
     } on ConnectionTypeNotInitializedLedgerException {
       return const Err(
         LedgerNoConnectionFailure('connection type not initialized'),
@@ -163,6 +327,13 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
 
     // The Ledger SDK reports a busy device as free text, not an APDU code.
     if (_deviceBusyPattern.hasMatch(raw)) return LedgerDeviceBusyFailure(raw);
+    if (raw.contains('SW_DENIED_BY_USER')) {
+      return LedgerRejectedByUserFailure(raw);
+    }
+
+    if (raw.contains('SW_INCORRECT_DATA') || raw.contains('SW_NOT_SUPPORTED')) {
+      return LedgerUnsupportedWalletPolicyFailure(raw);
+    }
 
     final code = _extractApduCode(raw);
     if (code != null) {

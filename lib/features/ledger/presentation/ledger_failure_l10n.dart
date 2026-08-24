@@ -25,6 +25,13 @@ extension LedgerFailureL10n on LedgerFailure {
       context.loc.ledgerErrorMissingDerivationPath,
     LedgerMissingScriptTypeFailure() =>
       context.loc.ledgerErrorMissingScriptType,
+    LedgerMissingWalletPolicyFailure() =>
+      context.loc.ledgerErrorMissingWalletPolicy,
+    LedgerUnsupportedWalletPolicyFailure() =>
+      context.loc.hardwareWalletPolicyUnsupported,
+    LedgerWalletPolicyNotRegisteredFailure() =>
+      context.loc.hardwareWalletPolicyNotRegistered,
+    LedgerAddressMismatchFailure() => context.loc.hardwareWalletAddressMismatch,
     LedgerUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }
