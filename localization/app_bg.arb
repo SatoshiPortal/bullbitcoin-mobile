@@ -10489,5 +10489,6 @@
   "settingsSearchDevModeKeywords": "режим за разработчици|настройки за разработка|debug режим|разширено тестване",
   "settingsSearchTestnetCredentialsKeywords": "данни за вход в testnet|testnet вход|testnet потребителско име|testnet парола|Basic Auth",
   "settingsSearchErrorReportingKeywords": "доклади за сривове|доклади за грешки|диагностика|телеметрия|логове за грешки",
-  "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност"
+  "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност",
+  "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати."
 }

@@ -5036,5 +5036,6 @@
   "settingsSearchDevModeKeywords": "开发者模式|开发设置|调试模式|高级测试",
   "settingsSearchTestnetCredentialsKeywords": "测试网用户凭据|测试网登录|测试网用户名|测试网密码|基本身份验证",
   "settingsSearchErrorReportingKeywords": "崩溃报告|错误报告|诊断|遥测|错误日志",
-  "settingsSearchScreenPrivacyKeywords": "屏幕截图|屏幕录制|截屏保护|隐私"
+  "settingsSearchScreenPrivacyKeywords": "屏幕截图|屏幕录制|截屏保护|隐私",
+  "settingsSearchStartTyping": "开始输入以查看结果。"
 }

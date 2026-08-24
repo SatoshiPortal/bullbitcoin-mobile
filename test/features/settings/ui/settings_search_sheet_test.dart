@@ -12,6 +12,7 @@ void main() {
     await tester.pumpWidget(_TestApp(home: _EmbeddedSearch(items: _items())));
     await tester.pump();
 
+    expect(find.text('Start typing to see results.'), findsOneWidget);
     expect(find.text('Tor Settings'), findsNothing);
     expect(find.text('Mempool Server'), findsNothing);
 
@@ -21,6 +22,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('Start typing to see results.'), findsNothing);
     expect(find.byTooltip('Clear text'), findsOneWidget);
     expect(find.text('Tor Settings'), findsOneWidget);
     expect(find.text('Settings → App Settings → Tor Settings'), findsOneWidget);
@@ -43,6 +45,36 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Selected: tor'), findsOneWidget);
+  });
+
+  testWidgets('keeps a fixed height while search results change', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_TestApp(home: _SearchLauncher(items: _items())));
+
+    await tester.tap(find.text('Open search'));
+    await tester.pumpAndSettle();
+
+    final sheet = find.byKey(const Key('settings-search-sheet-content'));
+    final initialHeight = tester.getSize(sheet).height;
+
+    await tester.enterText(
+      find.byKey(const Key('settings-search-field')),
+      'tor',
+    );
+    await tester.pump();
+    expect(tester.getSize(sheet).height, initialHeight);
+
+    await tester.enterText(
+      find.byKey(const Key('settings-search-field')),
+      'missing',
+    );
+    await tester.pump();
+    expect(tester.getSize(sheet).height, initialHeight);
+
+    await tester.tap(find.byTooltip('Clear text'));
+    await tester.pump();
+    expect(tester.getSize(sheet).height, initialHeight);
   });
 
   testWidgets('uses a left-pointing breadcrumb in RTL locales', (tester) async {

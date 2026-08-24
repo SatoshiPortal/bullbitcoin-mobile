@@ -5027,5 +5027,6 @@
   "settingsSearchDevModeKeywords": "kehittäjätila|kehitysasetukset|debug-tila|edistynyt testaus",
   "settingsSearchTestnetCredentialsKeywords": "testnet-tunnukset|testnet-kirjautuminen|testnet-käyttäjänimi|testnet-salasana|Basic Auth",
   "settingsSearchErrorReportingKeywords": "kaatumisraportit|virheraportit|diagnostiikka|telemetria|virhelokit",
-  "settingsSearchScreenPrivacyKeywords": "kuvakaappaukset|näytön tallennus|kaappaussuojaus|yksityisyys"
+  "settingsSearchScreenPrivacyKeywords": "kuvakaappaukset|näytön tallennus|kaappaussuojaus|yksityisyys",
+  "settingsSearchStartTyping": "Aloita kirjoittaminen nähdäksesi tulokset."
 }

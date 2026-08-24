@@ -12603,5 +12603,6 @@
   "settingsSearchDevModeKeywords": "vývojářský režim|vývojová nastavení|debug režim|pokročilé testování",
   "settingsSearchTestnetCredentialsKeywords": "přihlašovací údaje testnetu|přihlášení k testnetu|uživatelské jméno testnetu|heslo testnetu|Basic Auth",
   "settingsSearchErrorReportingKeywords": "hlášení pádů|hlášení chyb|diagnostika|telemetrie|chybové logy",
-  "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí"
+  "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí",
+  "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky."
 }

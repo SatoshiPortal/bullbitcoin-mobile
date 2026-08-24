@@ -8,16 +8,22 @@ import 'package:flutter/material.dart';
 
 class SettingsSearchSheet extends StatefulWidget {
   final List<SettingsItem> items;
+  final double heightFactor;
 
-  const SettingsSearchSheet({super.key, required this.items});
+  const SettingsSearchSheet({
+    super.key,
+    required this.items,
+    this.heightFactor = 0.55,
+  }) : assert(heightFactor > 0 && heightFactor <= 1);
 
   static Future<SettingsItem?> show({
     required BuildContext context,
     required List<SettingsItem> items,
+    double heightFactor = 0.55,
   }) {
     return BullBottomSheet.show<SettingsItem>(
       context: context,
-      child: SettingsSearchSheet(items: items),
+      child: SettingsSearchSheet(items: items, heightFactor: heightFactor),
     );
   }
 
@@ -58,14 +64,12 @@ class _SettingsSearchSheetState extends State<SettingsSearchSheet> {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
       padding: EdgeInsets.only(bottom: keyboardHeight),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: (MediaQuery.sizeOf(context).height - keyboardHeight) * 0.8,
-        ),
+      child: SizedBox(
+        key: const Key('settings-search-sheet-content'),
+        height: MediaQuery.sizeOf(context).height * widget.heightFactor,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 width: 40,
@@ -124,39 +128,45 @@ class _SettingsSearchSheetState extends State<SettingsSearchSheet> {
                   ),
                 ),
               ),
-              if (hasQuery) ...[
-                const Gap(12),
-                if (results.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: Text(
-                      context.loc.settingsSearchNoResults,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
-                    ),
-                  )
-                else
-                  Flexible(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: results.length,
-                      itemBuilder: (context, index) {
-                        final entry = results[index];
-                        return SettingsEntryItem(
-                          key: Key(
-                            'settings-search-result-${entry.id.name}-$index',
+              const Gap(12),
+              Expanded(
+                child: !hasQuery
+                    ? Center(
+                        child: Text(
+                          context.loc.settingsSearchStartTyping,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: context.appColors.textMuted,
                           ),
-                          icon: entry.icon,
-                          title: entry.title,
-                          subtitle: entry.location(Directionality.of(context)),
-                          isSuperUser: entry.isSuperuser,
-                          onTap: () => Navigator.of(context).pop(entry),
-                        );
-                      },
-                    ),
-                  ),
-              ],
+                        ),
+                      )
+                    : results.isEmpty
+                    ? Center(
+                        child: Text(
+                          context.loc.settingsSearchNoResults,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: results.length,
+                        itemBuilder: (context, index) {
+                          final entry = results[index];
+                          return SettingsEntryItem(
+                            key: Key(
+                              'settings-search-result-${entry.id.name}-$index',
+                            ),
+                            icon: entry.icon,
+                            title: entry.title,
+                            subtitle: entry.location(
+                              Directionality.of(context),
+                            ),
+                            isSuperUser: entry.isSuperuser,
+                            onTap: () => Navigator.of(context).pop(entry),
+                          );
+                        },
+                      ),
+              ),
             ],
           ),
         ),

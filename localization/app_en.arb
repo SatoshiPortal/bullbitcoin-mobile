@@ -14812,5 +14812,9 @@
   "settingsSearchScreenPrivacyKeywords": "screenshots|screen recording|capture protection|privacy",
   "@settingsSearchScreenPrivacyKeywords": {
     "description": "Pipe-separated search aliases for Screen Privacy. Search metadata; not displayed."
+  },
+  "settingsSearchStartTyping": "Start typing to see results.",
+  "@settingsSearchStartTyping": {
+    "description": "Prompt shown before the user enters a settings search query."
   }
 }

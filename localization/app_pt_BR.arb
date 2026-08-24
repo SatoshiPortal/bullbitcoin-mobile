@@ -12603,5 +12603,6 @@
   "settingsSearchDevModeKeywords": "modo desenvolvedor|configurações de desenvolvimento|modo debug|testes avançados",
   "settingsSearchTestnetCredentialsKeywords": "credenciais da testnet|login da testnet|usuário da testnet|senha da testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de bugs|diagnóstico|telemetria|logs de erros",
-  "settingsSearchScreenPrivacyKeywords": "capturas de tela|gravação de tela|proteção contra captura|privacidade"
+  "settingsSearchScreenPrivacyKeywords": "capturas de tela|gravação de tela|proteção contra captura|privacidade",
+  "settingsSearchStartTyping": "Comece a digitar para ver os resultados."
 }

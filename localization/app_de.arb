@@ -5002,5 +5002,6 @@
   "settingsSearchDevModeKeywords": "Entwicklermodus|Entwicklungseinstellungen|Debug-Modus|erweiterte Tests",
   "settingsSearchTestnetCredentialsKeywords": "Testnet-Zugangsdaten|Testnet-Anmeldung|Testnet-Benutzername|Testnet-Passwort|Basic Auth",
   "settingsSearchErrorReportingKeywords": "Absturzberichte|Fehlerberichte|Diagnose|Telemetrie|Fehlerprotokolle",
-  "settingsSearchScreenPrivacyKeywords": "Screenshots|Bildschirmaufnahme|Aufnahmeschutz|Privatsphäre"
+  "settingsSearchScreenPrivacyKeywords": "Screenshots|Bildschirmaufnahme|Aufnahmeschutz|Privatsphäre",
+  "settingsSearchStartTyping": "Beginne zu tippen, um Ergebnisse zu sehen."
 }

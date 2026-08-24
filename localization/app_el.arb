@@ -12603,5 +12603,6 @@
   "settingsSearchDevModeKeywords": "λειτουργία προγραμματιστή|ρυθμίσεις ανάπτυξης|λειτουργία debug|προηγμένες δοκιμές",
   "settingsSearchTestnetCredentialsKeywords": "διαπιστευτήρια testnet|σύνδεση testnet|όνομα χρήστη testnet|κωδικός testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "αναφορές σφαλμάτων λειτουργίας|αναφορές προβλημάτων|διαγνωστικά|τηλεμετρία|αρχεία σφαλμάτων",
-  "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο"
+  "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο",
+  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα."
 }

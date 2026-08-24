@@ -12603,5 +12603,6 @@
   "settingsSearchDevModeKeywords": "حالت توسعه دهنده|تنظیمات توسعه|حالت اشکال زدایی|آزمایش پیشرفته",
   "settingsSearchTestnetCredentialsKeywords": "اطلاعات ورود شبکه آزمایشی|ورود به شبکه آزمایشی|نام کاربری شبکه آزمایشی|گذرواژه شبکه آزمایشی|احراز هویت پایه",
   "settingsSearchErrorReportingKeywords": "گزارش های خرابی|گزارش خطا|اطلاعات تشخیصی|تله متری|گزارش های خطا",
-  "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی"
+  "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی",
+  "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید."
 }

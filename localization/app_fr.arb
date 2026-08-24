@@ -5080,5 +5080,6 @@
   "settingsSearchDevModeKeywords": "mode développeur|paramètres de développement|mode débogage|tests avancés",
   "settingsSearchTestnetCredentialsKeywords": "identifiants testnet|connexion testnet|nom d’utilisateur testnet|mot de passe testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "rapports de plantage|rapports de bogues|diagnostic|télémétrie|journaux d’erreurs",
-  "settingsSearchScreenPrivacyKeywords": "captures d’écran|enregistrement d’écran|protection contre la capture|confidentialité"
+  "settingsSearchScreenPrivacyKeywords": "captures d’écran|enregistrement d’écran|protection contre la capture|confidentialité",
+  "settingsSearchStartTyping": "Commencez à saisir pour voir les résultats."
 }

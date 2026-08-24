@@ -3820,5 +3820,6 @@
   "settingsSearchDevModeKeywords": "დეველოპერის რეჟიმი|დეველოპერის პარამეტრები|გამართვის რეჟიმი|გაფართოებული ტესტირება",
   "settingsSearchTestnetCredentialsKeywords": "testnet მომხმარებლის ავტორიზაციის მონაცემები|testnet-ში შესვლა|testnet მომხმარებლის სახელი|testnet პაროლი|საბაზისო ავთენტიფიკაცია",
   "settingsSearchErrorReportingKeywords": "ავარიული დახურვის ანგარიშები|ხარვეზების ანგარიშები|დიაგნოსტიკა|ტელემეტრია|შეცდომების ჟურნალები",
-  "settingsSearchScreenPrivacyKeywords": "სკრინშოტი|ეკრანის ჩაწერა|ეკრანის გადაღების დაცვა|კონფიდენციალურობა"
+  "settingsSearchScreenPrivacyKeywords": "სკრინშოტი|ეკრანის ჩაწერა|ეკრანის გადაღების დაცვა|კონფიდენციალურობა",
+  "settingsSearchStartTyping": "შედეგების სანახავად დაიწყეთ აკრეფა."
 }

@@ -3685,5 +3685,6 @@
   "settingsSearchDevModeKeywords": "hali ya msanidi programu|mipangilio ya uundaji|hali ya utatuzi|majaribio ya kina",
   "settingsSearchTestnetCredentialsKeywords": "vitambulisho vya mtumiaji wa testnet|kuingia testnet|jina la mtumiaji la testnet|nenosiri la testnet|uthibitishaji wa msingi",
   "settingsSearchErrorReportingKeywords": "ripoti za hitilafu|ripoti za kasoro|uchunguzi|data ya matumizi|kumbukumbu za makosa",
-  "settingsSearchScreenPrivacyKeywords": "picha za skrini|kurekodi skrini|ulinzi wa kunasa skrini|faragha"
+  "settingsSearchScreenPrivacyKeywords": "picha za skrini|kurekodi skrini|ulinzi wa kunasa skrini|faragha",
+  "settingsSearchStartTyping": "Anza kuandika ili kuona matokeo."
 }

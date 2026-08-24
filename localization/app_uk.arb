@@ -5033,5 +5033,6 @@
   "settingsSearchDevModeKeywords": "режим розробника|налаштування розробки|режим налагодження|розширене тестування",
   "settingsSearchTestnetCredentialsKeywords": "облікові дані testnet|вхід у testnet|ім’я користувача testnet|пароль testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "звіти про збої|звіти про помилки|діагностика|телеметрія|журнали помилок",
-  "settingsSearchScreenPrivacyKeywords": "знімки екрана|запис екрана|захист від захоплення екрана|конфіденційність"
+  "settingsSearchScreenPrivacyKeywords": "знімки екрана|запис екрана|захист від захоплення екрана|конфіденційність",
+  "settingsSearchStartTyping": "Почніть вводити, щоб побачити результати."
 }

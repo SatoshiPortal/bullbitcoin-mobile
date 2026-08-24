@@ -12603,5 +12603,6 @@
   "settingsSearchDevModeKeywords": "개발자 모드|개발 설정|디버그 모드|고급 테스트",
   "settingsSearchTestnetCredentialsKeywords": "테스트넷 사용자 자격 증명|테스트넷 로그인|테스트넷 사용자 이름|테스트넷 비밀번호|기본 인증",
   "settingsSearchErrorReportingKeywords": "충돌 보고서|버그 보고서|진단|원격 측정|오류 로그",
-  "settingsSearchScreenPrivacyKeywords": "스크린샷|화면 녹화|화면 캡처 보호|개인정보 보호"
+  "settingsSearchScreenPrivacyKeywords": "스크린샷|화면 녹화|화면 캡처 보호|개인정보 보호",
+  "settingsSearchStartTyping": "결과를 보려면 입력을 시작하세요."
 }

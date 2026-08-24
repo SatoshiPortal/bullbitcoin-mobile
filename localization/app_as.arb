@@ -9676,5 +9676,6 @@
   "settingsSearchDevModeKeywords": "Developer মোড|Development ছেটিংছ|Debug মোড|উন্নত পৰীক্ষণ",
   "settingsSearchTestnetCredentialsKeywords": "Testnet ব্যৱহাৰকাৰীৰ তথ্য|Testnet লগইন|Testnet ব্যৱহাৰকাৰীৰ নাম|Testnet পাছৱৰ্ড|Basic Auth",
   "settingsSearchErrorReportingKeywords": "Crash report|ত্ৰুটি প্ৰতিবেদন|Diagnostic|Telemetry|ত্ৰুটি লগ",
-  "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা"
+  "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা",
+  "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।"
 }

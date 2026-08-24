@@ -12994,5 +12994,6 @@
   "settingsSearchDevModeKeywords": "developer mode|development settings|debug mode|advanced testing",
   "settingsSearchTestnetCredentialsKeywords": "Testnet user credentials|Testnet login|Testnet username|Testnet password|Basic Auth",
   "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
-  "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata"
+  "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
+  "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein."
 }
