@@ -15527,7 +15527,6 @@
   },
   "importWatchOnlyErrorSignerOriginRequired": "This hardware signer export is missing its fingerprint and account path. Export a descriptor or an account xpub with key origin information.",
   "importWatchOnlyErrorFixedPublicKeyUnsupported": "This descriptor contains fixed public keys, which Bull does not support yet. Use extended public keys for every signer.",
-  "importWatchOnlyErrorTaprootUnsupported": "Taproot descriptors aren’t supported yet.",
   "walletSignerLabelWithFingerprint": "Signer {index} · {fingerprint}",
   "@importWatchOnlyErrorSignerOriginRequired": {
     "description": "Shown when a hardware-wallet xpub is missing the key origin needed for signing."
@@ -15554,9 +15553,6 @@
     }
   },
   "walletSignerLabel": "Signer {index}",
-  "@importWatchOnlyErrorTaprootUnsupported": {
-    "description": "Error shown when a user tries to import a Taproot descriptor"
-  },
   "importWatchOnlyBullMobileDevice": "Bull Wallet (this device)",
   "@importWatchOnlyChangePathDescription": {
     "description": "Explains the change branch inferred from a conventional external descriptor"
@@ -16358,5 +16354,9 @@
   "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
   "@sendPendingTransactionsInvalid": {
     "description": "Warning shown when one or more saved transactions are invalid."
-  }
+  },
+  "@walletAddressTypeTaproot": {
+    "description": "Address type for Taproot descriptor wallets"
+  },
+  "walletAddressTypeTaproot": "Taproot"
 }
