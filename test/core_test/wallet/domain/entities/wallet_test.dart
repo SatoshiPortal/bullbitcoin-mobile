@@ -136,6 +136,26 @@ void main() {
     });
   });
 
+  test('supports descriptor Send when at least one signer is available', () {
+    expect(
+      wallet(
+        scriptType: null,
+        externalDescriptor: 'wsh(pk(xpub/0/*))',
+        internalDescriptor: 'wsh(pk(xpub/1/*))',
+      ).supportsSend,
+      isTrue,
+    );
+    expect(
+      wallet(
+        scriptType: null,
+        externalDescriptor: 'wsh(pk(xpub/0/*))',
+        internalDescriptor: 'wsh(pk(xpub/1/*))',
+        signer: SignerEntity.none,
+      ).supportsSend,
+      isFalse,
+    );
+  });
+
   group('Wallet.isStandardSingleSignatureWallet', () {
     test('does not depend on whether the signer is local or remote', () {
       expect(wallet().isStandardSingleSignatureWallet, isTrue);

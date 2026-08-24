@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -13,32 +14,30 @@ import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
+import 'package:bb_mobile/features/send/ui/screens/send_signing_screen.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_path_tile.dart';
+import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
+import 'package:bb_mobile/features/send/ui/widgets/send_error.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
@@ -48,26 +47,85 @@ import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
-class SendScreen extends StatelessWidget {
+class SendScreen extends StatefulWidget {
   const SendScreen({super.key});
+
+  @override
+  State<SendScreen> createState() => _SendScreenState();
+}
+
+class SendLoadingScreen extends StatelessWidget {
+  const SendLoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.appColors.background,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: context.loc.sendTitle,
+          color: context.appColors.background,
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: Center(
+        child: ProgressScreen(
+          isLoading: true,
+          title: context.loc.sendLoadingTransaction,
+        ),
+      ),
+    );
+  }
+}
+
+class _SendScreenState extends State<SendScreen> {
+  late final AppLifecycleListener _lifecycleListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycleListener = AppLifecycleListener(
+      onStateChange: (lifecycleState) {
+        if (lifecycleState != AppLifecycleState.resumed) {
+          unawaited(context.read<SendCubit>().flushDraft());
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final step = context.select<SendCubit, SendStep>(
       (cubit) => cubit.state.step,
     );
-    switch (step) {
-      case SendStep.address:
-        return const SendAddressScreen();
-      case SendStep.amount:
-        return const SendAmountScreen();
-      case SendStep.confirm:
-        return const SendConfirmScreen();
-      case SendStep.sending:
-        return const SendSendingScreen();
-      case SendStep.success:
-        return const SendSucessScreen();
+    final screen = switch (step) {
+      SendStep.address => const SendAddressScreen(),
+      SendStep.amount => const SendAmountScreen(),
+      SendStep.confirm => const SendConfirmScreen(),
+      SendStep.signing => const SendSigningScreen(),
+      SendStep.sending => const SendSendingScreen(),
+      SendStep.success => const SendSucessScreen(),
+    };
+    if (step != SendStep.address &&
+        step != SendStep.amount &&
+        step != SendStep.confirm) {
+      return screen;
     }
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleEditableSendBack(context);
+      },
+      child: screen,
+    );
   }
 }
 
@@ -84,7 +142,8 @@ class SendAddressScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
           color: context.appColors.background,
-          onBack: () => context.pop(),
+          onBack: () => _handleEditableSendBack(context),
+          action: const SendDraftAppBarAction(),
         ),
       ),
       body: Stack(
@@ -306,7 +365,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
-          onBack: () => context.read<SendCubit>().backClicked(),
+          onBack: () => _handleEditableSendBack(context),
+          action: const SendDraftAppBarAction(),
         ),
       ),
       body: Column(
@@ -574,7 +634,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   ],
                                   if (buildError) ...[
                                     const Gap(16),
-                                    const _SendError(),
+                                    const SendError(),
                                   ],
                                 ],
                               ),
@@ -689,13 +749,19 @@ class SendConfirmScreen extends StatelessWidget {
     final isUnconfidentialLiquidDestination = context.select(
       (SendCubit cubit) => cubit.state.isUnconfidentialLiquidDestination,
     );
+    final isPreparingTransaction = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction || cubit.state.signingTransaction,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
-          onBack: () => context.read<SendCubit>().backClicked(),
+          onBack: () => _handleEditableSendBack(context),
+          backEnabled: !isPreparingTransaction,
+          action: const SendDraftAppBarAction(),
         ),
       ),
       body: Column(
@@ -733,7 +799,7 @@ class SendConfirmScreen extends StatelessWidget {
                       const _UnconfidentialLiquidWarning(),
                     ],
                     const Gap(40),
-                    const _SendError(),
+                    const SendError(),
                     const _BottomButtons(),
                   ],
                 ),
@@ -746,82 +812,129 @@ class SendConfirmScreen extends StatelessWidget {
   }
 }
 
-class _SendError extends StatelessWidget {
-  const _SendError();
+class SendDraftAppBarAction extends StatelessWidget {
+  const SendDraftAppBarAction({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final failure = context.select((SendCubit cubit) => cubit.state.failure);
-    final buildError = context.select(
-      (SendCubit cubit) => cubit.state.hasBuildFailure,
-    );
-    final confirmError = context.select(
-      (SendCubit cubit) => cubit.state.hasConfirmFailure,
-    );
-    final broadcastError = context.select(
-      (SendCubit cubit) => cubit.state.hasBroadcastFailure,
-    );
-    final frozenBalanceHint = context.select(
-      (SendCubit cubit) => cubit.state.frozenBalanceHint,
-    );
-
-    if (buildError) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BBText(
-          failure!.toTranslated(context),
-          style: context.font.bodyLarge,
-          color: context.appColors.error,
-          maxLines: 5,
-          textAlign: .center,
-        ),
-      );
+    final state = context.watch<SendCubit>().state;
+    final supportsDraft = _supportsDraft(state);
+    final hasRecipientInput = state.copiedRawPaymentRequest.trim().isNotEmpty;
+    if (!supportsDraft || (!state.isDraftSaved && !hasRecipientInput)) {
+      return const SizedBox.shrink();
     }
-    if (confirmError) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            BBText(
-              context.loc.sendErrorConfirmationFailed,
-              style: context.font.bodyLarge,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-            if (broadcastError) ...[
-              const Gap(8),
-              BBText(
-                context.loc.sendErrorBroadcastFailed,
-                style: context.font.bodyMedium,
-                color: context.appColors.error,
-                maxLines: 5,
-                textAlign: .center,
-              ),
-            ],
-          ],
-        ),
-      );
-    }
-    if (failure != null) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BBText(
-          // Same frozen-coins hint the address and amount steps pass, so a
-          // shortfall reads identically wherever it surfaces.
-          failure.toTranslated(
-            context,
-            formattedFrozenBalance: frozenBalanceHint,
+    if (state.persistingPendingTransaction) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: SizedBox.square(
+            dimension: 18,
+            child: CircularProgressIndicator(),
           ),
-          style: context.font.bodyLarge,
-          color: context.appColors.error,
-          maxLines: 5,
-          textAlign: .center,
         ),
       );
     }
-    return const SizedBox.shrink();
+    if (state.isDraftSaved) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: BBText(
+            context.loc.sendDraftSaved,
+            style: context.font.bodyMedium,
+            color: context.appColors.textMuted,
+          ),
+        ),
+      );
+    }
+    return TextButton(
+      onPressed: () => _saveDraftAndLeave(context),
+      child: BBText(
+        context.loc.save,
+        style: context.font.bodyMedium,
+        color: context.appColors.secondary,
+      ),
+    );
   }
+}
+
+Future<void> _saveDraftAndLeave(BuildContext context) async {
+  final cubit = context.read<SendCubit>();
+  final label = await LabelEntryBottomSheet.label(
+    context,
+    title: context.loc.sendDraftLabelTitle,
+    initialValue: cubit.state.label.isEmpty ? null : cubit.state.label,
+    hint: context.loc.sendDraftLabelHint,
+    allowEmpty: true,
+  );
+  if (label == null || !context.mounted) return;
+  cubit.noteChanged(label);
+  if (await cubit.saveDraft() && context.mounted) context.pop();
+}
+
+Future<void> _handleEditableSendBack(BuildContext context) async {
+  final cubit = context.read<SendCubit>();
+  final state = cubit.state;
+  if (state.buildingTransaction || state.signingTransaction) return;
+  if (state.isDraftSaved) {
+    if (state.step != SendStep.address) {
+      cubit.backClicked();
+      return;
+    }
+    if (await cubit.flushDraft() && context.mounted) context.pop();
+    return;
+  }
+  if (state.step != SendStep.address) {
+    cubit.backClicked();
+    return;
+  }
+  if (!state.hasUnsavedDraftChanges) {
+    context.pop();
+    return;
+  }
+  final action = await showDialog<_DraftBackAction>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(context.loc.sendDraftBackTitle),
+      content: Text(context.loc.sendDraftBackMessage),
+      actions: [
+        TextButton(
+          onPressed: () => dialogContext.pop(_DraftBackAction.continueEditing),
+          child: Text(context.loc.sendContinueEditing),
+        ),
+        TextButton(
+          onPressed: () => dialogContext.pop(_DraftBackAction.discard),
+          child: Text(context.loc.sendDraftDiscard),
+        ),
+        if (_supportsDraft(state) &&
+            state.copiedRawPaymentRequest.trim().isNotEmpty)
+          TextButton(
+            onPressed: () => dialogContext.pop(_DraftBackAction.save),
+            child: Text(context.loc.save),
+          ),
+      ],
+    ),
+  );
+  if (!context.mounted) return;
+  switch (action) {
+    case _DraftBackAction.save:
+      await _saveDraftAndLeave(context);
+    case _DraftBackAction.discard:
+      context.pop();
+    case _DraftBackAction.continueEditing || null:
+      break;
+  }
+}
+
+enum _DraftBackAction { save, discard, continueEditing }
+
+bool _supportsDraft(SendState state) {
+  final paymentRequest = state.paymentRequest;
+  return state.selectedWallet?.isBitcoin == true &&
+      (paymentRequest == null ||
+          SendType.from(paymentRequest) == SendType.bitcoin) &&
+      state.lightningOrder == null &&
+      state.chainSwap == null &&
+      !state.isSigningSession;
 }
 
 // ignore: unused_element
@@ -867,20 +980,26 @@ class _BottomButtons extends StatelessWidget {
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
-    final hasExternalSignerResult = context.select(
-      (SendCubit cubit) => cubit.state.hasExternalBitcoinSignerResult,
+    final hasFinalizedTx = context.select(
+      (SendCubit cubit) => cubit.state.hasFinalizedBitcoinTransaction,
     );
-    final isBusy = context.select(
-      (SendCubit cubit) =>
-          cubit.state.buildingTransaction || cubit.state.signingTransaction,
+    final requiresExternalSigning = context.select(
+      (SendCubit cubit) => cubit.state.requiresExternalBitcoinSigning,
     );
+    final needsCoordination = context.select(
+      (SendCubit cubit) => cubit.state.requiresBitcoinSigningCoordination,
+    );
+    final singleSigner = context.select((SendCubit cubit) {
+      final signers = cubit.state.eligibleBitcoinSigners;
+      return signers.length == 1 ? signers.single : null;
+    });
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasExternalSignerResult) ...[
+          if (isBitcoinWallet && !hasFinalizedTx) ...[
             BBButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
@@ -896,47 +1015,34 @@ class _BottomButtons extends StatelessWidget {
               outlined: true,
               bgColor: context.appColors.transparent,
               textColor: context.appColors.secondary,
-              disabled: isBusy,
             ),
             const Gap(12),
           ],
-          if (wallet != null &&
-              wallet.signsRemotely &&
-              !hasExternalSignerResult)
-            (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
-                ? const SignLedgerButton()
-                : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
-                ? const SignBitBoxButton()
-                : const ShowPsbtButton()
+          if (wallet != null && needsCoordination && !hasFinalizedTx)
+            BBButton.big(
+              label: context.loc.sendContinueToSigning,
+              onPressed: () =>
+                  context.read<SendCubit>().continueToBitcoinSigning(),
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
+              disabled: context.select(
+                (SendCubit cubit) => cubit.state.disableConfirmSend,
+              ),
+            )
+          else if (wallet != null && requiresExternalSigning && !hasFinalizedTx)
+            (wallet.signers.length == 1 &&
+                    wallet.scriptType != null &&
+                    singleSigner?.signerDevice?.isLedger == true)
+                ? SignLedgerButton(signer: singleSigner)
+                : (wallet.signers.length == 1 &&
+                      wallet.scriptType != null &&
+                      singleSigner?.signerDevice?.isBitBox == true)
+                ? SignBitBoxButton(signer: singleSigner)
+                : ShowPsbtButton(signer: singleSigner)
           else
             const ConfirmSendButton(),
         ],
       ),
-    );
-  }
-}
-
-class ConfirmSendButton extends StatelessWidget {
-  const ConfirmSendButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final hasExternalSignerResult = context.select(
-      (SendCubit cubit) => cubit.state.hasExternalBitcoinSignerResult,
-    );
-    final disableSendButton = context.select(
-      (SendCubit cubit) => cubit.state.disableConfirmSend,
-    );
-    return BBButton.big(
-      label: hasExternalSignerResult
-          ? context.loc.sendBroadcastTransaction
-          : context.loc.sendConfirm,
-      onPressed: () {
-        context.read<SendCubit>().onConfirmTransactionClicked();
-      },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
-      disabled: disableSendButton,
     );
   }
 }
@@ -966,8 +1072,8 @@ class _OnchainTransactionReview extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
-    final hasExternalSignerResult = context.select(
-      (SendCubit cubit) => cubit.state.hasExternalBitcoinSignerResult,
+    final hasFinalizedTx = context.select(
+      (SendCubit cubit) => cubit.state.hasFinalizedBitcoinTransaction,
     );
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
@@ -992,6 +1098,14 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const BitcoinPolicyPathTile(),
+        if (context.select((SendCubit cubit) {
+          final policy = cubit.state.bitcoinSigningPlan?.policy;
+          return policy?.requiresPath == true ||
+              policy?.hasTimelock == true ||
+              policy?.hasHashlock == true;
+        }))
+          const Gap(16),
         CommonOnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
@@ -1004,7 +1118,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
           note: label,
-          onFeePriorityTap: hasExternalSignerResult
+          onFeePriorityTap: hasFinalizedTx
               ? null
               : () async {
                   final sendCubit = context.read<SendCubit>();
@@ -1703,11 +1817,7 @@ class SendSendingScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(title: context.loc.sendTitle),
-        actions: [
-          CloseButton(
-            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-          ),
-        ],
+        actions: [CloseButton(onPressed: () => _leaveSend(context))],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -1862,7 +1972,7 @@ class SendSucessScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
-          onBack: () => context.goNamed(WalletRoute.walletHome.name),
+          onBack: () => _leaveSend(context),
         ),
       ),
       body: Padding(
@@ -2067,149 +2177,10 @@ class SendSucessScreen extends StatelessWidget {
   }
 }
 
-class ShowPsbtButton extends StatelessWidget {
-  const ShowPsbtButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final unsignedPsbt = context.select(
-      (SendCubit cubit) => cubit.state.unsignedPsbt,
-    );
-    final isBusy = context.select(
-      (SendCubit cubit) =>
-          cubit.state.buildingTransaction || cubit.state.signingTransaction,
-    );
-
-    final signerDevice = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
-    );
-
-    return BBButton.big(
-      label: context.loc.sendShowPsbt,
-      onPressed: () async {
-        final signerResult = await context.pushNamed<String>(
-          PsbtFlowRoutes.show.name,
-          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
-        );
-        if (signerResult != null && context.mounted) {
-          await context.read<SendCubit>().updateBitcoinSignerResult(
-            signerResult,
-          );
-        }
-      },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
-      disabled: isBusy || unsignedPsbt == null,
-    );
-  }
-}
-
-class SignLedgerButton extends StatelessWidget {
-  const SignLedgerButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final unsignedPsbt = context.select(
-      (SendCubit cubit) => cubit.state.unsignedPsbt,
-    );
-    final isBusy = context.select(
-      (SendCubit cubit) =>
-          cubit.state.buildingTransaction || cubit.state.signingTransaction,
-    );
-
-    final derivationPath = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
-    );
-
-    final deviceType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
-    );
-
-    final scriptType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
-    );
-
-    return BBButton.big(
-      label: context.loc.sendSignWithLedger,
-      onPressed: () async {
-        if (unsignedPsbt == null) return;
-
-        final result = await context.pushNamed<String>(
-          LedgerRoute.ledgerSignTransaction.name,
-          extra: LedgerRouteParams(
-            psbt: unsignedPsbt,
-            derivationPath: derivationPath,
-            requestedDeviceType: deviceType,
-            scriptType: scriptType,
-          ),
-        );
-
-        if (result != null && context.mounted) {
-          final accepted = await context
-              .read<SendCubit>()
-              .updateBitcoinSignerResult(result);
-          if (accepted && context.mounted) {
-            SnackBarUtils.showSnackBar(
-              context,
-              context.loc.sendTransactionSignedLedger,
-            );
-          }
-        }
-      },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
-      disabled: isBusy || unsignedPsbt == null,
-    );
-  }
-}
-
-class SignBitBoxButton extends StatelessWidget {
-  const SignBitBoxButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final unsignedPsbt = context.select(
-      (SendCubit cubit) => cubit.state.unsignedPsbt,
-    );
-    final isBusy = context.select(
-      (SendCubit cubit) =>
-          cubit.state.buildingTransaction || cubit.state.signingTransaction,
-    );
-
-    final derivationPath = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
-    );
-
-    final deviceType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
-    );
-
-    final scriptType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
-    );
-
-    return BBButton.big(
-      label: context.loc.sendSignWithBitBox,
-      onPressed: () async {
-        if (unsignedPsbt == null) return;
-
-        final result = await context.pushNamed<String>(
-          BitBoxRoute.bitboxSignTransaction.name,
-          extra: BitBoxRouteParams(
-            psbt: unsignedPsbt,
-            derivationPath: derivationPath,
-            requestedDeviceType: deviceType,
-            scriptType: scriptType,
-          ),
-        );
-
-        if (result != null && context.mounted) {
-          await context.read<SendCubit>().updateBitcoinSignerResult(result);
-        }
-      },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
-      disabled: isBusy || unsignedPsbt == null,
-    );
+void _leaveSend(BuildContext context) {
+  if (context.canPop()) {
+    context.pop();
+  } else {
+    context.go('/');
   }
 }

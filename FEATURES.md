@@ -122,7 +122,6 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
-    SEND --> WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
@@ -151,6 +150,7 @@ graph TB
     WALLETS --> NETWORK
     WALLETS --> SECRETS
     WALLETS --> SETTINGS
+    WALLETS --> SEND
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
@@ -221,7 +221,7 @@ graph TB
 
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
-- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
+- **Wallets**: Used by UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
@@ -229,7 +229,7 @@ graph TB
 
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
-- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
+- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management
 - **Receive**: Depends on Payjoin, Swaps
 - **Backups**: Depends on BIP85, Tor, Wallets
 
