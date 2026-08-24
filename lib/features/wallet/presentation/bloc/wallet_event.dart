@@ -8,6 +8,12 @@ class WalletStarted extends WalletEvent {
   const WalletStarted();
 }
 
+class WalletUpdated extends WalletEvent {
+  final Wallet wallet;
+
+  const WalletUpdated(this.wallet);
+}
+
 class WalletRefreshed extends WalletEvent {
   const WalletRefreshed({this.trigger = SyncTrigger.automatic});
 
