@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/send/presentation/bloc/send_pending_transactions_cubit.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -293,15 +294,17 @@ class SendLocator {
 
   static void registerFacade(GetIt locator) {
     locator.registerLazySingleton<SendFacade>(
-      () => SendFacade(
-        locator<WatchPendingBitcoinTransactionsUsecase>(),
-        locator<DeletePendingBitcoinTransactionUsecase>(),
-      ),
+      () => SendFacade(locator<WatchPendingBitcoinTransactionsUsecase>()),
     );
   }
 
   static void registerBlocs(GetIt locator) {
-    // param2 carries the localized SP wallet label, non-null exactly in SP mode.
+    locator.registerFactory<SendPendingTransactionsCubit>(
+      () => SendPendingTransactionsCubit(
+        locator<WatchPendingBitcoinTransactionsUsecase>(),
+        locator<DeletePendingBitcoinTransactionUsecase>(),
+      ),
+    );
     locator.registerFactoryParam<SendCubit, Wallet?, String?>(
       (wallet, spWalletLabel) => SendCubit(
         wallet: wallet,

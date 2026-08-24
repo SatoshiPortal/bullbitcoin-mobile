@@ -16455,5 +16455,9 @@
   },
   "sendPolicyChooseConditions": "Choose {threshold} of {count} conditions",
   "sendDraftKeptForLater": "Your Bitcoin draft is still saved. This payment will continue separately.",
-  "sendContinueToSigning": "Continue to signing"
+  "sendContinueToSigning": "Continue to signing",
+  "@sendPendingTransactionsInvalid": {
+    "description": "Warning shown when one or more saved transactions are invalid."
+  },
+  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded."
 }

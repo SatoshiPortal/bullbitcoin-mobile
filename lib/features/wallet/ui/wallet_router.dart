@@ -35,12 +35,17 @@ class WalletRouter {
     },
   );
 
-  static final walletDetailRoute = GoRoute(
+  static GoRoute walletDetailRoute({
+    WalletDetailFeatureSliverBuilder? featureSliverBuilder,
+  }) => GoRoute(
     name: WalletRoute.walletDetail.name,
     path: WalletRoute.walletDetail.path,
     builder: (context, state) {
       final walletId = state.pathParameters['walletId']!;
-      return WalletDetailScreen(walletId: walletId);
+      return WalletDetailScreen(
+        walletId: walletId,
+        featureSliverBuilder: featureSliverBuilder,
+      );
     },
   );
 }
