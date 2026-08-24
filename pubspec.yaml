@@ -57,17 +57,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 8e403226114f8e4e645d77885a55cf7bbdb24a0e
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 8e403226114f8e4e645d77885a55cf7bbdb24a0e
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 8e403226114f8e4e645d77885a55cf7bbdb24a0e
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -123,7 +123,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 8e403226114f8e4e645d77885a55cf7bbdb24a0e
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -131,7 +131,7 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
       path: packages/ledger-bitcoin
-      ref: c4240d1f518c5903b67191253212754a31ed5333
+      ref: ba3607f7283f6a3722810641865dde36e1cdeec2
   permission_handler: ^12.0.1
   cbor: ^6.3.7
   ur:
