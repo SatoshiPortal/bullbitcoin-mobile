@@ -24,6 +24,7 @@ class SwapInProgressPage extends StatelessWidget {
     );
 
     return PopScope(
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           return;
