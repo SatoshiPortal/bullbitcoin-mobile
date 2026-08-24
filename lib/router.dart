@@ -33,12 +33,14 @@ import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
+import 'package:bb_mobile/features/send/public/send_pending_transactions_contribution.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
@@ -160,7 +162,20 @@ class AppRouter {
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,
-      WalletRouter.walletDetailRoute,
+      WalletRouter.walletDetailRoute(
+        featureSliverBuilder: (context, wallet) => wallet.isBitcoin
+            ? SendPendingTransactionsContribution(
+                walletId: wallet.id,
+                walletRefreshes: context
+                    .read<WalletBloc>()
+                    .stream
+                    .map((state) => state.isRefreshing)
+                    .distinct()
+                    .where((isRefreshing) => !isRefreshing)
+                    .map((_) {}),
+              )
+            : const SliverToBoxAdapter(),
+      ),
       ConsolidationRouter.route,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
