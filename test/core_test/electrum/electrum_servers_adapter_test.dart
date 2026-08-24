@@ -7,7 +7,8 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/tor/configured_external_tor.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,7 +21,8 @@ class _MockSettingsRepository extends Mock
 
 class _MockTorSessionPort extends Mock implements ElectrumTorSessionPort {}
 
-class _MockAppSettingsRepository extends Mock implements SettingsRepository {}
+class _MockTorResolver extends Mock
+    implements ResolveConfiguredExternalTorUsecase {}
 
 const _network = ElectrumServerNetwork.bitcoinMainnet;
 const _liquidNetwork = ElectrumServerNetwork.liquidMainnet;
@@ -61,7 +63,7 @@ SettingsEntity _appSettings({
 void main() {
   late _MockServerRepository serverRepo;
   late _MockSettingsRepository settingsRepo;
-  late _MockAppSettingsRepository appSettingsRepository;
+  late _MockTorResolver torResolver;
   late _MockTorSessionPort torSessionPort;
   late ElectrumServersAdapter adapter;
 
@@ -72,23 +74,19 @@ void main() {
   setUp(() {
     serverRepo = _MockServerRepository();
     settingsRepo = _MockSettingsRepository();
-    appSettingsRepository = _MockAppSettingsRepository();
-    when(() => appSettingsRepository.fetch())
-        .thenAnswer((_) async => _appSettings());
+    torResolver = _MockTorResolver();
     torSessionPort = _MockTorSessionPort();
     when(
       () => torSessionPort.open(
         network: any(named: 'network'),
         serverUrl: any(named: 'serverUrl'),
-        isCustom: any(named: 'isCustom'),
-        externalProxyEnabled: any(named: 'externalProxyEnabled'),
-        externalProxyPort: any(named: 'externalProxyPort'),
+        configuredExternalRoute: any(named: 'configuredExternalRoute'),
       ),
     ).thenAnswer((_) async => null);
     adapter = ElectrumServersAdapter(
       serverRepository: serverRepo,
       settingsRepository: settingsRepo,
-      appSettingsRepository: appSettingsRepository,
+      resolveExternalTor: torResolver,
       torSessionPort: torSessionPort,
     );
   });
@@ -105,7 +103,20 @@ void main() {
       () => settingsRepo.fetchByNetwork(any()),
     ).thenAnswer((_) async => Ok(settings ?? _settings()));
     final app = appSettings ?? _appSettings();
-    when(() => appSettingsRepository.fetch()).thenAnswer((_) async => app);
+    when(() => torResolver.execute()).thenAnswer(
+      (_) async => app.useTorProxy
+          ? ConfiguredExternalTorReady(
+              TorRoute(
+                source: TorSource.external,
+                endpoint: TorProxyEndpoint(
+                  host: '127.0.0.1',
+                  port: app.torProxyPort,
+                ),
+                evidence: TorReadinessEvidence.externalSocksHandshake,
+              ),
+            )
+          : const ConfiguredExternalTorDisabled(),
+    );
   }
 
   group('runWithFallback — fallback semantics', () {
@@ -277,9 +288,7 @@ void main() {
         () => torSessionPort.open(
           network: _network,
           serverUrl: 'ssl://hidden.onion:50002',
-          isCustom: any(named: 'isCustom'),
-          externalProxyEnabled: any(named: 'externalProxyEnabled'),
-          externalProxyPort: any(named: 'externalProxyPort'),
+          configuredExternalRoute: any(named: 'configuredExternalRoute'),
         ),
       ).thenAnswer(
         (_) async => ElectrumTorRoute(
@@ -312,14 +321,12 @@ void main() {
           () => torSessionPort.open(
             network: _network,
             serverUrl: 'ssl://hidden.onion:50002',
-            isCustom: any(named: 'isCustom'),
-            externalProxyEnabled: any(named: 'externalProxyEnabled'),
-            externalProxyPort: any(named: 'externalProxyPort'),
+            configuredExternalRoute: any(named: 'configuredExternalRoute'),
           ),
         ).thenAnswer(
           (_) async => ElectrumTorRoute(
             TorProxyEndpoint(host: '127.0.0.1', port: 41234),
-            () async => throw Exception('close failed'),
+            () async => throw StateError('close failed'),
           ),
         );
         stub(
@@ -354,9 +361,7 @@ void main() {
         () => torSessionPort.open(
           network: _network,
           serverUrl: 'ssl://hidden.onion:50002',
-            isCustom: any(named: 'isCustom'),
-            externalProxyEnabled: any(named: 'externalProxyEnabled'),
-            externalProxyPort: any(named: 'externalProxyPort'),
+          configuredExternalRoute: any(named: 'configuredExternalRoute'),
         ),
       ).thenThrow(Exception('embedded Tor never bootstrapped'));
       stub(
@@ -380,7 +385,8 @@ void main() {
       expect(attempted, ['ssl://fallback:50002']);
     });
 
-    test('keeps Bitcoin clearnet direct with an enabled external proxy', () async {
+    // The proxy setting applies to all Bitcoin Electrum traffic, not only to onion servers. The default Electrum servers are clearnet, so routing them protects the user's IP too.
+    test('routes Bitcoin clearnet through an enabled external proxy', () async {
       stub(
         servers: [_server('ssl://a:50002')],
         settings: _settings(),
@@ -395,7 +401,7 @@ void main() {
         },
       );
 
-      expect(socks5, isNull);
+      expect(socks5, '127.0.0.1:9150');
     });
 
     test('leaves Bitcoin clearnet direct without an external proxy', () async {
@@ -532,7 +538,7 @@ void main() {
       },
     );
 
-    test('keeps clearnet direct when external Tor is unavailable', () async {
+    test('distinguishes unavailable Tor for a clearnet server', () async {
       stub(
         servers: [
           _server('ssl://a.example:50002'),
@@ -540,12 +546,25 @@ void main() {
         ],
         appSettings: _appSettings(useTorProxy: true),
       );
-      final reached = <String>[];
-      await adapter.runWithFallback<void>(
-        network: _network,
-        operation: (connection) async => reached.add(connection.url),
+      when(() => torResolver.execute()).thenAnswer(
+        (_) async => const ConfiguredExternalTorUnavailable(
+          TorExternalProxyUnavailableFailure(),
+        ),
       );
-      expect(reached, ['ssl://a.example:50002']);
+
+      await expectLater(
+        adapter.runWithFallback<void>(
+          network: _network,
+          operation: (_) async => fail('unavailable Tor must never connect'),
+        ),
+        throwsA(
+          isA<AllElectrumServersFailedException>().having(
+            (error) => error.attempts.first.error,
+            'first error',
+            isA<ClearnetServerWithoutConfiguredTorException>(),
+          ),
+        ),
+      );
     });
   });
 }

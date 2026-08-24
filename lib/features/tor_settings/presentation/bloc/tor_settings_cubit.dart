@@ -70,6 +70,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
         transportMode: settings.torTransportMode,
         lastSuccessfulTransport: settings.lastSuccessfulTorTransport,
         externalProxyAttempt: null,
+        externalProxyAttemptPort: null,
       ),
     );
     return true;
@@ -91,6 +92,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
         externalProxyAttempt: useTorProxy
             ? const TorConnecting(source: TorSource.external)
             : null,
+        externalProxyAttemptPort: useTorProxy ? torProxyPort : null,
       ),
     );
     final connection = await _updateTorProxyUsecase.execute(
@@ -99,7 +101,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
       isCurrent: () => !isClosed && generation == _settingsGeneration,
     );
     if (isClosed || generation != _settingsGeneration) return;
-    final accepted = connection is TorReady || !useTorProxy;
+    final accepted = connection is TorReady || connection is TorStopped;
     emit(
       state.copyWith(
         useTorProxy: accepted ? useTorProxy : state.useTorProxy,
@@ -108,6 +110,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
             ? state.connection
             : connection,
         externalProxyAttempt: accepted ? null : connection,
+        externalProxyAttemptPort: accepted ? null : torProxyPort,
       ),
     );
   }
@@ -140,6 +143,9 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
         externalProxyAttempt: connection is TorReady
             ? null
             : state.externalProxyAttempt,
+        externalProxyAttemptPort: connection is TorReady
+            ? null
+            : state.externalProxyAttemptPort,
       ),
     );
   }

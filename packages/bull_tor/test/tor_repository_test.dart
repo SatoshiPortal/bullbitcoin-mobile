@@ -360,7 +360,7 @@ void main() {
     });
   });
 
-  // Orbot is verified on its own: no repository, no lifecycle, no fallback
+  // The external proxy is verified on its own: no repository, no lifecycle, no fallback.
   // between the two sources.
   test(
     'VerifyExternalTorUsecase verifies only the supplied endpoint',

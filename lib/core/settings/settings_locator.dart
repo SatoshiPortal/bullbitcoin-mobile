@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
-import 'package:bb_mobile/core/settings/domain/update_tor_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:get_it/get_it.dart';
@@ -31,11 +30,6 @@ class SettingsLocator {
     locator.registerFactory<GetSettingsUsecase>(
       () =>
           GetSettingsUsecase(settingsRepository: locator<SettingsRepository>()),
-    );
-    locator.registerFactory<UpdateTorSettingsUsecase>(
-      () => UpdateTorSettingsUsecase(
-        settingsRepository: locator<domain.SettingsRepository>(),
-      ),
     );
     locator.registerFactory<WatchCurrencyChangesUsecase>(
       () => WatchCurrencyChangesUsecase(

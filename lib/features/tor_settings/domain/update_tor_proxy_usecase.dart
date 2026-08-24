@@ -20,12 +20,19 @@ class UpdateTorProxyUsecase {
     bool Function()? isCurrent,
   }) async {
     if (!useTorProxy) {
-      await _persist(() async {
-        await _settingsRepository.setTorProxy(
-          enabled: false,
-          port: torProxyPort,
+      try {
+        await _persist(() async {
+          await _settingsRepository.setTorProxy(
+            enabled: false,
+            port: torProxyPort,
+          );
+        }, isCurrent);
+      } catch (_) {
+        return const TorUnavailable(
+          source: TorSource.external,
+          failure: TorStorageFailure(),
         );
-      }, isCurrent);
+      }
       return const TorStopped(TorSource.external);
     }
 
@@ -45,9 +52,19 @@ class UpdateTorProxyUsecase {
     final connection = await _verifyExternalTorUsecase.execute(endpoint);
     if (connection is! TorReady) return connection;
 
-    await _persist(() async {
-      await _settingsRepository.setTorProxy(enabled: true, port: torProxyPort);
-    }, isCurrent);
+    try {
+      await _persist(() async {
+        await _settingsRepository.setTorProxy(
+          enabled: true,
+          port: torProxyPort,
+        );
+      }, isCurrent);
+    } catch (_) {
+      return const TorUnavailable(
+        source: TorSource.external,
+        failure: TorStorageFailure(),
+      );
+    }
     return connection;
   }
 

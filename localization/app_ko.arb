@@ -5452,10 +5452,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "결정할 수 없음 Tor 상태. Orbot을 설치하고 실행합니다.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "지불조인",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -7460,10 +7456,6 @@
   "exchangeBrandName": "비트 코인",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "과태 Orbot 항구: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "제출하기",
   "@submitButton": {
@@ -12203,7 +12195,6 @@
   "mempoolErrorSameAsDefault": "이 URL은 기본 서버와 동일합니다. 다른 URL을 사용해 주세요.",
   "mempoolErrorConnectionTimeout": "연결 시간이 초과되었습니다. 서버가 느리거나 응답하지 않을 수 있습니다.",
   "mempoolErrorHostNotFound": "이 서버를 찾을 수 없습니다. URL을 확인하고 다시 시도해 주세요.",
-  "mempoolErrorTorNotRunning": ".onion 주소에 연결할 수 없습니다. Tor/Orbot이 실행 중인지 확인하고 다시 시도해 주세요.",
   "mempoolErrorConnectionFailed": "서버에 연결할 수 없습니다. 네트워크 연결을 확인하고 다시 시도해 주세요.",
   "mempoolErrorNotMempoolServer": "이 URL은 Mempool 서버가 아닌 것 같습니다. 주소를 확인해 주세요.",
   "mempoolErrorServerUnavailable": "서버를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
@@ -12555,8 +12546,6 @@
   "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
   "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
   "torSettingsActiveTransport": "활성 전송: {transport}",
-  "torSettingsExternalProxyTitle": "외부 Tor 프록시(고급)",
-  "torSettingsExternalProxyDescription": "활성화하면 Bitcoin Electrum 서버와 암호화된 백업이 내장 Tor 대신 설정된 포트의 Orbot을 통해 전달됩니다. Liquid는 이를 통해 전달되지 않습니다.",
   "settingsScreenPrivacyTitle": "화면 개인정보 보호",
   "settingsScreenPrivacyDisabledMessage": "이제 민감한 화면에서 스크린샷이 허용됩니다",
   "settingsSearchHint": "설정 검색",

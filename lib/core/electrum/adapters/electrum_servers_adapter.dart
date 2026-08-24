@@ -7,7 +7,8 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_re
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/tor/configured_external_tor.dart';
+import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 
 /// Concrete [ElectrumServersPort]. Owns the only place in the app where the
 /// active server list is resolved, merged with Electrum and proxy settings, and
@@ -16,13 +17,13 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 class ElectrumServersAdapter implements ElectrumServersPort {
   final ElectrumServerRepository _serverRepository;
   final ElectrumSettingsRepository _settingsRepository;
-  final SettingsRepository _appSettingsRepository;
+  final ResolveConfiguredExternalTorUsecase _resolveExternalTor;
   final ElectrumTorSessionPort _torSessionPort;
 
   ElectrumServersAdapter({
     required this._serverRepository,
     required this._settingsRepository,
-    required this._appSettingsRepository,
+    required this._resolveExternalTor,
     required this._torSessionPort,
   });
 
@@ -56,7 +57,6 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     if (servers.isEmpty) {
       throw NoElectrumServersConfiguredException(network);
     }
-    final appSettings = await _appSettingsRepository.fetch();
 
     final connections = servers
         .map(
@@ -72,21 +72,36 @@ class ElectrumServersAdapter implements ElectrumServersPort {
         )
         .toList();
 
+    Future<ConfiguredExternalTor>? configuredExternalTor;
+    Future<ConfiguredExternalTor> resolveExternal() =>
+        configuredExternalTor ??= _resolveExternalTor.execute();
+
     return runElectrumFallback<ElectrumConnection, T>(
       servers: connections,
       urlOf: (c) => c.url,
       isCustomOf: (c) => c.isCustom,
       operation: (connection) async {
+        final isOnion = ElectrumServerUrl(connection.url).isOnion;
+        final configured =
+            network.isLiquid || (!isOnion && connection.socks5 != null)
+            ? null
+            : await resolveExternal();
+        final configuredRoute = switch (configured) {
+          ConfiguredExternalTorReady(:final route) => route,
+          ConfiguredExternalTorDisabled() || null => null,
+          ConfiguredExternalTorUnavailable() => throw _withoutTor(
+            connection.url,
+            isOnion: isOnion,
+          ),
+        };
         ElectrumTorRoute? route;
         try {
           route = await _torSessionPort.open(
             network: network,
             serverUrl: connection.url,
-            isCustom: connection.isCustom,
-            externalProxyEnabled: appSettings.useTorProxy,
-            externalProxyPort: appSettings.torProxyPort,
+            configuredExternalRoute: configuredRoute,
           );
-        } on Exception {
+        } catch (_) {
           // Opening the route can fail on its own — an embedded bootstrap that
           // never completes is arguably the likeliest way an onion server
           // becomes unusable. That makes *this server* unroutable, not the whole
@@ -94,10 +109,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
           // already treats as transient. Otherwise a caller that narrows
           // `isTransient` to its own error rethrows immediately and never tries
           // the healthy clearnet default sitting next in the set.
-          throw _withoutTor(
-            connection.url,
-            isOnion: ElectrumServerUrl(connection.url).isOnion,
-          );
+          throw _withoutTor(connection.url, isOnion: isOnion);
         }
         try {
           // Precedence matters and predates this stack: an explicitly persisted
@@ -108,7 +120,8 @@ class ElectrumServersAdapter implements ElectrumServersPort {
           // route, so the already verified external route remains the fallback.
           final routed = connection.withSocks5(
             route?.endpoint.authority ??
-                connection.socks5,
+                connection.socks5 ??
+                (!isOnion ? configuredRoute?.endpoint.authority : null),
           );
           // The chokepoint that makes the invariant unavoidable: not every
           // consumer goes through our socket connector — BDK and LWK open
@@ -120,7 +133,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
         } finally {
           try {
             await route?.close();
-          } on Exception {
+          } catch (_) {
             // Route cleanup must not turn a successful server operation into a
             // fallback attempt.
           }
@@ -148,5 +161,4 @@ class ElectrumServersAdapter implements ElectrumServersPort {
   }) => isOnion
       ? OnionServerWithoutTorException(url)
       : ClearnetServerWithoutConfiguredTorException(url);
-
 }

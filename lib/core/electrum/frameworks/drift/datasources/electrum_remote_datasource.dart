@@ -10,7 +10,7 @@ import 'package:convert/convert.dart';
 import 'package:bull_tor/tor.dart';
 
 class ElectrumRemoteDatasource {
-  /// Generous on purpose: this request can be routed through Orbot, where a
+  /// Generous on purpose: this request can be routed through a local proxy, where a
   /// circuit to an onion service is built before any byte moves.
   static const _requestTimeout = Duration(seconds: 30);
 

@@ -124,9 +124,7 @@ void main() {
     verifyNever(() => sessions.open());
   });
 
-  // Embedded Tor cannot bootstrap inside Orbot's device-wide tunnel, so an
-  // Orbot user has to reach the key server through Orbot's own SOCKS port.
-  // Loopback is what makes that work: it never traverses the tun interface.
+  // A user-managed proxy is borrowed through its loopback SOCKS5 endpoint; the app must neither bootstrap embedded Tor nor assume ownership of that proxy.
   test('routes through the external proxy when the user enabled it', () async {
     when(
       () => settingsRepository.fetch(),

@@ -44,10 +44,6 @@ abstract interface class SettingsRepository {
 
   Future<void> setIsDevMode(bool isEnabled);
 
-  Future<void> setUseTorProxy(bool useTorProxy);
-
-  Future<void> setTorProxyPort(int port);
-
   Future<void> setTorProxy({required bool enabled, required int port});
 
   Future<void> setTorTransportMode(TorTransportMode mode);

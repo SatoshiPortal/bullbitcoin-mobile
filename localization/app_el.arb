@@ -4599,10 +4599,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "Δεν μπορεί να προσδιοριστεί καθεστώς Tor. Βεβαιωθείτε ότι το Orbot είναι εγκατεστημένο και τρέχει.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "Payjoinin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -6272,10 +6268,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "Default Orbot port: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "Υποβολή",
   "@submitButton": {
@@ -12321,7 +12313,6 @@
   "mempoolErrorSameAsDefault": "Αυτό το URL είναι ίδιο με τον προεπιλεγμένο διακομιστή. Χρησιμοποιήστε διαφορετικό URL.",
   "mempoolErrorConnectionTimeout": "Η σύνδεση έληξε. Ο διακομιστής μπορεί να είναι αργός ή μη προσβάσιμος.",
   "mempoolErrorHostNotFound": "Δεν είναι δυνατή η εύρεση αυτού του διακομιστή. Ελέγξτε το URL και δοκιμάστε ξανά.",
-  "mempoolErrorTorNotRunning": "Δεν είναι δυνατή η πρόσβαση στη διεύθυνση .onion. Βεβαιωθείτε ότι το Tor/Orbot εκτελείται και δοκιμάστε ξανά.",
   "mempoolErrorConnectionFailed": "Αδυναμία σύνδεσης με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο δίκτυο και δοκιμάστε ξανά.",
   "mempoolErrorNotMempoolServer": "Αυτό το URL δεν φαίνεται να είναι διακομιστής mempool. Επαληθεύστε τη διεύθυνση.",
   "mempoolErrorServerUnavailable": "Ο διακομιστής δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
@@ -12555,8 +12546,6 @@
   "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
   "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
   "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
-  "torSettingsExternalProxyTitle": "Εξωτερικός διαμεσολαβητής Tor (για προχωρημένους)",
-  "torSettingsExternalProxyDescription": "Όταν είναι ενεργό, οι διακομιστές Bitcoin Electrum και τα κρυπτογραφημένα αντίγραφα ασφαλείας περνούν μέσω του Orbot στη ρυθμισμένη θύρα αντί του ενσωματωμένου Tor. Το Liquid δεν δρομολογείται ποτέ μέσω αυτού.",
   "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
   "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες",
   "settingsSearchHint": "Αναζήτηση ρυθμίσεων",

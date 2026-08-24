@@ -236,8 +236,6 @@ void main() {
       verify(
         () => settingsRepository.setTorProxy(enabled: true, port: 9050),
       ).called(1);
-      verifyNever(() => settingsRepository.setUseTorProxy(any()));
-      verifyNever(() => settingsRepository.setTorProxyPort(any()));
     },
   );
 
@@ -410,8 +408,11 @@ void main() {
 
     expect(cubit.state.connection, same(activeConnection));
     expect(cubit.state.externalProxyAttempt, isA<TorConnecting>());
+    expect(cubit.state.externalProxyAttemptPort, 9051);
     externalPort.releaseVerification.complete();
     await replacement;
+    expect(cubit.state.externalProxyAttempt, isNull);
+    expect(cubit.state.externalProxyAttemptPort, isNull);
   });
 
   test('keeps the active endpoint when a replacement port fails', () async {
@@ -456,6 +457,100 @@ void main() {
     expect(cubit.state.torProxyPort, 9050);
     expect(cubit.state.connection, same(activeConnection));
     expect(cubit.state.externalProxyAttempt, isA<TorUnavailable>());
+    expect(cubit.state.externalProxyAttemptPort, 9051);
+  });
+
+  test(
+    'reports a persistence failure without losing the active endpoint',
+    () async {
+      final getSettings = _MockGetSettingsUsecase();
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          useTorProxy: true,
+          torProxyPort: 9050,
+        ),
+      );
+      final settingsRepository = _MockSettingsRepository();
+      when(
+        () => settingsRepository.setTorProxy(
+          enabled: any(named: 'enabled'),
+          port: any(named: 'port'),
+        ),
+      ).thenThrow(Exception('settings secret'));
+      final externalPort = _FakeExternalTorPort();
+      final watchTor = _MockWatchTorConnectionUsecase();
+      when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
+      final cubit = TorSettingsCubit(
+        getSettingsUsecase: getSettings,
+        updateTorProxyUsecase: UpdateTorProxyUsecase(
+          settingsRepository,
+          VerifyExternalTorUsecase(externalPort),
+        ),
+        updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        watchTorConnectionUsecase: watchTor,
+        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+      );
+      addTearDown(cubit.close);
+
+      await cubit.init();
+      await cubit.updateTorSettings(useTorProxy: true, torProxyPort: 9051);
+
+      expect(cubit.state.useTorProxy, isTrue);
+      expect(cubit.state.torProxyPort, 9050);
+      expect(cubit.state.connection, isA<TorReady>());
+      expect(cubit.state.externalProxyAttempt, isA<TorUnavailable>());
+      expect(
+        (cubit.state.externalProxyAttempt! as TorUnavailable).failure,
+        isA<TorStorageFailure>(),
+      );
+    },
+  );
+
+  test('keeps an active proxy when disabling cannot be persisted', () async {
+    final getSettings = _MockGetSettingsUsecase();
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+        useTorProxy: true,
+        torProxyPort: 9050,
+      ),
+    );
+    final settingsRepository = _MockSettingsRepository();
+    when(
+      () => settingsRepository.setTorProxy(enabled: false, port: 9050),
+    ).thenThrow(Exception('settings secret'));
+    final externalPort = _FakeExternalTorPort();
+    final watchTor = _MockWatchTorConnectionUsecase();
+    when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
+    final cubit = TorSettingsCubit(
+      getSettingsUsecase: getSettings,
+      updateTorProxyUsecase: UpdateTorProxyUsecase(
+        settingsRepository,
+        VerifyExternalTorUsecase(externalPort),
+      ),
+      updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      watchTorConnectionUsecase: watchTor,
+      resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+    );
+    addTearDown(cubit.close);
+
+    await cubit.init();
+    final activeConnection = cubit.state.connection;
+    await cubit.updateTorSettings(useTorProxy: false, torProxyPort: 9050);
+
+    expect(cubit.state.useTorProxy, isTrue);
+    expect(cubit.state.torProxyPort, 9050);
+    expect(cubit.state.connection, same(activeConnection));
+    expect(cubit.state.externalProxyAttempt, isA<TorUnavailable>());
+    expect(
+      (cubit.state.externalProxyAttempt! as TorUnavailable).failure,
+      isA<TorStorageFailure>(),
+    );
   });
 
   test('does not apply settings loaded before a newer action', () async {

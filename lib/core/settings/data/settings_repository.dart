@@ -127,16 +127,6 @@ class SettingsRepository implements domain.SettingsRepository {
   }
 
   @override
-  Future<void> setUseTorProxy(bool useTorProxy) async {
-    await _settingsDatasource.setUseTorProxy(useTorProxy);
-  }
-
-  @override
-  Future<void> setTorProxyPort(int port) async {
-    await _settingsDatasource.setTorProxyPort(port);
-  }
-
-  @override
   Future<void> setTorProxy({required bool enabled, required int port}) async {
     await _settingsDatasource.setTorProxy(enabled: enabled, port: port);
   }

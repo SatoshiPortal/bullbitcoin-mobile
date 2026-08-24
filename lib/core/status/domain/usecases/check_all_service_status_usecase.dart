@@ -29,7 +29,8 @@ class CheckAllServiceStatusUsecase {
   final WalletRepository _walletRepository;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
   final CheckServerConnectionUsecase _checkServerConnectionUsecase;
-  final ResolveConfiguredExternalTorUsecase resolveConfiguredExternalTorUsecase;
+  final ResolveConfiguredExternalTorUsecase
+  _resolveConfiguredExternalTorUsecase;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -40,7 +41,7 @@ class CheckAllServiceStatusUsecase {
     required this._walletRepository,
     required this._ensureTorReadyUsecase,
     required this._checkServerConnectionUsecase,
-    required this.resolveConfiguredExternalTorUsecase,
+    required this._resolveConfiguredExternalTorUsecase,
   });
 
   Future<AllServicesStatus> execute({required Network network}) async {
@@ -248,7 +249,7 @@ class CheckAllServiceStatusUsecase {
     // wallet has no backup requiring embedded Tor. Only the disabled branch
     // consults wallet usage before probing embedded Tor.
     return status.copyWith(
-      status: switch (await resolveConfiguredExternalTorUsecase.execute()) {
+      status: switch (await _resolveConfiguredExternalTorUsecase.execute()) {
         ConfiguredExternalTorReady() => ServiceStatus.online,
         ConfiguredExternalTorUnavailable() => ServiceStatus.offline,
         ConfiguredExternalTorDisabled() => await _checkEmbeddedTorIfRequired(),

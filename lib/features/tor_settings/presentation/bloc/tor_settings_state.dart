@@ -10,5 +10,6 @@ sealed class TorSettingsState with _$TorSettingsState {
     @Default(TorUninitialized()) TorConnectionState embeddedConnection,
     @Default(TorUninitialized()) TorConnectionState connection,
     TorConnectionState? externalProxyAttempt,
+    int? externalProxyAttemptPort,
   }) = _TorSettingsState;
 }

@@ -7,15 +7,15 @@ import 'package:bull_tor/tor.dart';
 class TorConnectionStatusCard extends StatelessWidget {
   final TorConnectionState connection;
   final String? routeLabel;
-  final String? readyTitle;
-  final String? readyDescription;
+  final bool external;
+  final VoidCallback? onRetry;
 
   const TorConnectionStatusCard({
     super.key,
     required this.connection,
     this.routeLabel,
-    this.readyTitle,
-    this.readyDescription,
+    this.external = false,
+    this.onRetry,
   });
 
   /// Whether the blockage looks like the network filtering Tor traffic.
@@ -40,6 +40,11 @@ class TorConnectionStatusCard extends StatelessWidget {
     TorUninitialized() || TorStopped() => _VisualStatus.unknown,
   };
 
+  bool get _showRetry =>
+      external &&
+      onRetry != null &&
+      (_status == _VisualStatus.offline || _status == _VisualStatus.unknown);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -49,7 +54,9 @@ class TorConnectionStatusCard extends StatelessWidget {
           crossAxisAlignment: .start,
           children: [
             Text(
-              context.loc.torSettingsConnectionStatus,
+              external
+                  ? context.loc.torSettingsLocalProxyStatus
+                  : context.loc.torSettingsConnectionStatus,
               style: context.font.titleMedium,
             ),
             const Gap(16),
@@ -85,6 +92,16 @@ class TorConnectionStatusCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (_showRetry) ...[
+              const Gap(12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onRetry,
+                  child: Text(context.loc.torSettingsRetry),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -92,6 +109,16 @@ class TorConnectionStatusCard extends StatelessWidget {
   }
 
   String _getStatusTitle(BuildContext context) {
+    if (external) {
+      return switch (_status) {
+        _VisualStatus.online => context.loc.torSettingsExternalProxyReachable,
+        _VisualStatus.connecting =>
+          context.loc.torSettingsExternalProxyChecking,
+        _VisualStatus.offline =>
+          context.loc.torSettingsExternalProxyUnavailable,
+        _VisualStatus.unknown => context.loc.torSettingsExternalProxyNotChecked,
+      };
+    }
     if (_looksCensored) return context.loc.torSettingsStatusCensored;
     final progress = switch (connection) {
       TorConnecting(:final progress) => progress,
@@ -102,7 +129,7 @@ class TorConnectionStatusCard extends StatelessWidget {
     }
     switch (_status) {
       case _VisualStatus.online:
-        return readyTitle ?? context.loc.torSettingsStatusConnected;
+        return context.loc.torSettingsStatusConnected;
       case _VisualStatus.connecting:
         return context.loc.torSettingsStatusConnecting;
       case _VisualStatus.offline:
@@ -113,16 +140,28 @@ class TorConnectionStatusCard extends StatelessWidget {
   }
 
   String _getStatusDescription(BuildContext context) {
+    if (external) {
+      return switch (_status) {
+        _VisualStatus.online =>
+          context.loc.torSettingsExternalProxyReachableDescription,
+        _VisualStatus.connecting =>
+          context.loc.torSettingsExternalProxyCheckingDescription,
+        _VisualStatus.offline =>
+          context.loc.torSettingsExternalProxyUnavailableDescription,
+        _VisualStatus.unknown =>
+          context.loc.torSettingsExternalProxyNotCheckedDescription,
+      };
+    }
     if (_looksCensored) return context.loc.torSettingsDescCensored;
     switch (_status) {
       case _VisualStatus.online:
-        return readyDescription ?? context.loc.torSettingsDescConnected;
+        return context.loc.torSettingsDescConnected;
       case _VisualStatus.connecting:
         return context.loc.torSettingsDescConnecting;
       case _VisualStatus.offline:
         return context.loc.torSettingsDescDisconnected;
       case _VisualStatus.unknown:
-        return context.loc.torSettingsDescUnknown;
+        return context.loc.torSettingsEmbeddedStatusUnknownDescription;
     }
   }
 }

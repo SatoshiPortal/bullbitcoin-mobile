@@ -15,7 +15,7 @@ class TorSettingsLocator {
         locator<Tor>().embedded,
       ),
     );
-    locator.registerFactory<UpdateTorProxyUsecase>(
+    locator.registerLazySingleton<UpdateTorProxyUsecase>(
       () => UpdateTorProxyUsecase(
         locator<SettingsRepository>(),
         locator<VerifyExternalTorUsecase>(),

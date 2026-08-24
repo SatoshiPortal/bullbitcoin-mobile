@@ -5298,10 +5298,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "Tor অবস্থা নির্ধারণ করা যাচ্ছে না। নিশ্চিত করুন Orbot ইনস্টল করা আছে এবং চালু রয়েছে।",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -7251,10 +7247,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "ডিফল্ট Orbot পোর্ট: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "জমা দিন",
   "@submitButton": {
@@ -11554,7 +11546,6 @@
   "mempoolErrorSameAsDefault": "এই URL ডিফল্ট সার্ভারের মতো। অনুগ্রহ করে একটি ভিন্ন URL ব্যবহার করুন।",
   "mempoolErrorConnectionTimeout": "সংযোগের সময় শেষ হয়ে গেছে। সার্ভার ধীর বা অপ্রাপ্য হতে পারে।",
   "mempoolErrorHostNotFound": "এই সার্ভার খুঁজে পাওয়া যাচ্ছে না। অনুগ্রহ করে URL যাচাই করুন এবং আবার চেষ্টা করুন।",
-  "mempoolErrorTorNotRunning": ".onion ঠিকানায় পৌঁছানো যাচ্ছে না। নিশ্চিত করুন Tor/Orbot চালু আছে এবং আবার চেষ্টা করুন।",
   "mempoolErrorConnectionFailed": "সার্ভারে সংযোগ করা যাচ্ছে না। আপনার নেটওয়ার্ক সংযোগ যাচাই করুন এবং আবার চেষ্টা করুন।",
   "mempoolErrorNotMempoolServer": "এই URL একটি Mempool সার্ভার বলে মনে হচ্ছে না। অনুগ্রহ করে ঠিকানা যাচাই করুন।",
   "mempoolErrorServerUnavailable": "সার্ভার অনুপলব্ধ। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
@@ -12765,8 +12756,6 @@
   "torSettingsModeDirectDescription": "প্লাগেবল ট্রান্সপোর্ট ছাড়াই সরাসরি Tor নেটওয়ার্কে যুক্ত হয়।",
   "torSettingsModeSnowflakeDescription": "ফিল্টার করা নেটওয়ার্ক থেকে Tor-এ পৌঁছাতে স্বেচ্ছাসেবী Snowflake প্রক্সি ব্যবহার করে।",
   "torSettingsActiveTransport": "সক্রিয় ট্রান্সপোর্ট: {transport}",
-  "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্রক্সি (উন্নত)",
-  "torSettingsExternalProxyDescription": "সক্রিয় থাকলে, Bitcoin Electrum সার্ভার এবং এনক্রিপ্ট করা ব্যাকআপগুলি অন্তর্নির্মিত Tor-এর পরিবর্তে নির্ধারিত পোর্টে Orbot-এর মাধ্যমে যায়। Liquid কখনও এর মাধ্যমে যায় না।",
   "settingsScreenPrivacyTitle": "স্ক্রিন গোপনীয়তা",
   "settingsScreenPrivacyDisabledMessage": "এখন সংবেদনশীল স্ক্রিনে স্ক্রিনশট নেওয়ার অনুমতি রয়েছে",
   "settingsSearchHint": "সেটিংস খুঁজুন",

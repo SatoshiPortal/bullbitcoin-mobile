@@ -18,7 +18,7 @@ extension MempoolFailureL10n on MempoolFailure {
     MempoolValidationHostNotFoundFailure() =>
       context.loc.mempoolErrorHostNotFound,
     MempoolValidationTorNotRunningFailure() =>
-      context.loc.mempoolErrorTorNotRunning,
+      context.loc.mempoolErrorOnionRouteUnavailable,
     MempoolValidationConnectionErrorFailure() =>
       context.loc.mempoolErrorConnectionFailed,
     MempoolValidationNotMempoolServerFailure() =>

@@ -4,7 +4,7 @@ import 'package:bull_tor/tor.dart';
 ///
 /// Deliberately not a [TorSession]: that type carries a [TorTransport], which
 /// only describes how *embedded* Tor reached the network. An external proxy such
-/// as Orbot has no transport we know of, and inventing one would be a lie the
+/// as an external proxy has no transport we know of, and inventing one would be a lie the
 /// UI could read back. Mirrors `ElectrumTorRoute`, which draws the same line for
 /// the same reason.
 final class RecoverBullTorRoute {

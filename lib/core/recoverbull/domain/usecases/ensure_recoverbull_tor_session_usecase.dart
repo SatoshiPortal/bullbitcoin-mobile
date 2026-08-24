@@ -11,13 +11,11 @@ import 'package:bull_tor/tor.dart';
 ///
 /// The external proxy wins when the user enabled it. That is not only what the
 /// app promised before embedded Tor existed — it is the only thing that works
-/// for an Orbot user: Orbot's "Full Device VPN" mode puts every socket this app
-/// opens inside its own Tor tunnel, and embedded Tor cannot bootstrap through
-/// another Tor. Measured on a Pixel 5: 51s to ready without the VPN, versus
-/// stuck at 8% and then a Snowflake attempt that never completed with it.
-/// Loopback is the way out — a connection to 127.0.0.1 does not traverse the tun
-/// interface, so the proxy hop stays local and only Orbot's Tor carries the
-/// traffic. One circuit instead of two nested ones.
+/// for a local SOCKS5 proxy user: a system-level VPN can put every socket this
+/// app opens inside its own tunnel, and embedded Tor cannot bootstrap through
+/// another Tor. Loopback is the way out — a connection to 127.0.0.1 does not
+/// traverse the tunnel interface, so the proxy hop stays local and only the
+/// configured proxy carries the traffic.
 class EnsureRecoverBullTorSessionUsecase {
   final EmbeddedTor _embeddedTor;
   final SettingsRepository _settingsRepository;

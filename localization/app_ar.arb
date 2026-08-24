@@ -5115,10 +5115,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "غير قادر على تحديد حالة تور ضمان تركيب أوربوت وتشغيله.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -6955,10 +6951,6 @@
   "sendFastFee": "بسرعة",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "torSettingsPortHelper": "ميناء أوربوت الافتراضي: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "Submit",
   "@submitButton": {
@@ -12207,7 +12199,6 @@
   "mempoolErrorSameAsDefault": "هذا الرابط مطابق للخادم الافتراضي. يرجى استخدام رابط مختلف.",
   "mempoolErrorConnectionTimeout": "انتهت مهلة الاتصال. قد يكون الخادم بطيئًا أو غير متاح.",
   "mempoolErrorHostNotFound": "تعذّر العثور على هذا الخادم. يرجى التحقق من الرابط والمحاولة مجددًا.",
-  "mempoolErrorTorNotRunning": "تعذّر الوصول إلى عنوان .onion. تأكد من تشغيل Tor/Orbot وحاول مجددًا.",
   "mempoolErrorConnectionFailed": "تعذّر الاتصال بالخادم. تحقق من اتصال الشبكة وحاول مجددًا.",
   "mempoolErrorNotMempoolServer": "لا يبدو أن هذا الرابط خادم Mempool. يرجى التحقق من العنوان.",
   "mempoolErrorServerUnavailable": "الخادم غير متاح حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
@@ -12558,8 +12549,6 @@
   "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
   "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
   "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
-  "torSettingsExternalProxyTitle": "وكيل Tor خارجي (متقدم)",
-  "torSettingsExternalProxyDescription": "عند التفعيل، تمر خوادم Bitcoin Electrum والنسخ الاحتياطية المشفَّرة عبر Orbot على المنفذ المُعد بدلاً من Tor المدمج. لا يتم توجيه Liquid عبره أبداً.",
   "settingsScreenPrivacyTitle": "خصوصية الشاشة",
   "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة",
   "settingsSearchHint": "البحث في الإعدادات",
