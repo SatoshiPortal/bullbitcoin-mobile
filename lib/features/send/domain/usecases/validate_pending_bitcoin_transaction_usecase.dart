@@ -39,6 +39,7 @@ class ValidatePendingBitcoinTransactionUsecase {
         psbt: psbt,
         selection: transaction.policySelection,
         allowSpentWalletInputs: true,
+        allowFrozenWalletInputs: true,
       )) {
         case Ok(:final value):
           planDetails = value;
@@ -87,7 +88,8 @@ class ValidatePendingBitcoinTransactionUsecase {
           hasRequiredPreimages;
       final utxos = await _getWalletUtxosUsecase.execute(walletId: wallet.id);
       final availableOutpoints = {
-        for (final utxo in utxos) '${utxo.txId}:${utxo.vout}',
+        for (final utxo in utxos)
+          if (!utxo.isFrozen) '${utxo.txId}:${utxo.vout}',
       };
       final conflict = review.outpoints.any(
         (outpoint) => !availableOutpoints.contains(outpoint),

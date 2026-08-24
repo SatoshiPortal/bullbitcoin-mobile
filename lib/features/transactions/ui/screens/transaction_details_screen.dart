@@ -23,7 +23,6 @@ import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_a
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_status_label.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

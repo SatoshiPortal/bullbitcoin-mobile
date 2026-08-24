@@ -26,12 +26,15 @@ abstract interface class BitcoinSigningPort {
     String? signerId,
   });
 
+  /// Read-only inspection can include unavailable inputs when restoring a
+  /// pending transaction. Signing and broadcast must still enforce spendability.
   @useResult
   Future<Result<BitcoinPsbtReview, BitcoinSigningFailure>> reviewPsbt(
     String psbt, {
     required String walletId,
     bool requireLocalOrigin = true,
     bool allowSpentWalletInputs = false,
+    bool allowFrozenWalletInputs = false,
   });
 
   @useResult
