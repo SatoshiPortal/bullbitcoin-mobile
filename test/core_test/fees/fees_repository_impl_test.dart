@@ -61,10 +61,7 @@ void main() {
   test('uses the BB URL when fee estimation is disabled', () async {
     when(() => settingsRepository.fetchByNetwork(network)).thenAnswer(
       (_) async => Ok(
-        MempoolSettings.existing(
-          network: network,
-          useForFeeEstimation: false,
-        ),
+        MempoolSettings.existing(network: network, useForFeeEstimation: false),
       ),
     );
 
@@ -89,16 +86,15 @@ void main() {
         MempoolSettings.existing(network: network, useForFeeEstimation: true),
       ),
     );
-    when(() => serverRepository.fetchCustomServer(network)).thenAnswer(
-      (_) async => Ok(custom),
-    );
+    when(
+      () => serverRepository.fetchCustomServer(network),
+    ).thenAnswer((_) async => Ok(custom));
 
     await repository.getNetworkFees(network: Network.bitcoinMainnet);
 
     verify(
-      () => datasource.fetchBitcoinNetworkFees(
-        baseUrl: 'https://custom.example',
-      ),
+      () =>
+          datasource.fetchBitcoinNetworkFees(baseUrl: 'https://custom.example'),
     ).called(1);
     verifyNever(() => serverRepository.fetchDefaultServer(any()));
   });
@@ -114,12 +110,12 @@ void main() {
         MempoolSettings.existing(network: network, useForFeeEstimation: true),
       ),
     );
-    when(() => serverRepository.fetchCustomServer(network)).thenAnswer(
-      (_) async => const Ok(null),
-    );
-    when(() => serverRepository.fetchDefaultServer(network)).thenAnswer(
-      (_) async => Ok(defaultServer),
-    );
+    when(
+      () => serverRepository.fetchCustomServer(network),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => serverRepository.fetchDefaultServer(network),
+    ).thenAnswer((_) async => Ok(defaultServer));
 
     await repository.getNetworkFees(network: Network.bitcoinMainnet);
 
@@ -131,9 +127,9 @@ void main() {
   });
 
   test('propagates settings selection failure without calling HTTP', () async {
-    when(() => settingsRepository.fetchByNetwork(network)).thenAnswer(
-      (_) async => const Err(MempoolLoadFailure()),
-    );
+    when(
+      () => settingsRepository.fetchByNetwork(network),
+    ).thenAnswer((_) async => const Err(MempoolLoadFailure()));
 
     await expectLater(
       repository.getNetworkFees(network: Network.bitcoinMainnet),

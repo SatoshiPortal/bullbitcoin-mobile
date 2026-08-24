@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/tor/configured_external_tor.dart';
-import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
+import 'package:bb_mobile/features/tor_settings/domain/check_external_tor_connection_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_proxy_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_transport_mode_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,15 +17,14 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
     required this._updateTorProxyUsecase,
     required this._updateTorTransportModeUsecase,
     required this._watchTorConnectionUsecase,
-    required this._resolveConfiguredExternalTorUsecase,
+    required this._checkExternalTorConnectionUsecase,
   }) : super(const TorSettingsState());
 
   final GetSettingsUsecase _getSettingsUsecase;
   final UpdateTorProxyUsecase _updateTorProxyUsecase;
   final UpdateTorTransportModeUsecase _updateTorTransportModeUsecase;
   final WatchTorConnectionUsecase _watchTorConnectionUsecase;
-  final ResolveConfiguredExternalTorUsecase
-  _resolveConfiguredExternalTorUsecase;
+  final CheckExternalTorConnectionUsecase _checkExternalTorConnectionUsecase;
   StreamSubscription<TorConnectionState>? _connectionSubscription;
 
   /// Discards the answer of a check that a newer one has already superseded.
@@ -124,19 +122,8 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
         connection: const TorConnecting(source: TorSource.external),
       ),
     );
-    final resolved = await _resolveConfiguredExternalTorUsecase.execute();
+    final connection = await _checkExternalTorConnectionUsecase.execute();
     if (isClosed || generation != _checkGeneration) return;
-    final connection = switch (resolved) {
-      ConfiguredExternalTorReady(:final route) => TorReady(route),
-      ConfiguredExternalTorUnavailable(:final failure) => TorUnavailable(
-        source: TorSource.external,
-        failure: failure,
-      ),
-      ConfiguredExternalTorDisabled() => const TorUnavailable(
-        source: TorSource.external,
-        failure: TorExternalProxyUnavailableFailure(),
-      ),
-    };
     emit(
       state.copyWith(
         connection: connection,

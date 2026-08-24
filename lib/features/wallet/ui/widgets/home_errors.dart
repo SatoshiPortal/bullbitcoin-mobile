@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_fa
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -52,7 +53,7 @@ class HomeWarnings extends StatelessWidget {
                   bgColor: context.appColors.errorContainer,
                   onTap: () => context.pushNamed(switch (warning.action) {
                     WalletWarningAction.electrumSettings =>
-                      const ElectrumSettingsFacade().settingsRouteName,
+                      locator<ElectrumSettingsFacade>().settingsRouteName,
                     WalletWarningAction.torSettings =>
                       const TorSettingsFacade().settingsRouteName,
                   }),

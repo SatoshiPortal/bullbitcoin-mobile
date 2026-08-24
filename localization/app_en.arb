@@ -14592,7 +14592,7 @@
   "@torSettingsEmbeddedTitle": {
     "description": "Heading for embedded Tor settings"
   },
-  "torSettingsEmbeddedDescription": "Embedded Tor is used by RecoverBull and Bitcoin Electrum .onion servers. Other app traffic remains direct.",
+  "torSettingsEmbeddedDescription": "Bull’s built-in Tor routing protects RecoverBull and Bitcoin Electrum .onion servers. Other app traffic is not routed through Tor.",
   "@torSettingsEmbeddedDescription": {
     "description": "Explains which traffic uses embedded Tor"
   },
@@ -14637,7 +14637,7 @@
   "@torSettingsExternalProxyTitle": {
     "description": "Heading for the optional Orbot override"
   },
-  "torSettingsExternalProxyDescription": "When enabled, Bitcoin Electrum servers and encrypted backups go through Orbot at the configured port instead of embedded Tor. Liquid is never routed through it.",
+  "torSettingsExternalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
   "@torSettingsExternalProxyDescription": {
     "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
   },
@@ -14693,7 +14693,6 @@
   "@settingsScreenPrivacyDisabledMessage": {
     "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
   },
-<<<<<<< HEAD
   "settingsSearchHint": "Search settings",
   "@settingsSearchHint": {
     "description": "Placeholder for the settings search field"
@@ -14837,5 +14836,147 @@
   "torSettingsExternalProxyReachableDescription": "The configured SOCKS5 proxy accepted a connection.",
   "@torSettingsExternalProxyReachableDescription": {
     "description": "Clarifies what Bull verified for an external proxy without claiming that Tor is fully bootstrapped."
+  },
+  "torStatusReady": "Tor ready",
+  "@torStatusReady": {
+    "description": "Compact global status shown when embedded Tor is ready."
+  },
+  "torStatusConnecting": "Connecting to Tor: {progress}%",
+  "@torStatusConnecting": {
+    "description": "Compact global status shown while embedded Tor bootstraps.",
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      }
+    }
+  },
+  "torStatusNotStarted": "Tor not started",
+  "@torStatusNotStarted": {
+    "description": "Compact global status shown before embedded Tor is needed."
+  },
+  "torStatusStopped": "Tor stopped",
+  "@torStatusStopped": {
+    "description": "Compact global status shown when embedded Tor has stopped."
+  },
+  "torStatusUnavailable": "Tor unavailable",
+  "@torStatusUnavailable": {
+    "description": "Compact global status shown when embedded Tor cannot become ready."
+  },
+  "torStatusDetailsTitle": "Embedded Tor status",
+  "@torStatusDetailsTitle": {
+    "description": "Title of the global embedded Tor status details."
+  },
+  "torStatusStateLabel": "Status",
+  "@torStatusStateLabel": {
+    "description": "Label for the current embedded Tor lifecycle state."
+  },
+  "torStatusTransportLabel": "Transport",
+  "@torStatusTransportLabel": {
+    "description": "Label for the effective embedded Tor transport."
+  },
+  "torStatusProtectedTrafficLabel": "Traffic routed through Tor",
+  "@torStatusProtectedTrafficLabel": {
+    "description": "Label explaining which application traffic uses embedded Tor."
+  },
+  "torStatusNotStartedDescription": "Embedded Tor starts automatically when RecoverBull or a Bitcoin .onion server needs it.",
+  "@torStatusNotStartedDescription": {
+    "description": "Explains why embedded Tor can be not started."
+  },
+  "torStatusTelemetryUnavailable": "Circuit paths and throughput are not exposed by the embedded Tor engine.",
+  "@torStatusTelemetryUnavailable": {
+    "description": "Explains why circuit and throughput telemetry is absent from Tor details."
+  },
+  "torStatusProxyEndpointLabel": "SOCKS5 endpoint",
+  "@torStatusProxyEndpointLabel": {
+    "description": "Label for the verified local SOCKS5 endpoint exposed by embedded Tor."
+  },
+  "torSettingsExternalProxyChecking": "Checking proxy",
+  "@torSettingsExternalProxyChecking": {
+    "description": "Status title while checking the external SOCKS5 proxy"
+  },
+  "torSettingsExternalProxyCheckingDescription": "Bull is checking the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyCheckingDescription": {
+    "description": "Status description while checking the external SOCKS5 proxy"
+  },
+  "torSettingsExternalProxyUnavailable": "SOCKS5 proxy unavailable",
+  "@torSettingsExternalProxyUnavailable": {
+    "description": "Status title when the external SOCKS5 proxy is unavailable"
+  },
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyUnavailableDescription": {
+    "description": "Status description when the external SOCKS5 proxy is unavailable"
+  },
+  "torSettingsExternalProxyNotChecked": "Proxy not checked",
+  "@torSettingsExternalProxyNotChecked": {
+    "description": "Status title before the external SOCKS5 proxy is checked"
+  },
+  "torSettingsExternalProxyNotCheckedDescription": "Bull has not checked the configured SOCKS5 proxy yet.",
+  "@torSettingsExternalProxyNotCheckedDescription": {
+    "description": "Status description before the external SOCKS5 proxy is checked"
+  },
+  "torSettingsRetry": "Retry",
+  "@torSettingsRetry": {
+    "description": "Action to retry an external SOCKS5 proxy check"
+  },
+  "torSettingsLearnAboutOrbot": "Learn about Orbot",
+  "@torSettingsLearnAboutOrbot": {
+    "description": "User action linking to the Orbot website"
+  },
+  "torSettingsOrbotLinkFailed": "Unable to open the Orbot website.",
+  "@torSettingsOrbotLinkFailed": {
+    "description": "Snackbar shown when the Orbot website cannot be opened"
+  },
+  "torSettingsLocalProxyTitle": "Local SOCKS5 proxy (advanced)",
+  "@torSettingsLocalProxyTitle": {
+    "description": "Heading for the optional user-managed local SOCKS5 proxy."
+  },
+  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "@torSettingsLocalProxyDescription": {
+    "description": "Explains how Orbot VPN mode and the configured SOCKS port route traffic through Tor."
+  },
+  "torSettingsLocalProxyPortHelper": "Common local SOCKS5 port: 9050",
+  "@torSettingsLocalProxyPortHelper": {
+    "description": "Helper text showing a common local SOCKS5 port."
+  },
+  "torSettingsEmbeddedStatusUnknownDescription": "Embedded Tor has not reported a connection status yet.",
+  "@torSettingsEmbeddedStatusUnknownDescription": {
+    "description": "Description shown before embedded Tor reports a connection status."
+  },
+  "torSettingsLocalProxyStatus": "Local SOCKS5 proxy status",
+  "@torSettingsLocalProxyStatus": {
+    "description": "Heading for the local SOCKS5 proxy status card."
+  },
+  "mempoolErrorOnionRouteUnavailable": "The onion server is unreachable. Check that your Tor route is available and try again.",
+  "@mempoolErrorOnionRouteUnavailable": {
+    "description": "Error shown when an onion mempool server cannot be reached through the selected Tor route."
+  },
+  "electrumConfiguredExternalTorUnavailable": "Your configured Tor proxy is unavailable. Open Tor settings to reconnect it.",
+  "@electrumConfiguredExternalTorUnavailable": {
+    "description": "Message shown when a configured external Tor proxy prevents adding a custom Electrum server."
+  },
+  "electrumOpenTorSettings": "Open Tor settings",
+  "@electrumOpenTorSettings": {
+    "description": "Action to open Tor settings from an Electrum error."
+  },
+  "torSettingsProxyAttemptPort": "Attempted port: {port}",
+  "@torSettingsProxyAttemptPort": {
+    "description": "Identifies the local SOCKS5 port being checked or that failed verification.",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsProxyAttemptWithActivePort": "Attempted port: {attemptedPort} · Active port: {activePort}",
+  "@torSettingsProxyAttemptWithActivePort": {
+    "description": "Distinguishes a replacement SOCKS5 port attempt from the persisted active port.",
+    "placeholders": {
+      "attemptedPort": {
+        "type": "int"
+      },
+      "activePort": {
+        "type": "int"
+      }
+    }
   }
 }

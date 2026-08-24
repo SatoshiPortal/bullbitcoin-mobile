@@ -7,10 +7,7 @@ import 'package:get_it/get_it.dart';
 
 class FeesLocator {
   static void registerDatasources(GetIt locator) {
-    locator.registerLazySingleton<FeesDatasource>(
-      () => FeesDatasource(
-      ),
-    );
+    locator.registerLazySingleton<FeesDatasource>(() => FeesDatasource());
   }
 
   static void registerRepositories(GetIt locator) {

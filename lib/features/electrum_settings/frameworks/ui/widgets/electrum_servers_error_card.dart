@@ -22,8 +22,7 @@ class ElectrumServersErrorCard extends StatelessWidget {
         tagColor: context.appColors.error,
         bgColor: context.appColors.errorContainer,
       ),
-      if (failure
-          is ElectrumServersConfiguredExternalTorUnavailableFailure) ...[
+      if (failure is ElectrumServersExternalTorProxyUnavailableFailure) ...[
         const Gap(4),
         TextButton(
           onPressed: () =>

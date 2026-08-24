@@ -40,9 +40,8 @@ final class ElectrumServerUnreachableFailure extends ElectrumFailure {
 
 /// The configured external Tor proxy is unavailable, so a clearnet server
 /// cannot be probed without violating the fail-closed routing policy.
-final class ElectrumConfiguredExternalTorUnavailableFailure
-    extends ElectrumFailure {
-  const ElectrumConfiguredExternalTorUnavailableFailure([super.logMessage]);
+final class ElectrumExternalTorProxyUnavailableFailure extends ElectrumFailure {
+  const ElectrumExternalTorProxyUnavailableFailure([super.logMessage]);
 }
 
 /// stopGap is out of range. [value] is the offending value (sanitized).

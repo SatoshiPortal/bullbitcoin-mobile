@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_tor_status_visibility_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -37,6 +38,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
@@ -96,46 +98,61 @@ class AppRouter {
                     body: child,
                     bottomNavigationBar: isSupportChat
                         ? null
-                        : BottomNavigationBar(
-                            currentIndex: tabIndex,
-                            onTap: (index) {
-                              if (index == 0) {
-                                context.goNamed(WalletRoute.walletHome.name);
-                              } else {
-                                // Exchange tab
-                                if (Platform.isIOS) {
-                                  final isSuperuser =
-                                      context
-                                          .read<SettingsCubit>()
-                                          .state
-                                          .isSuperuser ??
-                                      false;
-                                  if (isSuperuser) {
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              EmbeddedTorStatusScope(
+                                shouldShow: () =>
+                                    locator<GetTorStatusVisibilityUsecase>()
+                                        .execute(),
+                                child: EmbeddedTorStatusIndicator(),
+                              ),
+                              BottomNavigationBar(
+                                currentIndex: tabIndex,
+                                onTap: (index) {
+                                  if (index == 0) {
                                     context.goNamed(
-                                      ExchangeRoute.exchangeHome.name,
+                                      WalletRoute.walletHome.name,
                                     );
                                   } else {
-                                    context.goNamed(
-                                      ExchangeRoute.exchangeLanding.name,
-                                    );
+                                    // Exchange tab
+                                    if (Platform.isIOS) {
+                                      final isSuperuser =
+                                          context
+                                              .read<SettingsCubit>()
+                                              .state
+                                              .isSuperuser ??
+                                          false;
+                                      if (isSuperuser) {
+                                        context.goNamed(
+                                          ExchangeRoute.exchangeHome.name,
+                                        );
+                                      } else {
+                                        context.goNamed(
+                                          ExchangeRoute.exchangeLanding.name,
+                                        );
+                                      }
+                                    } else {
+                                      context.goNamed(
+                                        ExchangeRoute.exchangeHome.name,
+                                      );
+                                    }
                                   }
-                                } else {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeHome.name,
-                                  );
-                                }
-                              }
-                            },
-                            items: [
-                              BottomNavigationBarItem(
-                                icon: const Icon(Icons.currency_bitcoin),
-                                label: context.loc.navigationTabWallet,
-                                backgroundColor: context.appColors.background,
-                              ),
-                              BottomNavigationBarItem(
-                                icon: const Icon(Icons.attach_money),
-                                label: context.loc.navigationTabExchange,
-                                backgroundColor: context.appColors.background,
+                                },
+                                items: [
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(Icons.currency_bitcoin),
+                                    label: context.loc.navigationTabWallet,
+                                    backgroundColor:
+                                        context.appColors.background,
+                                  ),
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(Icons.attach_money),
+                                    label: context.loc.navigationTabExchange,
+                                    backgroundColor:
+                                        context.appColors.background,
+                                  ),
+                                ],
                               ),
                             ],
                           ),

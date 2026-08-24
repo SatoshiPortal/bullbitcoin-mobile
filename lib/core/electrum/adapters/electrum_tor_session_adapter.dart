@@ -24,10 +24,7 @@ final class ElectrumTorSessionAdapter implements ElectrumTorSessionPort {
     if (externalProxyEnabled) {
       final TorProxyEndpoint endpoint;
       try {
-        endpoint = TorProxyEndpoint(
-          host: '127.0.0.1',
-          port: externalProxyPort,
-        );
+        endpoint = TorProxyEndpoint(host: '127.0.0.1', port: externalProxyPort);
       } on ArgumentError {
         throw OnionServerWithoutTorException(serverUrl);
       }

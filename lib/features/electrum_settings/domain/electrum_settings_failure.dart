@@ -32,11 +32,9 @@ final class ElectrumServersUnreachableFailure extends ElectrumServersFailure {
   const ElectrumServersUnreachableFailure([super.logMessage]);
 }
 
-final class ElectrumServersConfiguredExternalTorUnavailableFailure
+final class ElectrumServersExternalTorProxyUnavailableFailure
     extends ElectrumServersFailure {
-  const ElectrumServersConfiguredExternalTorUnavailableFailure([
-    super.logMessage,
-  ]);
+  const ElectrumServersExternalTorProxyUnavailableFailure([super.logMessage]);
 }
 
 final class ElectrumServersUnexpectedFailure extends ElectrumServersFailure {

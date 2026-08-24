@@ -51,13 +51,15 @@ void main() {
       request.response
         ..statusCode = HttpStatus.ok
         ..headers.contentType = ContentType.json
-        ..write(jsonEncode({
-          'fastestFee': 5,
-          'halfHourFee': 4,
-          'hourFee': 3,
-          'economyFee': 2,
-          'minimumFee': 1,
-        }))
+        ..write(
+          jsonEncode({
+            'fastestFee': 5,
+            'halfHourFee': 4,
+            'hourFee': 3,
+            'economyFee': 2,
+            'minimumFee': 1,
+          }),
+        )
         ..close();
     });
     socks = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
@@ -88,20 +90,17 @@ void main() {
       enableSsl: false,
     );
 
-    when(() => globalSettings.fetch()).thenAnswer(
-      (_) async => _torSettings(socks.port),
-    );
+    when(
+      () => globalSettings.fetch(),
+    ).thenAnswer((_) async => _torSettings(socks.port));
     when(() => mempoolSettings.fetchByNetwork(network)).thenAnswer(
       (_) async => Ok(
-        MempoolSettings.existing(
-          network: network,
-          useForFeeEstimation: true,
-        ),
+        MempoolSettings.existing(network: network, useForFeeEstimation: true),
       ),
     );
-    when(() => mempoolServers.fetchCustomServer(network)).thenAnswer(
-      (_) async => Ok(server),
-    );
+    when(
+      () => mempoolServers.fetchCustomServer(network),
+    ).thenAnswer((_) async => Ok(server));
 
     locator.registerSingleton<SettingsRepository>(globalSettings);
     locator.registerSingleton<MempoolSettingsRepository>(mempoolSettings);

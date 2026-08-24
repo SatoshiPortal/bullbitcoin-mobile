@@ -437,10 +437,8 @@ class ElectrumSettingsBloc
           ElectrumServersAlreadyExistsFailure(failure.logMessage),
         core.ElectrumServerUnreachableFailure() =>
           ElectrumServersUnreachableFailure(failure.logMessage),
-        core.ElectrumConfiguredExternalTorUnavailableFailure() =>
-          ElectrumServersConfiguredExternalTorUnavailableFailure(
-            failure.logMessage,
-          ),
+        core.ElectrumExternalTorProxyUnavailableFailure() =>
+          ElectrumServersExternalTorProxyUnavailableFailure(failure.logMessage),
         core.ElectrumUnexpectedFailure() => ElectrumServersUnexpectedFailure(
           failure.logMessage,
         ),

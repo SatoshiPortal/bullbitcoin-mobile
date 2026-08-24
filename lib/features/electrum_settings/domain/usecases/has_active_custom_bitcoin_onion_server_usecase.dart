@@ -23,9 +23,7 @@ final class HasActiveCustomBitcoinOnionServerUsecase {
       );
       return result.fold(
         (servers) => servers.any(
-          (server) =>
-              server.isCustom &&
-              ElectrumServerUrl(server.url).isOnion,
+          (server) => server.isCustom && ElectrumServerUrl(server.url).isOnion,
         ),
         (_) => false,
       );

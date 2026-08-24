@@ -7,9 +7,8 @@ import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/tor/configured_external_tor.dart';
-import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:meta/meta.dart';
@@ -19,14 +18,14 @@ class AddCustomServerUsecase {
   final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
   final ElectrumTorSessionPort _torSessionPort;
-  final ResolveConfiguredExternalTorUsecase _resolveExternalTor;
+  final SettingsRepository _settingsRepository;
 
   AddCustomServerUsecase({
     required this._electrumServerRepository,
     required this._electrumSettingsRepository,
     required this._serverStatusPort,
     required this._torSessionPort,
-    required this._resolveExternalTor,
+    required this._settingsRepository,
   });
 
   @useResult
@@ -66,22 +65,14 @@ class AddCustomServerUsecase {
           return Err(failure);
       }
 
-      final configuredExternal = server.network.isLiquid
-          ? const ConfiguredExternalTorDisabled()
-          : await _resolveExternalTor.execute();
-      if (configuredExternal is ConfiguredExternalTorUnavailable) {
-        return const Err(ElectrumConfiguredExternalTorUnavailableFailure());
-      }
-      final configuredExternalRoute = switch (configuredExternal) {
-        ConfiguredExternalTorReady(:final route) => route,
-        ConfiguredExternalTorDisabled() => null,
-        ConfiguredExternalTorUnavailable() => null,
-      };
+      final appSettings = await _settingsRepository.fetch();
 
       final route = await _torSessionPort.open(
         network: server.network,
         serverUrl: server.url,
-        configuredExternalRoute: configuredExternalRoute,
+        isCustom: server.isCustom,
+        externalProxyEnabled: appSettings.useTorProxy,
+        externalProxyPort: appSettings.torProxyPort,
       );
       try {
         // Step 1: verify the TCP/SSL socket is reachable.
@@ -111,13 +102,20 @@ class AddCustomServerUsecase {
       // Both checks passed — persist the server.
       final saveResult = await _electrumServerRepository.save(server);
       return saveResult.map((_) => ElectrumServerStatus.online);
-    } catch (e, st) {
+    } on OnionServerWithoutTorException catch (error, st) {
+      log.severe(
+        message: 'External Tor unavailable for custom onion server',
+        error: error,
+        trace: st,
+      );
+      return const Err(ElectrumExternalTorProxyUnavailableFailure());
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to add custom electrum server',
         error: e,
         trace: st,
       );
-      return Err(ElectrumUnexpectedFailure(e.toString()));
+      return const Err(ElectrumUnexpectedFailure());
     }
   }
 }

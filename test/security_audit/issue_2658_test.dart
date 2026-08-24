@@ -13,7 +13,9 @@ void main() {
     expect(source, isNot(contains('SocksTCPClient')));
     expect(
       source,
-      isNot(contains('core/settings/domain/repositories/settings_repository.dart')),
+      isNot(
+        contains('core/settings/domain/repositories/settings_repository.dart'),
+      ),
     );
     expect(source, isNot(contains('useTorProxy')));
     expect(source, isNot(contains('torProxyPort')));

@@ -30,50 +30,59 @@ void main() {
     settings = _Settings();
     servers = _Servers();
     when(settings.fetch).thenAnswer((_) async => _settings());
-    when(() => servers.fetchActiveServers(network: any(named: 'network')))
-        .thenAnswer((_) async => const Ok([]));
+    when(
+      () => servers.fetchActiveServers(network: any(named: 'network')),
+    ).thenAnswer((_) async => const Ok([]));
   });
 
   test('recognizes onion and onion-dot custom Bitcoin servers', () async {
-    when(() => servers.fetchActiveServers(network: any(named: 'network')))
-        .thenAnswer(
-          (_) async => Ok([
-            ElectrumServer.existing(
-              url: 'ssl://one.onion.:50002',
-              network: ElectrumServerNetwork.bitcoinMainnet,
-              isCustom: true,
-              priority: 0,
-            ),
-          ]),
-        );
+    when(
+      () => servers.fetchActiveServers(network: any(named: 'network')),
+    ).thenAnswer(
+      (_) async => Ok([
+        ElectrumServer.existing(
+          url: 'ssl://one.onion.:50002',
+          network: ElectrumServerNetwork.bitcoinMainnet,
+          isCustom: true,
+          priority: 0,
+        ),
+      ]),
+    );
 
     expect(
-      await HasActiveCustomBitcoinOnionServerUsecase(servers, settings).execute(),
+      await HasActiveCustomBitcoinOnionServerUsecase(
+        servers,
+        settings,
+      ).execute(),
       isTrue,
     );
   });
 
   test('ignores clearnet, non-custom, and Liquid servers', () async {
-    when(() => servers.fetchActiveServers(network: any(named: 'network')))
-        .thenAnswer(
-          (_) async => Ok([
-            ElectrumServer.existing(
-              url: 'ssl://one.example:50002',
-              network: ElectrumServerNetwork.bitcoinMainnet,
-              isCustom: true,
-              priority: 0,
-            ),
-            ElectrumServer.existing(
-              url: 'ssl://two.onion:50002',
-              network: ElectrumServerNetwork.bitcoinMainnet,
-              isCustom: false,
-              priority: 1,
-            ),
-          ]),
-        );
+    when(
+      () => servers.fetchActiveServers(network: any(named: 'network')),
+    ).thenAnswer(
+      (_) async => Ok([
+        ElectrumServer.existing(
+          url: 'ssl://one.example:50002',
+          network: ElectrumServerNetwork.bitcoinMainnet,
+          isCustom: true,
+          priority: 0,
+        ),
+        ElectrumServer.existing(
+          url: 'ssl://two.onion:50002',
+          network: ElectrumServerNetwork.bitcoinMainnet,
+          isCustom: false,
+          priority: 1,
+        ),
+      ]),
+    );
 
     expect(
-      await HasActiveCustomBitcoinOnionServerUsecase(servers, settings).execute(),
+      await HasActiveCustomBitcoinOnionServerUsecase(
+        servers,
+        settings,
+      ).execute(),
       isFalse,
     );
   });

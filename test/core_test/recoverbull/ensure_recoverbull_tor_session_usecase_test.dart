@@ -81,9 +81,7 @@ void main() {
   });
 
   setUpAll(() {
-    registerFallbackValue(
-      TorProxyEndpoint(host: '127.0.0.1', port: 9050),
-    );
+    registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
 
   test('accepts an embedded Onion route', () async {
@@ -156,9 +154,9 @@ void main() {
   });
 
   test('fails closed for an invalid external proxy port', () async {
-    when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => _settings(useTorProxy: true, torProxyPort: 0),
-    );
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _settings(useTorProxy: true, torProxyPort: 0));
 
     final result = await usecase.execute();
 

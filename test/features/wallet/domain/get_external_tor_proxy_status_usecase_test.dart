@@ -36,9 +36,7 @@ SettingsEntity settings({required bool useTorProxy, int port = 9050}) =>
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(
-      TorProxyEndpoint(host: '127.0.0.1', port: 9050),
-    );
+    registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
 
   GetExternalTorProxyStatusUsecase usecase(

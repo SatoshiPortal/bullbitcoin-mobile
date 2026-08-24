@@ -8,7 +8,7 @@ void main() {
   testWidgets('translates configured Tor failure without its raw detail', (
     tester,
   ) async {
-    const failure = ElectrumServersConfiguredExternalTorUnavailableFailure(
+    const failure = ElectrumServersExternalTorProxyUnavailableFailure(
       'secret detail',
     );
     await tester.pumpWidget(

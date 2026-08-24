@@ -48,7 +48,7 @@ void main() {
     final add = _MockAddCustomServerUsecase();
     when(() => add.execute(any())).thenAnswer(
       (_) async => const Err<ElectrumServerStatus, core.ElectrumFailure>(
-        core.ElectrumConfiguredExternalTorUnavailableFailure(),
+        core.ElectrumExternalTorProxyUnavailableFailure(),
       ),
     );
     final bloc = ElectrumSettingsBloc(
@@ -69,7 +69,7 @@ void main() {
 
     expect(
       state.electrumServersError,
-      isA<ElectrumServersConfiguredExternalTorUnavailableFailure>(),
+      isA<ElectrumServersExternalTorProxyUnavailableFailure>(),
     );
   });
 }

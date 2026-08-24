@@ -18,7 +18,7 @@ void main() {
           path: '/',
           builder: (context, state) => const Scaffold(
             body: ElectrumServersErrorCard(
-              failure: ElectrumServersConfiguredExternalTorUnavailableFailure(),
+              failure: ElectrumServersExternalTorProxyUnavailableFailure(),
             ),
           ),
         ),

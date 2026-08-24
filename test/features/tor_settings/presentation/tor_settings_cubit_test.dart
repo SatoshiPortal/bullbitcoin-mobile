@@ -5,9 +5,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_proxy_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_transport_mode_usecase.dart';
+import 'package:bb_mobile/features/tor_settings/domain/check_external_tor_connection_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
-import 'package:bb_mobile/core/tor/configured_external_tor.dart';
-import 'package:bb_mobile/core/tor/resolve_configured_external_tor_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
@@ -26,38 +25,54 @@ class _MockUpdateTorTransportModeUsecase extends Mock
 class _MockWatchTorConnectionUsecase extends Mock
     implements WatchTorConnectionUsecase {}
 
-class _ResolverFromPort implements ResolveConfiguredExternalTorUsecase {
-  final ExternalTorPort _port;
-  final int _portNumber;
-
-  const _ResolverFromPort(this._port, {int port = 9050}) : _portNumber = port;
-
-  @override
-  Future<ConfiguredExternalTor> execute() async {
+CheckExternalTorConnectionUsecase _resolverFromPort(
+  ExternalTorPort port, {
+  int portNumber = 9050,
+}) {
+  final settings = _MockGetSettingsUsecase();
+  final tor = _MockTor();
+  final external = _MockExternalTor();
+  when(settings.execute).thenAnswer(
+    (_) async => SettingsEntity(
+      environment: Environment.mainnet,
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'USD',
+      useTorProxy: true,
+      torProxyPort: portNumber,
+    ),
+  );
+  when(() => tor.external).thenReturn(external);
+  when(() => external.verify(any())).thenAnswer((invocation) async {
+    final endpoint = invocation.positionalArguments.single as TorProxyEndpoint;
     try {
-      final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: _portNumber);
-      await _port.verify(endpoint);
-      return ConfiguredExternalTorReady(
+      await port.verify(endpoint);
+      return TorReady(
         TorRoute(
           source: TorSource.external,
           endpoint: endpoint,
           evidence: TorReadinessEvidence.externalSocksHandshake,
         ),
       );
-    } catch (error) {
-      return ConfiguredExternalTorUnavailable(
-        TorExternalProxyUnavailableFailure(error.toString()),
+    } on Exception {
+      return const TorUnavailable(
+        source: TorSource.external,
+        failure: TorExternalProxyUnavailableFailure(),
       );
     }
-  }
+  });
+  return CheckExternalTorConnectionUsecase(settings, tor);
 }
+
+class _MockTor extends Mock implements Tor {}
+
+class _MockExternalTor extends Mock implements ExternalTor {}
 
 class _FakeExternalTorPort implements ExternalTorPort {
   bool available = true;
 
   @override
   Future<void> verify(TorProxyEndpoint endpoint) async {
-    if (!available) throw StateError('proxy unavailable');
+    if (!available) throw Exception('proxy unavailable');
   }
 }
 
@@ -97,11 +112,14 @@ class _SignalingExternalTorPort implements ExternalTorPort {
   @override
   Future<void> verify(TorProxyEndpoint endpoint) async {
     verificationStarted.complete();
-    if (!available) throw StateError('proxy unavailable');
+    if (!available) throw Exception('proxy unavailable');
   }
 }
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
+  });
   test('does not emit when settings finish loading after close', () async {
     final getSettings = _MockGetSettingsUsecase();
     final settings = Completer<SettingsEntity>();
@@ -112,7 +130,7 @@ void main() {
       updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: _MockWatchTorConnectionUsecase(),
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(
+      checkExternalTorConnectionUsecase: _resolverFromPort(
         _FakeExternalTorPort(),
       ),
     );
@@ -156,9 +174,9 @@ void main() {
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(
+        checkExternalTorConnectionUsecase: _resolverFromPort(
           _FakeExternalTorPort(),
-          port: 0,
+          portNumber: 0,
         ),
       );
       addTearDown(cubit.close);
@@ -198,7 +216,7 @@ void main() {
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+        checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
       addTearDown(cubit.close);
 
@@ -258,7 +276,7 @@ void main() {
       updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: watchTor,
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+      checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
     addTearDown(cubit.close);
 
@@ -289,7 +307,7 @@ void main() {
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(
+        checkExternalTorConnectionUsecase: _resolverFromPort(
           _FakeExternalTorPort(),
         ),
       );
@@ -340,7 +358,7 @@ void main() {
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: watchTor,
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+      checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
     addTearDown(cubit.close);
 
@@ -394,7 +412,7 @@ void main() {
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: watchTor,
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+      checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
     addTearDown(cubit.close);
 
@@ -444,7 +462,7 @@ void main() {
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: watchTor,
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+      checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
     addTearDown(cubit.close);
 
@@ -491,7 +509,7 @@ void main() {
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+        checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
       addTearDown(cubit.close);
 
@@ -535,7 +553,7 @@ void main() {
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: watchTor,
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+      checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
     addTearDown(cubit.close);
 
@@ -572,7 +590,7 @@ void main() {
       updateTorProxyUsecase: updateProxy,
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchTorConnectionUsecase: watchTor,
-      resolveConfiguredExternalTorUsecase: _ResolverFromPort(
+      checkExternalTorConnectionUsecase: _resolverFromPort(
         _FakeExternalTorPort(),
       ),
     );
@@ -629,7 +647,7 @@ void main() {
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+        checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
       addTearDown(cubit.close);
 
@@ -677,7 +695,7 @@ void main() {
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+        checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
       addTearDown(cubit.close);
 
@@ -712,7 +730,7 @@ void main() {
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+        checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
       addTearDown(cubit.close);
 
@@ -744,7 +762,7 @@ void main() {
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchTorConnectionUsecase: watchTor,
-        resolveConfiguredExternalTorUsecase: _ResolverFromPort(externalPort),
+        checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
       addTearDown(cubit.close);
 

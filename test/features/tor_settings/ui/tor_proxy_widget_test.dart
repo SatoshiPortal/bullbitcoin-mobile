@@ -67,10 +67,10 @@ void main() {
     expect(find.text(l10n.torSettingsEmbeddedTitle), findsNothing);
     expect(find.text(l10n.torSettingsTransportMode), findsNothing);
     expect(find.text('Local SOCKS5 proxy (advanced)'), findsOneWidget);
-    expect(find.text('SOCKS5 proxy reachable'), findsOneWidget);
+    expect(find.text(l10n.torSettingsExternalProxyReachable), findsOneWidget);
     expect(find.text('Retry'), findsNothing);
     expect(
-      find.text('The configured SOCKS5 proxy accepted a connection.'),
+      find.text(l10n.torSettingsExternalProxyReachableDescription),
       findsOneWidget,
     );
   });
@@ -130,7 +130,7 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.torSettingsConnectionStatus), findsOneWidget);
     expect(find.text(l10n.torSettingsStatusConnected), findsOneWidget);
-    expect(find.text('SOCKS5 proxy reachable'), findsNothing);
+    expect(find.text(l10n.torSettingsExternalProxyReachable), findsNothing);
     expect(find.text(l10n.torSettingsEmbeddedTitle), findsOneWidget);
     expect(find.text(l10n.torSettingsTransportMode), findsOneWidget);
     expect(find.text(l10n.torSettingsPortDisplay(9050)), findsOneWidget);
