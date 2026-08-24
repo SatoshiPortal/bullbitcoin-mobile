@@ -23,3 +23,7 @@ final class SettingsSigningKeyExportFailure extends SettingsFailure {
 final class SettingsWalletPolicyFailure extends SettingsFailure {
   const SettingsWalletPolicyFailure([super.logMessage]);
 }
+
+final class SettingsWalletRegistrationFailure extends SettingsFailure {
+  const SettingsWalletRegistrationFailure([super.logMessage]);
+}
