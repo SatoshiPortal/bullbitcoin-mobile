@@ -19,6 +19,8 @@ extension LedgerFailureL10n on LedgerFailure {
     LedgerDeviceLockedFailure() => context.loc.ledgerErrorDeviceLocked,
     LedgerBitcoinAppNotOpenFailure() =>
       context.loc.ledgerErrorBitcoinAppNotOpen,
+    LedgerBitcoinAppUpdateRequiredFailure() =>
+      context.loc.ledgerErrorBitcoinAppUpdateRequired,
     LedgerMissingPsbtFailure() => context.loc.ledgerErrorMissingPsbt,
     LedgerMissingAddressFailure() => context.loc.ledgerErrorMissingAddress,
     LedgerMissingDerivationPathFailure() =>

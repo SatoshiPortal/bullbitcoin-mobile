@@ -14,6 +14,12 @@ abstract interface class BitcoinDescriptorPort {
     required Network network,
   });
 
+  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
+  analyzeBitcoinPolicyDescriptor({
+    required String descriptor,
+    required Network network,
+  });
+
   Future<Wallet> importDescriptor({
     required String descriptor,
     required Network network,
