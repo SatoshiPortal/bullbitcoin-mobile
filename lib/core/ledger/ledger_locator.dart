@@ -1,14 +1,20 @@
 import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.dart';
+import 'package:bb_mobile/core/ledger/data/datasources/ledger_wallet_policy_hmac_datasource.dart';
 import 'package:bb_mobile/core/ledger/data/repositories/ledger_device_repository_impl.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/register_wallet_policy_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/sign_wallet_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/verify_wallet_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:get_it/get_it.dart';
 
 class LedgerLocator {
@@ -16,12 +22,20 @@ class LedgerLocator {
     locator.registerLazySingleton<LedgerDeviceDatasource>(
       () => LedgerDeviceDatasource(),
     );
+    locator.registerLazySingleton<LedgerWalletPolicyHmacDatasource>(
+      () => LedgerWalletPolicyHmacDatasource(
+        locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+      ),
+    );
   }
 
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<LedgerDeviceRepository>(
       () => LedgerDeviceRepositoryImpl(
         datasource: locator<LedgerDeviceDatasource>(),
+        hmacDatasource: locator<LedgerWalletPolicyHmacDatasource>(),
       ),
     );
   }
@@ -59,6 +73,21 @@ class LedgerLocator {
     );
     locator.registerFactory<VerifyAddressLedgerUsecase>(
       () => VerifyAddressLedgerUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<RegisterWalletPolicyLedgerUsecase>(
+      () => RegisterWalletPolicyLedgerUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<SignWalletPsbtLedgerUsecase>(
+      () => SignWalletPsbtLedgerUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<VerifyWalletAddressLedgerUsecase>(
+      () => VerifyWalletAddressLedgerUsecase(
         repository: locator<LedgerDeviceRepository>(),
       ),
     );
