@@ -10084,13 +10084,17 @@
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
-  "ledgerErrorUnknown": "Unknown error",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
-  "ledgerErrorUnknownOccurred": "Unknown error aaya",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
+  "ledgerErrorPermissionDenied": "Ledger device se connect karne ke liye Bluetooth permissions zaroori hain.",
+  "ledgerErrorNoDevicesFound": "Koi Ledger device nahi mila. Sunishchit karein ki aapka device on hai aur Bluetooth enabled hai.",
+  "ledgerErrorMultipleDevicesFound": "Kai Ledger devices mile. Kripya sunishchit karein ki paas mein sirf ek hi device ho.",
+  "ledgerErrorDeviceNotFound": "Ledger device nahi mila.",
+  "ledgerErrorDeviceMismatch": "Device mismatch detect hua.",
+  "ledgerErrorInvalidPsbt": "Invalid PSBT format detect hua.",
+  "ledgerErrorMissingDerivationPath": "Derivation path zaroori hai",
+  "ledgerErrorMissingScriptType": "Script type zaroori hai",
+  "ledgerErrorDeviceBusy": "Koi doosra program aapke Ledger ka use kar raha hai. Kripya use band karo (jaise ki Ledger Live) aur dobara try karo.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
   },
   "ledgerErrorNoConnection": "Koi Ledger connection available nahi hai",
   "@ledgerErrorNoConnection": {
@@ -10112,25 +10116,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "Sign karne ke liye derivation path zaruri hai",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Sign karne ke liye script type zaruri hai",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "Verification ke liye address zaruri hai",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "Verification ke liye derivation path zaruri hai",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "Verification ke liye script type zaruri hai",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "Dobara Try Karo",
   "@ledgerButtonTryAgain": {

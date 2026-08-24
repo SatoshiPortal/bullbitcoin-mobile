@@ -1,158 +1,104 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
-import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
+import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
-  final LedgerDeviceRepository _repository;
+  final DisconnectLedgerDeviceUsecase _disconnectLedgerDeviceUsecase;
+  final DisposeLedgerConnectionsUsecase _disposeLedgerConnectionsUsecase;
   final SignerDeviceEntity? _requestedDeviceType;
 
   LedgerOperationCubit({
     required this._scanLedgerDevicesUsecase,
     required this._connectLedgerDeviceUsecase,
+    required this._disconnectLedgerDeviceUsecase,
+    required this._disposeLedgerConnectionsUsecase,
     this._requestedDeviceType,
-  }) : _repository = locator<LedgerDeviceRepository>(),
-       super(const LedgerOperationState());
+  }) : super(const LedgerOperationState());
 
   LedgerDeviceEntity? get connectedDevice => state.connectedDevice;
 
   @override
   Future<void> close() async {
-    try {
-      await _repository.dispose();
-    } catch (e) {
-      log.warning('Error disposing Ledger repository', error: e);
-    }
-
+    _logTeardown(await _disposeLedgerConnectionsUsecase.execute(), 'dispose');
     await super.close();
   }
 
-  Future<void> executeOperation(Future<dynamic> Function() operation) async {
-    try {
-      if (state.connectedDevice != null) {
-        await _repository.disconnectConnection(state.connectedDevice!);
-      }
+  void _logTeardown(Result<void, LedgerFailure> result, String step) {
+    result.fold(
+      (_) {},
+      (failure) => log.warning('Ledger $step failed: ${failure.runtimeType}'),
+    );
+  }
 
-      emit(
-        state.copyWith(
-          status: LedgerOperationStatus.scanning,
-          errorMessage: null,
-        ),
+  /// Runs [operation] after scanning for and connecting to a device. Every step
+  /// yields a typed [LedgerFailure] on error — nothing is thrown across this
+  /// boundary and no raw text is ever stored in state.
+  Future<void> executeOperation<T>(
+    Future<Result<T, LedgerFailure>> Function() operation,
+  ) async {
+    if (state.connectedDevice != null) {
+      _logTeardown(
+        await _disconnectLedgerDeviceUsecase.execute(state.connectedDevice!),
+        'disconnect',
       );
-      final devices = await _scanLedgerDevicesUsecase.execute(
-        deviceType: _requestedDeviceType,
-      );
-
-      emit(
-        state.copyWith(
-          status: LedgerOperationStatus.connecting,
-          connectedDevice: devices.first,
-        ),
-      );
-
-      await _connectLedgerDeviceUsecase.execute(devices.first);
-
-      emit(state.copyWith(status: LedgerOperationStatus.processing));
-
-      try {
-        final result = await operation();
-        emit(
-          state.copyWith(status: LedgerOperationStatus.success, result: result),
-        );
-      } catch (e) {
-        final interpretedMessage = _interpretErrorCode(e.toString());
-        if (interpretedMessage != null) {
-          throw LedgerError.operationFailed(message: interpretedMessage);
-        }
-        throw LedgerError.operationFailed(message: e.toString());
-      }
-    } on LedgerError catch (e) {
-      final message = e.message;
-      log.severe(error: e, trace: StackTrace.current);
-      emit(
-        state.copyWith(
-          status: LedgerOperationStatus.error,
-          errorMessage: message,
-        ),
-      );
-      rethrow;
-    } on Exception catch (e) {
-      final interpretedMessage = _interpretErrorCode(e.toString());
-      if (interpretedMessage != null) {
-        log.severe(error: e, trace: StackTrace.current);
-        emit(
-          state.copyWith(
-            status: LedgerOperationStatus.error,
-            errorMessage: interpretedMessage,
-          ),
-        );
-      } else {
-        log.severe(error: e, trace: StackTrace.current);
-        emit(
-          state.copyWith(
-            status: LedgerOperationStatus.error,
-            errorMessage: e.toString(),
-          ),
-        );
-      }
-      rethrow;
     }
+
+    emit(state.copyWith(status: LedgerOperationStatus.scanning, failure: null));
+
+    final List<LedgerDeviceEntity> devices;
+    switch (await _scanLedgerDevicesUsecase.execute(
+      deviceType: _requestedDeviceType,
+    )) {
+      case Ok(:final value):
+        devices = value;
+      case Err(:final failure):
+        return _emitFailure(failure);
+    }
+    if (devices.isEmpty) {
+      return _emitFailure(const LedgerNoDevicesFoundFailure());
+    }
+
+    emit(
+      state.copyWith(
+        status: LedgerOperationStatus.connecting,
+        connectedDevice: devices.first,
+      ),
+    );
+
+    switch (await _connectLedgerDeviceUsecase.execute(devices.first)) {
+      case Ok():
+        break;
+      case Err(:final failure):
+        return _emitFailure(failure);
+    }
+
+    emit(state.copyWith(status: LedgerOperationStatus.processing));
+
+    switch (await operation()) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(status: LedgerOperationStatus.success, result: value),
+        );
+      case Err(:final failure):
+        _emitFailure(failure);
+    }
+  }
+
+  void _emitFailure(LedgerFailure failure) {
+    emit(state.copyWith(status: LedgerOperationStatus.error, failure: failure));
   }
 
   void reset() {
     emit(const LedgerOperationState());
   }
-}
-
-// Interpret error codes from Ledger operations.
-// Note: The returned strings are error keys that should be localized in the UI layer.
-// These keys correspond to entries in the localization ARB files (ledgerError*).
-String? _interpretErrorCode(String error) {
-  if (error.contains(
-    "Make sure no other program is communicating with the Ledger",
-  )) {
-    return error;
-  }
-
-  // Map error codes to localization keys
-  final errorCodePatterns = {
-    '6985': 'LEDGER_ERROR_REJECTED_BY_USER', // User rejected transaction
-    '5515': 'LEDGER_ERROR_DEVICE_LOCKED', // Device is locked
-    '6e01': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN', // Bitcoin app not open
-    '6a87': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
-    '6d02': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
-    '6511': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
-    '6e00': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
-  };
-
-  final patterns = [
-    RegExp(r'(?:0x\S*?|[0-9a-f]{4})(?= )'),
-    RegExp('Exception:\\s*([0-9a-f]{4})'),
-    RegExp('[0-9a-f]{4}'),
-  ];
-
-  for (final pattern in patterns) {
-    final match = pattern.firstMatch(error);
-    if (match != null) {
-      final errorCode =
-          match.group(0)?.replaceAll("0x", "").replaceAll("Exception: ", "") ??
-          "";
-
-      for (final entry in errorCodePatterns.entries) {
-        if (errorCode.contains(entry.key)) {
-          return entry.value;
-        }
-      }
-    }
-  }
-
-  return null;
 }

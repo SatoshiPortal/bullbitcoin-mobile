@@ -734,10 +734,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "Το άγνωστο λάθος συνέβη",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "Λήψη διεύθυνση",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -5480,10 +5476,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "Απαιτούμενο μονοπάτι για την υπογραφή",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "Ανοίξτε το πορτοφόλι σας",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -6468,14 +6460,6 @@
   "addressCardIndexLabel": "Index: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "Απαιτούμενο μονοπάτι για επαλήθευση",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Ο τύπος Script απαιτείται για την υπογραφή",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "Συνεχίστε να συνεχίζετε",
   "@dcaSetupContinue": {
@@ -7807,6 +7791,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "Ένα άλλο πρόγραμμα χρησιμοποιεί το Ledger σας. Παρακαλώ κλείστε το (για παράδειγμα το Ledger Live) και δοκιμάστε ξανά.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "No Ledger σύνδεση διαθέσιμη",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -8119,10 +8107,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "Ο τύπος Script απαιτείται για επαλήθευση",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "Anonymous backup με ισχυρή κρυπτογράφηση χρησιμοποιώντας το σύννεφο σας.",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -8188,10 +8172,14 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "ledgerErrorUnknown": "Άγνωστο λάθος",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
+  "ledgerErrorPermissionDenied": "Απαιτούνται άδειες Bluetooth για τη σύνδεση με συσκευές Ledger.",
+  "ledgerErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές Ledger. Βεβαιωθείτε ότι η συσκευή σας είναι ενεργοποιημένη και το Bluetooth ενεργό.",
+  "ledgerErrorMultipleDevicesFound": "Βρέθηκαν πολλές συσκευές Ledger. Βεβαιωθείτε ότι υπάρχει μόνο μία συσκευή κοντά.",
+  "ledgerErrorDeviceNotFound": "Η συσκευή Ledger δεν βρέθηκε.",
+  "ledgerErrorDeviceMismatch": "Εντοπίστηκε ασυμφωνία συσκευής.",
+  "ledgerErrorInvalidPsbt": "Εντοπίστηκε μη έγκυρη μορφή PSBT.",
+  "ledgerErrorMissingDerivationPath": "Απαιτείται διαδρομή παραγώγησης",
+  "ledgerErrorMissingScriptType": "Απαιτείται τύπος σεναρίου",
   "payBelowMinAmount": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"

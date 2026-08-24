@@ -826,10 +826,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "অজানা ত্রুটি ঘটেছে",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "গ্রহণের ঠিকানা",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6350,10 +6346,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "সাইন করার জন্য উৎপত্তি পথ প্রয়োজন।",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "আপনার ওয়ালেট ব্যাকআপ করুন",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7476,17 +7468,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "যাচাই করার জন্য উৎপত্তি পথ প্রয়োজন।",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "ভল্ট সেট করা হয়নি",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "সাইন করার জন্য স্ক্রিপ্ট ধরন প্রয়োজন।",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "চালিয়ে যান",
   "@dcaSetupContinue": {
@@ -9118,6 +9102,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "অন্য একটি প্রোগ্রাম আপনার Ledger ব্যবহার করছে। অনুগ্রহ করে এটি বন্ধ করুন (উদাহরণস্বরূপ, Ledger Live) এবং আবার চেষ্টা করুন।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "Ledger সংযোগ উপলব্ধ নয়",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -9535,10 +9523,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "যাচাই করার জন্য স্ক্রিপ্ট ধরন প্রয়োজন।",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "আপনার ক্লাউড ব্যবহার করে শক্ত এনক্রিপশনসহ গোপন ব্যাকআপ।",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -9620,10 +9604,14 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "অজানা ত্রুটি",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
+  "ledgerErrorPermissionDenied": "Ledger ডিভাইসের সাথে সংযোগ করতে ব্লুটুথ অনুমতি প্রয়োজন।",
+  "ledgerErrorNoDevicesFound": "কোনো Ledger ডিভাইস পাওয়া যায়নি। নিশ্চিত করুন যে আপনার ডিভাইসটি চালু আছে এবং ব্লুটুথ সক্রিয় আছে।",
+  "ledgerErrorMultipleDevicesFound": "একাধিক Ledger ডিভাইস পাওয়া গেছে। অনুগ্রহ করে নিশ্চিত করুন যে কাছে শুধুমাত্র একটি ডিভাইস আছে।",
+  "ledgerErrorDeviceNotFound": "Ledger ডিভাইস পাওয়া যায়নি।",
+  "ledgerErrorDeviceMismatch": "ডিভাইসের অমিল সনাক্ত হয়েছে।",
+  "ledgerErrorInvalidPsbt": "অবৈধ PSBT ফর্ম্যাট সনাক্ত হয়েছে।",
+  "ledgerErrorMissingDerivationPath": "ডেরিভেশন পাথ প্রয়োজন",
+  "ledgerErrorMissingScriptType": "স্ক্রিপ্ট টাইপ প্রয়োজন",
   "payBelowMinAmount": "আপনি এই ওয়ালেট দিয়ে ন্যূনতম পরিমাণের নিচে পাঠানোর চেষ্টা করছেন।",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"

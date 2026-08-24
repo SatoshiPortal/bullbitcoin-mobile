@@ -166,13 +166,17 @@
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
-  "ledgerErrorUnknown": "خطای ناشناخته",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
-  "ledgerErrorUnknownOccurred": "خطای ناشناخته رخ داد",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
+  "ledgerErrorPermissionDenied": "برای اتصال به دستگاه‌های Ledger مجوزهای بلوتوث لازم است.",
+  "ledgerErrorNoDevicesFound": "هیچ دستگاه Ledger یافت نشد. مطمئن شوید که دستگاه شما روشن است و بلوتوث فعال است.",
+  "ledgerErrorMultipleDevicesFound": "چندین دستگاه Ledger یافت شد. لطفاً مطمئن شوید که فقط یک دستگاه در نزدیکی است.",
+  "ledgerErrorDeviceNotFound": "دستگاه Ledger یافت نشد.",
+  "ledgerErrorDeviceMismatch": "عدم تطابق دستگاه شناسایی شد.",
+  "ledgerErrorInvalidPsbt": "قالب PSBT نامعتبر شناسایی شد.",
+  "ledgerErrorMissingDerivationPath": "مسیر اشتقاق لازم است",
+  "ledgerErrorMissingScriptType": "نوع اسکریپت لازم است",
+  "ledgerErrorDeviceBusy": "برنامه دیگری در حال استفاده از Ledger شما است. لطفاً آن را ببندید (برای مثال، Ledger Live) و دوباره امتحان کنید.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
   },
   "ledgerErrorNoConnection": "هیچ اتصال Ledger در دسترس نیست",
   "@ledgerErrorNoConnection": {
@@ -194,25 +198,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "مسیر راهنمایی برای امضای",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "نوع اسکریپت برای امضای",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "آدرس مورد نیاز برای تایید",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "مسیر راهنمایی برای تایید",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "نوع اسکریپت برای تأیید لازم است",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "دوباره امتحان کنید",
   "@ledgerButtonTryAgain": {

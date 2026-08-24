@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
+import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -42,7 +42,7 @@ class LedgerDeviceDatasource {
 
         if (!bluetoothConnectStatus.isGranted ||
             !bluetoothScanStatus.isGranted) {
-          throw const LedgerError.permissionDenied();
+          throw const PermissionDeniedLedgerException();
         }
       }
 
@@ -50,7 +50,7 @@ class LedgerDeviceDatasource {
       final bleIsEnabled = bleState == AvailabilityState.poweredOn;
 
       if (!bleIsEnabled) {
-        throw const LedgerError.permissionDenied();
+        throw const PermissionDeniedLedgerException();
       }
     }
 
@@ -131,15 +131,9 @@ class LedgerDeviceDatasource {
       return LedgerDeviceModel.fromLedgerDevice(device);
     }).toList();
 
-    if (deviceModels.isEmpty) {
-      throw const LedgerError.noDevicesFound();
+    if (devices.length == 1) {
+      _cachedDevice = devices.first;
     }
-
-    if (deviceModels.length > 1) {
-      throw const LedgerError.multipleDevicesFound();
-    }
-
-    _cachedDevice = devices.first;
     return deviceModels;
   }
 
@@ -149,7 +143,7 @@ class LedgerDeviceDatasource {
     }
 
     if (_cachedDevice == null || _cachedDevice!.id != device.id) {
-      throw const LedgerError.deviceNotFound();
+      throw const DeviceNotFoundLedgerException();
     }
 
     LedgerInterface? ledgerInterface;
@@ -160,7 +154,7 @@ class LedgerDeviceDatasource {
     }
 
     if (ledgerInterface == null) {
-      throw const LedgerError.connectionTypeNotInitialized();
+      throw const ConnectionTypeNotInitializedLedgerException();
     }
 
     // Adding retry logic due to permission dialog not returning
@@ -187,11 +181,11 @@ class LedgerDeviceDatasource {
 
   LedgerConnection _getSdkConnection(LedgerDeviceModel device) {
     if (_cachedConnection == null) {
-      throw const LedgerError.noActiveConnection();
+      throw const NoActiveConnectionLedgerException();
     }
 
     if (_cachedDevice == null || _cachedDevice!.id != device.id) {
-      throw const LedgerError.deviceMismatch();
+      throw const DeviceMismatchLedgerException();
     }
 
     return _cachedConnection!;
@@ -320,7 +314,7 @@ extension PsbtSigner on PsbtV2 {
       bufferReader.readSlice(5),
       Uint8List.fromList([0x70, 0x73, 0x62, 0x74, 0xff]),
     )) {
-      throw const LedgerError.invalidMagicBytes();
+      throw const InvalidMagicBytesLedgerException();
     }
     while (_readKeyPair(globalMap, bufferReader)) {}
 

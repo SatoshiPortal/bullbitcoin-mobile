@@ -830,10 +830,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "Bilinmeyen hata meydana geldi",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "Get Address",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6501,10 +6497,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "Türleme yolu imzalamak için gereklidir",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "Cüzdanınızı Değiştirin",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7635,17 +7627,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "Doğrulama yolu doğrulama için gereklidir",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault ayarlanmamış değildir",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Senaryo türü imzalamak için gereklidir",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "Devam etmeye devam et",
   "@dcaSetupContinue": {
@@ -9294,6 +9278,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "Başka bir program Ledger'ınızı kullanıyor. Lütfen onu kapatın (örneğin, Ledger Live) ve tekrar deneyin.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "No Ledger bağlantısı mevcut",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -9715,10 +9703,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "Senaryo türü doğrulama için gereklidir",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "Bulutunuzu kullanarak güçlü şifreleme ile anonim yedekleme.",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -9800,10 +9784,14 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "Bilinmeyen hata",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
+  "ledgerErrorPermissionDenied": "Ledger cihazlarına bağlanmak için Bluetooth izinleri gereklidir.",
+  "ledgerErrorNoDevicesFound": "Ledger cihazı bulunamadı. Cihazınızın açık ve Bluetooth'un etkin olduğundan emin olun.",
+  "ledgerErrorMultipleDevicesFound": "Birden fazla Ledger cihazı bulundu. Lütfen yakında yalnızca bir cihaz olduğundan emin olun.",
+  "ledgerErrorDeviceNotFound": "Ledger cihazı bulunamadı.",
+  "ledgerErrorDeviceMismatch": "Cihaz uyuşmazlığı tespit edildi.",
+  "ledgerErrorInvalidPsbt": "Geçersiz PSBT formatı tespit edildi.",
+  "ledgerErrorMissingDerivationPath": "Türetme yolu gereklidir",
+  "ledgerErrorMissingScriptType": "Betik türü gereklidir",
   "payBelowMinAmount": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"
