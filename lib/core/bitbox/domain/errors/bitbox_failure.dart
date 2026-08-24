@@ -56,6 +56,22 @@ final class InvalidParametersBitBoxFailure extends BitBoxFailure {
   const InvalidParametersBitBoxFailure([super.logMessage]);
 }
 
+final class WalletSignerMismatchBitBoxFailure extends BitBoxFailure {
+  const WalletSignerMismatchBitBoxFailure();
+}
+
+final class AddressMismatchBitBoxFailure extends BitBoxFailure {
+  const AddressMismatchBitBoxFailure();
+}
+
+final class UnsupportedWalletPolicyBitBoxFailure extends BitBoxFailure {
+  const UnsupportedWalletPolicyBitBoxFailure([super.logMessage]);
+}
+
+final class WalletPolicyNotRegisteredBitBoxFailure extends BitBoxFailure {
+  const WalletPolicyNotRegisteredBitBoxFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class BitBoxUnexpectedFailure extends BitBoxFailure {
