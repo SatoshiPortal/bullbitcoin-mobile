@@ -222,11 +222,13 @@ class _BitcoinSignerTile extends StatelessWidget {
       return;
     }
 
+    final usesDevicePsbtFlow =
+        wallet?.supportsDevicePsbtFlowFor(signer) == true;
     final result = await context.pushNamed<String>(
       PsbtFlowRoutes.show.name,
       extra: (
         psbt: context.read<SendCubit>().state.unsignedPsbt,
-        signerDevice: signer.signerDevice,
+        signerDevice: usesDevicePsbtFlow ? signer.signerDevice : null,
       ),
     );
     if (result != null && context.mounted) {
@@ -252,13 +254,21 @@ class ShowPsbtButton extends StatelessWidget {
     final unsignedPsbt = context.select(
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
+    final wallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
+    final usesDeviceSpecificFlow =
+        signer != null && wallet?.supportsDevicePsbtFlowFor(signer!) == true;
 
     return BBButton.big(
       label: context.loc.psbtFlowSharePsbt,
       onPressed: () async {
         final result = await context.pushNamed<String>(
           PsbtFlowRoutes.show.name,
-          extra: (psbt: unsignedPsbt, signerDevice: signer?.signerDevice),
+          extra: (
+            psbt: unsignedPsbt,
+            signerDevice: usesDeviceSpecificFlow ? signer?.signerDevice : null,
+          ),
         );
         if (result != null && context.mounted) {
           await context.read<SendCubit>().applyExternalBitcoinSigningResult(

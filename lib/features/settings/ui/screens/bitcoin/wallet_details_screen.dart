@@ -299,6 +299,9 @@ class _DescriptorWalletDetails extends StatelessWidget {
 
 String _descriptorAddressType(BuildContext context, Wallet wallet) {
   final descriptor = wallet.publicDescriptor.trim().toLowerCase();
+  if (descriptor.startsWith('tr(')) {
+    return context.loc.walletAddressTypeTaproot;
+  }
   if (descriptor.startsWith('sh(wsh(')) {
     return context.loc.walletDetailsNestedSegwitP2wsh;
   }

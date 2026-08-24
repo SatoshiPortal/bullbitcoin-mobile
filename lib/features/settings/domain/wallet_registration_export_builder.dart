@@ -69,7 +69,8 @@ abstract final class WalletRegistrationExportBuilder {
         device: device,
         fileName: fileName,
         encoding: WalletRegistrationQrEncoding.urBytes,
-        supportsPolicy: regularMultisig != null || _isNativeSegwit(wallet),
+        supportsPolicy:
+            regularMultisig != null || _supportsDescriptorRegistration(wallet),
       ),
       SignerDeviceEntity.specter => _specterOption(
         wallet: wallet,
@@ -94,19 +95,23 @@ abstract final class WalletRegistrationExportBuilder {
       SignerDeviceEntity.keystone => _commonMultisigOption(
         wallet: wallet,
         device: device,
-        regularMultisig: regularMultisig,
+        regularMultisig: _isTaproot(wallet) ? null : regularMultisig,
         fileName: fileName,
         allowLegacy: true,
         nameMaxLength: device == SignerDeviceEntity.jade ? 15 : 16,
       ),
       SignerDeviceEntity.passport =>
-        regularMultisig == null
+        _isTaproot(wallet)
+            ? _unsupportedPolicy(device)
+            : regularMultisig == null
             ? _descriptorOption(
                 wallet: wallet,
                 device: device,
                 fileName: fileName,
                 encoding: WalletRegistrationQrEncoding.urBytes,
-                supportsPolicy: _isNativeSegwit(wallet) && !policy.hasHashlock,
+                supportsPolicy:
+                    _supportsDescriptorRegistration(wallet) &&
+                    !policy.hasHashlock,
               )
             : _commonMultisigOption(
                 wallet: wallet,
@@ -119,7 +124,7 @@ abstract final class WalletRegistrationExportBuilder {
       SignerDeviceEntity.seedsigner => _commonMultisigOption(
         wallet: wallet,
         device: device,
-        regularMultisig: regularMultisig,
+        regularMultisig: _isTaproot(wallet) ? null : regularMultisig,
         fileName: fileName,
         allowLegacy: false,
         nameMaxLength: 16,
@@ -158,6 +163,9 @@ abstract final class WalletRegistrationExportBuilder {
     required String fileName,
     required WalletRegistrationQrEncoding qrEncoding,
   }) {
+    if (_isTaproot(wallet)) {
+      return _unsupportedPolicy(device);
+    }
     if (regularMultisig == null) return _unsupportedPolicy(device);
     if (!wallet.hasWalletPolicyKeyOrigins) {
       return UnavailableWalletRegistration(
@@ -295,8 +303,13 @@ abstract final class WalletRegistrationExportBuilder {
     return null;
   }
 
-  static bool _isNativeSegwit(Wallet wallet) =>
-      wallet.publicDescriptor.toLowerCase().startsWith('wsh(');
+  static bool _supportsDescriptorRegistration(Wallet wallet) {
+    final descriptor = wallet.publicDescriptor.toLowerCase();
+    return descriptor.startsWith('wsh(') || descriptor.startsWith('tr(');
+  }
+
+  static bool _isTaproot(Wallet wallet) =>
+      wallet.publicDescriptor.toLowerCase().startsWith('tr(');
 
   static UnavailableWalletRegistration _unsupportedPolicy(
     SignerDeviceEntity device,

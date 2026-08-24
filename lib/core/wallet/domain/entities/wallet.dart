@@ -160,8 +160,6 @@ abstract class Wallet with _$Wallet {
     if (isLiquid) {
       return 'Confidential Segwit';
     }
-    if (publicDescriptor.toLowerCase().startsWith('tr(')) return 'Taproot';
-
     return switch (scriptType) {
       ScriptType.bip84 => 'Native Segwit',
       ScriptType.bip49 => 'Nested Segwit',
@@ -224,6 +222,9 @@ abstract class Wallet with _$Wallet {
     if (!isBitcoin || descriptorKeys.isEmpty) return false;
     final descriptor = publicDescriptor.split('#').first.toLowerCase();
     if (descriptor.startsWith('wsh(')) return true;
+    if (descriptor.startsWith('tr(')) {
+      return _hasExtendedTaprootInternalKey(descriptor);
+    }
     return descriptor.startsWith('sh(wsh(sortedmulti(') ||
         descriptor.startsWith('sh(wsh(multi(');
   }
@@ -232,6 +233,9 @@ abstract class Wallet with _$Wallet {
     if (!isBitcoin || descriptorKeys.isEmpty) return false;
     final descriptor = publicDescriptor.split('#').first.toLowerCase();
     if (_containsMiniscriptHashlock(descriptor)) return false;
+    if (descriptor.startsWith('tr(')) {
+      return _hasExtendedTaprootInternalKey(descriptor);
+    }
     return descriptor.startsWith('wsh(') ||
         descriptor.startsWith('sh(wsh(sortedmulti(');
   }
@@ -260,6 +264,31 @@ abstract class Wallet with _$Wallet {
         supportsWalletPolicySigner(signer),
   );
 
+  bool get isTaprootKeyPathOnly {
+    final descriptor = publicDescriptor.split('#').first.toLowerCase();
+    return descriptor.startsWith('tr(') && !descriptor.contains(',');
+  }
+
+  bool supportsQrSigningFor(WalletSigner signer) {
+    final device = signer.signerDevice;
+    if (device == null || device.supportedQrType == QrType.none) return false;
+    final descriptor = publicDescriptor.split('#').first.toLowerCase();
+    if (!descriptor.startsWith('tr(')) return true;
+    return switch (device) {
+      SignerDeviceEntity.krux || SignerDeviceEntity.specter => true,
+      SignerDeviceEntity.passport => isTaprootKeyPathOnly,
+      _ => false,
+    };
+  }
+
+  bool supportsDevicePsbtFlowFor(WalletSigner signer) {
+    if (signer.signerDevice == SignerDeviceEntity.coldcardMk4) {
+      final descriptor = publicDescriptor.split('#').first.toLowerCase();
+      return !descriptor.startsWith('tr(');
+    }
+    return supportsQrSigningFor(signer);
+  }
+
   static bool _haveWalletPolicyKeyOrigins(Iterable<WalletDescriptorKey> keys) =>
       keys.isNotEmpty &&
       keys.every(
@@ -268,6 +297,15 @@ abstract class Wallet with _$Wallet {
             key.xpub.isNotEmpty &&
             key.derivationPath != null,
       );
+
+  static bool _hasExtendedTaprootInternalKey(String descriptor) {
+    final separator = descriptor.indexOf(',');
+    final close = descriptor.indexOf(')');
+    final end = separator < 0 ? close : separator;
+    if (end <= 3) return false;
+    final internalKey = descriptor.substring(3, end);
+    return internalKey.contains('xpub') || internalKey.contains('tpub');
+  }
 
   static bool _containsMiniscriptHashlock(String descriptor) =>
       descriptor.contains('sha256(') ||
@@ -282,7 +320,6 @@ abstract class Wallet with _$Wallet {
     final descriptorKey = singleDescriptorKey;
     if (descriptorKey != null) return descriptorKey.derivationPath;
     if (descriptorKeys.isNotEmpty) return null;
-
     // Find the content between [ and ]
     final startBracket = publicDescriptor.indexOf('[');
     final endBracket = publicDescriptor.indexOf(']');
