@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exceptio
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallets.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
@@ -314,6 +315,55 @@ class WalletRepository {
           ),
         )
         .toList();
+  }
+
+  Future<List<String>> getDefaultBitcoinWalletFingerprints({
+    Environment? environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet),
+        )
+        .map((wallet) => wallet.masterFingerprint)
+        .toList(growable: false);
+  }
+
+  Future<PreparedDeterministicWallet?> findMatchingDeterministicWallet({
+    required MnemonicSeed seed,
+    required DeterministicWalletSpec spec,
+  }) async {
+    final expected = await WalletMetadataService.deriveFromSeed(
+      seed: seed,
+      network: spec.network,
+      scriptType: spec.scriptType,
+      label: spec.label,
+      isDefault: spec.isDefault,
+    );
+    final existing = await _walletMetadataDatasource.fetch(expected.id);
+    if (existing == null) return null;
+    if (existing.network != spec.network ||
+        existing.scriptType != spec.scriptType ||
+        existing.externalPublicDescriptor !=
+            expected.externalPublicDescriptor ||
+        existing.internalPublicDescriptor !=
+            expected.internalPublicDescriptor) {
+      throw const DeterministicWalletMismatchException();
+    }
+    return PreparedDeterministicWallet(
+      specId: spec.id,
+      walletId: existing.id,
+      network: existing.network,
+      scriptType: existing.scriptType,
+      label: existing.label,
+      externalPublicDescriptor: existing.externalPublicDescriptor,
+      internalPublicDescriptor: existing.internalPublicDescriptor,
+      created: false,
+    );
   }
 
   Future<void> updateEncryptedBackupTime({

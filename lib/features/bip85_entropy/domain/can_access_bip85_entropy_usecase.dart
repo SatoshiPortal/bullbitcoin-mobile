@@ -10,7 +10,7 @@ class CanAccessBip85EntropyUsecase {
     try {
       final settings = await _getSettings.execute();
       return settings.isSuperuser == true && settings.isDevModeEnabled == true;
-    } catch (error, trace) {
+    } on Exception catch (error, trace) {
       log.warning(
         'Could not evaluate BIP85 entropy access',
         error: error.runtimeType,

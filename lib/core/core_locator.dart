@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/core/bitbox/bitbox_locator.dart';
+import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallets_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
@@ -86,6 +87,7 @@ class CoreLocator {
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);
     BitBoxCoreLocator.registerUsecases(locator);
+    DeterministicWalletsLocator.registerUsecase(locator);
   }
 
   static void registerFacades(GetIt locator) {

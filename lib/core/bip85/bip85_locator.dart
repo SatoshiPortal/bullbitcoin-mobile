@@ -6,10 +6,9 @@ import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_w
 import 'package:bb_mobile/core/bip85/domain/derive_bip85_mnemonic_at_index_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:get_it/get_it.dart';
 
 class Bip85DerivationsLocator {
@@ -29,25 +28,22 @@ class Bip85DerivationsLocator {
     locator.registerFactory<DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase>(
       () => DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase(
         bip85Repository: locator<Bip85Repository>(),
-        walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
+        getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
       ),
     );
     locator.registerFactory<DeriveNextBip85HexFromDefaultWalletUsecase>(
       () => DeriveNextBip85HexFromDefaultWalletUsecase(
         bip85Repository: locator<Bip85Repository>(),
-        walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
       ),
     );
 
     locator.registerFactory<DeriveNextBip85MnemonicFromDefaultWalletUsecase>(
       () => DeriveNextBip85MnemonicFromDefaultWalletUsecase(
         bip85Repository: locator<Bip85Repository>(),
-        walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
       ),
     );
 

@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -13,10 +15,12 @@ import 'package:bip32_keys/bip32_keys.dart' as bip32;
 class FetchAllBip85DerivationsWithEntropyUsecase {
   final Bip85Repository _bip85Repository;
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
 
   FetchAllBip85DerivationsWithEntropyUsecase({
     required this._bip85Repository,
     required this._getDefaultSeedUsecase,
+    required this._getSettingsUsecase,
   });
 
   @useResult
@@ -31,7 +35,17 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
     Set<String> excludedPathPrefixes = const {},
   }) async {
     try {
-      final defaultSeed = await _getDefaultSeedUsecase.execute();
+      final settings = await _getSettingsUsecase.execute();
+      final seedResult = await _getDefaultSeedUsecase.execute(
+        environment: settings.environment,
+      );
+      final Seed defaultSeed;
+      switch (seedResult) {
+        case Ok(:final value):
+          defaultSeed = value;
+        case Err(:final failure):
+          return Err(bip85FailureFromDefaultSeed(failure));
+      }
       final xprvBase58 = Bip32Derivation.getCanonicalRootXprvFromSeed(
         defaultSeed.bytes,
       );
@@ -61,7 +75,7 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
               .toList();
           return Ok(derivationsWithEntropy);
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'FetchAllBip85DerivationsWithEntropyUsecase failed',
         error: e.runtimeType,

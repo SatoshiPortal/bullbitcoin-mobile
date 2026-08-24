@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/bip85_entropy/domain/can_access_bip85_entropy
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_unreserved_bip85_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/fetch_unreserved_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
-import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class Bip85EntropyLocator {
@@ -20,19 +19,18 @@ class Bip85EntropyLocator {
       () => FetchAllBip85DerivationsWithEntropyUsecase(
         bip85Repository: locator<Bip85Repository>(),
         getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
       ),
     );
 
     locator.registerFactory<FetchUnreservedBip85DerivationsWithEntropyUsecase>(
       () => FetchUnreservedBip85DerivationsWithEntropyUsecase(
         locator<FetchAllBip85DerivationsWithEntropyUsecase>(),
-        locator<Bip85RegistryFacade>(),
       ),
     );
     locator.registerFactory<DeriveNextUnreservedBip85MnemonicUsecase>(
       () => DeriveNextUnreservedBip85MnemonicUsecase(
         locator<DeriveNextBip85MnemonicFromDefaultWalletUsecase>(),
-        locator<Bip85RegistryFacade>(),
       ),
     );
     locator.registerFactory<CanAccessBip85EntropyUsecase>(

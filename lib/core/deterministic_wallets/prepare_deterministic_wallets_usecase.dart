@@ -2,22 +2,30 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/bip85/domain/derive_bip85_mnemonic_at_index_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
+import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallet_failure.dart';
+import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallets.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/deterministic_wallet_failure.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/deterministic_wallets.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/repositories/deterministic_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
 
 class PrepareDeterministicWalletsUsecase {
   final DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase _derive;
-  final DeterministicWalletRepository _repository;
+  final WalletRepository _wallets;
+  final SeedRepository _seeds;
 
-  const PrepareDeterministicWalletsUsecase(this._derive, this._repository);
+  const PrepareDeterministicWalletsUsecase(
+    this._derive, {
+    required WalletRepository walletRepository,
+    required SeedRepository seedRepository,
+  }) : _wallets = walletRepository,
+       _seeds = seedRepository;
 
   @useResult
   Future<Result<PreparedDeterministicWallets, DeterministicWalletFailure>>
@@ -52,7 +60,7 @@ class PrepareDeterministicWalletsUsecase {
     var seedReady = false;
     try {
       for (final spec in request.walletSpecs) {
-        final existing = await _repository.findMatchingWallet(
+        final existing = await _wallets.findMatchingDeterministicWallet(
           seed: seed,
           spec: spec,
         );
@@ -61,13 +69,24 @@ class PrepareDeterministicWalletsUsecase {
           continue;
         }
         if (!seedReady) {
-          if (!await _repository.seedExists(seed.masterFingerprint)) {
+          if (!await _seeds.exists(seed.masterFingerprint)) {
             storedSeed = true;
-            await _repository.storeSeed(seed);
+            await _seeds.createFromMnemonic(
+              mnemonicWords: seed.mnemonicWords,
+              passphrase: seed.passphrase,
+            );
           }
           seedReady = true;
         }
-        prepared.add(await _repository.createWallet(seed: seed, spec: spec));
+        final wallet = await _wallets.createWallet(
+          seed: seed,
+          network: spec.network,
+          scriptType: spec.scriptType,
+          label: spec.label,
+          isDefault: spec.isDefault,
+          sync: spec.sync,
+        );
+        prepared.add(_prepared(spec, wallet, created: true));
       }
     } on DeterministicWalletMismatchException {
       return Err(
@@ -141,6 +160,21 @@ class PrepareDeterministicWalletsUsecase {
         as MnemonicSeed;
   }
 
+  PreparedDeterministicWallet _prepared(
+    DeterministicWalletSpec spec,
+    Wallet wallet, {
+    required bool created,
+  }) => PreparedDeterministicWallet(
+    specId: spec.id,
+    walletId: wallet.id,
+    network: wallet.network,
+    scriptType: wallet.scriptType,
+    label: wallet.label,
+    externalPublicDescriptor: wallet.externalPublicDescriptor,
+    internalPublicDescriptor: wallet.internalPublicDescriptor,
+    created: created,
+  );
+
   Future<DeterministicWalletFailure> _rollbackFailure(
     DeterministicWalletFailure failure,
     List<PreparedDeterministicWallet> wallets,
@@ -162,9 +196,16 @@ class PrepareDeterministicWalletsUsecase {
   ) async {
     try {
       for (final wallet in wallets.where((wallet) => wallet.created)) {
-        await _repository.deleteWallet(wallet.walletId);
+        await _wallets.deleteWallet(walletId: wallet.walletId);
       }
-      if (deleteSeed) await _repository.deleteSeed(fingerprint);
+      if (deleteSeed) {
+        switch (await _seeds.delete(fingerprint)) {
+          case Ok():
+            break;
+          case Err():
+            return false;
+        }
+      }
       return true;
     } on Exception catch (error, trace) {
       log.warning(

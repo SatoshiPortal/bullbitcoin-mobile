@@ -11,47 +11,27 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockBip85Repository extends Mock implements Bip85Repository {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockGetDefaultSeedUsecase extends Mock
+    implements GetDefaultSeedUsecase {}
 
-class _MockSeedRepository extends Mock implements SeedRepository {}
-
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
-final _testnetWallet = Wallet(
-  origin: 'testnet-default',
-  label: 'Secure Bitcoin',
-  network: Network.bitcoinTestnet,
-  isDefault: true,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
-  scriptType: ScriptType.bip84,
-  xpub: 'tpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-);
+class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
 void main() {
   late _MockBip85Repository bip85Repository;
-  late _MockWalletRepository walletRepository;
-  late _MockSeedRepository seedRepository;
-  late _MockSettingsRepository settingsRepository;
+  late _MockGetDefaultSeedUsecase getDefaultSeed;
+  late _MockGetSettingsUsecase getSettings;
 
   final seed = MnemonicSeed(
     mnemonicWords: const [
@@ -79,12 +59,11 @@ void main() {
 
   setUp(() {
     bip85Repository = _MockBip85Repository();
-    walletRepository = _MockWalletRepository();
-    seedRepository = _MockSeedRepository();
-    settingsRepository = _MockSettingsRepository();
+    getDefaultSeed = _MockGetDefaultSeedUsecase();
+    getSettings = _MockGetSettingsUsecase();
 
     // The app is running on testnet.
-    when(() => settingsRepository.fetch()).thenAnswer(
+    when(() => getSettings.execute()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.testnet,
         bitcoinUnit: BitcoinUnit.sats,
@@ -92,23 +71,9 @@ void main() {
       ),
     );
 
-    // Only a testnet default wallet exists — the app is running on testnet.
     when(
-      () => walletRepository.getWallets(
-        onlyDefaults: true,
-        onlyBitcoin: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer((_) async => <Wallet>[]);
-    when(
-      () => walletRepository.getWallets(
-        onlyDefaults: true,
-        onlyBitcoin: true,
-        environment: Environment.testnet,
-      ),
-    ).thenAnswer((_) async => <Wallet>[_testnetWallet]);
-
-    when(() => seedRepository.get(any())).thenAnswer((_) async => seed);
+      () => getDefaultSeed.execute(environment: Environment.testnet),
+    ).thenAnswer((_) async => Ok<Seed, SeedFailure>(seed));
     when(
       () => bip85Repository.fetchNextIndexForApplication(any()),
     ).thenAnswer((_) async => const Ok(0));
@@ -158,9 +123,8 @@ void main() {
     () async {
       final usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
         bip85Repository: bip85Repository,
-        walletRepository: walletRepository,
-        seedRepository: seedRepository,
-        settingsRepository: settingsRepository,
+        getDefaultSeedUsecase: getDefaultSeed,
+        getSettingsUsecase: getSettings,
       );
 
       final result = await usecase.execute();
@@ -176,9 +140,8 @@ void main() {
   test('hex derivation uses the active-environment default wallet', () async {
     final usecase = DeriveNextBip85HexFromDefaultWalletUsecase(
       bip85Repository: bip85Repository,
-      walletRepository: walletRepository,
-      seedRepository: seedRepository,
-      settingsRepository: settingsRepository,
+      getDefaultSeedUsecase: getDefaultSeed,
+      getSettingsUsecase: getSettings,
     );
 
     final result = await usecase.execute(length: 30);

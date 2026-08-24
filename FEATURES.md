@@ -23,8 +23,6 @@ graph TB
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
     BIP85[BIP85]
-    BIP85_REGISTRY[BIP85 Registry]
-    DETERMINISTIC_WALLETS[Deterministic Wallets]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -70,7 +68,6 @@ graph TB
     AUTOSWAP --> SWAPS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
-    BIP85 --> BIP85_REGISTRY
     BACKUPS --> BIP85
     BACKUPS --> TOR
     BACKUPS --> WALLETS
@@ -83,8 +80,6 @@ graph TB
     COINS --> LABELS
     COINS --> WALLETS
     DCA --> RECEIVE
-    DETERMINISTIC_WALLETS --> BIP85
-    DETERMINISTIC_WALLETS --> WALLETS
     EXCHANGE --> SETTINGS
     FEES --> NETWORK
     FUNDING --> EXCHANGE

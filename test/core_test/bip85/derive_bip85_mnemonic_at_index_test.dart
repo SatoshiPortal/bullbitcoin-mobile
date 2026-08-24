@@ -4,16 +4,14 @@ import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_bip85_mnemonic_at_index_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/failures/failure.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart';
@@ -21,57 +19,30 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Wallets extends Mock implements WalletRepository {}
-
-class _Seeds extends Mock implements SeedRepository {}
+class _GetDefaultSeed extends Mock implements GetDefaultSeedUsecase {}
 
 void main() {
   late SqliteDatabase database;
   late Bip85Repository repository;
-  late _Wallets wallets;
-  late _Seeds seeds;
+  late _GetDefaultSeed getDefaultSeed;
   late DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase usecase;
   late BytesSeed seed;
-  late Wallet wallet;
 
   setUp(() {
     final bytes = Uint8List.fromList(List.generate(16, (index) => index));
     final fingerprint = hex.encode(bip32.Bip32Keys.fromSeed(bytes).fingerprint);
     seed =
         Seed.bytes(bytes: bytes, masterFingerprint: fingerprint) as BytesSeed;
-    wallet = Wallet(
-      origin: 'default',
-      network: Network.bitcoinMainnet,
-      isDefault: true,
-      masterFingerprint: fingerprint,
-      xpubFingerprint: fingerprint,
-      scriptType: ScriptType.bip84,
-      xpub: 'xpub',
-      externalPublicDescriptor: 'external',
-      internalPublicDescriptor: 'internal',
-      signer: SignerEntity.local,
-      signerDevice: null,
-      balanceSat: BigInt.zero,
-    );
     database = SqliteDatabase(NativeDatabase.memory());
     repository = Bip85Repository(datasource: Bip85Datasource(sqlite: database));
-    wallets = _Wallets();
-    seeds = _Seeds();
+    getDefaultSeed = _GetDefaultSeed();
     usecase = DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase(
       bip85Repository: repository,
-      walletRepository: wallets,
-      seedRepository: seeds,
+      getDefaultSeedUsecase: getDefaultSeed,
     );
     when(
-      () => wallets.getWallets(
-        environment: Environment.mainnet,
-        onlyDefaults: true,
-        onlyBitcoin: true,
-      ),
-    ).thenAnswer((_) async => [wallet]);
-    when(
-      () => seeds.get(wallet.masterFingerprint),
-    ).thenAnswer((_) async => seed);
+      () => getDefaultSeed.execute(environment: Environment.mainnet),
+    ).thenAnswer((_) async => Ok<Seed, SeedFailure>(seed));
     addTearDown(database.close);
   });
 
@@ -123,18 +94,14 @@ void main() {
 
     expect(stale, isA<Ok<dynamic, Bip85Failure>>());
     expect(result, isA<Ok<dynamic, Bip85Failure>>());
-    expect(_value(stored)?.xprvFingerprint, wallet.masterFingerprint);
+    expect(_value(stored)?.xprvFingerprint, seed.masterFingerprint);
     expect(_value(stored)?.alias, 'BTCPay');
   });
 
   test('rejects an ambiguous default-wallet trust root', () async {
     when(
-      () => wallets.getWallets(
-        environment: Environment.mainnet,
-        onlyDefaults: true,
-        onlyBitcoin: true,
-      ),
-    ).thenAnswer((_) async => [wallet, wallet]);
+      () => getDefaultSeed.execute(environment: Environment.mainnet),
+    ).thenAnswer((_) async => const Err(DefaultSeedAmbiguousFailure()));
 
     final result = await usecase.execute(
       index: 100,
@@ -144,7 +111,6 @@ void main() {
 
     expect(result, isA<Err<dynamic, Bip85Failure>>());
     expect((result as Err).failure, isA<Bip85DefaultWalletAmbiguousFailure>());
-    verifyNever(() => seeds.get(any()));
   });
 
   test('does not silently reuse a revoked reservation', () async {

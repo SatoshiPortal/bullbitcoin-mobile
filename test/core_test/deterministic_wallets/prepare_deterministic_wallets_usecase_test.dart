@@ -2,15 +2,17 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/bip85/domain/derive_bip85_mnemonic_at_index_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
+import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallet_failure.dart';
+import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallets.dart';
+import 'package:bb_mobile/core/deterministic_wallets/prepare_deterministic_wallets_usecase.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/deterministic_wallet_failure.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/deterministic_wallets.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/prepare_deterministic_wallets_usecase.dart';
-import 'package:bb_mobile/features/deterministic_wallets/domain/repositories/deterministic_wallet_repository.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,7 +20,9 @@ import 'package:mocktail/mocktail.dart';
 class _Derive extends Mock
     implements DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {}
 
-class _Repository extends Mock implements DeterministicWalletRepository {}
+class _Wallets extends Mock implements WalletRepository {}
+
+class _Seeds extends Mock implements SeedRepository {}
 
 const _bitcoin = DeterministicWalletSpec(
   id: 'bitcoin',
@@ -47,26 +51,32 @@ void main() {
   final mnemonic = bip39.Mnemonic.fromWords(
     words: List.generate(11, (_) => 'zoo') + ['wrong'],
   );
-  late _Derive derive;
-  late _Repository repository;
-  late PrepareDeterministicWalletsUsecase usecase;
-
-  setUpAll(() {
-    registerFallbackValue(
+  final fallbackSeed =
       Seed.mnemonic(
             mnemonicWords: const ['fallback'],
             bytes: Uint8List(16),
             masterFingerprint: 'fallback',
           )
-          as MnemonicSeed,
-    );
+          as MnemonicSeed;
+  late _Derive derive;
+  late _Wallets wallets;
+  late _Seeds seeds;
+  late PrepareDeterministicWalletsUsecase usecase;
+
+  setUpAll(() {
+    registerFallbackValue(fallbackSeed);
     registerFallbackValue(_bitcoin);
   });
 
   setUp(() {
     derive = _Derive();
-    repository = _Repository();
-    usecase = PrepareDeterministicWalletsUsecase(derive, repository);
+    wallets = _Wallets();
+    seeds = _Seeds();
+    usecase = PrepareDeterministicWalletsUsecase(
+      derive,
+      walletRepository: wallets,
+      seedRepository: seeds,
+    );
     when(
       () => derive.execute(
         index: 100,
@@ -86,13 +96,13 @@ void main() {
     final bitcoin = _prepared(_bitcoin, created: false);
     final liquid = _prepared(_liquid, created: false);
     when(
-      () => repository.findMatchingWallet(
+      () => wallets.findMatchingDeterministicWallet(
         seed: any(named: 'seed'),
         spec: _bitcoin,
       ),
     ).thenAnswer((_) async => bitcoin);
     when(
-      () => repository.findMatchingWallet(
+      () => wallets.findMatchingDeterministicWallet(
         seed: any(named: 'seed'),
         spec: _liquid,
       ),
@@ -103,51 +113,63 @@ void main() {
     expect(result, isA<Ok<dynamic, DeterministicWalletFailure>>());
     expect(_value(result).wallets, [bitcoin, liquid]);
     expect(_value(result).childSeedStoredDuringAttempt, isFalse);
-    verifyNever(() => repository.seedExists(any()));
-    verifyNever(() => repository.storeSeed(any()));
+    verifyNever(() => seeds.exists(any()));
+    verifyNever(
+      () => seeds.createFromMnemonic(
+        mnemonicWords: any(named: 'mnemonicWords'),
+        passphrase: any(named: 'passphrase'),
+      ),
+    );
   });
 
-  test(
-    'rolls back new wallets and their newly stored seed on failure',
-    () async {
-      final bitcoin = _prepared(_bitcoin, created: true);
-      when(
-        () => repository.findMatchingWallet(
-          seed: any(named: 'seed'),
-          spec: any(named: 'spec'),
-        ),
-      ).thenAnswer((_) async => null);
-      when(() => repository.seedExists(any())).thenAnswer((_) async => false);
-      when(() => repository.storeSeed(any())).thenAnswer((_) async {});
-      when(
-        () => repository.createWallet(
-          seed: any(named: 'seed'),
-          spec: _bitcoin,
-        ),
-      ).thenAnswer((_) async => bitcoin);
-      when(
-        () => repository.createWallet(
-          seed: any(named: 'seed'),
-          spec: _liquid,
-        ),
-      ).thenThrow(Exception('create failed'));
-      when(
-        () => repository.deleteWallet(bitcoin.walletId),
-      ).thenAnswer((_) async {});
-      when(() => repository.deleteSeed(any())).thenAnswer((_) async {});
+  test('rolls back new wallets and their newly stored seed on failure', () async {
+    when(
+      () => wallets.findMatchingDeterministicWallet(
+        seed: any(named: 'seed'),
+        spec: any(named: 'spec'),
+      ),
+    ).thenAnswer((_) async => null);
+    when(() => seeds.exists(any())).thenAnswer((_) async => false);
+    when(
+      () => seeds.createFromMnemonic(
+        mnemonicWords: any(named: 'mnemonicWords'),
+        passphrase: any(named: 'passphrase'),
+      ),
+    ).thenAnswer((_) async => fallbackSeed);
+    when(
+      () => wallets.createWallet(
+        seed: any(named: 'seed'),
+        network: _bitcoin.network,
+        scriptType: _bitcoin.scriptType,
+        label: _bitcoin.label,
+        isDefault: _bitcoin.isDefault,
+        sync: _bitcoin.sync,
+      ),
+    ).thenAnswer((_) async => _wallet(_bitcoin));
+    when(
+      () => wallets.createWallet(
+        seed: any(named: 'seed'),
+        network: _liquid.network,
+        scriptType: _liquid.scriptType,
+        label: _liquid.label,
+        isDefault: _liquid.isDefault,
+        sync: _liquid.sync,
+      ),
+    ).thenThrow(Exception('create failed'));
+    when(
+      () => wallets.deleteWallet(walletId: 'bitcoin-wallet'),
+    ).thenAnswer((_) async {});
+    when(() => seeds.delete(any())).thenAnswer((_) async => const Ok(null));
 
-      final result = await usecase.execute(_request);
+    final result = await usecase.execute(_request);
 
-      expect(result, isA<Err<dynamic, DeterministicWalletFailure>>());
-      expect(
-        (result as Err).failure,
-        isA<DeterministicWalletOperationFailure>(),
-      );
-      verify(() => repository.storeSeed(any())).called(1);
-      verify(() => repository.deleteWallet(bitcoin.walletId)).called(1);
-      verify(() => repository.deleteSeed(any())).called(1);
-    },
-  );
+    expect(result, isA<Err<dynamic, DeterministicWalletFailure>>());
+    expect((result as Err).failure, isA<DeterministicWalletOperationFailure>());
+    verify(
+      () => wallets.deleteWallet(walletId: 'bitcoin-wallet'),
+    ).called(1);
+    verify(() => seeds.delete(any())).called(1);
+  });
 
   test('preserves a reserved-path conflict as a distinct failure', () async {
     when(
@@ -166,7 +188,7 @@ void main() {
       isA<DeterministicWalletDerivationConflictFailure>(),
     );
     verifyNever(
-      () => repository.findMatchingWallet(
+      () => wallets.findMatchingDeterministicWallet(
         seed: any(named: 'seed'),
         spec: any(named: 'spec'),
       ),
@@ -186,6 +208,20 @@ PreparedDeterministicWallet _prepared(
   externalPublicDescriptor: '${spec.id}-external',
   internalPublicDescriptor: '${spec.id}-internal',
   created: created,
+);
+
+Wallet _wallet(DeterministicWalletSpec spec) => Wallet(
+  origin: '${spec.id}-wallet',
+  network: spec.network,
+  masterFingerprint: 'aabbccdd',
+  xpubFingerprint: '11223344',
+  scriptType: spec.scriptType,
+  xpub: 'xpub',
+  externalPublicDescriptor: '${spec.id}-external',
+  internalPublicDescriptor: '${spec.id}-internal',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.zero,
 );
 
 T _value<T, F extends Failure>(Result<T, F> result) => switch (result) {

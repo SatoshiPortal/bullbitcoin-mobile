@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -7,7 +8,6 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/can_access_bip85_entropy_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_unreserved_bip85_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/fetch_unreserved_bip85_derivations_with_entropy_usecase.dart';
-import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -20,8 +20,6 @@ class _FetchDerivations extends Mock
     implements FetchAllBip85DerivationsWithEntropyUsecase {}
 
 void main() {
-  const registry = Bip85RegistryFacade();
-
   setUpAll(() {
     registerFallbackValue(<int>{});
     registerFallbackValue(<String>{});
@@ -53,7 +51,7 @@ void main() {
 
   test('entropy access fails closed when settings cannot load', () async {
     final settings = _GetSettings();
-    when(settings.execute).thenThrow(StateError('unavailable'));
+    when(settings.execute).thenThrow(Exception('unavailable'));
 
     expect(await CanAccessBip85EntropyUsecase(settings).execute(), isFalse);
   });
@@ -66,7 +64,6 @@ void main() {
 
     final result = await DeriveNextUnreservedBip85MnemonicUsecase(
       derive,
-      registry,
     ).execute();
     expect(result, isA<Err>());
 
@@ -77,7 +74,7 @@ void main() {
               ),
             ).captured.single
             as Set<int>;
-    expect(excluded, registry.reservedWalletSeedIndices);
+    expect(excluded, Bip85Reservations.reservedWalletSeedIndices);
   });
 
   test('entropy listing hides every reserved path and namespace', () async {
@@ -91,7 +88,6 @@ void main() {
 
     final result = await FetchUnreservedBip85DerivationsWithEntropyUsecase(
       fetch,
-      registry,
     ).execute();
     expect(result, isA<Ok>());
 
@@ -101,7 +97,7 @@ void main() {
         excludedPathPrefixes: captureAny(named: 'excludedPathPrefixes'),
       ),
     ).captured;
-    expect(captured[0], registry.reservedPaths);
-    expect(captured[1], registry.reservedPathPrefixes);
+    expect(captured[0], Bip85Reservations.reservedPaths);
+    expect(captured[1], Bip85Reservations.reservedPathPrefixes);
   });
 }

@@ -73,3 +73,7 @@ class PreparedDeterministicWallet {
     required this.created,
   });
 }
+
+final class DeterministicWalletMismatchException implements Exception {
+  const DeterministicWalletMismatchException();
+}
