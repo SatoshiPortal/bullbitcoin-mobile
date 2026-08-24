@@ -85,6 +85,7 @@ class AppRouter {
       );
     },
     routes: [
+      GoRoute(path: '/', redirect: (_, _) => WalletRoute.walletHome.path),
       ShellRoute(
         notifyRootObserver: true,
         builder: (context, state, child) {

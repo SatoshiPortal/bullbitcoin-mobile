@@ -16097,5 +16097,363 @@
   "walletPolicySignWith": "Sign with {signer}",
   "@copiedToClipboardMessage": {
     "description": "Snackbar confirmation message after copying to clipboard"
-  }
+  },
+  "@sendAuthorization": {
+    "description": "Label for the transaction authorization conditions"
+  },
+  "@sendPolicyViewDetails": {
+    "description": "Action to show technical transaction authorization conditions"
+  },
+  "@sendDraftLabelTitle": {
+    "description": "Title for the optional draft label editor."
+  },
+  "@sendPolicyAnotherAmountAvailableInBlocks": {
+    "description": "Additional balance that the same authorization option can spend after more blocks.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendDraftKeptForLater": {
+    "description": "Notice after switching a saved Bitcoin draft to another payment type"
+  },
+  "sendPolicyAuthorizationAvailableInBlocks": "Authorization becomes available in {count, plural, =1{1 block} other{{count} blocks}}",
+  "sendPolicyAmountAvailableInBlocks": "This option can spend {amount} in {count, plural, =1{1 block} other{{count} blocks}}",
+  "sendRestartSigningConfirm": "Restart signing",
+  "sendSigningConflictTitle": "Transaction conflict",
+  "@sendPolicyChooseOneOption": {
+    "description": "Instruction for selecting one transaction authorization option"
+  },
+  "@sendSigningRestart": {
+    "description": "Action confirming that signing should restart from an edited transaction."
+  },
+  "sendPolicyAvailableNow": "This option is available now",
+  "sendSigningDeleteLocalCopy": "Delete local copy",
+  "@sendLoadingTransaction": {
+    "description": "Message shown while restoring a saved transaction"
+  },
+  "@sendPolicyChooseConditions": {
+    "description": "Instruction for selecting Miniscript threshold branches",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendSignersNeeded": {
+    "description": "Number of additional signers needed to satisfy a transaction policy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSigningContinue": "Continue signing",
+  "@sendPolicyAmountAvailableInBlocks": {
+    "description": "Status for a relatively timelocked authorization option when a specific amount becomes spendable after more blocks.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendPolicyUnavailableForFunds": {
+    "description": "Status for an authorization option that cannot spend the selected funds"
+  },
+  "sendPendingConflict": "Conflict",
+  "@sendSigningConflictMessage": {
+    "description": "Explanation for a conflicting saved signing transaction."
+  },
+  "@sendSigningContinue": {
+    "description": "Action to remain in the signing session."
+  },
+  "sendTransactionFallback": "Transaction",
+  "sendPendingTransactionsTitle": "Drafts",
+  "@sendContinueToSigning": {
+    "description": "Action that freezes transaction details and opens signing coordination."
+  },
+  "@sendDraftSaved": {
+    "description": "Passive status shown after a transaction draft has been saved."
+  },
+  "@sendTransactionFallback": {
+    "description": "Fallback name for an unlabeled resumable signing transaction without an amount."
+  },
+  "sendPolicyHideDetails": "Hide details",
+  "sendSignersNeeded": "{count, plural, =1{1 more signer needed} other{{count} more signers needed}}",
+  "sendSigningDeleteWarning": "Deleting Bull’s local copy does not invalidate PSBTs or signatures already shared with other signers. An external copy may still be completed and broadcast.",
+  "sendDraftBackMessage": "You can save this transaction as a draft and continue later.",
+  "sendSigningBackTitle": "Finish signing later?",
+  "@sendPolicyAuthorizationAvailableAtBlock": {
+    "description": "Activation status for an unavailable absolute block-height path",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSpendingPathRequired": "Selection required",
+  "sendFinishLater": "Finish later",
+  "@sendDraftBackMessage": {
+    "description": "Explanation when leaving a new unsaved transaction."
+  },
+  "sendPolicyPreimageInvalid": "This preimage does not match the spending condition",
+  "@sendPendingConflict": {
+    "description": "Status for a saved transaction whose inputs were spent elsewhere."
+  },
+  "sendAuthorizeTransaction": "Authorize transaction",
+  "@sendRestartSigningConfirm": {
+    "description": "Confirmation action for rebuilding a transaction with a different spending path"
+  },
+  "@sendContinueEditing": {
+    "description": "Action to stay in the transaction editor."
+  },
+  "@sendChooseAuthorizationDescription": {
+    "description": "Explanation shown above transaction authorization choices"
+  },
+  "sendDraftDiscard": "Discard",
+  "@sendDraftLabelHint": {
+    "description": "Hint for an optional transaction draft label."
+  },
+  "sendPolicyChangePath": "Change-address funds",
+  "sendPolicyAmountAvailableNow": "This option can spend {amount} now",
+  "@sendPolicyAuthorizationAvailableAtTime": {
+    "description": "Activation status for an unavailable absolute timestamp path",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendPolicyAmountAvailableNow": {
+    "description": "Spendable amount available through an authorization option",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sendDraftFallback": "Draft",
+  "@sendDraftDiscard": {
+    "description": "Action to discard an unsaved transaction."
+  },
+  "@sendRestartSigningTitle": {
+    "description": "Title of the warning shown when changing a spending path after signatures were added"
+  },
+  "sendPolicyAuthorizationAvailableAtBlock": "Authorization becomes available at block {height}",
+  "sendPolicyViewDetails": "View details",
+  "sendPolicyChooseOneOption": "Choose one option",
+  "sendPolicyUnavailableForFunds": "Not available for these funds",
+  "@sendPolicyHideDetails": {
+    "description": "Action to hide technical transaction authorization conditions"
+  },
+  "sendAuthorization": "Authorization",
+  "sendSigningRestartTitle": "Restart signing?",
+  "sendSigningRestartMessage": "Editing creates a new unsigned transaction. Collected signatures cannot be kept if the transaction changes.",
+  "sendDraftFallbackAmount": "Draft · {amount}",
+  "sendSigningUnavailableTitle": "Signing is not available yet",
+  "@sendPolicyPreimageProvided": {
+    "description": "Confirmation that the required hash preimage has been supplied"
+  },
+  "@sendDraftBackTitle": {
+    "description": "Title when leaving a new unsaved transaction."
+  },
+  "@sendPolicyChooseSignatures": {
+    "description": "Instruction for selecting the required number of signer keys",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendPolicyAmountAvailableAfter": "This option can spend {amount} after {timestamp}",
+  "@sendSigningReady": {
+    "description": "Status shown once the selected spending policy has enough signatures"
+  },
+  "@sendPolicyAnotherAmountAvailableAfter": {
+    "description": "Additional balance that the same authorization option can spend after a time.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendFinishLater": {
+    "description": "Action to leave a signing session while preserving it."
+  },
+  "sendSignerSign": "Sign",
+  "@sendPolicyPreimageInvalid": {
+    "description": "Validation error for an incorrect Miniscript hash preimage"
+  },
+  "@sendSigningRestartMessage": {
+    "description": "Warning that editing a signing transaction invalidates signatures."
+  },
+  "sendDraftLabelHint": "Optional label",
+  "@sendPolicyAmountAvailableAfter": {
+    "description": "Status for a relatively timelocked authorization option when a specific amount becomes spendable after a time.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendSigningDeleteLocalCopy": {
+    "description": "Action to remove a saved signing session from Bull."
+  },
+  "sendSigningKeepForLater": "Keep for later",
+  "sendPolicyAvailableAfter": "This option becomes available after {timestamp}",
+  "@sendSigningDeleteWarning": {
+    "description": "Warning shown before deleting a local signing session."
+  },
+  "sendSignerSigned": "Signed",
+  "@sendPolicyChangePath": {
+    "description": "Label for an internal-keychain spending path when descriptors differ"
+  },
+  "sendSigningRestart": "Restart signing",
+  "sendPolicyAnotherAmountAvailableInBlocks": "It can spend another {amount} in {count, plural, =1{1 block} other{{count} blocks}}",
+  "@sendSpendingPathRequired": {
+    "description": "Status shown when a Miniscript spending path has not been selected"
+  },
+  "@sendPolicyAvailableAtBlock": {
+    "description": "Status for an authorization option locked until a block height",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "sendChooseAuthorizationDescription": "Choose how this transaction will be authorized.",
+  "sendPolicyAuthorizationAvailableAtTime": "Authorization becomes available after {timestamp}",
+  "sendPolicyAvailableAtBlock": "This option becomes available at block {height}",
+  "@sendPolicyAvailableNow": {
+    "description": "Status for an authorization option that can be used immediately"
+  },
+  "sendPendingDraft": "Draft",
+  "sendSigningReady": "Ready to broadcast",
+  "sendContinueEditing": "Continue editing",
+  "sendDraftLabelTitle": "Save draft",
+  "@sendEditTransaction": {
+    "description": "Action to return a frozen signing transaction to editing."
+  },
+  "@sendSigningTitle": {
+    "description": "Heading for coordinating signatures on a multisig transaction"
+  },
+  "sendPolicyChooseSignatures": "Choose {count} signatures",
+  "sendSigningUnavailableMessage": "The selected spending conditions are not currently satisfied. Try again after the wallet has synced or the required time has passed.",
+  "@sendPolicyAuthorizationAvailableInBlocks": {
+    "description": "Activation status for UTXOs under a relative block timelock",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendPolicyAvailableAfter": {
+    "description": "Status for an authorization option locked until a date and time",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendSigningRestartTitle": {
+    "description": "Title shown before editing a transaction that already has signatures."
+  },
+  "sendRestartSigningDescription": "This spending path changes the transaction inputs or timing. Existing signatures can’t be reused.",
+  "@sendSigningKeepForLater": {
+    "description": "Action to preserve a signing session and leave."
+  },
+  "sendSigningTitle": "Sign transaction",
+  "@sendSignerSigned": {
+    "description": "Status shown for a signer whose signature is present in the PSBT"
+  },
+  "sendLoadingTransaction": "Loading transaction...",
+  "sendPolicyPreimageProvided": "Preimage provided",
+  "sendPolicyReceivePath": "Receive-address funds",
+  "@sendSigningConflictTitle": {
+    "description": "Title shown when a saved signing transaction has spent inputs."
+  },
+  "@sendSigningUnavailableTitle": {
+    "description": "Title shown when the saved spending path is not currently usable."
+  },
+  "sendEditTransaction": "Edit transaction",
+  "sendPolicyPreimageHint": "Enter the 32-byte preimage as hexadecimal",
+  "@sendDraftFallbackAmount": {
+    "description": "Fallback name for an unlabeled draft with an amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sendDraftSaved": "Saved",
+  "sendDeleteDraft": "Delete draft",
+  "@sendSigningUnavailableMessage": {
+    "description": "Explanation when a saved signing policy is not currently available."
+  },
+  "sendSigningConflictMessage": "One or more inputs are spent or frozen. Unfreeze frozen coins to resume. If an input was spent, restart this transaction.",
+  "@sendSigningBackTitle": {
+    "description": "Title when leaving an active signing session."
+  },
+  "@sendTransactionFallbackAmount": {
+    "description": "Fallback name for an unlabeled resumable signing transaction with an amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendAuthorizeTransaction": {
+    "description": "Title for the transaction authorization selector"
+  },
+  "sendTransactionFallbackAmount": "Transaction · {amount}",
+  "@sendPolicyNoPathAvailable": {
+    "description": "Status shown when every Miniscript spending path is still timelocked or otherwise unavailable"
+  },
+  "@sendPolicyPreimageHint": {
+    "description": "Hint for the Miniscript hash preimage input"
+  },
+  "sendPolicyNoPathAvailable": "No spending path is available yet",
+  "sendDraftBackTitle": "Save this transaction?",
+  "sendPolicyAnotherAmountAvailableAfter": "It can spend another {amount} after {timestamp}",
+  "@sendDraftFallback": {
+    "description": "Fallback name for an unlabeled draft without a valid amount."
+  },
+  "@sendDeleteDraft": {
+    "description": "Action to delete a transaction draft."
+  },
+  "@sendSignerSign": {
+    "description": "Action for adding a signature with Bull Wallet on this device"
+  },
+  "@sendPendingTransactionsTitle": {
+    "description": "Heading above local resumable transaction items."
+  },
+  "@sendPendingDraft": {
+    "description": "Status for an editable saved transaction."
+  },
+  "@sendPolicyReceivePath": {
+    "description": "Label for an external-keychain spending path when descriptors differ"
+  },
+  "sendRestartSigningTitle": "Restart signing?",
+  "@sendRestartSigningDescription": {
+    "description": "Warning that a spending-path change changes transaction signing fields and discards existing signatures"
+  },
+  "sendPolicyChooseConditions": "Choose {threshold} of {count} conditions",
+  "sendDraftKeptForLater": "Your Bitcoin draft is still saved. This payment will continue separately.",
+  "sendContinueToSigning": "Continue to signing"
 }
