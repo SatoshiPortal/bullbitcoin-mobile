@@ -24,6 +24,7 @@ class GetBitcoinSigningPlanUsecase {
     BitcoinPolicySelection selection = const BitcoinPolicySelection.empty(),
     Set<String> satisfiedPreimageKeys = const {},
     bool allowSpentWalletInputs = false,
+    bool allowFrozenWalletInputs = false,
   }) async {
     if (!wallet.isBitcoin) {
       return const Err(
@@ -46,6 +47,7 @@ class GetBitcoinSigningPlanUsecase {
         walletId: wallet.id,
         requireLocalOrigin: false,
         allowSpentWalletInputs: allowSpentWalletInputs,
+        allowFrozenWalletInputs: allowFrozenWalletInputs,
       )) {
         case Ok(:final value):
           review = value;

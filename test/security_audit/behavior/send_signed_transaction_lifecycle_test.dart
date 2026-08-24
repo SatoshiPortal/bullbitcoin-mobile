@@ -35,11 +35,14 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/apply_bitcoin_policy_preimages_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -48,6 +51,8 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_bitcoin_policy_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/restore_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -55,10 +60,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_policy_preimage_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -67,6 +70,9 @@ import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/save_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -105,6 +111,21 @@ class _MockPrepareLiquidSendUsecase extends Mock
     implements PrepareLiquidSendUsecase {}
 
 class _MockSignBitcoinTxUsecase extends Mock implements SignBitcoinTxUsecase {}
+
+class _MockGetBitcoinSigningPlanUsecase extends Mock
+    implements GetBitcoinSigningPlanUsecase {}
+
+class _MockResolveBitcoinPolicyUsecase extends Mock
+    implements ResolveBitcoinPolicyUsecase {}
+
+class _MockValidateBitcoinPolicyPreimageUsecase extends Mock
+    implements ValidateBitcoinPolicyPreimageUsecase {}
+
+class _MockApplyBitcoinPolicyPreimagesUsecase extends Mock
+    implements ApplyBitcoinPolicyPreimagesUsecase {}
+
+class _MockProcessBitcoinSignerResultUsecase extends Mock
+    implements ProcessBitcoinSignerResultUsecase {}
 
 class _MockSignLiquidTxUsecase extends Mock implements SignLiquidTxUsecase {}
 
@@ -179,11 +200,20 @@ class _MockCheckLiquidConsolidationUsecase extends Mock
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
-class _MockProcessBitcoinSignerResultUsecase extends Mock
-    implements ProcessBitcoinSignerResultUsecase {}
+class _MockSavePendingBitcoinTransactionUsecase extends Mock
+    implements SavePendingBitcoinTransactionUsecase {}
 
-class _MockVerifySignedTxUsecase extends Mock
-    implements VerifySendSignedTxUsecase {}
+class _MockGetPendingBitcoinTransactionUsecase extends Mock
+    implements GetPendingBitcoinTransactionUsecase {}
+
+class _MockRestorePendingBitcoinTransactionUsecase extends Mock
+    implements RestorePendingBitcoinTransactionUsecase {}
+
+class _MockDeletePendingBitcoinTransactionUsecase extends Mock
+    implements DeletePendingBitcoinTransactionUsecase {}
+
+class _MockValidatePendingBitcoinTransactionUsecase extends Mock
+    implements ValidatePendingBitcoinTransactionUsecase {}
 
 /// Exposes `emit` so a test can start from a realistic mid-flow state.
 class _MockValidateSpRecipientForSendUsecase extends Mock
@@ -217,6 +247,10 @@ class _TestSendCubit extends SendCubit {
     required super.validateBitcoinSelectionUsecase,
     required super.prepareLiquidSendUsecase,
     required super.signBitcoinTxUsecase,
+    required super.getBitcoinSigningPlanUsecase,
+    required super.resolveBitcoinPolicyUsecase,
+    required super.validateBitcoinPolicyPreimageUsecase,
+    required super.applyBitcoinPolicyPreimagesUsecase,
     required super.processBitcoinSignerResultUsecase,
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTxUsecase,
@@ -245,7 +279,6 @@ class _TestSendCubit extends SendCubit {
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
-    required super.verifySignedTxUsecase,
     required super.validateSpRecipientForSendUsecase,
     required super.validateSpAmountForSendUsecase,
     required super.getSpNetworkForSendUsecase,
@@ -254,6 +287,11 @@ class _TestSendCubit extends SendCubit {
     required super.refreshSpWalletForSendUsecase,
     required super.resolveSelectedInputsUsecase,
     required super.validateCoinControlPaymentRequestUsecase,
+    required super.savePendingBitcoinTransactionUsecase,
+    required super.getPendingBitcoinTransactionUsecase,
+    required super.restorePendingBitcoinTransactionUsecase,
+    required super.deletePendingBitcoinTransactionUsecase,
+    required super.validatePendingBitcoinTransactionUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -326,6 +364,12 @@ void main() {
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
       prepareLiquidSendUsecase: prepareLiquidSendUsecase,
       signBitcoinTxUsecase: _MockSignBitcoinTxUsecase(),
+      getBitcoinSigningPlanUsecase: _MockGetBitcoinSigningPlanUsecase(),
+      resolveBitcoinPolicyUsecase: _MockResolveBitcoinPolicyUsecase(),
+      validateBitcoinPolicyPreimageUsecase:
+          _MockValidateBitcoinPolicyPreimageUsecase(),
+      applyBitcoinPolicyPreimagesUsecase:
+          _MockApplyBitcoinPolicyPreimagesUsecase(),
       processBitcoinSignerResultUsecase:
           _MockProcessBitcoinSignerResultUsecase(),
       signLiquidTxUsecase: _MockSignLiquidTxUsecase(),
@@ -357,7 +401,6 @@ void main() {
       previewBitcoinFeePresetsUsecase: _MockPreviewBitcoinFeePresetsUsecase(),
       checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
       getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
-      verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
       validateSpRecipientForSendUsecase:
           _MockValidateSpRecipientForSendUsecase(),
       validateSpAmountForSendUsecase: _MockValidateSpAmountForSendUsecase(),
@@ -370,6 +413,16 @@ void main() {
       ),
       validateCoinControlPaymentRequestUsecase:
           ValidateCoinControlPaymentRequestUsecase(),
+      savePendingBitcoinTransactionUsecase:
+          _MockSavePendingBitcoinTransactionUsecase(),
+      getPendingBitcoinTransactionUsecase:
+          _MockGetPendingBitcoinTransactionUsecase(),
+      restorePendingBitcoinTransactionUsecase:
+          _MockRestorePendingBitcoinTransactionUsecase(),
+      deletePendingBitcoinTransactionUsecase:
+          _MockDeletePendingBitcoinTransactionUsecase(),
+      validatePendingBitcoinTransactionUsecase:
+          _MockValidatePendingBitcoinTransactionUsecase(),
     );
   });
 

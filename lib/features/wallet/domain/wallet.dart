@@ -250,7 +250,6 @@ abstract class Wallet with _$Wallet {
   bool get isWatchOnly =>
       signers.every((signer) => signer.signer == SignerEntity.none);
   bool get isWatchSigner => singleSigner?.signer == SignerEntity.remote;
-  bool get signsLocally => singleSigner?.signer == SignerEntity.local;
   bool get isStandardSingleSignatureWallet {
     final key = singleDescriptorKey;
     final type = scriptType;
@@ -272,6 +271,9 @@ abstract class Wallet with _$Wallet {
       ? !isWatchOnly
       : isStandardLocalSingleSignatureWallet ||
             (signsRemotely && isStandardSingleSignatureWallet);
+
+  bool get supportsSend =>
+      isLiquid ? !isWatchOnly : hasLocalSigner || hasRemoteSigner;
 
   bool get signsRemotely => hasRemoteSigner;
   bool get isHardwareWallet => signerDevice != null;

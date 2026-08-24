@@ -1,3 +1,5 @@
+import 'domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
+import 'domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 
 import 'public/send_facade.dart';
@@ -41,6 +43,8 @@ class BlockchainLocator {
         bitcoin: locator<BroadcastBitcoinTransactionUsecase>().execute,
         liquid: locator<BroadcastLiquidTransactionUsecase>().execute,
         verifySignedTxUsecase: locator<VerifySignedTxUsecase>(),
+        watchPendingBitcoinTransactionsUsecase: locator<WatchPendingBitcoinTransactionsUsecase>(),
+        deletePendingBitcoinTransactionUsecase: locator<DeletePendingBitcoinTransactionUsecase>(),
       ),
     );
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
