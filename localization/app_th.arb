@@ -9859,7 +9859,6 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "ความคิดเห็น",
   "ledgerErrorPermissionDenied": "ต้องมีสิทธิ์ Bluetooth เพื่อเชื่อมต่อกับอุปกรณ์ Ledger",
   "ledgerErrorNoDevicesFound": "ไม่พบอุปกรณ์ Ledger โปรดตรวจสอบว่าอุปกรณ์ของคุณเปิดอยู่และเปิดใช้งาน Bluetooth แล้ว",
   "ledgerErrorMultipleDevicesFound": "พบอุปกรณ์ Ledger หลายเครื่อง โปรดตรวจสอบว่ามีอุปกรณ์เพียงเครื่องเดียวอยู่ใกล้ๆ",
@@ -9868,9 +9867,6 @@
   "ledgerErrorInvalidPsbt": "ตรวจพบรูปแบบ PSBT ที่ไม่ถูกต้อง",
   "ledgerErrorMissingDerivationPath": "ต้องระบุเส้นทางการอนุพันธ์",
   "ledgerErrorMissingScriptType": "ต้องระบุประเภทสคริปต์",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "payBelowMinAmount": "คุณพยายามที่จะจ่ายขั้นต่ําต่ํากว่าจํานวนขั้นต่ํา.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"

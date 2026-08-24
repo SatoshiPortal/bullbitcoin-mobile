@@ -1,11 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
 
-/// Closed set of every failure the ledger domain surfaces to the user.
-/// `sealed` keeps it closed (exhaustive switches; no foreign variants). Pure
-/// Dart — the user-facing message lives in the presentation extension
-/// `ledger_failure_l10n.dart`, never here. The raw device/SDK reason is logged
-/// at the repository boundary and, when kept at all, lives only in
-/// [Failure.logMessage] for logs/Sentry.
 sealed class LedgerFailure extends Failure {
   const LedgerFailure([super.logMessage]);
 }

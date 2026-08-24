@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
+import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
 
@@ -25,6 +25,6 @@ extension LedgerFailureL10n on LedgerFailure {
       context.loc.ledgerErrorMissingDerivationPath,
     LedgerMissingScriptTypeFailure() =>
       context.loc.ledgerErrorMissingScriptType,
-    LedgerUnexpectedFailure() => context.loc.ledgerErrorUnknown,
+    LedgerUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

@@ -3237,7 +3237,6 @@
   "backupWalletVaultProviderCustomLocation": "Posizione personalizzata",
   "bitboxErrorConnectionTypeNotInitialized": "Tipo di connessione non inizializzato.",
   "transactionListOngoingTransfersDescription": "Questi trasferimenti sono attualmente in corso. I vostri fondi sono sicuri e saranno disponibili quando il trasferimento sarà completato.",
-  "ledgerErrorUnknown": "Errore sconosciuto",
   "ledgerErrorPermissionDenied": "Sono necessarie le autorizzazioni Bluetooth per connettersi ai dispositivi Ledger.",
   "ledgerErrorNoDevicesFound": "Nessun dispositivo Ledger trovato. Assicurati che il dispositivo sia acceso e che il Bluetooth sia attivo.",
   "ledgerErrorMultipleDevicesFound": "Trovati più dispositivi Ledger. Assicurati che ci sia un solo dispositivo nelle vicinanze.",

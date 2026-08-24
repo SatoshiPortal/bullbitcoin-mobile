@@ -3237,7 +3237,6 @@
   "backupWalletVaultProviderCustomLocation": "习俗地点",
   "bitboxErrorConnectionTypeNotInitialized": "连接类型没有初步确定.",
   "transactionListOngoingTransfersDescription": "这些转移目前正在进行之中。 你们的资金是安全的,在转让完成后将可动用.",
-  "ledgerErrorUnknown": "不详的错误",
   "ledgerErrorPermissionDenied": "连接 Ledger 设备需要蓝牙权限。",
   "ledgerErrorNoDevicesFound": "未找到 Ledger 设备。请确保您的设备已开机并已启用蓝牙。",
   "ledgerErrorMultipleDevicesFound": "找到多个 Ledger 设备。请确保附近只有一个设备。",

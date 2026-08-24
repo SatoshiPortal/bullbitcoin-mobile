@@ -8172,7 +8172,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "ledgerErrorUnknown": "Άγνωστο λάθος",
   "ledgerErrorPermissionDenied": "Απαιτούνται άδειες Bluetooth για τη σύνδεση με συσκευές Ledger.",
   "ledgerErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές Ledger. Βεβαιωθείτε ότι η συσκευή σας είναι ενεργοποιημένη και το Bluetooth ενεργό.",
   "ledgerErrorMultipleDevicesFound": "Βρέθηκαν πολλές συσκευές Ledger. Βεβαιωθείτε ότι υπάρχει μόνο μία συσκευή κοντά.",
@@ -8181,9 +8180,6 @@
   "ledgerErrorInvalidPsbt": "Εντοπίστηκε μη έγκυρη μορφή PSBT.",
   "ledgerErrorMissingDerivationPath": "Απαιτείται διαδρομή παραγώγησης",
   "ledgerErrorMissingScriptType": "Απαιτείται τύπος σεναρίου",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "payBelowMinAmount": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"

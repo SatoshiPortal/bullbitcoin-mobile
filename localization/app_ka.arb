@@ -3364,7 +3364,6 @@
   "ledgerInstructionsAndroidDual": "დარწმუნდით, რომ თქვენი Ledger განბლოკილია, გახსნილია Bitcoin აპლიკაცია და ჩართულია Bluetooth.",
   "ledgerScanningMessage": "მიმდინარეობს ახლომდებარე Ledger მოწყობილობების ძებნა...",
   "ledgerConnectingSubtext": "მიმდინარეობს დაცული კავშირის დამყარება...",
-  "ledgerErrorUnknown": "უცნობი შეცდომა",
   "ledgerErrorPermissionDenied": "Ledger მოწყობილობებთან დასაკავშირებლად საჭიროა Bluetooth-ის ნებართვები.",
   "ledgerErrorNoDevicesFound": "Ledger მოწყობილობები ვერ მოიძებნა. დარწმუნდით, რომ თქვენი მოწყობილობა ჩართულია და Bluetooth გააქტიურებულია.",
   "ledgerErrorMultipleDevicesFound": "აღმოჩენილია რამდენიმე Ledger მოწყობილობა. გთხოვთ, დარწმუნდეთ, რომ ახლოს მხოლოდ ერთი მოწყობილობაა.",

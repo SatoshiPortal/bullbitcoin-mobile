@@ -3477,7 +3477,6 @@
   "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä tai liitä laite USB-kaapelilla.",
   "ledgerScanningMessage": "Etsitään lähellä olevia Ledger-laitteita...",
   "ledgerConnectingSubtext": "Muodostetaan suojattua yhteyttä...",
-  "ledgerErrorUnknown": "Tuntematon virhe",
   "ledgerErrorPermissionDenied": "Ledger-laitteisiin yhdistäminen vaatii Bluetooth-käyttöoikeudet.",
   "ledgerErrorNoDevicesFound": "Ledger-laitteita ei löytynyt. Varmista, että laitteesi on päällä ja Bluetooth on käytössä.",
   "ledgerErrorMultipleDevicesFound": "Löytyi useita Ledger-laitteita. Varmista, että lähellä on vain yksi laite.",

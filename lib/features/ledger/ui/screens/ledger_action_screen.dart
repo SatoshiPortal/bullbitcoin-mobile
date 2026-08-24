@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
+import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
@@ -550,7 +550,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     );
   }
 
-  void _handleSuccess(BuildContext context, dynamic result) {
+  void _handleSuccess(BuildContext context, Object? result) {
     switch (widget.action) {
       case ImportWalletLedgerAction():
         context.pushNamed(
@@ -594,6 +594,6 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   String _getErrorMessage(BuildContext context, LedgerFailure? failure) {
     // Translate only: the typed failure carries no raw text, and the raw
     // device/SDK reason was already logged at the repository boundary.
-    return failure?.toTranslated(context) ?? context.loc.ledgerErrorUnknown;
+    return failure?.toTranslated(context) ?? context.loc.oopsSomethingWentWrong;
   }
 }

@@ -3228,7 +3228,6 @@
   "ledgerInstructionsAndroidDual": "Hakikisha Ledger yako imefunguliwa na programu ya Bitcoin imefunguliwa na Bluetooth imewashwa.",
   "ledgerScanningMessage": "Inatafuta vifaa vya Ledger vilivyo karibu...",
   "ledgerConnectingSubtext": "Inaanzisha muunganisho salama...",
-  "ledgerErrorUnknown": "Hitilafu isiyojulikana",
   "ledgerErrorPermissionDenied": "Ruhusa za Bluetooth zinahitajika ili kuunganisha na vifaa vya Ledger.",
   "ledgerErrorNoDevicesFound": "Hakuna vifaa vya Ledger vilivyopatikana. Hakikisha kifaa chako kimewashwa na Bluetooth imewashwa.",
   "ledgerErrorMultipleDevicesFound": "Vifaa vingi vya Ledger vimepatikana. Tafadhali hakikisha kuna kifaa kimoja tu karibu.",

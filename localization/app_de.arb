@@ -3177,7 +3177,6 @@
   "backupWalletVaultProviderCustomLocation": "Benutzerdefinierter Speicherort",
   "bitboxErrorConnectionTypeNotInitialized": "Verbindungstyp nicht initialisiert.",
   "transactionListOngoingTransfersDescription": "Diese Überweisungen werden derzeit durchgeführt. Ihr Geld ist sicher und wird nach Abschluss der Überweisung verfügbar sein.",
-  "ledgerErrorUnknown": "Unbekannter Fehler",
   "ledgerErrorPermissionDenied": "Für die Verbindung mit Ledger-Geräten sind Bluetooth-Berechtigungen erforderlich.",
   "ledgerErrorNoDevicesFound": "Keine Ledger-Geräte gefunden. Stellen Sie sicher, dass Ihr Gerät eingeschaltet und Bluetooth aktiviert ist.",
   "ledgerErrorMultipleDevicesFound": "Mehrere Ledger-Geräte gefunden. Bitte stellen Sie sicher, dass sich nur ein Gerät in der Nähe befindet.",

@@ -166,7 +166,6 @@
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
-  "ledgerErrorUnknown": "خطای ناشناخته",
   "ledgerErrorPermissionDenied": "برای اتصال به دستگاه‌های Ledger مجوزهای بلوتوث لازم است.",
   "ledgerErrorNoDevicesFound": "هیچ دستگاه Ledger یافت نشد. مطمئن شوید که دستگاه شما روشن است و بلوتوث فعال است.",
   "ledgerErrorMultipleDevicesFound": "چندین دستگاه Ledger یافت شد. لطفاً مطمئن شوید که فقط یک دستگاه در نزدیکی است.",
@@ -175,9 +174,6 @@
   "ledgerErrorInvalidPsbt": "قالب PSBT نامعتبر شناسایی شد.",
   "ledgerErrorMissingDerivationPath": "مسیر اشتقاق لازم است",
   "ledgerErrorMissingScriptType": "نوع اسکریپت لازم است",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "ledgerErrorDeviceBusy": "برنامه دیگری در حال استفاده از Ledger شما است. لطفاً آن را ببندید (برای مثال، Ledger Live) و دوباره امتحان کنید.",
   "@ledgerErrorDeviceBusy": {
     "description": "Error message when another program is communicating with the Ledger device"

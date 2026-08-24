@@ -3253,7 +3253,6 @@
   "ledgerInstructionsAndroidUsb": "Համոզվեք, որ ձեր Ledger-ը ապակողպված է, Bitcoin հավելվածը բացված է, և միացրեք այն USB-ով։",
   "ledgerInstructionsAndroidDual": "Համոզվեք, որ ձեր Ledger-ը ապակողպված է, Bitcoin հավելվածը բացված է և Bluetooth-ը միացված է։",
   "ledgerScanningMessage": "Փնտրվում են մոտակա Ledger սարքեր...",
-  "ledgerErrorUnknown": "Անհայտ սխալ",
   "ledgerErrorDeviceBusy": "Մեկ այլ ծրագիր օգտագործում է ձեր Ledger-ը։ Խնդրում ենք փակել այն (օրինակ՝ Ledger Live) և կրկին փորձել։",
   "ledgerErrorNoConnection": "Ledger կապ հասանելի չէ",
   "ledgerErrorRejectedByUser": "Գործարքը մերժվել է օգտատիրոջ կողմից Ledger սարքի վրա։",

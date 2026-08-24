@@ -3236,7 +3236,6 @@
   "backupWalletVaultProviderCustomLocation": "Пользовательское местоположение",
   "bitboxErrorConnectionTypeNotInitialized": "Тип подключения не инициализируется.",
   "transactionListOngoingTransfersDescription": "Эти переводы в настоящее время осуществляются. Ваши средства безопасны и будут доступны, когда передача завершится.",
-  "ledgerErrorUnknown": "Неизвестная ошибка",
   "ledgerErrorPermissionDenied": "Для подключения к устройствам Ledger требуются разрешения Bluetooth.",
   "ledgerErrorNoDevicesFound": "Устройства Ledger не найдены. Убедитесь, что устройство включено и Bluetooth активирован.",
   "ledgerErrorMultipleDevicesFound": "Найдено несколько устройств Ledger. Убедитесь, что рядом находится только одно устройство.",

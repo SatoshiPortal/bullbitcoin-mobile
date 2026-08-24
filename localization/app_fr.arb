@@ -3529,7 +3529,6 @@
   "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé, ou connectez l'appareil via USB.",
   "ledgerScanningMessage": "Recherche d'appareils Ledger à proximité...",
   "ledgerConnectingSubtext": "Établissement d'une connexion sécurisée...",
-  "ledgerErrorUnknown": "Erreur inconnue",
   "ledgerErrorPermissionDenied": "Les autorisations Bluetooth sont requises pour se connecter aux appareils Ledger.",
   "ledgerErrorNoDevicesFound": "Aucun appareil Ledger trouvé. Assurez-vous que votre appareil est allumé et que le Bluetooth est activé.",
   "ledgerErrorMultipleDevicesFound": "Plusieurs appareils Ledger trouvés. Veuillez vous assurer qu'un seul appareil se trouve à proximité.",

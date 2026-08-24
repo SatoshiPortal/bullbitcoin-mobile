@@ -11639,10 +11639,6 @@
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
-  "ledgerErrorUnknown": "Unknown error",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "ledgerErrorPermissionDenied": "Bluetooth permissions are required to connect to Ledger devices.",
   "@ledgerErrorPermissionDenied": {
     "description": "Error message when Bluetooth permissions are denied for Ledger"

@@ -3374,7 +3374,6 @@
   "rbfTitle": "Замінити платіж",
   "backupWalletVaultProviderCustomLocation": "Місцезнаходження",
   "bitboxErrorConnectionTypeNotInitialized": "Тип підключення не ініціюється.",
-  "ledgerErrorUnknown": "Невідома помилка",
   "ledgerErrorPermissionDenied": "Для підключення до пристроїв Ledger потрібні дозволи Bluetooth.",
   "ledgerErrorNoDevicesFound": "Пристрої Ledger не знайдено. Переконайтеся, що ваш пристрій увімкнено та Bluetooth активовано.",
   "ledgerErrorMultipleDevicesFound": "Знайдено декілька пристроїв Ledger. Переконайтеся, що поблизу лише один пристрій.",

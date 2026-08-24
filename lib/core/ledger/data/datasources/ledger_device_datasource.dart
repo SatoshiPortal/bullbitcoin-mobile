@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_exception.dart';
+import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;

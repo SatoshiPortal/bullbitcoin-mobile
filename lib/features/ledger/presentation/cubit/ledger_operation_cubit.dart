@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
+import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
@@ -33,8 +33,8 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   /// Runs [operation] after scanning for and connecting to a device. Every step
   /// yields a typed [LedgerFailure] on error — nothing is thrown across this
   /// boundary and no raw text is ever stored in state.
-  Future<void> executeOperation(
-    Future<Result<dynamic, LedgerFailure>> Function() operation,
+  Future<void> executeOperation<T>(
+    Future<Result<T, LedgerFailure>> Function() operation,
   ) async {
     if (state.connectedDevice != null) {
       await _repository.disconnectConnection(state.connectedDevice!);

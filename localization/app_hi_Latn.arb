@@ -10084,7 +10084,6 @@
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
-  "ledgerErrorUnknown": "Unknown error",
   "ledgerErrorPermissionDenied": "Ledger device se connect karne ke liye Bluetooth permissions zaroori hain.",
   "ledgerErrorNoDevicesFound": "Koi Ledger device nahi mila. Sunishchit karein ki aapka device on hai aur Bluetooth enabled hai.",
   "ledgerErrorMultipleDevicesFound": "Kai Ledger devices mile. Kripya sunishchit karein ki paas mein sirf ek hi device ho.",
@@ -10093,9 +10092,6 @@
   "ledgerErrorInvalidPsbt": "Invalid PSBT format detect hua.",
   "ledgerErrorMissingDerivationPath": "Derivation path zaroori hai",
   "ledgerErrorMissingScriptType": "Script type zaroori hai",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "ledgerErrorDeviceBusy": "Koi doosra program aapke Ledger ka use kar raha hai. Kripya use band karo (jaise ki Ledger Live) aur dobara try karo.",
   "@ledgerErrorDeviceBusy": {
     "description": "Error message when another program is communicating with the Ledger device"

@@ -9859,7 +9859,6 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "अज्ञात त्रुटि",
   "ledgerErrorPermissionDenied": "Ledger डिवाइस से कनेक्ट करने के लिए ब्लूटूथ अनुमतियाँ आवश्यक हैं।",
   "ledgerErrorNoDevicesFound": "कोई Ledger डिवाइस नहीं मिला। सुनिश्चित करें कि आपका डिवाइस चालू है और ब्लूटूथ सक्षम है।",
   "ledgerErrorMultipleDevicesFound": "कई Ledger डिवाइस मिले। कृपया सुनिश्चित करें कि पास में केवल एक ही डिवाइस है।",
@@ -9868,9 +9867,6 @@
   "ledgerErrorInvalidPsbt": "अमान्य PSBT प्रारूप का पता चला।",
   "ledgerErrorMissingDerivationPath": "व्युत्पत्ति पथ आवश्यक है",
   "ledgerErrorMissingScriptType": "स्क्रिप्ट प्रकार आवश्यक है",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "payBelowMinAmount": "आप इस वॉलेट से न्यूनतम भुगतान योग्य राशि से कम भुगतान करने का प्रयास कर रहे हैं।",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"

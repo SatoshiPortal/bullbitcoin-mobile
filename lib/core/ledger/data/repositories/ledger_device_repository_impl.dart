@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_exception.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
+import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
+import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -128,9 +128,12 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     } on InvalidMagicBytesLedgerException {
       return const Err(LedgerInvalidPsbtFailure());
     } on ConnectionTypeNotInitializedLedgerException {
-      // Internal wiring bug — never a meaningful message for the user.
+      // The transport for this device was never initialized (its scan did not
+      // run or did not complete), so there is nothing to talk to. That is the
+      // same situation as a missing connection from the user's point of view —
+      // and "no connection available" is actionable, unlike a generic "oops".
       return const Err(
-        LedgerUnexpectedFailure('connection type not initialized'),
+        LedgerNoConnectionFailure('connection type not initialized'),
       );
     } catch (e, st) {
       final failure = _interpretRawError(e);
@@ -171,16 +174,22 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   );
 
   /// Extracts a normalized (lowercase, no `0x`) 4-hex-digit APDU status word.
-  /// Matches are anchored on word boundaries and accept an optional `0x`
-  /// prefix, so a status word survives but an incidental 4-hex run inside a
-  /// txid/address does not get mistaken for one.
   String? _extractApduCode(String error) {
     final match = _apduCodePattern.firstMatch(error);
-    return match?.group(1)?.toLowerCase();
+    if (match == null) return null;
+    return (match.group(1) ?? match.group(2))?.toLowerCase();
   }
 
+  /// Matches an APDU status word only when it is unambiguously labelled: either
+  /// hex-prefixed (`0x6985`) or introduced by a status-word keyword (`sw=6985`,
+  /// `status word 6985`, `apdu: 6985`). A bare 4-character run is deliberately
+  /// NOT matched — `timeout after 6985 ms`, or an incidental slice of a txid,
+  /// would otherwise be read as "rejected by user" and show the user a
+  /// confidently wrong reason.
   static final RegExp _apduCodePattern = RegExp(
-    r'\b(?:0x)?([0-9a-f]{4})\b',
+    r'0x([0-9a-f]{4})\b'
+    r'|\b(?:sw|status(?:\s*word)?|apdu(?:\s*(?:code|status))?|code)'
+    r'\s*[:=]?\s*(?:0x)?([0-9a-f]{4})\b',
     caseSensitive: false,
   );
 }

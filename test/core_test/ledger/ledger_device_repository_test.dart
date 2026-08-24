@@ -3,8 +3,8 @@ import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/data/repositories/ledger_device_repository_impl.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_exception.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
+import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
+import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +35,17 @@ void main() {
   });
 
   group('LedgerDeviceRepositoryImpl (the sanitization boundary)', () {
+    test('maps an uninitialized transport to a no-connection failure, '
+        'not a generic one', () async {
+      when(
+        () => datasource.connectDevice(any()),
+      ).thenThrow(const ConnectionTypeNotInitializedLedgerException());
+
+      final result = await repository.connectDevice(device);
+
+      expect((result as Err).failure, isA<LedgerNoConnectionFailure>());
+    });
+
     test('maps a semantic LedgerException to its typed failure', () async {
       when(
         () => datasource.connectDevice(any()),
@@ -69,6 +80,54 @@ void main() {
       // The raw reason is retained for logs/Sentry, never rendered by the UI.
       expect(failure.logMessage, contains('6985'));
     });
+
+    test('does not mistake an unlabelled 4-digit run for an APDU status word, '
+        'so an unrelated message cannot show a wrong reason', () async {
+      when(
+        () => datasource.signPsbt(
+          any(),
+          psbt: any(named: 'psbt'),
+          derivationPath: any(named: 'derivationPath'),
+          scriptType: any(named: 'scriptType'),
+        ),
+      ).thenThrow(Exception('transport timeout after 6985 ms'));
+
+      final result = await repository.signPsbt(
+        device,
+        psbt: 'psbt',
+        derivationPath: "m/84'/0'/0'",
+        scriptType: ScriptType.bip84,
+      );
+
+      // '6985' here is a duration, not a status word: reading it as one would
+      // tell the user they rejected the operation on the device.
+      final failure = (result as Err).failure;
+      expect(failure, isA<LedgerUnexpectedFailure>());
+      expect(failure, isNot(isA<LedgerRejectedByUserFailure>()));
+    });
+
+    test(
+      'still recognizes a keyword-labelled status word without 0x',
+      () async {
+        when(
+          () => datasource.signPsbt(
+            any(),
+            psbt: any(named: 'psbt'),
+            derivationPath: any(named: 'derivationPath'),
+            scriptType: any(named: 'scriptType'),
+          ),
+        ).thenThrow(Exception('ledger responded sw=5515'));
+
+        final result = await repository.signPsbt(
+          device,
+          psbt: 'psbt',
+          derivationPath: "m/84'/0'/0'",
+          scriptType: ScriptType.bip84,
+        );
+
+        expect((result as Err).failure, isA<LedgerDeviceLockedFailure>());
+      },
+    );
 
     test('maps an unrecognized raw exception to a sanitized unexpected failure '
         'without leaking the message to the UI surface', () async {

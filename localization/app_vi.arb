@@ -3215,7 +3215,6 @@
   "ledgerInstructionsAndroidDual": "Hãy đảm bảo Ledger của bạn đã mở khóa với ứng dụng Bitcoin đang mở và Bluetooth đã bật.",
   "ledgerScanningMessage": "Đang tìm thiết bị Ledger gần đây...",
   "ledgerConnectingSubtext": "Đang thiết lập kết nối an toàn...",
-  "ledgerErrorUnknown": "Lỗi không xác định",
   "ledgerErrorPermissionDenied": "Cần có quyền Bluetooth để kết nối với các thiết bị Ledger.",
   "ledgerErrorNoDevicesFound": "Không tìm thấy thiết bị Ledger. Hãy đảm bảo thiết bị của bạn đã bật và đã bật Bluetooth.",
   "ledgerErrorMultipleDevicesFound": "Đã tìm thấy nhiều thiết bị Ledger. Vui lòng đảm bảo chỉ có một thiết bị ở gần.",

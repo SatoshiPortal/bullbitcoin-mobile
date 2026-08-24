@@ -10143,7 +10143,6 @@
   "ledgerInstructionsAndroidDual": "Уверете се, че вашият Ledger е отключен, приложението Bitcoin е отворено и Bluetooth е активиран.",
   "ledgerScanningMessage": "Търсене на близки Ledger устройства...",
   "ledgerConnectingSubtext": "Установяване на защитена връзка...",
-  "ledgerErrorUnknown": "Неизвестна грешка",
   "ledgerErrorPermissionDenied": "За свързване с устройства Ledger са необходими разрешения за Bluetooth.",
   "ledgerErrorNoDevicesFound": "Не са намерени устройства Ledger. Уверете се, че устройството ви е включено и Bluetooth е активиран.",
   "ledgerErrorMultipleDevicesFound": "Намерени са няколко устройства Ledger. Моля, уверете се, че наблизо има само едно устройство.",

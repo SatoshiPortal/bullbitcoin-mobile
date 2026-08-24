@@ -9784,7 +9784,6 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "Bilinmeyen hata",
   "ledgerErrorPermissionDenied": "Ledger cihazlarına bağlanmak için Bluetooth izinleri gereklidir.",
   "ledgerErrorNoDevicesFound": "Ledger cihazı bulunamadı. Cihazınızın açık ve Bluetooth'un etkin olduğundan emin olun.",
   "ledgerErrorMultipleDevicesFound": "Birden fazla Ledger cihazı bulundu. Lütfen yakında yalnızca bir cihaz olduğundan emin olun.",
@@ -9793,9 +9792,6 @@
   "ledgerErrorInvalidPsbt": "Geçersiz PSBT formatı tespit edildi.",
   "ledgerErrorMissingDerivationPath": "Türetme yolu gereklidir",
   "ledgerErrorMissingScriptType": "Betik türü gereklidir",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "payBelowMinAmount": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"

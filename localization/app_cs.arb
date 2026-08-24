@@ -9677,7 +9677,6 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "Neznámá chyba",
   "ledgerErrorPermissionDenied": "Pro připojení k zařízením Ledger jsou vyžadována oprávnění Bluetooth.",
   "ledgerErrorNoDevicesFound": "Nebyla nalezena žádná zařízení Ledger. Ujistěte se, že je vaše zařízení zapnuté a má povolené Bluetooth.",
   "ledgerErrorMultipleDevicesFound": "Bylo nalezeno více zařízení Ledger. Ujistěte se, že je v blízkosti pouze jedno zařízení.",
@@ -9686,9 +9685,6 @@
   "ledgerErrorInvalidPsbt": "Byl zjištěn neplatný formát PSBT.",
   "ledgerErrorMissingDerivationPath": "Je vyžadována odvozovací cesta",
   "ledgerErrorMissingScriptType": "Je vyžadován typ skriptu",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
   "payBelowMinAmount": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"
