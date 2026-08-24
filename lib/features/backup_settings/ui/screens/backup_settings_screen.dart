@@ -48,10 +48,7 @@ class _Screen extends StatelessWidget {
       },
       child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
         builder: (context, state) {
-          final items = buildSettingsItems(
-            localization: context.loc,
-            exchangeTitle: context.loc.settingsExchangeSettingsTitle,
-          );
+          final items = settingsItemsOf(context);
           return Scaffold(
             appBar: AppBar(
               forceMaterialTransparency: true,

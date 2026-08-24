@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -11,6 +14,7 @@ import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
@@ -112,6 +116,31 @@ extension SettingsItemsX on Iterable<SettingsItem> {
 
   Iterable<SettingsItem> inSection(SettingsItemSection section) =>
       where((item) => item.section == section);
+}
+
+/// The settings registry for the current context.
+///
+/// Every settings screen goes through this instead of calling
+/// [buildSettingsItems] with its own arguments, so the superuser and dev-mode
+/// gating and the platform-dependent exchange title are decided in exactly one
+/// place. Search depends on that: it surfaces items from every section at once,
+/// so a screen-local approximation of these flags would show the wrong rows.
+List<SettingsItem> settingsItemsOf(BuildContext context) {
+  final isSuperuser = context.select(
+    (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+  );
+  final isDevModeEnabled = context.select(
+    (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
+  );
+
+  return buildSettingsItems(
+    localization: context.loc,
+    exchangeTitle: Platform.isIOS && !isSuperuser
+        ? context.loc.settingsAccountSettingsTitle
+        : context.loc.settingsExchangeSettingsTitle,
+    isSuperuser: isSuperuser,
+    isDevModeEnabled: isDevModeEnabled,
+  );
 }
 
 List<SettingsItem> buildSettingsItems({

@@ -14,22 +14,11 @@ class AppSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-    final isDevModeEnabled = context.select(
-      (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
-    );
     final currentLanguage = context.select(
       (SettingsCubit cubit) =>
           cubit.state.language ?? Language.unitedStatesEnglish,
     );
-    final items = buildSettingsItems(
-      localization: context.loc,
-      exchangeTitle: context.loc.settingsExchangeSettingsTitle,
-      isSuperuser: isSuperuser,
-      isDevModeEnabled: isDevModeEnabled,
-    );
+    final items = settingsItemsOf(context);
 
     Widget? trailingFor(SettingsItemId id) => switch (id) {
       SettingsItemId.language => AppLanguagePicker(

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -46,13 +44,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
 
-    final isSuperuser =
-        context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
-        false;
-    final isDevModeEnabled =
-        context.select((SettingsCubit cubit) => cubit.state.isDevModeEnabled) ??
-        false;
-
     final serviceStatusLoading = context.select(
       (ServiceStatusCubit cubit) => cubit.state.isLoading,
     );
@@ -61,15 +52,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
-    final exchangeTitle = Platform.isIOS && !isSuperuser
-        ? context.loc.settingsAccountSettingsTitle
-        : context.loc.settingsExchangeSettingsTitle;
-    final items = buildSettingsItems(
-      localization: context.loc,
-      exchangeTitle: exchangeTitle,
-      isSuperuser: isSuperuser,
-      isDevModeEnabled: isDevModeEnabled,
-    );
+    final items = settingsItemsOf(context);
 
     return Scaffold(
       appBar: AppBar(
