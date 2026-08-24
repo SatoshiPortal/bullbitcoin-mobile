@@ -282,7 +282,7 @@ graph TB
     SP --> SECRETS
     WALLETS --> SETTINGS
     WALLETS -->|public orders + swap scheduling port| SWAPS
-    WALLETS --> SEND
+    WALLETS -->|Navigation| SEND
     WITHDRAWAL --> RECIPIENTS
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
@@ -361,6 +361,10 @@ graph TB
    - Dependency cardinality (required vs optional)
 
 ## Dependency Rules
+
+The app shell composes Send's pending-transaction contribution into wallet details
+through Wallet's generic sliver builder. Send owns its pending-transaction state
+and actions; Wallet retains navigation to Send.
 
 1. **No Cyclic Dependencies**: Features must not create circular dependency chains
 2. **Core Independence**: Core must not depend on any feature

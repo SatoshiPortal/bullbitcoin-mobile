@@ -16268,5 +16268,9 @@
   "sendDraftDiscard": "Discard",
   "@sendDraftDiscard": {
     "description": "Action to discard an unsaved transaction."
+  },
+  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
+  "@sendPendingTransactionsInvalid": {
+    "description": "Warning shown when one or more saved transactions are invalid."
   }
 }

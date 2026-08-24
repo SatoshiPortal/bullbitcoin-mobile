@@ -7,6 +7,10 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/send/presentation/bloc/send_pending_transactions_cubit.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -322,6 +326,12 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
+    locator.registerFactory<SendPendingTransactionsCubit>(
+      () => SendPendingTransactionsCubit(
+        locator<WatchPendingBitcoinTransactionsUsecase>(),
+        locator<DeletePendingBitcoinTransactionUsecase>(),
+      ),
+    );
     locator.registerFactoryParam<
       SendCubit,
       Wallet?,

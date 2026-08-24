@@ -7,7 +7,6 @@ export 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 
 export '../domain/pending_bitcoin_transaction.dart';
@@ -32,15 +31,12 @@ final class SendFacade {
   final VerifySignedTxUsecase _verifySignedTxUsecase;
   final WatchPendingBitcoinTransactionsUsecase
   _watchPendingBitcoinTransactionsUsecase;
-  final DeletePendingBitcoinTransactionUsecase
-  _deletePendingBitcoinTransactionUsecase;
 
   SendFacade({
     required this._bitcoin,
     required this._liquid,
     VerifySignedTxUsecase? verifySignedTxUsecase,
     required this._watchPendingBitcoinTransactionsUsecase,
-    required this._deletePendingBitcoinTransactionUsecase,
   }) : _verifySignedTxUsecase =
            verifySignedTxUsecase ?? VerifySignedTxUsecase();
 
@@ -71,11 +67,4 @@ final class SendFacade {
   Stream<Result<PendingBitcoinTransactionSnapshot, SendFailure>> watchPending(
     String walletId,
   ) => _watchPendingBitcoinTransactionsUsecase.execute(walletId);
-
-  Future<Result<void, SendFailure>> deletePending(
-    PendingBitcoinTransaction transaction,
-  ) => _deletePendingBitcoinTransactionUsecase.execute(
-    transaction.id,
-    expectedRevision: transaction.revision,
-  );
 }
