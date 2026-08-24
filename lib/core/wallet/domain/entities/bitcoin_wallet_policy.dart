@@ -473,7 +473,9 @@ final class BitcoinWalletPolicy {
       if (externalChoice == null ||
           internalChoice == null ||
           !_sameIndices(externalChoice, internalChoice)) {
-        throw StateError(
+        throw ArgumentError.value(
+          selection.choices,
+          'selection',
           'Matching receive and change policies require the same selection',
         );
       }
@@ -953,7 +955,9 @@ BitcoinPolicyNode? _nodeAtPath(BitcoinPolicyNode root, String nodePath) {
   for (final segment in nodePath.split('/').skip(1)) {
     if (node is! BitcoinThresholdPolicyNode) return null;
     final index = int.tryParse(segment);
-    if (index == null || index >= node.children.length) return null;
+    if (index == null || index < 0 || index >= node.children.length) {
+      return null;
+    }
     node = node.children[index];
   }
   return node;
