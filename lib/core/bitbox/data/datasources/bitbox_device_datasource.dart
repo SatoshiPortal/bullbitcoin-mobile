@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart'
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:bull_sdk/bitbox.dart' as bitbox;
 import 'package:universal_ble/universal_ble.dart';
@@ -399,6 +400,97 @@ class BitBoxDeviceDatasource {
     }
   }
 
+  Future<String> getWalletPolicyXpub(
+    BitBoxDeviceModel device, {
+    required String derivationPath,
+    required bool isTestnet,
+  }) async {
+    try {
+      return await bitbox.getBtcXpub(
+        serialNumber: device.serialNumber,
+        keypath: derivationPath,
+        xpubType: isTestnet ? 'tpub' : 'xpub',
+      );
+    } catch (error) {
+      throw _mapWalletPolicyError(error);
+    }
+  }
+
+  Future<bool> isWalletPolicyRegistered(
+    BitBoxDeviceModel device, {
+    required String descriptor,
+    required bool isTestnet,
+  }) async {
+    try {
+      return await bitbox.isWalletPolicyRegistered(
+        serialNumber: device.serialNumber,
+        descriptor: descriptor,
+        testnet: isTestnet,
+      );
+    } catch (error) {
+      throw _mapWalletPolicyError(error);
+    }
+  }
+
+  Future<void> registerWalletPolicy(
+    BitBoxDeviceModel device, {
+    required String descriptor,
+    required bool isTestnet,
+    String? name,
+  }) async {
+    try {
+      await bitbox.registerWalletPolicy(
+        serialNumber: device.serialNumber,
+        descriptor: descriptor,
+        testnet: isTestnet,
+        name: name,
+      );
+    } catch (error) {
+      throw _mapWalletPolicyError(error);
+    }
+  }
+
+  Future<String> verifyWalletAddress(
+    BitBoxDeviceModel device, {
+    required String descriptor,
+    required bool isTestnet,
+    required BitcoinPolicyKeychain keychain,
+    required int index,
+  }) async {
+    try {
+      return await bitbox.verifyWalletAddress(
+        serialNumber: device.serialNumber,
+        descriptor: descriptor,
+        testnet: isTestnet,
+        keychain: switch (keychain) {
+          BitcoinPolicyKeychain.external => bitbox.BitBoxKeychain.receive,
+          BitcoinPolicyKeychain.internal => bitbox.BitBoxKeychain.change,
+        },
+        index: index,
+      );
+    } catch (error) {
+      throw _mapWalletPolicyError(error);
+    }
+  }
+
+  Future<String> signWalletPsbt(
+    BitBoxDeviceModel device, {
+    required String descriptor,
+    required String psbt,
+    required bool isTestnet,
+  }) async {
+    try {
+      return await bitbox.signWalletPsbt(
+        serialNumber: device.serialNumber,
+        descriptor: descriptor,
+        psbtStr: psbt,
+        testnet: isTestnet,
+      );
+    } catch (error) {
+      throw _mapWalletPolicyError(error);
+    }
+  }
+
   Future<String> signPsbt(
     BitBoxDeviceModel device, {
     required String psbt,
@@ -447,6 +539,24 @@ class BitBoxDeviceDatasource {
 
     return _interpretOperationError(error.toString()) ??
         BitBoxUnexpectedFailure(error.toString());
+  }
+
+  BitBoxFailure _mapWalletPolicyError(Object error) {
+    if (error is BitBoxFailure) return error;
+    final normalized = error.toString().toLowerCase();
+    if (normalized.contains('not registered')) {
+      return const WalletPolicyNotRegisteredBitBoxFailure();
+    }
+    if (normalized.contains('does not control a key in this descriptor')) {
+      return const WalletSignerMismatchBitBoxFailure();
+    }
+    if (normalized.contains('unsupported') ||
+        normalized.contains('supports only') ||
+        normalized.contains('firmware') ||
+        normalized.contains('controls more than one key')) {
+      return UnsupportedWalletPolicyBitBoxFailure(error.toString());
+    }
+    return _mapOperationError(error);
   }
 
   /// Error text patterns the bridge currently emits, mapped to typed
