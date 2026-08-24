@@ -442,6 +442,18 @@ final class BitcoinWalletPolicy {
             nodePath: 'root',
             selection: selection,
           ),
+      requiredExternalKeys: _signatureKeys(
+        node: external.root,
+        keychain: BitcoinPolicyKeychain.external,
+        nodePath: 'root',
+        selection: selection,
+      ),
+      requiredInternalKeys: _signatureKeys(
+        node: internal.root,
+        keychain: BitcoinPolicyKeychain.internal,
+        nodePath: 'root',
+        selection: selection,
+      ),
       eligibleExternalOutpoints: eligibleExternalOutpoints,
       eligibleInternalOutpoints: eligibleInternalOutpoints,
     );
