@@ -40,6 +40,24 @@ class TransactionDetailsScreen extends StatelessWidget {
     final returnToExchange =
         GoRouterState.of(context).uri.queryParameters['returnToExchange'] ==
         'true';
+
+    void closeScreen() {
+      if (returnToExchange) {
+        context.goNamed(ExchangeRoute.exchangeHome.name);
+      } else if (returnHome) {
+        context.goNamed(WalletRoute.walletHome.name);
+      } else if (context.canPop()) {
+        context.pop();
+      } else {
+        context.goNamed(WalletRoute.walletHome.name);
+      }
+    }
+
+    // A flow that `go`es here leaves this screen alone on the stack, so back
+    // had nothing to pop and closed the app. Veto the pop in that case and let
+    // closeScreen navigate; when there is a route below, back still pops.
+    final canPopBack = context.canPop();
+
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -67,195 +85,199 @@ class TransactionDetailsScreen extends StatelessWidget {
     final orderSwap = tx?.orderSwap;
     final isChainSwap = tx?.isChainSwap ?? false;
 
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: isOngoingSwap == true
-              ? (isChainSwap
-                    ? context.loc.transactionDetailTransferProgress
-                    : context.loc.transactionDetailSwapProgress)
-              : context.loc.transactionDetailTitle,
-          actionIcon: Icons.close,
-          onAction: () {
-            if (returnToExchange) {
-              context.goNamed(ExchangeRoute.exchangeHome.name);
-            } else if (returnHome) {
-              context.goNamed(WalletRoute.walletHome.name);
-            } else if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(WalletRoute.walletHome.name);
-            }
-          },
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3.0),
-          child: FadingLinearProgress(
-            trigger: isBroadcastingPayjoinOriginalTx,
-            backgroundColor: context.appColors.onPrimary,
-            foregroundColor: context.appColors.primary,
+    return PopScope(
+      canPop: canPopBack,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+
+        closeScreen();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            title: isOngoingSwap == true
+                ? (isChainSwap
+                      ? context.loc.transactionDetailTransferProgress
+                      : context.loc.transactionDetailSwapProgress)
+                : context.loc.transactionDetailTitle,
+            actionIcon: Icons.close,
+            onAction: closeScreen,
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: FadingLinearProgress(
+              trigger: isBroadcastingPayjoinOriginalTx,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
+            ),
           ),
         ),
-      ),
-      body: SafeArea(
-        child: BBRefreshIndicator(
-          onRefresh: () => context.read<TransactionDetailsCubit>().refresh(),
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              if (hasLoadError)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: _LoadErrorContent(),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverToBoxAdapter(
-                    child: Center(
-                      child: Column(
-                        children: [
-                          if (isLoading)
-                            const LoadingBoxContent(height: 72, width: 72)
-                          else
-                            TransactionDirectionBadge(
-                              isIncoming: isIncoming ?? false,
-                              isSwap: isChainSwap,
-                            ),
-                          const Gap(24),
-                          if (isLoading)
-                            const LoadingLineContent(width: 150)
-                          else
-                            const TransactionDetailsStatusLabel(),
-                          if (isOngoingSwap == true && swap != null) ...[
-                            const Gap(8),
-                            SwapProgressIndicator(swap: swap),
-                          ],
-                          if (isLoading)
-                            const LoadingLineContent(
-                              height: 24,
-                              width: 200,
-                              padding: EdgeInsets.zero,
-                            )
-                          else
-                            const TransactionDetailsAmount(),
-                          const Gap(16),
-                          if (isOngoingSwap == true && swap != null) ...[
-                            SwapStatusDescription(swap: swap),
+        body: SafeArea(
+          child: BBRefreshIndicator(
+            onRefresh: () => context.read<TransactionDetailsCubit>().refresh(),
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                if (hasLoadError)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _LoadErrorContent(),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(
+                        child: Column(
+                          children: [
+                            if (isLoading)
+                              const LoadingBoxContent(height: 72, width: 72)
+                            else
+                              TransactionDirectionBadge(
+                                isIncoming: isIncoming ?? false,
+                                isSwap: isChainSwap,
+                              ),
+                            const Gap(24),
+                            if (isLoading)
+                              const LoadingLineContent(width: 150)
+                            else
+                              const TransactionDetailsStatusLabel(),
+                            if (isOngoingSwap == true && swap != null) ...[
+                              const Gap(8),
+                              SwapProgressIndicator(swap: swap),
+                            ],
+                            if (isLoading)
+                              const LoadingLineContent(
+                                height: 24,
+                                width: 200,
+                                padding: EdgeInsets.zero,
+                              )
+                            else
+                              const TransactionDetailsAmount(),
                             const Gap(16),
-                          ],
-                          if (isOngoingSwap == true && orderSwap != null) ...[
-                            OrderSwapStatusDescription(orderSwap: orderSwap),
-                            const Gap(16),
-                          ],
-                          if (isOrderType &&
-                              tx?.isBuyOrder == true &&
-                              tx?.order != null &&
-                              (tx!.order! as BuyOrder).bitcoinAddress != null &&
-                              tx.order!.sentAt == null) ...[
-                            AccelerateTransactionListTile(
-                              orderId: tx.order!.orderId,
-                              onTap: () {
-                                context.pushNamed(
-                                  BuyRoute.buyAccelerate.name,
-                                  pathParameters: {
-                                    'orderId': tx.order!.orderId,
-                                  },
-                                );
-                              },
-                            ),
-                            const Gap(16),
-                          ],
-                          if (isLoading)
-                            const LoadingBoxContent(height: 400)
-                          else
-                            const TransactionDetailsTable(),
-                          if (tx?.order is FiatPaymentOrder &&
-                              (tx!.order! as FiatPaymentOrder).payoutMethod ==
-                                  OrderPaymentMethod.sinpe &&
-                              (tx.order! as FiatPaymentOrder).payoutCurrency ==
-                                  'CRC') ...[
-                            const Gap(16),
-                            BBButton.big(
-                              label: context.loc.payViewReceipt,
-                              onPressed: () {
-                                showSinpeReceiptBottomSheet(
-                                  context,
-                                  tx.order! as FiatPaymentOrder,
-                                );
-                              },
-                              bgColor: context.appColors.secondary,
-                              textColor: context.appColors.onSecondary,
-                            ),
-                          ],
-                          const Gap(16),
-                          if (payjoin != null)
-                            BroadcastPayjoinOriginalTxButton(payjoin: payjoin),
-                          if (isLoading)
-                            const LoadingLineContent(height: 40)
-                          else
-                            BBButton.big(
-                              label: context.loc.transactionDetailAddNote,
-                              disabled:
-                                  !(walletTransaction != null &&
-                                      walletTransaction.labels.length < 10),
-                              onPressed: () async {
-                                if (walletTransaction == null ||
-                                    walletTransaction.labels.length >= 10) {
-                                  log.warning(
-                                    'A transaction can have up to 10 labels, current length: ${walletTransaction?.labels.length}',
+                            if (isOngoingSwap == true && swap != null) ...[
+                              SwapStatusDescription(swap: swap),
+                              const Gap(16),
+                            ],
+                            if (isOngoingSwap == true && orderSwap != null) ...[
+                              OrderSwapStatusDescription(orderSwap: orderSwap),
+                              const Gap(16),
+                            ],
+                            if (isOrderType &&
+                                tx?.isBuyOrder == true &&
+                                tx?.order != null &&
+                                (tx!.order! as BuyOrder).bitcoinAddress !=
+                                    null &&
+                                tx.order!.sentAt == null) ...[
+                              AccelerateTransactionListTile(
+                                orderId: tx.order!.orderId,
+                                onTap: () {
+                                  context.pushNamed(
+                                    BuyRoute.buyAccelerate.name,
+                                    pathParameters: {
+                                      'orderId': tx.order!.orderId,
+                                    },
                                   );
-                                  return;
-                                }
-                                final cubit = context
-                                    .read<TransactionDetailsCubit>();
-                                final saved = await LabelEntryBottomSheet.label(
-                                  context,
-                                  title: context.loc.transactionNoteAddTitle,
-                                  suggestionsFuture: cubit
-                                      .fetchDistinctLabels(),
-                                  hint: context.loc.transactionNoteHint,
-                                );
-                                if (saved == null || !context.mounted) return;
-                                cubit.saveTransactionLabel(
-                                  NewLabel.tx(
-                                    transactionId: walletTransaction.txId,
-                                    label: saved,
-                                  ),
-                                );
-                              },
-                              bgColor: context.appColors.transparent,
-                              textColor: context.appColors.onSurface,
-                              outlined: true,
-                              borderColor: context.appColors.onSurface,
-                            ),
-                          const Gap(16),
-                          if (isOutgoing == true &&
-                              walletTransaction?.isConfirmed == false &&
-                              walletTransaction?.isRbf == true &&
-                              walletTransaction?.isBitcoin == true &&
-                              wallet?.signsLocally == true &&
-                              tx?.txId != null &&
-                              tx?.isSwap != true)
-                            BBButton.big(
-                              label: context.loc.transactionDetailAccelerate,
-                              onPressed: () {
-                                context.pushNamed(
-                                  ReplaceByFeeRoute.replaceByFeeFlow.name,
-                                  extra: walletTransaction,
-                                );
-                              },
-                              bgColor: context.appColors.onSurface,
-                              textColor: context.appColors.surface,
-                            ),
-                        ],
+                                },
+                              ),
+                              const Gap(16),
+                            ],
+                            if (isLoading)
+                              const LoadingBoxContent(height: 400)
+                            else
+                              const TransactionDetailsTable(),
+                            if (tx?.order is FiatPaymentOrder &&
+                                (tx!.order! as FiatPaymentOrder).payoutMethod ==
+                                    OrderPaymentMethod.sinpe &&
+                                (tx.order! as FiatPaymentOrder)
+                                        .payoutCurrency ==
+                                    'CRC') ...[
+                              const Gap(16),
+                              BBButton.big(
+                                label: context.loc.payViewReceipt,
+                                onPressed: () {
+                                  showSinpeReceiptBottomSheet(
+                                    context,
+                                    tx.order! as FiatPaymentOrder,
+                                  );
+                                },
+                                bgColor: context.appColors.secondary,
+                                textColor: context.appColors.onSecondary,
+                              ),
+                            ],
+                            const Gap(16),
+                            if (payjoin != null)
+                              BroadcastPayjoinOriginalTxButton(
+                                payjoin: payjoin,
+                              ),
+                            if (isLoading)
+                              const LoadingLineContent(height: 40)
+                            else
+                              BBButton.big(
+                                label: context.loc.transactionDetailAddNote,
+                                disabled:
+                                    !(walletTransaction != null &&
+                                        walletTransaction.labels.length < 10),
+                                onPressed: () async {
+                                  if (walletTransaction == null ||
+                                      walletTransaction.labels.length >= 10) {
+                                    log.warning(
+                                      'A transaction can have up to 10 labels, current length: ${walletTransaction?.labels.length}',
+                                    );
+                                    return;
+                                  }
+                                  final cubit = context
+                                      .read<TransactionDetailsCubit>();
+                                  final saved =
+                                      await LabelEntryBottomSheet.label(
+                                        context,
+                                        title:
+                                            context.loc.transactionNoteAddTitle,
+                                        suggestionsFuture: cubit
+                                            .fetchDistinctLabels(),
+                                        hint: context.loc.transactionNoteHint,
+                                      );
+                                  if (saved == null || !context.mounted) return;
+                                  cubit.saveTransactionLabel(
+                                    NewLabel.tx(
+                                      transactionId: walletTransaction.txId,
+                                      label: saved,
+                                    ),
+                                  );
+                                },
+                                bgColor: context.appColors.transparent,
+                                textColor: context.appColors.onSurface,
+                                outlined: true,
+                                borderColor: context.appColors.onSurface,
+                              ),
+                            const Gap(16),
+                            if (isOutgoing == true &&
+                                walletTransaction?.isConfirmed == false &&
+                                walletTransaction?.isRbf == true &&
+                                walletTransaction?.isBitcoin == true &&
+                                wallet?.signsLocally == true &&
+                                tx?.txId != null &&
+                                tx?.isSwap != true)
+                              BBButton.big(
+                                label: context.loc.transactionDetailAccelerate,
+                                onPressed: () {
+                                  context.pushNamed(
+                                    ReplaceByFeeRoute.replaceByFeeFlow.name,
+                                    extra: walletTransaction,
+                                  );
+                                },
+                                bgColor: context.appColors.onSurface,
+                                textColor: context.appColors.surface,
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
