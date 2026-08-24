@@ -5,7 +5,10 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 
 class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
   final BitBoxDeviceDatasource _datasource;
@@ -107,6 +110,162 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
       isTestnet: isTestnet,
     ),
   );
+
+  @override
+  Future<Result<void, BitBoxFailure>> registerWalletPolicy(
+    BitBoxDeviceEntity device, {
+    required Wallet wallet,
+  }) => _guard(() async {
+    final model = device.toModel();
+    final signer = await _matchWalletSigner(
+      model,
+      wallet: wallet,
+      isTestnet: wallet.isTestnet,
+    );
+    _ensureSupportedPolicy(wallet, signer);
+    final registered = await _datasource.isWalletPolicyRegistered(
+      model,
+      descriptor: wallet.publicDescriptor,
+      isTestnet: wallet.isTestnet,
+    );
+    if (!registered) {
+      await _datasource.registerWalletPolicy(
+        model,
+        descriptor: wallet.publicDescriptor,
+        isTestnet: wallet.isTestnet,
+        name: _walletPolicyName(wallet),
+      );
+    }
+  });
+
+  @override
+  Future<Result<String, BitBoxFailure>> signWalletPsbt(
+    BitBoxDeviceEntity device, {
+    required Wallet wallet,
+    required String signerId,
+    required String psbt,
+  }) => _guard(() async {
+    final model = device.toModel();
+    final signer = await _matchWalletSigner(
+      model,
+      wallet: wallet,
+      signerId: signerId,
+      isTestnet: wallet.isTestnet,
+    );
+    _ensureSupportedPolicy(wallet, signer);
+    if (!await _datasource.isWalletPolicyRegistered(
+      model,
+      descriptor: wallet.publicDescriptor,
+      isTestnet: wallet.isTestnet,
+    )) {
+      throw const WalletPolicyNotRegisteredBitBoxFailure();
+    }
+    return _datasource.signWalletPsbt(
+      model,
+      descriptor: wallet.publicDescriptor,
+      psbt: psbt,
+      isTestnet: wallet.isTestnet,
+    );
+  });
+
+  @override
+  Future<Result<bool, BitBoxFailure>> verifyWalletAddress(
+    BitBoxDeviceEntity device, {
+    required Wallet wallet,
+    required String address,
+    required BitcoinPolicyKeychain keychain,
+    required int index,
+  }) => _guard(() async {
+    final model = device.toModel();
+    final signer = await _matchWalletSigner(
+      model,
+      wallet: wallet,
+      isTestnet: wallet.isTestnet,
+    );
+    _ensureSupportedPolicy(wallet, signer);
+    if (!await _datasource.isWalletPolicyRegistered(
+      model,
+      descriptor: wallet.publicDescriptor,
+      isTestnet: wallet.isTestnet,
+    )) {
+      throw const WalletPolicyNotRegisteredBitBoxFailure();
+    }
+    final verifiedAddress = await _datasource.verifyWalletAddress(
+      model,
+      descriptor: wallet.publicDescriptor,
+      isTestnet: wallet.isTestnet,
+      keychain: keychain,
+      index: index,
+    );
+    if (verifiedAddress != address) {
+      throw const AddressMismatchBitBoxFailure();
+    }
+    return true;
+  });
+
+  Future<WalletSigner> _matchWalletSigner(
+    BitBoxDeviceModel device, {
+    required Wallet wallet,
+    required bool isTestnet,
+    String? signerId,
+  }) async {
+    final fingerprint = (await _datasource.getMasterFingerprint(
+      device,
+    )).toLowerCase();
+    final candidates = wallet.signers.where(
+      (signer) =>
+          signer.signerDevice?.isBitBox == true &&
+          (signerId == null || signer.id == signerId),
+    );
+    for (final signer in candidates) {
+      if (signer.descriptorKeys.any(
+        (key) => key.masterFingerprint.toLowerCase() != fingerprint,
+      )) {
+        continue;
+      }
+      var matches = true;
+      for (final key in signer.descriptorKeys) {
+        final path = key.derivationPath;
+        if (path == null || key.xpub.isEmpty) {
+          matches = false;
+          break;
+        }
+        final xpub = await _datasource.getWalletPolicyXpub(
+          device,
+          derivationPath: path,
+          isTestnet: isTestnet,
+        );
+        if (!_sameXpub(xpub, key.xpub)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) return signer;
+    }
+    throw const WalletSignerMismatchBitBoxFailure();
+  }
+
+  static void _ensureSupportedPolicy(Wallet wallet, WalletSigner signer) {
+    if (!wallet.supportsWalletPolicySigner(signer)) {
+      throw const UnsupportedWalletPolicyBitBoxFailure();
+    }
+  }
+
+  static String? _walletPolicyName(Wallet wallet) {
+    final source = wallet.label?.trim() ?? '';
+    final name = source.codeUnits
+        .where((unit) => unit >= 0x20 && unit <= 0x7e)
+        .map(String.fromCharCode)
+        .join()
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    if (name.isEmpty) return null;
+    return name.length <= 30 ? name : name.substring(0, 30).trimRight();
+  }
+
+  static bool _sameXpub(String first, String second) =>
+      Bip32Derivation.getBip32Xpub(first).toBase58() ==
+      Bip32Derivation.getBip32Xpub(second).toBase58();
 
   @override
   Future<Result<void, BitBoxFailure>> disconnectConnection(

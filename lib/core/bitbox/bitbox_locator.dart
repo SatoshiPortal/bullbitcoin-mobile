@@ -4,10 +4,13 @@ import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_reposito
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/register_wallet_policy_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/sign_psbt_bitbox_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/sign_wallet_psbt_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/verify_wallet_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:get_it/get_it.dart';
 
@@ -69,6 +72,24 @@ class BitBoxCoreLocator {
       () => SignPsbtBitBoxUsecase(
         repository: locator<BitBoxDeviceRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RegisterWalletPolicyBitBoxUsecase>(
+      () => RegisterWalletPolicyBitBoxUsecase(
+        repository: locator<BitBoxDeviceRepository>(),
+      ),
+    );
+
+    locator.registerFactory<SignWalletPsbtBitBoxUsecase>(
+      () => SignWalletPsbtBitBoxUsecase(
+        repository: locator<BitBoxDeviceRepository>(),
+      ),
+    );
+
+    locator.registerFactory<VerifyWalletAddressBitBoxUsecase>(
+      () => VerifyWalletAddressBitBoxUsecase(
+        repository: locator<BitBoxDeviceRepository>(),
       ),
     );
   }

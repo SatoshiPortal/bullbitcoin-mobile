@@ -13,8 +13,14 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_useca
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -83,6 +89,193 @@ void main() {
 
       expect(result, isA<Ok>());
       expect((result as Ok).value, 'aabbccdd');
+    });
+
+    test('requires the fingerprint and account xpub to match', () async {
+      final wallet = _policyWallet(SignerDeviceEntity.bitbox02);
+      when(
+        () => datasource.getMasterFingerprint(any()),
+      ).thenAnswer((_) async => 'aabbccdd');
+      when(
+        () => datasource.getWalletPolicyXpub(
+          any(),
+          derivationPath: _accountPath,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => _otherXpub);
+
+      final result = await repository.registerWalletPolicy(
+        _device,
+        wallet: wallet,
+      );
+
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<WalletSignerMismatchBitBoxFailure>());
+      verifyNever(
+        () => datasource.isWalletPolicyRegistered(
+          any(),
+          descriptor: any(named: 'descriptor'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      );
+    });
+
+    test(
+      'registers an unregistered policy after matching its signer',
+      () async {
+        final wallet = _policyWallet(SignerDeviceEntity.bitbox02);
+        when(
+          () => datasource.getMasterFingerprint(any()),
+        ).thenAnswer((_) async => 'aabbccdd');
+        when(
+          () => datasource.getWalletPolicyXpub(
+            any(),
+            derivationPath: _accountPath,
+            isTestnet: false,
+          ),
+        ).thenAnswer((_) async => _xpub);
+        when(
+          () => datasource.isWalletPolicyRegistered(
+            any(),
+            descriptor: wallet.publicDescriptor,
+            isTestnet: false,
+          ),
+        ).thenAnswer((_) async => false);
+        when(
+          () => datasource.registerWalletPolicy(
+            any(),
+            descriptor: wallet.publicDescriptor,
+            isTestnet: false,
+            name: 'Policy wallet',
+          ),
+        ).thenAnswer((_) async {});
+
+        final result = await repository.registerWalletPolicy(
+          _device,
+          wallet: wallet,
+        );
+
+        expect(result, isA<Ok>());
+        verify(
+          () => datasource.registerWalletPolicy(
+            any(),
+            descriptor: wallet.publicDescriptor,
+            isTestnet: false,
+            name: 'Policy wallet',
+          ),
+        ).called(1);
+      },
+    );
+
+    test('rejects multisig with two keys assigned to one BitBox', () async {
+      final wallet = _multiKeyPolicyWallet();
+      final secondPath = "m/48'/0'/1'/2'";
+      final secondXpub = Bip32Derivation.getBip32Xpub(_otherXpub).toBase58();
+      when(
+        () => datasource.getMasterFingerprint(any()),
+      ).thenAnswer((_) async => 'aabbccdd');
+      when(
+        () => datasource.getWalletPolicyXpub(
+          any(),
+          derivationPath: _accountPath,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => _xpub);
+      when(
+        () => datasource.getWalletPolicyXpub(
+          any(),
+          derivationPath: secondPath,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => secondXpub);
+
+      final result = await repository.registerWalletPolicy(
+        _device,
+        wallet: wallet,
+      );
+
+      expect(result, isA<Err>());
+      expect(
+        (result as Err).failure,
+        isA<UnsupportedWalletPolicyBitBoxFailure>(),
+      );
+      verifyNever(
+        () => datasource.isWalletPolicyRegistered(
+          any(),
+          descriptor: any(named: 'descriptor'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      );
+    });
+
+    test('accepts disjoint policy roles for one BitBox account key', () async {
+      final wallet = _disjointRolePolicyWallet(SignerDeviceEntity.bitbox02);
+      when(
+        () => datasource.getMasterFingerprint(any()),
+      ).thenAnswer((_) async => 'aabbccdd');
+      when(
+        () => datasource.getWalletPolicyXpub(
+          any(),
+          derivationPath: _accountPath,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => _xpub);
+      when(
+        () => datasource.isWalletPolicyRegistered(
+          any(),
+          descriptor: wallet.publicDescriptor,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => true);
+
+      final result = await repository.registerWalletPolicy(
+        _device,
+        wallet: wallet,
+      );
+
+      expect(wallet.supportsWalletPolicySigner(wallet.signers.single), isTrue);
+      expect(result, isA<Ok>());
+    });
+
+    test('rejects a wallet-policy address mismatch', () async {
+      final wallet = _policyWallet(SignerDeviceEntity.bitbox02);
+      when(
+        () => datasource.getMasterFingerprint(any()),
+      ).thenAnswer((_) async => 'aabbccdd');
+      when(
+        () => datasource.getWalletPolicyXpub(
+          any(),
+          derivationPath: _accountPath,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => _xpub);
+      when(
+        () => datasource.isWalletPolicyRegistered(
+          any(),
+          descriptor: wallet.publicDescriptor,
+          isTestnet: false,
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => datasource.verifyWalletAddress(
+          any(),
+          descriptor: wallet.publicDescriptor,
+          isTestnet: false,
+          keychain: BitcoinPolicyKeychain.external,
+          index: 4,
+        ),
+      ).thenAnswer((_) async => 'bc1qwrong');
+
+      final result = await repository.verifyWalletAddress(
+        _device,
+        wallet: wallet,
+        address: 'bc1qexpected',
+        keychain: BitcoinPolicyKeychain.external,
+        index: 4,
+      );
+
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<AddressMismatchBitBoxFailure>());
     });
   });
 
@@ -231,6 +424,120 @@ void main() {
       expect((result as Ok).value, [_device]);
     });
   });
+}
+
+const _accountPath = "m/48'/0'/0'/2'";
+const _xpub =
+    'xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7';
+const _otherXpub =
+    'tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ';
+
+Wallet _policyWallet(SignerDeviceEntity device) {
+  const key = '[aabbccdd/48\'/0\'/0\'/2\']$_xpub/<0;1>/*';
+  return Wallet(
+    origin: 'wallet-id',
+    label: 'Policy wallet',
+    network: Network.bitcoinMainnet,
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: 'aabbccdd',
+        xpubFingerprint: '',
+        xpub: _xpub,
+        derivationPath: _accountPath,
+        signer: SignerEntity.remote,
+        signerDevice: device,
+      ),
+    ],
+    scriptType: null,
+    publicDescriptor: 'wsh(pk($key))',
+    balanceSat: BigInt.zero,
+  );
+}
+
+Wallet _multiKeyPolicyWallet() {
+  final secondXpub = Bip32Derivation.getBip32Xpub(_otherXpub).toBase58();
+  const secondPath = "m/48'/0'/1'/2'";
+  final keys = [
+    WalletDescriptorKey(
+      id: 'key-0',
+      signerId: 'signer-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: '',
+      xpub: _xpub,
+      derivationPath: _accountPath,
+    ),
+    WalletDescriptorKey(
+      id: 'key-1',
+      signerId: 'signer-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: '',
+      xpub: secondXpub,
+      derivationPath: secondPath,
+    ),
+  ];
+  final descriptorKeys = keys
+      .map(
+        (key) =>
+            '[${key.masterFingerprint}/${key.derivationPath!.substring(2)}]'
+            '${key.xpub}/<0;1>/*',
+      )
+      .join(',');
+  return Wallet(
+    origin: 'wallet-id',
+    network: Network.bitcoinMainnet,
+    signers: [
+      WalletSigner(
+        id: 'signer-0',
+        signer: SignerEntity.remote,
+        signerDevice: SignerDeviceEntity.bitbox02,
+        descriptorKeys: keys,
+      ),
+    ],
+    scriptType: null,
+    publicDescriptor: 'wsh(sortedmulti(1,$descriptorKeys))',
+    balanceSat: BigInt.zero,
+  );
+}
+
+Wallet _disjointRolePolicyWallet(SignerDeviceEntity device) {
+  const origin = '[aabbccdd/48\'/0\'/0\'/2\']$_xpub';
+  final keys = [
+    WalletDescriptorKey(
+      id: 'key-0',
+      signerId: 'signer-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: '',
+      xpub: _xpub,
+      derivationPath: _accountPath,
+      descriptorPath: '/<0;1>/*',
+    ),
+    WalletDescriptorKey(
+      id: 'key-1',
+      signerId: 'signer-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: '',
+      xpub: _xpub,
+      derivationPath: _accountPath,
+      descriptorPath: '/<2;3>/*',
+    ),
+  ];
+  return Wallet(
+    origin: 'wallet-id',
+    network: Network.bitcoinMainnet,
+    signers: [
+      WalletSigner(
+        id: 'signer-0',
+        signer: SignerEntity.remote,
+        signerDevice: device,
+        descriptorKeys: keys,
+      ),
+    ],
+    scriptType: null,
+    publicDescriptor:
+        'wsh(or_d(pk($origin/<0;1>/*),'
+        'and_v(v:older(20),pk($origin/<2;3>/*))))',
+    balanceSat: BigInt.zero,
+  );
 }
 
 class _MockRepository extends Mock implements BitBoxDeviceRepository {}
