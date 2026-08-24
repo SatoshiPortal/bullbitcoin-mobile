@@ -1,32 +1,34 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
-import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
-  final LedgerDeviceRepository _repository;
+  final DisconnectLedgerDeviceUsecase _disconnectLedgerDeviceUsecase;
+  final DisposeLedgerConnectionsUsecase _disposeLedgerConnectionsUsecase;
   final SignerDeviceEntity? _requestedDeviceType;
 
   LedgerOperationCubit({
     required this._scanLedgerDevicesUsecase,
     required this._connectLedgerDeviceUsecase,
+    required this._disconnectLedgerDeviceUsecase,
+    required this._disposeLedgerConnectionsUsecase,
     this._requestedDeviceType,
-  }) : _repository = locator<LedgerDeviceRepository>(),
-       super(const LedgerOperationState());
+  }) : super(const LedgerOperationState());
 
   LedgerDeviceEntity? get connectedDevice => state.connectedDevice;
 
   @override
   Future<void> close() async {
-    await _repository.dispose();
+    await _disposeLedgerConnectionsUsecase.execute();
     await super.close();
   }
 
@@ -37,7 +39,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     Future<Result<T, LedgerFailure>> Function() operation,
   ) async {
     if (state.connectedDevice != null) {
-      await _repository.disconnectConnection(state.connectedDevice!);
+      await _disconnectLedgerDeviceUsecase.execute(state.connectedDevice!);
     }
 
     emit(state.copyWith(status: LedgerOperationStatus.scanning, failure: null));

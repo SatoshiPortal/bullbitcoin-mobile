@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
-import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cubit.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -17,13 +17,17 @@ class _MockScanLedgerDevicesUsecase extends Mock
 class _MockConnectLedgerDeviceUsecase extends Mock
     implements ConnectLedgerDeviceUsecase {}
 
-class _MockLedgerDeviceRepository extends Mock
-    implements LedgerDeviceRepository {}
+class _MockDisconnectLedgerDeviceUsecase extends Mock
+    implements DisconnectLedgerDeviceUsecase {}
+
+class _MockDisposeLedgerConnectionsUsecase extends Mock
+    implements DisposeLedgerConnectionsUsecase {}
 
 void main() {
   late _MockScanLedgerDevicesUsecase scan;
   late _MockConnectLedgerDeviceUsecase connect;
-  late _MockLedgerDeviceRepository repository;
+  late _MockDisconnectLedgerDeviceUsecase disconnect;
+  late _MockDisposeLedgerConnectionsUsecase disposeConnections;
 
   const device = LedgerDeviceEntity(
     id: 'device-1',
@@ -39,27 +43,18 @@ void main() {
   setUp(() {
     scan = _MockScanLedgerDevicesUsecase();
     connect = _MockConnectLedgerDeviceUsecase();
-    repository = _MockLedgerDeviceRepository();
+    disconnect = _MockDisconnectLedgerDeviceUsecase();
+    disposeConnections = _MockDisposeLedgerConnectionsUsecase();
 
-    // The cubit resolves its repository from the locator for dispose/cleanup.
-    if (locator.isRegistered<LedgerDeviceRepository>()) {
-      locator.unregister<LedgerDeviceRepository>();
-    }
-    locator.registerSingleton<LedgerDeviceRepository>(repository);
-
-    when(() => repository.dispose()).thenAnswer((_) async {});
-    when(() => repository.disconnectConnection(any())).thenAnswer((_) async {});
-  });
-
-  tearDown(() {
-    if (locator.isRegistered<LedgerDeviceRepository>()) {
-      locator.unregister<LedgerDeviceRepository>();
-    }
+    when(() => disposeConnections.execute()).thenAnswer((_) async {});
+    when(() => disconnect.execute(any())).thenAnswer((_) async {});
   });
 
   LedgerOperationCubit buildCubit() => LedgerOperationCubit(
     scanLedgerDevicesUsecase: scan,
     connectLedgerDeviceUsecase: connect,
+    disconnectLedgerDeviceUsecase: disconnect,
+    disposeLedgerConnectionsUsecase: disposeConnections,
   );
 
   void stubScan(Result<List<LedgerDeviceEntity>, LedgerFailure> result) {
