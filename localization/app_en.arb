@@ -15578,6 +15578,10 @@
       }
     }
   },
+  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
+  "@sendPendingTransactionsInvalid": {
+    "description": "Warning shown when one or more saved transactions are invalid."
+  },
   "copiedToClipboardMessage": "Copied to clipboard",
   "@copiedToClipboardMessage": {
     "description": "Snackbar confirmation message after copying to clipboard"
