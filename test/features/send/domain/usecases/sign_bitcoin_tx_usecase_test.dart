@@ -46,6 +46,7 @@ final class _FakeBitcoinSigningPort implements BitcoinSigningPort {
     String psbt, {
     required String walletId,
     bool requireLocalOrigin = true,
+    bool allowSpentWalletInputs = false,
   }) => throw UnimplementedError();
 
   @override

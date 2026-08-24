@@ -317,6 +317,16 @@ void main() {
       parsedOriginal.dispose();
       wallet.dispose();
 
+      await expectLater(
+        datasource.validateWalletPsbtInputs(originalPsbt, wallet: walletModel),
+        throwsA(isA<BitcoinPsbtMissingUtxoException>()),
+      );
+      await datasource.validateWalletPsbtInputs(
+        originalPsbt,
+        wallet: walletModel,
+        allowSpentWalletInputs: true,
+      );
+
       final metadata = WalletMetadataModel(
         id: walletModel.id,
         network: Network.bitcoinTestnet,
