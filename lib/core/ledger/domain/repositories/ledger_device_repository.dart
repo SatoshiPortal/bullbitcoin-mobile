@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:primitives/primitives.dart' show Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class LedgerDeviceRepository {
@@ -40,6 +42,29 @@ abstract interface class LedgerDeviceRepository {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
+  });
+
+  @useResult
+  Future<Result<void, LedgerFailure>> registerWalletPolicy(
+    LedgerDeviceEntity device, {
+    required Wallet wallet,
+  });
+
+  @useResult
+  Future<Result<String, LedgerFailure>> signWalletPsbt(
+    LedgerDeviceEntity device, {
+    required Wallet wallet,
+    required String signerId,
+    required String psbt,
+  });
+
+  @useResult
+  Future<Result<bool, LedgerFailure>> verifyWalletAddress(
+    LedgerDeviceEntity device, {
+    required Wallet wallet,
+    required String address,
+    required BitcoinPolicyKeychain keychain,
+    required int index,
   });
 
   @useResult

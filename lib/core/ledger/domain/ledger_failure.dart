@@ -78,6 +78,22 @@ final class LedgerMissingScriptTypeFailure extends LedgerFailure {
   const LedgerMissingScriptTypeFailure([super.logMessage]);
 }
 
+final class LedgerMissingWalletPolicyFailure extends LedgerFailure {
+  const LedgerMissingWalletPolicyFailure([super.logMessage]);
+}
+
+final class LedgerUnsupportedWalletPolicyFailure extends LedgerFailure {
+  const LedgerUnsupportedWalletPolicyFailure([super.logMessage]);
+}
+
+final class LedgerWalletPolicyNotRegisteredFailure extends LedgerFailure {
+  const LedgerWalletPolicyNotRegisteredFailure([super.logMessage]);
+}
+
+final class LedgerAddressMismatchFailure extends LedgerFailure {
+  const LedgerAddressMismatchFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI — the
 /// presentation extension returns the shared generic string.
 final class LedgerUnexpectedFailure extends LedgerFailure {
