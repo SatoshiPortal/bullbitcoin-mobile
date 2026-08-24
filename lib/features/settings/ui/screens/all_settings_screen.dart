@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
@@ -49,20 +50,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     final items = settingsItemsOf(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.settingsScreenTitle),
-        actionsPadding: const EdgeInsets.only(right: 8),
-        actions: [
-          IconButton(
-            key: const Key('settings-search-button'),
-            tooltip: context.loc.settingsSearchHint,
-            color: context.appColors.secondary,
-            iconSize: 32,
-            icon: const Icon(Icons.search),
-            onPressed: () => context.pushNamed(SettingsRoute.search.name),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -70,6 +58,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             child: Column(
               children: [
                 const Gap(16),
+                SettingsSearchBar(
+                  key: const Key('settings-search-bar'),
+                  onTap: () => context.pushNamed(SettingsRoute.search.name),
+                ),
+                const Gap(8),
                 for (final item in items.inSection(SettingsItemSection.root))
                   item.buildTile(
                     context,
