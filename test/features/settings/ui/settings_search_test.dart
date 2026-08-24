@@ -191,6 +191,14 @@ void main() {
       );
     });
 
+    test('matches a German keyword its German title does not contain', () {
+      // The theme screen is labelled "Anzeige & Layout" in German, so the word
+      // a user actually reaches for is only findable through the keywords.
+      final results = searchSettings(_germanItems(), 'Dunkelmodus');
+
+      expect(results.map((item) => item.id), contains(SettingsItemId.theme));
+    });
+
     test('folds the German sharp s to a double s', () {
       final items = [
         SettingsItem(
