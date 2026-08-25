@@ -24,19 +24,30 @@ class ExchangeSupportChatRepositoryImpl
     required this._isTestnet,
   });
 
+  /// Being logged out is a normal, expected state rather than an exceptional one, so the missing key is returned as a failure instead of being thrown and caught a few lines below.
+  Future<Result<String, ExchangeSupportChatFailure>> _apiKey() async {
+    final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
+    if (apiKey == null) {
+      log.warning('Support chat: no API key stored, user is logged out');
+      return const Err(NotAuthenticatedFailure());
+    }
+    return Ok(apiKey.key);
+  }
+
   @override
   Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>>
   getMessages({int? page, int? pageSize}) async {
     try {
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+      final String apiKey;
+      switch (await _apiKey()) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return Err(failure);
       }
 
       final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
-        apiKey.key,
+        apiKey,
       );
       if (userSummaryModel == null) {
         throw Exception('User summary not found');
@@ -48,7 +59,7 @@ class ExchangeSupportChatRepositoryImpl
       }
 
       final messageModels = await _datasource.listMessages(
-        apiKey: apiKey.key,
+        apiKey: apiKey,
         userId: userId,
         page: page,
         pageSize: pageSize,
@@ -70,11 +81,12 @@ class ExchangeSupportChatRepositoryImpl
     List<SupportChatMessageAttachment>? attachments,
   }) async {
     try {
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+      final String apiKey;
+      switch (await _apiKey()) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return Err(failure);
       }
 
       final attachmentModels = attachments
@@ -92,7 +104,7 @@ class ExchangeSupportChatRepositoryImpl
           .toList();
 
       await _datasource.sendMessage(
-        apiKey: apiKey.key,
+        apiKey: apiKey,
         text: text,
         attachments: attachmentModels,
       );
@@ -110,15 +122,16 @@ class ExchangeSupportChatRepositoryImpl
   Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
   getMessageAttachment(String attachmentId) async {
     try {
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+      final String apiKey;
+      switch (await _apiKey()) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return Err(failure);
       }
 
       final attachmentModel = await _datasource.getMessageAttachment(
-        apiKey: apiKey.key,
+        apiKey: apiKey,
         attachmentId: attachmentId,
       );
 
