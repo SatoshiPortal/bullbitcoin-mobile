@@ -96,7 +96,12 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
             ),
           );
         }
-      case Err():
+      case Err(:final failure):
+        // Deliberately not surfaced: the thread already on screen stays usable, and a snackbar on every scroll to the top would be noise. Logged so a broken pagination is still diagnosable.
+        log.warning(
+          'Failed to load older support chat messages',
+          error: failure.logMessage,
+        );
         emit(state.copyWith(loadingOlderMessages: false));
     }
 
