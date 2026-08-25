@@ -9246,8 +9246,6 @@
   "exchangeFileUploadTapToReupload": "Натиснете, за да качите отново",
   "exchangeSupportChatAttachmentImage": "Изображение",
   "exchangeSupportChatAttachmentUnknownFile": "Неизвестен файл",
-  "exchangeSupportChatPermissionDenied": "Достъпът е отказан.",
-  "exchangeSupportChatPermissionDeniedSettings": "Достъпът е отказан. Моля, разрешете достъпа до фотогалерията в Настройките.",
   "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
   "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
   "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",

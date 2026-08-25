@@ -4415,8 +4415,6 @@
   "exchangeFileUploadTapToReupload": "Lataa uudelleen napauttamalla",
   "exchangeSupportChatAttachmentImage": "Kuva",
   "exchangeSupportChatAttachmentUnknownFile": "Tuntematon tiedosto",
-  "exchangeSupportChatPermissionDenied": "Käyttöoikeus evätty.",
-  "exchangeSupportChatPermissionDeniedSettings": "Käyttöoikeus evätty. Myönnä pääsy valokuvakirjastoon asetuksissa.",
   "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",

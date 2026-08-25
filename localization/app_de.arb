@@ -4301,8 +4301,6 @@
   "exchangeFileUploadTapToReupload": "Tippen Sie, um erneut hochzuladen",
   "exchangeSupportChatAttachmentImage": "Bild",
   "exchangeSupportChatAttachmentUnknownFile": "Unbekannte Datei",
-  "exchangeSupportChatPermissionDenied": "Berechtigung verweigert.",
-  "exchangeSupportChatPermissionDeniedSettings": "Berechtigung verweigert. Bitte erlauben Sie den Zugriff auf die Fotobibliothek in den Einstellungen.",
   "exchangeSupportChatPickFilesFailed": "Auswahl der Dateien fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "exchangeSupportChatAttachLogsFailed": "Anhängen der Protokolle fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "exchangeSupportChatFetchFileDataFailed": "Abrufen der Dateidaten fehlgeschlagen.",

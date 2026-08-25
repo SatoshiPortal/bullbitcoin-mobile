@@ -12459,8 +12459,6 @@
   "exchangeFileUploadTapToReupload": "แตะเพื่ออัปโหลดใหม่",
   "exchangeSupportChatAttachmentImage": "รูปภาพ",
   "exchangeSupportChatAttachmentUnknownFile": "ไฟล์ที่ไม่ทราบชนิด",
-  "exchangeSupportChatPermissionDenied": "การอนุญาตถูกปฏิเสธ",
-  "exchangeSupportChatPermissionDeniedSettings": "การอนุญาตถูกปฏิเสธ กรุณาอนุญาตให้เข้าถึงคลังภาพในการตั้งค่า",
   "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",

@@ -12458,8 +12458,6 @@
   "exchangeFileUploadTapToReupload": "اضغط لإعادة الرفع",
   "exchangeSupportChatAttachmentImage": "صورة",
   "exchangeSupportChatAttachmentUnknownFile": "ملف غير معروف",
-  "exchangeSupportChatPermissionDenied": "تم رفض الإذن.",
-  "exchangeSupportChatPermissionDeniedSettings": "تم رفض الإذن. يرجى منح صلاحية الوصول إلى مكتبة الصور من الإعدادات.",
   "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",

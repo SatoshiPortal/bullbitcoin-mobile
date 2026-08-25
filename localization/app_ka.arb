@@ -3688,8 +3688,6 @@
   "exchangeFileUploadTapToReupload": "შეეხეთ ხელახლა ასატვირთად",
   "exchangeSupportChatAttachmentImage": "სურათი",
   "exchangeSupportChatAttachmentUnknownFile": "უცნობი ფაილი",
-  "exchangeSupportChatPermissionDenied": "წვდომა უარყოფილია.",
-  "exchangeSupportChatPermissionDeniedSettings": "წვდომა უარყოფილია. გთხოვთ, დაუშვათ ფოტოთეკაზე წვდომა პარამეტრებში.",
   "exchangeSupportChatPickFilesFailed": "ფაილების არჩევა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "exchangeSupportChatAttachLogsFailed": "ჟურნალების დამატება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "exchangeSupportChatFetchFileDataFailed": "ფაილის მონაცემების მიღება ვერ მოხერხდა",

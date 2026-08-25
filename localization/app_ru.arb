@@ -4430,8 +4430,6 @@
   "exchangeFileUploadTapToReupload": "Нажмите, чтобы загрузить снова",
   "exchangeSupportChatAttachmentImage": "Изображение",
   "exchangeSupportChatAttachmentUnknownFile": "Неизвестный файл",
-  "exchangeSupportChatPermissionDenied": "Доступ запрещён.",
-  "exchangeSupportChatPermissionDeniedSettings": "Доступ запрещён. Пожалуйста, предоставьте доступ к фотоальбому в настройках.",
   "exchangeSupportChatPickFilesFailed": "Не удалось выбрать файлы. Попробуйте снова.",
   "exchangeSupportChatAttachLogsFailed": "Не удалось прикрепить журналы. Попробуйте снова.",
   "exchangeSupportChatFetchFileDataFailed": "Не удалось получить данные файла.",

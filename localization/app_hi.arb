@@ -12647,8 +12647,6 @@
   "exchangeFileUploadTapToReupload": "पुनः अपलोड करने के लिए टैप करें",
   "exchangeSupportChatAttachmentImage": "छवि",
   "exchangeSupportChatAttachmentUnknownFile": "अज्ञात फ़ाइल",
-  "exchangeSupportChatPermissionDenied": "अनुमति अस्वीकार कर दी गई।",
-  "exchangeSupportChatPermissionDeniedSettings": "अनुमति अस्वीकार कर दी गई। कृपया सेटिंग्स में फ़ोटो लाइब्रेरी की पहुंच प्रदान करें।",
   "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",

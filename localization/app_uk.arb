@@ -4421,8 +4421,6 @@
   "exchangeFileUploadTapToReupload": "Торкніться, щоб завантажити знову",
   "exchangeSupportChatAttachmentImage": "Зображення",
   "exchangeSupportChatAttachmentUnknownFile": "Невідомий файл",
-  "exchangeSupportChatPermissionDenied": "Доступ заборонено.",
-  "exchangeSupportChatPermissionDeniedSettings": "Доступ заборонено. Будь ласка, надайте доступ до бібліотеки фотографій у Налаштуваннях.",
   "exchangeSupportChatPickFilesFailed": "Не вдалося вибрати файли. Спробуйте ще раз.",
   "exchangeSupportChatAttachLogsFailed": "Не вдалося прикріпити журнали. Спробуйте ще раз.",
   "exchangeSupportChatFetchFileDataFailed": "Не вдалося отримати дані файлу.",

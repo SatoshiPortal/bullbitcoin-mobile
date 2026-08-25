@@ -4911,8 +4911,6 @@
   "exchangeFileUploadTapToReupload": "点击重新上传",
   "exchangeSupportChatAttachmentImage": "图片",
   "exchangeSupportChatAttachmentUnknownFile": "未知文件",
-  "exchangeSupportChatPermissionDenied": "权限被拒绝。",
-  "exchangeSupportChatPermissionDeniedSettings": "权限被拒绝。请在设置中授予照片图库访问权限。",
   "exchangeSupportChatPickFilesFailed": "选择文件失败，请重试。",
   "exchangeSupportChatAttachLogsFailed": "添加日志失败，请重试。",
   "exchangeSupportChatFetchFileDataFailed": "获取文件数据失败",

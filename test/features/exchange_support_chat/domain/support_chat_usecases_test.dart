@@ -62,7 +62,7 @@ void main() {
   group('PickImageAttachmentsUsecase', () {
     test('forwards the repository result untouched', () async {
       final repository = _MockAttachmentPickerRepository();
-      const failure = PermissionDeniedNeedsSettingsFailure();
+      const failure = PickFilesFailure('boom');
       when(() => repository.pickImages()).thenAnswer(
         (_) async =>
             const Err<

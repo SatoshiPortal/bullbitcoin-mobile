@@ -12465,8 +12465,6 @@
   "exchangeFileUploadTapToReupload": "탭하여 다시 업로드",
   "exchangeSupportChatAttachmentImage": "이미지",
   "exchangeSupportChatAttachmentUnknownFile": "알 수 없는 파일",
-  "exchangeSupportChatPermissionDenied": "권한이 거부되었습니다.",
-  "exchangeSupportChatPermissionDeniedSettings": "권한이 거부되었습니다. 설정에서 사진 라이브러리 접근을 허용해 주세요.",
   "exchangeSupportChatPickFilesFailed": "파일을 선택하지 못했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatAttachLogsFailed": "로그 첨부에 실패했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatFetchFileDataFailed": "파일 데이터를 가져오지 못했습니다",

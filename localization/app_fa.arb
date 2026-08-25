@@ -12455,8 +12455,6 @@
   "exchangeFileUploadTapToReupload": "ضربه برای دوباره آپلود",
   "exchangeSupportChatAttachmentImage": "تصویر",
   "exchangeSupportChatAttachmentUnknownFile": "فایل نامشخص",
-  "exchangeSupportChatPermissionDenied": "دسترسی رد شد.",
-  "exchangeSupportChatPermissionDeniedSettings": "دسترسی رد شد. لطفاً دسترسی به کتابخانه‌ی عکس را در تنظیمات فعال کنید.",
   "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",

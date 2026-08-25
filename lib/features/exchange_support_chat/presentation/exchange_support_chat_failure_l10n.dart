@@ -12,10 +12,6 @@ extension ExchangeSupportChatFailureL10n on ExchangeSupportChatFailure {
       context.loc.exchangeSupportChatLoadAttachmentError,
     FetchFileDataFailure() =>
       context.loc.exchangeSupportChatFetchFileDataFailed,
-    PermissionDeniedFailure() =>
-      context.loc.exchangeSupportChatPermissionDenied,
-    PermissionDeniedNeedsSettingsFailure() =>
-      context.loc.exchangeSupportChatPermissionDeniedSettings,
     PickFilesFailure() => context.loc.exchangeSupportChatPickFilesFailed,
     AttachLogsFailure() => context.loc.exchangeSupportChatAttachLogsFailed,
     ExchangeSupportChatUnexpectedFailure() =>

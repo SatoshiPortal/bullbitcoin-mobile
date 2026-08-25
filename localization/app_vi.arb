@@ -3541,8 +3541,6 @@
   "exchangeFileUploadTapToReupload": "Nhấn để tải lên lại",
   "exchangeSupportChatAttachmentImage": "Hình ảnh",
   "exchangeSupportChatAttachmentUnknownFile": "Tệp không xác định",
-  "exchangeSupportChatPermissionDenied": "Quyền bị từ chối.",
-  "exchangeSupportChatPermissionDeniedSettings": "Quyền bị từ chối. Vui lòng cấp quyền truy cập thư viện ảnh trong Cài đặt.",
   "exchangeSupportChatPickFilesFailed": "Không thể chọn tệp. Vui lòng thử lại.",
   "exchangeSupportChatAttachLogsFailed": "Không thể đính kèm nhật ký. Vui lòng thử lại.",
   "exchangeSupportChatFetchFileDataFailed": "Không thể lấy dữ liệu tệp",

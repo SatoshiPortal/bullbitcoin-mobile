@@ -3544,8 +3544,6 @@
   "exchangeFileUploadTapToReupload": "Հպեք՝ նորից վերբեռնելու համար",
   "exchangeSupportChatAttachmentImage": "Նկար",
   "exchangeSupportChatAttachmentUnknownFile": "Անհայտ ֆայլ",
-  "exchangeSupportChatPermissionDenied": "Թույլտվությունը մերժվեց։",
-  "exchangeSupportChatPermissionDeniedSettings": "Թույլտվությունը մերժվեց։ Խնդրում ենք տրամադրել լուսանկարների գրադարանի հասանելիություն Կարգավորումներում։",
   "exchangeSupportChatPickFilesFailed": "Չհաջողվեց ընտրել ֆայլերը։ Խնդրում ենք կրկին փորձել։",
   "exchangeSupportChatAttachLogsFailed": "Չհաջողվեց կցել մատյանները։ Խնդրում ենք կրկին փորձել։",
   "exchangeSupportChatFetchFileDataFailed": "Չհաջողվեց բերել ֆայլի տվյալները",

@@ -12455,8 +12455,6 @@
   "exchangeFileUploadTapToReupload": "Yeniden yüklemek için dokunun",
   "exchangeSupportChatAttachmentImage": "Görsel",
   "exchangeSupportChatAttachmentUnknownFile": "Bilinmeyen dosya",
-  "exchangeSupportChatPermissionDenied": "İzin reddedildi.",
-  "exchangeSupportChatPermissionDeniedSettings": "İzin reddedildi. Lütfen Ayarlar'dan fotoğraf kitaplığı erişimine izin verin.",
   "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",

@@ -11923,8 +11923,6 @@
   "exchangeFileUploadTapToReupload": "Klepněte pro opětovné nahrání",
   "exchangeSupportChatAttachmentImage": "Obrázek",
   "exchangeSupportChatAttachmentUnknownFile": "Neznámý soubor",
-  "exchangeSupportChatPermissionDenied": "Oprávnění zamítnuto.",
-  "exchangeSupportChatPermissionDeniedSettings": "Oprávnění zamítnuto. Povolte přístup k fotogalerii v Nastavení.",
   "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
   "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
   "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",

@@ -4470,8 +4470,6 @@
   "exchangeFileUploadTapToReupload": "Toque para carregar novamente",
   "exchangeSupportChatAttachmentImage": "Imagem",
   "exchangeSupportChatAttachmentUnknownFile": "Ficheiro desconhecido",
-  "exchangeSupportChatPermissionDenied": "Permissão negada.",
-  "exchangeSupportChatPermissionDeniedSettings": "Permissão negada. Conceda acesso à biblioteca de fotos nas Definições.",
   "exchangeSupportChatPickFilesFailed": "Falha ao escolher ficheiros. Tente novamente.",
   "exchangeSupportChatAttachLogsFailed": "Falha ao anexar registos. Tente novamente.",
   "exchangeSupportChatFetchFileDataFailed": "Falha ao obter os dados do ficheiro.",

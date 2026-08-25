@@ -13521,14 +13521,6 @@
   "@exchangeSupportChatAttachmentUnknownFile": {
     "description": "Fallback display name for a non-image attachment in the support chat when no file name is available."
   },
-  "exchangeSupportChatPermissionDenied": "Permission denied.",
-  "@exchangeSupportChatPermissionDenied": {
-    "description": "Snackbar shown when a runtime permission needed to attach photos is denied."
-  },
-  "exchangeSupportChatPermissionDeniedSettings": "Permission denied. Please grant photo library access in Settings.",
-  "@exchangeSupportChatPermissionDeniedSettings": {
-    "description": "Snackbar shown when photo library permission is permanently denied and the user must enable it from Settings."
-  },
   "exchangeSupportChatPickFilesFailed": "Failed to pick files. Please try again.",
   "@exchangeSupportChatPickFilesFailed": {
     "description": "Snackbar shown when picking files for a support chat attachment fails."

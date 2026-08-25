@@ -35,18 +35,6 @@ final class FetchFileDataFailure extends ExchangeSupportChatFailure {
   const FetchFileDataFailure([super.logMessage]);
 }
 
-/// Media-library permission was denied (can be retried in-app).
-final class PermissionDeniedFailure extends ExchangeSupportChatFailure {
-  const PermissionDeniedFailure([super.logMessage]);
-}
-
-/// Media-library permission was permanently denied — the user must enable it
-/// from the OS settings.
-final class PermissionDeniedNeedsSettingsFailure
-    extends ExchangeSupportChatFailure {
-  const PermissionDeniedNeedsSettingsFailure([super.logMessage]);
-}
-
 /// Picking image files failed.
 final class PickFilesFailure extends ExchangeSupportChatFailure {
   const PickFilesFailure([super.logMessage]);

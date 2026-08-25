@@ -9530,8 +9530,6 @@
   "exchangeFileUploadTapToReupload": "পুনৰ আপলোড কৰিবলৈ টেপ কৰক",
   "exchangeSupportChatAttachmentImage": "প্ৰতিচ্ছবি",
   "exchangeSupportChatAttachmentUnknownFile": "অজ্ঞাত ফাইল",
-  "exchangeSupportChatPermissionDenied": "অনুমতি নাকচ কৰা হৈছে।",
-  "exchangeSupportChatPermissionDeniedSettings": "অনুমতি নাকচ কৰা হৈছে। অনুগ্ৰহ কৰি ছেটিংছত ফটো লাইব্ৰেৰীৰ প্ৰৱেশাধিকাৰ দিয়ক।",
   "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",

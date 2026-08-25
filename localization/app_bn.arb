@@ -12667,8 +12667,6 @@
   "exchangeFileUploadTapToReupload": "পুনরায় আপলোড করতে ট্যাপ করুন",
   "exchangeSupportChatAttachmentImage": "ছবি",
   "exchangeSupportChatAttachmentUnknownFile": "অজানা ফাইল",
-  "exchangeSupportChatPermissionDenied": "অনুমতি অস্বীকৃত।",
-  "exchangeSupportChatPermissionDeniedSettings": "অনুমতি অস্বীকৃত। অনুগ্রহ করে সেটিংসে গিয়ে ফটো লাইব্রেরি অ্যাক্সেসের অনুমতি দিন।",
   "exchangeSupportChatPickFilesFailed": "ফাইল বাছাই করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSupportChatAttachLogsFailed": "লগ সংযুক্ত করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইল ডেটা আনতে ব্যর্থ হয়েছে",
