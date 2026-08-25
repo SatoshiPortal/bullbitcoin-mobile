@@ -92,7 +92,7 @@ void main() {
         home: SettingsSearchView(
           items: [
             SettingsItem(
-              id: SettingsItemId.tor,
+              id: SettingsItemId.logs,
               section: SettingsItemSection.app,
               title: 'Tor Settings',
               path: const ['Settings', 'App Settings', 'Tor Settings'],
@@ -138,7 +138,7 @@ void main() {
         home: SettingsSearchView(
           items: [
             SettingsItem(
-              id: SettingsItemId.tor,
+              id: SettingsItemId.logs,
               section: SettingsItemSection.app,
               title: 'إعدادات Tor',
               path: const ['الإعدادات', 'إعدادات التطبيق', 'إعدادات Tor'],
@@ -166,7 +166,7 @@ void main() {
 
 List<SettingsItem> _items() => [
   SettingsItem(
-    id: SettingsItemId.tor,
+    id: SettingsItemId.logs,
     section: SettingsItemSection.app,
     title: 'Tor Settings',
     path: const ['Settings', 'App Settings', 'Tor Settings'],

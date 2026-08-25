@@ -1917,8 +1917,8 @@
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "bitcoinSettingsImportWalletTitle": "Carteira de importação",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "Carteira de importação",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "jadeInstructionsTitle": "Blockstream Jade PSBT Instruções",
@@ -2190,10 +2190,6 @@
   "@ledgerWalletTypeLegacy": {
     "description": "Display name for Legacy wallet type (BIP44)"
   },
-  "walletOptionsWalletDetailsTitle": "Detalhes da carteira",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "transactionSwapDescLnSendCompleted": "O pagamento Lightning foi enviado com sucesso! A tua troca já está completa.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -2383,10 +2379,6 @@
   "buyEnterAmount": "Insira quantidade",
   "@buyEnterAmount": {
     "description": "Label for amount input field in buy flow"
-  },
-  "settingsWalletBackupTitle": "Backup de carteira",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "transactionOrderLabelOrderNumber": "Número de ordem",
   "@transactionOrderLabelOrderNumber": {
@@ -2851,8 +2843,8 @@
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
   },
-  "settingsServicesStatusTitle": "Estado dos serviços",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "Estado dos serviços",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "selectAmountTitle": "Selecione o valor",
@@ -4682,8 +4674,8 @@
   "@payToAddress": {
     "description": "Label showing destination address"
   },
-  "walletOptionsUnnamedWalletFallback": "Carteira sem nome",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "Carteira sem nome",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "sendFeeRateTooHigh": "Taxa de taxa parece muito alta",
@@ -5190,10 +5182,6 @@
   "recoverbullSelectVaultProvider": "Selecione Provedor de Vault",
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
-  },
-  "backupSettingsScreenTitle": "Configurações de backup",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
   },
   "replaceByFeeOriginalTransactionTitle": "Transação original",
   "@replaceByFeeOriginalTransactionTitle": {
@@ -6434,10 +6422,6 @@
         "type": "String"
       }
     }
-  },
-  "walletsListTitle": "Detalhes da carteira",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "dcaConfirmNetwork": "Rede",
   "@dcaConfirmNetwork": {
@@ -7770,10 +7754,6 @@
   "payLiquidNetwork": "Rede líquida",
   "@payLiquidNetwork": {
     "description": "Option for Liquid Network payment"
-  },
-  "walletOptionsNotFoundMessage": "Carteira não encontrada",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
   },
   "transactionLabelTransactionFee": "Taxa de transação",
   "@transactionLabelTransactionFee": {
@@ -9121,10 +9101,6 @@
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
-  "bitcoinSettingsAutoTransferTitle": "Configurações de transferência automática",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
-  },
   "exchangeAccountInfoUserNumberCopiedMessage": "Número do usuário copiado para clipboard",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
@@ -9974,10 +9950,6 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "settingsTorSettingsTitle": "Configurações do Tor",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
-  },
   "swapDoNotUninstallWarning": "Não desinstale o aplicativo até que a transferência seja concluída!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
@@ -10509,10 +10481,6 @@
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
   },
-  "walletsListNoWalletsMessage": "Nenhuma carteira encontrada",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
-  },
   "payFirstNameHint": "Insira o primeiro nome",
   "@payFirstNameHint": {
     "description": "Hint for first name input"
@@ -10707,10 +10675,6 @@
   "exchangeLandingFeature2": "DCA, Limite de ordens e Auto-compra",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
-  },
-  "bitcoinSettingsWalletsTitle": "Carteiras",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
   },
   "recoverbullErrorConnectionFailed": "Falhado em se conectar ao servidor de chaves de destino. Por favor, tente novamente mais tarde!",
   "@recoverbullErrorConnectionFailed": {
@@ -10972,10 +10936,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "Configurações do servidor Mempool",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "bip329LabelsImportButton": "Etiquetas de importação",
   "@bip329LabelsImportButton": {
@@ -11294,10 +11254,6 @@
   "importWatchOnlySigningDevice": "Dispositivo de assinatura",
   "@importWatchOnlySigningDevice": {
     "description": "Label for signing device selection field"
-  },
-  "bitcoinSettingsElectrumServerTitle": "Configurações do servidor Electrum",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
   "errorGenericTitle": "Oops! Algo correu mal",
   "@errorGenericTitle": {
@@ -12550,7 +12506,6 @@
   "settingsSearchNoResults": "Nenhuma configuração encontrada.",
   "settingsSearchMempoolKeywords": "explorador de blocos|estimativa de taxas|taxas de transação|API mempool",
   "settingsSearchExchangeKeywords": "conta|conta da corretora|negociação|comprar e vender",
-  "settingsSearchWalletBackupKeywords": "backup|recuperação|recuperar carteira|backup da seed",
   "settingsSearchStartBackupKeywords": "criar backup|salvar backup|fazer backup da carteira",
   "settingsSearchRecoverbullKeywords": "backup criptografado|backup na nuvem|cofre criptografado|recuperação do cofre|Recoverbull",
   "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
@@ -12560,7 +12515,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|mapa Bitcoin|mapa de comerciantes|lugares que aceitam bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termos e condições|informações legais|acordo do usuário|TOS",
   "settingsSearchServicesStatusKeywords": "status dos serviços|status do sistema|online|indisponibilidade",
-  "settingsSearchWalletsKeywords": "gerenciar carteiras|detalhes da carteira|carteiras Bitcoin",
   "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemônico|carteira somente leitura|carteira de hardware",
   "settingsSearchBroadcastTransactionKeywords": "transmitir transação assinada|publicar transação|transação bruta|hexadecimal da transação|PSBT",
   "settingsSearchPayjoinKeywords": "privacidade Payjoin|transação colaborativa|Payjoin|P2EP",
@@ -12573,7 +12527,6 @@
   "settingsSearchThemeKeywords": "aparência|modo escuro|modo claro|tema do sistema",
   "settingsSearchCurrencyKeywords": "moeda fiduciária|moeda local|moeda padrão|moeda de câmbio",
   "settingsSearchSecurityPinKeywords": "código PIN|senha de acesso|bloqueio do aplicativo|autenticação|alterar PIN",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|roteamento onion|Tor integrado|rede de privacidade",
   "settingsSearchLogsKeywords": "logs de debug|logs de diagnóstico|logs do aplicativo|exportar logs",
   "settingsSearchDevModeKeywords": "modo desenvolvedor|configurações de desenvolvimento|modo debug|testes avançados",
   "settingsSearchTestnetCredentialsKeywords": "credenciais da testnet|login da testnet|usuário da testnet|senha da testnet|Basic Auth",

@@ -247,7 +247,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Tor not started'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Tor Settings'));
+    await tester.tap(find.text('Tor'));
     await tester.pumpAndSettle();
 
     expect(find.text('Tor settings destination'), findsOneWidget);

@@ -211,7 +211,7 @@ class _EmbeddedTorStatusDetails extends StatelessWidget {
                   const Gap(8),
                 ],
                 BullButton.big(
-                  label: context.loc.settingsTorSettingsTitle,
+                  label: context.loc.torTitle,
                   onPressed: onOpenSettings,
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.primary,

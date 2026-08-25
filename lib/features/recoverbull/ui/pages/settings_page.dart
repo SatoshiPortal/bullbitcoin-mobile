@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -118,6 +120,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: .stretch,
                   children: [
                     const Gap(16),
+                    SettingsEntryItem(
+                      icon: Icons.vpn_lock,
+                      title: context.loc.torTitle,
+                      onTap: () => context.pushNamed(
+                        const TorSettingsFacade().settingsRouteName,
+                      ),
+                    ),
+                    const Gap(24),
                     Row(
                       mainAxisAlignment: .spaceBetween,
                       children: [

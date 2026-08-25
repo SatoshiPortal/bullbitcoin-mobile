@@ -26,10 +26,7 @@ void main() {
 
     test('matches a dedicated Assamese keyword', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(
-        localization: localization,
-        exchangeTitle: localization.settingsExchangeSettingsTitle,
-      );
+      final items = buildSettingsItems(localization: localization);
 
       final results = searchSettings(items, 'ব্লক এক্সপ্লোৰাৰ');
 
@@ -39,10 +36,7 @@ void main() {
 
     test('matches dedicated metadata for another localized setting', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(
-        localization: localization,
-        exchangeTitle: localization.settingsExchangeSettingsTitle,
-      );
+      final items = buildSettingsItems(localization: localization);
 
       final results = searchSettings(items, 'আন্ধাৰ');
 
@@ -51,10 +45,7 @@ void main() {
 
     test('keeps English terms as a fallback in another locale', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(
-        localization: localization,
-        exchangeTitle: localization.settingsExchangeSettingsTitle,
-      );
+      final items = buildSettingsItems(localization: localization);
 
       final results = searchSettings(items, 'transaction fees');
 
@@ -87,11 +78,81 @@ void main() {
       }
     });
 
+    test('places wallet import under the Wallet section', () {
+      final items = _englishItems();
+
+      expect(items.byId(SettingsItemId.wallet).title, 'Wallet');
+      expect(
+        items.byId(SettingsItemId.importWallet).section,
+        SettingsItemSection.wallet,
+      );
+      expect(
+        items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
+        'Settings → Wallet → Import wallet',
+      );
+      expect(walletSettingsItemsAfterBackupOrder, [
+        SettingsItemId.recoverbull,
+        SettingsItemId.importWallet,
+        SettingsItemId.labels,
+        SettingsItemId.transactionHistory,
+      ]);
+    });
+
+    test('orders and labels root settings for progressive disclosure', () {
+      final items = _englishItems();
+      final rootItems = items.inSection(SettingsItemSection.root);
+
+      expect(rootItems.map((item) => item.id), [
+        SettingsItemId.appSettings,
+        SettingsItemId.wallet,
+        SettingsItemId.bitcoinSettings,
+        SettingsItemId.exchange,
+        SettingsItemId.btcMap,
+        SettingsItemId.termsOfService,
+        SettingsItemId.servicesStatus,
+        SettingsItemId.logs,
+      ]);
+      expect(rootItems.map((item) => item.title), [
+        'App',
+        'Wallet',
+        'Bitcoin',
+        'Exchange',
+        'Map',
+        'Terms of Service',
+        'Service Status',
+        'Logs',
+      ]);
+      expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
+      expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
+      expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
+    });
+
+    test('groups developer controls at the bottom of App Settings', () {
+      final ids = _englishItems(
+        isSuperuser: true,
+        isDevModeEnabled: true,
+      ).inSection(SettingsItemSection.app).map((item) => item.id).toList();
+
+      expect(ids.sublist(ids.length - 4), [
+        SettingsItemId.errorReporting,
+        SettingsItemId.devMode,
+        SettingsItemId.testnetMode,
+        SettingsItemId.testnetCredentials,
+      ]);
+      expect(
+        _englishItems(
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ).byId(SettingsItemId.testnetMode).section,
+        SettingsItemSection.app,
+      );
+    });
+
     test('supports dedicated semantic aliases across the registry', () {
       final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
       final expectedIds = {
         'trading': SettingsItemId.exchange,
-        'seed backup': SettingsItemId.walletBackup,
+        'seed backup': SettingsItemId.wallet,
         'create backup': SettingsItemId.startBackup,
         'cloud backup': SettingsItemId.recoverbull,
         'transaction labels': SettingsItemId.labels,
@@ -101,7 +162,6 @@ void main() {
         'merchant map': SettingsItemId.btcMap,
         'user agreement': SettingsItemId.termsOfService,
         'service health': SettingsItemId.servicesStatus,
-        'manage wallets': SettingsItemId.wallets,
         'watch-only wallet': SettingsItemId.importWallet,
         'transaction hex': SettingsItemId.broadcastTransaction,
         'collaborative transaction': SettingsItemId.payjoin,
@@ -115,7 +175,6 @@ void main() {
         'appearance': SettingsItemId.theme,
         'local currency': SettingsItemId.currency,
         'passcode': SettingsItemId.securityPin,
-        'onion routing': SettingsItemId.tor,
         'diagnostic logs': SettingsItemId.logs,
         'screen recording': SettingsItemId.screenPrivacy,
         'developer mode': SettingsItemId.devMode,
@@ -140,11 +199,11 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Wallet Backup → Transaction History',
+        'Settings → Wallet → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Wallet Backup ← Transaction History',
+        'Settings ← Wallet ← Transaction History',
       );
     });
 
@@ -240,7 +299,6 @@ List<SettingsItem> _englishItems({
   final localization = AppLocalizationsEn();
   return buildSettingsItems(
     localization: localization,
-    exchangeTitle: localization.settingsExchangeSettingsTitle,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
   );
@@ -248,16 +306,10 @@ List<SettingsItem> _englishItems({
 
 List<SettingsItem> _frenchItems() {
   final localization = AppLocalizationsFr();
-  return buildSettingsItems(
-    localization: localization,
-    exchangeTitle: localization.settingsExchangeSettingsTitle,
-  );
+  return buildSettingsItems(localization: localization);
 }
 
 List<SettingsItem> _germanItems() {
   final localization = AppLocalizationsDe();
-  return buildSettingsItems(
-    localization: localization,
-    exchangeTitle: localization.settingsExchangeSettingsTitle,
-  );
+  return buildSettingsItems(localization: localization);
 }

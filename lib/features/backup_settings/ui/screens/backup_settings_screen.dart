@@ -54,7 +54,7 @@ class _Screen extends StatelessWidget {
               forceMaterialTransparency: true,
               automaticallyImplyLeading: false,
               flexibleSpace: TopBar(
-                title: context.loc.backupSettingsScreenTitle,
+                title: context.loc.settingsWalletTitle,
                 onBack: () => context.pop(),
               ),
             ),
@@ -81,17 +81,18 @@ class _Screen extends StatelessWidget {
                       if (state.lastEncryptedBackup != null ||
                           state.lastPhysicalBackup != null)
                         const _TestBackupButton(),
-                      items
-                          .byId(SettingsItemId.recoverbull)
-                          .buildTile(
-                            context,
-                            iconColor: context.appColors.secondary,
-                            textColor: context.appColors.secondary,
-                          ),
-                      items.byId(SettingsItemId.labels).buildTile(context),
-                      items
-                          .byId(SettingsItemId.transactionHistory)
-                          .buildTile(context),
+                      for (final id in walletSettingsItemsAfterBackupOrder)
+                        items
+                            .byId(id)
+                            .buildTile(
+                              context,
+                              iconColor: id == SettingsItemId.recoverbull
+                                  ? context.appColors.secondary
+                                  : null,
+                              textColor: id == SettingsItemId.recoverbull
+                                  ? context.appColors.secondary
+                                  : null,
+                            ),
                     ],
                   ),
                 ),

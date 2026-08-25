@@ -761,10 +761,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "الجدار",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "exchangeLandingLoginToUseSupport": "يرجى الدخول أو التسجيل لاستخدام دردشة الدعم في المسائل المتصلة بالتبادل.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -1959,8 +1955,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "جدار استيراد",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "جدار استيراد",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "payEnterInvoice": "الفواتير",
@@ -2288,10 +2284,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "تفاصيل الجدارة",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "محفظة بيتكين آمنة",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -2378,10 +2370,6 @@
   "walletTypeWatchSigner": "شاهدْ سيغنر",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "دعم الجدار",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "ledgerConnectingSubtext": "إقامة إتصال آمن...",
   "@ledgerConnectingSubtext": {
@@ -3002,8 +2990,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "الخدمات",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "الخدمات",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "ستنعش الأسعار ",
@@ -3728,10 +3716,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "Mempool Server Settings",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "selectCoinsManuallyLabel": "بيع العملات اليدوية",
   "@selectCoinsManuallyLabel": {
@@ -4681,8 +4665,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "غير مسماة",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "غير مسماة",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "الاستخدام الوحيد للمعاملات التي تتجاوز 000 20 يورو. وفيما يتعلق بالمعاملات الأصغر، استخدم خيار نظام المحاسبة البيئية - الاقتصادية الثابت.",
@@ -5615,10 +5599,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "مجموعات الدعم",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "أرسل تحويلاً سلكياً من حسابك المصرفي باستخدام تفاصيل مصرف (بول بيتكين) أدناه بنكك قد يتطلب فقط بعض التفاصيل.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -6285,10 +6265,6 @@
   "dcaFrequencyValidationError": "يرجى اختيار التردد",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
-  },
-  "walletsListTitle": "تفاصيل الجدارة",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "payAllCountries": "جميع البلدان",
   "@payAllCountries": {
@@ -7609,10 +7585,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "لم يعثر عليه",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "Legacy",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -7880,10 +7852,6 @@
   "coreSwapsLnReceiveRefundable": "(سواب) مستعد لإستعادة التمويل.",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
-  },
-  "bitcoinSettingsElectrumServerTitle": "Electrum Server Settings",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
   "payRemoveRecipient": "Remove Recipient",
   "@payRemoveRecipient": {
@@ -8528,10 +8496,6 @@
   "settingsDevModeWarningTitle": "Dev Mode",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "المعاملة الأصلية",
   "@rbfOriginalTransaction": {
@@ -9346,10 +9310,6 @@
   "backupWalletErrorGoogleDriveSave": "فشل في إنقاذ قوقل",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
-  },
-  "settingsTorSettingsTitle": "تنظيمات التعذيب",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "importQrDeviceKeystoneStep2": "فتحه عن طريق الدخول إلى",
   "@importQrDeviceKeystoneStep2": {
@@ -10678,10 +10638,6 @@
   "recoverbullCreatingVault": "الإبداع المشفرة القبو",
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
-  },
-  "walletsListNoWalletsMessage": "لا توجد محفظات",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
   },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
@@ -12553,7 +12509,6 @@
   "settingsSearchNoResults": "لم يتم العثور على إعدادات.",
   "settingsSearchMempoolKeywords": "مستكشف الكتل|تقدير الرسوم|رسوم المعاملات|واجهة mempool API",
   "settingsSearchExchangeKeywords": "حساب|حساب المنصة|التداول|شراء وبيع",
-  "settingsSearchWalletBackupKeywords": "نسخة احتياطية|الاسترداد|استعادة المحفظة|نسخة احتياطية للبذور",
   "settingsSearchStartBackupKeywords": "إنشاء نسخة احتياطية|حفظ نسخة احتياطية|نسخ المحفظة احتياطيا",
   "settingsSearchRecoverbullKeywords": "نسخة احتياطية مشفرة|نسخة احتياطية سحابية|خزنة مشفرة|استرداد الخزنة",
   "settingsSearchLabelsKeywords": "تسميات المحفظة|تسميات المعاملات|BIP329|استيراد التسميات|تصدير التسميات",
@@ -12563,7 +12518,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|خريطة بيتكوين|خريطة التجار|أماكن إنفاق بيتكوين",
   "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
   "settingsSearchServicesStatusKeywords": "حالة الخدمات|حالة النظام|متصل|انقطاع الخدمة",
-  "settingsSearchWalletsKeywords": "إدارة المحافظ|تفاصيل المحفظة|محافظ بيتكوين",
   "settingsSearchImportWalletKeywords": "إضافة محفظة|استعادة محفظة|استيراد عبارة الاسترداد|محفظة للمشاهدة فقط|محفظة أجهزة",
   "settingsSearchBroadcastTransactionKeywords": "بث معاملة موقعة|إرسال المعاملة|معاملة خام|بيانات المعاملة السداسية|PSBT",
   "settingsSearchPayjoinKeywords": "خصوصية Payjoin|معاملة تعاونية|P2EP",
@@ -12576,7 +12530,6 @@
   "settingsSearchThemeKeywords": "المظهر|الوضع الداكن|الوضع الفاتح|سمة النظام",
   "settingsSearchCurrencyKeywords": "العملة الورقية|العملة المحلية|العملة الأساسية|عملة الصرف",
   "settingsSearchSecurityPinKeywords": "رمز PIN|رمز المرور|قفل التطبيق|المصادقة|تغيير رمز PIN",
-  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية",
   "settingsSearchLogsKeywords": "سجلات التصحيح|سجلات التشخيص|سجلات التطبيق|تصدير السجلات",
   "settingsSearchDevModeKeywords": "وضع المطور|إعدادات التطوير|وضع التصحيح|اختبارات متقدمة",
   "settingsSearchTestnetCredentialsKeywords": "بيانات اعتماد شبكة الاختبار|تسجيل دخول شبكة الاختبار|اسم مستخدم شبكة الاختبار|كلمة مرور شبكة الاختبار|مصادقة أساسية",

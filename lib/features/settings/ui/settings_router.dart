@@ -21,8 +21,6 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
@@ -190,65 +188,52 @@ class SettingsRouter {
           TestWalletBackupRouter.route,
         ],
       ),
+      // A wallet is always reached from its own screen (wallet home → gear),
+      // never from a list, so these carry the shared prefix themselves.
       GoRoute(
-        path: SettingsRoute.walletDetailsWalletList.path,
-        name: SettingsRoute.walletDetailsWalletList.name,
-        builder: (context, state) => const WalletsListScreen(),
-        routes: [
-          GoRoute(
-            path: SettingsRoute.walletOptions.path,
-            name: SettingsRoute.walletOptions.name,
-            builder: (context, state) {
-              final walletId = state.pathParameters['walletId']!;
-              return WalletOptionsScreen(walletId: walletId);
-            },
-          ),
-          GoRoute(
-            path: SettingsRoute.walletDetailsSelectedWallet.path,
-            name: SettingsRoute.walletDetailsSelectedWallet.name,
-            builder: (context, state) {
-              final walletId = state.pathParameters['walletId']!;
-              return MultiBlocListener(
-                listeners: [
-                  BlocListener<WalletBloc, WalletState>(
-                    listenWhen: (previous, current) {
-                      return previous.wallets.length > current.wallets.length;
-                    },
-                    listener: (context, state) {
-                      context.goNamed(WalletRoute.walletHome.name);
-                    },
-                  ),
-                  BlocListener<WalletBloc, WalletState>(
-                    listenWhen: (previous, current) {
-                      // Listen for wallet deletion error to show a sheet.
-                      return previous.walletDeletionError == null &&
-                          current.walletDeletionError != null;
-                    },
-                    listener: (context, state) {
-                      WalletDeletionFailedSheet.show(
-                        context,
-                        error: state.walletDeletionError!,
-                      );
-                    },
-                  ),
-                ],
-                child: WalletDetailsScreen(walletId: walletId),
-              );
-            },
-          ),
-          GoRoute(
-            path: SettingsRoute.walletAddresses.path,
-            name: SettingsRoute.walletAddresses.name,
-            builder: (context, state) {
-              final walletId = state.pathParameters['walletId']!;
-              return BlocProvider(
-                create: (_) =>
-                    locator<AddressViewBloc>(param1: walletId, param2: 10),
-                child: AddressesScreen(walletId: walletId),
-              );
-            },
-          ),
-        ],
+        path: SettingsRoute.walletDetailsSelectedWallet.path,
+        name: SettingsRoute.walletDetailsSelectedWallet.name,
+        builder: (context, state) {
+          final walletId = state.pathParameters['walletId']!;
+          return MultiBlocListener(
+            listeners: [
+              BlocListener<WalletBloc, WalletState>(
+                listenWhen: (previous, current) {
+                  return previous.wallets.length > current.wallets.length;
+                },
+                listener: (context, state) {
+                  context.goNamed(WalletRoute.walletHome.name);
+                },
+              ),
+              BlocListener<WalletBloc, WalletState>(
+                listenWhen: (previous, current) {
+                  // Listen for wallet deletion error to show a sheet.
+                  return previous.walletDeletionError == null &&
+                      current.walletDeletionError != null;
+                },
+                listener: (context, state) {
+                  WalletDeletionFailedSheet.show(
+                    context,
+                    error: state.walletDeletionError!,
+                  );
+                },
+              ),
+            ],
+            child: WalletDetailsScreen(walletId: walletId),
+          );
+        },
+      ),
+      GoRoute(
+        path: SettingsRoute.walletAddresses.path,
+        name: SettingsRoute.walletAddresses.name,
+        builder: (context, state) {
+          final walletId = state.pathParameters['walletId']!;
+          return BlocProvider(
+            create: (_) =>
+                locator<AddressViewBloc>(param1: walletId, param2: 10),
+            child: AddressesScreen(walletId: walletId),
+          );
+        },
       ),
       GoRoute(
         path: SettingsRoute.logs.path,

@@ -1703,10 +1703,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "کیف پول",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "exchangeLandingLoginToUseSupport": "لطفا ورود یا ثبت نام برای استفاده از چت پشتیبانی برای مسائل مربوط به تبادل.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -2770,8 +2766,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "واردات کیف پول",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "واردات کیف پول",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "شکست در اتصال به Google Drive",
@@ -3049,10 +3045,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "جزئیات کیف پول",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "کیف پول Bitcoin امن",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -3131,10 +3123,6 @@
   "walletTypeWatchSigner": "Watch-Signer",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "کیف پول پشتیبان",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "transactionError": "Error - {error}",
   "@transactionError": {
@@ -3703,8 +3691,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "خدمات وضعیت",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "خدمات وضعیت",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "قیمت در ",
@@ -4336,10 +4324,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "تنظیمات Mempool Server Settings",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "selectCoinsManuallyLabel": "انتخاب سکه های دستی",
   "@selectCoinsManuallyLabel": {
@@ -5191,8 +5175,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "کیف پول بدون نام",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "کیف پول بدون نام",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "فقط برای معاملات بالای 20،000 یورو استفاده کنید. برای معاملات کوچکتر، از گزینه Instant SEPA استفاده کنید.",
@@ -6042,10 +6026,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "تنظیمات Backup",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "ارسال یک انتقال سیم از حساب بانکی خود با استفاده از جزئیات بانک بیت کوین در زیر. بانک شما ممکن است فقط به برخی از این جزئیات نیاز داشته باشد.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -6649,10 +6629,6 @@
   "dcaFrequencyValidationError": "لطفا یک فرکانس انتخاب کنید",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
-  },
-  "walletsListTitle": "جزئیات کیف پول",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "payAllCountries": "همه کشورها",
   "@payAllCountries": {
@@ -7812,10 +7788,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "کیف پول پیدا نشد",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "میراث",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -8059,10 +8031,6 @@
   "coreSwapsLnReceiveRefundable": "آماده است تا بازپرداخت شود.",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
-  },
-  "bitcoinSettingsElectrumServerTitle": "تنظیمات Electrum Server Settings",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
   "payRemoveRecipient": "حذف Recipient",
   "@payRemoveRecipient": {
@@ -8623,10 +8591,6 @@
   "settingsDevModeWarningTitle": "Mode",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "bitcoinSettingsAutoTransferTitle": "تنظیمات انتقال خودکار",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "معاملات اصلی",
   "@rbfOriginalTransaction": {
@@ -9369,10 +9333,6 @@
   "backupWalletErrorGoogleDriveSave": "شکست برای نجات Google Drive",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
-  },
-  "settingsTorSettingsTitle": "تنظیمات Tor",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "importQrDeviceKeystoneStep2": "باز کردن آن با وارد کردن PIN",
   "@importQrDeviceKeystoneStep2": {
@@ -10594,10 +10554,6 @@
   "recoverbullCreatingVault": "ایجاد رمزگذاری Vault Vault",
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
-  },
-  "walletsListNoWalletsMessage": "هیچ کیف پولی پیدا نشد",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
   },
   "importWalletColdcardQ": "کارت سرد Q",
   "@importWalletColdcardQ": {
@@ -12550,7 +12506,6 @@
   "settingsSearchNoResults": "هیچ تنظیماتی یافت نشد.",
   "settingsSearchMempoolKeywords": "کاوشگر بلوک|تخمین کارمزد|کارمزد تراکنش|رابط mempool API",
   "settingsSearchExchangeKeywords": "حساب|حساب صرافی|معامله|خرید و فروش",
-  "settingsSearchWalletBackupKeywords": "نسخه پشتیبان|بازیابی|بازیابی کیف پول|پشتیبان عبارت بازیابی",
   "settingsSearchStartBackupKeywords": "ایجاد نسخه پشتیبان|ذخیره نسخه پشتیبان|پشتیبان گیری از کیف پول",
   "settingsSearchRecoverbullKeywords": "نسخه پشتیبان رمزگذاری شده|پشتیبان ابری|خزانه رمزگذاری شده|بازیابی خزانه",
   "settingsSearchLabelsKeywords": "برچسب های کیف پول|برچسب های تراکنش|BIP329|وارد کردن برچسب ها|خروجی گرفتن از برچسب ها",
@@ -12560,7 +12515,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|نقشه بیت کوین|نقشه پذیرندگان|محل خرج کردن بیت کوین",
   "settingsSearchTermsOfServiceKeywords": "شرایط و ضوابط|موارد حقوقی|توافق نامه کاربر|TOS",
   "settingsSearchServicesStatusKeywords": "سلامت سرویس|وضعیت سیستم|آنلاین|قطعی سرویس",
-  "settingsSearchWalletsKeywords": "مدیریت کیف پول ها|جزئیات کیف پول|کیف پول های بیت کوین",
   "settingsSearchImportWalletKeywords": "افزودن کیف پول|بازیابی کیف پول|وارد کردن عبارت بازیابی|کیف پول فقط نظارتی|کیف پول سخت افزاری",
   "settingsSearchBroadcastTransactionKeywords": "انتشار تراکنش امضا شده|ارسال تراکنش|تراکنش خام|هگز تراکنش|PSBT",
   "settingsSearchPayjoinKeywords": "حریم خصوصی Payjoin|تراکنش مشارکتی|P2EP",
@@ -12573,7 +12527,6 @@
   "settingsSearchThemeKeywords": "ظاهر|حالت تیره|حالت روشن|پوسته سیستم",
   "settingsSearchCurrencyKeywords": "ارز فیات|ارز محلی|ارز پیش فرض|ارز صرافی",
   "settingsSearchSecurityPinKeywords": "کد PIN|رمز عبور|قفل برنامه|احراز هویت|تغییر PIN",
-  "settingsSearchTorKeywords": "پروکسی Tor|Orbot|مسیریابی پیازی|Tor داخلی|شبکه حریم خصوصی",
   "settingsSearchLogsKeywords": "گزارش های اشکال زدایی|گزارش های تشخیصی|گزارش های برنامه|خروجی گرفتن از گزارش ها",
   "settingsSearchDevModeKeywords": "حالت توسعه دهنده|تنظیمات توسعه|حالت اشکال زدایی|آزمایش پیشرفته",
   "settingsSearchTestnetCredentialsKeywords": "اطلاعات ورود شبکه آزمایشی|ورود به شبکه آزمایشی|نام کاربری شبکه آزمایشی|گذرواژه شبکه آزمایشی|احراز هویت پایه",
