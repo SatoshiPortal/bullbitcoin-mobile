@@ -1,10 +1,48 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
+
+final class BdkDescriptorKey {
+  final String masterFingerprint;
+  final String xpubFingerprint;
+  final String xpub;
+  final String? derivationPath;
+  final String descriptorPath;
+
+  const BdkDescriptorKey({
+    required this.masterFingerprint,
+    required this.xpubFingerprint,
+    required this.xpub,
+    required this.derivationPath,
+    this.descriptorPath = '',
+  });
+}
+
+final class BdkTwoPathDescriptor {
+  final String descriptor;
+  final String externalDescriptor;
+  final String internalDescriptor;
+  final String scriptIdentity;
+  final ScriptType? scriptType;
+  final List<BdkDescriptorKey> keys;
+  final bool inferredChangePath;
+
+  const BdkTwoPathDescriptor({
+    required this.descriptor,
+    required this.externalDescriptor,
+    required this.internalDescriptor,
+    required this.scriptIdentity,
+    required this.scriptType,
+    this.keys = const [],
+    this.inferredChangePath = false,
+  });
+}
 
 class BdkFacade {
   // Standard lookahead value for address discovery
@@ -32,12 +70,16 @@ class BdkFacade {
         ? bdk.NetworkKind.test
         : bdk.NetworkKind.main;
 
+    final parsed = parsePublicTwoPathDescriptor(
+      descriptor: walletModel.descriptor,
+      isTestnet: walletModel.isTestnet,
+    );
     final external = bdk.Descriptor(
-      descriptor: walletModel.externalDescriptor,
+      descriptor: parsed.externalDescriptor,
       networkKind: networkKind,
     );
     final internal = bdk.Descriptor(
-      descriptor: walletModel.internalDescriptor,
+      descriptor: parsed.internalDescriptor,
       networkKind: networkKind,
     );
 
@@ -177,6 +219,279 @@ class BdkFacade {
         persister: dbPersister,
         lookahead: _lookahead,
       );
+    }
+  }
+
+  static BdkTwoPathDescriptor parsePublicTwoPathDescriptor({
+    required String descriptor,
+    required bool isTestnet,
+  }) {
+    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final supplied = bdk.Descriptor(
+      descriptor: descriptor.trim(),
+      networkKind: networkKind,
+    );
+    try {
+      supplied.sanityCheck();
+    } finally {
+      supplied.dispose();
+    }
+    final normalized = _normalizeTwoPathDescriptor(descriptor);
+    final parsed = bdk.Descriptor(
+      descriptor: normalized.descriptor,
+      networkKind: networkKind,
+    );
+    try {
+      parsed.sanityCheck();
+
+      if (parsed.descType() == bdk.DescriptorType.tr) {
+        throw const UnsupportedTaprootDescriptorException();
+      }
+
+      if (!parsed.isMultipath()) {
+        throw const FormatException(
+          'Descriptor must define receiving and change paths',
+        );
+      }
+      if (!parsed.hasWildcard()) {
+        throw const FormatException('Descriptor must be ranged');
+      }
+      if (parsed.toStringWithSecret() != parsed.toString()) {
+        throw const FormatException('Private descriptors cannot be imported');
+      }
+
+      final singleDescriptors = parsed.toSingleDescriptors();
+      try {
+        if (singleDescriptors.length != 2) {
+          throw const FormatException(
+            'Descriptor must define exactly two wallet paths',
+          );
+        }
+
+        final persister = bdk.Persister.newInMemory();
+        bdk.Wallet? wallet;
+        try {
+          wallet = bdk.Wallet.createFromTwoPathDescriptor(
+            twoPathDescriptor: parsed,
+            network: network,
+            persister: persister,
+            lookahead: _lookahead,
+          );
+        } finally {
+          wallet?.dispose();
+          persister.dispose();
+        }
+
+        final externalDescriptor = singleDescriptors.first.toString();
+        return BdkTwoPathDescriptor(
+          descriptor: parsed.toString(),
+          externalDescriptor: externalDescriptor,
+          internalDescriptor: singleDescriptors.last.toString(),
+          scriptIdentity: _scriptIdentity(singleDescriptors),
+          scriptType: switch (parsed.descType()) {
+            bdk.DescriptorType.wpkh => ScriptType.bip84,
+            bdk.DescriptorType.shWpkh => ScriptType.bip49,
+            bdk.DescriptorType.pkh => ScriptType.bip44,
+            _ => null,
+          },
+          keys: _descriptorKeys(parsed.toString()),
+          inferredChangePath: normalized.inferredChangePath,
+        );
+      } finally {
+        for (final descriptor in singleDescriptors) {
+          descriptor.dispose();
+        }
+      }
+    } finally {
+      parsed.dispose();
+    }
+  }
+
+  static String _scriptIdentity(List<bdk.Descriptor> descriptors) {
+    final identities = <String>[];
+    for (final descriptor in descriptors) {
+      final id = descriptor.descriptorId();
+      try {
+        identities.add(id.toString());
+      } finally {
+        id.dispose();
+      }
+    }
+    identities.sort();
+    return identities.join(':');
+  }
+
+  static List<BdkDescriptorKey> _descriptorKeys(String descriptor) {
+    final keys = <BdkDescriptorKey>[];
+    final seen = <String>{};
+
+    for (final atom in _descriptorAtoms(descriptor)) {
+      if (const {
+        'sha256',
+        'hash256',
+        'ripemd160',
+        'hash160',
+      }.contains(atom.parent?.split(':').last)) {
+        continue;
+      }
+      final candidate = atom.value;
+      final bdk.DescriptorPublicKey descriptorKey;
+      try {
+        descriptorKey = bdk.DescriptorPublicKey.fromString(
+          publicKey: candidate,
+        );
+      } on Exception {
+        continue;
+      }
+
+      final String normalizedDescriptorKey;
+      try {
+        normalizedDescriptorKey = descriptorKey.toString();
+      } finally {
+        descriptorKey.dispose();
+      }
+      final originEnd = normalizedDescriptorKey.startsWith('[')
+          ? normalizedDescriptorKey.indexOf(']')
+          : -1;
+      if (normalizedDescriptorKey.startsWith('[') && originEnd < 0) continue;
+      final keyStart = originEnd + 1;
+      final keyEnd = normalizedDescriptorKey.indexOf('/', keyStart);
+      final xpub = normalizedDescriptorKey.substring(
+        keyStart,
+        keyEnd < 0 ? normalizedDescriptorKey.length : keyEnd,
+      );
+      final descriptorPath = keyEnd < 0
+          ? ''
+          : normalizedDescriptorKey.substring(keyEnd);
+
+      if (!xpub.startsWith('xpub') && !xpub.startsWith('tpub')) {
+        throw const UnsupportedFixedPublicKeyDescriptorException();
+      }
+      final xpubFingerprint = Bip32Derivation.getBip32Xpub(xpub).fingerprintHex;
+
+      var masterFingerprint = '';
+      String? derivationPath;
+      if (originEnd > 0) {
+        final origin = normalizedDescriptorKey
+            .substring(1, originEnd)
+            .split('/');
+        masterFingerprint = origin.first.toLowerCase();
+        if (origin.length > 1) {
+          derivationPath = 'm/${origin.skip(1).join('/')}';
+        }
+      }
+
+      final identity =
+          '$masterFingerprint:$derivationPath:$xpub:$descriptorPath';
+      if (!seen.add(identity)) continue;
+      keys.add(
+        BdkDescriptorKey(
+          masterFingerprint: masterFingerprint,
+          xpubFingerprint: xpubFingerprint,
+          xpub: xpub,
+          derivationPath: derivationPath,
+          descriptorPath: descriptorPath,
+        ),
+      );
+    }
+
+    return List.unmodifiable(keys);
+  }
+
+  static Iterable<({String value, String? parent})> _descriptorAtoms(
+    String descriptor,
+  ) sync* {
+    final withoutChecksum = descriptor.split('#').first;
+    var start = 0;
+    final parents = <String?>[];
+    for (var index = 0; index < withoutChecksum.length; index++) {
+      final delimiter = withoutChecksum[index];
+      if (!'(),{}'.contains(delimiter)) continue;
+      final atom = withoutChecksum.substring(start, index).trim();
+      if (atom.isNotEmpty) {
+        yield (value: atom, parent: parents.lastOrNull);
+      }
+      if (delimiter == '(') {
+        parents.add(atom.isEmpty ? null : atom);
+      } else if (delimiter == '{') {
+        parents.add(null);
+      } else if ((delimiter == ')' || delimiter == '}') && parents.isNotEmpty) {
+        parents.removeLast();
+      }
+      start = index + 1;
+    }
+    final atom = withoutChecksum.substring(start).trim();
+    if (atom.isNotEmpty) {
+      yield (value: atom, parent: parents.lastOrNull);
+    }
+  }
+
+  static ({String descriptor, bool inferredChangePath})
+  _normalizeTwoPathDescriptor(String descriptor) {
+    final withoutChecksum = descriptor.trim().split('#').first;
+    if (withoutChecksum.contains('<')) {
+      return (descriptor: withoutChecksum, inferredChangePath: false);
+    }
+
+    final wildcards = RegExp(r'/\*').allMatches(withoutChecksum).toList();
+    final usesConventionalExternalPath =
+        wildcards.isNotEmpty &&
+        wildcards.every(
+          (match) =>
+              match.start >= 2 &&
+              withoutChecksum.substring(match.start - 2, match.start) == '/0',
+        );
+    if (!usesConventionalExternalPath) {
+      return (descriptor: withoutChecksum, inferredChangePath: false);
+    }
+
+    return (
+      descriptor: withoutChecksum.replaceAll('/0/*', '/<0;1>/*'),
+      inferredChangePath: true,
+    );
+  }
+
+  static String combinePublicDescriptorPair({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required bool isTestnet,
+  }) {
+    final parsed = parsePublicTwoPathDescriptor(
+      descriptor: externalDescriptor,
+      isTestnet: isTestnet,
+    );
+    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final normalizedInternalDescriptor = _normalizePublicSingleDescriptor(
+      descriptor: internalDescriptor,
+      networkKind: networkKind,
+    );
+    if (!parsed.inferredChangePath ||
+        parsed.internalDescriptor != normalizedInternalDescriptor) {
+      throw const FormatException(
+        'Wallet descriptors do not form receive and change paths',
+      );
+    }
+    return parsed.descriptor;
+  }
+
+  static String _normalizePublicSingleDescriptor({
+    required String descriptor,
+    required bdk.NetworkKind networkKind,
+  }) {
+    final parsed = bdk.Descriptor(
+      descriptor: descriptor.trim(),
+      networkKind: networkKind,
+    );
+    try {
+      parsed.sanityCheck();
+      if (parsed.isMultipath() ||
+          parsed.toStringWithSecret() != parsed.toString()) {
+        throw const FormatException('Expected one public descriptor path');
+      }
+      return parsed.toString();
+    } finally {
+      parsed.dispose();
     }
   }
 

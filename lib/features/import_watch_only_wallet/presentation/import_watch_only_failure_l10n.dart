@@ -11,6 +11,12 @@ extension ImportWatchOnlyFailureL10n on ImportWatchOnlyFailure {
       context.loc.importWatchOnlyErrorNoWalletSelected,
     LabelRequiredFailure() => context.loc.importWatchOnlyErrorLabelRequired,
     InvalidFormatFailure() => context.loc.importWatchOnlyErrorInvalidFormat,
+    TaprootUnsupportedFailure() =>
+      context.loc.importWatchOnlyErrorTaprootUnsupported,
+    FixedPublicKeyUnsupportedFailure() =>
+      context.loc.importWatchOnlyErrorFixedPublicKeyUnsupported,
+    SignerOriginRequiredFailure() =>
+      context.loc.importWatchOnlyErrorSignerOriginRequired,
     ImportFailedFailure() => context.loc.importWatchOnlyErrorImportFailed,
     NetworkMismatchFailure() => context.loc.importWatchOnlyErrorImportFailed,
   };

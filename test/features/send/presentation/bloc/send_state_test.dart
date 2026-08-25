@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,26 +67,34 @@ void main() {
   Wallet bitcoinWallet() => Wallet(
     origin: 'test-btc-origin',
     network: Network.bitcoinMainnet,
-    xpubFingerprint: '00000000',
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: '00000000',
+        xpubFingerprint: '00000000',
+        xpub: '',
+        signer: SignerEntity.local,
+        signerDevice: null,
+      ),
+    ],
     scriptType: ScriptType.bip84,
-    xpub: '',
-    externalPublicDescriptor: '',
-    internalPublicDescriptor: '',
-    signer: SignerEntity.local,
-    signerDevice: null,
+    publicDescriptor: '',
     balanceSat: BigInt.from(100000),
   );
 
   Wallet liquidWallet() => Wallet(
     origin: 'test-lbtc-origin',
     network: Network.liquidMainnet,
-    xpubFingerprint: '00000000',
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: '00000000',
+        xpubFingerprint: '00000000',
+        xpub: '',
+        signer: SignerEntity.local,
+        signerDevice: null,
+      ),
+    ],
     scriptType: ScriptType.bip84,
-    xpub: '',
-    externalPublicDescriptor: '',
-    internalPublicDescriptor: '',
-    signer: SignerEntity.local,
-    signerDevice: null,
+    publicDescriptor: '',
     balanceSat: BigInt.from(100000),
   );
 
@@ -511,13 +520,17 @@ void main() {
         selectedWallet: Wallet(
           origin: 'test-hw-origin',
           network: Network.bitcoinMainnet,
-          xpubFingerprint: '00000000',
+          signers: [
+            WalletSigner.single(
+              masterFingerprint: '00000000',
+              xpubFingerprint: '00000000',
+              xpub: '',
+              signer: SignerEntity.remote,
+              signerDevice: SignerDeviceEntity.ledgerNanoX,
+            ),
+          ],
           scriptType: ScriptType.bip84,
-          xpub: '',
-          externalPublicDescriptor: '',
-          internalPublicDescriptor: '',
-          signer: SignerEntity.remote,
-          signerDevice: SignerDeviceEntity.ledgerNanoX,
+          publicDescriptor: '',
           balanceSat: BigInt.from(100000),
         ),
         paymentRequest: bip21WithPj(),

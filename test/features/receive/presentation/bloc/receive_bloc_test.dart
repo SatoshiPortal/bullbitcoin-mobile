@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -143,13 +144,19 @@ Wallet _testWallet({
 }) => Wallet(
   origin: origin,
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
   balanceSat: balanceSat ?? BigInt.from(50000),
   confirmedBalanceSat: confirmedBalanceSat ?? balanceSat ?? BigInt.from(50000),
 );

@@ -179,11 +179,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final liquidWallets = wallets
           .where(
             (wallet) =>
-                wallet.isLiquid && (wallet.isDefault || wallet.signsLocally),
+                wallet.isLiquid &&
+                (wallet.isDefault ||
+                    wallet.isStandardLocalSingleSignatureWallet),
           )
           .toList();
       final bitcoinWallets = wallets
-          .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
+          .where(
+            (wallet) =>
+                !wallet.isLiquid && wallet.isStandardLocalSingleSignatureWallet,
+          )
           .toList();
 
       var fromWallet = liquidWallets.isNotEmpty
@@ -337,7 +342,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       return;
     }
 
-    if (!newFromWallet.signsLocally) {
+    if (!newFromWallet.isStandardLocalSingleSignatureWallet) {
       return;
     }
 
@@ -360,7 +365,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               (w) =>
                   w.isLiquid != newToWallet.isLiquid &&
                   w.isDefault &&
-                  w.signsLocally,
+                  w.isStandardLocalSingleSignatureWallet,
             )
             .firstOrNull;
         if (opposite != null) {
@@ -384,7 +389,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         }
       } else {
         final btcWallet = state.wallets
-            .where((w) => !w.isLiquid && w.isDefault && w.signsLocally)
+            .where(
+              (w) =>
+                  !w.isLiquid &&
+                  w.isDefault &&
+                  w.isStandardLocalSingleSignatureWallet,
+            )
             .firstOrNull;
         if (btcWallet != null) {
           newFromWallet = btcWallet;

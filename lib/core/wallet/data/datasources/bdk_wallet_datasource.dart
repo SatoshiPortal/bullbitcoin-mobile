@@ -67,6 +67,14 @@ class BdkWalletDatasource {
       ? _activeSyncs.isNotEmpty
       : _activeSyncs.containsKey(walletId);
 
+  BdkTwoPathDescriptor parsePublicTwoPathDescriptor({
+    required String descriptor,
+    required bool isTestnet,
+  }) => BdkFacade.parsePublicTwoPathDescriptor(
+    descriptor: descriptor,
+    isTestnet: isTestnet,
+  );
+
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final balanceInfo = bdkWallet.balance();
@@ -106,9 +114,7 @@ class BdkWalletDatasource {
           _performFullScan,
           _SyncParams(
             walletId: wallet.id,
-            externalDescriptor:
-                (wallet as PublicBdkWalletModel).externalDescriptor,
-            internalDescriptor: wallet.internalDescriptor,
+            descriptor: (wallet as PublicBdkWalletModel).descriptor,
             isTestnet: wallet.isTestnet,
             electrumUrl: electrumServer.url,
             electrumSocks5: electrumServer.socks5,
@@ -789,8 +795,7 @@ class BdkWalletDatasource {
 // Top-level function for isolate execution
 class _SyncParams {
   final String walletId;
-  final String externalDescriptor;
-  final String internalDescriptor;
+  final String descriptor;
   final bool isTestnet;
   final String electrumUrl;
   final String? electrumSocks5;
@@ -803,8 +808,7 @@ class _SyncParams {
 
   _SyncParams({
     required this.walletId,
-    required this.externalDescriptor,
-    required this.internalDescriptor,
+    required this.descriptor,
     required this.isTestnet,
     required this.electrumUrl,
     required this.electrumSocks5,
@@ -826,8 +830,7 @@ Future<void> _performFullScan(_SyncParams params) async {
   // Recreate wallet model in the isolate
   final wallet = WalletModel.publicBdk(
     id: params.walletId,
-    externalDescriptor: params.externalDescriptor,
-    internalDescriptor: params.internalDescriptor,
+    descriptor: params.descriptor,
     isTestnet: params.isTestnet,
   );
 

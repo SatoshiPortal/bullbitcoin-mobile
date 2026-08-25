@@ -14748,5 +14748,50 @@
   "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
   "@onboardingBackupVerificationError": {
     "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
+  },
+  "importWatchOnlyBullMobileDevice": "Bull Wallet (this device)",
+  "@importWatchOnlyBullMobileDevice": {
+    "description": "Device name shown when a descriptor key belongs to the local Bull wallet"
+  },
+  "importWatchOnlyChangePathDescription": "This descriptor specifies receive addresses on /0/*. Bull will use /1/* for change.",
+  "@importWatchOnlyChangePathDescription": {
+    "description": "Explains the change branch inferred from a conventional external descriptor"
+  },
+  "importWatchOnlyChangePathTitle": "Change path",
+  "@importWatchOnlyChangePathTitle": {
+    "description": "Title shown when Bull infers the change branch from a receive-only descriptor"
+  },
+  "walletSignerLabelWithFingerprint": "Signer {index} · {fingerprint}",
+  "@walletSignerLabelWithFingerprint": {
+    "description": "Label identifying a wallet signer by position and fingerprint",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "walletSignerLabel": "Signer {index}",
+  "@walletSignerLabel": {
+    "description": "Label identifying a wallet signer by position",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "importWatchOnlyErrorFixedPublicKeyUnsupported": "This descriptor contains fixed public keys, which Bull does not support yet. Use extended public keys for every signer.",
+  "@importWatchOnlyErrorFixedPublicKeyUnsupported": {
+    "description": "Error shown when a descriptor contains a fixed public key instead of an extended public key"
+  },
+  "importWatchOnlyErrorTaprootUnsupported": "Taproot descriptors aren’t supported yet.",
+  "@importWatchOnlyErrorTaprootUnsupported": {
+    "description": "Error shown when a user tries to import a Taproot descriptor"
+  },
+  "importWatchOnlyErrorSignerOriginRequired": "This hardware signer export is missing its fingerprint and account path. Export a descriptor or an account xpub with key origin information.",
+  "@importWatchOnlyErrorSignerOriginRequired": {
+    "description": "Shown when a hardware-wallet xpub is missing the key origin needed for signing."
   }
 }
