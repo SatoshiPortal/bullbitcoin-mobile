@@ -199,7 +199,7 @@ String _describeLeaf(
   BitcoinPolicyNode node,
   Wallet wallet,
 ) => switch (node) {
-  BitcoinSignaturePolicyNode(:final key) => context.loc.sendPolicySignWith(
+  BitcoinSignaturePolicyNode(:final key) => context.loc.walletPolicySignWith(
     _signerName(context, key, wallet),
   ),
   BitcoinRelativeTimelockPolicyNode(
@@ -220,7 +220,7 @@ String _describeLeaf(
     context.loc.walletDetailsAbsoluteTimeCondition(
       _formatTimestamp(context, value),
     ),
-  BitcoinHashlockPolicyNode() => context.loc.sendPolicyHashPreimage,
+  BitcoinHashlockPolicyNode() => context.loc.walletPolicyHashPreimage,
   BitcoinThresholdPolicyNode() => throw StateError(
     'Threshold policies must be rendered as groups',
   ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:primitives/primitives.dart';
@@ -156,7 +157,7 @@ void main() {
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
         SendFacade(VerifySignedTxUsecase()),
       ),
-      unsignedPsbt: unsignedPsbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
     );
     addTearDown(cubit.close);
 
@@ -183,7 +184,7 @@ void main() {
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
         SendFacade(VerifySignedTxUsecase()),
       ),
-      unsignedPsbt: unsignedPsbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
     );
     addTearDown(cubit.close);
 
@@ -369,6 +370,38 @@ void main() {
       expect(cubit.state.transaction?.data, exportedPsbt);
       await cubit.broadcastTransaction();
       verify(() => broadcast.execute(exportedPsbt, isPsbt: true)).called(1);
+    });
+  });
+
+  late _MockBroadcastBitcoinTransactionUsecase broadcastUsecase;
+
+  setUp(() {
+    broadcastUsecase = _MockBroadcastBitcoinTransactionUsecase();
+  });
+
+  BroadcastSignedTxCubit buildCubit() => BroadcastSignedTxCubit(
+    broadcastBitcoinTransactionUsecase: broadcastUsecase,
+    request: const BroadcastSignedTxRequest(collectSignerResult: true),
+  );
+
+  group('signer result collection', () {
+    test('stores the signer result for authoritative validation', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.tryParseTransaction('signer-result');
+
+      expect(cubit.state.collectedSignerResult, 'signer-result');
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('collects a non-BBQR signer QR directly', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.onQrScanned('signer-result');
+
+      expect(cubit.state.collectedSignerResult, 'signer-result');
     });
   });
 }

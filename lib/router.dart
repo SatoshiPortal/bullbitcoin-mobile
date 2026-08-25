@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/psbt_signing/ui/psbt_signing_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
@@ -212,6 +213,7 @@ class AppRouter {
       ImportWatchOnlyRouter.route,
       BroadcastSignedTxRouter.route,
       PsbtRouterConfig.route,
+      PsbtSigningRouter.route,
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,

@@ -80,6 +80,41 @@ void main() {
       ),
     ).called(1);
   });
+
+  test('keeps the latest payin when one is already prepared', () async {
+    when(
+      () => facade.savePreparedPayin(
+        localId: 'local-1',
+        signedTransaction: 'current-psbt',
+        isPsbt: true,
+      ),
+    ).thenAnswer(
+      (_) async => const Err(SwapInvalidStateFailure('already prepared')),
+    );
+    when(
+      () => facade.replacePreparedPayin(
+        localId: 'local-1',
+        signedTransaction: 'current-psbt',
+        isPsbt: true,
+      ),
+    ).thenAnswer((_) async => Ok(_record()));
+
+    final result = await usecase.execute(
+      localId: 'local-1',
+      update: SendSwapPayinUpdate.prepared,
+      signedTransaction: 'current-psbt',
+      isPsbt: true,
+    );
+
+    expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
+    verify(
+      () => facade.replacePreparedPayin(
+        localId: 'local-1',
+        signedTransaction: 'current-psbt',
+        isPsbt: true,
+      ),
+    ).called(1);
+  });
 }
 
 OrderSwapRecord _record() => OrderSwapRecord(

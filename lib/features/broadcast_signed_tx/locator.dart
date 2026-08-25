@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewa
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:get_it/get_it.dart';
 
 class BroadcastSignedTxLocator {
@@ -25,12 +26,16 @@ class BroadcastSignedTxLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<BroadcastSignedTxCubit, String?, void>(
-      (unsignedPsbt, _) => BroadcastSignedTxCubit(
+    locator.registerFactoryParam<
+      BroadcastSignedTxCubit,
+      BroadcastSignedTxRequest,
+      void
+    >(
+      (request, _) => BroadcastSignedTxCubit(
         broadcastBitcoinTransactionUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),
         verifySignedTxUsecase: locator<VerifyBroadcastSignedTxUsecase>(),
-        unsignedPsbt: unsignedPsbt,
+        request: request,
       ),
     );
     locator.registerFactory<TransactionReviewCubit>(
