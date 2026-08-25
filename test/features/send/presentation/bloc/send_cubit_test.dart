@@ -26,7 +26,9 @@ import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_se
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -300,39 +302,54 @@ class _TestableSendCubit extends SendCubit {
 Wallet _bitcoinLocalWallet() => Wallet(
   origin: 'w1',
   network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: '',
   balanceSat: BigInt.from(1000000),
 );
 
 Wallet _liquidWallet({required int balanceSat}) => Wallet(
   origin: 'w-liquid',
   network: Network.liquidMainnet,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/1776'/0'",
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: '',
   balanceSat: BigInt.from(balanceSat),
 );
 
 Wallet _bitcoinWallet({required int balanceSat}) => Wallet(
   origin: 'w-bitcoin',
   network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: '',
   balanceSat: BigInt.from(balanceSat),
 );
 
@@ -5994,6 +6011,57 @@ void main() {
   }
 
   group('SendCubit.createTransaction shortfalls', () {
+    for (final scenario in [
+      (
+        exception: SelectedBitcoinCoinsUnavailableException(),
+        failure: isA<SendSelectedCoinsUnavailableFailure>(),
+      ),
+      (
+        exception: SelectedBitcoinCoinsInsufficientException(),
+        failure: isA<SendSelectedCoinsInsufficientFailure>(),
+      ),
+    ]) {
+      test('maps ${scenario.exception.runtimeType}', () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final selected = _utxo(amountSat: 1000);
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            networkFee: any(named: 'networkFee'),
+            amountSat: any(named: 'amountSat'),
+            drain: any(named: 'drain'),
+            selectedInputs: any(named: 'selectedInputs'),
+            replaceByFee: any(named: 'replaceByFee'),
+          ),
+        ).thenThrow(scenario.exception);
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async => [selected]);
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.amount,
+            sendType: SendType.bitcoin,
+            selectedWallet: _bitcoinWallet(balanceSat: 20000),
+            paymentRequest: const PaymentRequest.bitcoin(
+              address: 'bc1-address',
+              isTestnet: false,
+            ),
+            amount: '500',
+            inputAmountCurrencyCode: 'sats',
+            liquidFeesList: _feeOptions(),
+            bitcoinFeesList: _feeOptions(),
+            selectedUtxos: [selected],
+          ),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, scenario.failure);
+      });
+    }
+
     test(
       'a selected coin that disappears is unavailable, not insufficient',
       () async {

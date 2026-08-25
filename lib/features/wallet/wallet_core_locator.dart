@@ -17,6 +17,8 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -53,7 +55,12 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
+        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        electrumServers: locator<ElectrumServersPort>(),
       ),
+    );
+    locator.registerLazySingleton<BitcoinSigningPort>(
+      () => locator<BitcoinWalletRepository>(),
     );
 
     locator.registerLazySingleton<LiquidWalletRepository>(
@@ -64,6 +71,9 @@ class WalletLocator {
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
+    );
+    locator.registerLazySingleton<BitcoinDescriptorPort>(
+      () => locator<WalletRepository>(),
     );
 
     locator.registerLazySingleton<WalletUtxoRepository>(

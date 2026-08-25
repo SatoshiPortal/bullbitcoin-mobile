@@ -82,8 +82,12 @@ void main() {
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer((_) async => const Ok('psbt'));
-    when(() => bitcoinWallet.getTxSize(psbt: any(named: 'psbt')))
-        .thenAnswer((_) async => 110);
+    when(
+      () => bitcoinWallet.getTxSize(
+        psbt: any(named: 'psbt'),
+        walletId: any(named: 'walletId'),
+      ),
+    ).thenAnswer((_) async => 110);
     when(
       () => bitcoinWallet.getRecipientAmounts(
         psbt: any(named: 'psbt'),

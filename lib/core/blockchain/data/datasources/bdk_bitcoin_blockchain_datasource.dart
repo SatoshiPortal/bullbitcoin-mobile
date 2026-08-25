@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
@@ -35,7 +36,7 @@ class BdkBitcoinBlockchainDatasource {
     String finalizedPsbt, {
     required ElectrumConnection connection,
   }) => broadcastTransaction(
-    decodeBitcoinPsbt(finalizedPsbt).bytes,
+    decodeBitcoinPsbt(normalizeBitcoinPsbt(finalizedPsbt)).bytes,
     connection: connection,
   );
 

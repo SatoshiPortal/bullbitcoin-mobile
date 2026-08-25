@@ -4,6 +4,11 @@ import 'package:bb_mobile/features/import_watch_only_wallet/presentation/scan_wa
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:go_router/go_router.dart';
 
+typedef WatchOnlyImportInput = ({
+  String input,
+  SignerDeviceEntity? signerDevice,
+});
+
 enum ImportWatchOnlyWalletRoutes {
   import('/import-watch-only'),
   scan('/import-watch-only-scanner');
@@ -20,8 +25,14 @@ class ImportWatchOnlyRouter {
         name: ImportWatchOnlyWalletRoutes.import.name,
         path: ImportWatchOnlyWalletRoutes.import.path,
         builder: (context, state) {
-          final watchOnlyWallet = state.extra as WatchOnlyWalletEntity?;
-          return ImportWatchOnlyScreen(watchOnlyWallet: watchOnlyWallet);
+          final extra = state.extra;
+          return ImportWatchOnlyScreen(
+            watchOnlyWallet: extra is WatchOnlyWalletEntity ? extra : null,
+            input: extra is WatchOnlyImportInput ? extra.input : null,
+            signerDevice: extra is WatchOnlyImportInput
+                ? extra.signerDevice
+                : null,
+          );
         },
       ),
       GoRoute(

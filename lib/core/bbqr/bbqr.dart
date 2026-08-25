@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart';
@@ -100,7 +101,7 @@ class Bbqr {
   }
 
   static Future<List<String>> splitPsbt(String psbt) async {
-    final psbtBytes = switch (canonicalBitcoinPsbt(psbt)) {
+    final psbtBytes = switch (canonicalBitcoinPsbt(normalizeBitcoinPsbt(psbt))) {
       Ok(:final value) => base64.decode(value),
       Err() => throw const FormatException('PSBT rejected by the decoder'),
     };

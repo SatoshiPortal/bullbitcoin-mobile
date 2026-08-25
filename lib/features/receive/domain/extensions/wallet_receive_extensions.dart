@@ -12,18 +12,18 @@ extension WalletReceiveExtension on Wallet {
 
   List<ReceiveNetworkType> get _receiveNetworks {
     if (isLiquid) {
-      return signsLocally
+      return isStandardLocalSingleSignatureWallet
           ? [ReceiveNetworkType.lightning, ReceiveNetworkType.liquid]
           : [ReceiveNetworkType.liquid];
     }
-    return signsLocally
+    return isStandardLocalSingleSignatureWallet
         ? [ReceiveNetworkType.bitcoin, ReceiveNetworkType.lightning]
         : [ReceiveNetworkType.bitcoin];
   }
 
   ReceiveNetworkType get defaultReceiveNetwork {
     if (isLiquid) {
-      return signsLocally
+      return isStandardLocalSingleSignatureWallet
           ? ReceiveNetworkType.lightning
           : ReceiveNetworkType.liquid;
     }

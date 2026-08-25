@@ -50,11 +50,14 @@ import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'bdk_wallet_test_fixture.dart';
 
 // The canonical BIP39 test mnemonic ("abandon" x11 + "about"). Public
 // knowledge, no funds, safe to hardcode.
@@ -161,17 +164,14 @@ void main() {
       keychainKind: bdk.KeychainKind.external_,
       networkKind: bdk.NetworkKind.test,
     );
-    final internal = bdk.Descriptor.newBip84(
-      secretKey: secretKey,
-      keychainKind: bdk.KeychainKind.internal,
-      networkKind: bdk.NetworkKind.test,
-    );
-
     walletModel = WalletModel.publicBdk(
       id: 'bdk-wallet-datasource-test',
-      externalDescriptor: external.toString(),
-      internalDescriptor: internal.toString(),
-      network: Network.bitcoinTestnet,
+      descriptor: external
+          .toString()
+          .split('#')
+          .first
+          .replaceAll('/0/*', '/<0;1>/*'),
+      isTestnet: true,
     ) as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the

@@ -36,13 +36,12 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
 
     final walletModel = metadata.isBitcoin
         ? WalletModel.publicBdk(
-            externalDescriptor: metadata.externalPublicDescriptor,
-            internalDescriptor: metadata.internalPublicDescriptor,
+            descriptor: metadata.publicDescriptor,
             network: metadata.network,
             id: metadata.id,
           )
         : WalletModel.publicLwk(
-            combinedCtDescriptor: metadata.externalPublicDescriptor,
+            combinedCtDescriptor: metadata.publicDescriptor,
             network: metadata.network,
             id: metadata.id,
           );

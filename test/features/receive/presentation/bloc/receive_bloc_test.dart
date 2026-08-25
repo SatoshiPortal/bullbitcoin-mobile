@@ -15,6 +15,10 @@ import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
@@ -176,13 +180,19 @@ Wallet _testWallet({
 }) => Wallet(
   origin: origin,
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: signer,
-  signerDevice: null,
+  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
   balanceSat: balanceSat ?? BigInt.from(50000),
   confirmedBalanceSat: confirmedBalanceSat ?? balanceSat ?? BigInt.from(50000),
 );

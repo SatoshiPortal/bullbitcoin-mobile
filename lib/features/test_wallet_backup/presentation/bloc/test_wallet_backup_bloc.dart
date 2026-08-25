@@ -54,7 +54,9 @@ class TestWalletBackupBloc
     if (wallet == null) {
       return const Err(TestWalletBackupNoWalletSelectedFailure());
     }
-    return _getSecretFromFingerprintUsecase.execute(wallet.masterFingerprint);
+    return _getMnemonicFromFingerprintUsecase.execute(
+      wallet.localMasterFingerprints.single,
+    );
   }
 
   /// Verifies a transient candidate without retaining it in bloc state.
@@ -114,6 +116,27 @@ class TestWalletBackupBloc
         state.copyWith(
           failure: const TestWalletBackupNoWalletSelectedFailure(),
         ),
+      );
+      return;
+    }
+
+    final bool isCorrect;
+    switch (await _verifyPhysicalBackupUsecase.execute(
+      fingerprint: wallet.localMasterFingerprints.single,
+      mnemonic: event.reorderedWords,
+    )) {
+      case Ok(:final value):
+        isCorrect = value;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+    }
+
+    if (!isCorrect) {
+      // A wrong answer is an outcome of the test, not a failure: it has its
+      // own status and its own screen, and must not surface an error.
+      emit(
+        state.copyWith(verificationStatus: BackupVerificationStatus.failure),
       );
       return;
     }

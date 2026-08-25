@@ -90,3 +90,9 @@ final class WalletConsolidationRequiredFailure extends WalletFailure {
 final class WalletAddressNetworkMismatchFailure extends WalletFailure {
   const WalletAddressNetworkMismatchFailure([super.logMessage]);
 }
+
+final class BitcoinSigningFailure extends WalletFailure {
+  final BitcoinSigningFailureKind kind;
+
+  const BitcoinSigningFailure(this.kind, [super.logMessage]);
+}

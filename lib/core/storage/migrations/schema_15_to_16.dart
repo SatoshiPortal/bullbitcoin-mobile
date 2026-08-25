@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
@@ -101,5 +103,232 @@ class Schema15To16 {
     }
     // The cache is now owned by bull_pricer. Safe on every rerun.
     await m.deleteTable('prices');
+    final schema15 = Schema15(database: m.database);
+    final oldWallets = schema15.walletMetadatas;
+    final newWallets = schema16.walletMetadatas;
+    if (!await m.hasColumn('wallet_metadatas', 'public_descriptor')) {
+      final existingWallets = await m.database
+          .customSelect('SELECT * FROM wallet_metadatas')
+          .get();
+      final migrations = [
+        for (final wallet in existingWallets)
+          (
+            wallet: wallet,
+            id: wallet.read<String>('id'),
+            network: wallet.read<String>('network'),
+            publicDescriptor: _publicDescriptorForWallet(
+              network: wallet.read<String>('network'),
+              externalDescriptor: wallet.read<String>(
+                'external_public_descriptor',
+              ),
+              internalDescriptor: wallet.read<String>(
+                'internal_public_descriptor',
+              ),
+            ),
+            derivationPath: _derivationPathForWallet(
+              origin: wallet.read<String>('id'),
+              descriptor: wallet.read<String>('external_public_descriptor'),
+              xpub: wallet.read<String>('xpub'),
+              masterFingerprint: wallet.read<String>('master_fingerprint'),
+              xpubFingerprint: wallet.read<String>('xpub_fingerprint'),
+            ),
+          ),
+      ];
+      final descriptorByWalletId = {
+        for (final migration in migrations)
+          migration.id: migration.publicDescriptor,
+      };
+
+      await m.alterTable(
+        // ignore: experimental_member_use
+        TableMigration(
+          newWallets,
+          columnTransformer: {
+            newWallets.publicDescriptor: descriptorByWalletId.isEmpty
+                ? const Constant('')
+                : CaseWhenExpression(
+                    cases: [
+                      for (final entry in descriptorByWalletId.entries)
+                        CaseWhen(
+                          oldWallets.id.equals(entry.key),
+                          then: Variable(entry.value),
+                        ),
+                    ],
+                    orElse: const Constant(''),
+                  ),
+          },
+        ),
+      );
+
+      await m.createTable(schema16.walletSigners);
+      await m.createTable(schema16.walletDescriptorKeys);
+      for (final migration in migrations) {
+        final wallet = migration.wallet;
+        final signerDevice = wallet.readNullable<String>('signer_device');
+        await m.database
+            .into(schema16.walletSigners)
+            .insert(
+              RawValuesInsertable({
+                'wallet_id': Variable(migration.id),
+                'id': const Constant('signer-0'),
+                'position': const Constant(0),
+                'signer': Variable(wallet.read<String>('signer')),
+                if (signerDevice != null)
+                  'signer_device': Variable(signerDevice),
+              }),
+            );
+        await m.database
+            .into(schema16.walletDescriptorKeys)
+            .insert(
+              RawValuesInsertable({
+                'wallet_id': Variable(migration.id),
+                'id': const Constant('key-0'),
+                'position': const Constant(0),
+                'signer_id': const Constant('signer-0'),
+                'master_fingerprint': Variable(
+                  wallet.read<String>('master_fingerprint'),
+                ),
+                'xpub_fingerprint': Variable(
+                  wallet.read<String>('xpub_fingerprint'),
+                ),
+                'xpub': Variable(wallet.read<String>('xpub')),
+                'derivation_path': Variable(migration.derivationPath),
+                'descriptor_path': Constant(
+                  migration.network.startsWith('bitcoin')
+                      ? standardSingleSignatureDescriptorPath
+                      : '',
+                ),
+              }),
+            );
+      }
+
+      final migratedSigners = await m.database
+          .select(schema16.walletSigners)
+          .get();
+      final migratedKeys = await m.database
+          .select(schema16.walletDescriptorKeys)
+          .get();
+      if (migratedSigners.length != migrations.length ||
+          migratedKeys.length != migrations.length) {
+        throw StateError(
+          'Not every v15 wallet received signer and descriptor-key rows',
+        );
+      }
+
+      final foreignKeyViolations = await m.database
+          .customSelect('PRAGMA foreign_key_check')
+          .get();
+      if (foreignKeyViolations.isNotEmpty) {
+        throw StateError('The v16 wallet migration violated a foreign key');
+      }
+    }
+  }
+
+  static String _publicDescriptorForWallet({
+    required String network,
+    required String externalDescriptor,
+    required String internalDescriptor,
+  }) {
+    if (network == 'unresolved') {
+      if (externalDescriptor != internalDescriptor) {
+        throw StateError('Unresolved wallet has distinct descriptors');
+      }
+      return externalDescriptor;
+    }
+    if (network == 'liquidMainnet' || network == 'liquidTestnet') {
+      if (externalDescriptor != internalDescriptor) {
+        throw StateError(
+          'Liquid wallet has inconsistent confidential descriptors',
+        );
+      }
+      return externalDescriptor;
+    }
+
+    return BdkFacade.combinePublicDescriptorPair(
+      externalDescriptor: externalDescriptor,
+      internalDescriptor: internalDescriptor,
+      isTestnet: network == 'bitcoinTestnet',
+    );
+  }
+
+  static String? _derivationPathForOrigin(String origin) {
+    final match = RegExp(r"\[[a-fA-F0-9]+/(\d+)[hH']/(\d+)[hH']/(\d+)[hH']\]")
+        .firstMatch(origin);
+    if (match == null) {
+      return null;
+    }
+    return "m/${match.group(1)}'/${match.group(2)}'/${match.group(3)}'";
+  }
+
+  static String? _derivationPathForWallet({
+    required String origin,
+    required String descriptor,
+    required String xpub,
+    required String masterFingerprint,
+    required String xpubFingerprint,
+  }) {
+    final descriptorOrigins = _descriptorOrigins(descriptor);
+    if (descriptorOrigins.isEmpty) return _derivationPathForOrigin(origin);
+
+    final matchingXpub = descriptorOrigins
+        .where((candidate) => candidate.xpub == xpub)
+        .toList();
+    if (matchingXpub.length == 1) return matchingXpub.single.derivationPath;
+
+    final expectedFingerprints = {
+      masterFingerprint.trim().toLowerCase(),
+      xpubFingerprint.trim().toLowerCase(),
+    }..remove('');
+    final matchingFingerprint = descriptorOrigins
+        .where(
+          (candidate) => expectedFingerprints.contains(candidate.fingerprint),
+        )
+        .toList();
+    if (matchingFingerprint.length == 1) {
+      return matchingFingerprint.single.derivationPath;
+    }
+
+    if (descriptorOrigins.length == 1 && expectedFingerprints.isEmpty) {
+      return descriptorOrigins.single.derivationPath;
+    }
+
+    throw StateError('Cannot identify migrated signer origin for: $origin');
+  }
+
+  static List<({String fingerprint, String xpub, String derivationPath})>
+  _descriptorOrigins(String descriptor) {
+    final origins =
+        <({String fingerprint, String xpub, String derivationPath})>[];
+    final seen = <String>{};
+    final pattern = RegExp(r"\[([a-fA-F0-9]{8})/([^\]]+)\]([^/,\s\)\}]+)");
+
+    for (final match in pattern.allMatches(descriptor)) {
+      final fingerprint = match.group(1)!.toLowerCase();
+      final xpub = match.group(3)!;
+      final derivationPath = _normalizeDerivationPath(match.group(2)!);
+      if (!seen.add('$fingerprint:$derivationPath:$xpub')) continue;
+      origins.add((
+        fingerprint: fingerprint,
+        xpub: xpub,
+        derivationPath: derivationPath,
+      ));
+    }
+    return origins;
+  }
+
+  static String _normalizeDerivationPath(String path) {
+    final components = path.split('/');
+    final componentPattern = RegExp(r"^(\d+)([hH']?)$");
+    if (components.isEmpty ||
+        components.any((component) => !componentPattern.hasMatch(component))) {
+      throw StateError('Cannot normalize descriptor key origin: $path');
+    }
+
+    final normalized = components.map((component) {
+      final match = componentPattern.firstMatch(component)!;
+      final hardened = match.group(2)!.isNotEmpty;
+      return '${match.group(1)}${hardened ? "'" : ''}';
+    });
+    return 'm/${normalized.join('/')}';
   }
 }

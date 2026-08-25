@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/msats.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
@@ -328,7 +328,7 @@ sealed class PaymentRequest with _$PaymentRequest {
   }
 
   static Future<PaymentRequest?> _tryParsePsbt(String psbtBase64) async {
-    switch (canonicalBitcoinPsbt(psbtBase64)) {
+    switch (canonicalBitcoinPsbt(normalizeBitcoinPsbt(psbtBase64))) {
       case Ok(:final value):
         return PaymentRequest.psbt(psbt: value);
       case Err(:final failure):
