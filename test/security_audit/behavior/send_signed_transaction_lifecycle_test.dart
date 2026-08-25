@@ -43,6 +43,7 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usec
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
@@ -50,8 +51,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -165,6 +166,9 @@ class _MockCheckLiquidConsolidationUsecase extends Mock
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
+class _MockProcessBitcoinSignerResultUsecase extends Mock
+    implements ProcessBitcoinSignerResultUsecase {}
+
 class _MockVerifySignedTxUsecase extends Mock
     implements VerifySignedTxUsecase {}
 
@@ -183,6 +187,7 @@ class _TestSendCubit extends SendCubit {
     required super.validateBitcoinSelectionUsecase,
     required super.prepareLiquidSendUsecase,
     required super.signBitcoinTxUsecase,
+    required super.processBitcoinSignerResultUsecase,
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTxUsecase,
     required super.broadcastLiquidTxUsecase,
@@ -284,6 +289,8 @@ void main() {
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
       prepareLiquidSendUsecase: prepareLiquidSendUsecase,
       signBitcoinTxUsecase: _MockSignBitcoinTxUsecase(),
+      processBitcoinSignerResultUsecase:
+          _MockProcessBitcoinSignerResultUsecase(),
       signLiquidTxUsecase: _MockSignLiquidTxUsecase(),
       broadcastBitcoinTxUsecase: broadcastBitcoinTx,
       broadcastLiquidTxUsecase: _MockBroadcastLiquidTransactionUsecase(),

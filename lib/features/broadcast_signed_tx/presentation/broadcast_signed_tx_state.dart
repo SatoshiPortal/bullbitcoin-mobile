@@ -11,6 +11,7 @@ abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
     required Bbqr bbqr,
     @Default(null) ParsedTx? transaction,
     @Default(null) String? unsignedPsbt,
+    @Default(null) String? collectedSignerResult,
     @Default(false) bool isBroadcasting,
     @Default(false) bool isBroadcasted,
     @Default(null) Uri? pushTxUri,

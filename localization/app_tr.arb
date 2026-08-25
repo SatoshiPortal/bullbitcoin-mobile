@@ -3678,10 +3678,6 @@
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
   },
-  "psbtFlowDone": "Ben yaptım",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "exchangeHomeDepositButton": "Deposit",
   "@exchangeHomeDepositButton": {
     "description": "Button label for depositing funds to the exchange"

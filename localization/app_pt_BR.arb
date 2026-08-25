@@ -3582,10 +3582,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "psbtFlowDone": "Estou acabado",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "transactionSwapDescLnReceiveDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"

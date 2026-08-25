@@ -159,6 +159,7 @@ abstract class SendState with _$SendState {
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
     String? signedBitcoinTx,
+    @Default(false) bool hasExternalBitcoinSignerResult,
     String? signedLiquidTx,
     OrderSwapRecord? lightningOrder,
     OrderSwapQuote? lightningQuote,

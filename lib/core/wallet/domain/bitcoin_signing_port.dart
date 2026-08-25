@@ -43,6 +43,10 @@ abstract interface class BitcoinSigningPort {
   });
 
   @useResult
+  Future<Result<({String psbt, bool isFinalized}), BitcoinSigningFailure>>
+  finalizePsbt(String psbt);
+
+  @useResult
   Future<Result<bool, BitcoinSigningFailure>> validatePolicyPreimage(
     BitcoinPolicyPreimage preimage,
   );
