@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ void main() {
   ) async {
     await pumpPage(
       tester,
-      const RecoverBullState(
+      RecoverBullState(
         flow: RecoverBullFlow.recoverVault,
         torConnection: tor.TorConnecting(
           source: tor.TorSource.embedded,
@@ -98,6 +99,54 @@ void main() {
     expect(find.text(l10n.recoverbullRecoverBullServer), findsOneWidget);
     expect(find.byKey(const ValueKey('tor-bull-direct')), findsOneWidget);
     expect(find.text(l10n.torSettingsModeDirectDescription), findsOneWidget);
+  });
+
+  testWidgets('offers Tor Settings for an external proxy failure', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: ExternalTorProxyUnavailableFailure(),
+        torConnection: tor.TorUnavailable(
+          source: tor.TorSource.external,
+          failure: tor.TorExternalProxyUnavailableFailure(),
+        ),
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsTitle), findsOneWidget);
+    expect(
+      find.text(l10n.torSettingsExternalProxyUnavailableDescription),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.torSettingsDescDisconnected), findsNothing);
+  });
+
+  testWidgets('does not offer Tor Settings for a key-server failure', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: KeyServerConnectionFailure(),
+        keyServerStatus: KeyServerStatus.offline,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsTitle), findsNothing);
   });
 
   // Tor being usable and the key server answering are two different facts,

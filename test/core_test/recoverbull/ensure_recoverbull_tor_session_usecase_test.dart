@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:bull_tor/src/domain/ports/external_tor_port.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -13,6 +14,19 @@ class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
 class _MockTorSessions extends Mock implements TorSessions {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class _MockTor extends Mock implements Tor {}
+
+class _MockExternalTor extends Mock implements ExternalTor {}
+
+class _FakeExternalTorPort implements ExternalTorPort {
+  bool available = true;
+
+  @override
+  Future<void> verify(TorProxyEndpoint endpoint) async {
+    if (!available) throw StateError('proxy unavailable');
+  }
+}
 
 SettingsEntity _settings({bool useTorProxy = false, int torProxyPort = 9050}) =>
     SettingsEntity(
@@ -27,18 +41,47 @@ void main() {
   late _MockEmbeddedTor embeddedTor;
   late _MockTorSessions sessions;
   late _MockSettingsRepository settingsRepository;
+  late _MockTor tor;
+  late _MockExternalTor externalTor;
+  late _FakeExternalTorPort externalTorPort;
   late EnsureRecoverBullTorSessionUsecase usecase;
 
   setUp(() {
     embeddedTor = _MockEmbeddedTor();
     sessions = _MockTorSessions();
     settingsRepository = _MockSettingsRepository();
+    tor = _MockTor();
+    externalTor = _MockExternalTor();
+    externalTorPort = _FakeExternalTorPort();
     when(() => embeddedTor.sessions).thenReturn(sessions);
     when(() => settingsRepository.fetch()).thenAnswer((_) async => _settings());
+    when(() => tor.external).thenReturn(externalTor);
+    when(() => externalTor.verify(any())).thenAnswer((invocation) async {
+      final endpoint =
+          invocation.positionalArguments.single as TorProxyEndpoint;
+      if (!externalTorPort.available) {
+        return const TorUnavailable(
+          source: TorSource.external,
+          failure: TorExternalProxyUnavailableFailure(),
+        );
+      }
+      return TorReady(
+        TorRoute(
+          source: TorSource.external,
+          endpoint: endpoint,
+          evidence: TorReadinessEvidence.externalSocksHandshake,
+        ),
+      );
+    });
     usecase = EnsureRecoverBullTorSessionUsecase(
       embeddedTor,
       settingsRepository,
+      tor,
     );
+  });
+
+  setUpAll(() {
+    registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
 
   test('accepts an embedded Onion route', () async {
@@ -79,9 +122,7 @@ void main() {
     verifyNever(() => sessions.open());
   });
 
-  // Embedded Tor cannot bootstrap inside Orbot's device-wide tunnel, so an
-  // Orbot user has to reach the key server through Orbot's own SOCKS port.
-  // Loopback is what makes that work: it never traverses the tun interface.
+  // A user-managed proxy is borrowed through its loopback SOCKS5 endpoint; the app must neither bootstrap embedded Tor nor assume ownership of that proxy.
   test('routes through the external proxy when the user enabled it', () async {
     when(
       () => settingsRepository.fetch(),
@@ -110,6 +151,50 @@ void main() {
     final route =
         (result as Ok<RecoverBullTorRoute, RecoverBullCoreFailure>).value;
     expect(route.endpoint.port, 19050);
+  });
+
+  test('fails closed for an invalid external proxy port', () async {
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _settings(useTorProxy: true, torProxyPort: 0));
+
+    final result = await usecase.execute();
+
+    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    verifyNever(() => externalTor.verify(any()));
+    verifyNever(() => embeddedTor.ensureReady());
+  });
+
+  test(
+    'rejects an unavailable external proxy before opening any session',
+    () async {
+      externalTorPort.available = false;
+      when(() => settingsRepository.fetch()).thenAnswer(
+        (_) async => _settings(useTorProxy: true, torProxyPort: 9050),
+      );
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+      expect(
+        (result as Err<RecoverBullTorRoute, RecoverBullCoreFailure>).failure,
+        isA<ExternalTorProxyUnavailableFailure>(),
+      );
+      verifyNever(() => embeddedTor.ensureReady());
+      verifyNever(() => sessions.open());
+    },
+  );
+
+  test('rechecks external proxy instead of restarting embedded Tor', () async {
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _settings(useTorProxy: true));
+
+    final result = await usecase.execute(restartEmbedded: true);
+
+    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    verifyNever(() => embeddedTor.ensureReady());
+    verifyNever(() => embeddedTor.retry());
   });
 
   test('maps settings fetch exceptions to a failure result', () async {

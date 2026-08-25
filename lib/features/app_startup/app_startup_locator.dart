@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/get_legacy_seeds_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_tor_status_visibility_usecase.dart';
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -56,6 +58,14 @@ class AppStartupLocator {
       () => InitializeRequiredTorUsecase(
         locator<AppStartupWalletPort>(),
         locator<EnsureTorReadyUsecase>(),
+        locator<SettingsRepository>(),
+        locator<Tor>(),
+      ),
+    );
+    locator.registerFactory<GetTorStatusVisibilityUsecase>(
+      () => GetTorStatusVisibilityUsecase(
+        locator<AppStartupWalletPort>(),
+        locator<ElectrumSettingsFacade>(),
       ),
     );
 

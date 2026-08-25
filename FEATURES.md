@@ -15,6 +15,8 @@ graph TB
 
     %% Feature modules
     SETTINGS[Settings]
+    ELECTRUM_SETTINGS[Electrum Settings]
+    RECOVERBULL[RecoverBull]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -65,6 +67,7 @@ graph TB
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
+    APP_STARTUP --> ELECTRUM_SETTINGS
     AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
     AUTOSWAPS --> TRANSFER
@@ -116,6 +119,9 @@ graph TB
     SWAPS --> LABELS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
+    WALLETS --> TOR
+    WALLETS --> ELECTRUM_SETTINGS
+    RECOVERBULL --> TOR
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -180,7 +186,7 @@ graph TB
    - Secure Storage instance (Flutter Secure Storage)
    - API Clients (REST/GraphQL clients)
    - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
-   - Explicit Orbot SOCKS override for Bitcoin Electrum `.onion` servers
+   - Explicit local SOCKS5 override for Bitcoin Electrum and encrypted backups
    - UI Kit (shared widgets, theme)
    - DI setup and interfaces (Service Locator pattern)
    - Router setup and interfaces (Navigation)
@@ -199,7 +205,7 @@ graph TB
 ### Central Features (Highly Depended Upon)
 
 - **Core**: Foundation for all features
-- **Tor**: `packages/tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus external SOCKS verification for the explicit Electrum Orbot override. Depends on Flutter: it owns a platform plugin and app-directory storage, which is the infrastructure-package exception in AGENTS.md
+- **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price

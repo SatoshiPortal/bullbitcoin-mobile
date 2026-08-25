@@ -6,7 +6,7 @@ import '../domain/ports/socket_port.dart';
 import '../domain/tor_failure.dart';
 import 'tor_logger.dart';
 
-/// Verifies a user-managed proxy such as Orbot without claiming bootstrap data
+/// Verifies a user-managed SOCKS5 proxy without claiming bootstrap data
 /// that SOCKS5 does not expose.
 final class ExternalSocksTorBackend implements ExternalTorPort {
   final SocketPort _socketPort;

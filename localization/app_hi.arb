@@ -5452,10 +5452,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "निर्धारित करने में असमर्थ Tor status. सुनिश्चित करें कि Orbot स्थापित और चल रहा है।।",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -7460,10 +7456,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "डिफ़ॉल्ट Orbot बंदरगाह: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "जमा करना",
   "@submitButton": {
@@ -11858,7 +11850,6 @@
   "mempoolErrorSameAsDefault": "यह URL डिफ़ॉल्ट सर्वर के समान है। कृपया एक अलग URL का उपयोग करें।",
   "mempoolErrorConnectionTimeout": "कनेक्शन समय समाप्त हो गया। सर्वर धीमा या अनुपलब्ध हो सकता है।",
   "mempoolErrorHostNotFound": "यह सर्वर नहीं मिल सका। कृपया URL जाँचें और पुनः प्रयास करें।",
-  "mempoolErrorTorNotRunning": ".onion पते तक नहीं पहुँचा जा सका। सुनिश्चित करें कि Tor/Orbot चल रहा है और पुनः प्रयास करें।",
   "mempoolErrorConnectionFailed": "सर्वर से कनेक्ट नहीं हो सका। अपना नेटवर्क कनेक्शन जाँचें और पुनः प्रयास करें।",
   "mempoolErrorNotMempoolServer": "यह URL mempool सर्वर नहीं लगता। कृपया पता सत्यापित करें।",
   "mempoolErrorServerUnavailable": "सर्वर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
@@ -12745,8 +12736,6 @@
   "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
   "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
   "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
-  "torSettingsExternalProxyTitle": "बाहरी Tor प्रॉक्सी (उन्नत)",
-  "torSettingsExternalProxyDescription": "सक्षम होने पर, Bitcoin Electrum सर्वर और एन्क्रिप्टेड बैकअप अंतर्निहित Tor के बजाय कॉन्फ़िगर किए गए पोर्ट पर Orbot से गुजरते हैं। Liquid कभी इससे नहीं जाता।",
   "settingsScreenPrivacyTitle": "स्क्रीन गोपनीयता",
   "settingsScreenPrivacyDisabledMessage": "अब संवेदनशील स्क्रीन पर स्क्रीनशॉट लेने की अनुमति है",
   "settingsSearchHint": "सेटिंग खोजें",

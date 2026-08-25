@@ -1,7 +1,5 @@
-import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/tor_settings/ui/screens/tor_settings_screen.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum TorSettingsRoute {
@@ -15,9 +13,7 @@ class TorSettingsRouter {
   static final route = GoRoute(
     name: TorSettingsRoute.torSettings.name,
     path: TorSettingsRoute.torSettings.path,
-    builder: (context, state) => BlocProvider(
-      create: (context) => locator<TorSettingsCubit>(),
-      child: const TorSettingsScreen(),
-    ),
+    builder: (context, state) =>
+        const TorSettingsScope(child: TorSettingsScreen()),
   );
 }

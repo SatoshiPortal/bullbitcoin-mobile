@@ -5452,10 +5452,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "สามารถตรวจสอบได้ สถานะ ตรวจสอบให้แน่ใจหรือใช้งาน.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "ชําระเงิน",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -7464,10 +7460,6 @@
   "exchangeBrandName": "สหรัฐ",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "ค่าเริ่มต้นหรือพอร์ตดิจิตอล: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "ติดต่อ",
   "@submitButton": {
@@ -12207,7 +12199,6 @@
   "mempoolErrorSameAsDefault": "URL นี้เหมือนกับเซิร์ฟเวอร์เริ่มต้น กรุณาใช้ URL อื่น",
   "mempoolErrorConnectionTimeout": "การเชื่อมต่อหมดเวลา เซิร์ฟเวอร์อาจทำงานช้าหรือไม่สามารถเข้าถึงได้",
   "mempoolErrorHostNotFound": "ไม่พบเซิร์ฟเวอร์นี้ กรุณาตรวจสอบ URL แล้วลองใหม่อีกครั้ง",
-  "mempoolErrorTorNotRunning": "ไม่สามารถเข้าถึงที่อยู่ .onion ได้ โปรดตรวจสอบว่า Tor/Orbot กำลังทำงานอยู่ แล้วลองใหม่อีกครั้ง",
   "mempoolErrorConnectionFailed": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่อีกครั้ง",
   "mempoolErrorNotMempoolServer": "URL นี้ดูเหมือนจะไม่ใช่เซิร์ฟเวอร์ mempool กรุณาตรวจสอบที่อยู่อีกครั้ง",
   "mempoolErrorServerUnavailable": "เซิร์ฟเวอร์ไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้งในภายหลัง",
@@ -12559,8 +12550,6 @@
   "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
   "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
   "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
-  "torSettingsExternalProxyTitle": "พร็อกซี Tor ภายนอก (ขั้นสูง)",
-  "torSettingsExternalProxyDescription": "เมื่อเปิดใช้งาน เซิร์ฟเวอร์ Bitcoin Electrum และข้อมูลสำรองที่เข้ารหัสจะผ่าน Orbot ที่พอร์ตที่กำหนดไว้ แทน Tor ในตัว ส่วน Liquid จะไม่ผ่าน Orbot เลย",
   "settingsScreenPrivacyTitle": "ความเป็นส่วนตัวของหน้าจอ",
   "settingsScreenPrivacyDisabledMessage": "ตอนนี้อนุญาตให้จับภาพหน้าจอในหน้าจอที่ละเอียดอ่อนได้แล้ว",
   "settingsSearchHint": "ค้นหาการตั้งค่า",

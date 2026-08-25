@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_tor/tor.dart';
 
-abstract class SettingsRepository {
+abstract interface class SettingsRepository {
   Stream<String> get currencyChangeStream;
 
   Future<void> close();
@@ -44,9 +44,7 @@ abstract class SettingsRepository {
 
   Future<void> setIsDevMode(bool isEnabled);
 
-  Future<void> setUseTorProxy(bool useTorProxy);
-
-  Future<void> setTorProxyPort(int port);
+  Future<void> setTorProxy({required bool enabled, required int port});
 
   Future<void> setTorTransportMode(TorTransportMode mode);
 

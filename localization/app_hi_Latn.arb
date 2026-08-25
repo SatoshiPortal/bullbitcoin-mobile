@@ -617,10 +617,6 @@
   "@mempoolErrorHostNotFound": {
     "description": "Error when mempool server hostname cannot be resolved"
   },
-  "mempoolErrorTorNotRunning": ".onion address tak nahi pahunch pa rahe. Pakka karo ki Tor/Orbot chal raha hai aur phir try karo.",
-  "@mempoolErrorTorNotRunning": {
-    "description": "Error when trying to reach a .onion address without Tor"
-  },
   "mempoolErrorConnectionFailed": "Server se connect nahi ho pa raha. Apna network connection check karo aur phir try karo.",
   "@mempoolErrorConnectionFailed": {
     "description": "Error when connection to mempool server fails"
@@ -10670,10 +10666,6 @@
   "@torSettingsPortHint": {
     "description": "Hint text for port input showing default value"
   },
-  "torSettingsPortHelper": "Default Orbot port: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
-  },
   "torSettingsPortValidationEmpty": "Kripya ek port number enter karo",
   "@torSettingsPortValidationEmpty": {
     "description": "Validation error when port is empty"
@@ -10721,10 +10713,6 @@
   "torSettingsDescDisconnected": "Tor proxy nahi chal raha",
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
-  },
-  "torSettingsDescUnknown": "Tor status determine karne mein asmarth. Ensure karo ki Orbot install hai aur chal raha hai.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
   },
   "withdrawSuccessTitle": "Withdrawal Shuru Hua",
   "@withdrawSuccessTitle": {
@@ -12946,8 +12934,6 @@
   "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
   "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
   "torSettingsActiveTransport": "Active transport: {transport}",
-  "torSettingsExternalProxyTitle": "Bahari Tor proxy (advanced)",
-  "torSettingsExternalProxyDescription": "Enable karne par, Bitcoin Electrum ke .onion servers embedded Tor ki jagah configure kiye gaye port par Orbot ka istemal karte hain.",
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "settingsScreenPrivacyDisabledMessage": "Ab sanvedansheel screen par screenshot lene ki anumati hai",
   "settingsSearchHint": "Settings khojein",

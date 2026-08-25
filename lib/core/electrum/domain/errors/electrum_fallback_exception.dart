@@ -62,6 +62,16 @@ class OnionServerWithoutTorException extends ElectrumFallbackException {
     : super('No Tor route available for onion Electrum server $url.');
 }
 
+/// A clearnet server cannot be contacted because the configured external Tor
+/// proxy is unavailable. It must not be reported as an onion routing failure.
+class ClearnetServerWithoutConfiguredTorException
+    extends ElectrumFallbackException {
+  final String url;
+
+  ClearnetServerWithoutConfiguredTorException(this.url)
+    : super('Configured external Tor is unavailable for Electrum server $url.');
+}
+
 /// Every server in the active set failed with a transient error.
 ///
 /// The active set is resolved once and is *either* all custom *or* all default

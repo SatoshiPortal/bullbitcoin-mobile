@@ -17,10 +17,9 @@ final class TorHttpClientFactory {
   const TorHttpClientFactory();
 
   HttpClient create(TorProxyEndpoint endpoint) {
-    // `ProxySettings` takes a resolved address, but `TorProxyEndpoint` accepts
-    // any non-empty host because the Electrum advanced options let one be typed
-    // by hand. Rejecting a non-literal here as a modeled failure keeps that
-    // combination from surfacing as a bare `ArgumentError` from `dart:io`.
+    // The proxy endpoint is loopback by product contract. The destination
+    // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
+    // ATYP DOMAINNAME instead of resolving it on the device.
     final address = InternetAddress.tryParse(endpoint.host);
     if (address == null) {
       throw TorBackendException(

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
+    as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
@@ -16,6 +18,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
@@ -48,8 +51,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
-  final tor.EnsureTorReadyUsecase _ensureTorReadyUsecase;
-  final tor.RetryTorConnectionUsecase _retryTorConnectionUsecase;
+  final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
   final UpdateLatestEncryptedVaultTestUsecase
@@ -57,6 +59,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final tor.WatchTorConnectionUsecase _watchTorConnectionUsecase;
 
   StreamSubscription<tor.TorConnectionState>? _torSubscription;
+  Future<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>?
+  _pendingRoutePreparation;
+  bool _closingBloc = false;
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
@@ -72,8 +77,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._restoreVaultUsecase,
     required this._connectToGoogleDriveUsecase,
     required this._saveToGoogleDriveUsecase,
-    required this._ensureTorReadyUsecase,
-    required this._retryTorConnectionUsecase,
+    required this._ensureRecoverBullTorSessionUsecase,
     required this._walletBloc,
     required this._fetchLatestGoogleDriveVaultUsecase,
     required this._updateLatestEncryptedVaultTestUsecase,
@@ -101,7 +105,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
   @override
   Future<void> close() async {
+    _closingBloc = true;
     await _torSubscription?.cancel();
+    final pending = _pendingRoutePreparation;
+    if (pending != null) {
+      final result = await pending;
+      if (result case Ok(:final value)) {
+        await value.close();
+      }
+    }
     return super.close();
   }
 
@@ -115,6 +127,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     // local readiness latched until Tor reports an actual blockage or a
     // terminal state. A diagnostic means this is not a benign refresh.
     final next = event.state;
+    if (state.torConnection case tor.TorReady(
+      :final route,
+    ) when route.source == tor.TorSource.external) {
+      return;
+    }
+    if (state.torConnection case tor.TorConnecting(
+      :final source,
+    ) when source == tor.TorSource.external) {
+      return;
+    }
+    if (state.torConnection case tor.TorUnavailable(
+      :final source,
+    ) when source == tor.TorSource.external) {
+      return;
+    }
     if (state.torConnection is tor.TorReady &&
         next is tor.TorConnecting &&
         next.diagnostic == null) {
@@ -140,32 +167,43 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     emit(
       state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
     );
-    final connection = event.restart
-        ? await _retryTorConnectionUsecase.execute()
-        : await _ensureTorReadyUsecase.execute();
-    if (isClosed) return;
-    switch (connection) {
-      case tor.TorReady(:final route):
-        log.info(
-          'Using ${route.source.name} Tor on port ${route.endpoint.port}',
-        );
+    final preparation = _ensureRecoverBullTorSessionUsecase.execute(
+      restartEmbedded: event.restart,
+    );
+    _pendingRoutePreparation = preparation;
+    final result = await preparation;
+    if (isClosed || _closingBloc) return;
+    switch (result) {
+      case Ok(:final value):
+        final connection = tor.TorReady(value.route);
+        try {
+          await value.close();
+        } catch (error, stackTrace) {
+          log.warning(
+            'closing RecoverBull route failed',
+            error: error,
+            trace: stackTrace,
+          );
+        }
+        if (isClosed || _closingBloc) return;
         emit(state.copyWith(torConnection: connection));
         add(const OnServerCheck());
-      case tor.TorUnavailable(:final failure):
-        log.severe(
-          error: failure.logMessage ?? failure.runtimeType.toString(),
-          trace: StackTrace.current,
-        );
+      case Err(:final failure):
+        final torFailure = failure is core.ExternalTorProxyUnavailableFailure
+            ? tor.TorExternalProxyUnavailableFailure(failure.logMessage)
+            : tor.TorBootstrapFailure(failure.logMessage);
         emit(
           state.copyWith(
-            failure: const TorNotStartedFailure(),
+            torConnection: tor.TorUnavailable(
+              source: failure is core.ExternalTorProxyUnavailableFailure
+                  ? tor.TorSource.external
+                  : tor.TorSource.embedded,
+              failure: torFailure,
+            ),
+            failure: _torFailure(failure),
             keyServerStatus: KeyServerStatus.offline,
           ),
         );
-      case tor.TorUninitialized() || tor.TorStopped() || tor.TorConnecting():
-        // A newer retry generation replaced this operation. Its stream owns the
-        // current state; the stale handler must not publish a failure.
-        return;
     }
   }
 
@@ -187,38 +225,48 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         ),
       );
 
-      final isConnected = await _connectToKeyServerUsecase.execute(
+      final result = await _connectToKeyServerUsecase.execute(
         // Published before the call, so the screen shows which attempt is
         // actually in flight rather than which one already failed. Guarded:
         // the backoff outlives the screen when the user navigates away.
         onAttempt: (attempt) {
-          if (isClosed) return;
+          if (isClosed || _closingBloc) return;
           emit(state.copyWith(keyServerAttempt: attempt));
         },
       );
+      if (isClosed || _closingBloc) return;
 
-      if (!isConnected) {
-        log.severe(
-          error: 'Recoverbull server is not ready after $retries retries',
-          trace: StackTrace.current,
-        );
-        emit(
-          state.copyWith(
-            failure: const KeyServerConnectionFailure(),
-            keyServerStatus: KeyServerStatus.offline,
-          ),
-        );
-      } else {
-        log.fine(
-          'Recoverbull server ready after ${state.keyServerAttempt} attempts',
-        );
-        // Tor's status is not forced here. It used to be set to `online` on
-        // this path, which asserted Tor's health from the key server's reply;
-        // the readiness stream is the only thing that knows, and the screen
-        // latches it.
-        emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
+      switch (result) {
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              failure: _fetchKeyFailure(failure),
+              keyServerStatus: KeyServerStatus.offline,
+            ),
+          );
+        case Ok(value: false):
+          log.severe(
+            error: 'Recoverbull server is not ready after $retries retries',
+            trace: StackTrace.current,
+          );
+          emit(
+            state.copyWith(
+              failure: const KeyServerConnectionFailure(),
+              keyServerStatus: KeyServerStatus.offline,
+            ),
+          );
+        case Ok(value: true):
+          log.fine(
+            'Recoverbull server ready after ${state.keyServerAttempt} attempts',
+          );
+          // Tor's status is not forced here. It used to be set to `online` on
+          // this path, which asserted Tor's health from the key server's reply;
+          // the readiness stream is the only thing that knows, and the screen
+          // latches it.
+          emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
       }
     } catch (e) {
+      if (isClosed || _closingBloc) return;
       log.severe(error: e, trace: StackTrace.current);
       emit(
         state.copyWith(
@@ -347,10 +395,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           return;
       }
 
-      final isConnected = await _checkKeyServerConnectionUsecase.execute();
-      if (!isConnected) {
-        emit(state.copyWith(failure: const KeyServerConnectionFailure()));
-        return;
+      switch (await _checkKeyServerConnectionUsecase.execute()) {
+        case Ok(value: true):
+          break;
+        case Ok():
+          emit(state.copyWith(failure: const KeyServerConnectionFailure()));
+          return;
+        case Err(:final failure):
+          emit(state.copyWith(failure: _storeKeyFailure(failure)));
+          return;
       }
 
       switch (event.provider) {
@@ -516,22 +569,24 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   }
 
   // Maps a core failure surfaced while selecting/fetching a vault.
-  RecoverBullFailure _selectFailure(RecoverBullCoreFailure failure) =>
+  RecoverBullFailure _selectFailure(core.RecoverBullCoreFailure failure) =>
       switch (failure) {
-        InvalidVaultFileFailure() => const InvalidVaultFileFormatFailure(),
+        core.InvalidVaultFileFailure() => const InvalidVaultFileFormatFailure(),
         _ => const SelectVaultFailure(),
       };
 
   // Maps a core failure surfaced while fetching the vault key from the server.
-  RecoverBullFailure _fetchKeyFailure(RecoverBullCoreFailure failure) =>
+  RecoverBullFailure _fetchKeyFailure(core.RecoverBullCoreFailure failure) =>
       switch (failure) {
-        KeyServerInvalidCredentialsFailure() =>
+        core.KeyServerInvalidCredentialsFailure() =>
           const InvalidVaultCredentialsFailure(),
-        KeyServerRejectedFailure() => const InvalidVaultCredentialsFailure(),
-        KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
-          retryIn: retryIn ?? Duration.zero,
-        ),
-        KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
+        core.KeyServerRejectedFailure() =>
+          const InvalidVaultCredentialsFailure(),
+        core.KeyServerRateLimitedFailure(:final retryIn) =>
+          VaultRateLimitedFailure(retryIn: retryIn ?? Duration.zero),
+        core.KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
+        core.ExternalTorProxyUnavailableFailure() =>
+          const ExternalTorProxyUnavailableFailure(),
         _ => RecoverBullUnexpectedFailure(failure.logMessage),
       };
 
@@ -539,15 +594,25 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // Mirrors [_fetchKeyFailure] for the shared key-server cases (so a 429
   // cooldown or invalid credentials still reach the user) but falls back to the
   // creation-specific error instead of the generic unexpected one.
-  RecoverBullFailure _storeKeyFailure(RecoverBullCoreFailure failure) =>
+  RecoverBullFailure _storeKeyFailure(
+    core.RecoverBullCoreFailure failure,
+  ) => switch (failure) {
+    core.KeyServerInvalidCredentialsFailure() =>
+      const InvalidVaultCredentialsFailure(),
+    core.KeyServerRejectedFailure() => const InvalidVaultCredentialsFailure(),
+    core.KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
+      retryIn: retryIn ?? Duration.zero,
+    ),
+    core.KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
+    core.ExternalTorProxyUnavailableFailure() =>
+      const ExternalTorProxyUnavailableFailure(),
+    _ => const VaultCreationFailure(),
+  };
+
+  RecoverBullFailure _torFailure(core.RecoverBullCoreFailure failure) =>
       switch (failure) {
-        KeyServerInvalidCredentialsFailure() =>
-          const InvalidVaultCredentialsFailure(),
-        KeyServerRejectedFailure() => const InvalidVaultCredentialsFailure(),
-        KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
-          retryIn: retryIn ?? Duration.zero,
-        ),
-        KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
-        _ => const VaultCreationFailure(),
+        core.ExternalTorProxyUnavailableFailure() =>
+          const ExternalTorProxyUnavailableFailure(),
+        _ => const TorNotStartedFailure(),
       };
 }

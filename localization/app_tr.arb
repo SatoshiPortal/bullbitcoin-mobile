@@ -5428,10 +5428,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "Belirlenemez Tor durumu. Emin Orbot kuruldu ve çalışıyor.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "Payjoin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -7406,10 +7402,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "Varsayılan Orbot limanı: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "Gönder",
   "@submitButton": {
@@ -12203,7 +12195,6 @@
   "mempoolErrorSameAsDefault": "Bu URL varsayılan sunucuyla aynı. Lütfen farklı bir URL kullanın.",
   "mempoolErrorConnectionTimeout": "Bağlantı zaman aşımına uğradı. Sunucu yavaş olabilir veya ulaşılamıyor olabilir.",
   "mempoolErrorHostNotFound": "Bu sunucu bulunamıyor. Lütfen URL'yi kontrol edip tekrar deneyin.",
-  "mempoolErrorTorNotRunning": ".onion adresine ulaşılamıyor. Tor/Orbot'un çalıştığından emin olun ve tekrar deneyin.",
   "mempoolErrorConnectionFailed": "Sunucuya bağlanılamıyor. Ağ bağlantınızı kontrol edip tekrar deneyin.",
   "mempoolErrorNotMempoolServer": "Bu URL bir mempool sunucusu gibi görünmüyor. Lütfen adresi doğrulayın.",
   "mempoolErrorServerUnavailable": "Sunucu kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
@@ -12555,8 +12546,6 @@
   "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
   "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
   "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
-  "torSettingsExternalProxyTitle": "Harici Tor vekili (gelişmiş)",
-  "torSettingsExternalProxyDescription": "Etkinleştirildiğinde Bitcoin Electrum sunucuları ve şifreli yedekler, gömülü Tor yerine yapılandırılan porttaki Orbot üzerinden geçer. Liquid asla bunun üzerinden yönlendirilmez.",
   "settingsScreenPrivacyTitle": "Ekran gizliliği",
   "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor",
   "settingsSearchHint": "Ayarlarda ara",

@@ -28,7 +28,7 @@ import 'tor_controller.dart';
 ///
 /// Two independent capabilities are registered here and they never meet:
 /// the embedded Arti client behind [TorRepository], and the SOCKS check for
-/// the user's own Orbot behind [VerifyExternalTorUsecase].
+/// a user-managed local SOCKS5 proxy behind [VerifyExternalTorUsecase].
 final class TorLocator {
   static Future<void> registerDatasources(
     GetIt locator, {

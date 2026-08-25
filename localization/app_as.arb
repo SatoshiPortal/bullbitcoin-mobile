@@ -358,7 +358,6 @@
   "mempoolErrorSameAsDefault": "এই URL ডিফল্ট চাৰ্ভাৰৰ দৰেই। অনুগ্ৰহ কৰি এটা ভিন্ন URL ব্যৱহাৰ কৰক।",
   "mempoolErrorConnectionTimeout": "সংযোগৰ সময় শেষ হৈছে। চাৰ্ভাৰটো লেহেমীয়া বা অপ্ৰাপ্য হ'ব পাৰে।",
   "mempoolErrorHostNotFound": "এই চাৰ্ভাৰ বিচাৰি পোৱা নগ'ল। অনুগ্ৰহ কৰি URL পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorTorNotRunning": ".onion ঠিকনাত উপনীত হ'ব পৰা নগ'ল। Tor/Orbot চলি আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "mempoolErrorConnectionFailed": "চাৰ্ভাৰৰ সৈতে সংযোগ কৰিবলৈ অক্ষম। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "mempoolErrorNotMempoolServer": "এই URL এটা mempool চাৰ্ভাৰ নহয় যেন লাগিছে। অনুগ্ৰহ কৰি ঠিকনা যাচাই কৰক।",
   "mempoolErrorServerUnavailable": "চাৰ্ভাৰ উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।",
@@ -8529,10 +8528,6 @@
   "@torSettingsPortHint": {
     "description": "Hint text for port input showing default value"
   },
-  "torSettingsPortHelper": "ডিফল্ট Orbot port: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
-  },
   "torSettingsPortValidationEmpty": "অনুগ্ৰহ কৰি এটা port নম্বৰ দিয়ক",
   "@torSettingsPortValidationEmpty": {
     "description": "Validation error when port is empty"
@@ -8580,10 +8575,6 @@
   "torSettingsDescDisconnected": "Tor proxy চলি নাই",
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
-  },
-  "torSettingsDescUnknown": "Tor-ৰ স্থিতি নিৰ্ধাৰণ কৰিব পৰা নগ'ল। Orbot ইনষ্টল আৰু চলি আছে নিশ্চিত কৰক।",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
   },
   "withdrawSuccessTitle": "উত্তোলন আৰম্ভ হৈছে",
   "@withdrawSuccessTitle": {
@@ -9628,8 +9619,6 @@
   "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
   "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
   "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
-  "torSettingsExternalProxyTitle": "বাহ্যিক Tor প্ৰক্সী (উন্নত)",
-  "torSettingsExternalProxyDescription": "সক্ৰিয় কৰিলে, Bitcoin Electrum ছাৰ্ভাৰ আৰু এনক্ৰিপ্ট কৰা বেকআপসমূহ অন্তৰ্নিহিত Tor-ৰ পৰিবৰ্তে নিৰ্ধাৰিত পৰ্টত Orbot-ৰ মাজেদি যায়। Liquid কেতিয়াও ইয়াৰ মাজেদি নাযায়।",
   "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
   "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে",
   "settingsSearchHint": "ছেটিংছ সন্ধান কৰক",

@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -16,15 +17,15 @@ class AddCustomServerUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
-  final SettingsRepository _settingsRepository;
   final ElectrumTorSessionPort _torSessionPort;
+  final SettingsRepository _settingsRepository;
 
   AddCustomServerUsecase({
     required this._electrumServerRepository,
     required this._electrumSettingsRepository,
     required this._serverStatusPort,
-    required this._settingsRepository,
     required this._torSessionPort,
+    required this._settingsRepository,
   });
 
   @useResult
@@ -51,8 +52,6 @@ class AddCustomServerUsecase {
         return const Err(ElectrumServerAlreadyExistsFailure());
       }
 
-      // Fetch app settings to get Tor configuration
-      final appSettings = await _settingsRepository.fetch();
       // Probe with the user's own validateDomain setting: accepting a
       // certificate the sync would refuse saves a server that can never be
       // used, and the failure only surfaces later as a broken sync.
@@ -66,9 +65,12 @@ class AddCustomServerUsecase {
           return Err(failure);
       }
 
+      final appSettings = await _settingsRepository.fetch();
+
       final route = await _torSessionPort.open(
         network: server.network,
         serverUrl: server.url,
+        isCustom: server.isCustom,
         externalProxyEnabled: appSettings.useTorProxy,
         externalProxyPort: appSettings.torProxyPort,
       );
@@ -100,13 +102,20 @@ class AddCustomServerUsecase {
       // Both checks passed — persist the server.
       final saveResult = await _electrumServerRepository.save(server);
       return saveResult.map((_) => ElectrumServerStatus.online);
-    } catch (e, st) {
+    } on OnionServerWithoutTorException catch (error, st) {
+      log.severe(
+        message: 'External Tor unavailable for custom onion server',
+        error: error,
+        trace: st,
+      );
+      return const Err(ElectrumExternalTorProxyUnavailableFailure());
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to add custom electrum server',
         error: e,
         trace: st,
       );
-      return Err(ElectrumUnexpectedFailure(e.toString()));
+      return const Err(ElectrumUnexpectedFailure());
     }
   }
 }

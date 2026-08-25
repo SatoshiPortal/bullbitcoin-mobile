@@ -7,7 +7,7 @@ ElectrumServerViewModel _server(String url, ElectrumServerStatus status) =>
     ElectrumServerViewModel(url: url, status: status, priority: 0);
 
 void main() {
-  test('clearnet failures do not report an Orbot failure', () {
+  test('clearnet failures do not report an onion route failure', () {
     final state = ElectrumSettingsState(
       defaultServers: [
         _server(
@@ -20,7 +20,7 @@ void main() {
     expect(state.activeOnionServersAreOffline, isFalse);
   });
 
-  test('offline custom onion servers report an Orbot failure', () {
+  test('offline custom onion servers report an onion route failure', () {
     final state = ElectrumSettingsState(
       defaultServers: [
         _server(
@@ -36,7 +36,7 @@ void main() {
     expect(state.activeOnionServersAreOffline, isTrue);
   });
 
-  test('an online onion server does not report an Orbot failure', () {
+  test('an online onion server does not report an onion route failure', () {
     final state = ElectrumSettingsState(
       customServers: [
         _server('ssl://hidden.onion:50002', ElectrumServerStatus.online),

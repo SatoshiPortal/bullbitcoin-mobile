@@ -16,4 +16,14 @@ final class WalletStartupAdapter implements AppStartupWalletPort {
     );
     return wallets.isNotEmpty && wallets.first.latestEncryptedBackup != null;
   }
+
+  @override
+  Future<bool> hasTestedRecoverBullBackup() async {
+    final wallets = await _walletRepository.getWallets(
+      onlyDefaults: true,
+      onlyBitcoin: true,
+      environment: Environment.mainnet,
+    );
+    return wallets.any((wallet) => wallet.isEncryptedVaultTested);
+  }
 }

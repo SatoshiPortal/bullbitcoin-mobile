@@ -2407,7 +2407,6 @@
   "leaveYourPhone": "deixar seu telefone e é ",
   "sendFastFee": "Rápido",
   "exchangeBrandName": "BITCOIN",
-  "torSettingsPortHelper": "Porta Orbot padrão: 9050",
   "submitButton": "Submeter-me",
   "bitboxScreenTryAgainButton": "Tente novamente",
   "dcaConfirmTitle": "Confirmação Comprar",
@@ -3807,10 +3806,6 @@
   "@withdrawOwnershipQuestion": {
     "description": "Question asking about account ownership"
   },
-  "torSettingsDescUnknown": "Não foi possível determinar o status do Tor. Verifique se o Orbot está instalado e em execução.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "torSettingsDescConnecting": "Estabelecendo conexão com o Tor",
   "@torSettingsDescConnecting": {
     "description": "Description when Tor is connecting"
@@ -4118,7 +4113,6 @@
   "mempoolErrorSameAsDefault": "Este URL é o mesmo do servidor padrão. Por favor, use um URL diferente.",
   "mempoolErrorConnectionTimeout": "Tempo de conexão esgotado. O servidor pode estar lento ou inacessível.",
   "mempoolErrorHostNotFound": "Servidor não encontrado. Verifique a URL e tente novamente.",
-  "mempoolErrorTorNotRunning": "Não foi possível acessar o endereço .onion. Certifique-se de que o Tor/Orbot está em execução e tente novamente.",
   "mempoolErrorConnectionFailed": "Não foi possível conectar ao servidor. Verifique sua conexão de rede e tente novamente.",
   "mempoolErrorNotMempoolServer": "Esta URL não parece ser um servidor mempool. Verifique o endereço.",
   "mempoolErrorServerUnavailable": "Servidor indisponível. Tente novamente mais tarde.",
@@ -5052,8 +5046,6 @@
   "torSettingsModeDirectDescription": "Liga-se diretamente à rede Tor, sem pluggable transport.",
   "torSettingsModeSnowflakeDescription": "Usa proxies voluntários Snowflake para alcançar o Tor a partir de uma rede filtrada.",
   "torSettingsActiveTransport": "Transporte ativo: {transport}",
-  "torSettingsExternalProxyTitle": "Proxy Tor externo (avançado)",
-  "torSettingsExternalProxyDescription": "Quando ativo, os servidores Bitcoin Electrum e as cópias de segurança cifradas passam pelo Orbot na porta configurada em vez do Tor integrado. O Liquid nunca é encaminhado por ele.",
   "settingsScreenPrivacyTitle": "Privacidade do ecrã",
   "settingsScreenPrivacyDisabledMessage": "As capturas de ecrã são agora permitidas em ecrãs sensíveis",
   "settingsSearchHint": "Pesquisar nas definições",

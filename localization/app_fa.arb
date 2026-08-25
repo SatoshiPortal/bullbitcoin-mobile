@@ -736,10 +736,6 @@
   "@torSettingsPortHint": {
     "description": "Hint text for port input showing default value"
   },
-  "torSettingsPortHelper": "پورت پیش فرض Orbot: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
-  },
   "withdrawOwnershipMyAccount": "این حساب من است",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -818,10 +814,6 @@
   "torSettingsDescDisconnected": "Tor پروکسی در حال اجرا نیست",
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
-  },
-  "torSettingsDescUnknown": "عدم توانایی برای تعیین وضعیت Tor اطمینان حاصل کنید که Orbot نصب و اجرا می شود.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
   },
   "walletAutoTransferAllowButton": "اجازه دادن",
   "@walletAutoTransferAllowButton": {
@@ -12203,7 +12195,6 @@
   "mempoolErrorSameAsDefault": "این آدرس همان سرور پیش‌فرض است. لطفاً از یک آدرس دیگر استفاده کنید.",
   "mempoolErrorConnectionTimeout": "اتصال با وقفه مواجه شد. ممکن است سرور کند یا در دسترس نباشد.",
   "mempoolErrorHostNotFound": "این سرور پیدا نشد. لطفاً آدرس را بررسی کنید و دوباره امتحان کنید.",
-  "mempoolErrorTorNotRunning": "دسترسی به آدرس .onion ممکن نشد. اطمینان حاصل کنید که Tor/Orbot در حال اجراست و دوباره امتحان کنید.",
   "mempoolErrorConnectionFailed": "اتصال به سرور ممکن نشد. اتصال شبکه خود را بررسی کنید و دوباره امتحان کنید.",
   "mempoolErrorNotMempoolServer": "به نظر نمی‌رسد این آدرس یک سرور mempool باشد. لطفاً آدرس را بررسی کنید.",
   "mempoolErrorServerUnavailable": "سرور در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
@@ -12555,8 +12546,6 @@
   "torSettingsModeDirectDescription": "بدون حامل اتصال‌پذیر، مستقیماً به شبکه Tor متصل می‌شود.",
   "torSettingsModeSnowflakeDescription": "از پروکسی‌های داوطلبانه Snowflake استفاده می‌کند تا از شبکه‌ای فیلترشده به Tor برسد.",
   "torSettingsActiveTransport": "حامل فعال: {transport}",
-  "torSettingsExternalProxyTitle": "پروکسی Tor بیرونی (پیشرفته)",
-  "torSettingsExternalProxyDescription": "در صورت فعال بودن، سرورهای Bitcoin Electrum و پشتیبان‌های رمزگذاری‌شده به‌جای Tor داخلی از Orbot روی درگاه تنظیم‌شده عبور می‌کنند. Liquid هرگز از آن عبور نمی‌کند.",
   "settingsScreenPrivacyTitle": "حریم خصوصی صفحه",
   "settingsScreenPrivacyDisabledMessage": "اکنون گرفتن اسکرین‌شات در صفحه‌های حساس مجاز است",
   "settingsSearchHint": "جستجو در تنظیمات",

@@ -5492,10 +5492,6 @@
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
   },
-  "torSettingsDescUnknown": "Nelze určit Tor status. Ujistěte se, že Orbot je nainstalován a spuštěn.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
   "transactionFilterPayjoin": "Čeština",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -7415,10 +7411,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "torSettingsPortHelper": "Výchozí port Orbot: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
   },
   "submitButton": "Odeslat",
   "@submitButton": {
@@ -12321,7 +12313,6 @@
   "mempoolErrorSameAsDefault": "Tato adresa URL je stejná jako výchozí server. Použijte prosím jinou adresu URL.",
   "mempoolErrorConnectionTimeout": "Časový limit připojení vypršel. Server může být pomalý nebo nedostupný.",
   "mempoolErrorHostNotFound": "Tento server se nepodařilo najít. Zkontrolujte adresu URL a zkuste to znovu.",
-  "mempoolErrorTorNotRunning": "Nelze se připojit k adrese .onion. Ujistěte se, že běží Tor/Orbot, a zkuste to znovu.",
   "mempoolErrorConnectionFailed": "Nelze se připojit k serveru. Zkontrolujte své síťové připojení a zkuste to znovu.",
   "mempoolErrorNotMempoolServer": "Tato adresa URL nevypadá jako mempool server. Ověřte prosím adresu.",
   "mempoolErrorServerUnavailable": "Server je nedostupný. Zkuste to prosím později.",
@@ -12555,8 +12546,6 @@
   "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
   "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
   "torSettingsActiveTransport": "Aktivní transport: {transport}",
-  "torSettingsExternalProxyTitle": "Externí proxy Tor (pokročilé)",
-  "torSettingsExternalProxyDescription": "Když je zapnuto, servery Bitcoin Electrum a zašifrované záhy procházejí přes Orbot na nastaveném portu místo vestavěného Toru. Liquid se přes něj nikdy nesměruje.",
   "settingsScreenPrivacyTitle": "Soukromí obrazovky",
   "settingsScreenPrivacyDisabledMessage": "Snímky obrazovky jsou nyní na citlivých obrazovkách povoleny",
   "settingsSearchHint": "Hledat v nastavení",

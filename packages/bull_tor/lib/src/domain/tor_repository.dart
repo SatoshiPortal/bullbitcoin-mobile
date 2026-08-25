@@ -6,10 +6,7 @@ import 'entities/tor_transport.dart';
 
 /// The embedded Arti client's lifecycle and current readiness.
 ///
-/// Orbot is deliberately absent: it is not an alternative source this
-/// repository can select. It carries Bitcoin Electrum `.onion` traffic, has no
-/// lifecycle of ours to manage, and is checked on its own through
-/// `VerifyExternalTorUsecase`.
+/// The external proxy is deliberately absent because this repository only owns embedded Arti. A user-managed SOCKS5 proxy has no lifecycle of ours to manage and is checked separately through `VerifyExternalTorUsecase`.
 abstract interface class TorRepository {
   /// Last published state, for a caller that cannot wait for [watch].
   TorConnectionState get current;

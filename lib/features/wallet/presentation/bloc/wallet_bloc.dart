@@ -14,8 +14,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_result
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,6 +37,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._deleteWalletUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
+    required this._getExternalTorProxyStatusUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
@@ -60,6 +61,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final DeleteWalletUsecase _deleteWalletUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
+  final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -67,6 +69,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   bool? _lastBitcoinSyncSuccess;
   bool? _lastLiquidSyncSuccess;
+  int _electrumWarningGeneration = 0;
 
   @override
   Future<void> close() {
@@ -291,6 +294,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     ElectrumSyncResultChanged event,
     Emitter<WalletState> emit,
   ) async {
+    final generation = ++_electrumWarningGeneration;
     final result = event.result;
 
     if (result.isLiquid) {
@@ -309,10 +313,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         (false, true) => 'Liquid electrum server failure',
         _ => '',
       };
+      final externalTorStatus = bitcoinServerDown
+          ? await _getExternalTorProxyStatusUsecase.execute()
+          : ExternalTorProxyStatus.disabled;
+      if (isClosed || generation != _electrumWarningGeneration) return;
       final warning = WalletWarning(
         title: title,
         description: 'Click to configure electrum server settings',
-        actionRoute: ElectrumSettingsRoute.electrumSettings.name,
+        action:
+            bitcoinServerDown &&
+                externalTorStatus == ExternalTorProxyStatus.unavailable
+            ? WalletWarningAction.torSettings
+            : WalletWarningAction.electrumSettings,
         type: WarningType.error,
       );
       emit(state.copyWith(warnings: [warning]));

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,5 +18,6 @@ void main() {
 
     expect(locator.isRegistered<RecoverBullRemoteDatasource>(), isTrue);
     expect(locator.isRegistered<RecoverBullRepository>(), isTrue);
+    expect(locator<RecoverBullRepository>(), isA<RecoverBullRepositoryImpl>());
   });
 }

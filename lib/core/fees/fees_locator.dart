@@ -2,25 +2,21 @@ import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:get_it/get_it.dart';
 
 class FeesLocator {
   static void registerDatasources(GetIt locator) {
-    locator.registerLazySingleton<FeesDatasource>(
-      () => FeesDatasource(
-        getActiveMempoolServerUsecase: locator<GetActiveMempoolServerUsecase>(),
-        mempoolSettingsRepository: locator<MempoolSettingsRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
+    locator.registerLazySingleton<FeesDatasource>(() => FeesDatasource());
   }
 
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<FeesRepository>(
-      () => FeesRepositoryImpl(feesDatasource: locator<FeesDatasource>()),
+      () => FeesRepositoryImpl(
+        feesDatasource: locator<FeesDatasource>(),
+        mempoolSettingsRepository: locator(),
+        mempoolServerRepository: locator(),
+      ),
     );
   }
 
