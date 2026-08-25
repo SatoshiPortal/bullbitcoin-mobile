@@ -55,7 +55,9 @@ class TestWalletBackupBloc
     if (wallet == null) {
       return const Err(TestWalletBackupNoWalletSelectedFailure());
     }
-    return _getMnemonicFromFingerprintUsecase.execute(wallet.masterFingerprint);
+    return _getMnemonicFromFingerprintUsecase.execute(
+      wallet.localMasterFingerprints.single,
+    );
   }
 
   Future<void> _onLoadWallets(
@@ -111,7 +113,7 @@ class TestWalletBackupBloc
 
     final bool isCorrect;
     switch (await _verifyPhysicalBackupUsecase.execute(
-      fingerprint: wallet.masterFingerprint,
+      fingerprint: wallet.localMasterFingerprints.single,
       mnemonic: event.reorderedWords,
     )) {
       case Ok(:final value):

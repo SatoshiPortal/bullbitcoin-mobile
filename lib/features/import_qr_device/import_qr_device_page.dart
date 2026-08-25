@@ -62,10 +62,7 @@ class ImportQrDevicePage extends StatelessWidget {
               children: [
                 BBButton.small(
                   label: context.loc.importQrDeviceButtonOpenCamera,
-                  onPressed: () => context.pushNamed(
-                    ImportWatchOnlyWalletRoutes.scan.name,
-                    extra: device,
-                  ),
+                  onPressed: () => _scanWallet(context),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,
@@ -88,6 +85,18 @@ class ImportQrDevicePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _scanWallet(BuildContext context) async {
+    final input = await context.pushNamed<String>(
+      ImportWatchOnlyWalletRoutes.scan.name,
+      extra: device,
+    );
+    if (input == null || !context.mounted) return;
+    await context.pushNamed(
+      ImportWatchOnlyWalletRoutes.import.name,
+      extra: (input: input, signerDevice: device),
     );
   }
 }

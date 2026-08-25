@@ -84,7 +84,7 @@ class CheckForExistingDefaultWalletsUsecase {
       );
       try {
         final seed = await _seedRepository.get(
-          defaultWallets.first.masterFingerprint,
+          defaultWallets.first.localMasterFingerprints.single,
         );
         final network = !hasBitcoin
             ? (environment.isMainnet
@@ -126,7 +126,7 @@ class CheckForExistingDefaultWalletsUsecase {
     await Future.wait(
       defaultWallets.map((wallet) async {
         try {
-          await _seedRepository.get(wallet.masterFingerprint);
+          await _seedRepository.get(wallet.localMasterFingerprints.single);
           log.fine('FINE: Seed Found');
         } catch (e) {
           log.severe(

@@ -32,7 +32,10 @@ void main() {
   }) {
     final wallet = _MockWallet();
     when(() => wallet.isDefault).thenReturn(isDefault);
-    when(() => wallet.masterFingerprint).thenReturn(masterFingerprint);
+    final fingerprints = masterFingerprint.isEmpty
+        ? const <String>[]
+        : [masterFingerprint];
+    when(() => wallet.localMasterFingerprints).thenReturn(fingerprints);
     return wallet;
   }
 
@@ -91,6 +94,22 @@ void main() {
         verifyNever(() => seedRepository.delete(any()));
       },
     );
+
+    test('ignores the fingerprint on a remote-only sibling', () async {
+      final wallet = buildWallet();
+      final sibling = buildWallet();
+      when(() => sibling.localMasterFingerprints).thenReturn(const []);
+      when(
+        () => walletRepository.getWallet(walletId),
+      ).thenAnswer((_) async => wallet);
+      when(
+        () => walletRepository.getWallets(),
+      ).thenAnswer((_) async => [sibling]);
+
+      await usecase.execute(walletId: walletId);
+
+      verify(() => seedRepository.delete(fingerprint)).called(1);
+    });
 
     test('never touches a seed for a watch-only wallet', () async {
       final wallet = buildWallet(masterFingerprint: '');

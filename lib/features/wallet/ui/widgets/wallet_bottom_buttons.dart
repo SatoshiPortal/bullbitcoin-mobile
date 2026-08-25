@@ -29,7 +29,7 @@ class WalletBottomButtons extends StatelessWidget {
         context.pushNamed(routeName, extra: wallet);
       },
       onSend: () => context.pushNamed(SendRoute.send.name, extra: wallet),
-      sendDisabled: wallet?.isWatchOnly ?? false,
+      sendDisabled: wallet != null && !wallet!.supportsLegacySend,
     );
   }
 }

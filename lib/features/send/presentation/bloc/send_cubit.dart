@@ -322,7 +322,11 @@ class SendCubit extends Cubit<SendState>
           return;
       }
       emit(
-        state.copyWith(wallets: wallets.where((w) => !w.isWatchOnly).toList()),
+        state.copyWith(
+          wallets: wallets
+              .where((wallet) => wallet.supportsLegacySend)
+              .toList(),
+        ),
       );
 
       await getCurrencies();

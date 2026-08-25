@@ -51,7 +51,7 @@ void main() {
       'returns SeedDeleteFailure when a wallet still uses the seed — guard',
       () async {
         final wallet = _MockWallet();
-        when(() => wallet.masterFingerprint).thenReturn(fingerprint);
+        when(() => wallet.localMasterFingerprints).thenReturn([fingerprint]);
         when(
           () => walletRepository.getWallets(),
         ).thenAnswer((_) async => Ok([wallet]));
@@ -64,6 +64,22 @@ void main() {
         verifyNever(() => seedRepository.delete(any()));
       },
     );
+
+    test('ignores a fingerprint used only by a remote signer', () async {
+      final wallet = _MockWallet();
+      when(() => wallet.localMasterFingerprints).thenReturn(const []);
+      when(
+        () => walletRepository.getWallets(),
+      ).thenAnswer((_) async => [wallet]);
+      when(
+        () => seedRepository.delete(fingerprint),
+      ).thenAnswer((_) async => const Ok(null));
+
+      final result = await usecase.execute(fingerprint);
+
+      expect(result, isA<Ok>());
+      verify(() => seedRepository.delete(fingerprint)).called(1);
+    });
 
     test(
       'returns SeedDeleteFailure on repository error — no raw leak',

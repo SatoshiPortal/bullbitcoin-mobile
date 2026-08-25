@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -185,13 +186,17 @@ Bolt11PaymentRequest _invoice({required int amountSat, int? expiresAt}) =>
 Wallet _wallet(Network network, {bool remote = false}) => Wallet(
   origin: 'wallet-1',
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      signer: remote ? SignerEntity.remote : SignerEntity.local,
+      signerDevice: remote ? SignerDeviceEntity.jade : null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: remote ? SignerEntity.remote : SignerEntity.local,
-  signerDevice: remote ? SignerDeviceEntity.jade : null,
+  publicDescriptor: '',
   balanceSat: BigInt.from(100000),
 );
 

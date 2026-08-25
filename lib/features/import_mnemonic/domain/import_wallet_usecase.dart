@@ -4,6 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
@@ -76,21 +77,47 @@ class ImportWalletUsecase {
 
       return Ok(wallet);
     } catch (e, st) {
+      if (e is WalletAlreadyExistsException) {
+        if (seedCreatedByThisImport != null) {
+          try {
+            final wallets = await _wallet.getWallets();
+            final seedIsInUse = wallets.any(
+              (wallet) => wallet.localMasterFingerprints.contains(
+                seedCreatedByThisImport,
+              ),
+            );
+            if (!seedIsInUse) {
+              await _deleteOrphanedSeed(seedCreatedByThisImport);
+            }
+          } catch (cleanupError, cleanupStackTrace) {
+            log.warning(
+              'Failed to check duplicate wallet seed ownership',
+              error: cleanupError,
+              trace: cleanupStackTrace,
+            );
+          }
+        }
+        return const Err(ImportMnemonicDuplicateFailure());
+      }
       // Remove the orphaned seed so a later import of the same mnemonic is
       // not rejected as a duplicate (issue #2634). Only a seed this call
       // created is orphaned; a pre-existing one belongs to another wallet.
       // A cleanup failure is logged but must not mask the import error.
       if (seedCreatedByThisImport != null) {
-        final deletion = await _seedRepository.delete(seedCreatedByThisImport);
-        if (deletion case Err(:final failure)) {
-          log.warning(
-            'Failed to clean up orphaned seed after import failure',
-            error: failure,
-          );
-        }
+        await _deleteOrphanedSeed(seedCreatedByThisImport);
       }
       log.severe(message: 'Import wallet failed', error: e, trace: st);
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
+    }
+  }
+
+  Future<void> _deleteOrphanedSeed(String fingerprint) async {
+    final deletion = await _seedRepository.delete(fingerprint);
+    if (deletion case Err(:final failure)) {
+      log.warning(
+        'Failed to clean up orphaned seed after import failure',
+        error: failure,
+      );
     }
   }
 }

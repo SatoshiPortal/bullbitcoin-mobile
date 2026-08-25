@@ -27,6 +27,7 @@ class WalletDetailsScreen extends StatelessWidget {
     final isDeletingWallet = context.select(
       (WalletBloc bloc) => bloc.state.isDeletingWallet,
     );
+    final derivationPath = wallet?.derivationPath;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,20 +75,24 @@ class WalletDetailsScreen extends StatelessWidget {
                   vertical: 24,
                 ),
                 children: [
-                  _InfoField(
-                    label: context.loc.walletDetailsWalletFingerprintLabel,
-                    value: wallet.masterFingerprint,
-                  ),
-                  const SizedBox(height: 18),
-                  _CopyField(
-                    label: context.loc.walletDetailsPubkeyLabel,
-                    value: wallet.xpub,
-                    copyLabel: context.loc.walletDetailsCopyButton,
-                  ),
-                  const SizedBox(height: 18),
+                  if (wallet.singleDescriptorKey case final key?) ...[
+                    if (key.masterFingerprint.isNotEmpty) ...[
+                      _InfoField(
+                        label: context.loc.walletDetailsWalletFingerprintLabel,
+                        value: key.masterFingerprint,
+                      ),
+                      const SizedBox(height: 18),
+                    ],
+                    _CopyField(
+                      label: context.loc.walletDetailsPubkeyLabel,
+                      value: key.xpub,
+                      copyLabel: context.loc.walletDetailsCopyButton,
+                    ),
+                    const SizedBox(height: 18),
+                  ],
                   _CopyField(
                     label: context.loc.walletDetailsDescriptorLabel,
-                    value: wallet.externalPublicDescriptor,
+                    value: wallet.publicDescriptor,
                     copyLabel: context.loc.walletDetailsCopyButton,
                   ),
                   const SizedBox(height: 18),
@@ -100,23 +105,27 @@ class WalletDetailsScreen extends StatelessWidget {
                     label: context.loc.walletDetailsNetworkLabel,
                     value: wallet.networkString,
                   ),
-                  const SizedBox(height: 18),
-                  _InfoField(
-                    label: context.loc.walletDetailsDerivationPathLabel,
-                    value: wallet.derivationPath,
-                  ),
-                  const SizedBox(height: 18),
-                  _InfoField(
-                    label: context.loc.walletDetailsSignerLabel,
-                    value: wallet.signer.displayName,
-                  ),
-                  const SizedBox(height: 18),
-                  _InfoField(
-                    label: context.loc.walletDetailsSignerDeviceLabel,
-                    value:
-                        wallet.signerDevice?.displayName ??
-                        context.loc.walletDetailsSignerDeviceNotSupported,
-                  ),
+                  if (derivationPath != null) ...[
+                    const SizedBox(height: 18),
+                    _InfoField(
+                      label: context.loc.walletDetailsDerivationPathLabel,
+                      value: derivationPath,
+                    ),
+                  ],
+                  if (wallet.singleSigner case final signer?) ...[
+                    const SizedBox(height: 18),
+                    _InfoField(
+                      label: context.loc.walletDetailsSignerLabel,
+                      value: signer.signer.displayName,
+                    ),
+                    const SizedBox(height: 18),
+                    _InfoField(
+                      label: context.loc.walletDetailsSignerDeviceLabel,
+                      value:
+                          signer.signerDevice?.displayName ??
+                          context.loc.walletDetailsSignerDeviceNotSupported,
+                    ),
+                  ],
                   const Gap(32),
                   BBButton.big(
                     label: context.loc.addressViewAddressesTitle,

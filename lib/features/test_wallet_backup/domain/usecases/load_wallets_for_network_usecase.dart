@@ -39,8 +39,11 @@ class LoadWalletsForNetworkUsecase {
             TestWalletBackupWalletsUnavailableFailure(failure.logMessage),
           );
       }
-      if (wallets.isEmpty) return const Err(TestWalletBackupNoWalletsFailure());
-      return Ok(wallets);
+      final eligible = wallets.where((wallet) =>
+          wallet.isStandardLocalSingleSignatureWallet &&
+          wallet.localMasterFingerprints.length == 1).toList();
+      if (eligible.isEmpty) return const Err(TestWalletBackupNoWalletsFailure());
+      return Ok(eligible);
     } on Object catch (e, st) {
       log.severe(
         message: 'Failed to load wallets for the backup test',

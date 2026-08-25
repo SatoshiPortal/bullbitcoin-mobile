@@ -64,7 +64,7 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     final existingFingerprints = <String>{};
     switch (await _getWalletsUsecase.execute()) {
       case Ok(:final value):
-        existingFingerprints.addAll(value.map((w) => w.masterFingerprint));
+        existingFingerprints.addAll(value.expand((w) => w.localMasterFingerprints));
       case Err(failure: NoWalletsFoundFailure()):
         break;
       case Err(:final failure):

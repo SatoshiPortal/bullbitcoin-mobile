@@ -52,7 +52,7 @@ class UpdateLatestEncryptedVaultTestUsecase {
       }
 
       for (final wallet in availableWallets) {
-        if (wallet.masterFingerprint == decodedFingerprint) {
+        if (wallet.localMasterFingerprints.contains(decodedFingerprint)) {
           await _walletRepository.updateEncryptedBackupTime(
             time: DateTime.now(),
             walletId: wallet.id,

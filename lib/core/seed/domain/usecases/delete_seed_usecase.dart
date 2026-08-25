@@ -33,7 +33,7 @@ class DeleteSeedUsecase {
           );
       }
       final hasExistingWallet = wallets.any(
-        (wallet) => wallet.masterFingerprint == fingerprint,
+        (wallet) => wallet.localMasterFingerprints.contains(fingerprint),
       );
       if (hasExistingWallet) {
         log.warning(

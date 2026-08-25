@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -88,7 +89,7 @@ class WalletDetailScreen extends StatelessWidget {
                     SliverToBoxAdapter(
                       child: WalletDetailBalanceCard(
                         isLiquid: wallet.isLiquid,
-                        signer: wallet.signer,
+                        signer: wallet.hasLocalSigner ? SignerEntity.local : wallet.hasRemoteSigner ? SignerEntity.remote : SignerEntity.none,
                         balanceText: CurrencyText(
                           wallet.balanceSat.toInt(),
                           style: Theme.of(context).textTheme.displaySmall
