@@ -47,7 +47,11 @@ class BumpFeeUsecase {
         isPsbt: true,
       );
       return Ok(broadcastedTxid);
-    } on bdk.FeeRateTooLowCreateTxException {
+    } on bdk.FeeRateTooLowCreateTxException catch (e) {
+      log.warning(
+        'BDK rejected replacement fee rate',
+        error: 'Required rate: ${e.required_}',
+      );
       return const Err(ReplaceByFeeFeeRateTooLowFailure());
     } catch (e, st) {
       log.severe(message: 'Bump fee failed', error: e, trace: st);
