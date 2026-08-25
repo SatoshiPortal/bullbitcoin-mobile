@@ -93,6 +93,30 @@ void main() {
         expect((result as Err).failure, isA<NotAuthenticatedFailure>());
       },
     );
+
+    test('a key without a usable identity is an auth failure, not a load '
+        'failure, and the thread is never requested', () async {
+      final apiKey = _MockApiKeyModel();
+      when(() => apiKey.key).thenReturn('secret-key');
+      when(
+        () => apiKeyDatasource.get(isTestnet: any(named: 'isTestnet')),
+      ).thenAnswer((_) async => apiKey);
+      when(
+        () => apiDatasource.getUserSummary(any()),
+      ).thenAnswer((_) async => null);
+
+      final result = await repository.getMessages();
+
+      expect((result as Err).failure, isA<NotAuthenticatedFailure>());
+      verifyNever(
+        () => datasource.listMessages(
+          apiKey: any(named: 'apiKey'),
+          userId: any(named: 'userId'),
+          page: any(named: 'page'),
+          pageSize: any(named: 'pageSize'),
+        ),
+      );
+    });
   });
 
   group('support chat use-cases (thin forwarders)', () {

@@ -49,13 +49,11 @@ class ExchangeSupportChatRepositoryImpl
       final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
         apiKey,
       );
-      if (userSummaryModel == null) {
-        throw Exception('User summary not found');
-      }
-
-      final userId = userSummaryModel.userId;
+      final userId = userSummaryModel?.userId;
       if (userId == null) {
-        throw Exception('User ID not found in user summary');
+        // No usable identity behind the key: the session is not good enough to read the thread, which is an auth problem rather than a transport one.
+        log.warning('Support chat: user summary carries no user id');
+        return const Err(NotAuthenticatedFailure());
       }
 
       final messageModels = await _datasource.listMessages(
