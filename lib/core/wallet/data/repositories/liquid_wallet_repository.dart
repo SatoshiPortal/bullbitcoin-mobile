@@ -47,7 +47,7 @@ class LiquidWalletRepository implements LiquidSendPort {
         return const Err(WalletTransactionBuildFailure('Not a Liquid wallet'));
       }
       final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        combinedCtDescriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
@@ -102,7 +102,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
     final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      combinedCtDescriptor: metadata.publicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
     );
@@ -123,7 +123,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
     final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      combinedCtDescriptor: metadata.publicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
     );
@@ -157,17 +157,14 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
-    // The mnemonic stays inside `secrets`: it builds the lwk wallet in a
-    // scratch directory it removes afterwards, signs, and returns only
-    // the signed PSET.
-    final fingerprint = metadata.seedFingerprint;
-    if (fingerprint == null) {
-      throw Exception('No secret for wallet: not a seed-derived wallet');
+    if (metadata.signers.length != 1 ||
+        metadata.signers.single.descriptorKeys.length != 1) {
+      throw StateError('Standard local single-signature wallet required');
     }
-    final secret = switch (await _secrets.fetch(fingerprint)) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw Exception('No secret for wallet: $failure'),
-    };
+    final descriptorKey = metadata.signers.single.descriptorKeys.single;
+    final seed =
+        await _seed.get(descriptorKey.masterFingerprint) as MnemonicSeedModel;
+    final mnemonic = seed.mnemonicWords.join(' ');
 
     return switch (await secret.sign.pset(
       pset,
@@ -196,7 +193,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
     final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      combinedCtDescriptor: metadata.publicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
     );

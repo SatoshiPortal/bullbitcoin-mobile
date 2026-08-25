@@ -346,7 +346,7 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinAwaitingFunds {
     if (type != ReceiveType.bitcoin) return false;
     return wallet != null &&
-        wallet!.signsLocally &&
+        wallet!.isStandardLocalSingleSignatureWallet &&
         payjoinGloballyEnabled == true &&
         !hasUtxos &&
         payjoin == null;
@@ -354,7 +354,9 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinAvailable {
     if (type == ReceiveType.bitcoin) {
-      return wallet != null && wallet!.signsLocally && payjoin != null;
+      return wallet != null &&
+          wallet!.isStandardLocalSingleSignatureWallet &&
+          payjoin != null;
     }
     return false;
   }
@@ -373,7 +375,7 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinToggleable =>
       type == ReceiveType.bitcoin &&
       wallet != null &&
-      wallet!.signsLocally &&
+      wallet!.isStandardLocalSingleSignatureWallet &&
       hasUtxos;
 
   /// True when the user has entered a requested amount that is below the

@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
@@ -108,52 +109,47 @@ class ImportWalletUsecase {
 
       return Ok(wallet);
     } catch (e, st) {
+      if (e is WalletAlreadyExistsException) {
+        if (seedCreatedByThisImport != null) {
+          try {
+            final wallets = await _wallet.getWallets();
+            final seedIsInUse = wallets.any(
+              (wallet) => wallet.localMasterFingerprints.contains(
+                seedCreatedByThisImport,
+              ),
+            );
+            if (!seedIsInUse) {
+              await _deleteOrphanedSeed(seedCreatedByThisImport);
+            }
+          } catch (cleanupError, cleanupStackTrace) {
+            log.warning(
+              'Failed to check duplicate wallet seed ownership',
+              error: cleanupError,
+              trace: cleanupStackTrace,
+            );
+          }
+        }
+        return const Err(ImportMnemonicDuplicateFailure());
+      }
       // Remove the orphaned seed so a later import of the same mnemonic is
       // not rejected as a duplicate (issue #2634). Only a seed this call
       // created is orphaned; a pre-existing one belongs to another wallet.
       // A cleanup failure is logged but must not mask the import error.
-      // And even then, never a seed some wallet has come to reference: a
-      // lookup that fails keeps the seed, because an orphan in the keystore
-      // is recoverable and a stranded wallet is not.
-      if (seedCreatedByThisImport != null &&
-          !await _referencedByAWallet(seedCreatedByThisImport)) {
-        final deletion = await _secrets.trash(seedCreatedByThisImport);
-        if (deletion case Err(:final failure)) {
-          log.warning(
-            'Failed to clean up orphaned seed after import failure',
-            error: failure,
-          );
-        }
+      if (seedCreatedByThisImport != null) {
+        await _deleteOrphanedSeed(seedCreatedByThisImport);
       }
       log.severe(message: 'Import wallet failed', error: e, trace: st);
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
     }
   }
 
-  Future<bool> _referencedByAWallet(Fingerprint fingerprint) async {
-    try {
-      switch (await _wallet.getWallets()) {
-        // Only a wallet that signs locally holds this seed; a watch-only
-        // wallet with the same origin fingerprint does not, whatever its
-        // spelling. Same rule as DeleteWalletUsecase and DeleteSecretUsecase.
-        case Ok(value: final wallets):
-          return wallets.any(
-            (w) =>
-                w.signsLocally &&
-                Fingerprint.tryParse(w.masterFingerprint) == fingerprint,
-          );
-        case Err(:final failure):
-          // Unknown counts as referenced: cleanup must never delete a seed a
-          // wallet may still use.
-          log.warning(
-            'Could not check wallet references before cleanup: '
-            '${failure.logMessage}',
-          );
-          return true;
-      }
-    } catch (e) {
-      log.warning('Could not check wallet references before cleanup: $e');
-      return true;
+  Future<void> _deleteOrphanedSeed(String fingerprint) async {
+    final deletion = await _seedRepository.delete(fingerprint);
+    if (deletion case Err(:final failure)) {
+      log.warning(
+        'Failed to clean up orphaned seed after import failure',
+        error: failure,
+      );
     }
   }
 }

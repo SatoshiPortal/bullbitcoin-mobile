@@ -7,9 +7,13 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
@@ -18,9 +22,9 @@ import 'package:primitives/primitives.dart'
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
-import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
@@ -61,14 +65,13 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         return const Err(WalletTransactionBuildFailure('Not a Bitcoin wallet'));
       }
 
-      final wallet =
-          WalletModel.publicBdk(
-                externalDescriptor: metadata.externalPublicDescriptor,
-                internalDescriptor: metadata.internalPublicDescriptor,
-                isTestnet: metadata.isTestnet,
-                id: metadata.id,
-              )
-              as PublicBdkWalletModel;
+    final wallet =
+        WalletModel.publicBdk(
+              descriptor: metadata.publicDescriptor,
+              isTestnet: metadata.isTestnet,
+              id: metadata.id,
+            )
+            as PublicBdkWalletModel;
 
       // D7 defense in depth: a frozen coin must never be spendable. BDK's
       // documented semantics are the opposite — a manually added utxo
@@ -209,8 +212,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
     final wallet =
         WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
+              descriptor: metadata.publicDescriptor,
               isTestnet: metadata.isTestnet,
               id: metadata.id,
             )
@@ -238,8 +240,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
     final wallet =
         WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
+              descriptor: metadata.publicDescriptor,
               isTestnet: metadata.isTestnet,
               id: metadata.id,
             )
@@ -314,6 +315,53 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       address,
       isTestnet: metadata.isTestnet,
     );
+  }
+
+  Future<PrivateBdkWalletModel> getPrivateWallet({
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+
+    final scriptType = metadata.inferredScriptType;
+    if (metadata.signers.length != 1 || scriptType == null) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final signer = metadata.signers.single;
+    if (signer.descriptorKeys.length != 1) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final descriptorKey = signer.descriptorKeys.single;
+    if (signer.signer != Signer.local ||
+        scriptType.standardAccount(
+              descriptorKey.derivationPath,
+              metadata.network,
+            ) !=
+            0 ||
+        descriptorKey.descriptorPath != standardSingleSignatureDescriptorPath) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final seed =
+        await _seed.get(descriptorKey.masterFingerprint) as MnemonicSeedModel;
+    final mnemonic = seed.mnemonicWords.join(' ');
+
+    final wallet =
+        WalletModel.privateBdk(
+              id: metadata.id,
+              mnemonic: mnemonic,
+              passphrase: seed.passphrase,
+              scriptType: scriptType,
+              isTestnet: metadata.isTestnet,
+            )
+            as PrivateBdkWalletModel;
+    return wallet;
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({

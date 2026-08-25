@@ -1,12 +1,15 @@
 import 'dart:typed_data';
 
-import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -100,15 +103,36 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     BitcoinNetwork network,
   ) async {
     final metadata = await _loadMetadata(walletId, network);
-    final fingerprint = metadata.seedFingerprint;
-    if (fingerprint == null) {
-      throw Exception('No secret for wallet: not a seed-derived wallet');
+    final scriptType = metadata.inferredScriptType;
+    if (metadata.signers.length != 1 || scriptType == null) {
+      throw StateError('Payjoin requires a standard local wallet');
     }
-    final secret = _unwrap(await _secrets.fetch(fingerprint));
-    if (!secret.info.isMnemonic) {
+    final signer = metadata.signers.single;
+    if (signer.descriptorKeys.length != 1) {
+      throw StateError('Payjoin requires a standard local wallet');
+    }
+    final descriptorKey = signer.descriptorKeys.single;
+    if (signer.signer != Signer.local ||
+        scriptType.standardAccount(
+              descriptorKey.derivationPath,
+              metadata.network,
+            ) !=
+            0 ||
+        descriptorKey.descriptorPath != standardSingleSignatureDescriptorPath) {
+      throw StateError('Payjoin requires a standard local wallet');
+    }
+    final seed = await _seed.get(descriptorKey.masterFingerprint);
+    if (seed is! MnemonicSeedModel) {
       throw StateError('Payjoin requires a local mnemonic wallet');
     }
-    return (secret, metadata);
+    return WalletModel.privateBdk(
+          id: walletId,
+          scriptType: scriptType,
+          mnemonic: seed.mnemonicWords.join(' '),
+          passphrase: seed.passphrase,
+          isTestnet: metadata.isTestnet,
+        )
+        as PrivateBdkWalletModel;
   }
 
   /// This adapter already reports every problem by throwing — the port has no failure type — so a package failure becomes a `StateError` naming its kind, never its message.

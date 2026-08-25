@@ -7695,6 +7695,8 @@ final class Schema16 extends i0.VersionedSchema {
   late final List<i1.DatabaseSchemaEntity> entities = [
     transactions,
     walletMetadatas,
+    walletSigners,
+    walletDescriptorKeys,
     labels,
     settings,
     payjoinSenders,
@@ -7707,6 +7709,7 @@ final class Schema16 extends i0.VersionedSchema {
     autoSwap,
     bip85Derivations,
     recoverbull,
+    prices,
     frozenUtxos,
     dismissedAnnouncements,
     orderSwaps,
@@ -7742,7 +7745,7 @@ final class Schema16 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape21 walletMetadatas = Shape21(
+  late final Shape43 walletMetadatas = Shape43(
     source: i0.VersionedTable(
       entityName: 'wallet_metadatas',
       withoutRowId: false,
@@ -7750,21 +7753,63 @@ final class Schema16 extends i0.VersionedSchema {
       tableConstraints: ['PRIMARY KEY(id)'],
       columns: [
         _column_126,
-        _column_127,
-        _column_128,
+        _column_182,
         _column_129,
         _column_130,
         _column_131,
         _column_132,
-        _column_133,
-        _column_134,
-        _column_135,
-        _column_136,
-        _column_137,
+        _column_288,
         _column_138,
         _column_139,
         _column_140,
         _column_141,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape44 walletSigners = Shape44(
+    source: i0.VersionedTable(
+      entityName: 'wallet_signers',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(wallet_id, id)',
+        'FOREIGN KEY(wallet_id)REFERENCES wallet_metadatas(id)ON DELETE CASCADE',
+        'UNIQUE(wallet_id, position)',
+      ],
+      columns: [
+        _column_161,
+        _column_126,
+        _column_289,
+        _column_136,
+        _column_137,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape45 walletDescriptorKeys = Shape45(
+    source: i0.VersionedTable(
+      entityName: 'wallet_descriptor_keys',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(wallet_id, id)',
+        'FOREIGN KEY(wallet_id)REFERENCES wallet_metadatas(id)ON DELETE CASCADE',
+        'FOREIGN KEY(wallet_id, signer_id)REFERENCES wallet_signers(wallet_id, id)ON DELETE CASCADE',
+        'UNIQUE(wallet_id, position)',
+      ],
+      columns: [
+        _column_161,
+        _column_126,
+        _column_289,
+        _column_290,
+        _column_127,
+        _column_128,
+        _column_133,
+        _column_291,
+        _column_292,
       ],
       attachedDatabase: database,
     ),
@@ -8019,6 +8064,31 @@ final class Schema16 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape33 prices = Shape33(
+    source: i0.VersionedTable(
+      entityName: 'prices',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'UNIQUE(from_currency, to_currency, interval, created_at)',
+      ],
+      columns: [
+        _column_147,
+        _column_222,
+        _column_223,
+        _column_224,
+        _column_225,
+        _column_226,
+        _column_227,
+        _column_228,
+        _column_229,
+        _column_230,
+        _column_231,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
   late final Shape39 frozenUtxos = Shape39(
     source: i0.VersionedTable(
       entityName: 'frozen_utxos',
@@ -8126,6 +8196,111 @@ final class Schema16 extends i0.VersionedSchema {
   );
 }
 
+class Shape43 extends i0.VersionedTable {
+  Shape43({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get network =>
+      columnsByName['network']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isEncryptedVaultTested =>
+      columnsByName['is_encrypted_vault_tested']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isPhysicalBackupTested =>
+      columnsByName['is_physical_backup_tested']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get latestEncryptedBackup =>
+      columnsByName['latest_encrypted_backup']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get latestPhysicalBackup =>
+      columnsByName['latest_physical_backup']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get publicDescriptor =>
+      columnsByName['public_descriptor']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isDefault =>
+      columnsByName['is_default']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get label =>
+      columnsByName['label']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get syncedAt =>
+      columnsByName['synced_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get birthday =>
+      columnsByName['birthday']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_288(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'public_descriptor',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape44 extends i0.VersionedTable {
+  Shape44({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get walletId =>
+      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get position =>
+      columnsByName['position']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get signer =>
+      columnsByName['signer']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get signerDevice =>
+      columnsByName['signer_device']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<int> _column_289(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'position',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape45 extends i0.VersionedTable {
+  Shape45({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get walletId =>
+      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get position =>
+      columnsByName['position']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get signerId =>
+      columnsByName['signer_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get masterFingerprint =>
+      columnsByName['master_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get xpubFingerprint =>
+      columnsByName['xpub_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get xpub =>
+      columnsByName['xpub']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get derivationPath =>
+      columnsByName['derivation_path']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get descriptorPath =>
+      columnsByName['descriptor_path']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_290(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'signer_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_291(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'derivation_path',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_292(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'descriptor_path',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL DEFAULT \'\'',
+      defaultValue: const i1.CustomExpression('\'\''),
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,

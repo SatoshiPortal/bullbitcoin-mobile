@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repos
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -80,6 +81,9 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
       ),
+    );
+    locator.registerLazySingleton<BitcoinDescriptorPort>(
+      () => locator<WalletRepository>(),
     );
 
     locator.registerLazySingleton<WalletUtxoRepository>(

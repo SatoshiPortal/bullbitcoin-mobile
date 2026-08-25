@@ -386,7 +386,7 @@ class SendCubit extends Cubit<SendState>
           wallets: wallets
               .where(
                 (wallet) =>
-                    !wallet.isWatchOnly ||
+                    wallet.supportsLegacySend ||
                     explicitWalletIds.contains(wallet.id),
               )
               .toList(),

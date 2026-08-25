@@ -209,7 +209,7 @@ class TransactionDetailsScreen extends StatelessWidget {
             walletTransaction?.isConfirmed == false &&
             walletTransaction?.isRbf == true &&
             walletTransaction?.isBitcoin == true &&
-            wallet?.signsLocally == true &&
+            wallet?.isStandardLocalSingleSignatureWallet == true &&
             tx?.txId != null &&
             tx?.isSwap != true)
           BullButton.big(

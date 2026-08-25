@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -252,14 +253,17 @@ final _wallet = Wallet(
   label: 'Secure Bitcoin',
   network: Network.bitcoinMainnet,
   isDefault: true,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'desc',
   balanceSat: BigInt.from(1000000),
 );
 
@@ -404,14 +408,17 @@ void main() {
         label: 'Instant payments',
         network: Network.liquidMainnet,
         isDefault: true,
-        masterFingerprint: 'aabbccdd',
-        xpubFingerprint: 'aabbccdd',
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: 'aabbccdd',
+            xpubFingerprint: 'aabbccdd',
+            xpub: 'xpub',
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ),
+        ],
         scriptType: ScriptType.bip84,
-        xpub: 'xpub',
-        externalPublicDescriptor: 'desc',
-        internalPublicDescriptor: 'desc',
-        signer: SignerEntity.local,
-        signerDevice: null,
+        publicDescriptor: 'desc',
         balanceSat: BigInt.from(walletBalanceSat),
       );
 

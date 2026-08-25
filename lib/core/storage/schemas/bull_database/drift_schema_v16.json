@@ -163,24 +163,18 @@
             "dsl_features": []
           },
           {
-            "name": "master_fingerprint",
-            "getter_name": "masterFingerprint",
+            "name": "network",
+            "getter_name": "network",
             "moor_type": "string",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "xpub_fingerprint",
-            "getter_name": "xpubFingerprint",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<Network>(Network.values)",
+              "dart_type_name": "Network"
+            }
           },
           {
             "name": "is_encrypted_vault_tested",
@@ -231,58 +225,14 @@
             "dsl_features": []
           },
           {
-            "name": "xpub",
-            "getter_name": "xpub",
+            "name": "public_descriptor",
+            "getter_name": "publicDescriptor",
             "moor_type": "string",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
-          },
-          {
-            "name": "external_public_descriptor",
-            "getter_name": "externalPublicDescriptor",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "internal_public_descriptor",
-            "getter_name": "internalPublicDescriptor",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "signer",
-            "getter_name": "signer",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "signer_device",
-            "getter_name": "signerDevice",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [],
-            "type_converter": {
-              "dart_expr": "const EnumNameConverter<SignerDevice>(SignerDevice.values)",
-              "dart_type_name": "SignerDevice"
-            }
           },
           {
             "name": "is_default",
@@ -339,6 +289,202 @@
     },
     {
       "id": 2,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "wallet_signers",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "signer",
+            "getter_name": "signer",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<Signer>(Signer.values)",
+              "dart_type_name": "Signer"
+            }
+          },
+          {
+            "name": "signer_device",
+            "getter_name": "signerDevice",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<SignerDevice>(SignerDevice.values)",
+              "dart_type_name": "SignerDevice"
+            }
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
+          "UNIQUE(wallet_id, position)"
+        ],
+        "explicit_pk": [
+          "wallet_id",
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [
+        1,
+        2
+      ],
+      "type": "table",
+      "data": {
+        "name": "wallet_descriptor_keys",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "signer_id",
+            "getter_name": "signerId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "master_fingerprint",
+            "getter_name": "masterFingerprint",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "xpub_fingerprint",
+            "getter_name": "xpubFingerprint",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "xpub",
+            "getter_name": "xpub",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "derivation_path",
+            "getter_name": "derivationPath",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "descriptor_path",
+            "getter_name": "descriptorPath",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
+          "FOREIGN KEY(wallet_id, signer_id) REFERENCES wallet_signers(wallet_id, id) ON DELETE CASCADE",
+          "UNIQUE(wallet_id, position)"
+        ],
+        "explicit_pk": [
+          "wallet_id",
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 4,
       "references": [],
       "type": "table",
       "data": {
@@ -418,7 +564,7 @@
       }
     },
     {
-      "id": 3,
+      "id": 5,
       "references": [],
       "type": "table",
       "data": {
@@ -632,7 +778,7 @@
       }
     },
     {
-      "id": 4,
+      "id": 6,
       "references": [],
       "type": "table",
       "data": {
@@ -791,7 +937,7 @@
       }
     },
     {
-      "id": 5,
+      "id": 7,
       "references": [],
       "type": "table",
       "data": {
@@ -980,7 +1126,7 @@
       }
     },
     {
-      "id": 6,
+      "id": 8,
       "references": [],
       "type": "table",
       "data": {
@@ -1059,7 +1205,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 9,
       "references": [],
       "type": "table",
       "data": {
@@ -1144,7 +1290,7 @@
       }
     },
     {
-      "id": 8,
+      "id": 10,
       "references": [],
       "type": "table",
       "data": {
@@ -1229,7 +1375,7 @@
       }
     },
     {
-      "id": 9,
+      "id": 11,
       "references": [],
       "type": "table",
       "data": {
@@ -1270,7 +1416,7 @@
       }
     },
     {
-      "id": 10,
+      "id": 12,
       "references": [],
       "type": "table",
       "data": {
@@ -1570,7 +1716,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 13,
       "references": [],
       "type": "table",
       "data": {
@@ -1696,7 +1842,7 @@
       }
     },
     {
-      "id": 12,
+      "id": 14,
       "references": [],
       "type": "table",
       "data": {
@@ -1771,7 +1917,7 @@
       }
     },
     {
-      "id": 13,
+      "id": 15,
       "references": [],
       "type": "table",
       "data": {
@@ -1825,7 +1971,145 @@
       }
     },
     {
-      "id": 14,
+      "id": 16,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "prices",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "from_currency",
+            "getter_name": "fromCurrency",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "to_currency",
+            "getter_name": "toCurrency",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "interval",
+            "getter_name": "interval",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "market_price",
+            "getter_name": "marketPrice",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "price",
+            "getter_name": "price",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "price_currency",
+            "getter_name": "priceCurrency",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "precision",
+            "getter_name": "precision",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "index_price",
+            "getter_name": "indexPrice",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "user_price",
+            "getter_name": "userPrice",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "unique_keys": [
+          [
+            "from_currency",
+            "to_currency",
+            "interval",
+            "created_at"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 17,
       "references": [],
       "type": "table",
       "data": {
@@ -1874,7 +2158,7 @@
       }
     },
     {
-      "id": 15,
+      "id": 18,
       "references": [],
       "type": "table",
       "data": {
@@ -1911,7 +2195,7 @@
       }
     },
     {
-      "id": 16,
+      "id": 19,
       "references": [],
       "type": "table",
       "data": {
@@ -2372,13 +2656,13 @@
       }
     },
     {
-      "id": 17,
+      "id": 20,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_request_id",
         "sql": null,
         "unique": true,
@@ -2391,13 +2675,13 @@
       }
     },
     {
-      "id": 18,
+      "id": 21,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_local_status",
         "sql": null,
         "unique": false,
@@ -2410,13 +2694,13 @@
       }
     },
     {
-      "id": 19,
+      "id": 22,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_source_wallet",
         "sql": null,
         "unique": false,
@@ -2429,13 +2713,13 @@
       }
     },
     {
-      "id": 20,
+      "id": 23,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_destination_wallet",
         "sql": null,
         "unique": false,
@@ -2448,13 +2732,13 @@
       }
     },
     {
-      "id": 21,
+      "id": 24,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_bitcoin_txid",
         "sql": null,
         "unique": false,
@@ -2467,13 +2751,13 @@
       }
     },
     {
-      "id": 22,
+      "id": 25,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_liquid_txid",
         "sql": null,
         "unique": false,
@@ -2486,13 +2770,13 @@
       }
     },
     {
-      "id": 23,
+      "id": 26,
       "references": [
-        16
+        19
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 19,
         "name": "order_swaps_local_payin_txid",
         "sql": null,
         "unique": false,
@@ -2520,7 +2804,25 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"xpub\" TEXT NOT NULL, \"external_public_descriptor\" TEXT NOT NULL, \"internal_public_descriptor\" TEXT NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"public_descriptor\" TEXT NOT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "wallet_signers",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_signers\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
+        }
+      ]
+    },
+    {
+      "name": "wallet_descriptor_keys",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_descriptor_keys\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer_id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"xpub\" TEXT NOT NULL, \"derivation_path\" TEXT NULL, \"descriptor_path\" TEXT NOT NULL DEFAULT '', PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, FOREIGN KEY(wallet_id, signer_id) REFERENCES wallet_signers(wallet_id, id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
         }
       ]
     },
@@ -2629,6 +2931,15 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"url\" TEXT NOT NULL, \"is_permission_granted\" INTEGER NOT NULL CHECK (\"is_permission_granted\" IN (0, 1)));"
+        }
+      ]
+    },
+    {
+      "name": "prices",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"prices\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"from_currency\" TEXT NOT NULL, \"to_currency\" TEXT NOT NULL, \"interval\" TEXT NOT NULL, \"market_price\" REAL NULL, \"price\" REAL NULL, \"price_currency\" TEXT NULL, \"precision\" INTEGER NULL, \"index_price\" REAL NULL, \"user_price\" REAL NULL, \"created_at\" TEXT NOT NULL, UNIQUE (\"from_currency\", \"to_currency\", \"interval\", \"created_at\"));"
         }
       ]
     },

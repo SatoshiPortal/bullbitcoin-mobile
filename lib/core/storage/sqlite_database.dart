@@ -22,6 +22,8 @@ import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
@@ -38,6 +40,8 @@ part 'sqlite_database.g.dart';
   tables: [
     Transactions,
     WalletMetadatas,
+    WalletSigners,
+    WalletDescriptorKeys,
     Labels,
     Settings,
     PayjoinSenders,
@@ -195,6 +199,7 @@ class SqliteDatabase extends _$SqliteDatabase {
       // step runs, so this fires once on the first launch after a
       // pre-v6.6.0 → v6.6.0+ upgrade and is a no-op otherwise.
       beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
         if (details.versionBefore != null &&
             details.versionBefore != details.versionNow) {
           Report.recordSchemaUpgrade(from: details.versionBefore!);
