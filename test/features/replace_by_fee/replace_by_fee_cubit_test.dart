@@ -54,6 +54,56 @@ void main() {
     bumpFee = _MockBumpFeeUsecase();
   });
 
+  group('ReplaceByFeeCubit — prefilled bump rate', () {
+    test('clears the BDK threshold when fee/vsize is fractional', () async {
+      final cubit = await buildCubit();
+
+      // The fixture pays 200 sat over a 140-vbyte transaction. `vsize` is
+      // BDK's `Transaction::vsize()` — ceil(weight/4) — so a 140-vbyte tx
+      // weighs between 557 and 560 wu, and BDK derives the rate it must beat
+      // from that weight, not from vsize. The strictest case is the lightest
+      // weight: 200 sat over 557 wu = 359.06 sat/kwu, which BDK floors to 359.
+      // A valid replacement must clear that plus the 250 sat/kwu (1 sat/vByte)
+      // incremental relay fee, so the prefilled rate has to be >= 609.
+      //
+      // Computing the original rate as `feeSat / vsize` instead gives
+      // 357.14 sat/kwu, and rounding `357.14 + 250` to the nearest sat/kwu
+      // rounds *down* to 607 — two steps under the threshold. The user then
+      // sees a rate the app itself proposed being rejected as too low.
+      const lightestWeightWu = 4 * 140 - 3;
+      const strictestOriginalSatPerKwu = 200 * 1000 ~/ lightestWeightWu;
+      const incrementalRelaySatPerKwu = 250;
+
+      expect(
+        cubit.state.newFeeRate!.feeRate.satPerKwu,
+        greaterThanOrEqualTo(
+          strictestOriginalSatPerKwu + incrementalRelaySatPerKwu,
+        ),
+      );
+    });
+
+    test('stays valid after the two-decimal input round-trip', () {
+      const feeSat = 201;
+      const vsize = 140;
+      final minimum = NetworkFeeRelayPolicy.minimumReplacementSatPerKwu(
+        feeSat: feeSat,
+        vsize: vsize,
+      );
+      final prefill = NetworkFeeRelayPolicy.replacementPrefillSatPerKwu(
+        feeSat: feeSat,
+        vsize: vsize,
+      );
+      final displayed = (prefill / 250).toStringAsFixed(2);
+      final reparsed = NetworkFee.relativeFromSatPerVbyte(
+        double.parse(displayed),
+      ).satPerKwu;
+
+      expect(minimum, 611);
+      expect(displayed, '2.45');
+      expect(reparsed, greaterThanOrEqualTo(minimum));
+    });
+  });
+
   group('ReplaceByFeeCubit — below-floor selection gate', () {
     test('broadcast refuses while the custom field is below floor', () async {
       final cubit = await buildCubit();

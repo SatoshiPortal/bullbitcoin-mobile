@@ -30,8 +30,6 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
             vsize: originalTransaction.vsize,
           ),
         };
-        final originalSatPerVbyte =
-            originalTransaction.feeSat / originalTransaction.vsize;
         emit(
           state.copyWith(
             fastestFeeRate: FeeEntity(
@@ -40,8 +38,11 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
             ),
             newFeeRate: FeeEntity(
               type: FeeType.custom,
-              feeRate: NetworkFee.relativeFromSatPerVbyte(
-                originalSatPerVbyte + 1,
+              feeRate: RelativeFee(
+                NetworkFeeRelayPolicy.replacementPrefillSatPerKwu(
+                  feeSat: originalTransaction.feeSat,
+                  vsize: originalTransaction.vsize,
+                ),
               ),
             ),
             minRelay: value.minRelay,
