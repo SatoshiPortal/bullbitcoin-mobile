@@ -36,7 +36,15 @@ void main() {
     liquidWallet = _MockWallet();
 
     when(() => bitcoinWallet.network).thenReturn(Network.bitcoinMainnet);
+    when(() => bitcoinWallet.isBitcoin).thenReturn(true);
+    when(
+      () => bitcoinWallet.isStandardLocalSingleSignatureWallet,
+    ).thenReturn(true);
     when(() => liquidWallet.network).thenReturn(Network.liquidMainnet);
+    when(() => liquidWallet.isBitcoin).thenReturn(false);
+    when(
+      () => liquidWallet.isStandardLocalSingleSignatureWallet,
+    ).thenReturn(true);
   });
 
   group('BuyState Payjoin choice', () {
@@ -67,6 +75,11 @@ void main() {
           isFalse,
         );
         expect(state.copyWith(selectedWallet: null).canOfferPayjoin, isFalse);
+
+        when(
+          () => bitcoinWallet.isStandardLocalSingleSignatureWallet,
+        ).thenReturn(false);
+        expect(state.canOfferPayjoin, isFalse);
       },
     );
 

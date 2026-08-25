@@ -64,7 +64,9 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     final existingFingerprints = <String>{};
     try {
       final wallets = await _getWalletsUsecase.execute();
-      existingFingerprints.addAll(wallets.map((w) => w.masterFingerprint));
+      existingFingerprints.addAll(
+        wallets.expand((wallet) => wallet.localMasterFingerprints),
+      );
     } on NoWalletsFoundException {
       // intentionally empty — all seeds treated as "old"
     } catch (e, st) {

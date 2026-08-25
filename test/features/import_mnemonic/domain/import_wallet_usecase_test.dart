@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
@@ -154,6 +155,86 @@ void main() {
         verifyNever(() => settingsRepository.fetch());
       },
     );
+
+    test('keeps a duplicate wallet seed when another wallet uses it', () async {
+      final existingWallet = MockWallet();
+      when(
+        () => checkDuplicate.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => fakeSettings);
+      when(
+        () => seedRepository.createFromMnemonic(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => fakeSeed);
+      when(
+        () => walletRepository.createWallet(
+          seed: any(named: 'seed'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          isDefault: any(named: 'isDefault'),
+          sync: any(named: 'sync'),
+          label: any(named: 'label'),
+        ),
+      ).thenThrow(const WalletAlreadyExistsException('descriptor-wallet'));
+      when(
+        () => walletRepository.getWallets(),
+      ).thenAnswer((_) async => [existingWallet]);
+      when(
+        () => existingWallet.localMasterFingerprints,
+      ).thenReturn(const ['aabbccdd']);
+
+      final result = await usecase.execute(mnemonicWords: words);
+
+      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+      verifyNever(() => seedRepository.delete(any()));
+    });
+
+    test('deletes an unused seed after a duplicate wallet is found', () async {
+      final existingWallet = MockWallet();
+      when(
+        () => checkDuplicate.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => fakeSettings);
+      when(
+        () => seedRepository.createFromMnemonic(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => fakeSeed);
+      when(
+        () => walletRepository.createWallet(
+          seed: any(named: 'seed'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          isDefault: any(named: 'isDefault'),
+          sync: any(named: 'sync'),
+          label: any(named: 'label'),
+        ),
+      ).thenThrow(const WalletAlreadyExistsException('descriptor-wallet'));
+      when(
+        () => walletRepository.getWallets(),
+      ).thenAnswer((_) async => [existingWallet]);
+      when(() => existingWallet.localMasterFingerprints).thenReturn(const []);
+
+      final result = await usecase.execute(mnemonicWords: words);
+
+      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+      verify(() => seedRepository.delete('aabbccdd')).called(1);
+    });
 
     test(
       'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',

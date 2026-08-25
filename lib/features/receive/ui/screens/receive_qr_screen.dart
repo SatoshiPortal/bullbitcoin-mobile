@@ -41,10 +41,16 @@ class ReceiveQrPage extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
     final isLedger = context.select(
-      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isLedger ?? false,
+      (ReceiveBloc bloc) =>
+          (bloc.state.wallet?.isStandardSingleSignatureWallet ?? false) &&
+          (bloc.state.wallet?.signsRemotely ?? false) &&
+          (bloc.state.wallet?.signerDevice?.isLedger ?? false),
     );
     final isBitBox = context.select(
-      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
+      (ReceiveBloc bloc) =>
+          (bloc.state.wallet?.isStandardSingleSignatureWallet ?? false) &&
+          (bloc.state.wallet?.signsRemotely ?? false) &&
+          (bloc.state.wallet?.signerDevice?.isBitBox ?? false),
     );
     final showAddressVerification = !isLightning && (isLedger || isBitBox);
     final orderSwap = context.select(

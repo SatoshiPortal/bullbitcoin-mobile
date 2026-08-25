@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
@@ -52,14 +53,18 @@ Wallet _wallet({required bool isDefault, required String origin}) => Wallet(
   label: 'Test',
   network: Network.bitcoinMainnet,
   isDefault: isDefault,
-  masterFingerprint: _fingerprint,
-  xpubFingerprint: _fingerprint,
+  publicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub/<0;1>/*)',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: _fingerprint,
+      xpubFingerprint: _fingerprint,
+      xpub: 'xpub',
+      derivationPath: "m/84'/0'/0'",
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.zero,
 );
 

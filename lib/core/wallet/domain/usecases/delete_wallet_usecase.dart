@@ -36,22 +36,20 @@ class DeleteWalletUsecase {
 
       await _walletRepository.deleteWallet(walletId: walletId);
 
-      // Clean up the seed in secure storage once no remaining wallet
-      // still references it. Bitcoin and Liquid default wallets share a
-      // master fingerprint, so the seed is only deleted when the last
-      // wallet derived from it is gone. Watch-only wallets have an empty
-      // master fingerprint and never own a seed entry. Issue #2324.
-      if (wallet.masterFingerprint.isNotEmpty) {
-        final remaining = await _walletRepository.getWallets();
-        final stillUsed = remaining.any(
-          (w) => w.masterFingerprint == wallet.masterFingerprint,
-        );
-        if (!stillUsed) {
+      // Clean up locally held seeds once no remaining wallet references them.
+      final localFingerprints = wallet.localMasterFingerprints.toSet();
+      if (localFingerprints.isNotEmpty) {
+        final remainingWallets = await _walletRepository.getWallets();
+        for (final fingerprint in localFingerprints) {
+          final stillUsed = remainingWallets.any(
+            (remaining) =>
+                remaining.localMasterFingerprints.contains(fingerprint),
+          );
+          if (stillUsed) continue;
+
           // Best-effort cleanup: a failure here leaves an orphan seed entry
           // but must not fail the wallet deletion the user asked for.
-          final deleted = await _seedRepository.delete(
-            wallet.masterFingerprint,
-          );
+          final deleted = await _seedRepository.delete(fingerprint);
           if (deleted case Err(:final failure)) {
             log.warning(
               'DeleteWalletUsecase: failed to clean up seed for $walletId: '

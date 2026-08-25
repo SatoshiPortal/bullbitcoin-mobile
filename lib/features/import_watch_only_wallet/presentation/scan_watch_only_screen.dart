@@ -3,18 +3,14 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
-import 'package:satoshifier/satoshifier.dart';
 
 class ScanWatchOnlyScreen extends StatefulWidget {
   final SignerDeviceEntity? signerDevice;
@@ -45,43 +41,24 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               if (_handled) return;
               _handled = true;
               setState(() => _scanned = data);
-              try {
-                String signerData = data;
-                if (widget.signerDevice == SignerDeviceEntity.krux) {
-                  signerData = Descriptor.parse(data).external;
-                } else if (widget.signerDevice == SignerDeviceEntity.passport ||
-                    widget.signerDevice == SignerDeviceEntity.keystone) {
-                  final selectedDescriptor = await _chooseDerivation(
-                    context,
-                    data,
-                  );
-                  if (selectedDescriptor == null) {
-                    _handled = false;
-                    return;
-                  }
-                  signerData = selectedDescriptor;
-                }
-                final watchOnly = await WatchOnlyWalletEntity.parse(
-                  signerData,
-                  signerDevice: widget.signerDevice,
+              String signerData = data;
+              if (widget.signerDevice == SignerDeviceEntity.passport ||
+                  widget.signerDevice == SignerDeviceEntity.keystone) {
+                final selectedDescriptor = await _chooseDerivation(
+                  context,
+                  data,
                 );
-
-                if (!context.mounted) {
+                if (selectedDescriptor == null) {
                   _handled = false;
                   return;
                 }
-                context.replaceNamed(
-                  ImportWatchOnlyWalletRoutes.import.name,
-                  extra: watchOnly,
-                );
-              } catch (e, st) {
-                log.warning(
-                  'Failed to parse scanned watch-only',
-                  error: e,
-                  trace: st,
-                );
-                _handled = false;
+                signerData = selectedDescriptor;
               }
+              if (!context.mounted || !context.canPop()) {
+                _handled = false;
+                return;
+              }
+              context.pop(signerData);
             },
           ),
           if (_scanned.isNotEmpty)

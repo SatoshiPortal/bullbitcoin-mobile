@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
@@ -81,7 +82,11 @@ class WalletDetailScreen extends StatelessWidget {
                       child: WalletDetailBalanceCard(
                         balanceSat: wallet.balanceSat.toInt(),
                         isLiquid: wallet.isLiquid,
-                        signer: wallet.signer,
+                        signer: wallet.hasLocalSigner
+                            ? SignerEntity.local
+                            : wallet.hasRemoteSigner
+                            ? SignerEntity.remote
+                            : SignerEntity.none,
                       ),
                     ),
                     if (wallet.isLiquid)

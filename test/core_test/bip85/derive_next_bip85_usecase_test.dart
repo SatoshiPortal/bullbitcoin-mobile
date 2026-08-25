@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -30,14 +31,17 @@ final _fakeWallet = Wallet(
   label: 'Test',
   network: Network.bitcoinMainnet,
   isDefault: true,
-  masterFingerprint: 'abcd1234',
-  xpubFingerprint: 'abcd1234',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'abcd1234',
+      xpubFingerprint: 'abcd1234',
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'desc',
   balanceSat: BigInt.zero,
 );
 

@@ -130,17 +130,14 @@ void main() {
       keychainKind: bdk.KeychainKind.external_,
       networkKind: bdk.NetworkKind.test,
     );
-    final internal = bdk.Descriptor.newBip84(
-      secretKey: secretKey,
-      keychainKind: bdk.KeychainKind.internal,
-      networkKind: bdk.NetworkKind.test,
-    );
-
     walletModel =
         WalletModel.publicBdk(
               id: 'bdk-wallet-datasource-test',
-              externalDescriptor: external.toString(),
-              internalDescriptor: internal.toString(),
+              descriptor: external
+                  .toString()
+                  .split('#')
+                  .first
+                  .replaceAll('/0/*', '/<0;1>/*'),
               isTestnet: true,
             )
             as PublicBdkWalletModel;

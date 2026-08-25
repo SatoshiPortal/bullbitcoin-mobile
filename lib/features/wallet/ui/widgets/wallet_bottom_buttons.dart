@@ -54,7 +54,7 @@ class WalletBottomButtons extends StatelessWidget {
             textColor: context.appColors.onSecondaryFixed,
             outlined: true,
             borderColor: context.appColors.onSecondaryFixed,
-            disabled: wallet?.isWatchOnly ?? false,
+            disabled: wallet != null && !wallet!.supportsLegacySend,
           ),
         ),
       ],

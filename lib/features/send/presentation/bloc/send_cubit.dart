@@ -258,7 +258,11 @@ class SendCubit extends Cubit<SendState>
     try {
       final wallets = await _getWalletsUsecase.execute();
       emit(
-        state.copyWith(wallets: wallets.where((w) => !w.isWatchOnly).toList()),
+        state.copyWith(
+          wallets: wallets
+              .where((wallet) => wallet.supportsLegacySend)
+              .toList(),
+        ),
       );
       await getCurrencies();
       await getExchangeRate();
