@@ -13,12 +13,11 @@ import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_messag
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/attachment_filename_sanitizer.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
@@ -28,6 +27,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required this._getAttachmentUsecase,
     required this._resolveUserIdUsecase,
     required this._createLogAttachmentUsecase,
+    required this._pickImageAttachmentsUsecase,
     required this._exchangeNotificationService,
   }) : super(const ExchangeSupportChatState()) {
     _notificationSubscription = _exchangeNotificationService.messageStream
@@ -40,6 +40,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   final GetSupportChatMessageAttachmentUsecase _getAttachmentUsecase;
   final ResolveSupportChatUserIdUsecase _resolveUserIdUsecase;
   final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
+  final PickImageAttachmentsUsecase _pickImageAttachmentsUsecase;
   final ExchangeNotificationService _exchangeNotificationService;
   StreamSubscription<NotificationMessage>? _notificationSubscription;
 
@@ -108,150 +109,20 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     emit(state.copyWith(newMessageText: text));
   }
 
-  Future<bool> _requestPhotoLibraryPermission() async {
-    if (Platform.isIOS) {
-      final status = await Permission.photos.status;
-      if (status.isGranted) {
-        return true;
-      }
-      if (status.isPermanentlyDenied) {
-        return false;
-      }
-      final requestedStatus = await Permission.photos.request();
-      return requestedStatus.isGranted;
-    } else if (Platform.isAndroid) {
-      final photosStatus = await Permission.photos.status;
-      if (photosStatus.isGranted) {
-        return true;
-      }
-      if (photosStatus.isPermanentlyDenied) {
-        final storageStatus = await Permission.storage.status;
-        if (storageStatus.isGranted) {
-          return true;
-        }
-        if (storageStatus.isPermanentlyDenied) {
-          return false;
-        }
-        final requestedStorageStatus = await Permission.storage.request();
-        return requestedStorageStatus.isGranted;
-      }
-      final requestedStatus = await Permission.photos.request();
-      if (requestedStatus.isGranted) {
-        return true;
-      }
-      if (requestedStatus.isPermanentlyDenied) {
-        final storageStatus = await Permission.storage.status;
-        if (storageStatus.isGranted) {
-          return true;
-        }
-        if (storageStatus.isPermanentlyDenied) {
-          return false;
-        }
-        final requestedStorageStatus = await Permission.storage.request();
-        return requestedStorageStatus.isGranted;
-      }
-      return false;
-    }
-    return true;
-  }
-
   Future<void> addAttachment() async {
-    try {
-      emit(state.copyWith(failure: null));
+    emit(state.copyWith(failure: null));
 
-      if (Platform.isAndroid) {
-        final hasPermission = await _requestPhotoLibraryPermission();
-        if (!hasPermission) {
-          final photosStatus = await Permission.photos.status;
-          final storageStatus = await Permission.storage.status;
-          if (photosStatus.isPermanentlyDenied &&
-              storageStatus.isPermanentlyDenied) {
-            emit(
-              state.copyWith(
-                failure: const PermissionDeniedNeedsSettingsFailure(),
-              ),
-            );
-            return;
-          }
-          emit(state.copyWith(failure: const PermissionDeniedFailure()));
-          return;
-        }
-      }
-
-      final ImagePicker picker = ImagePicker();
-      final List<XFile> images = await picker.pickMultiImage();
-
-      if (images.isEmpty) {
-        return;
-      }
-
-      final newAttachments = <SupportChatMessageAttachment>[];
-
-      for (final image in images) {
-        final bytes = await image.readAsBytes();
-        final fileName = image.name;
-        final extension = fileName.split('.').last.toLowerCase();
-        String fileType;
-
-        switch (extension) {
-          case 'jpg':
-          case 'jpeg':
-            fileType = 'image/jpeg';
-            break;
-          case 'png':
-            fileType = 'image/png';
-            break;
-          case 'gif':
-            fileType = 'image/gif';
-            break;
-          default:
-            fileType = 'image/jpeg';
-        }
-
-        newAttachments.add(
-          SupportChatMessageAttachment(
-            attachmentId:
-                'temp_attachment_${fileName}_${DateTime.now().millisecondsSinceEpoch}',
-            fileName: fileName,
-            fileType: fileType,
-            fileSize: bytes.length,
-            fileData: bytes,
-            createdAt: DateTime.now(),
+    switch (await _pickImageAttachmentsUsecase.execute()) {
+      case Ok(:final value):
+        // An empty list means the user dismissed the picker: nothing to add, and nothing to report.
+        if (value.isEmpty) return;
+        emit(
+          state.copyWith(
+            newMessageAttachments: [...state.newMessageAttachments, ...value],
           ),
         );
-      }
-
-      if (newAttachments.isEmpty) return;
-
-      emit(
-        state.copyWith(
-          newMessageAttachments: [
-            ...state.newMessageAttachments,
-            ...newAttachments,
-          ],
-        ),
-      );
-    } on Exception catch (e, st) {
-      final message = e.toString().toLowerCase();
-      log.warning(
-        'Failed to pick support chat attachments',
-        error: e,
-        trace: st,
-      );
-      if (message.contains('permission') || message.contains('denied')) {
-        emit(
-          state.copyWith(failure: PermissionDeniedNeedsSettingsFailure('$e')),
-        );
-      } else {
-        emit(state.copyWith(failure: PickFilesFailure('$e')));
-      }
-    } catch (e, st) {
-      log.warning(
-        'Failed to pick support chat attachments',
-        error: e,
-        trace: st,
-      );
-      emit(state.copyWith(failure: PickFilesFailure('$e')));
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
     }
   }
 

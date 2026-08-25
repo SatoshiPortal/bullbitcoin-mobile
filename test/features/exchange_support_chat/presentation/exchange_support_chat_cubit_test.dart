@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +26,9 @@ class _MockGetAttachmentUsecase extends Mock
 
 class _MockResolveUserIdUsecase extends Mock
     implements ResolveSupportChatUserIdUsecase {}
+
+class _MockPickImageAttachmentsUsecase extends Mock
+    implements PickImageAttachmentsUsecase {}
 
 class _MockCreateLogAttachmentUsecase extends Mock
     implements CreateLogAttachmentUsecase {}
@@ -65,6 +69,7 @@ void main() {
       getAttachmentUsecase: getAttachmentUsecase,
       resolveUserIdUsecase: _MockResolveUserIdUsecase(),
       createLogAttachmentUsecase: _MockCreateLogAttachmentUsecase(),
+      pickImageAttachmentsUsecase: _MockPickImageAttachmentsUsecase(),
       exchangeNotificationService: notificationService,
     );
   });
