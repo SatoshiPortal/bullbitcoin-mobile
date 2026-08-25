@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -42,6 +43,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -1097,8 +1099,12 @@ class _BottomButtons extends StatelessWidget {
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
-    final hasFinalizedTx = context.select(
-      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
+    final hasExternalSignerResult = context.select(
+      (SendCubit cubit) => cubit.state.hasExternalBitcoinSignerResult,
+    );
+    final isBusy = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction || cubit.state.signingTransaction,
     );
     final isSpMode = context.read<SendCubit>().isSpMode;
     final transactionBusy = context.select(
@@ -1114,7 +1120,7 @@ class _BottomButtons extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
-              !hasFinalizedTx &&
+              !hasExternalSignerResult &&
               !isSpMode) ...[
             BullButton.big(
               label: context.loc.sendAdvancedSettings,
@@ -1132,13 +1138,13 @@ class _BottomButtons extends StatelessWidget {
               outlined: true,
               bgColor: context.appColors.transparent,
               textColor: context.appColors.secondary,
+              disabled: isBusy,
             ),
             const Gap(12),
           ],
-          if (!isSpMode &&
-              wallet != null &&
-              !wallet.signsLocally &&
-              !hasFinalizedTx)
+          if (wallet != null &&
+              wallet.signsRemotely &&
+              !hasExternalSignerResult)
             (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
                 ? const SignLedgerButton()
                 : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
@@ -1157,14 +1163,14 @@ class ConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasFinalizedTx = context.select(
-      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
+    final hasExternalSignerResult = context.select(
+      (SendCubit cubit) => cubit.state.hasExternalBitcoinSignerResult,
     );
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
-    return BullButton.big(
-      label: hasFinalizedTx
+    return BBButton.big(
+      label: hasExternalSignerResult
           ? context.loc.sendBroadcastTransaction
           : context.loc.sendConfirm,
       onPressed: () {
@@ -1234,8 +1240,8 @@ class _OnchainTransactionReview extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
-    final hasFinalizedTx = context.select(
-      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
+    final hasExternalSignerResult = context.select(
+      (SendCubit cubit) => cubit.state.hasExternalBitcoinSignerResult,
     );
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
@@ -1289,7 +1295,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
           note: label,
-          onFeePriorityTap: hasFinalizedTx || isSpMode
+          onFeePriorityTap: hasExternalSignerResult || isSpMode
               ? null
               : () => _showBitcoinFeeOptions(context),
         ),
@@ -2409,6 +2415,10 @@ class ShowPsbtButton extends StatelessWidget {
     final unsignedPsbt = context.select(
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
+    final isBusy = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction || cubit.state.signingTransaction,
+    );
 
     final signerDevice = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
@@ -2416,14 +2426,8 @@ class ShowPsbtButton extends StatelessWidget {
 
     return BullButton.big(
       label: context.loc.sendShowPsbt,
-      onPressed: () {
-        // The PSBT route and the broadcast after signing take the wallet
-        // itself, not the send screen's view of it.
-        final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
-          SendWalletBitcoin(:final wallet) => wallet,
-          _ => null,
-        };
-        context.pushNamed(
+      onPressed: () async {
+        final signerResult = await context.pushNamed<String>(
           PsbtFlowRoutes.show.name,
           extra: (
             psbt: unsignedPsbt,
@@ -2431,9 +2435,15 @@ class ShowPsbtButton extends StatelessWidget {
             wallet: wallet,
           ),
         );
+        if (signerResult != null && context.mounted) {
+          await context.read<SendCubit>().updateBitcoinSignerResult(
+            signerResult,
+          );
+        }
       },
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
+      disabled: isBusy || unsignedPsbt == null,
     );
   }
 }
@@ -2445,6 +2455,10 @@ class SignLedgerButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final unsignedPsbt = context.select(
       (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+    final isBusy = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction || cubit.state.signingTransaction,
     );
 
     final derivationPath = context.select(
@@ -2477,7 +2491,7 @@ class SignLedgerButton extends StatelessWidget {
         if (result != null && context.mounted) {
           final accepted = await context
               .read<SendCubit>()
-              .updateSignedBitcoinTx(result);
+              .updateBitcoinSignerResult(result);
           if (accepted && context.mounted) {
             BullSnackBar.show(
               context,
@@ -2488,6 +2502,7 @@ class SignLedgerButton extends StatelessWidget {
       },
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
+      disabled: isBusy || unsignedPsbt == null,
     );
   }
 }
@@ -2499,6 +2514,10 @@ class SignBitBoxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final unsignedPsbt = context.select(
       (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+    final isBusy = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction || cubit.state.signingTransaction,
     );
 
     final derivationPath = context.select(
@@ -2529,38 +2548,12 @@ class SignBitBoxButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          final String finalizedTx;
-          try {
-            finalizedTx = await _finalizePsbt(result);
-          } catch (_) {
-            if (!context.mounted) return;
-            BullSnackBar.show(
-              context,
-              message: context.loc.sendErrorConfirmationFailed,
-            );
-            return;
-          }
-          if (context.mounted) {
-            await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
-          }
+          await context.read<SendCubit>().updateBitcoinSignerResult(result);
         }
       },
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
+      disabled: isBusy || unsignedPsbt == null,
     );
-  }
-
-  Future<String> _finalizePsbt(String signedPsbt) async {
-    try {
-      if (signedPsbt.startsWith('cHN')) {
-        final psbt = Psbt.fromBase64(signedPsbt);
-        final builder = PsbtBuilder.fromPsbt(psbt);
-        return builder.finalizeAll().toHex();
-      }
-      return signedPsbt;
-    } catch (e, st) {
-      log.warning('Failed to finalize BitBox signed PSBT', error: e, trace: st);
-      Error.throwWithStackTrace(e, st);
-    }
   }
 }

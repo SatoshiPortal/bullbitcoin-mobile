@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:primitives/primitives.dart';
 import 'package:primitives/primitives.dart' as primitives show Network;
@@ -292,7 +294,7 @@ void main() {
           verifySignedTxUsecase: VerifySignedTxUsecase(),
         ),
       ),
-      unsignedPsbt: unsignedPsbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
     );
     addTearDown(cubit.close);
 
@@ -328,7 +330,7 @@ void main() {
           verifySignedTxUsecase: VerifySignedTxUsecase(),
         ),
       ),
-      unsignedPsbt: unsignedPsbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
     );
     addTearDown(cubit.close);
 
@@ -552,6 +554,38 @@ void main() {
           network: app.Network.bitcoinTestnet,
         ),
       ).called(1);
+    });
+  });
+
+  late _MockBroadcastBitcoinTransactionUsecase broadcastUsecase;
+
+  setUp(() {
+    broadcastUsecase = _MockBroadcastBitcoinTransactionUsecase();
+  });
+
+  BroadcastSignedTxCubit buildCubit() => BroadcastSignedTxCubit(
+    broadcastBitcoinTransactionUsecase: broadcastUsecase,
+    request: const BroadcastSignedTxRequest(collectSignerResult: true),
+  );
+
+  group('signer result collection', () {
+    test('stores the signer result for authoritative validation', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.tryParseTransaction('signer-result');
+
+      expect(cubit.state.collectedSignerResult, 'signer-result');
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('collects a non-BBQR signer QR directly', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.onQrScanned('signer-result');
+
+      expect(cubit.state.collectedSignerResult, 'signer-result');
     });
   });
 }

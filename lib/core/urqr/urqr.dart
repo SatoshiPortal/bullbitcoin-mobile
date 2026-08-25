@@ -17,6 +17,9 @@ class UrQrGenerator {
 
     final parts = <String>[];
     while (!encoder.isComplete) {
+      if (parts.length == UrQrReader.maxMultipartParts) {
+        throw UrSequenceLimitExceeded();
+      }
       final part = encoder.nextPart();
       parts.add(part);
     }

@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_nfc_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_qr_page.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -21,21 +22,17 @@ enum BroadcastSignedTxRoute {
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      final (unsignedPsbt, network) = switch (state.extra) {
-        (String psbt, Wallet? wallet) => (psbt, wallet?.network),
-        (psbt: final String psbt, wallet: final Wallet? wallet) => (
-          psbt,
-          wallet?.network,
-        ),
-        String psbt => (psbt, null),
-        _ => (null, null),
+      final extra = state.extra;
+      final request = switch (extra) {
+        BroadcastSignedTxRequest request => request,
+        (String psbt, Wallet? wallet) => BroadcastSignedTxRequest(unsignedPsbt: psbt, network: wallet?.network),
+        (psbt: final String psbt, wallet: final Wallet? wallet) => BroadcastSignedTxRequest(unsignedPsbt: psbt, network: wallet?.network),
+        String psbt => BroadcastSignedTxRequest(unsignedPsbt: psbt),
+        _ => const BroadcastSignedTxRequest(),
       };
 
       return BlocProvider(
-        create: (_) => locator<BroadcastSignedTxCubit>(
-          param1: unsignedPsbt,
-          param2: network,
-        ),
+        create: (_) => locator<BroadcastSignedTxCubit>(param1: request),
         child: child,
       );
     },
@@ -51,8 +48,12 @@ class BroadcastSignedTxRouter {
             builder: (context, state) =>
                 BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
                   listenWhen: (previous, state) =>
-                      previous.transaction == null && state.transaction != null,
-                  listener: (context, state) => context.pop(),
+                      (previous.transaction == null &&
+                          state.transaction != null) ||
+                      (previous.collectedSignerResult == null &&
+                          state.collectedSignerResult != null),
+                  listener: (context, state) =>
+                      context.pop(state.collectedSignerResult),
                   child: const ScanQrPage(),
                 ),
           ),

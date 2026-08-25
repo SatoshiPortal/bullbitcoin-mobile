@@ -6376,9 +6376,18 @@
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
   },
-  "psbtFlowDone": "Ho gaya",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
+  "psbtFlowError": "Error: {error}",
+  "@psbtFlowError": {
+    "description": "Error message in psbt flow",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "Dikhane ke liye koi parts nahi hain",
+  "@psbtFlowNoPartsToDisplay": {
+    "description": "Message when there are no QR code parts to show"
   },
   "psbtFlowPartProgress": "Part {current} of {total}",
   "@psbtFlowPartProgress": {

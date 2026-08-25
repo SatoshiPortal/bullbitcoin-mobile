@@ -26,6 +26,10 @@ final class _FakeBitcoinSigningPort implements BitcoinSigningPort {
   }
 
   @override
+  Future<Result<({String psbt, bool isFinalized}), BitcoinSigningFailure>>
+  finalizePsbt(String psbt) => throw UnimplementedError();
+
+  @override
   Future<Result<BitcoinWalletPolicy, BitcoinSigningFailure>> getPolicy({
     required String walletId,
   }) => throw UnimplementedError();
