@@ -30,6 +30,26 @@ class Bip32Derivation {
     return root.toBase58();
   }
 
+  static String deriveXpub({
+    required Uint8List seedBytes,
+    required String derivationPath,
+    required Network network,
+  }) {
+    if (!network.isBitcoin) {
+      throw ArgumentError.value(network, 'network', 'Must be Bitcoin');
+    }
+
+    final testnet = bip32.NetworkType(
+      wif: 0x80,
+      bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
+    );
+    final root = bip32.Bip32Keys.fromSeed(
+      seedBytes,
+      network: network.isTestnet ? testnet : null,
+    );
+    return root.derivePath(_normalizePath(derivationPath)).neutered.toBase58();
+  }
+
   static bip32.Bip32Keys getBip32Xpub(String xpub) {
     final decoded = base58.decode(xpub);
     final keyBytes = decoded.sublist(4); // Remove xpub version bytes
