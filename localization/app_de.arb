@@ -1103,7 +1103,6 @@
   "exchangeDcaFrequencyDay": "Tag",
   "payBumpFee": "Gebühren erhöhen",
   "bitboxActionImportWalletProcessingSubtext": "Ihre Watch-Only-Wallet wird eingerichtet…",
-  "psbtFlowDone": "Ich bin fertig",
   "exchangeHomeDepositButton": "Einzahlen",
   "testBackupRecoverWallet": "Wallet wiederherstellen",
   "sendEstimatedDelivery": "Geschätzte Ankunft: ~",

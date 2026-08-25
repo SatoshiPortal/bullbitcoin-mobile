@@ -2988,10 +2988,6 @@
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
   },
-  "psbtFlowDone": "Έχω κάνει",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "sendEstimatedDelivery": "Εκτιμώμενη παράδοση - ",
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"

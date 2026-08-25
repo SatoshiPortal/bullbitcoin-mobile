@@ -8145,10 +8145,6 @@
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
   },
-  "psbtFlowDone": "I'm done",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "psbtFlowSignViaNfc": "Sign via NFC",
   "@psbtFlowSignViaNfc": {
     "description": "Button to send a PSBT to a hardware signer over NFC"
@@ -15691,9 +15687,6 @@
       }
     }
   },
-  "@sendPolicyHashPreimage": {
-    "description": "Description of a Miniscript hashlock condition"
-  },
   "settingsSearchSigningKeyExportKeywords": "extended public key|xpub|descriptor key|wallet signer|multisig signer",
   "@walletDetailsNestedSegwitP2wsh": {
     "description": "Address type label for a nested SegWit script descriptor"
@@ -15845,16 +15838,7 @@
   "@walletDetailsLoadingLabel": {
     "description": "Status shown while wallet details are loading"
   },
-  "sendPolicySignWith": "Sign with {signer}",
   "signingKeyExportPrivacyNotice": "Anyone with this key can view the addresses and transaction history derived from it, but cannot spend your bitcoin.",
-  "@sendPolicySignWith": {
-    "description": "Description of a signature condition in a Miniscript path",
-    "placeholders": {
-      "signer": {
-        "type": "String"
-      }
-    }
-  },
   "@signingKeyExportAccount": {
     "description": "Label for the BIP48 account number used when exporting a signing key"
   },
@@ -15863,6 +15847,255 @@
   },
   "walletDetailsUnassignedSignerLabel": "Unassigned",
   "walletDetailsUnavailableLabel": "Unavailable",
-  "sendPolicyHashPreimage": "Provide hash preimage",
-  "walletDetailsNativeSegwitP2wsh": "Native SegWit (P2WSH)"
+  "walletDetailsNativeSegwitP2wsh": "Native SegWit (P2WSH)",
+  "psbtSigningReviewTitle": "Review transaction",
+  "@psbtSigningChooseFile": {
+    "description": "Button label for importing a PSBT file."
+  },
+  "@walletPolicyWaitBlocks": {
+    "description": "Description of a relative block timelock condition",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@psbtSigningTimingUnverified": {
+    "description": "Warning shown when timelock maturity cannot be verified for the PSBT inputs."
+  },
+  "psbtSigningSignWithDevice": "Sign with this device",
+  "psbtSigningNotMineableForBlocks": "Bull can sign now, but this transaction cannot be mined for {count, plural, =1{1 more block} other{{count} more blocks}}.",
+  "@psbtSigningTitle": {
+    "description": "Title for the external PSBT signing flow."
+  },
+  "psbtSigningFrozenUtxo": "This PSBT spends a frozen coin. Unfreeze it before signing.",
+  "@psbtSigningWalletUnavailable": {
+    "description": "Error shown when the selected wallet cannot sign PSBTs."
+  },
+  "@psbtSigningEdit": {
+    "description": "Button label for starting another standalone PSBT signing flow."
+  },
+  "psbtSigningShareFile": "Share PSBT file",
+  "@psbtSigningNotMineableForBlocks": {
+    "description": "PSBT warning for unsatisfied relative block sequences.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@psbtSigningNotMineableBeforeTime": {
+    "description": "PSBT warning for an unsatisfied time-based lock.",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "walletPolicyConditionsRequired": "{threshold} of {count} conditions required",
+  "@psbtFlowSharePsbt": {
+    "description": "Button label for sharing an unsigned PSBT"
+  },
+  "psbtSigningInvalidPsbt": "This is not a valid PSBT.",
+  "@psbtSigningQrDescription": {
+    "description": "Instructions for scanning the signed PSBT QR code."
+  },
+  "@psbtFlowCopyPsbt": {
+    "description": "Button label for copying an unsigned PSBT to the clipboard"
+  },
+  "@psbtSigningWalletMismatch": {
+    "description": "Error shown when a PSBT does not belong to the selected wallet."
+  },
+  "importSignedPsbtPasteHint": "Paste a signed PSBT",
+  "@psbtSigningNonAddressOutput": {
+    "description": "Label for a transaction output that has no displayable address."
+  },
+  "@psbtSigningReviewTitle": {
+    "description": "Heading for the external PSBT transaction review."
+  },
+  "@walletPolicyAfterTimestamp": {
+    "description": "Description of an absolute timestamp condition",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@psbtSigningInvalidPsbt": {
+    "description": "Error shown when imported text is not a valid PSBT."
+  },
+  "@psbtSigningSignWithDevice": {
+    "description": "Button label for signing the PSBT with this device."
+  },
+  "@psbtSigningQrTitle": {
+    "description": "Title of the signed PSBT QR screen."
+  },
+  "psbtSigningEdit": "Sign another PSBT",
+  "walletPolicyWaitDays": "Wait {count, plural, =1{1 day} other{{count} days}}",
+  "psbtSigningIntro": "Import a PSBT. Bull verifies its inputs and wallet-owned outputs before signing.",
+  "@psbtSigningShareFile": {
+    "description": "Button label for sharing a signed PSBT file."
+  },
+  "@psbtSigningPasteHint": {
+    "description": "Placeholder for the PSBT text input."
+  },
+  "psbtSigningTitle": "Sign a PSBT",
+  "@psbtSigningMissingUtxo": {
+    "description": "Error shown when a PSBT lacks input data required for safe review."
+  },
+  "walletPolicyAfterTimestamp": "After timestamp {timestamp}",
+  "@psbtSigningMissingLocalKey": {
+    "description": "Error shown when a PSBT has no key origin for the local signer."
+  },
+  "psbtSigningPasteHint": "Paste a PSBT",
+  "@walletPolicyConditionsRequired": {
+    "description": "Explanation of a spending-condition threshold.",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@importSignedPsbtTitle": {
+    "description": "Page title when collecting a signed PSBT from another signer"
+  },
+  "@psbtSigningPartialDescription": {
+    "description": "Instructions for sharing a partially signed PSBT."
+  },
+  "@psbtSigningNoSignatureAdded": {
+    "description": "Error shown when signing adds no new local signature."
+  },
+  "@walletPolicyThisDevice": {
+    "description": "Name for the mobile wallet signer in a spending path"
+  },
+  "psbtSigningMissingUtxo": "The PSBT is missing the input data needed for safe review.",
+  "@psbtSigningFrozenUtxo": {
+    "description": "Shown when standalone PSBT signing is blocked because an input coin is frozen"
+  },
+  "importSignedPsbtTitle": "Import signed PSBT",
+  "psbtSigningWalletMismatch": "This PSBT does not belong to the selected wallet.",
+  "@walletPolicyWaitMinutes": {
+    "description": "Description of a relative time timelock measured in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "psbtSigningTimingUnverified": "Bull can sign now, but could not verify when this transaction can be mined.",
+  "psbtSigningWalletUnavailable": "This wallet is not available for PSBT signing.",
+  "walletPolicyWaitHours": "Wait {count, plural, =1{1 hour} other{{count} hours}}",
+  "psbtSigningNotMineableBeforeTime": "Bull can sign now, but this transaction cannot be mined before {timestamp}.",
+  "@psbtSigningSignedWithDeviceTitle": {
+    "description": "Title shown after this device signs the PSBT."
+  },
+  "psbtSigningNotMineableBeforeBlock": "Bull can sign now, but this transaction cannot be mined before block {height}.",
+  "psbtSigningWalletOutput": "Back to this wallet",
+  "@walletPolicyAfterBlock": {
+    "description": "Description of an absolute block-height condition",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "walletPolicyThisDevice": "this device",
+  "@psbtSigningCopyPsbt": {
+    "description": "Button label for copying a signed PSBT."
+  },
+  "@psbtSigningFinalDescription": {
+    "description": "Instructions for sharing a fully signed PSBT."
+  },
+  "@walletPolicyWaitHours": {
+    "description": "Description of a relative time timelock measured in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@importSignedPsbtPasteHint": {
+    "description": "Input hint when collecting a signed PSBT from another signer"
+  },
+  "psbtSigningPartialDescription": "Share this signed PSBT to continue.",
+  "walletPolicyWaitMinutes": "Wait {count, plural, =1{1 minute} other{{count} minutes}}",
+  "copiedToClipboardMessage": "Copied to clipboard",
+  "walletPolicyAfterBlock": "After block {height}",
+  "walletPolicyWaitBlocks": "Wait {count, plural, =1{1 block} other{{count} blocks}}",
+  "psbtSigningFinalDescription": "This PSBT is fully signed and ready to share.",
+  "walletPolicyHashPreimage": "Provide hash preimage",
+  "@walletPolicyWaitDays": {
+    "description": "Description of a relative time timelock measured in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "psbtSigningChooseFile": "Choose file",
+  "@psbtFlowQrTooLarge": {
+    "description": "Message shown when a PSBT exceeds the animated UR QR transport limit"
+  },
+  "@psbtSigningAuthorization": {
+    "description": "Label for the transaction authorization requirements."
+  },
+  "psbtSigningNonAddressOutput": "Non-address output",
+  "psbtSigningQrDescription": "Scan this QR to import the signed PSBT.",
+  "psbtSigningMissingLocalKey": "This PSBT does not include a key origin for Bull on this device.",
+  "psbtSigningSignedWithDeviceTitle": "PSBT signed with this device",
+  "psbtFlowQrTooLarge": "This PSBT is too large for QR. Use copy or file sharing instead.",
+  "@psbtSigningNotMineableBeforeBlock": {
+    "description": "PSBT warning for an unsatisfied absolute block locktime.",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "psbtSigningFileReadFailed": "Bull could not read this PSBT file.",
+  "psbtSigningShowQr": "Show QR",
+  "@psbtSigningWalletOutput": {
+    "description": "Label for an output returning funds to the selected wallet."
+  },
+  "@psbtSigningUnsupportedSighash": {
+    "description": "Error shown when a PSBT uses an unsupported signature hash mode."
+  },
+  "psbtSigningUnsupportedSighash": "This PSBT uses a signing mode Bull does not support.",
+  "@walletPolicySignWith": {
+    "description": "Description of a signature condition in a Miniscript path",
+    "placeholders": {
+      "signer": {
+        "type": "String"
+      }
+    }
+  },
+  "@walletPolicyHashPreimage": {
+    "description": "Description of a Miniscript hashlock condition"
+  },
+  "psbtFlowCopyPsbt": "Copy PSBT",
+  "psbtSigningQrTitle": "Signed PSBT",
+  "@psbtSigningIntro": {
+    "description": "Introduction to importing and safely reviewing a PSBT."
+  },
+  "psbtSigningAuthorization": "Authorization",
+  "psbtSigningNoSignatureAdded": "Bull could not add a new signature to this PSBT.",
+  "psbtSigningCopyPsbt": "Copy signed PSBT",
+  "psbtSigningScanQr": "Scan QR",
+  "psbtFlowSharePsbt": "Share PSBT",
+  "@psbtSigningFileReadFailed": {
+    "description": "Error shown when an imported PSBT file cannot be read."
+  },
+  "@psbtSigningScanQr": {
+    "description": "Button label for scanning a PSBT QR code."
+  },
+  "@psbtSigningShowQr": {
+    "description": "Button label for displaying a signed PSBT as a QR code."
+  },
+  "walletPolicySignWith": "Sign with {signer}",
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  }
 }
