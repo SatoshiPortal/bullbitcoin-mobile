@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -117,13 +118,19 @@ Wallet _wallet({
 }) => Wallet(
   origin: id,
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: signer,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: signer,
-  signerDevice: null,
+  publicDescriptor: '',
   balanceSat: BigInt.from(balanceSat),
   isDefault: isDefault,
 );

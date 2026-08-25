@@ -49,7 +49,9 @@ class TestWalletBackupBloc
     if (wallet == null) {
       throw Exception('No wallet selected');
     }
-    return _getMnemonicFromFingerprintUsecase.execute(wallet.masterFingerprint);
+    return _getMnemonicFromFingerprintUsecase.execute(
+      wallet.localMasterFingerprints.single,
+    );
   }
 
   Future<void> _onLoadWallets(
@@ -100,7 +102,7 @@ class TestWalletBackupBloc
       }
 
       final isCorrect = await _verifyPhysicalBackupUsecase.execute(
-        fingerprint: wallet.masterFingerprint,
+        fingerprint: wallet.localMasterFingerprints.single,
         mnemonic: event.reorderedWords,
       );
 

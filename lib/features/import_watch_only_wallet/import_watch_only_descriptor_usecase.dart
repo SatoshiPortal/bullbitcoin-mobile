@@ -1,38 +1,36 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 
 class ImportWatchOnlyDescriptorUsecase {
-  final WalletRepository _wallet;
+  final BitcoinDescriptorPort _descriptorPort;
 
-  ImportWatchOnlyDescriptorUsecase({required WalletRepository walletRepository})
-    : _wallet = walletRepository;
+  ImportWatchOnlyDescriptorUsecase(this._descriptorPort);
 
-  /// Wraps the still-throwing core [WalletRepository]; this use-case is the
-  /// boundary that catches the raw rejection, logs it, and maps it to a
+  /// Maps failures from the core descriptor boundary to the feature's
   /// sanitized [ImportWatchOnlyFailure].
   @useResult
   Future<Result<Wallet, ImportWatchOnlyFailure>> execute({
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
   }) async {
     try {
-      final wallet = await _wallet.importDescriptor(
-        watchOnlyDescriptor: watchOnlyDescriptor,
+      final wallet = await _descriptorPort.importDescriptor(
+        descriptor: watchOnlyDescriptor.descriptor,
+        network: watchOnlyDescriptor.network,
+        label: watchOnlyDescriptor.label,
+        signers: watchOnlyDescriptor.signers,
       );
       return Ok(wallet);
-    } catch (e, st) {
-      // Keep the raw descriptor/BDK rejection reason in the logs; the UI shows
-      // a generic localized message. A rejected descriptor is an expected
-      // user-facing condition (malformed input), so this is a warning.
-      log.warning(
-        'Failed to import watch-only descriptor',
-        error: e,
-        trace: st,
-      );
+    } on UnsupportedTaprootDescriptorException catch (_, st) {
+      log.warning('Taproot descriptor import is not supported', trace: st);
+      return const Err(TaprootUnsupportedFailure());
+    } on Exception catch (_, st) {
+      // Descriptor parser errors can contain key material.
+      log.warning('Failed to import watch-only descriptor', trace: st);
       return const Err(ImportFailedFailure());
     }
   }

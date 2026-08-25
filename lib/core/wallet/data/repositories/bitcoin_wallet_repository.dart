@@ -1,18 +1,20 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
@@ -53,8 +55,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
     final wallet =
         WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
+              descriptor: metadata.publicDescriptor,
               isTestnet: metadata.isTestnet,
               id: metadata.id,
             )
@@ -147,8 +148,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
     final wallet =
         WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
+              descriptor: metadata.publicDescriptor,
               isTestnet: metadata.isTestnet,
               id: metadata.id,
             )
@@ -176,8 +176,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
     final wallet =
         WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
+              descriptor: metadata.publicDescriptor,
               isTestnet: metadata.isTestnet,
               id: metadata.id,
             )
@@ -234,8 +233,26 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
+    final scriptType = metadata.inferredScriptType;
+    if (metadata.signers.length != 1 || scriptType == null) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final signer = metadata.signers.single;
+    if (signer.descriptorKeys.length != 1) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final descriptorKey = signer.descriptorKeys.single;
+    if (signer.signer != Signer.local ||
+        scriptType.standardAccount(
+              descriptorKey.derivationPath,
+              metadata.network,
+            ) !=
+            0 ||
+        descriptorKey.descriptorPath != standardSingleSignatureDescriptorPath) {
+      throw StateError('Standard local single-signature wallet required');
+    }
     final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
+        await _seed.get(descriptorKey.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
     final wallet =
@@ -243,7 +260,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
               id: metadata.id,
               mnemonic: mnemonic,
               passphrase: seed.passphrase,
-              scriptType: metadata.scriptType,
+              scriptType: scriptType,
               isTestnet: metadata.isTestnet,
             )
             as PrivateBdkWalletModel;

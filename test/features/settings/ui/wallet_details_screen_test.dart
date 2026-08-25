@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -17,14 +18,19 @@ Wallet _wallet({required bool isDefault}) => Wallet(
   label: 'Savings',
   network: Network.bitcoinMainnet,
   isDefault: isDefault,
-  masterFingerprint: 'abcd1234',
-  xpubFingerprint: 'abcd1234',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'abcd1234',
+      xpubFingerprint: 'abcd1234',
+      xpub: 'xpub-test',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: '/<0;1>/*',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'xpub-test',
-  externalPublicDescriptor: 'wpkh(xpub-test/0/*)',
-  internalPublicDescriptor: 'wpkh(xpub-test/1/*)',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub-test/<0;1>/*)',
   balanceSat: BigInt.zero,
 );
 
