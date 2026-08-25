@@ -15671,5 +15671,198 @@
   "@importWatchOnlyChangePathDescription": {
     "description": "Explains the change branch inferred from a conventional external descriptor"
   },
-  "importWatchOnlyChangePathDescription": "This descriptor specifies receive addresses on /0/*. Bull will use /1/* for change."
+  "importWatchOnlyChangePathDescription": "This descriptor specifies receive addresses on /0/*. Bull will use /1/* for change.",
+  "@walletDetailsCompleteConditions": {
+    "description": "Explanation for a threshold of spending conditions",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsAbsoluteTimeCondition": {
+    "description": "Absolute timestamp timelock condition",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendPolicyHashPreimage": {
+    "description": "Description of a Miniscript hashlock condition"
+  },
+  "settingsSearchSigningKeyExportKeywords": "extended public key|xpub|descriptor key|wallet signer|multisig signer",
+  "@walletDetailsNestedSegwitP2wsh": {
+    "description": "Address type label for a nested SegWit script descriptor"
+  },
+  "@walletDetailsNativeSegwitP2wpkh": {
+    "description": "Address type label for a native SegWit single-key descriptor"
+  },
+  "@walletDetailsSignersLabel": {
+    "description": "Heading for wallet signer details"
+  },
+  "@walletDetailsViewButton": {
+    "description": "Button label for opening more wallet details"
+  },
+  "walletDetailsAvailableSpendingPaths": "Available spending paths",
+  "@walletDetailsUnavailableLabel": {
+    "description": "Status shown when wallet details cannot be loaded"
+  },
+  "@walletDetailsSpendingConditionsLabel": {
+    "description": "Title for the readable wallet spending policy"
+  },
+  "@walletDetailsNativeSegwitP2wsh": {
+    "description": "Address type label for a native SegWit script descriptor"
+  },
+  "@walletDetailsLegacyP2pkh": {
+    "description": "Address type label for a legacy single-key descriptor"
+  },
+  "walletDetailsSignersLabel": "Signers",
+  "@walletDetailsAbsoluteBlockCondition": {
+    "description": "Absolute block timelock condition",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsLegacyP2pkh": "Legacy (P2PKH)",
+  "@walletDetailsExternalSignerLabel": {
+    "description": "Label for a signer controlled outside Bull Wallet"
+  },
+  "walletDetailsCompleteConditions": "Complete {threshold} of these {count} conditions",
+  "walletDetailsRelativeBlocksCondition": "This condition becomes available for each coin {count, plural, =1{1 block} other{{count} blocks}} after it is confirmed",
+  "@walletDetailsRelativeMinutesCondition": {
+    "description": "Relative minute timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsNestedSegwitP2wpkh": {
+    "description": "Address type label for a nested SegWit single-key descriptor"
+  },
+  "@walletDetailsAvailableSpendingPaths": {
+    "description": "Label introducing the wallet spending paths"
+  },
+  "walletDetailsAllConditionsRequired": "All of these conditions are required",
+  "signingKeyExportDescription": "Use this key to add Bull Wallet as a signer to another wallet.",
+  "@walletDetailsRelativeBlocksCondition": {
+    "description": "Relative block timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsNestedSegwitP2wpkh": "Nested SegWit (P2SH-P2WPKH)",
+  "@signingKeyExportDescription": {
+    "description": "Explains how the exported signing key can be used"
+  },
+  "@walletDetailsSpendingPathTitle": {
+    "description": "Heading for a numbered wallet spending path",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletPolicySignaturesRequired": {
+    "description": "Explanation of a multisig signature threshold.",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsRelativeHoursCondition": {
+    "description": "Relative hour timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsSpendingPathTitle": "Spending path {index}",
+  "signingKeyExportTitle": "Use Bull as signer",
+  "@walletDetailsRelativeDaysCondition": {
+    "description": "Relative day timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsAbsoluteTimeCondition": "This condition becomes available after {timestamp}",
+  "walletDetailsRelativeMinutesCondition": "This condition becomes available for each coin {count, plural, =1{1 minute} other{{count} minutes}} after it is confirmed",
+  "@walletDetailsUnassignedSignerLabel": {
+    "description": "Label for a wallet key with no assigned signer type"
+  },
+  "walletDetailsKeyLabel": "Key {index}",
+  "@signingKeyExportAccountHelp": {
+    "description": "Explains how to avoid reusing an exported signing key across wallets"
+  },
+  "walletDetailsViewButton": "View",
+  "@signingKeyExportPrivacyNotice": {
+    "description": "Privacy notice shown with an exported extended public key"
+  },
+  "walletDetailsRelativeDaysCondition": "This condition becomes available for each coin {count, plural, =1{1 day} other{{count} days}} after it is confirmed",
+  "walletDetailsLegacyP2sh": "Legacy (P2SH)",
+  "signingKeyExportAccountHelp": "Use a different account number when you need a separate key for another wallet.",
+  "signingKeyExportAccount": "Account",
+  "@walletDetailsKeyLabel": {
+    "description": "Heading for one of multiple keys belonging to a signer",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsLegacyP2sh": {
+    "description": "Address type label for a legacy script descriptor"
+  },
+  "walletDetailsRelativeHoursCondition": "This condition becomes available for each coin {count, plural, =1{1 hour} other{{count} hours}} after it is confirmed",
+  "walletDetailsExternalSignerLabel": "External signer",
+  "walletPolicySignaturesRequired": "{threshold} of {count} signatures required",
+  "walletDetailsLoadingLabel": "Loading...",
+  "walletDetailsNestedSegwitP2wsh": "Nested SegWit (P2SH-P2WSH)",
+  "@settingsSearchSigningKeyExportKeywords": {
+    "description": "Search aliases for exporting Bull signing keys"
+  },
+  "walletDetailsAbsoluteBlockCondition": "This condition becomes available at block {height}",
+  "@signingKeyExportTitle": {
+    "description": "Title for exporting the Bull Wallet signing key"
+  },
+  "walletDetailsSpendingConditionsLabel": "Spending conditions",
+  "walletDetailsNativeSegwitP2wpkh": "Native SegWit (P2WPKH)",
+  "@walletDetailsLoadingLabel": {
+    "description": "Status shown while wallet details are loading"
+  },
+  "sendPolicySignWith": "Sign with {signer}",
+  "signingKeyExportPrivacyNotice": "Anyone with this key can view the addresses and transaction history derived from it, but cannot spend your bitcoin.",
+  "@sendPolicySignWith": {
+    "description": "Description of a signature condition in a Miniscript path",
+    "placeholders": {
+      "signer": {
+        "type": "String"
+      }
+    }
+  },
+  "@signingKeyExportAccount": {
+    "description": "Label for the BIP48 account number used when exporting a signing key"
+  },
+  "@walletDetailsAllConditionsRequired": {
+    "description": "Explanation for a spending path requiring every listed condition"
+  },
+  "walletDetailsUnassignedSignerLabel": "Unassigned",
+  "walletDetailsUnavailableLabel": "Unavailable",
+  "sendPolicyHashPreimage": "Provide hash preimage",
+  "walletDetailsNativeSegwitP2wsh": "Native SegWit (P2WSH)"
 }
