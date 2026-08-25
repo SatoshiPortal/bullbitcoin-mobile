@@ -1325,7 +1325,6 @@
   "startBackupButton": "বেকআপ আৰম্ভ কৰক",
   "exportVaultButton": "Vault ৰপ্তানি কৰক",
   "exportingVaultButton": "ৰপ্তানি হৈ আছে...",
-  "viewVaultKeyButton": "Vault Key চাওক",
   "revealingVaultKeyButton": "প্ৰকাশ কৰা হৈ আছে...",
   "errorLabel": "ত্ৰুটি",
   "backupKeyTitle": "বেকআপ Key",

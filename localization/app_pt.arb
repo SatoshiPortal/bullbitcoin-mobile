@@ -2404,7 +2404,6 @@
   "submitButton": "Submeter-me",
   "bitboxScreenTryAgainButton": "Tente novamente",
   "dcaConfirmTitle": "Confirmação Comprar",
-  "viewVaultKeyButton": "Ver o Vault Chaveiro",
   "recoverbullPasswordMismatch": "As senhas não coincidem",
   "fundExchangeCrIbanUsdTransferCodeWarning": "Você deve adicionar o código de transferência como \"mensagem\" ou \"razão\" ou \"descrição\" ao fazer o pagamento. Se você esquecer de incluir este código, seu pagamento pode ser rejeitado.",
   "sendAdvancedSettings": "Configurações avançadas",

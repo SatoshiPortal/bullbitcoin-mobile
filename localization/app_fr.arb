@@ -1020,7 +1020,6 @@
   "startBackupButton": "Démarrer la sauvegarde",
   "exportVaultButton": "Exporter le coffre-fort",
   "exportingVaultButton": "Exportation...",
-  "viewVaultKeyButton": "Afficher la clé du coffre-fort",
   "revealingVaultKeyButton": "Révélation...",
   "errorLabel": "Erreur",
   "backupKeyTitle": "Clé de sauvegarde",

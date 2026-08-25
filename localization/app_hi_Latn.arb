@@ -3316,10 +3316,6 @@
   "@exportingVaultButton": {
     "description": "Button label shown while exporting vault"
   },
-  "viewVaultKeyButton": "Vault Key Dekho",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "revealingVaultKeyButton": "Dikha Raha Hai...",
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"

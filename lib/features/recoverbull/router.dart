@@ -12,10 +12,15 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_u
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/has_current_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_tor/tor.dart';
@@ -35,6 +40,15 @@ class RecoverBullFlowsExtra {
   RecoverBullFlowsExtra({required this.flow, required this.vault});
 }
 
+void openRecoverBullFlow(
+  BuildContext context, {
+  required RecoverBullFlow flow,
+  EncryptedVault? vault,
+}) => context.goNamed(
+  RecoverBullRoute.recoverbullFlows.name,
+  extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
+);
+
 class RecoverBullRouter {
   static final route = GoRoute(
     name: RecoverBullRoute.recoverbullFlows.name,
@@ -42,39 +56,55 @@ class RecoverBullRouter {
     builder: (context, state) {
       final RecoverBullFlowsExtra extra = state.extra! as RecoverBullFlowsExtra;
 
-      return BlocProvider(
-        create: (context) => RecoverBullBloc(
-          flow: extra.flow,
-          preSelectedVault: extra.vault,
-          pickVaultUsecase: locator<PickVaultUsecase>(),
-          saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
-          createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
-          storeVaultKeyIntoServerUsecase:
-              locator<StoreVaultKeyIntoServerUsecase>(),
-          checkKeyServerConnectionUsecase:
-              locator<CheckServerConnectionUsecase>(),
-          // Composed here rather than registered: this feature has no locator
-          // of its own, and the use case is a thin retry policy over a core
-          // use case that is registered.
-          connectToKeyServerUsecase: ConnectToKeyServerUsecase(
-            locator<CheckServerConnectionUsecase>(),
-            locator<EnsureRecoverBullTorSessionUsecase>(),
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => RecoverBullBloc(
+              flow: extra.flow,
+              preSelectedVault: extra.vault,
+              pickVaultUsecase: locator<PickVaultUsecase>(),
+              saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
+              createEncryptedVaultUsecase:
+                  locator<CreateEncryptedVaultUsecase>(),
+              storeVaultKeyIntoServerUsecase:
+                  locator<StoreVaultKeyIntoServerUsecase>(),
+              checkKeyServerConnectionUsecase:
+                  locator<CheckServerConnectionUsecase>(),
+              // Composed here rather than registered: this feature has no
+              // locator of its own, and the use case is a thin retry policy
+              // over registered core use cases.
+              connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+                locator<CheckServerConnectionUsecase>(),
+                locator<EnsureRecoverBullTorSessionUsecase>(),
+              ),
+              fetchVaultKeyFromServerUsecase:
+                  locator<FetchVaultKeyFromServerUsecase>(),
+              decryptVaultUsecase: locator<DecryptVaultUsecase>(),
+              restoreVaultUsecase: locator<RestoreVaultUsecase>(),
+              connectToGoogleDriveUsecase:
+                  locator<ConnectToGoogleDriveUsecase>(),
+              saveToGoogleDriveUsecase:
+                  locator<SaveVaultToGoogleDriveUsecase>(),
+              ensureRecoverBullTorSessionUsecase:
+                  locator<EnsureRecoverBullTorSessionUsecase>(),
+              walletBloc: context.read(),
+              fetchLatestGoogleDriveVaultUsecase:
+                  locator<FetchLatestGoogleDriveVaultUsecase>(),
+              updateLatestEncryptedVaultTestUsecase:
+                  locator<UpdateLatestEncryptedVaultTestUsecase>(),
+              watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
+            ),
           ),
-          fetchVaultKeyFromServerUsecase:
-              locator<FetchVaultKeyFromServerUsecase>(),
-          decryptVaultUsecase: locator<DecryptVaultUsecase>(),
-          restoreVaultUsecase: locator<RestoreVaultUsecase>(),
-          connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
-          saveToGoogleDriveUsecase: locator<SaveVaultToGoogleDriveUsecase>(),
-          ensureRecoverBullTorSessionUsecase:
-              locator<EnsureRecoverBullTorSessionUsecase>(),
-          walletBloc: context.read(),
-          fetchLatestGoogleDriveVaultUsecase:
-              locator<FetchLatestGoogleDriveVaultUsecase>(),
-          updateLatestEncryptedVaultTestUsecase:
-              locator<UpdateLatestEncryptedVaultTestUsecase>(),
-          watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
-        ),
+          if (extra.flow == RecoverBullFlow.settings)
+            BlocProvider(
+              create: (_) => RecoverBullSettingsCubit(
+                HasCurrentEncryptedBackupUsecase(
+                  locator<GetWalletsUsecase>(),
+                  locator<GetSettingsUsecase>(),
+                ),
+              )..load(),
+            ),
+        ],
         child: const RecoverBullFlowNavigator(),
       );
     },

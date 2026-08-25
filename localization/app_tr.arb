@@ -7395,10 +7395,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "Manzara Anahtar Anahtar Anahtar Anahtar",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "Şifreler eşleşmez",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"

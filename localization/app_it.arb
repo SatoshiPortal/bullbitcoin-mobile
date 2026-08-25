@@ -2422,7 +2422,6 @@
   "submitButton": "Inviare",
   "bitboxScreenTryAgainButton": "Prova ancora",
   "dcaConfirmTitle": "Confermare il Ricorso Comprare",
-  "viewVaultKeyButton": "Visualizza Vault chiave",
   "recoverbullPasswordMismatch": "Le password non corrispondono",
   "fundExchangeCrIbanUsdTransferCodeWarning": "È necessario aggiungere il codice di trasferimento come \"message\" o \"reason\" o \"descrizione\" quando si effettua il pagamento. Se si dimentica di includere questo codice, il pagamento può essere respinto.",
   "sendAdvancedSettings": "Impostazioni avanzate",

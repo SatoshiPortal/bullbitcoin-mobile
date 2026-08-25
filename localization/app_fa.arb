@@ -7200,10 +7200,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "مشاهده Vault کلید کلیدی",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "پسوردها مطابقت ندارند",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"

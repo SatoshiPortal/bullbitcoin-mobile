@@ -11201,10 +11201,6 @@
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
   },
-  "viewVaultKeyButton": "Ver o Vault Chaveiro",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullContinue": "Continue",
   "@recoverbullContinue": {
     "description": "Button text to proceed to next step"

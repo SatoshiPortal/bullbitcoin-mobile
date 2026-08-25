@@ -972,7 +972,6 @@
   "startBackupButton": "Початок резервного копіювання",
   "exportVaultButton": "Експорт Vault",
   "exportingVaultButton": "Експорт.",
-  "viewVaultKeyButton": "Переглянути Vault Головна",
   "revealingVaultKeyButton": "Відновлення ...",
   "errorLabel": "Помилка",
   "backupKeyTitle": "Зворотній зв'язок",

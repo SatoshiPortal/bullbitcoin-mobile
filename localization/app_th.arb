@@ -7453,10 +7453,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "มุมมอง คีย์",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "รหัสผ่านไม่ตรงกับรหัสผ่าน",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"

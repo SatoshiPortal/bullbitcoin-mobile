@@ -4319,10 +4319,6 @@
   "@exportingVaultButton": {
     "description": "Button label shown while exporting vault"
   },
-  "viewVaultKeyButton": "View Vault Key",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "revealingVaultKeyButton": "Revealing...",
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"

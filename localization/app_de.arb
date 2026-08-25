@@ -2367,7 +2367,6 @@
   "submitButton": "Absenden",
   "bitboxScreenTryAgainButton": "Erneut versuchen",
   "dcaConfirmTitle": "Wiederkehrenden Kauf bestätigen",
-  "viewVaultKeyButton": "Tresor-Schlüssel anzeigen",
   "recoverbullPasswordMismatch": "Passwörter stimmen nicht überein",
   "fundExchangeCrIbanUsdTransferCodeWarning": "Sie müssen den Transfercode als „Nachricht“ oder „Anweisung“ oder „Beschreibung“ bei der Zahlung hinzufügen. Wenn Sie vergessen, diesen Code einzubeziehen, kann Ihre Zahlung abgelehnt werden.",
   "backupSettingsPhysicalBackup": "Physische Sicherung",

@@ -1595,7 +1595,6 @@
   "startBackupButton": "Սկսել պահուստավորումը",
   "exportVaultButton": "Արտահանել պահոցը",
   "exportingVaultButton": "Արտահանվում է...",
-  "viewVaultKeyButton": "Դիտել պահոցի բանալին",
   "revealingVaultKeyButton": "Բացահայտվում է...",
   "errorLabel": "Սխալ",
   "backupKeyTitle": "Պահուստի բանալի",

@@ -1595,7 +1595,6 @@
   "startBackupButton": "Bắt đầu sao lưu",
   "exportVaultButton": "Xuất kho lưu trữ",
   "exportingVaultButton": "Đang xuất...",
-  "viewVaultKeyButton": "Xem khóa kho lưu trữ",
   "revealingVaultKeyButton": "Đang hiển thị...",
   "errorLabel": "Lỗi",
   "backupKeyTitle": "Khóa sao lưu",

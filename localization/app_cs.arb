@@ -7396,10 +7396,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "Zobrazit Vault Čeština",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "Heslo neodpovídají",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"

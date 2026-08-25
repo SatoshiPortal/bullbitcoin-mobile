@@ -982,7 +982,6 @@
   "startBackupButton": "Aloita varmuuskopiointi",
   "exportVaultButton": "Vie holviin",
   "exportingVaultButton": "Viedään...",
-  "viewVaultKeyButton": "Näytä holvin avain",
   "revealingVaultKeyButton": "Paljastetaan...",
   "errorLabel": "Virhe",
   "backupKeyTitle": "Varmuuskopion avain",

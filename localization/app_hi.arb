@@ -7449,10 +7449,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "वॉल्ट देखें कुंजी",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "पासवर्ड मैच नहीं करते",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"

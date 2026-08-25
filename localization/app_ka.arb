@@ -1753,7 +1753,6 @@
   "startBackupButton": "სარეზერვო ასლის დაწყება",
   "exportVaultButton": "საცავის ექსპორტი",
   "exportingVaultButton": "ექსპორტირდება...",
-  "viewVaultKeyButton": "საცავის გასაღების ნახვა",
   "revealingVaultKeyButton": "ინახება...",
   "errorLabel": "შეცდომა",
   "backupKeyTitle": "სარეზერვო ასლის გასაღები",
