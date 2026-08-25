@@ -39,6 +39,7 @@ enum SettingsItemId {
   termsOfService,
   servicesStatus,
   importWallet,
+  signingKeyExport,
   broadcastTransaction,
   payjoin,
   autoswap,
@@ -388,6 +389,22 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsSearchImportWalletKeywords,
         english.settingsSearchImportWalletKeywords,
         [english.walletSettingsImportWalletTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.signingKeyExport,
+      section: SettingsItemSection.wallet,
+      title: localization.signingKeyExportTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.signingKeyExportTitle,
+      ),
+      icon: Icons.key,
+      open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
+      keywords: _keywords(
+        localization.settingsSearchSigningKeyExportKeywords,
+        english.settingsSearchSigningKeyExportKeywords,
+        [english.signingKeyExportTitle],
       ),
     ),
     SettingsItem(
