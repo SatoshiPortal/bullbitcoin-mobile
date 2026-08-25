@@ -4430,8 +4430,6 @@
   "exchangeFileUploadTapToReupload": "Нажмите, чтобы загрузить снова",
   "exchangeSupportChatAttachmentImage": "Изображение",
   "exchangeSupportChatAttachmentUnknownFile": "Неизвестный файл",
-  "exchangeSupportChatPermissionDenied": "Доступ запрещён.",
-  "exchangeSupportChatPermissionDeniedSettings": "Доступ запрещён. Пожалуйста, предоставьте доступ к фотоальбому в настройках.",
   "exchangeSupportChatPickFilesFailed": "Не удалось выбрать файлы. Попробуйте снова.",
   "exchangeSupportChatAttachLogsFailed": "Не удалось прикрепить журналы. Попробуйте снова.",
   "exchangeSupportChatFetchFileDataFailed": "Не удалось получить данные файла.",
@@ -5041,5 +5039,8 @@
   "settingsSearchTestnetCredentialsKeywords": "учётные данные testnet|вход в testnet|имя пользователя testnet|пароль testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "отчёты о сбоях|отчёты об ошибках|диагностика|телеметрия|журналы ошибок",
   "settingsSearchScreenPrivacyKeywords": "снимки экрана|запись экрана|защита от захвата экрана|конфиденциальность",
-  "settingsSearchStartTyping": "Начните вводить, чтобы увидеть результаты."
+  "settingsSearchStartTyping": "Начните вводить, чтобы увидеть результаты.",
+  "exchangeSupportChatLoadMessagesError": "Не удалось загрузить сообщения. Попробуйте ещё раз.",
+  "exchangeSupportChatSendMessageError": "Не удалось отправить сообщение. Попробуйте ещё раз.",
+  "exchangeSupportChatLoadAttachmentError": "Не удалось открыть вложение. Попробуйте ещё раз."
 }

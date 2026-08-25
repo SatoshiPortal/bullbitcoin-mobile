@@ -12455,8 +12455,6 @@
   "exchangeFileUploadTapToReupload": "ضربه برای دوباره آپلود",
   "exchangeSupportChatAttachmentImage": "تصویر",
   "exchangeSupportChatAttachmentUnknownFile": "فایل نامشخص",
-  "exchangeSupportChatPermissionDenied": "دسترسی رد شد.",
-  "exchangeSupportChatPermissionDeniedSettings": "دسترسی رد شد. لطفاً دسترسی به کتابخانه‌ی عکس را در تنظیمات فعال کنید.",
   "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",
@@ -12581,5 +12579,8 @@
   "settingsSearchTestnetCredentialsKeywords": "اطلاعات ورود شبکه آزمایشی|ورود به شبکه آزمایشی|نام کاربری شبکه آزمایشی|گذرواژه شبکه آزمایشی|احراز هویت پایه",
   "settingsSearchErrorReportingKeywords": "گزارش های خرابی|گزارش خطا|اطلاعات تشخیصی|تله متری|گزارش های خطا",
   "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی",
-  "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید."
+  "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید.",
+  "exchangeSupportChatLoadMessagesError": "بارگیری پیام‌ها ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatSendMessageError": "ارسال پیام شما ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatLoadAttachmentError": "باز کردن پیوست ممکن نشد. لطفاً دوباره تلاش کنید."
 }

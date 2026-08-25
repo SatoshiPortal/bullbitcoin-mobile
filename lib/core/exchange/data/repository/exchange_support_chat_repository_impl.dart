@@ -5,7 +5,10 @@ import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_d
 import 'package:bb_mobile/core/exchange/data/models/support_chat_message_attachment_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 class ExchangeSupportChatRepositoryImpl
     implements ExchangeSupportChatRepository {
@@ -21,58 +24,67 @@ class ExchangeSupportChatRepositoryImpl
     required this._isTestnet,
   });
 
+  /// Being logged out is a normal, expected state rather than an exceptional one, so the missing key is returned as a failure instead of being thrown and caught a few lines below.
+  Future<Result<String, ExchangeSupportChatFailure>> _apiKey() async {
+    final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
+    if (apiKey == null) {
+      log.warning('Support chat: no API key stored, user is logged out');
+      return const Err(NotAuthenticatedFailure());
+    }
+    return Ok(apiKey.key);
+  }
+
   @override
-  Future<List<SupportChatMessage>> getMessages({
-    int? page,
-    int? pageSize,
-  }) async {
+  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>>
+  getMessages({int? page, int? pageSize}) async {
     try {
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+      final String apiKey;
+      switch (await _apiKey()) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return Err(failure);
       }
 
       final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
-        apiKey.key,
+        apiKey,
       );
-      if (userSummaryModel == null) {
-        throw Exception('User summary not found');
-      }
-
-      final userId = userSummaryModel.userId;
+      final userId = userSummaryModel?.userId;
       if (userId == null) {
-        throw Exception('User ID not found in user summary');
+        // No usable identity behind the key: the session is not good enough to read the thread, which is an auth problem rather than a transport one.
+        log.warning('Support chat: user summary carries no user id');
+        return const Err(NotAuthenticatedFailure());
       }
 
       final messageModels = await _datasource.listMessages(
-        apiKey: apiKey.key,
+        apiKey: apiKey,
         userId: userId,
         page: page,
         pageSize: pageSize,
       );
 
-      return messageModels.map((model) => model.toEntity()).toList();
-    } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      }
-      throw Exception('Failed to get messages: $e');
+      return Ok(messageModels.map((model) => model.toEntity()).toList());
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
+    } catch (e, st) {
+      log.warning('Failed to load support chat messages', error: e, trace: st);
+      return Err(LoadMessagesFailure('$e'));
     }
   }
 
   @override
-  Future<void> sendMessage({
+  Future<Result<void, ExchangeSupportChatFailure>> sendMessage({
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) async {
     try {
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+      final String apiKey;
+      switch (await _apiKey()) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return Err(failure);
       }
 
       final attachmentModels = attachments
@@ -90,41 +102,48 @@ class ExchangeSupportChatRepositoryImpl
           .toList();
 
       await _datasource.sendMessage(
-        apiKey: apiKey.key,
+        apiKey: apiKey,
         text: text,
         attachments: attachmentModels,
       );
-    } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      }
-      throw Exception('Failed to send message: $e');
+      return const Ok(null);
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
+    } catch (e, st) {
+      log.warning('Failed to send support chat message', error: e, trace: st);
+      return Err(SendMessageFailure('$e'));
     }
   }
 
   @override
-  Future<SupportChatMessageAttachment> getMessageAttachment(
-    String attachmentId,
-  ) async {
+  Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
+  getMessageAttachment(String attachmentId) async {
     try {
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+      final String apiKey;
+      switch (await _apiKey()) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return Err(failure);
       }
 
       final attachmentModel = await _datasource.getMessageAttachment(
-        apiKey: apiKey.key,
+        apiKey: apiKey,
         attachmentId: attachmentId,
       );
 
-      return attachmentModel.toEntity();
-    } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      }
-      throw Exception('Failed to get message attachment: $e');
+      return Ok(attachmentModel.toEntity());
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
+    } catch (e, st) {
+      log.warning(
+        'Failed to load support chat attachment',
+        error: e,
+        trace: st,
+      );
+      return Err(LoadAttachmentFailure('$e'));
     }
   }
 }

@@ -3553,8 +3553,6 @@
   "exchangeFileUploadTapToReupload": "Gusa kupakia tena",
   "exchangeSupportChatAttachmentImage": "Picha",
   "exchangeSupportChatAttachmentUnknownFile": "Faili isiyojulikana",
-  "exchangeSupportChatPermissionDenied": "Ruhusa imekataliwa.",
-  "exchangeSupportChatPermissionDeniedSettings": "Ruhusa imekataliwa. Tafadhali toa ruhusa ya kufikia maktaba ya picha kwenye Mipangilio.",
   "exchangeSupportChatPickFilesFailed": "Imeshindwa kuchagua faili. Tafadhali jaribu tena.",
   "exchangeSupportChatAttachLogsFailed": "Imeshindwa kuambatanisha kumbukumbu. Tafadhali jaribu tena.",
   "exchangeSupportChatFetchFileDataFailed": "Imeshindwa kupata data ya faili",
@@ -3684,5 +3682,8 @@
   "settingsSearchTestnetCredentialsKeywords": "vitambulisho vya mtumiaji wa testnet|kuingia testnet|jina la mtumiaji la testnet|nenosiri la testnet|uthibitishaji wa msingi",
   "settingsSearchErrorReportingKeywords": "ripoti za hitilafu|ripoti za kasoro|uchunguzi|data ya matumizi|kumbukumbu za makosa",
   "settingsSearchScreenPrivacyKeywords": "picha za skrini|kurekodi skrini|ulinzi wa kunasa skrini|faragha",
-  "settingsSearchStartTyping": "Anza kuandika ili kuona matokeo."
+  "settingsSearchStartTyping": "Anza kuandika ili kuona matokeo.",
+  "exchangeSupportChatLoadMessagesError": "Imeshindwa kupakia ujumbe. Tafadhali jaribu tena.",
+  "exchangeSupportChatSendMessageError": "Imeshindwa kutuma ujumbe wako. Tafadhali jaribu tena.",
+  "exchangeSupportChatLoadAttachmentError": "Imeshindwa kufungua kiambatisho. Tafadhali jaribu tena."
 }

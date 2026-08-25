@@ -12459,8 +12459,6 @@
   "exchangeFileUploadTapToReupload": "แตะเพื่ออัปโหลดใหม่",
   "exchangeSupportChatAttachmentImage": "รูปภาพ",
   "exchangeSupportChatAttachmentUnknownFile": "ไฟล์ที่ไม่ทราบชนิด",
-  "exchangeSupportChatPermissionDenied": "การอนุญาตถูกปฏิเสธ",
-  "exchangeSupportChatPermissionDeniedSettings": "การอนุญาตถูกปฏิเสธ กรุณาอนุญาตให้เข้าถึงคลังภาพในการตั้งค่า",
   "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
@@ -12585,5 +12583,8 @@
   "settingsSearchTestnetCredentialsKeywords": "ข้อมูลรับรองผู้ใช้เทสต์เน็ต|เข้าสู่ระบบเทสต์เน็ต|ชื่อผู้ใช้เทสต์เน็ต|รหัสผ่านเทสต์เน็ต|การยืนยันตัวตนพื้นฐาน",
   "settingsSearchErrorReportingKeywords": "รายงานข้อขัดข้อง|รายงานข้อบกพร่อง|การวินิจฉัย|ข้อมูลการใช้งาน|บันทึกข้อผิดพลาด",
   "settingsSearchScreenPrivacyKeywords": "ภาพหน้าจอ|การบันทึกหน้าจอ|การป้องกันการจับภาพ|ความเป็นส่วนตัว",
-  "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์"
+  "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์",
+  "exchangeSupportChatLoadMessagesError": "ไม่สามารถโหลดข้อความได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatSendMessageError": "ไม่สามารถส่งข้อความของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง"
 }
