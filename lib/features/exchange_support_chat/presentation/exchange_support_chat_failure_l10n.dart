@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
 

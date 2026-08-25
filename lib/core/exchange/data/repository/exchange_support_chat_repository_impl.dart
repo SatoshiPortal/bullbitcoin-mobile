@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_d
 import 'package:bb_mobile/core/exchange/data/models/support_chat_message_attachment_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';

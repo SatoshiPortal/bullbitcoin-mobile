@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'exchange_support_chat_state.freezed.dart';
