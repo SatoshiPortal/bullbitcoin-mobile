@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
@@ -36,6 +37,7 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usec
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -43,7 +45,6 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
@@ -159,8 +160,8 @@ class _MockCheckLiquidConsolidationUsecase extends Mock
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
-class _MockVerifySignedTxUsecase extends Mock
-    implements VerifySignedTxUsecase {}
+class _MockProcessBitcoinSignerResultUsecase extends Mock
+    implements ProcessBitcoinSignerResultUsecase {}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -196,6 +197,7 @@ class _TestableSendCubit extends SendCubit {
     required super.updatePaidSendSwapUsecase,
     required super.watchFinishedWalletSyncsUsecase,
     required super.signBitcoinTxUsecase,
+    required super.processBitcoinSignerResultUsecase,
     required super.signLiquidTxUsecase,
     required super.broadcastBitcoinTxUsecase,
     required super.broadcastLiquidTxUsecase,
@@ -209,7 +211,6 @@ class _TestableSendCubit extends SendCubit {
     required super.previewBitcoinFeePresetsUsecase,
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
-    required super.verifySignedTxUsecase,
     super.parsePaymentRequest,
   });
 
@@ -357,7 +358,7 @@ void main() {
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
-  late _MockVerifySignedTxUsecase verifySignedTxUsecase;
+  late _MockProcessBitcoinSignerResultUsecase processBitcoinSignerResultUsecase;
 
   late StreamController<PayjoinSession> payjoinEvents;
 
@@ -388,6 +389,7 @@ void main() {
     updatePaidSendSwapUsecase: updatePaidSendSwapUsecase,
     watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
     signBitcoinTxUsecase: signBitcoinTxUsecase,
+    processBitcoinSignerResultUsecase: processBitcoinSignerResultUsecase,
     signLiquidTxUsecase: signLiquidTxUsecase,
     broadcastBitcoinTxUsecase: broadcastBitcoinTxUsecase,
     broadcastLiquidTxUsecase: broadcastLiquidTxUsecase,
@@ -401,7 +403,6 @@ void main() {
     previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
-    verifySignedTxUsecase: verifySignedTxUsecase,
     parsePaymentRequest: parsePaymentRequest,
   );
 
@@ -431,6 +432,7 @@ void main() {
     registerFallbackValue(
       const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
     );
+    registerFallbackValue(BitcoinSignerResultKind.detect);
     // For any(named: 'feeRate') on the prepare-send stubs.
     registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
   });
@@ -475,15 +477,8 @@ void main() {
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
-    verifySignedTxUsecase = _MockVerifySignedTxUsecase();
-    // A hardware signer that returns what it was asked to sign: the default
-    // is acceptance, tests that need a tampered device re-stub it.
-    when(
-      () => verifySignedTxUsecase.execute(
-        unsignedPsbt: any(named: 'unsignedPsbt'),
-        signedTxHex: any(named: 'signedTxHex'),
-      ),
-    ).thenAnswer((_) async {});
+    processBitcoinSignerResultUsecase =
+        _MockProcessBitcoinSignerResultUsecase();
 
     payjoinEvents = StreamController<PayjoinSession>.broadcast();
 
@@ -713,50 +708,214 @@ void main() {
       confirmedAmountSat: 50000,
     );
 
-    test('audit reproducer: a signed transaction that fails verification is '
-        'refused, never stored for broadcast', () async {
-      // Before the fix, updateSignedBitcoinTx stored the device-returned
-      // bytes verbatim and onConfirmTransactionClicked broadcast them
-      // unchecked, while the confirm screen kept showing the pre-signing
-      // address and amount.
+    test('a signer result that fails verification is not stored', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(hardwareSignReadyState());
       when(
-        () => verifySignedTxUsecase.execute(
-          unsignedPsbt: any(named: 'unsignedPsbt'),
-          signedTxHex: any(named: 'signedTxHex'),
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'deadbeef',
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'cHNidP8=',
+          walletId: 'w1',
         ),
-      ).thenThrow(
-        VerifySignedTxException('The signed transaction does not match'),
+      ).thenAnswer(
+        (_) async => const Err(
+          BitcoinSigningFailure(BitcoinSigningFailureKind.invalidPsbt),
+        ),
       );
 
-      await cubit.updateSignedBitcoinTx('deadbeef');
+      await cubit.updateBitcoinSignerResult('deadbeef');
 
-      expect(
-        cubit.state.signedBitcoinTx,
-        isNull,
-        reason: 'a tampered transaction must never reach the broadcast path',
-      );
+      expect(cubit.state.signedBitcoinTx, isNull);
       expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
     });
 
-    test('a signed transaction passing the output check is stored', () async {
+    test('a verified raw transaction is stored', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'deadbeef',
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'cHNidP8=',
+          walletId: 'w1',
+        ),
+      ).thenAnswer(
+        (_) async => const Ok(
+          ProcessedBitcoinTransaction(transaction: 'deadbeef', txSize: 100),
+        ),
+      );
+
+      await cubit.updateBitcoinSignerResult('deadbeef');
+
+      expect(cubit.state.signedBitcoinTx, 'deadbeef');
+      expect(cubit.state.failure, isNull);
+    });
+
+    test(
+      'a transaction rebuild immediately drops the previous signer result',
+      () async {
+        final remoteWallet = _bitcoinLocalWallet().copyWith(
+          signers: [
+            WalletSigner.single(
+              masterFingerprint: '00000000',
+              xpubFingerprint: '00000000',
+              xpub: '',
+              signer: SignerEntity.remote,
+              signerDevice: null,
+            ),
+          ],
+        );
+        final fees = FeeOptions(
+          fastest: NetworkFee.relativeFromSatPerVbyte(10),
+          economic: NetworkFee.relativeFromSatPerVbyte(5),
+          slow: NetworkFee.relativeFromSatPerVbyte(2),
+          minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
+        );
+        final utxos = Completer<List<WalletUtxo>>();
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: 'w1'),
+        ).thenAnswer((_) => utxos.future);
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: 'w1',
+            address: 'bc1qdestination',
+            networkFee: fees.fastest,
+            amountSat: 50000,
+            replaceByFee: true,
+            selectedInputs: const [],
+            drain: false,
+          ),
+        ).thenAnswer(
+          (_) async =>
+              (unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false),
+        );
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: 'new-unsigned-psbt',
+          ),
+        ).thenAnswer((_) async => 100);
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          hardwareSignReadyState().copyWith(
+            selectedWallet: remoteWallet,
+            paymentRequest: const PaymentRequest.bitcoin(
+              address: 'bc1qdestination',
+              isTestnet: false,
+            ),
+            signedBitcoinPsbt: 'old-signed-psbt',
+            hasExternalBitcoinSignerResult: true,
+            bitcoinFeesList: fees,
+            liquidFeesList: fees,
+          ),
+        );
+
+        final rebuilding = cubit.createTransaction();
+
+        expect(cubit.state.unsignedPsbt, isNull);
+        expect(cubit.state.signedBitcoinPsbt, isNull);
+        expect(cubit.state.hasExternalBitcoinSignerResult, isFalse);
+
+        utxos.complete(const []);
+        await rebuilding;
+      },
+    );
+
+    test('a validated signer PSBT is stored as a PSBT', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(hardwareSignReadyState());
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: 'signed-psbt',
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'cHNidP8=',
+          walletId: 'w1',
+        ),
+      ).thenAnswer(
+        (_) async =>
+            const Ok(ProcessedBitcoinPsbt(psbt: 'combined-psbt', txSize: 100)),
+      );
+
+      final accepted = await cubit.updateBitcoinSignerResult('signed-psbt');
+
+      expect(accepted, isTrue);
+      expect(cubit.state.signedBitcoinPsbt, 'combined-psbt');
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('a slower signer result cannot replace a newer one', () async {
+      final older =
+          Completer<
+            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
+          >();
+      final newer =
+          Completer<
+            Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
+          >();
+      when(
+        () => processBitcoinSignerResultUsecase.execute(
+          result: any(named: 'result'),
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'cHNidP8=',
+          walletId: 'w1',
+        ),
+      ).thenAnswer((invocation) {
+        final result = invocation.namedArguments[#result] as String;
+        return result == 'older' ? older.future : newer.future;
+      });
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(hardwareSignReadyState());
 
-      await cubit.updateSignedBitcoinTx('deadbeef');
+      final olderRequest = cubit.updateBitcoinSignerResult('older');
+      final newerRequest = cubit.updateBitcoinSignerResult('newer');
+      newer.complete(
+        const Ok(ProcessedBitcoinPsbt(psbt: 'newer-psbt', txSize: 100)),
+      );
+      expect(await newerRequest, isTrue);
+      older.complete(
+        const Ok(ProcessedBitcoinPsbt(psbt: 'older-psbt', txSize: 100)),
+      );
 
-      expect(cubit.state.signedBitcoinTx, 'deadbeef');
-      expect(cubit.state.failure, isNull);
-      verify(
-        () => verifySignedTxUsecase.execute(
-          unsignedPsbt: 'cHNidP8=',
-          signedTxHex: 'deadbeef',
-        ),
-      ).called(1);
+      expect(await olderRequest, isFalse);
+      expect(cubit.state.signedBitcoinPsbt, 'newer-psbt');
     });
+
+    test(
+      'closing during transaction verification discards the result',
+      () async {
+        final verification =
+            Completer<
+              Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>
+            >();
+        when(
+          () => processBitcoinSignerResultUsecase.execute(
+            result: 'deadbeef',
+            kind: BitcoinSignerResultKind.detect,
+            currentPsbt: 'cHNidP8=',
+            walletId: 'w1',
+          ),
+        ).thenAnswer((_) => verification.future);
+        final cubit = buildCubit();
+        cubit.setStateForTest(hardwareSignReadyState());
+
+        final signing = cubit.updateBitcoinSignerResult('deadbeef');
+        await cubit.close();
+        verification.complete(
+          const Ok(
+            ProcessedBitcoinTransaction(transaction: 'deadbeef', txSize: 100),
+          ),
+        );
+
+        expect(await signing, isFalse);
+        expect(cubit.state.signedBitcoinTx, isNull);
+      },
+    );
 
     test('a valid retry clears the previous verification error', () async {
       final cubit = buildCubit();
@@ -764,23 +923,27 @@ void main() {
       cubit.setStateForTest(hardwareSignReadyState());
       var attempts = 0;
       when(
-        () => verifySignedTxUsecase.execute(
-          unsignedPsbt: any(named: 'unsignedPsbt'),
-          signedTxHex: any(named: 'signedTxHex'),
+        () => processBitcoinSignerResultUsecase.execute(
+          result: any(named: 'result'),
+          kind: BitcoinSignerResultKind.detect,
+          currentPsbt: 'cHNidP8=',
+          walletId: 'w1',
         ),
       ).thenAnswer((_) async {
         attempts++;
-        if (attempts == 1) {
-          throw VerifySignedTxException(
-            'The signed transaction does not match',
-          );
-        }
+        return attempts == 1
+            ? const Err(
+                BitcoinSigningFailure(BitcoinSigningFailureKind.invalidPsbt),
+              )
+            : const Ok(
+                ProcessedBitcoinTransaction(transaction: 'valid', txSize: 100),
+              );
       });
 
-      expect(await cubit.updateSignedBitcoinTx('tampered'), isFalse);
+      expect(await cubit.updateBitcoinSignerResult('tampered'), isFalse);
       expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
 
-      expect(await cubit.updateSignedBitcoinTx('valid'), isTrue);
+      expect(await cubit.updateBitcoinSignerResult('valid'), isTrue);
       expect(cubit.state.signedBitcoinTx, 'valid');
       expect(cubit.state.failure, isNull);
     });
@@ -794,14 +957,16 @@ void main() {
           hardwareSignReadyState().copyWith(unsignedPsbt: null),
         );
 
-        await cubit.updateSignedBitcoinTx('deadbeef');
+        await cubit.updateBitcoinSignerResult('deadbeef');
 
         expect(cubit.state.signedBitcoinTx, isNull);
         expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
         verifyNever(
-          () => verifySignedTxUsecase.execute(
-            unsignedPsbt: any(named: 'unsignedPsbt'),
-            signedTxHex: any(named: 'signedTxHex'),
+          () => processBitcoinSignerResultUsecase.execute(
+            result: any(named: 'result'),
+            kind: any(named: 'kind'),
+            currentPsbt: any(named: 'currentPsbt'),
+            walletId: any(named: 'walletId'),
           ),
         );
       },

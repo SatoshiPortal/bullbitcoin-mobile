@@ -5222,10 +5222,6 @@
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
   },
-  "psbtFlowDone": "মই সম্পন্ন কৰিলোঁ",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "psbtFlowError": "ত্ৰুটি: {error}",
   "@psbtFlowError": {
     "description": "Error message in psbt flow",

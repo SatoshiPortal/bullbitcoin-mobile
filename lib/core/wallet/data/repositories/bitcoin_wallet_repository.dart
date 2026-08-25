@@ -392,6 +392,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
   }
 
   @override
+  Future<Result<({String psbt, bool isFinalized}), BitcoinSigningFailure>>
+  finalizePsbt(String psbt) =>
+      _guardSigning(() async => _bdkWallet.finalizePsbt(psbt));
+
+  @override
   Future<Result<bool, BitcoinSigningFailure>> validatePolicyPreimage(
     BitcoinPolicyPreimage preimage,
   ) => _guardSigning(() async => _bdkWallet.validatePolicyPreimage(preimage));

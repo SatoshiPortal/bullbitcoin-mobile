@@ -9,6 +9,15 @@ import 'package:ur/ur_encoder.dart';
 
 void main() {
   group('UrQrReader', () {
+    test('generator rejects streams beyond the reader limit', () {
+      final psbt = base64.encode(Uint8List(100000));
+
+      expect(
+        () => UrQrGenerator.generatePsbtUr(psbt),
+        throwsA(isA<UrSequenceLimitExceeded>()),
+      );
+    });
+
     // Animated URs are fountain-coded (BCR-2020-005): once the pure
     // fragments 1..N have played, the stream keeps emitting mixed parts
     // N+1, N+2, ... The reader must accept them, or any scan that joins

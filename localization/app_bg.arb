@@ -3063,10 +3063,6 @@
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
   },
-  "psbtFlowDone": "Готов съм",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "testBackupRecoverWallet": "Възстанови портфейла.",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"

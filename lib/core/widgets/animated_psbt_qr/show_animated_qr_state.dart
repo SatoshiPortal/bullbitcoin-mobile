@@ -9,6 +9,7 @@ abstract class ShowAnimatedQrState with _$ShowAnimatedQrState {
     @Default([]) List<String> parts,
     @Default(100) int fragmentLength,
     @Default(false) bool isLoading,
+    @Default(false) bool isTooLarge,
     String? error,
   }) = _ShowAnimatedQrState;
 }

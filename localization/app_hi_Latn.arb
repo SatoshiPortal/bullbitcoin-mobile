@@ -7312,10 +7312,6 @@
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
   },
-  "psbtFlowDone": "Ho gaya",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "psbtFlowError": "Error: {error}",
   "@psbtFlowError": {
     "description": "Error message in psbt flow",

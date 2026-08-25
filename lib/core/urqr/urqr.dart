@@ -19,11 +19,16 @@ class UrQrGenerator {
 
       final parts = <String>[];
       while (!encoder.isComplete) {
+        if (parts.length == UrQrReader.maxMultipartParts) {
+          throw UrSequenceLimitExceeded();
+        }
         final part = encoder.nextPart();
         parts.add(part);
       }
 
       return parts;
+    } on UrSequenceLimitExceeded {
+      rethrow;
     } catch (e) {
       log.severe(
         message: 'Failed to generate PSBT UR',

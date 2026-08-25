@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
+import 'package:bb_mobile/features/psbt_signing/psbt_signing_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -124,6 +125,7 @@ class AppLocator {
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
+    PsbtSigningLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     AppUnlockLocator.setup(locator);

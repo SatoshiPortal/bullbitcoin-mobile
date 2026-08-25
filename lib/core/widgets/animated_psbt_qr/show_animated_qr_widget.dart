@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_cubit.dart';
-import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
+import 'package:bb_mobile/core/widgets/animated_psbt_qr/show_animated_qr_cubit.dart';
+import 'package:bb_mobile/core/widgets/animated_psbt_qr/show_animated_qr_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -87,6 +87,24 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.error,
                 ),
+              ),
+            ),
+          );
+        }
+
+        if (state.isTooLarge) {
+          return Container(
+            width: 300,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: context.appColors.surfaceFixed,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              context.loc.psbtFlowQrTooLarge,
+              textAlign: TextAlign.center,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.error,
               ),
             ),
           );

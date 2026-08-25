@@ -43,10 +43,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_useca
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -91,6 +91,7 @@ class SendCubit extends Cubit<SendState>
     required this._updatePaidSendSwapUsecase,
     required this._watchFinishedWalletSyncsUsecase,
     required this._signBitcoinTxUsecase,
+    required this._processBitcoinSignerResultUsecase,
     required this._signLiquidTxUsecase,
     required this._broadcastBitcoinTxUsecase,
     required this._broadcastLiquidTxUsecase,
@@ -104,7 +105,6 @@ class SendCubit extends Cubit<SendState>
     required this._previewBitcoinFeePresetsUsecase,
     required this._checkLiquidConsolidationUsecase,
     required this._getSendPayjoinEnabledUsecase,
-    required this._verifySignedTxUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
        super(const SendState());
@@ -139,6 +139,7 @@ class SendCubit extends Cubit<SendState>
   final UpdateSendSwapPayinUsecase _updateSendSwapPayinUsecase;
   final WatchSendSwapUsecase _watchSendSwapUsecase;
   final SignBitcoinTxUsecase _signBitcoinTxUsecase;
+  final ProcessBitcoinSignerResultUsecase _processBitcoinSignerResultUsecase;
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
@@ -158,7 +159,6 @@ class SendCubit extends Cubit<SendState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
-  final VerifySignedTxUsecase _verifySignedTxUsecase;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
@@ -175,6 +175,8 @@ class SendCubit extends Cubit<SendState>
   /// built for the previous tx shape for broadcast).
   int _bitcoinPreviewEpoch = 0;
   int _paymentRequestInputGeneration = 0;
+  int _bitcoinSignerResultGeneration = 0;
+  int _bitcoinSignerResultOperations = 0;
 
   @override
   Future<void> close() async {
@@ -234,6 +236,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   void backClicked() {
+    if (state.buildingTransaction || state.signingTransaction) return;
     _invalidateSignedTransaction();
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
@@ -1373,6 +1376,7 @@ class SendCubit extends Cubit<SendState>
   // type the dummies in Step 2a must be updated to match, otherwise Step 3b
   // will fire.
   Future<void> createTransaction() async {
+    _invalidateSignedTransaction();
     try {
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
         await loadFees();
@@ -1750,17 +1754,21 @@ class SendCubit extends Cubit<SendState>
   Future<bool> _persistPreparedOrderPayin({
     required String signedTransaction,
     required bool isPsbt,
+    bool Function()? isCurrent,
   }) async {
     final order = state.lightningOrder;
     if (order == null) return true;
-    switch (await _updateSendSwapPayinUsecase.execute(
+    if (isCurrent != null && !isCurrent()) return false;
+    final result = await _updateSendSwapPayinUsecase.execute(
       localId: order.localId,
       update: order.localStatus == OrderSwapLocalStatus.readyToBroadcast
           ? SendSwapPayinUpdate.replaced
           : SendSwapPayinUpdate.prepared,
       signedTransaction: signedTransaction,
       isPsbt: isPsbt,
-    )) {
+    );
+    if (isClosed || (isCurrent != null && !isCurrent())) return false;
+    switch (result) {
       case Ok(:final value):
         emit(state.copyWith(lightningOrder: value));
         return true;
@@ -2323,72 +2331,130 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  Future<bool> updateSignedBitcoinTx(String signedTx) async {
-    // A directly-connected hardware signer (Ledger, BitBox) returns raw
-    // signed bytes that are broadcast as-is, while the confirm screen keeps
-    // showing the pre-signing address and amount. Verify the signed
-    // transaction pays exactly what the unsigned PSBT pays before trusting
-    // it: a compromised device or transport could otherwise redirect the
-    // payment or the change undetected.
+  Future<bool> updateBitcoinSignerResult(String signerResult) =>
+      _runBitcoinSignerResult(
+        () => _updateBitcoinSignerResult(
+          signerResult,
+          kind: BitcoinSignerResultKind.detect,
+        ),
+      );
+
+  Future<bool> _updateBitcoinSignerResult(
+    String signerResult, {
+    required BitcoinSignerResultKind kind,
+  }) async {
+    final generation = ++_bitcoinSignerResultGeneration;
     final unsignedPsbt = state.unsignedPsbt;
-    if (unsignedPsbt == null) {
-      log.severe(
-        error:
-            'updateSignedBitcoinTx called with no unsigned PSBT in state; '
-            'refusing the signed transaction',
-        trace: StackTrace.current,
-      );
+    final wallet = state.selectedWallet;
+    if (unsignedPsbt == null || wallet == null || !wallet.isBitcoin) {
       emit(
         state.copyWith(
+          signedBitcoinPsbt: null,
           signedBitcoinTx: null,
-          failure: SendTransactionConfirmationFailure(
-            logMessage: 'No transaction to sign',
-          ),
+          hasExternalBitcoinSignerResult: false,
+          failure: const SendTransactionConfirmationFailure(),
         ),
       );
       return false;
     }
-    emit(state.copyWith(signedBitcoinTx: null, failure: null));
-    try {
-      await _verifySignedTxUsecase.execute(
-        unsignedPsbt: unsignedPsbt,
-        signedTxHex: signedTx,
-      );
-    } on VerifySignedTxException catch (e) {
-      log.severe(
-        error:
-            'Hardware signer returned a transaction that does not match '
-            'the confirmed one: $e',
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(
-          signedBitcoinTx: null,
-          failure: SendTransactionConfirmationFailure(logMessage: e.message),
-        ),
-      );
-      return false;
-    }
-    if (state.unsignedPsbt != unsignedPsbt) {
-      emit(
-        state.copyWith(
-          signedBitcoinTx: null,
-          failure: SendTransactionConfirmationFailure(
-            logMessage: 'The transaction changed while it was being signed',
-          ),
-        ),
-      );
-      return false;
-    }
-    if (!await _persistPreparedOrderPayin(
-      signedTransaction: signedTx,
-      isPsbt: false,
+
+    emit(
+      state.copyWith(
+        signedBitcoinPsbt: null,
+        signedBitcoinTx: null,
+        hasExternalBitcoinSignerResult: false,
+        failure: null,
+      ),
+    );
+    final result = await _processBitcoinSignerResultUsecase.execute(
+      result: signerResult,
+      kind: kind,
+      currentPsbt: unsignedPsbt,
+      walletId: wallet.id,
+    );
+    if (!_isCurrentBitcoinSignerResult(
+      generation: generation,
+      unsignedPsbt: unsignedPsbt,
+      walletId: wallet.id,
     )) {
       return false;
     }
-    emit(state.copyWith(signedBitcoinTx: signedTx, failure: null));
+    final ProcessedBitcoinSignerResult verified;
+    switch (result) {
+      case Ok(:final value):
+        verified = value;
+      case Err(:final failure):
+        log.warning('Rejected Bitcoin signer result', error: failure.kind.name);
+        emit(
+          state.copyWith(
+            signedBitcoinPsbt: null,
+            signedBitcoinTx: null,
+            hasExternalBitcoinSignerResult: false,
+            failure: const SendTransactionConfirmationFailure(),
+          ),
+        );
+        return false;
+    }
+    final signedTransaction = switch (verified) {
+      ProcessedBitcoinPsbt(:final psbt) => psbt,
+      ProcessedBitcoinTransaction(:final transaction) => transaction,
+    };
+    final isPsbt = verified is ProcessedBitcoinPsbt;
+    if (!await _persistPreparedOrderPayin(
+      signedTransaction: signedTransaction,
+      isPsbt: isPsbt,
+      isCurrent: () => _isCurrentBitcoinSignerResult(
+        generation: generation,
+        unsignedPsbt: unsignedPsbt,
+        walletId: wallet.id,
+      ),
+    )) {
+      return false;
+    }
+    if (!_isCurrentBitcoinSignerResult(
+      generation: generation,
+      unsignedPsbt: unsignedPsbt,
+      walletId: wallet.id,
+    )) {
+      return false;
+    }
+    emit(
+      state.copyWith(
+        signedBitcoinPsbt: isPsbt ? signedTransaction : null,
+        signedBitcoinTx: isPsbt ? null : signedTransaction,
+        hasExternalBitcoinSignerResult: true,
+        failure: null,
+      ),
+    );
     return true;
   }
+
+  Future<bool> _runBitcoinSignerResult(
+    Future<bool> Function() operation,
+  ) async {
+    _bitcoinSignerResultOperations++;
+    if (_bitcoinSignerResultOperations == 1) {
+      emit(state.copyWith(signingTransaction: true));
+    }
+    try {
+      return await operation();
+    } finally {
+      _bitcoinSignerResultOperations--;
+      if (!isClosed && _bitcoinSignerResultOperations == 0) {
+        emit(state.copyWith(signingTransaction: false));
+      }
+    }
+  }
+
+  bool _isCurrentBitcoinSignerResult({
+    required int generation,
+    required String unsignedPsbt,
+    required String? walletId,
+  }) =>
+      !isClosed &&
+      generation == _bitcoinSignerResultGeneration &&
+      state.unsignedPsbt == unsignedPsbt &&
+      state.selectedWallet?.id == walletId;
 
   /// Drops every payload that was built or signed for the *previous* shape of
   /// this payment. The BDK path stores its signed transaction in
@@ -2396,9 +2462,9 @@ class SendCubit extends Cubit<SendState>
   /// [SendState.signedBitcoinTx]; `onConfirmTransactionClicked` broadcasts
   /// whichever is present, so clearing only one leaves an editable payment
   /// with a broadcastable signature attached to the old recipient/amount.
-  /// The unsigned PSBT goes too: it is the reference
-  /// [updateSignedBitcoinTx] verifies a hardware signature against.
+  /// The unsigned PSBT is also the reference used to verify signer results.
   void _invalidateSignedTransaction() {
+    _bitcoinSignerResultGeneration++;
     if (state.signedBitcoinTx == null &&
         state.signedBitcoinPsbt == null &&
         state.signedLiquidTx == null &&
@@ -2409,6 +2475,7 @@ class SendCubit extends Cubit<SendState>
       state.copyWith(
         signedBitcoinTx: null,
         signedBitcoinPsbt: null,
+        hasExternalBitcoinSignerResult: false,
         signedLiquidTx: null,
         unsignedPsbt: null,
       ),

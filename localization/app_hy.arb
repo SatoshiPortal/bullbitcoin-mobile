@@ -2518,7 +2518,6 @@
   "psbtImDone": "Ես ավարտեցի",
   "psbtFlowSignTransaction": "Ստորագրել գործարքը",
   "psbtFlowInstructions": "Հրահանգներ",
-  "psbtFlowDone": "Ես ավարտեցի",
   "psbtFlowSignViaNfc": "Ստորագրել NFC-ով",
   "psbtFlowSignViaNfcSheetTitle": "Հպեք ձեր {deviceName}-ը՝ PSBT-ն NFC-ով ուղարկելու համար",
   "psbtFlowError": "Սխալ․ {error}",

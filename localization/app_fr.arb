@@ -2590,7 +2590,6 @@
   "psbtImDone": "J'ai terminé",
   "psbtFlowSignTransaction": "Signer la transaction",
   "psbtFlowInstructions": "Instructions",
-  "psbtFlowDone": "J'ai terminé",
   "psbtFlowError": "Erreur : {error}",
   "@psbtFlowError": {
     "placeholders": {

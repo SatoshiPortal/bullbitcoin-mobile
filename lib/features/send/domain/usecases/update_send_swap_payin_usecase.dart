@@ -22,7 +22,7 @@ class UpdateSendSwapPayinUsecase {
     bool? isPsbt,
     String? transactionId,
   }) async {
-    final Result<OrderSwapRecord, SwapFailure> result;
+    Result<OrderSwapRecord, SwapFailure> result;
     switch (update) {
       case SendSwapPayinUpdate.prepared:
         if (signedTransaction == null || isPsbt == null) {
@@ -35,6 +35,13 @@ class UpdateSendSwapPayinUsecase {
           signedTransaction: signedTransaction,
           isPsbt: isPsbt,
         );
+        if (result case Err(failure: SwapInvalidStateFailure())) {
+          result = await _swapFacade.replacePreparedPayin(
+            localId: localId,
+            signedTransaction: signedTransaction,
+            isPsbt: isPsbt,
+          );
+        }
       case SendSwapPayinUpdate.replaced:
         if (signedTransaction == null || isPsbt == null) {
           return const Err(
