@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -12,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockWalletBloc extends Mock implements WalletBloc {}
+
+class _MockWalletDetailsCubit extends Mock implements WalletDetailsCubit {}
 
 Wallet _wallet({required bool isDefault}) => Wallet(
   origin: 'wallet-id',
@@ -42,10 +45,16 @@ Future<void> _pumpScreen(WidgetTester tester, {required bool isDefault}) async {
   );
   when(() => walletBloc.state).thenReturn(state);
   when(() => walletBloc.stream).thenAnswer((_) => const Stream.empty());
+  final walletDetailsCubit = _MockWalletDetailsCubit();
+  when(() => walletDetailsCubit.state).thenReturn(const WalletDetailsState());
+  when(() => walletDetailsCubit.stream).thenAnswer((_) => const Stream.empty());
 
   await tester.pumpWidget(
-    BlocProvider<WalletBloc>.value(
-      value: walletBloc,
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<WalletBloc>.value(value: walletBloc),
+        BlocProvider<WalletDetailsCubit>.value(value: walletDetailsCubit),
+      ],
       child: MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: AppLocalizations.localizationsDelegates,

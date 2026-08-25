@@ -169,6 +169,7 @@ void main() {
         'user agreement': SettingsItemId.termsOfService,
         'service health': SettingsItemId.servicesStatus,
         'watch-only wallet': SettingsItemId.importWallet,
+        'descriptor key': SettingsItemId.signingKeyExport,
         'transaction hex': SettingsItemId.broadcastTransaction,
         'collaborative transaction': SettingsItemId.payjoin,
         'automatic swap': SettingsItemId.autoswap,
