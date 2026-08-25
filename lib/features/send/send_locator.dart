@@ -28,8 +28,8 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -37,6 +37,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
@@ -92,6 +93,12 @@ class SendLocator {
     );
     locator.registerFactory<SignBitcoinTxUsecase>(
       () => SignBitcoinTxUsecase(locator<BitcoinSigningPort>()),
+    );
+    locator.registerFactory<ProcessBitcoinSignerResultUsecase>(
+      () => ProcessBitcoinSignerResultUsecase(
+        locator<SignBitcoinTxUsecase>(),
+        locator<BitcoinSigningPort>(),
+      ),
     );
     locator.registerFactory<CreateSendSwapUsecase>(
       () => CreateSendSwapUsecase(
@@ -171,9 +178,7 @@ class SendLocator {
     locator.registerFactory<GetSendPayjoinEnabledUsecase>(
       () => GetSendPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
-    locator.registerFactory<VerifySignedTxUsecase>(
-      () => VerifySignedTxUsecase(),
-    );
+    locator.registerFactory<VerifySignedTxUsecase>(VerifySignedTxUsecase.new);
   }
 
   static void registerBlocs(GetIt locator) {
@@ -194,6 +199,8 @@ class SendLocator {
             locator<ValidateBitcoinSelectionUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
+        processBitcoinSignerResultUsecase:
+            locator<ProcessBitcoinSignerResultUsecase>(),
         signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
         broadcastBitcoinTxUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),

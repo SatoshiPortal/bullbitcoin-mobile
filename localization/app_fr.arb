@@ -2591,6 +2591,16 @@
   "psbtFlowSignTransaction": "Signer la transaction",
   "psbtFlowInstructions": "Instructions",
   "psbtFlowDone": "J'ai terminé",
+
+  "psbtFlowError": "Erreur : {error}",
+  "@psbtFlowError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "Aucune partie à afficher",
   "psbtFlowPartProgress": "Partie {current} de {total}",
   "@psbtFlowPartProgress": {
     "placeholders": {

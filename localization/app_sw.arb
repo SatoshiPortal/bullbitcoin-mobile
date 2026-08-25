@@ -2531,7 +2531,6 @@
   "psbtImDone": "Nimemaliza",
   "psbtFlowSignTransaction": "Saini muamala",
   "psbtFlowInstructions": "Maelekezo",
-  "psbtFlowDone": "Nimemaliza",
   "psbtFlowSignViaNfc": "Saini kupitia NFC",
   "psbtFlowSignViaNfcSheetTitle": "Gusa {deviceName} yako ili kutuma PSBT kupitia NFC",
   "psbtFlowPartProgress": "Sehemu {current} ya {total}",

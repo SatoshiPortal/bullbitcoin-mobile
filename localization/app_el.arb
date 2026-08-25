@@ -3142,10 +3142,6 @@
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
   },
-  "psbtFlowDone": "Έχω κάνει",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "fundExchangeMethodSinpeTransferSubtitle": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
