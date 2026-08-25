@@ -15,3 +15,11 @@ final class SettingsConsentFailure extends SettingsFailure {
 final class SettingsLogsFailure extends SettingsFailure {
   const SettingsLogsFailure([super.logMessage]);
 }
+
+final class SettingsSigningKeyExportFailure extends SettingsFailure {
+  const SettingsSigningKeyExportFailure([super.logMessage]);
+}
+
+final class SettingsWalletPolicyFailure extends SettingsFailure {
+  const SettingsWalletPolicyFailure([super.logMessage]);
+}
