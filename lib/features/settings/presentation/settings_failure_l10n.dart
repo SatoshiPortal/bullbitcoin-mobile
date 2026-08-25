@@ -11,5 +11,7 @@ extension SettingsFailureL10n on SettingsFailure {
     SettingsExchangeSyncFailure() => context.loc.settingsErrorSavingSetting,
     SettingsNetworkUnavailableFailure() => context.loc.oopsSomethingWentWrong,
     SettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsSigningKeyExportFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsWalletPolicyFailure() => context.loc.oopsSomethingWentWrong,
   };
 }
