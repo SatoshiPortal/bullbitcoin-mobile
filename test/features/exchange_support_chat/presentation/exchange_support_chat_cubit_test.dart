@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,8 +23,8 @@ class _MockSendMessageUsecase extends Mock
 class _MockGetAttachmentUsecase extends Mock
     implements GetSupportChatMessageAttachmentUsecase {}
 
-class _MockGetUserSummaryUsecase extends Mock
-    implements GetExchangeUserSummaryUsecase {}
+class _MockResolveUserIdUsecase extends Mock
+    implements ResolveSupportChatUserIdUsecase {}
 
 class _MockCreateLogAttachmentUsecase extends Mock
     implements CreateLogAttachmentUsecase {}
@@ -63,7 +63,7 @@ void main() {
       getMessagesUsecase: _MockGetMessagesUsecase(),
       sendMessageUsecase: _MockSendMessageUsecase(),
       getAttachmentUsecase: getAttachmentUsecase,
-      getUserSummaryUsecase: _MockGetUserSummaryUsecase(),
+      resolveUserIdUsecase: _MockResolveUserIdUsecase(),
       createLogAttachmentUsecase: _MockCreateLogAttachmentUsecase(),
       exchangeNotificationService: notificationService,
     );

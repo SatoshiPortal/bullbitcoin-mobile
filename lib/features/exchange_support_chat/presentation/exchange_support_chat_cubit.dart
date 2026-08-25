@@ -7,13 +7,13 @@ import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart'
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/attachment_filename_sanitizer.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,7 +26,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required this._getMessagesUsecase,
     required this._sendMessageUsecase,
     required this._getAttachmentUsecase,
-    required this._getUserSummaryUsecase,
+    required this._resolveUserIdUsecase,
     required this._createLogAttachmentUsecase,
     required this._exchangeNotificationService,
   }) : super(const ExchangeSupportChatState()) {
@@ -38,7 +38,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   final GetSupportChatMessagesUsecase _getMessagesUsecase;
   final SendSupportChatMessageUsecase _sendMessageUsecase;
   final GetSupportChatMessageAttachmentUsecase _getAttachmentUsecase;
-  final GetExchangeUserSummaryUsecase _getUserSummaryUsecase;
+  final ResolveSupportChatUserIdUsecase _resolveUserIdUsecase;
   final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
   final ExchangeNotificationService _exchangeNotificationService;
   StreamSubscription<NotificationMessage>? _notificationSubscription;
@@ -49,15 +49,9 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     emit(state.copyWith(loadingMessages: true, failure: null));
 
     if (state.userId == null) {
-      // Best-effort: a missing user id must not block loading messages.
-      try {
-        final userSummary = await _getUserSummaryUsecase.execute();
-        final userId = userSummary.userId;
-        if (userId != null) {
-          emit(state.copyWith(userId: userId));
-        }
-      } catch (e) {
-        log.warning('Failed to resolve support chat user id', error: e);
+      // Best-effort: the id only decides which bubbles render as mine, so a failed lookup is logged at the boundary and must not block the thread.
+      if (await _resolveUserIdUsecase.execute() case Ok(:final value?)) {
+        emit(state.copyWith(userId: value));
       }
     }
 
