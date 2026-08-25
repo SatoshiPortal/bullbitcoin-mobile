@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_fail
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:meta/meta.dart';
 
-abstract class ExchangeSupportChatRepository {
+abstract interface class ExchangeSupportChatRepository {
   @useResult
   Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>>
   getMessages({int? page, int? pageSize});
