@@ -12,6 +12,11 @@ const life = (days, extra = {}) => lifecycle({ now: iso(90), lastActivityAt: iso
 const comment = (marker, days, user = 'github-actions[bot]') => ({ body: marker, created_at: iso(days), user: { login: user, type: 'Bot' } });
 
 test('readiness accepts one local open ready closing issue', () => assert.equal(readiness(base({ closingIssuesReferences: [issue(1)] })).ready, true));
+test('readiness accepts GraphQL label connections', () => {
+  const graphqlIssue = { ...issue(1), labels: { nodes: [{ name: 'ready' }] } };
+  const graphqlPr = base({ labels: { nodes: [] }, closingIssuesReferences: [graphqlIssue] });
+  assert.equal(readiness(graphqlPr).ready, true);
+});
 test('readiness rejects invalid issue references', () => {
   for (const refs of [[], [issue(1, 'OPEN', [])], [issue(1, 'CLOSED')], [issue(1), issue(2, 'CLOSED')]]) assert.equal(readiness(base({ closingIssuesReferences: refs })).ready, false);
   assert.equal(readiness(base({ closingIssuesReferences: [{ ...issue(1), repository: { nameWithOwner: 'other/project' } }] })).ready, false);
