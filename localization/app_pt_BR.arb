@@ -7574,10 +7574,6 @@
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
   },
-  "settingsBitcoinSettingsTitle": "Configurações de Bitcoin",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "payCannotBumpFee": "Não pode pagar por esta transação",
   "@payCannotBumpFee": {
     "description": "Error when RBF is not available"
@@ -12506,7 +12502,6 @@
   "settingsSearchRecoverbullKeywords": "backup criptografado|backup na nuvem|cofre criptografado|recuperação do cofre|Recoverbull",
   "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
   "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
-  "settingsSearchBitcoinSettingsKeywords": "preferências do Bitcoin|configurações de rede|configurações da carteira",
   "settingsSearchAppSettingsKeywords": "preferências do aplicativo|configurações do aplicativo|configurações gerais",
   "settingsSearchBtcMapKeywords": "BTC Map|mapa Bitcoin|mapa de comerciantes|lugares que aceitam bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termos e condições|informações legais|acordo do usuário|TOS",

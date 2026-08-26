@@ -22,7 +22,7 @@ enum SettingsRoute {
   exchangeLegacyTransactions('exchange-legacy-transactions'),
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
-  bitcoinSettings('bitcoin-settings'),
+  walletSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),
   autoswapSettings('autoswap-settings'),

@@ -336,10 +336,6 @@
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
-  "settingsBitcoinSettingsTitle": "Bitcoin Settings",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "settingsSecurityPinTitle": "Security Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
@@ -14669,10 +14665,6 @@
   "@settingsSearchTransactionHistoryKeywords": {
     "description": "Pipe-separated search aliases for Transaction History. Search metadata; not displayed."
   },
-  "settingsSearchBitcoinSettingsKeywords": "bitcoin preferences|network settings|wallet settings",
-  "@settingsSearchBitcoinSettingsKeywords": {
-    "description": "Pipe-separated search aliases for Bitcoin Settings. Search metadata; not displayed."
-  },
   "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
   "@settingsSearchAppSettingsKeywords": {
     "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
@@ -14923,20 +14915,20 @@
   "@exchangeSupportChatLoadAttachmentError": {
     "description": "Shown when downloading or opening a support chat attachment fails."
   },
-  "settingsWalletTitle": "Wallet",
-  "@settingsWalletTitle": {
+  "settingsBackupTitle": "Backup",
+  "@settingsBackupTitle": {
     "description": "Title for the wallet settings section"
   },
-  "settingsSearchWalletKeywords": "wallet|backup|recovery|recover wallet|seed backup|import wallet",
-  "@settingsSearchWalletKeywords": {
+  "settingsSearchBackupKeywords": "backup|recovery|recover wallet|seed backup",
+  "@settingsSearchBackupKeywords": {
     "description": "Pipe-separated search aliases for wallet settings"
   },
   "settingsAppTitle": "App",
   "@settingsAppTitle": {
     "description": "Root settings entry for app preferences"
   },
-  "settingsBitcoinTitle": "Bitcoin",
-  "@settingsBitcoinTitle": {
+  "settingsWalletTitle": "Wallet",
+  "@settingsWalletTitle": {
     "description": "Root settings entry for Bitcoin preferences"
   },
   "settingsExchangeTitle": "Exchange",
@@ -14958,5 +14950,13 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool Server",
   "@bitcoinSettingsMempoolServerTitle": {
     "description": "Bitcoin settings list entry for Mempool server configuration"
+  },
+  "settingsWalletSettingsTitle": "Wallet Settings",
+  "@settingsWalletSettingsTitle": {
+    "description": "Title of the wallet settings screen"
+  },
+  "settingsSearchWalletSettingsKeywords": "wallet|bitcoin|network settings|on-chain settings|bitcoin settings",
+  "@settingsSearchWalletSettingsKeywords": {
+    "description": "Pipe-separated search aliases for wallet settings"
   }
 }

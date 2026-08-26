@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart'
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
@@ -143,9 +143,9 @@ class SettingsRouter {
         builder: (context, state) => const ExchangeLogoutScreen(),
       ),
       GoRoute(
-        name: SettingsRoute.bitcoinSettings.name,
-        path: SettingsRoute.bitcoinSettings.path,
-        builder: (context, state) => const BitcoinSettingsScreen(),
+        name: SettingsRoute.walletSettings.name,
+        path: SettingsRoute.walletSettings.path,
+        builder: (context, state) => const WalletSettingsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.payjoinSettings.name,

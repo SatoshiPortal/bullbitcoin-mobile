@@ -8353,10 +8353,6 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "Bitcoin সেটিংস",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "backupWalletHowToDecideBackupModalTitle": "কীভাবে সিদ্ধান্ত নেবেন",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -12716,7 +12712,6 @@
   "settingsSearchRecoverbullKeywords": "এনক্রিপ্টেড ব্যাকআপ|ক্লাউড ব্যাকআপ|এনক্রিপ্টেড ভল্ট|ভল্ট পুনরুদ্ধার",
   "settingsSearchLabelsKeywords": "ওয়ালেট লেবেল|লেনদেনের লেবেল|BIP329|লেবেল আমদানি|লেবেল রপ্তানি",
   "settingsSearchTransactionHistoryKeywords": "লেনদেন রপ্তানি|লেনদেনের ইতিহাস রপ্তানি|CSV|ওয়ালেটের ইতিহাস",
-  "settingsSearchBitcoinSettingsKeywords": "বিটকয়েন পছন্দসমূহ|নেটওয়ার্ক সেটিংস|ওয়ালেট সেটিংস",
   "settingsSearchAppSettingsKeywords": "অ্যাপ পছন্দসমূহ|অ্যাপ্লিকেশন সেটিংস|সাধারণ সেটিংস",
   "settingsSearchBtcMapKeywords": "BTC Map|বিটকয়েন মানচিত্র|ব্যবসায়ীর মানচিত্র|বিটকয়েন খরচ করার জায়গা",
   "settingsSearchTermsOfServiceKeywords": "শর্তাবলী|আইনি|ব্যবহারকারী চুক্তি|TOS",

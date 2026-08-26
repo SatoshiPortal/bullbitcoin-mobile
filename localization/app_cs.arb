@@ -8474,10 +8474,6 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "Nastavení Bitcoinu",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "backupWalletHowToDecideBackupModalTitle": "Jak se rozhodnout",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -12506,7 +12502,6 @@
   "settingsSearchRecoverbullKeywords": "šifrovaná záloha|cloudová záloha|šifrovaný trezor|obnovení z trezoru|Recoverbull",
   "settingsSearchLabelsKeywords": "štítky peněženky|štítky transakcí|BIP329|import štítků|export štítků",
   "settingsSearchTransactionHistoryKeywords": "export transakcí|vyexportovat transakce|CSV|historie peněženky",
-  "settingsSearchBitcoinSettingsKeywords": "nastavení Bitcoinu|nastavení sítě|nastavení peněženky",
   "settingsSearchAppSettingsKeywords": "předvolby aplikace|nastavení aplikace|obecná nastavení",
   "settingsSearchBtcMapKeywords": "BTC Map|bitcoinová mapa|mapa obchodníků|místa přijímající bitcoin",
   "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",

@@ -60,7 +60,7 @@ void main() {
     test('ranks a title match above section matches', () {
       final results = searchSettings(_englishItems(), 'bitcoin settings');
 
-      expect(results.first.id, SettingsItemId.bitcoinSettings);
+      expect(results.first.id, SettingsItemId.walletSettings);
     });
 
     test('includes nested backup and superuser settings', () {
@@ -81,7 +81,7 @@ void main() {
     test('places wallet import under the Wallet section', () {
       final items = _englishItems();
 
-      expect(items.byId(SettingsItemId.wallet).title, 'Wallet');
+      expect(items.byId(SettingsItemId.backup).title, 'Backup');
       expect(
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
@@ -90,11 +90,17 @@ void main() {
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
         'Settings → Wallet → Import wallet',
       );
-      expect(walletSettingsItemsAfterBackupOrder, [
-        SettingsItemId.recoverbull,
-        SettingsItemId.importWallet,
+      expect(backupSettingsDataItemOrder, [
         SettingsItemId.labels,
         SettingsItemId.transactionHistory,
+      ]);
+      expect(walletSettingsItemOrder, [
+        SettingsItemId.payjoin,
+        SettingsItemId.autoswap,
+        SettingsItemId.importWallet,
+        SettingsItemId.electrum,
+        SettingsItemId.mempool,
+        SettingsItemId.broadcastTransaction,
       ]);
     });
 
@@ -104,8 +110,8 @@ void main() {
 
       expect(rootItems.map((item) => item.id), [
         SettingsItemId.appSettings,
-        SettingsItemId.wallet,
-        SettingsItemId.bitcoinSettings,
+        SettingsItemId.backup,
+        SettingsItemId.walletSettings,
         SettingsItemId.exchange,
         SettingsItemId.btcMap,
         SettingsItemId.termsOfService,
@@ -114,8 +120,8 @@ void main() {
       ]);
       expect(rootItems.map((item) => item.title), [
         'App',
+        'Backup',
         'Wallet',
-        'Bitcoin',
         'Exchange',
         'Map',
         'Terms of Service',
@@ -152,12 +158,12 @@ void main() {
       final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
       final expectedIds = {
         'trading': SettingsItemId.exchange,
-        'seed backup': SettingsItemId.wallet,
+        'seed backup': SettingsItemId.backup,
         'create backup': SettingsItemId.startBackup,
         'cloud backup': SettingsItemId.recoverbull,
         'transaction labels': SettingsItemId.labels,
         'CSV': SettingsItemId.transactionHistory,
-        'network settings': SettingsItemId.bitcoinSettings,
+        'network settings': SettingsItemId.walletSettings,
         'general settings': SettingsItemId.appSettings,
         'merchant map': SettingsItemId.btcMap,
         'user agreement': SettingsItemId.termsOfService,
@@ -199,11 +205,11 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Wallet → Transaction History',
+        'Settings → Backup → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Wallet ← Transaction History',
+        'Settings ← Backup ← Transaction History',
       );
     });
 

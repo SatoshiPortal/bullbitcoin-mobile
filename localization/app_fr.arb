@@ -87,7 +87,6 @@
   "fiatCurrencySettingsLabel": "Devise fiduciaire",
   "languageSettingsScreenTitle": "Langue",
   "settingsExchangeSettingsTitle": "Paramètres d'échange",
-  "settingsBitcoinSettingsTitle": "Paramètres Bitcoin",
   "settingsSecurityPinTitle": "Code PIN de sécurité",
   "pinCodeAuthentication": "Authentification",
   "pinCodeCreateTitle": "Créer un nouveau code PIN",

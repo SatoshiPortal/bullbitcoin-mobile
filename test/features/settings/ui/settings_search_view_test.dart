@@ -175,7 +175,7 @@ List<SettingsItem> _items() => [
   ),
   SettingsItem(
     id: SettingsItemId.mempool,
-    section: SettingsItemSection.bitcoin,
+    section: SettingsItemSection.wallet,
     title: 'Mempool Server',
     path: const ['Settings', 'Bitcoin Settings', 'Mempool Server'],
     icon: IconData(0),

@@ -256,10 +256,6 @@
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
-  "settingsBitcoinSettingsTitle": "Bitcoin Settings",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "settingsSecurityPinTitle": "Security PIN",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
@@ -12894,7 +12890,6 @@
   "settingsSearchRecoverbullKeywords": "encrypted backup|cloud backup|encrypted vault|vault recovery",
   "settingsSearchLabelsKeywords": "wallet ke labels|transaction ke labels|BIP329|labels import karein|labels export karein",
   "settingsSearchTransactionHistoryKeywords": "transaction export karein|transaction history export karein|CSV|wallet history",
-  "settingsSearchBitcoinSettingsKeywords": "bitcoin preferences|network settings|wallet settings",
   "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
   "settingsSearchBtcMapKeywords": "BTC Map|bitcoin ka naksha|merchant map|bitcoin kharch karne ki jagah",
   "settingsSearchTermsOfServiceKeywords": "niyam aur shartein|kanooni|user agreement|TOS",

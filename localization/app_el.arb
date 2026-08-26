@@ -7177,10 +7177,6 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "Bitcoin ρυθμίσεις Bitcoin",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "backupSettingsLabel": "Wallet backup",
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
@@ -12506,7 +12502,6 @@
   "settingsSearchRecoverbullKeywords": "κρυπτογραφημένο αντίγραφο ασφαλείας|αντίγραφο στο cloud|κρυπτογραφημένο θησαυροφυλάκιο|ανάκτηση θησαυροφυλακίου|Recoverbull",
   "settingsSearchLabelsKeywords": "ετικέτες πορτοφολιού|ετικέτες συναλλαγών|BIP329|εισαγωγή ετικετών|εξαγωγή ετικετών",
   "settingsSearchTransactionHistoryKeywords": "εξαγωγή συναλλαγών|εξαγωγή ιστορικού|CSV|ιστορικό πορτοφολιού",
-  "settingsSearchBitcoinSettingsKeywords": "ρυθμίσεις Bitcoin|ρυθμίσεις δικτύου|ρυθμίσεις πορτοφολιού",
   "settingsSearchAppSettingsKeywords": "προτιμήσεις εφαρμογής|ρυθμίσεις εφαρμογής|γενικές ρυθμίσεις",
   "settingsSearchBtcMapKeywords": "BTC Map|χάρτης Bitcoin|χάρτης εμπόρων|μέρη που δέχονται bitcoin",
   "settingsSearchTermsOfServiceKeywords": "όροι και προϋποθέσεις|νομικά|συμφωνία χρήστη|TOS",

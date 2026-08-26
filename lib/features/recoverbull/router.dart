@@ -12,13 +12,9 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_u
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
-import 'package:bb_mobile/features/recoverbull/domain/usecases/has_current_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,55 +52,39 @@ class RecoverBullRouter {
     builder: (context, state) {
       final RecoverBullFlowsExtra extra = state.extra! as RecoverBullFlowsExtra;
 
-      return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => RecoverBullBloc(
-              flow: extra.flow,
-              preSelectedVault: extra.vault,
-              pickVaultUsecase: locator<PickVaultUsecase>(),
-              saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
-              createEncryptedVaultUsecase:
-                  locator<CreateEncryptedVaultUsecase>(),
-              storeVaultKeyIntoServerUsecase:
-                  locator<StoreVaultKeyIntoServerUsecase>(),
-              checkKeyServerConnectionUsecase:
-                  locator<CheckServerConnectionUsecase>(),
-              // Composed here rather than registered: this feature has no
-              // locator of its own, and the use case is a thin retry policy
-              // over registered core use cases.
-              connectToKeyServerUsecase: ConnectToKeyServerUsecase(
-                locator<CheckServerConnectionUsecase>(),
-                locator<EnsureRecoverBullTorSessionUsecase>(),
-              ),
-              fetchVaultKeyFromServerUsecase:
-                  locator<FetchVaultKeyFromServerUsecase>(),
-              decryptVaultUsecase: locator<DecryptVaultUsecase>(),
-              restoreVaultUsecase: locator<RestoreVaultUsecase>(),
-              connectToGoogleDriveUsecase:
-                  locator<ConnectToGoogleDriveUsecase>(),
-              saveToGoogleDriveUsecase:
-                  locator<SaveVaultToGoogleDriveUsecase>(),
-              ensureRecoverBullTorSessionUsecase:
-                  locator<EnsureRecoverBullTorSessionUsecase>(),
-              walletBloc: context.read(),
-              fetchLatestGoogleDriveVaultUsecase:
-                  locator<FetchLatestGoogleDriveVaultUsecase>(),
-              updateLatestEncryptedVaultTestUsecase:
-                  locator<UpdateLatestEncryptedVaultTestUsecase>(),
-              watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
-            ),
+      return BlocProvider(
+        create: (context) => RecoverBullBloc(
+          flow: extra.flow,
+          preSelectedVault: extra.vault,
+          pickVaultUsecase: locator<PickVaultUsecase>(),
+          saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
+          createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
+          storeVaultKeyIntoServerUsecase:
+              locator<StoreVaultKeyIntoServerUsecase>(),
+          checkKeyServerConnectionUsecase:
+              locator<CheckServerConnectionUsecase>(),
+          // Composed here rather than registered: this feature has no
+          // locator of its own, and the use case is a thin retry policy
+          // over registered core use cases.
+          connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+            locator<CheckServerConnectionUsecase>(),
+            locator<EnsureRecoverBullTorSessionUsecase>(),
           ),
-          if (extra.flow == RecoverBullFlow.settings)
-            BlocProvider(
-              create: (_) => RecoverBullSettingsCubit(
-                HasCurrentEncryptedBackupUsecase(
-                  locator<GetWalletsUsecase>(),
-                  locator<GetSettingsUsecase>(),
-                ),
-              )..load(),
-            ),
-        ],
+          fetchVaultKeyFromServerUsecase:
+              locator<FetchVaultKeyFromServerUsecase>(),
+          decryptVaultUsecase: locator<DecryptVaultUsecase>(),
+          restoreVaultUsecase: locator<RestoreVaultUsecase>(),
+          connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
+          saveToGoogleDriveUsecase: locator<SaveVaultToGoogleDriveUsecase>(),
+          ensureRecoverBullTorSessionUsecase:
+              locator<EnsureRecoverBullTorSessionUsecase>(),
+          walletBloc: context.read(),
+          fetchLatestGoogleDriveVaultUsecase:
+              locator<FetchLatestGoogleDriveVaultUsecase>(),
+          updateLatestEncryptedVaultTestUsecase:
+              locator<UpdateLatestEncryptedVaultTestUsecase>(),
+          watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
+        ),
         child: const RecoverBullFlowNavigator(),
       );
     },

@@ -6,15 +6,10 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_settings_cubit.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
-import 'package:bb_mobile/features/recoverbull/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -103,10 +98,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final hasEncryptedBackup = context.select(
-      (RecoverBullSettingsCubit cubit) => cubit.state ?? false,
-    );
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -129,24 +120,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: .stretch,
                   children: [
                     const Gap(16),
-                    if (hasEncryptedBackup) ...[
-                      SettingsEntryItem(
-                        icon: Icons.vpn_key,
-                        title: context.loc.backupSettingsViewVaultKey,
-                        onTap: () async {
-                          final confirmed =
-                              await ViewVaultKeyWarningBottomSheet.show(
-                                context,
-                              );
-                          if (confirmed != true || !context.mounted) return;
-                          openRecoverBullFlow(
-                            context,
-                            flow: RecoverBullFlow.viewVaultKey,
-                          );
-                        },
-                      ),
-                      const Gap(24),
-                    ],
                     SettingsEntryItem(
                       icon: Icons.vpn_lock,
                       title: context.loc.torTitle,

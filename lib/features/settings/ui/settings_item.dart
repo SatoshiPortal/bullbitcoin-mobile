@@ -10,8 +10,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
@@ -26,12 +25,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 enum SettingsItemId {
   exchange,
-  wallet,
+  backup,
   startBackup,
   recoverbull,
   labels,
   transactionHistory,
-  bitcoinSettings,
+  walletSettings,
   appSettings,
   btcMap,
   termsOfService,
@@ -56,13 +55,20 @@ enum SettingsItemId {
   errorReporting,
 }
 
-enum SettingsItemSection { root, wallet, bitcoin, app }
+enum SettingsItemSection { root, backup, wallet, app }
 
-const walletSettingsItemsAfterBackupOrder = [
-  SettingsItemId.recoverbull,
-  SettingsItemId.importWallet,
+const backupSettingsDataItemOrder = [
   SettingsItemId.labels,
   SettingsItemId.transactionHistory,
+];
+
+const walletSettingsItemOrder = [
+  SettingsItemId.payjoin,
+  SettingsItemId.autoswap,
+  SettingsItemId.importWallet,
+  SettingsItemId.electrum,
+  SettingsItemId.mempool,
+  SettingsItemId.broadcastTransaction,
 ];
 
 typedef OpenSettingsItem = void Function(BuildContext context);
@@ -149,16 +155,16 @@ List<SettingsItem> buildSettingsItems({
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
+  final backupSection = localization.settingsBackupTitle;
   final walletSection = localization.settingsWalletTitle;
-  final bitcoinSection = localization.settingsBitcoinTitle;
   final appSection = localization.settingsAppTitle;
   final exchangeSection = localization.settingsExchangeTitle;
 
   List<String> path(SettingsItemSection section, String title) =>
       switch (section) {
         SettingsItemSection.root => [rootSection, title],
+        SettingsItemSection.backup => [rootSection, backupSection, title],
         SettingsItemSection.wallet => [rootSection, walletSection, title],
-        SettingsItemSection.bitcoin => [rootSection, bitcoinSection, title],
         SettingsItemSection.app => [rootSection, appSection, title],
       };
 
@@ -177,24 +183,24 @@ List<SettingsItem> buildSettingsItems({
       ),
     ),
     SettingsItem(
-      id: SettingsItemId.wallet,
+      id: SettingsItemId.backup,
       section: SettingsItemSection.root,
-      title: walletSection,
-      path: path(SettingsItemSection.root, walletSection),
-      icon: Icons.account_balance_wallet,
+      title: backupSection,
+      path: path(SettingsItemSection.root, backupSection),
+      icon: Icons.backup_outlined,
       open: (context) => context.pushNamed(SettingsRoute.backupSettings.name),
       keywords: _keywords(
-        localization.settingsSearchWalletKeywords,
-        english.settingsSearchWalletKeywords,
-        [english.settingsWalletTitle],
+        localization.settingsSearchBackupKeywords,
+        english.settingsSearchBackupKeywords,
+        [english.settingsBackupTitle],
       ),
     ),
     SettingsItem(
       id: SettingsItemId.startBackup,
-      section: SettingsItemSection.wallet,
+      section: SettingsItemSection.backup,
       title: localization.backupSettingsStartBackup,
       path: path(
-        SettingsItemSection.wallet,
+        SettingsItemSection.backup,
         localization.backupSettingsStartBackup,
       ),
       icon: Icons.save_as,
@@ -210,20 +216,14 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.recoverbull,
-      section: SettingsItemSection.wallet,
+      section: SettingsItemSection.backup,
       title: localization.backupSettingsRecoverBullSettings,
       path: path(
-        SettingsItemSection.wallet,
+        SettingsItemSection.backup,
         localization.backupSettingsRecoverBullSettings,
       ),
       icon: Icons.cloud_circle,
-      open: (context) => context.pushNamed(
-        RecoverBullRoute.recoverbullFlows.name,
-        extra: RecoverBullFlowsExtra(
-          flow: RecoverBullFlow.settings,
-          vault: null,
-        ),
-      ),
+      open: (context) => const RecoverBullFacade().openSettings(context),
       keywords: _keywords(
         localization.settingsSearchRecoverbullKeywords,
         english.settingsSearchRecoverbullKeywords,
@@ -232,10 +232,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.labels,
-      section: SettingsItemSection.wallet,
+      section: SettingsItemSection.backup,
       title: localization.backupSettingsLabelsButton,
       path: path(
-        SettingsItemSection.wallet,
+        SettingsItemSection.backup,
         localization.backupSettingsLabelsButton,
       ),
       icon: Icons.sell,
@@ -248,10 +248,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.transactionHistory,
-      section: SettingsItemSection.wallet,
+      section: SettingsItemSection.backup,
       title: localization.transactionHistoryTitle,
       path: path(
-        SettingsItemSection.wallet,
+        SettingsItemSection.backup,
         localization.transactionHistoryTitle,
       ),
       icon: Icons.file_download,
@@ -264,16 +264,16 @@ List<SettingsItem> buildSettingsItems({
       ),
     ),
     SettingsItem(
-      id: SettingsItemId.bitcoinSettings,
+      id: SettingsItemId.walletSettings,
       section: SettingsItemSection.root,
-      title: bitcoinSection,
-      path: path(SettingsItemSection.root, bitcoinSection),
+      title: walletSection,
+      path: path(SettingsItemSection.root, walletSection),
       icon: Icons.currency_bitcoin,
-      open: (context) => context.pushNamed(SettingsRoute.bitcoinSettings.name),
+      open: (context) => context.pushNamed(SettingsRoute.walletSettings.name),
       keywords: _keywords(
-        localization.settingsSearchBitcoinSettingsKeywords,
-        english.settingsSearchBitcoinSettingsKeywords,
-        [english.settingsBitcoinTitle, english.settingsBitcoinSettingsTitle],
+        localization.settingsSearchWalletSettingsKeywords,
+        english.settingsSearchWalletSettingsKeywords,
+        [english.settingsWalletTitle, english.settingsWalletSettingsTitle],
       ),
     ),
     SettingsItem(
@@ -380,10 +380,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.broadcastTransaction,
-      section: SettingsItemSection.bitcoin,
+      section: SettingsItemSection.wallet,
       title: localization.bitcoinSettingsBroadcastTransactionTitle,
       path: path(
-        SettingsItemSection.bitcoin,
+        SettingsItemSection.wallet,
         localization.bitcoinSettingsBroadcastTransactionTitle,
       ),
       icon: Icons.satellite_alt,
@@ -397,10 +397,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.payjoin,
-      section: SettingsItemSection.bitcoin,
+      section: SettingsItemSection.wallet,
       title: localization.bitcoinSettingsPayjoinTitle,
       path: path(
-        SettingsItemSection.bitcoin,
+        SettingsItemSection.wallet,
         localization.bitcoinSettingsPayjoinTitle,
       ),
       icon: Icons.compare_arrows,
@@ -413,10 +413,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.autoswap,
-      section: SettingsItemSection.bitcoin,
+      section: SettingsItemSection.wallet,
       title: localization.bitcoinSettingsAutoTransferTitle,
       path: path(
-        SettingsItemSection.bitcoin,
+        SettingsItemSection.wallet,
         localization.bitcoinSettingsAutoTransferTitle,
       ),
       icon: Icons.swap_vertical_circle,
@@ -432,10 +432,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.electrum,
-      section: SettingsItemSection.bitcoin,
+      section: SettingsItemSection.wallet,
       title: localization.bitcoinSettingsElectrumServerTitle,
       path: path(
-        SettingsItemSection.bitcoin,
+        SettingsItemSection.wallet,
         localization.bitcoinSettingsElectrumServerTitle,
       ),
       icon: Icons.hub,
@@ -449,10 +449,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.mempool,
-      section: SettingsItemSection.bitcoin,
+      section: SettingsItemSection.wallet,
       title: localization.bitcoinSettingsMempoolServerTitle,
       path: path(
-        SettingsItemSection.bitcoin,
+        SettingsItemSection.wallet,
         localization.bitcoinSettingsMempoolServerTitle,
       ),
       icon: Icons.memory,
@@ -466,9 +466,9 @@ List<SettingsItem> buildSettingsItems({
     if (isSuperuser)
       SettingsItem(
         id: SettingsItemId.seedViewer,
-        section: SettingsItemSection.bitcoin,
+        section: SettingsItemSection.wallet,
         title: localization.allSeedViewTitle,
-        path: path(SettingsItemSection.bitcoin, localization.allSeedViewTitle),
+        path: path(SettingsItemSection.wallet, localization.allSeedViewTitle),
         icon: Icons.vpn_key,
         open: (context) => context.pushNamed(SettingsRoute.allSeedView.name),
         keywords: _keywords(
@@ -481,10 +481,10 @@ List<SettingsItem> buildSettingsItems({
     if (isSuperuser && isDevModeEnabled)
       SettingsItem(
         id: SettingsItemId.bip85,
-        section: SettingsItemSection.bitcoin,
+        section: SettingsItemSection.wallet,
         title: localization.bitcoinSettingsBip85EntropiesTitle,
         path: path(
-          SettingsItemSection.bitcoin,
+          SettingsItemSection.wallet,
           localization.bitcoinSettingsBip85EntropiesTitle,
         ),
         icon: Icons.science,

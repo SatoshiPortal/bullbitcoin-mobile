@@ -8505,10 +8505,6 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "Bitcoin Ayarlar",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "backupWalletHowToDecideBackupModalTitle": "Nasıl karar verilir",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -12506,7 +12502,6 @@
   "settingsSearchRecoverbullKeywords": "şifreli yedek|bulut yedeği|şifreli kasa|kasa kurtarma|Recoverbull",
   "settingsSearchLabelsKeywords": "cüzdan etiketleri|işlem etiketleri|BIP329|etiketleri içe aktar|etiketleri dışa aktar",
   "settingsSearchTransactionHistoryKeywords": "işlemleri dışa aktar|işlem dışa aktarma|CSV|cüzdan geçmişi",
-  "settingsSearchBitcoinSettingsKeywords": "Bitcoin tercihleri|ağ ayarları|cüzdan ayarları",
   "settingsSearchAppSettingsKeywords": "uygulama tercihleri|uygulama ayarları|genel ayarlar",
   "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin haritası|satıcı haritası|bitcoin harcanabilen yerler",
   "settingsSearchTermsOfServiceKeywords": "şartlar ve koşullar|yasal bilgiler|kullanıcı sözleşmesi|TOS",

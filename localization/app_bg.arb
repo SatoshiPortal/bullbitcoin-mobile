@@ -6607,10 +6607,6 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "Настройки на Биткойн",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "backupWalletHowToDecideBackupModalTitle": "Как да решите",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -10413,7 +10409,6 @@
   "settingsSearchRecoverbullKeywords": "криптирано резервно копие|облачно резервно копие|криптиран трезор|възстановяване от трезор|Recoverbull",
   "settingsSearchLabelsKeywords": "етикети на портфейла|етикети на транзакциите|BIP329|импортиране на етикети|експортиране на етикети",
   "settingsSearchTransactionHistoryKeywords": "експортиране на транзакции|експорт на транзакции|CSV|история на портфейла",
-  "settingsSearchBitcoinSettingsKeywords": "настройки на Биткойн|мрежови настройки|настройки на портфейла",
   "settingsSearchAppSettingsKeywords": "предпочитания на приложението|настройки на приложението|общи настройки",
   "settingsSearchBtcMapKeywords": "BTC Map|биткойн карта|карта на търговците|места за плащане с биткойн",
   "settingsSearchTermsOfServiceKeywords": "общи условия|правна информация|потребителско споразумение|TOS",

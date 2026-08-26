@@ -8022,10 +8022,6 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "Bitcoin Settings",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
-  },
   "backupWalletHowToDecideBackupModalTitle": "كيفية تقرير",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -12509,7 +12505,6 @@
   "settingsSearchRecoverbullKeywords": "نسخة احتياطية مشفرة|نسخة احتياطية سحابية|خزنة مشفرة|استرداد الخزنة",
   "settingsSearchLabelsKeywords": "تسميات المحفظة|تسميات المعاملات|BIP329|استيراد التسميات|تصدير التسميات",
   "settingsSearchTransactionHistoryKeywords": "تصدير المعاملات|تصدير سجل المعاملات|CSV|سجل المحفظة",
-  "settingsSearchBitcoinSettingsKeywords": "تفضيلات بيتكوين|إعدادات الشبكة|إعدادات المحفظة",
   "settingsSearchAppSettingsKeywords": "تفضيلات التطبيق|إعدادات التطبيق|الإعدادات العامة",
   "settingsSearchBtcMapKeywords": "BTC Map|خريطة بيتكوين|خريطة التجار|أماكن إنفاق بيتكوين",
   "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
