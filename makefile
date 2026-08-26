@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -66,6 +66,13 @@ bull-ui-check:
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
 checks: analyze bull-ui-check fix-check format-check unit-test
+
+# Supply-chain regression gate: every external GitHub Actions `uses:` reference
+# must stay pinned to a full commit SHA (mutable tags can be repointed).
+# Analyze and Test runs this as a dedicated lightweight job for every PR.
+action-pins-check:
+	@echo "📌 Checking GitHub Actions are pinned to a commit SHA"
+	@bash tools/check_action_pins.sh
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"

@@ -46,7 +46,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
       # runner has ~21GB free, so dropping this risks turning every PR red on
@@ -108,7 +108,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
       # Linux desktop app on one runner. The arm64 partner image is leaner
