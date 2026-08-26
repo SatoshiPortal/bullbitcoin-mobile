@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -10,6 +11,8 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -223,6 +226,48 @@ Wallet _bitcoinLocalWallet() => Wallet(
   balanceSat: BigInt.from(1000000),
 );
 
+Wallet _liquidWallet({required int balanceSat}) => Wallet(
+  origin: 'w-liquid',
+  network: Network.liquidMainnet,
+  xpubFingerprint: '00000000',
+  scriptType: ScriptType.bip84,
+  xpub: '',
+  externalPublicDescriptor: '',
+  internalPublicDescriptor: '',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.from(balanceSat),
+);
+
+Wallet _bitcoinWallet({required int balanceSat}) => Wallet(
+  origin: 'w-bitcoin',
+  network: Network.bitcoinMainnet,
+  xpubFingerprint: '00000000',
+  scriptType: ScriptType.bip84,
+  xpub: '',
+  externalPublicDescriptor: '',
+  internalPublicDescriptor: '',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.from(balanceSat),
+);
+
+WalletUtxo _utxo({required int amountSat}) => WalletUtxo.bitcoin(
+  walletId: 'w-bitcoin',
+  txId: 'a' * 64,
+  vout: 0,
+  scriptPubkey: Uint8List(0),
+  amountSat: BigInt.from(amountSat),
+  address: 'bc1-utxo',
+);
+
+FeeOptions _feeOptions() => const FeeOptions(
+  fastest: RelativeFee(25),
+  economic: RelativeFee(25),
+  slow: RelativeFee(25),
+  minRelay: RelativeFee(25),
+);
+
 Bip21PaymentRequest _payjoinBip21() =>
     const PaymentRequest.bip21(
           network: Network.bitcoinMainnet,
@@ -357,6 +402,8 @@ void main() {
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(_bitcoinLocalWallet());
     registerFallbackValue(BigInt.zero);
+    // For any(named: 'feeRate') on the prepare-send stubs.
+    registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
   });
 
   setUp(() {
@@ -808,6 +855,105 @@ void main() {
               as NewLabel;
       expect(stored.reference, 'broadcast-txid');
       expect(stored.label, 'coffee');
+    });
+  });
+
+  // A shortfall used to show "Build Failed", the same message as a dead
+  // Electrum server or a bad address.
+  group('SendCubit.createTransaction shortfalls', () {
+    test(
+      'a shortfall at build time is an insufficient-balance failure',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            feeRate: any(named: 'feeRate'),
+            amountSat: any(named: 'amountSat'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenThrow(
+          InsufficientFundsException(
+            'InsufficientFunds { missing_sats: 2, is_token: false }',
+            missingSat: 2,
+          ),
+        );
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async => <WalletUtxo>[]);
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.amount,
+            sendType: SendType.liquid,
+            selectedWallet: _liquidWallet(balanceSat: 20000),
+            paymentRequest: const PaymentRequest.liquid(
+              address: 'lq1-address',
+              isTestnet: false,
+            ),
+            amount: '19998',
+            inputAmountCurrencyCode: 'sats',
+            liquidFeesList: _feeOptions(),
+            bitcoinFeesList: _feeOptions(),
+          ),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendInsufficientFundsForFeesFailure>());
+        expect(cubit.state.failure, isNot(isA<SendTransactionBuildFailure>()));
+        // and it must not move on to confirm with no transaction built
+        expect(cubit.state.step, SendStep.amount);
+      },
+    );
+
+    // With hand-picked coins the amount was only checked against the whole
+    // balance, so the shortfall may be the selection rather than the fee.
+    test('with hand-picked coins the message stays generic', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          networkFee: any(named: 'networkFee'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenThrow(InsufficientFundsException('needed 5000, available 1000'));
+      final selected = _utxo(amountSat: 1000);
+      // loadUtxos() filters the selection against the wallet's current UTXOs,
+      // so the picked coin has to be in the list or the selection is dropped.
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [selected]);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          sendType: SendType.bitcoin,
+          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1-address',
+            isTestnet: false,
+          ),
+          amount: '5000',
+          inputAmountCurrencyCode: 'sats',
+          liquidFeesList: _feeOptions(),
+          bitcoinFeesList: _feeOptions(),
+          selectedUtxos: [selected],
+        ),
+      );
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+      expect(
+        cubit.state.failure,
+        isNot(isA<SendInsufficientFundsForFeesFailure>()),
+      );
     });
   });
 }

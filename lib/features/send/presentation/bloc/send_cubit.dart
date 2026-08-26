@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -895,7 +896,8 @@ class SendCubit extends Cubit<SendState>
       );
       return;
     }
-    if (state.failure is! SendTransactionBuildFailure) {
+    // Any failure keeps the user here.
+    if (state.failure == null) {
       emit(
         state.copyWith(
           step: SendStep.confirm,
@@ -1629,6 +1631,17 @@ class SendCubit extends Cubit<SendState>
         );
         return;
       }
+      if (e is InsufficientFundsException) {
+        emit(
+          state.copyWith(
+            failure: state.selectedUtxos.isEmpty
+                ? SendInsufficientFundsForFeesFailure(e.message)
+                : SendInsufficientBalanceFailure(e.message),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
@@ -1963,8 +1976,9 @@ class SendCubit extends Cubit<SendState>
         if (orderNeedsPayin || sendNeedsSignature) {
           await createTransaction();
         }
-        if (state.failure is SendTransactionBuildFailure ||
-            state.unsignedPsbt == null) {
+        // Stop on any failure, not just a build one — otherwise an
+        // insufficient-balance failure would sign whatever PSBT is left over.
+        if (state.failure != null || state.unsignedPsbt == null) {
           emit(state.copyWith(step: SendStep.confirm));
           return;
         }
