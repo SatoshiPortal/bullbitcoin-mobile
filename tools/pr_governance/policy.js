@@ -3,7 +3,9 @@
 const READY = 'ready';
 
 function labelsOf(pr) {
-  return new Set((pr.labels || []).map((label) => typeof label === 'string' ? label : label.name));
+  const source = pr?.labels;
+  const labels = Array.isArray(source) ? source : Array.isArray(source?.nodes) ? source.nodes : [];
+  return new Set(labels.flatMap((label) => typeof label === 'string' ? [label] : typeof label?.name === 'string' ? [label.name] : []));
 }
 
 function readiness(pr) {

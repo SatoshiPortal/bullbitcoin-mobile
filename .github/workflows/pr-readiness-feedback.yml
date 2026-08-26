@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   feedback:
@@ -18,7 +18,7 @@ jobs:
       # base SHA and never checks out, reads, or executes PR-head content.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
@@ -27,7 +27,7 @@ jobs:
             const p = context.payload.pull_request;
             let cursor = null, pr, refs = [];
             do {
-              const data = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ author{login} labels(first:100){nodes{name}} closingIssuesReferences(first:100,after:$cursor){nodes{state repository{nameWithOwner} labels(first:100){nodes{name}}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.name, number: p.number, cursor });
+              const data = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ author{login} labels(first:100){nodes{name}} closingIssuesReferences(first:100,after:$cursor){nodes{state repository{nameWithOwner} labels(first:100){nodes{name}}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.repo, number: p.number, cursor });
               pr = data.repository.pullRequest;
               refs = refs.concat(pr.closingIssuesReferences.nodes);
               cursor = pr.closingIssuesReferences.pageInfo.hasNextPage ? pr.closingIssuesReferences.pageInfo.endCursor : null;
