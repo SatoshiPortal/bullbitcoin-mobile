@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
+import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +35,12 @@ class AddCustomServerBottomSheet extends StatefulWidget {
 
     return BlurredBottomSheet.show<CustomServerInput>(
       context: context,
-      child: BlocProvider.value(
-        value: bloc,
-        child: const AddCustomServerBottomSheet(),
+      child: TorSettingsScope.provideFrom(
+        context: context,
+        child: BlocProvider.value(
+          value: bloc,
+          child: const AddCustomServerBottomSheet(),
+        ),
       ),
     );
   }
@@ -78,7 +82,10 @@ class _AddCustomServerBottomSheetState
     // the default — don't override a manual user choice.
     setState(() {
       _isOnion = isOnion;
-      if (result != null && result.sslExplicit) {
+      if (isOnion) {
+        _enableSsl = false;
+        _sslAutoDetected = true;
+      } else if (result != null && result.sslExplicit) {
         _enableSsl = result.enableSsl;
         _sslAutoDetected = true;
       } else if (_sslAutoDetected) {
@@ -233,28 +240,30 @@ class _AddCustomServerBottomSheetState
                         ),
                         Switch(
                           value: _enableSsl,
-                          onChanged: (value) {
-                            setState(() {
-                              _enableSsl = value;
-                              _sslAutoDetected = false; // user override
-                            });
-                          },
+                          onChanged: _isOnion
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    _enableSsl = value;
+                                    _sslAutoDetected = false; // user override
+                                  });
+                                },
                         ),
                       ],
                     ),
                     const Gap(8),
                   ],
                   if (!isLiquid && _isOnion) ...[
+                    SettingsEntryItem(
+                      icon: Icons.vpn_lock,
+                      title: context.loc.torTitle,
+                      onTap: () => TorSettingsBottomSheet.show(context),
+                    ),
+                    const Gap(8),
                     InfoCard(
                       description: context.loc.electrumOnionUsesTorDescription,
                       tagColor: context.appColors.primary,
                       bgColor: context.appColors.surfaceContainer,
-                    ),
-                    const Gap(8),
-                    TextButton.icon(
-                      onPressed: () => TorSettingsBottomSheet.show(context),
-                      icon: const Icon(Icons.vpn_lock),
-                      label: Text(context.loc.electrumConfigureTor),
                     ),
                     const Gap(8),
                   ],

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
+
 /// A fully-resolved Electrum server connection ready to be passed to a
 /// datasource (BDK / LWK / the electrum-client repository).
 ///
@@ -14,6 +16,8 @@
 /// [isCustom] is carried only so the executor's error reporting can tell the
 /// caller which tier was exhausted — datasources should not branch on it.
 class ElectrumConnection {
+  static const onionMinimumTimeout = 30;
+
   final String url;
   final int retry;
   final int timeout;
@@ -31,6 +35,17 @@ class ElectrumConnection {
     required this.isCustom,
     this.socks5,
   });
+
+  int get effectiveTimeout =>
+      resolveEffectiveTimeout(url: url, configuredTimeout: timeout);
+
+  static int resolveEffectiveTimeout({
+    required String url,
+    required int configuredTimeout,
+  }) =>
+      ElectrumServerUrl(url).isOnion && configuredTimeout < onionMinimumTimeout
+      ? onionMinimumTimeout
+      : configuredTimeout;
 
   ElectrumConnection withSocks5(String? socks5) => ElectrumConnection(
     url: url,

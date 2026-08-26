@@ -26,14 +26,14 @@ void main() {
     expect(online, isTrue);
     expect(serversPort.network, ElectrumServerNetwork.bitcoinMainnet);
     expect(statusPort.proxyEndpoint?.authority, '127.0.0.1:41001');
-    // Null, so the port applies its longer onion default. Passing the user's 5s
-    // clearnet ceiling here made healthy onion servers report offline and lit
-    // the Tor error banner.
-    expect(statusPort.timeout, isNull);
+    expect(statusPort.timeout, 30);
+    expect(statusPort.retry, 1);
   });
 
   test('an unproxied server keeps the user timeout', () async {
-    final serversPort = _FakeElectrumServersPort(_connection());
+    final serversPort = _FakeElectrumServersPort(
+      _connection(url: 'ssl://electrum.example.com:50002'),
+    );
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
     final adapter = ElectrumConnectivityAdapter(
       electrumServersPort: serversPort,
@@ -95,16 +95,19 @@ void main() {
 
 /// The seeded default for `timeout` is 5 seconds, so the fixture uses it: a
 /// proxied probe must not inherit that clearnet ceiling.
-ElectrumConnection _connection({String? socks5, int timeout = 5}) =>
-    ElectrumConnection(
-      url: 'ssl://hiddenservice.onion:50002',
-      retry: 1,
-      timeout: timeout,
-      stopGap: 20,
-      validateDomain: true,
-      isCustom: false,
-      socks5: socks5,
-    );
+ElectrumConnection _connection({
+  String url = 'ssl://hiddenservice.onion:50002',
+  String? socks5,
+  int timeout = 5,
+}) => ElectrumConnection(
+  url: url,
+  retry: 1,
+  timeout: timeout,
+  stopGap: 20,
+  validateDomain: true,
+  isCustom: false,
+  socks5: socks5,
+);
 
 final class _FakeElectrumServersPort implements ElectrumServersPort {
   final ElectrumConnection connection;
@@ -128,6 +131,7 @@ final class _FakeServerStatusPort implements ServerStatusPort {
   TorProxyEndpoint? proxyEndpoint;
   int? timeout;
   bool? validateDomain;
+  int? retry;
   int calls = 0;
 
   _FakeServerStatusPort(this.result);
@@ -138,10 +142,12 @@ final class _FakeServerStatusPort implements ServerStatusPort {
     required ElectrumServerNetwork network,
     required bool validateDomain,
     int? timeout,
+    int? retry,
     TorProxyEndpoint? proxyEndpoint,
   }) async {
     calls++;
     this.timeout = timeout;
+    this.retry = retry;
     this.proxyEndpoint = proxyEndpoint;
     this.validateDomain = validateDomain;
     return result;

@@ -23,9 +23,12 @@ class SetAdvancedOptionsBottomSheet extends StatefulWidget {
 
     return BlurredBottomSheet.show<void>(
       context: context,
-      child: BlocProvider.value(
-        value: bloc,
-        child: const SetAdvancedOptionsBottomSheet(),
+      child: TorSettingsScope.provideFrom(
+        context: context,
+        child: BlocProvider.value(
+          value: bloc,
+          child: const SetAdvancedOptionsBottomSheet(),
+        ),
       ),
     );
   }

@@ -8,6 +8,12 @@ final class TorSettingsScope extends StatefulWidget {
 
   const TorSettingsScope({required this.child, super.key});
 
+  static Widget provideFrom({
+    required BuildContext context,
+    required Widget child,
+  }) =>
+      BlocProvider.value(value: context.read<TorSettingsCubit>(), child: child);
+
   @override
   State<TorSettingsScope> createState() => _TorSettingsScopeState();
 }

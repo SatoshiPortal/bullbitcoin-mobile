@@ -10,10 +10,6 @@ import 'package:convert/convert.dart';
 import 'package:bull_tor/tor.dart';
 
 class ElectrumRemoteDatasource {
-  /// Generous on purpose: this request can be routed through a local proxy, where a
-  /// circuit to an onion service is built before any byte moves.
-  static const _requestTimeout = Duration(seconds: 30);
-
   final SqliteDatabase _sqlite;
   final ElectrumSocketConnector _socketConnector;
 
@@ -68,12 +64,9 @@ class ElectrumRemoteDatasource {
       throw Exception('Electrum RPC error: unusable SOCKS5 proxy');
     }
 
-    // An onion circuit is built before the first byte moves, so the user's
-    // clearnet timeout is not a sensible ceiling there. Mirrors
-    // `ServerStatusAdapter._resolveTimeout`.
-    final timeout = proxy == null
-        ? Duration(seconds: connection.timeout)
-        : _requestTimeout;
+    // An onion circuit is built before the first byte moves, so the shared
+    // connection policy raises the configured timeout to at least 30 seconds.
+    final timeout = Duration(seconds: connection.effectiveTimeout);
 
     Socket? socket;
     try {

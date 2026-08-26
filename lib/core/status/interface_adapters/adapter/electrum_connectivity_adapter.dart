@@ -42,12 +42,10 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
             // The user's own setting, so "online" here means the sync can
             // actually reach the server too.
             validateDomain: connection.validateDomain,
-            // Deliberately not `connection.timeout`: that is the user's clearnet
-            // ceiling, seeded at 5s, and it would override the longer onion
-            // default. Five seconds cannot cover a SOCKS handshake, a circuit
-            // build, TLS and a JSON-RPC round trip, so a healthy onion server
-            // would report offline and trip the Tor error banner.
-            timeout: proxyEndpoint == null ? connection.timeout : null,
+            // The configured clearnet timeout is seeded at 5s. Onion routes
+            // raise it to the shared 30s minimum used by the real BDK sync.
+            timeout: connection.effectiveTimeout,
+            retry: connection.retry,
             proxyEndpoint: proxyEndpoint,
           );
           if (status == ElectrumServerStatus.online) return true;

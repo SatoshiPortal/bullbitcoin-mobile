@@ -9,11 +9,11 @@ abstract class ServerStatusPort {
     TorProxyEndpoint? proxyEndpoint,
   });
 
-  /// Verifies the server actually serves real chain data by fetching a known
-  /// historical transaction via `blockchain.transaction.get`. A server that
-  /// only responds to `server.version` can still be desynced, pruned, or
-  /// otherwise broken — fetching a real tx proves it can answer wallet
-  /// queries. Falls back to `server.version` on testnets (no stable txid).
+  /// Verifies the server through the same protocol client used by the wallet.
+  /// Bitcoin uses BDK for a header subscription and, on mainnet, a known
+  /// historical transaction. Liquid performs the equivalent JSON-RPC probe.
+  /// Testnets stop after the protocol/header handshake because they have no
+  /// stable probe transaction.
   ///
   /// [validateDomain] must mirror the user's electrum setting of the same
   /// name — the flag the BDK/LWK sync obeys. When true, the certificate
@@ -29,6 +29,7 @@ abstract class ServerStatusPort {
     required ElectrumServerNetwork network,
     required bool validateDomain,
     int? timeout,
+    int? retry,
     TorProxyEndpoint? proxyEndpoint,
   });
 }

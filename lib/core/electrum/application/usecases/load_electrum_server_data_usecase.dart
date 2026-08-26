@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_re
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -78,6 +79,10 @@ class LoadElectrumServerDataUsecase {
       final serverStatusMap = <String, ElectrumServerStatus>{};
       await Future.wait(
         servers.map((server) async {
+          final effectiveTimeout = ElectrumConnection.resolveEffectiveTimeout(
+            url: server.url,
+            configuredTimeout: settings.timeout,
+          );
           ElectrumTorRoute? route;
           try {
             route = await _torSessionPort.open(
@@ -87,8 +92,12 @@ class LoadElectrumServerDataUsecase {
               externalProxyEnabled: appSettings.useTorProxy,
               externalProxyPort: appSettings.torProxyPort,
             );
-            serverStatusMap[server.url] = await _serverStatusPort.checkSocket(
+            serverStatusMap[server.url] = await _serverStatusPort.checkElectrum(
               url: server.url,
+              network: network,
+              validateDomain: settings.validateDomain,
+              timeout: effectiveTimeout,
+              retry: settings.retry,
               proxyEndpoint: route?.endpoint,
             );
           } on Exception {

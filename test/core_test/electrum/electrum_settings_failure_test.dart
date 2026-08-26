@@ -180,6 +180,7 @@ void main() {
         when(
           () => statusPort.checkSocket(
             url: any(named: 'url'),
+            timeout: any(named: 'timeout'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -203,6 +204,7 @@ void main() {
         when(
           () => statusPort.checkSocket(
             url: any(named: 'url'),
+            timeout: any(named: 'timeout'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -214,6 +216,8 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: any(named: 'validateDomain'),
+            timeout: any(named: 'timeout'),
+            retry: any(named: 'retry'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -226,6 +230,8 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: false,
+            timeout: 5,
+            retry: 1,
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).called(1);
@@ -257,6 +263,8 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: any(named: 'validateDomain'),
+            timeout: any(named: 'timeout'),
+            retry: any(named: 'retry'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         );
@@ -286,6 +294,7 @@ void main() {
       when(
         () => statusPort.checkSocket(
           url: 'ssl://hidden.onion:50002',
+          timeout: 30,
           proxyEndpoint: endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -306,6 +315,7 @@ void main() {
       verify(
         () => statusPort.checkSocket(
           url: 'ssl://hidden.onion:50002',
+          timeout: 30,
           proxyEndpoint: endpoint,
         ),
       ).called(1);
@@ -341,6 +351,7 @@ void main() {
       when(
         () => statusPort.checkSocket(
           url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
           proxyEndpoint: externalRoute.endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -349,6 +360,8 @@ void main() {
           url: any(named: 'url'),
           network: _network,
           validateDomain: true,
+          timeout: 5,
+          retry: 1,
           proxyEndpoint: externalRoute.endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -410,6 +423,7 @@ void main() {
       verifyNever(
         () => statusPort.checkSocket(
           url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
           proxyEndpoint: any(named: 'proxyEndpoint'),
         ),
       );
@@ -543,7 +557,14 @@ void main() {
         (_) async => ElectrumTorRoute(endpoint, () async => routeClosed = true),
       );
       when(
-        () => statusPort.checkSocket(url: server.url, proxyEndpoint: endpoint),
+        () => statusPort.checkElectrum(
+          url: server.url,
+          network: _network,
+          validateDomain: true,
+          timeout: 30,
+          retry: 1,
+          proxyEndpoint: endpoint,
+        ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
 
       final result = await usecase.execute(
@@ -553,7 +574,14 @@ void main() {
       expect(result, isA<Ok>());
       expect(routeClosed, isTrue);
       verify(
-        () => statusPort.checkSocket(url: server.url, proxyEndpoint: endpoint),
+        () => statusPort.checkElectrum(
+          url: server.url,
+          network: _network,
+          validateDomain: true,
+          timeout: 30,
+          retry: 1,
+          proxyEndpoint: endpoint,
+        ),
       ).called(1);
     });
 
@@ -612,8 +640,12 @@ void main() {
           (_) async => ElectrumTorRoute(externalRoute.endpoint, () async {}),
         );
         when(
-          () => statusPort.checkSocket(
+          () => statusPort.checkElectrum(
             url: any(named: 'url'),
+            network: _network,
+            validateDomain: true,
+            timeout: 30,
+            retry: 1,
             proxyEndpoint: externalRoute.endpoint,
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -708,8 +740,12 @@ void main() {
           ),
         ).called(1);
         verifyNever(
-          () => statusPort.checkSocket(
+          () => statusPort.checkElectrum(
             url: any(named: 'url'),
+            network: any(named: 'network'),
+            validateDomain: any(named: 'validateDomain'),
+            timeout: any(named: 'timeout'),
+            retry: any(named: 'retry'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         );

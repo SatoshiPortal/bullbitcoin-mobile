@@ -14962,9 +14962,5 @@
   "electrumOnionUsesTorDescription": "This .onion server is routed through Tor.",
   "@electrumOnionUsesTorDescription": {
     "description": "Explains Tor routing when adding a custom onion Electrum server"
-  },
-  "electrumConfigureTor": "Configure Tor",
-  "@electrumConfigureTor": {
-    "description": "Action that opens Tor configuration from Electrum settings"
   }
 }
