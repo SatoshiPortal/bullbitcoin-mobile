@@ -34,6 +34,8 @@ class ElectrumSettingsLocator {
         deleteCustomServerUsecase: locator<DeleteCustomServerUsecase>(),
         setAdvancedElectrumOptionsUsecase:
             locator<SetAdvancedElectrumOptionsUsecase>(),
+        hasActiveCustomBitcoinOnionServerUsecase:
+            locator<HasActiveCustomBitcoinOnionServerUsecase>(),
       ),
     );
   }

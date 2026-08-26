@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/usecases/has_active_custom_bitcoin_onion_server_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +36,8 @@ class ElectrumSettingsBloc
   final SetCustomServersPriorityUsecase _setCustomServersPriorityUsecase;
   final DeleteCustomServerUsecase _deleteCustomServerUsecase;
   final SetAdvancedElectrumOptionsUsecase _setAdvancedElectrumOptionsUsecase;
+  final HasActiveCustomBitcoinOnionServerUsecase
+  _hasActiveCustomBitcoinOnionServerUsecase;
 
   ElectrumSettingsBloc({
     required this._loadElectrumServerDataUsecase,
@@ -42,6 +45,7 @@ class ElectrumSettingsBloc
     required this._setCustomServersPriorityUsecase,
     required this._deleteCustomServerUsecase,
     required this._setAdvancedElectrumOptionsUsecase,
+    required this._hasActiveCustomBitcoinOnionServerUsecase,
   }) : super(const ElectrumSettingsState()) {
     on<ElectrumSettingsLoaded>(_onLoaded);
     on<ElectrumCustomServerAdded>(_onCustomServerAdded);
@@ -71,6 +75,8 @@ class ElectrumSettingsBloc
         final statuses = value.serverStatuses;
         final servers = value.servers;
         final settings = value.settings;
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             environment: settings.network.isTestnet
@@ -104,6 +110,8 @@ class ElectrumSettingsBloc
               socks5: settings.socks5,
             ),
             isLoadingData: false,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -162,11 +170,15 @@ class ElectrumSettingsBloc
           network: network,
           validateDomain: false,
         );
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: [...state.customServers, newServer],
             isAddingCustomServer: false,
             advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -232,10 +244,14 @@ class ElectrumSettingsBloc
               ),
             )
             .toList();
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: updatedServers,
             isPrioritizingCustomServer: false,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -280,11 +296,15 @@ class ElectrumSettingsBloc
         final updatedAdvancedOptions = updatedCustomServers.isEmpty
             ? await _setValidateDomain(network: network, validateDomain: true)
             : null;
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: updatedCustomServers,
             isDeletingCustomServer: false,
             advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
