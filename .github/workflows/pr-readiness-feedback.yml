@@ -27,7 +27,7 @@ jobs:
             const p = context.payload.pull_request;
             let cursor = null, pr, refs = [];
             do {
-              const data = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ author{login} labels(first:100){nodes{name}} closingIssuesReferences(first:100,after:$cursor){nodes{state repository{nameWithOwner} labels(first:100){nodes{name}}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.name, number: p.number, cursor });
+              const data = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ author{login} labels(first:100){nodes{name}} closingIssuesReferences(first:100,after:$cursor){nodes{state repository{nameWithOwner} labels(first:100){nodes{name}}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.repo, number: p.number, cursor });
               pr = data.repository.pullRequest;
               refs = refs.concat(pr.closingIssuesReferences.nodes);
               cursor = pr.closingIssuesReferences.pageInfo.hasNextPage ? pr.closingIssuesReferences.pageInfo.endCursor : null;

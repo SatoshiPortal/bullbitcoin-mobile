@@ -35,7 +35,7 @@ jobs:
                 if (!timeline) throw new Error('timeline unavailable');
                 let cursor = null, linked = [];
                 do {
-                  const refs = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){repository(owner:$owner,name:$name){pullRequest(number:$number){closingIssuesReferences(first:100,after:$cursor){nodes{number repository{nameWithOwner}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.name, number: p.number, cursor });
+                  const refs = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){repository(owner:$owner,name:$name){pullRequest(number:$number){closingIssuesReferences(first:100,after:$cursor){nodes{number repository{nameWithOwner}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.repo, number: p.number, cursor });
                   linked = linked.concat(refs.repository.pullRequest.closingIssuesReferences.nodes.filter((i) => i.repository.nameWithOwner === `${context.repo.owner}/${context.repo.repo}`));
                   cursor = refs.repository.pullRequest.closingIssuesReferences.pageInfo.hasNextPage ? refs.repository.pullRequest.closingIssuesReferences.pageInfo.endCursor : null;
                 } while (cursor);
