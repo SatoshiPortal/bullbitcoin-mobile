@@ -885,7 +885,7 @@ class SendCubit extends Cubit<SendState>
         state.sendType == SendType.bitcoin) {
       await createTransaction();
     }
-    if (!await hasBalance()) {
+    if (state.failure == null && !await hasBalance()) {
       emit(
         state.copyWith(
           failure: const SendInsufficientBalanceFailure(
@@ -1954,6 +1954,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> onConfirmTransactionClicked() async {
+    clearFailure();
     try {
       final orderNeedsPayin =
           state.lightningOrder != null &&

@@ -549,6 +549,48 @@ void main() {
       },
     );
 
+    // The payjoin-only path skips createTransaction(), so nothing else clears
+    // the failure a previous attempt left behind. Without a clear at the top
+    // of onConfirmTransactionClicked, the gate that refuses to sign while a
+    // failure is set traps every retry on this screen.
+    test(
+      'a failed payjoin start can be retried from the confirm screen',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        var attempts = 0;
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer((_) async {
+          attempts++;
+          if (attempts == 1) throw Exception('payjoin directory unreachable');
+          return _sender(status: PayjoinStatus.requested);
+        });
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(attempts, 2);
+        expect(cubit.state.step, SendStep.sending);
+        expect(cubit.state.payjoinSender?.status, PayjoinStatus.requested);
+      },
+    );
+
     test('a completed PayjoinSender (real payjoin, txId set) resolves the flow '
         'to success with the payjoin txid, syncs the wallet and stores the '
         'user label on that final txid', () async {
@@ -877,7 +919,6 @@ void main() {
         ).thenThrow(
           InsufficientFundsException(
             'InsufficientFunds { missing_sats: 2, is_token: false }',
-            missingSat: 2,
           ),
         );
         when(
