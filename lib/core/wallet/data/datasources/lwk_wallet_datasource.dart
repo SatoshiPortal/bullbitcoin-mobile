@@ -402,10 +402,7 @@ class LwkWalletDatasource {
     } catch (e) {
       if (e is lwk.LwkError) {
         if (e.msg.contains(_lwkInsufficientFundsMarker)) {
-          throw InsufficientFundsException(
-            e.msg,
-            missingSat: _missingSatsFromLwkError(e.msg),
-          );
+          throw InsufficientFundsException(e.msg);
         }
         // A build failure on a wallet whose confirmed L-BTC UTXO count exceeds
         // the Liquid confidential-tx input limit is almost certainly the
@@ -424,16 +421,10 @@ class LwkWalletDatasource {
   /// longer be built (the true protocol maximum is 256).
   static const int maxLiquidTxInputs = 256;
 
+  /// LWK reports a shortfall as plain text, e.g.
+  /// `InsufficientFunds { missing_sats: 21, asset_id: ..., is_token: false }`.
+  /// Matching the text is all the SDK gives us, so it stays in this file.
   static const String _lwkInsufficientFundsMarker = 'InsufficientFunds';
-
-  static final RegExp _lwkMissingSatsPattern = RegExp(r'missing_sats:\s*(\d+)');
-
-  /// How many sats short, or null if the message doesn't say.
-  static int? _missingSatsFromLwkError(String message) {
-    final match = _lwkMissingSatsPattern.firstMatch(message);
-    if (match == null) return null;
-    return int.tryParse(match.group(1)!);
-  }
 
   /// Number of L-BTC UTXOs in the wallet — the count that matters for the
   /// 256-input limit (asset-filtered, mirroring lwk's `utxoStatus`). Drives
