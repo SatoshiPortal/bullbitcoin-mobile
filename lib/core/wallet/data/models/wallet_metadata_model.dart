@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
 
@@ -28,6 +29,8 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     DateTime? syncedAt,
     SignerDevice? signerDevice,
     DateTime? birthday,
+    @Default(WalletProvenance.watchOnly) WalletProvenance provenance,
+    bool? seedPassphraseUsed,
   }) = _WalletMetadataModel;
 
   const WalletMetadataModel._();
@@ -65,6 +68,8 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     syncedAt: Value(syncedAt),
     signerDevice: Value(signerDevice),
     birthday: Value(birthday),
+    provenance: Value(provenance),
+    seedPassphraseUsed: Value(seedPassphraseUsed),
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -85,5 +90,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         syncedAt: row.syncedAt,
         signerDevice: row.signerDevice,
         birthday: row.birthday,
+        provenance: row.provenance,
+        seedPassphraseUsed: row.seedPassphraseUsed,
       );
 }

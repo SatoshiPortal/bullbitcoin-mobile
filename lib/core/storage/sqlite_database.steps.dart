@@ -7238,6 +7238,8 @@ final class Schema15 extends i0.VersionedSchema {
         _column_139,
         _column_140,
         _column_141,
+        _column_287,
+        _column_288,
       ],
       attachedDatabase: database,
     ),
@@ -7488,16 +7490,16 @@ final class Schema15 extends i0.VersionedSchema {
         'UNIQUE(parent_fingerprint, bip85_derivation_path)',
       ],
       columns: [
-        _column_287,
-        _column_288,
         _column_289,
         _column_290,
         _column_291,
         _column_292,
         _column_293,
         _column_294,
-        _column_165,
         _column_295,
+        _column_296,
+        _column_165,
+        _column_297,
       ],
       attachedDatabase: database,
     ),
@@ -7511,12 +7513,12 @@ final class Schema15 extends i0.VersionedSchema {
       tableConstraints: ['PRIMARY KEY(wallet_id)'],
       columns: [
         _column_161,
-        _column_296,
-        _column_297,
-        _column_182,
         _column_298,
+        _column_299,
+        _column_182,
+        _column_300,
         _column_165,
-        _column_295,
+        _column_297,
       ],
       attachedDatabase: database,
     ),
@@ -7529,13 +7531,13 @@ final class Schema15 extends i0.VersionedSchema {
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(entry_id)'],
       columns: [
-        _column_296,
-        _column_299,
-        _column_300,
-        _column_247,
+        _column_298,
         _column_301,
+        _column_302,
+        _column_247,
+        _column_303,
         _column_165,
-        _column_295,
+        _column_297,
       ],
       attachedDatabase: database,
     ),
@@ -7548,8 +7550,6 @@ final class Schema15 extends i0.VersionedSchema {
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(id)'],
       columns: [
-        _column_302,
-        _column_303,
         _column_304,
         _column_305,
         _column_306,
@@ -7559,6 +7559,8 @@ final class Schema15 extends i0.VersionedSchema {
         _column_310,
         _column_311,
         _column_312,
+        _column_313,
+        _column_314,
       ],
       attachedDatabase: database,
     ),
@@ -7747,6 +7749,10 @@ class Shape42 extends i0.VersionedTable {
       columnsByName['synced_at']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get birthday =>
       columnsByName['birthday']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get provenance =>
+      columnsByName['provenance']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get seedPassphraseUsed =>
+      columnsByName['seed_passphrase_used']! as i1.GeneratedColumn<int>;
 }
 
 i1.GeneratedColumn<int> _column_285(String aliasedName) =>
@@ -7764,6 +7770,23 @@ i1.GeneratedColumn<int> _column_286(String aliasedName) =>
       true,
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL CHECK (auto_sweep_enabled IN (0, 1))',
+    );
+i1.GeneratedColumn<String> _column_287(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'provenance',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL DEFAULT \'watchOnly\'',
+      defaultValue: const i1.CustomExpression('\'watchOnly\''),
+    );
+i1.GeneratedColumn<int> _column_288(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'seed_passphrase_used',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL CHECK (seed_passphrase_used IN (0, 1))',
     );
 
 class Shape43 extends i0.VersionedTable {
@@ -7790,7 +7813,7 @@ class Shape43 extends i0.VersionedTable {
       columnsByName['updated_at']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_287(String aliasedName) =>
+i1.GeneratedColumn<String> _column_289(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'entry_id',
       aliasedName,
@@ -7798,7 +7821,7 @@ i1.GeneratedColumn<String> _column_287(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_288(String aliasedName) =>
+i1.GeneratedColumn<String> _column_290(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'parent_fingerprint',
       aliasedName,
@@ -7806,7 +7829,7 @@ i1.GeneratedColumn<String> _column_288(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_289(String aliasedName) =>
+i1.GeneratedColumn<String> _column_291(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'bip85_derivation_path',
       aliasedName,
@@ -7814,7 +7837,7 @@ i1.GeneratedColumn<String> _column_289(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_290(String aliasedName) =>
+i1.GeneratedColumn<String> _column_292(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'reservation_id',
       aliasedName,
@@ -7822,7 +7845,7 @@ i1.GeneratedColumn<String> _column_290(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_291(String aliasedName) =>
+i1.GeneratedColumn<String> _column_293(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'entry_type',
       aliasedName,
@@ -7830,7 +7853,7 @@ i1.GeneratedColumn<String> _column_291(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_292(String aliasedName) =>
+i1.GeneratedColumn<String> _column_294(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'owner_feature',
       aliasedName,
@@ -7838,7 +7861,7 @@ i1.GeneratedColumn<String> _column_292(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_293(String aliasedName) =>
+i1.GeneratedColumn<int> _column_295(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'bip85_application',
       aliasedName,
@@ -7846,7 +7869,7 @@ i1.GeneratedColumn<int> _column_293(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_294(String aliasedName) =>
+i1.GeneratedColumn<int> _column_296(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'bip85_index',
       aliasedName,
@@ -7854,7 +7877,7 @@ i1.GeneratedColumn<int> _column_294(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_295(String aliasedName) =>
+i1.GeneratedColumn<int> _column_297(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'updated_at',
       aliasedName,
@@ -7881,7 +7904,7 @@ class Shape44 extends i0.VersionedTable {
       columnsByName['updated_at']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_296(String aliasedName) =>
+i1.GeneratedColumn<String> _column_298(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'entry_id',
       aliasedName,
@@ -7890,7 +7913,7 @@ i1.GeneratedColumn<String> _column_296(String aliasedName) =>
       $customConstraints:
           'NOT NULL REFERENCES keychain_manifest_entries(entry_id)',
     );
-i1.GeneratedColumn<String> _column_297(String aliasedName) =>
+i1.GeneratedColumn<String> _column_299(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'child_seed_fingerprint',
       aliasedName,
@@ -7898,7 +7921,7 @@ i1.GeneratedColumn<String> _column_297(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_298(String aliasedName) =>
+i1.GeneratedColumn<String> _column_300(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'script_type',
       aliasedName,
@@ -7925,7 +7948,7 @@ class Shape45 extends i0.VersionedTable {
       columnsByName['updated_at']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_299(String aliasedName) =>
+i1.GeneratedColumn<String> _column_301(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'public_key_hex',
       aliasedName,
@@ -7933,7 +7956,7 @@ i1.GeneratedColumn<String> _column_299(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_300(String aliasedName) =>
+i1.GeneratedColumn<String> _column_302(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'key_kind',
       aliasedName,
@@ -7941,7 +7964,7 @@ i1.GeneratedColumn<String> _column_300(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_301(String aliasedName) =>
+i1.GeneratedColumn<String> _column_303(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'description',
       aliasedName,
@@ -7976,7 +7999,7 @@ class Shape46 extends i0.VersionedTable {
       columnsByName['recovery_blocked']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<int> _column_302(String aliasedName) =>
+i1.GeneratedColumn<int> _column_304(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'id',
       aliasedName,
@@ -7985,7 +8008,7 @@ i1.GeneratedColumn<int> _column_302(String aliasedName) =>
       $customConstraints: 'NOT NULL DEFAULT 1',
       defaultValue: const i1.CustomExpression('1'),
     );
-i1.GeneratedColumn<int> _column_303(String aliasedName) =>
+i1.GeneratedColumn<int> _column_305(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'enabled',
       aliasedName,
@@ -7994,7 +8017,7 @@ i1.GeneratedColumn<int> _column_303(String aliasedName) =>
       $customConstraints: 'NOT NULL DEFAULT 0 CHECK (enabled IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
     );
-i1.GeneratedColumn<int> _column_304(String aliasedName) =>
+i1.GeneratedColumn<int> _column_306(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'dirty',
       aliasedName,
@@ -8003,7 +8026,7 @@ i1.GeneratedColumn<int> _column_304(String aliasedName) =>
       $customConstraints: 'NOT NULL DEFAULT 0 CHECK (dirty IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
     );
-i1.GeneratedColumn<int> _column_305(String aliasedName) =>
+i1.GeneratedColumn<int> _column_307(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'dirty_revision',
       aliasedName,
@@ -8012,7 +8035,7 @@ i1.GeneratedColumn<int> _column_305(String aliasedName) =>
       $customConstraints: 'NOT NULL DEFAULT 0',
       defaultValue: const i1.CustomExpression('0'),
     );
-i1.GeneratedColumn<int> _column_306(String aliasedName) =>
+i1.GeneratedColumn<int> _column_308(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'last_attempted_at',
       aliasedName,
@@ -8020,7 +8043,7 @@ i1.GeneratedColumn<int> _column_306(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_307(String aliasedName) =>
+i1.GeneratedColumn<int> _column_309(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'last_succeeded_at',
       aliasedName,
@@ -8028,7 +8051,7 @@ i1.GeneratedColumn<int> _column_307(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_308(String aliasedName) =>
+i1.GeneratedColumn<int> _column_310(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'remote_generation',
       aliasedName,
@@ -8037,7 +8060,7 @@ i1.GeneratedColumn<int> _column_308(String aliasedName) =>
       $customConstraints: 'NOT NULL DEFAULT 0',
       defaultValue: const i1.CustomExpression('0'),
     );
-i1.GeneratedColumn<String> _column_309(String aliasedName) =>
+i1.GeneratedColumn<String> _column_311(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'remote_etag',
       aliasedName,
@@ -8045,7 +8068,7 @@ i1.GeneratedColumn<String> _column_309(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<String> _column_310(String aliasedName) =>
+i1.GeneratedColumn<String> _column_312(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'content_hash',
       aliasedName,
@@ -8053,7 +8076,7 @@ i1.GeneratedColumn<String> _column_310(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_311(String aliasedName) =>
+i1.GeneratedColumn<int> _column_313(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'unsupported_version',
       aliasedName,
@@ -8061,7 +8084,7 @@ i1.GeneratedColumn<int> _column_311(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_312(String aliasedName) =>
+i1.GeneratedColumn<int> _column_314(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'recovery_blocked',
       aliasedName,

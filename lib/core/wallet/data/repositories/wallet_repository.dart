@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -64,6 +65,8 @@ class WalletRepository {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
+    required WalletProvenance provenance,
+    bool? seedPassphraseUsed,
     String? label,
     bool isDefault = false,
     bool sync = false,
@@ -87,6 +90,8 @@ class WalletRepository {
       scriptType: scriptType,
       label: walletLabel,
       isDefault: isDefault,
+      provenance: provenance,
+      seedPassphraseUsed: seedPassphraseUsed,
       birthday: birthday,
     );
 
@@ -343,6 +348,7 @@ class WalletRepository {
       scriptType: spec.scriptType,
       label: spec.label,
       isDefault: spec.isDefault,
+      provenance: WalletProvenance.bip85,
     );
     final existing = await _walletMetadataDatasource.fetch(expected.id);
     if (existing == null) return null;

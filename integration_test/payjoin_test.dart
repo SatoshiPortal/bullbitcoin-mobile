@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -181,11 +182,13 @@ Future<void> main({bool isInitialized = false}) async {
         seed: receiverSeed,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
+        provenance: WalletProvenance.importedMnemonic,
       );
       senderWallet = await walletRepository.createWallet(
         seed: senderSeed,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
+        provenance: WalletProvenance.importedMnemonic,
       );
     });
 

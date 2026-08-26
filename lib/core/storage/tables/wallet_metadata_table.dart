@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:drift/drift.dart';
 
 enum Signer {
@@ -92,6 +93,9 @@ class WalletMetadatas extends Table {
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   DateTimeColumn get birthday => dateTime().nullable()();
+  TextColumn get provenance =>
+      textEnum<WalletProvenance>().withDefault(const Constant('watchOnly'))();
+  BoolColumn get seedPassphraseUsed => boolean().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
@@ -43,6 +44,7 @@ class PrepareDeterministicWalletsUsecase {
       String derivation,
       bip39.Mnemonic mnemonic,
       String parentFingerprint,
+      bool parentPassphraseUsed,
     })
     value;
     switch (derived) {
@@ -82,6 +84,8 @@ class PrepareDeterministicWalletsUsecase {
           seed: seed,
           network: spec.network,
           scriptType: spec.scriptType,
+          provenance: WalletProvenance.bip85,
+          seedPassphraseUsed: value.parentPassphraseUsed,
           label: spec.label,
           isDefault: spec.isDefault,
           sync: spec.sync,

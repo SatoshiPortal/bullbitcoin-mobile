@@ -66,6 +66,7 @@ void main() {
     expect(first, isA<Ok<dynamic, Bip85Failure>>());
     expect(second, isA<Ok<dynamic, Bip85Failure>>());
     expect(_value(first).derivation, "39'/0'/12'/100'");
+    expect(_value(first).parentPassphraseUsed, isFalse);
     expect(_value(second).mnemonic.sentence, _value(first).mnemonic.sentence);
     expect(conflict, isA<Err<dynamic, Bip85Failure>>());
     expect((conflict as Err).failure, isA<Bip85DerivationConflictFailure>());
@@ -73,6 +74,33 @@ void main() {
       await database.select(database.bip85Derivations).get(),
       hasLength(1),
     );
+  });
+
+  test('reports whether the parent seed uses a passphrase', () async {
+    final mnemonic = bip39.Mnemonic.fromWords(
+      words: List.generate(11, (_) => 'zoo') + ['wrong'],
+      passphrase: 'secret',
+    );
+    final bytes = Uint8List.fromList(mnemonic.seed);
+    final passphraseSeed = Seed.mnemonic(
+      mnemonicWords: mnemonic.words,
+      passphrase: 'secret',
+      bytes: bytes,
+      masterFingerprint: hex.encode(
+        bip32.Bip32Keys.fromSeed(bytes).fingerprint,
+      ),
+    );
+    when(
+      () => getDefaultSeed.execute(environment: Environment.mainnet),
+    ).thenAnswer((_) async => Ok<Seed, SeedFailure>(passphraseSeed));
+
+    final result = await usecase.execute(
+      index: 100,
+      alias: 'BTCPay',
+      environment: Environment.mainnet,
+    );
+
+    expect(_value(result).parentPassphraseUsed, isTrue);
   });
 
   test('replaces a reservation left by a different default seed', () async {

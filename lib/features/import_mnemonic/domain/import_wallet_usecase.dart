@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
@@ -67,6 +68,7 @@ class ImportWalletUsecase {
         seed: seed,
         network: bitcoinNetwork,
         scriptType: scriptType,
+        provenance: WalletProvenance.importedMnemonic,
         isDefault: false,
         sync: false,
         label: label,

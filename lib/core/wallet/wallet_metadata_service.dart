@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 
 class WalletMetadataService {
@@ -106,6 +108,8 @@ class WalletMetadataService {
     required ScriptType scriptType,
     String? label,
     required bool isDefault,
+    required WalletProvenance provenance,
+    bool? seedPassphraseUsed,
     DateTime? birthday,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(
@@ -165,6 +169,10 @@ class WalletMetadataService {
       isPhysicalBackupTested: false,
       isEncryptedVaultTested: false,
       birthday: birthday,
+      provenance: provenance,
+      seedPassphraseUsed:
+          seedPassphraseUsed ??
+          (seed is MnemonicSeed ? seed.passphrase?.isNotEmpty ?? false : null),
     );
   }
 
@@ -217,12 +225,15 @@ class WalletMetadataService {
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       isDefault: false,
+      provenance: WalletProvenance.watchOnly,
     );
   }
 
   static Future<WalletMetadataModel> fromDescriptor(
-    WatchOnlyDescriptorEntity entity,
-  ) async {
+    WatchOnlyDescriptorEntity entity, {
+    WalletProvenance? provenance,
+    bool? seedPassphraseUsed,
+  }) async {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
         fingerprint: entity.masterFingerprint,
@@ -242,6 +253,12 @@ class WalletMetadataService {
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: entity.label,
+      provenance:
+          provenance ??
+          (entity.signer == SignerEntity.remote
+              ? WalletProvenance.externalSigner
+              : WalletProvenance.watchOnly),
+      seedPassphraseUsed: seedPassphraseUsed,
     );
   }
 }

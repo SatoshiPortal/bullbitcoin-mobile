@@ -23,7 +23,12 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
   @useResult
   Future<
     Result<
-      ({String derivation, bip39.Mnemonic mnemonic, String parentFingerprint}),
+      ({
+        String derivation,
+        bip39.Mnemonic mnemonic,
+        String parentFingerprint,
+        bool parentPassphraseUsed,
+      }),
       Bip85Failure
     >
   >
@@ -88,6 +93,8 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
           derivation: value.derivation,
           mnemonic: value.mnemonic,
           parentFingerprint: seed.masterFingerprint,
+          parentPassphraseUsed:
+              seed is MnemonicSeed && (seed.passphrase?.isNotEmpty ?? false),
         ));
       }
 
@@ -102,6 +109,8 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
           derivation: derived.derivation,
           mnemonic: derived.mnemonic,
           parentFingerprint: seed.masterFingerprint,
+          parentPassphraseUsed:
+              seed is MnemonicSeed && (seed.passphrase?.isNotEmpty ?? false),
         )),
       };
     } on Exception catch (error, trace) {

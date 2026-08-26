@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
@@ -140,6 +141,7 @@ void main() {
           seed: any(named: 'seed'),
           network: any(named: 'network'),
           scriptType: any(named: 'scriptType'),
+          provenance: WalletProvenance.importedMnemonic,
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
@@ -166,6 +168,7 @@ void main() {
           seed: any(named: 'seed'),
           network: any(named: 'network'),
           scriptType: any(named: 'scriptType'),
+          provenance: WalletProvenance.importedMnemonic,
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),

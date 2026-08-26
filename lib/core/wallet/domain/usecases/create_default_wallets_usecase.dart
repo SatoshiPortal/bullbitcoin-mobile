@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
@@ -59,6 +60,7 @@ class CreateDefaultWalletsUsecase {
               seed: seed,
               network: bitcoinNetwork,
               scriptType: scriptType,
+              provenance: WalletProvenance.defaultSeed,
               isDefault: true,
               birthday: birthday,
             ),
@@ -70,6 +72,7 @@ class CreateDefaultWalletsUsecase {
               seed: seed,
               network: liquidNetwork,
               scriptType: scriptType,
+              provenance: WalletProvenance.defaultSeed,
               isDefault: true,
               birthday: birthday,
             ),

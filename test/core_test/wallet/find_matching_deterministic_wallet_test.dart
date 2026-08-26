@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -72,6 +73,7 @@ void main() {
       scriptType: spec.scriptType,
       label: spec.label,
       isDefault: spec.isDefault,
+      provenance: WalletProvenance.bip85,
     );
     await metadata.store(expected);
 
@@ -92,6 +94,7 @@ void main() {
       scriptType: spec.scriptType,
       label: spec.label,
       isDefault: spec.isDefault,
+      provenance: WalletProvenance.bip85,
     );
     await metadata.store(
       expected.copyWith(externalPublicDescriptor: 'different descriptor'),

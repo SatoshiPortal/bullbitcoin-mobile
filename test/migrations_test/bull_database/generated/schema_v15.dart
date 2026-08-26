@@ -748,6 +748,23 @@ class WalletMetadatas extends Table
     requiredDuringInsert: false,
     $customConstraints: 'NULL',
   );
+  late final GeneratedColumn<String> provenance = GeneratedColumn<String>(
+    'provenance',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'watchOnly\'',
+    defaultValue: const CustomExpression('\'watchOnly\''),
+  );
+  late final GeneratedColumn<int> seedPassphraseUsed = GeneratedColumn<int>(
+    'seed_passphrase_used',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (seed_passphrase_used IN (0, 1))',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -768,6 +785,8 @@ class WalletMetadatas extends Table
     label,
     syncedAt,
     birthday,
+    provenance,
+    seedPassphraseUsed,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -852,6 +871,14 @@ class WalletMetadatas extends Table
         DriftSqlType.string,
         data['${effectivePrefix}birthday'],
       ),
+      provenance: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provenance'],
+      )!,
+      seedPassphraseUsed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}seed_passphrase_used'],
+      ),
     );
   }
 
@@ -886,6 +913,8 @@ class WalletMetadatasData extends DataClass
   final String? label;
   final String? syncedAt;
   final String? birthday;
+  final String provenance;
+  final int? seedPassphraseUsed;
   const WalletMetadatasData({
     required this.id,
     required this.masterFingerprint,
@@ -905,6 +934,8 @@ class WalletMetadatasData extends DataClass
     this.label,
     this.syncedAt,
     this.birthday,
+    required this.provenance,
+    this.seedPassphraseUsed,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -947,6 +978,10 @@ class WalletMetadatasData extends DataClass
     if (!nullToAbsent || birthday != null) {
       map['birthday'] = Variable<String>(birthday);
     }
+    map['provenance'] = Variable<String>(provenance);
+    if (!nullToAbsent || seedPassphraseUsed != null) {
+      map['seed_passphrase_used'] = Variable<int>(seedPassphraseUsed);
+    }
     return map;
   }
 
@@ -986,6 +1021,10 @@ class WalletMetadatasData extends DataClass
       birthday: birthday == null && nullToAbsent
           ? const Value.absent()
           : Value(birthday),
+      provenance: Value(provenance),
+      seedPassphraseUsed: seedPassphraseUsed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(seedPassphraseUsed),
     );
   }
 
@@ -1025,6 +1064,8 @@ class WalletMetadatasData extends DataClass
       label: serializer.fromJson<String?>(json['label']),
       syncedAt: serializer.fromJson<String?>(json['syncedAt']),
       birthday: serializer.fromJson<String?>(json['birthday']),
+      provenance: serializer.fromJson<String>(json['provenance']),
+      seedPassphraseUsed: serializer.fromJson<int?>(json['seedPassphraseUsed']),
     );
   }
   @override
@@ -1053,6 +1094,8 @@ class WalletMetadatasData extends DataClass
       'label': serializer.toJson<String?>(label),
       'syncedAt': serializer.toJson<String?>(syncedAt),
       'birthday': serializer.toJson<String?>(birthday),
+      'provenance': serializer.toJson<String>(provenance),
+      'seedPassphraseUsed': serializer.toJson<int?>(seedPassphraseUsed),
     };
   }
 
@@ -1075,6 +1118,8 @@ class WalletMetadatasData extends DataClass
     Value<String?> label = const Value.absent(),
     Value<String?> syncedAt = const Value.absent(),
     Value<String?> birthday = const Value.absent(),
+    String? provenance,
+    Value<int?> seedPassphraseUsed = const Value.absent(),
   }) => WalletMetadatasData(
     id: id ?? this.id,
     masterFingerprint: masterFingerprint ?? this.masterFingerprint,
@@ -1104,6 +1149,10 @@ class WalletMetadatasData extends DataClass
     label: label.present ? label.value : this.label,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
     birthday: birthday.present ? birthday.value : this.birthday,
+    provenance: provenance ?? this.provenance,
+    seedPassphraseUsed: seedPassphraseUsed.present
+        ? seedPassphraseUsed.value
+        : this.seedPassphraseUsed,
   );
   WalletMetadatasData copyWithCompanion(WalletMetadatasCompanion data) {
     return WalletMetadatasData(
@@ -1147,6 +1196,12 @@ class WalletMetadatasData extends DataClass
       label: data.label.present ? data.label.value : this.label,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
       birthday: data.birthday.present ? data.birthday.value : this.birthday,
+      provenance: data.provenance.present
+          ? data.provenance.value
+          : this.provenance,
+      seedPassphraseUsed: data.seedPassphraseUsed.present
+          ? data.seedPassphraseUsed.value
+          : this.seedPassphraseUsed,
     );
   }
 
@@ -1170,7 +1225,9 @@ class WalletMetadatasData extends DataClass
           ..write('autoSweepEnabled: $autoSweepEnabled, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
-          ..write('birthday: $birthday')
+          ..write('birthday: $birthday, ')
+          ..write('provenance: $provenance, ')
+          ..write('seedPassphraseUsed: $seedPassphraseUsed')
           ..write(')'))
         .toString();
   }
@@ -1195,6 +1252,8 @@ class WalletMetadatasData extends DataClass
     label,
     syncedAt,
     birthday,
+    provenance,
+    seedPassphraseUsed,
   );
   @override
   bool operator ==(Object other) =>
@@ -1217,7 +1276,9 @@ class WalletMetadatasData extends DataClass
           other.autoSweepEnabled == this.autoSweepEnabled &&
           other.label == this.label &&
           other.syncedAt == this.syncedAt &&
-          other.birthday == this.birthday);
+          other.birthday == this.birthday &&
+          other.provenance == this.provenance &&
+          other.seedPassphraseUsed == this.seedPassphraseUsed);
 }
 
 class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
@@ -1239,6 +1300,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String?> label;
   final Value<String?> syncedAt;
   final Value<String?> birthday;
+  final Value<String> provenance;
+  final Value<int?> seedPassphraseUsed;
   final Value<int> rowid;
   const WalletMetadatasCompanion({
     this.id = const Value.absent(),
@@ -1259,6 +1322,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
+    this.provenance = const Value.absent(),
+    this.seedPassphraseUsed = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WalletMetadatasCompanion.insert({
@@ -1280,6 +1345,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
+    this.provenance = const Value.absent(),
+    this.seedPassphraseUsed = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        masterFingerprint = Value(masterFingerprint),
@@ -1310,6 +1377,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Expression<String>? label,
     Expression<String>? syncedAt,
     Expression<String>? birthday,
+    Expression<String>? provenance,
+    Expression<int>? seedPassphraseUsed,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1337,6 +1406,9 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       if (label != null) 'label': label,
       if (syncedAt != null) 'synced_at': syncedAt,
       if (birthday != null) 'birthday': birthday,
+      if (provenance != null) 'provenance': provenance,
+      if (seedPassphraseUsed != null)
+        'seed_passphrase_used': seedPassphraseUsed,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1360,6 +1432,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Value<String?>? label,
     Value<String?>? syncedAt,
     Value<String?>? birthday,
+    Value<String>? provenance,
+    Value<int?>? seedPassphraseUsed,
     Value<int>? rowid,
   }) {
     return WalletMetadatasCompanion(
@@ -1386,6 +1460,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       label: label ?? this.label,
       syncedAt: syncedAt ?? this.syncedAt,
       birthday: birthday ?? this.birthday,
+      provenance: provenance ?? this.provenance,
+      seedPassphraseUsed: seedPassphraseUsed ?? this.seedPassphraseUsed,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1457,6 +1533,12 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     if (birthday.present) {
       map['birthday'] = Variable<String>(birthday.value);
     }
+    if (provenance.present) {
+      map['provenance'] = Variable<String>(provenance.value);
+    }
+    if (seedPassphraseUsed.present) {
+      map['seed_passphrase_used'] = Variable<int>(seedPassphraseUsed.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1484,6 +1566,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('birthday: $birthday, ')
+          ..write('provenance: $provenance, ')
+          ..write('seedPassphraseUsed: $seedPassphraseUsed, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -88,6 +89,7 @@ void main() {
         derivation: "39'/0'/12'/100'",
         mnemonic: mnemonic,
         parentFingerprint: 'aabbccdd',
+        parentPassphraseUsed: true,
       )),
     );
   });
@@ -143,6 +145,8 @@ void main() {
           seed: any(named: 'seed'),
           network: _bitcoin.network,
           scriptType: _bitcoin.scriptType,
+          provenance: WalletProvenance.bip85,
+          seedPassphraseUsed: true,
           label: _bitcoin.label,
           isDefault: _bitcoin.isDefault,
           sync: _bitcoin.sync,
@@ -153,6 +157,8 @@ void main() {
           seed: any(named: 'seed'),
           network: _liquid.network,
           scriptType: _liquid.scriptType,
+          provenance: WalletProvenance.bip85,
+          seedPassphraseUsed: true,
           label: _liquid.label,
           isDefault: _liquid.isDefault,
           sync: _liquid.sync,

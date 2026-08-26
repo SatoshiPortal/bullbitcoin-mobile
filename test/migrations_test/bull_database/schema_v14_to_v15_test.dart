@@ -50,6 +50,8 @@ void main() {
       expect(wallet.id, 'wallet-1');
       expect(wallet.hideOnHome, isNull);
       expect(wallet.autoSweepEnabled, isNull);
+      expect(wallet.provenance, 'defaultSeed');
+      expect(wallet.seedPassphraseUsed, isNull);
       await migrated
           .update(migrated.walletMetadatas)
           .write(
@@ -205,6 +207,14 @@ void main() {
       'keychain_manifest_nostr_keys',
       'wallet_backup_states',
     });
-    expect(walletColumns, containsAll(['hide_on_home', 'auto_sweep_enabled']));
+    expect(
+      walletColumns,
+      containsAll([
+        'hide_on_home',
+        'auto_sweep_enabled',
+        'provenance',
+        'seed_passphrase_used',
+      ]),
+    );
   });
 }

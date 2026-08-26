@@ -14,6 +14,21 @@ class Schema14To15 {
       schema.walletMetadatas,
       schema.walletMetadatas.autoSweepEnabled,
     );
+    await m.addColumn(
+      schema.walletMetadatas,
+      schema.walletMetadatas.provenance,
+    );
+    await m.addColumn(
+      schema.walletMetadatas,
+      schema.walletMetadatas.seedPassphraseUsed,
+    );
+    await m.database.customStatement(
+      "UPDATE wallet_metadatas SET provenance = CASE "
+      "WHEN is_default = 1 THEN 'defaultSeed' "
+      "WHEN signer = 'local' THEN 'importedMnemonic' "
+      "WHEN signer = 'remote' THEN 'externalSigner' "
+      "ELSE 'watchOnly' END",
+    );
     await m.createTable(schema.keychainManifestEntries);
     await m.createTable(schema.keychainManifestWalletBindings);
     await m.createTable(schema.keychainManifestNostrKeys);

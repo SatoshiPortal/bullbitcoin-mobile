@@ -355,6 +355,34 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "provenance",
+            "getter_name": "provenance",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'watchOnly\\'')",
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<WalletProvenance>(WalletProvenance.values)",
+              "dart_type_name": "WalletProvenance"
+            }
+          },
+          {
+            "name": "seed_passphrase_used",
+            "getter_name": "seedPassphraseUsed",
+            "moor_type": "bool",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"seed_passphrase_used\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"seed_passphrase_used\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -3116,7 +3144,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"xpub\" TEXT NOT NULL, \"external_public_descriptor\" TEXT NOT NULL, \"internal_public_descriptor\" TEXT NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"hide_on_home\" INTEGER NULL CHECK (\"hide_on_home\" IN (0, 1)), \"auto_sweep_enabled\" INTEGER NULL CHECK (\"auto_sweep_enabled\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"xpub\" TEXT NOT NULL, \"external_public_descriptor\" TEXT NOT NULL, \"internal_public_descriptor\" TEXT NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"hide_on_home\" INTEGER NULL CHECK (\"hide_on_home\" IN (0, 1)), \"auto_sweep_enabled\" INTEGER NULL CHECK (\"auto_sweep_enabled\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, \"provenance\" TEXT NOT NULL DEFAULT 'watchOnly', \"seed_passphrase_used\" INTEGER NULL CHECK (\"seed_passphrase_used\" IN (0, 1)), PRIMARY KEY (\"id\"));"
         }
       ]
     },
