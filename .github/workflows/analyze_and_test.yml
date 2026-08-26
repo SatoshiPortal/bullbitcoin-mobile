@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
   # The funded Payjoin fixture spends from shared testnet wallets. It does not
   # run for the concurrent develop stack; workflow_dispatch lets a reviewer run
   # it for an arbitrary branch.
