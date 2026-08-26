@@ -331,12 +331,13 @@ class BdkWalletDatasource {
     try {
       psbt = txBuilder.finish(wallet: bdkWallet);
     } on bdk.InsufficientFundsCreateTxException catch (e) {
-      // Mapped here so callers don't depend on a BDK type. Both totals
-      // include the fee, so the difference is what's missing.
-      throw InsufficientFundsException(
-        e.toString(),
-        missingSat: e.needed - e.available,
-      );
+      // Mapped here so callers don't depend on a BDK type.
+      throw InsufficientFundsException(e.toString());
+    } on bdk.CoinSelectionCreateTxException catch (e) {
+      // The same situation reported through a different variant: BDK raises
+      // this one when the selection can't cover the outputs plus the fee,
+      // which is what hand-picked coins hit.
+      throw InsufficientFundsException(e.errorMessage);
     }
 
     return psbt.serialize();
