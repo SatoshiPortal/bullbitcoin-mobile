@@ -1,0 +1,47 @@
+name: Recheck PR readiness after issue changes
+
+on:
+  issues:
+    types: [labeled, unlabeled, closed, reopened]
+
+permissions:
+  actions: write
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    steps:
+      # Require a fork fixture before enabling this workflow in repository
+      # rulesets: pull_request workflow runs for fork PRs must be observed and
+      # rerun successfully. The checkout is only the trusted workflow revision;
+      # no pull request content is used.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { selectReadinessRun } = require('./tools/pr_governance/policy');
+            const issue = context.payload.issue;
+            const timeline = await github.paginate(github.rest.issues.listEventsForTimeline, { owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number, per_page: 100 });
+            const numbers = [...new Set(timeline.filter((e) => e.event === 'cross-referenced' && e.source?.issue?.pull_request && e.source.issue.state === 'open').map((e) => e.source.issue.number))];
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            const runsFor = (headSha, number) => github.paginate(github.rest.actions.listWorkflowRuns, { owner: context.repo.owner, repo: context.repo.repo, workflow_id: 'pr-readiness.yml', event: 'pull_request', head_sha: headSha, per_page: 100 }).then((runs) => selectReadinessRun(runs, number, headSha));
+            for (const number of numbers) {
+              const pr = await github.rest.pulls.get({ owner: context.repo.owner, repo: context.repo.repo, pull_number: number });
+              if (pr.data.state !== 'open') continue;
+              const headSha = pr.data.head.sha;
+              let matches = [];
+              for (const delay of [0, 1000, 2000]) {
+                if (delay) await sleep(delay);
+                const run = await runsFor(headSha, number);
+                if (run) { matches = [run]; break; }
+              }
+              const run = matches.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+              if (run) await github.rest.actions.reRunWorkflow({ owner: context.repo.owner, repo: context.repo.repo, run_id: run.id });
+              else core.warning(`No current PR readiness run found for PR #${number} at ${headSha}; the native pull_request event will create one.`);
+            }

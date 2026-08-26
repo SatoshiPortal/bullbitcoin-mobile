@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -73,6 +73,10 @@ checks: analyze bull-ui-check fix-check format-check unit-test
 action-pins-check:
 	@echo "📌 Checking GitHub Actions are pinned to a commit SHA"
 	@bash tools/check_action_pins.sh
+
+pr-governance-test:
+	@echo "🛡️ Testing PR governance policy"
+	@node --test tools/pr_governance/policy.test.js
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
