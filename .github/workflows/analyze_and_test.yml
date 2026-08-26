@@ -5,17 +5,6 @@ on:
     branches:
       - main
       - develop
-    # Docs-only PRs skip both jobs entirely. Safe because develop has no
-    # required status checks (verified via the API) — a skipped run can't
-    # strand a PR on "Expected — waiting". If checks are ever made required,
-    # this needs the paths-filter + always-green sentinel pattern instead.
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.git-blame-ignore-revs'
-      - '.github/ISSUE_TEMPLATE/**'
   # The funded Payjoin fixture spends from shared testnet wallets. It does not
   # run for the concurrent develop stack; workflow_dispatch lets a reviewer run
   # it for an arbitrary branch.
@@ -24,6 +13,7 @@ on:
 # Checkout + tests only; no writes to the repo via the token.
 permissions:
   contents: read
+  pull-requests: read
 
 # Cancel superseded runs on the same PR — these builds are heavy (Rust FRB
 # crates + Flutter SDK + Linux GTK app + integration tests), so don't run stale
@@ -41,7 +31,98 @@ concurrency:
 # the known follow-up. Neither job `needs:` the other on purpose: the split
 # exists so the fast signal never waits for the slow one.
 jobs:
+  classification:
+    name: Classify changed files
+    runs-on: ubuntu-24.04
+    outputs:
+      run_app_checks: ${{ steps.classify.outputs.run_app_checks }}
+    steps:
+      - name: Classify pull request files
+        id: classify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "run_app_checks=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          api_url="https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}/files"
+          page=1
+          file_count=0
+          run_app_checks=false
+
+          while :; do
+            response=$(curl --fail-with-body --silent --show-error \
+              --retry 2 --retry-delay 1 --max-time 30 \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "${api_url}?per_page=100&page=${page}")
+
+            if ! jq -e 'type == "array"' >/dev/null <<<"$response"; then
+              echo "Changed-file API returned a non-array response" >&2
+              exit 1
+            fi
+            if ! jq -e 'all(.[]; type == "object" and (.filename | type == "string"))' >/dev/null <<<"$response"; then
+              echo "Changed-file API returned an invalid file entry" >&2
+              exit 1
+            fi
+
+            page_count=$(jq 'length' <<<"$response")
+            while IFS= read -r path; do
+              file_count=$((file_count + 1))
+              case "$path" in
+                *.md|docs/*|LICENSE|.gitignore|.git-blame-ignore-revs|.github/ISSUE_TEMPLATE/*)
+                  ;;
+                *)
+                  run_app_checks=true
+                  ;;
+              esac
+            done < <(jq -r '.[].filename // empty' <<<"$response")
+
+            (( page_count < 100 )) && break
+            page=$((page + 1))
+          done
+
+          if (( file_count == 0 )); then
+            echo "Changed-file enumeration returned an impossible empty set" >&2
+            exit 1
+          fi
+
+          echo "Enumerated ${file_count} changed file(s); application checks: ${run_app_checks}"
+          echo "run_app_checks=${run_app_checks}" >> "$GITHUB_OUTPUT"
+
+  action-pins:
+    name: Check action pins
+    runs-on: ubuntu-24.04
+    steps:
+      # The trusted checker is loaded from the repository's trusted base.
+      - name: Checkout candidate tree (data only)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: candidate
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Checkout trusted checker and base tree
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: trusted
+          # PRs use the immutable base SHA; manual runs trust the repository's
+          # default branch, selected deterministically from the dispatch event.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Verify external action pins
+        run: bash trusted/tools/check_action_pins.sh "$GITHUB_WORKSPACE/candidate"
+
   checks:
+    needs: classification
+    if: ${{ needs.classification.outputs.run_app_checks == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -100,6 +181,8 @@ jobs:
         run: make unit-test
 
   integration:
+    needs: classification
+    if: ${{ needs.classification.outputs.run_app_checks == 'true' }}
     # arm64: free 4-vCPU runners for public repos, native arm execution — the
     # Rust FRB compile is exactly the workload that benefits. If this arch
     # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
@@ -189,3 +272,51 @@ jobs:
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
             make integration-test
           '
+
+  ci:
+    name: CI
+    if: ${{ !cancelled() }}
+    needs: [classification, action-pins, checks, integration]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require the expected checks
+        env:
+          CLASSIFICATION_RESULT: ${{ needs.classification.result }}
+          RUN_APP_CHECKS: ${{ needs.classification.outputs.run_app_checks }}
+          ACTION_PINS_RESULT: ${{ needs.action-pins.result }}
+          CHECKS_RESULT: ${{ needs.checks.result }}
+          INTEGRATION_RESULT: ${{ needs.integration.result }}
+        run: |
+          set -euo pipefail
+
+          [[ "$CLASSIFICATION_RESULT" == success ]] || {
+            echo "Classification result was ${CLASSIFICATION_RESULT}, expected success" >&2
+            exit 1
+          }
+          [[ "$ACTION_PINS_RESULT" == success ]] || {
+            echo "Action-pin result was ${ACTION_PINS_RESULT}, expected success" >&2
+            exit 1
+          }
+
+          case "$RUN_APP_CHECKS" in
+            true)
+              [[ "$CHECKS_RESULT" == success ]] || {
+                echo "Application checks result was ${CHECKS_RESULT}, expected success" >&2
+                exit 1
+              }
+              [[ "$INTEGRATION_RESULT" == success ]] || {
+                echo "Integration result was ${INTEGRATION_RESULT}, expected success" >&2
+                exit 1
+              }
+              ;;
+            false)
+              [[ "$CHECKS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
+                echo "Docs-only PR expected both application jobs to be skipped; got checks=${CHECKS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
+                exit 1
+              }
+              ;;
+            *)
+              echo "Classification output was '${RUN_APP_CHECKS}', expected true or false" >&2
+              exit 1
+              ;;
+          esac
