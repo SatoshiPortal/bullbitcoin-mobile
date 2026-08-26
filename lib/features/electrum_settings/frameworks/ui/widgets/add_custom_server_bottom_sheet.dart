@@ -1,11 +1,14 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +19,11 @@ class CustomServerInput {
   final bool enableSsl;
 
   CustomServerInput({required this.url, required this.enableSsl});
+}
+
+bool isOnionCustomServerInput(String input) {
+  final parsed = ElectrumUrlParser.tryParse(input);
+  return parsed != null && ElectrumServerUrl(parsed.cleanUrl).isOnion;
 }
 
 class AddCustomServerBottomSheet extends StatefulWidget {
@@ -45,6 +53,7 @@ class _AddCustomServerBottomSheetState
   final _focusNode = FocusNode();
   bool _enableSsl = true;
   bool _sslAutoDetected = false;
+  bool _isOnion = false;
 
   @override
   void initState() {
@@ -62,18 +71,21 @@ class _AddCustomServerBottomSheetState
 
   void _onUrlChanged() {
     final input = _controller.text.trim();
-    if (input.isEmpty) return;
-
     final result = ElectrumUrlParser.tryParse(input);
+    final isOnion = isOnionCustomServerInput(input);
     // Only override the toggle when the URL carries an unambiguous SSL signal
     // (explicit :s/:t suffix or .onion host). Plain clearnet host:port is just
     // the default — don't override a manual user choice.
-    if (result != null && result.sslExplicit) {
-      setState(() {
+    setState(() {
+      _isOnion = isOnion;
+      if (result != null && result.sslExplicit) {
         _enableSsl = result.enableSsl;
         _sslAutoDetected = true;
-      });
-    }
+      } else if (_sslAutoDetected) {
+        _enableSsl = true;
+        _sslAutoDetected = false;
+      }
+    });
   }
 
   void _submit() {
@@ -229,6 +241,20 @@ class _AddCustomServerBottomSheetState
                           },
                         ),
                       ],
+                    ),
+                    const Gap(8),
+                  ],
+                  if (!isLiquid && _isOnion) ...[
+                    InfoCard(
+                      description: context.loc.electrumOnionUsesTorDescription,
+                      tagColor: context.appColors.primary,
+                      bgColor: context.appColors.surfaceContainer,
+                    ),
+                    const Gap(8),
+                    TextButton.icon(
+                      onPressed: () => TorSettingsBottomSheet.show(context),
+                      icon: const Icon(Icons.vpn_lock),
+                      label: Text(context.loc.electrumConfigureTor),
                     ),
                     const Gap(8),
                   ],
