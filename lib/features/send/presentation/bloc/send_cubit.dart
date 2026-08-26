@@ -885,6 +885,8 @@ class SendCubit extends Cubit<SendState>
         state.sendType == SendType.bitcoin) {
       await createTransaction();
     }
+    // Skipped when the build above already failed: it knows whether the fee or
+    // the coins fell short, and this check would flatten that away.
     if (state.failure == null && !await hasBalance()) {
       emit(
         state.copyWith(
@@ -1632,9 +1634,13 @@ class SendCubit extends Cubit<SendState>
         return;
       }
       if (e is InsufficientFundsException) {
+        // Frozen or hand-picked coins can be the real cause, not the fee. Both
+        // need the generic failure
+        final blamesFees =
+            state.selectedUtxos.isEmpty && state.frozenBalanceSat == 0;
         emit(
           state.copyWith(
-            failure: state.selectedUtxos.isEmpty
+            failure: blamesFees
                 ? SendInsufficientFundsForFeesFailure(e.message)
                 : SendInsufficientBalanceFailure(e.message),
             buildingTransaction: false,
@@ -1954,6 +1960,8 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> onConfirmTransactionClicked() async {
+    // Needed even though createTransaction() also clears: the payjoin-only
+    // path below skips it, and a leftover failure blocks every retry.
     clearFailure();
     try {
       final orderNeedsPayin =

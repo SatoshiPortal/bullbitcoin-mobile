@@ -252,13 +252,18 @@ Wallet _bitcoinWallet({required int balanceSat}) => Wallet(
   balanceSat: BigInt.from(balanceSat),
 );
 
-WalletUtxo _utxo({required int amountSat}) => WalletUtxo.bitcoin(
+WalletUtxo _utxo({
+  required int amountSat,
+  int vout = 0,
+  bool isFrozen = false,
+}) => WalletUtxo.bitcoin(
   walletId: 'w-bitcoin',
   txId: 'a' * 64,
-  vout: 0,
+  vout: vout,
   scriptPubkey: Uint8List(0),
   amountSat: BigInt.from(amountSat),
   address: 'bc1-utxo',
+  isFrozen: isFrozen,
 );
 
 FeeOptions _feeOptions() => const FeeOptions(
@@ -550,9 +555,7 @@ void main() {
     );
 
     // The payjoin-only path skips createTransaction(), so nothing else clears
-    // the failure a previous attempt left behind. Without a clear at the top
-    // of onConfirmTransactionClicked, the gate that refuses to sign while a
-    // failure is set traps every retry on this screen.
+    // a failure left by the previous attempt and every retry gets trapped.
     test(
       'a failed payjoin start can be retried from the confirm screen',
       () async {
@@ -990,6 +993,52 @@ void main() {
 
       await cubit.onAmountConfirmed();
 
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+      expect(
+        cubit.state.failure,
+        isNot(isA<SendInsufficientFundsForFeesFailure>()),
+      );
+    });
+
+    // #2337: frozen coins cause a shortfall too, and only the generic failure
+    // reaches the "manage coins" hint that tells the user what to do.
+    test('with frozen coins the message stays generic', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          networkFee: any(named: 'networkFee'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenThrow(InsufficientFundsException('needed 10000, available 5000'));
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [_utxo(amountSat: 15000, isFrozen: true)]);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          sendType: SendType.bitcoin,
+          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1-address',
+            isTestnet: false,
+          ),
+          // Fits the 20000 balance, but 15000 of it is frozen.
+          amount: '10000',
+          inputAmountCurrencyCode: 'sats',
+          liquidFeesList: _feeOptions(),
+          bitcoinFeesList: _feeOptions(),
+        ),
+      );
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.frozenBalanceSat, 15000);
       expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
       expect(
         cubit.state.failure,
