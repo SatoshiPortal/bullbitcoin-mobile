@@ -105,6 +105,8 @@ void main() {
 
   const utxoLargeAmountSat = 200000;
   const utxoSmallAmountSat = 30000;
+  // Both UTXOs share utxoLargeTxId (same funding tx); only vout differs.
+  const utxoSmallVout = 1;
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('bdk_wallet_datasource_');
@@ -333,10 +335,9 @@ void main() {
     },
   );
 
-  // BDK signals a shortfall through two exception types and the docs don't say
-  // which applies when, so these pin it against the real builder: whichever it
-  // picks must arrive as InsufficientFundsException, or the send screen falls
-  // back to a generic "Build Failed".
+  // BDK has two exception types for a shortfall and doesn't say which it uses
+  // when, so these pin it against the real builder: either must arrive as
+  // InsufficientFundsException.
   test(
     'buildPsbt reports more than the whole balance as insufficient funds',
     () async {
@@ -354,10 +355,9 @@ void main() {
     },
   );
 
-  // The case the send screen carves out: the amount fits the picked coin, but
-  // not once the fee is added. `addUtxos` only makes a coin *required*, so the
-  // large one has to be marked unspendable or BDK tops the transaction up from
-  // it and the shortfall never happens.
+  // The amount fits the picked coin but not the fee. The large coin must be
+  // unspendable too: `addUtxos` only makes a coin required, so BDK would
+  // otherwise top the transaction up from it and never fall short.
   test(
     'buildPsbt reports a fee-only shortfall as insufficient funds',
     () async {
@@ -372,7 +372,7 @@ void main() {
           selected: [
             WalletUtxoModel.bitcoin(
               txId: utxoLargeTxId,
-              vout: 1,
+              vout: utxoSmallVout,
               amountSat: BigInt.from(utxoSmallAmountSat),
               scriptPubkey: Uint8List(0),
               address: '',
