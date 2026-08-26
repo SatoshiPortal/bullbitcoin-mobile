@@ -12844,8 +12844,6 @@
   "exchangeFileUploadTapToReupload": "Phir se upload karne ke liye tap karo",
   "exchangeSupportChatAttachmentImage": "Image",
   "exchangeSupportChatAttachmentUnknownFile": "Anjaan file",
-  "exchangeSupportChatPermissionDenied": "Permission deny hua.",
-  "exchangeSupportChatPermissionDeniedSettings": "Permission deny hua. Kripya Settings mein photo library ka access do.",
   "exchangeSupportChatPickFilesFailed": "Files select nahi ho saki. Kripya dobara try karein.",
   "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
   "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
@@ -12969,5 +12967,8 @@
   "settingsSearchTestnetCredentialsKeywords": "Testnet user credentials|Testnet login|Testnet username|Testnet password|Basic Auth",
   "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
   "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
-  "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein."
+  "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein.",
+  "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
+  "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
+  "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein."
 }

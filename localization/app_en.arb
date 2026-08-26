@@ -13521,14 +13521,6 @@
   "@exchangeSupportChatAttachmentUnknownFile": {
     "description": "Fallback display name for a non-image attachment in the support chat when no file name is available."
   },
-  "exchangeSupportChatPermissionDenied": "Permission denied.",
-  "@exchangeSupportChatPermissionDenied": {
-    "description": "Snackbar shown when a runtime permission needed to attach photos is denied."
-  },
-  "exchangeSupportChatPermissionDeniedSettings": "Permission denied. Please grant photo library access in Settings.",
-  "@exchangeSupportChatPermissionDeniedSettings": {
-    "description": "Snackbar shown when photo library permission is permanently denied and the user must enable it from Settings."
-  },
   "exchangeSupportChatPickFilesFailed": "Failed to pick files. Please try again.",
   "@exchangeSupportChatPickFilesFailed": {
     "description": "Snackbar shown when picking files for a support chat attachment fails."
@@ -14978,5 +14970,17 @@
         "type": "int"
       }
     }
+  },
+  "exchangeSupportChatLoadMessagesError": "Couldn't load messages. Please try again.",
+  "@exchangeSupportChatLoadMessagesError": {
+    "description": "Shown when loading the support chat message history fails."
+  },
+  "exchangeSupportChatSendMessageError": "Couldn't send your message. Please try again.",
+  "@exchangeSupportChatSendMessageError": {
+    "description": "Shown when sending a support chat message fails."
+  },
+  "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
+  "@exchangeSupportChatLoadAttachmentError": {
+    "description": "Shown when downloading or opening a support chat attachment fails."
   }
 }

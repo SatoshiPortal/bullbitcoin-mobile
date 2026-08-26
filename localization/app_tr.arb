@@ -12455,8 +12455,6 @@
   "exchangeFileUploadTapToReupload": "Yeniden yüklemek için dokunun",
   "exchangeSupportChatAttachmentImage": "Görsel",
   "exchangeSupportChatAttachmentUnknownFile": "Bilinmeyen dosya",
-  "exchangeSupportChatPermissionDenied": "İzin reddedildi.",
-  "exchangeSupportChatPermissionDeniedSettings": "İzin reddedildi. Lütfen Ayarlar'dan fotoğraf kitaplığı erişimine izin verin.",
   "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",
@@ -12581,5 +12579,8 @@
   "settingsSearchTestnetCredentialsKeywords": "testnet kimlik bilgileri|testnet girişi|testnet kullanıcı adı|testnet parolası|Basic Auth",
   "settingsSearchErrorReportingKeywords": "çökme raporları|hata raporları|tanılama|telemetri|hata günlükleri",
   "settingsSearchScreenPrivacyKeywords": "ekran görüntüleri|ekran kaydı|ekran yakalama koruması|gizlilik",
-  "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın."
+  "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
+  "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin."
 }

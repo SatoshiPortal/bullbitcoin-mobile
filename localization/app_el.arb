@@ -11923,8 +11923,6 @@
   "exchangeFileUploadTapToReupload": "Πατήστε για να ανεβάσετε ξανά",
   "exchangeSupportChatAttachmentImage": "Εικόνα",
   "exchangeSupportChatAttachmentUnknownFile": "Άγνωστο αρχείο",
-  "exchangeSupportChatPermissionDenied": "Η άδεια απορρίφθηκε.",
-  "exchangeSupportChatPermissionDeniedSettings": "Η άδεια απορρίφθηκε. Παραχωρήστε πρόσβαση στη βιβλιοθήκη φωτογραφιών στις Ρυθμίσεις.",
   "exchangeSupportChatPickFilesFailed": "Η επιλογή αρχείων απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatAttachLogsFailed": "Η επισύναψη αρχείων καταγραφής απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε.",
@@ -12581,5 +12579,8 @@
   "settingsSearchTestnetCredentialsKeywords": "διαπιστευτήρια testnet|σύνδεση testnet|όνομα χρήστη testnet|κωδικός testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "αναφορές σφαλμάτων λειτουργίας|αναφορές προβλημάτων|διαγνωστικά|τηλεμετρία|αρχεία σφαλμάτων",
   "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο",
-  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα."
+  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα.",
+  "exchangeSupportChatLoadMessagesError": "Δεν ήταν δυνατή η φόρτωση των μηνυμάτων. Δοκιμάστε ξανά.",
+  "exchangeSupportChatSendMessageError": "Δεν ήταν δυνατή η αποστολή του μηνύματός σας. Δοκιμάστε ξανά.",
+  "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά."
 }

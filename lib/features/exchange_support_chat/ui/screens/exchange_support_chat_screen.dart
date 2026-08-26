@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/exchange/data/services/exchange_notification_serv
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
@@ -13,6 +14,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
+import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -41,8 +43,9 @@ class ExchangeSupportChatScreen extends StatelessWidget {
           sendMessageUsecase: locator<SendSupportChatMessageUsecase>(),
           getAttachmentUsecase:
               locator<GetSupportChatMessageAttachmentUsecase>(),
-          getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+          resolveUserIdUsecase: locator<ResolveSupportChatUserIdUsecase>(),
           createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
+          pickImageAttachmentsUsecase: locator<PickImageAttachmentsUsecase>(),
           exchangeNotificationService: locator<ExchangeNotificationService>(),
         );
         if (initialMessage case final message? when message.isNotEmpty) {
@@ -124,12 +127,14 @@ class _ChatBodyState extends State<_ChatBody> {
         Expanded(
           child:
               BlocConsumer<ExchangeSupportChatCubit, ExchangeSupportChatState>(
+                listenWhen: (previous, current) =>
+                    previous.failure != current.failure,
                 listener: (context, state) {
-                  final code = state.errorCode;
-                  if (code != null) {
+                  final failure = state.failure;
+                  if (failure != null) {
                     SnackBarUtils.showSnackBar(
                       context,
-                      _supportChatErrorMessage(context, code),
+                      failure.toTranslated(context),
                     );
                   }
                 },
@@ -327,12 +332,9 @@ class _MessageInputState extends State<_MessageInput> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (state.errorSendingMessage.isNotEmpty) ...[
+            if (state.sendMessageFailure case final sendFailure?) ...[
               BBText(
-                state.errorSendingMessage ==
-                        ExchangeSupportChatCubit.errorMessageEmpty
-                    ? context.loc.exchangeSupportChatMessageEmptyError
-                    : state.errorSendingMessage,
+                sendFailure.toTranslated(context),
                 style: context.font.labelSmall?.copyWith(
                   color: context.appColors.error,
                 ),
@@ -708,19 +710,3 @@ class _AttachmentPreviewWidget extends StatelessWidget {
     );
   }
 }
-
-String _supportChatErrorMessage(
-  BuildContext context,
-  SupportChatErrorCode code,
-) => switch (code) {
-  SupportChatErrorCode.permissionDenied =>
-    context.loc.exchangeSupportChatPermissionDenied,
-  SupportChatErrorCode.permissionDeniedNeedsSettings =>
-    context.loc.exchangeSupportChatPermissionDeniedSettings,
-  SupportChatErrorCode.pickFilesFailed =>
-    context.loc.exchangeSupportChatPickFilesFailed,
-  SupportChatErrorCode.attachLogsFailed =>
-    context.loc.exchangeSupportChatAttachLogsFailed,
-  SupportChatErrorCode.fetchFileDataFailed =>
-    context.loc.exchangeSupportChatFetchFileDataFailed,
-};

@@ -4439,8 +4439,6 @@
   "exchangeFileUploadTapToReupload": "Toca para volver a subir",
   "exchangeSupportChatAttachmentImage": "Imagen",
   "exchangeSupportChatAttachmentUnknownFile": "Archivo desconocido",
-  "exchangeSupportChatPermissionDenied": "Permiso denegado.",
-  "exchangeSupportChatPermissionDeniedSettings": "Permiso denegado. Concede acceso a la biblioteca de fotos en Ajustes.",
   "exchangeSupportChatPickFilesFailed": "No se pudieron seleccionar los archivos. Inténtalo de nuevo.",
   "exchangeSupportChatAttachLogsFailed": "No se pudieron adjuntar los registros. Inténtalo de nuevo.",
   "exchangeSupportChatFetchFileDataFailed": "No se pudieron obtener los datos del archivo.",
@@ -5035,5 +5033,8 @@
   "settingsSearchTestnetCredentialsKeywords": "credenciales de testnet|inicio de sesión en testnet|usuario de testnet|contraseña de testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "informes de fallos|informes de errores|diagnóstico|telemetría|registros de errores",
   "settingsSearchScreenPrivacyKeywords": "capturas de pantalla|grabación de pantalla|protección de captura|privacidad",
-  "settingsSearchStartTyping": "Empieza a escribir para ver resultados."
+  "settingsSearchStartTyping": "Empieza a escribir para ver resultados.",
+  "exchangeSupportChatLoadMessagesError": "No se pudieron cargar los mensajes. Inténtalo de nuevo.",
+  "exchangeSupportChatSendMessageError": "No se pudo enviar tu mensaje. Inténtalo de nuevo.",
+  "exchangeSupportChatLoadAttachmentError": "No se pudo abrir el archivo adjunto. Inténtalo de nuevo."
 }
