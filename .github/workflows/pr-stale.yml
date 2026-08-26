@@ -1,0 +1,62 @@
+name: Positive PR stale lifecycle
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # This checks out only the trusted workflow revision, never PR content.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { lifecycle, messages } = require('./tools/pr_governance/policy');
+            // The module is available only when this workflow is dispatched from
+            // a trusted repository revision; API failures, truncation, or
+            // missing timeline data leave closure fail-open below.
+            const prs = await github.paginate(github.rest.pulls.list, { owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
+            for (const p of prs) {
+              try {
+                const timelineFor = (number) => github.paginate(github.rest.issues.listEventsForTimeline, { owner: context.repo.owner, repo: context.repo.repo, issue_number: number, per_page: 100 });
+                const timeline = await timelineFor(p.number);
+                if (!timeline) throw new Error('timeline unavailable');
+                let cursor = null, linked = [];
+                do {
+                  const refs = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){repository(owner:$owner,name:$name){pullRequest(number:$number){closingIssuesReferences(first:100,after:$cursor){nodes{number repository{nameWithOwner}} pageInfo{hasNextPage endCursor}}}}}`, { owner: context.repo.owner, name: context.repo.name, number: p.number, cursor });
+                  linked = linked.concat(refs.repository.pullRequest.closingIssuesReferences.nodes.filter((i) => i.repository.nameWithOwner === `${context.repo.owner}/${context.repo.repo}`));
+                  cursor = refs.repository.pullRequest.closingIssuesReferences.pageInfo.hasNextPage ? refs.repository.pullRequest.closingIssuesReferences.pageInfo.endCursor : null;
+                } while (cursor);
+                 const linkedTimelines = (await Promise.all(linked.map((i) => timelineFor(i.number)))).flat();
+                const translate = (e, reopenType) => ({ at: e.created_at, actorType: e.actor?.type || e.user?.type || e.author?.type, type: e.event === 'commented' ? 'comment' : e.event === 'reviewed' ? 'review' : e.event === 'committed' || e.event === 'head_ref_force_pushed' ? 'push' : e.event === 'edited' || e.event === 'renamed' ? 'title-edit' : e.event === 'labeled' && e.label?.name === 'ready' ? 'ready-label' : e.event === 'reopened' ? reopenType : e.event });
+                 const events = timeline.map((e) => translate(e, 'reopen-pr')).concat(linkedTimelines.map((e) => translate(e, 'reopen-issue')));
+                const comments = await github.paginate(github.rest.issues.listComments, { owner: context.repo.owner, repo: context.repo.repo, issue_number: p.number, per_page: 100 });
+                const human = events.filter((e) => require('./tools/pr_governance/policy').qualifyingActivity(e)).map((e) => e.at).filter(Boolean).sort().pop() || p.created_at;
+                const decision = lifecycle({ now: new Date().toISOString(), lastActivityAt: human, comments, events, open: p.state === 'open' });
+                  if (decision.action === 'remind') {
+                    const body = messages.reminder(p.html_url);
+                   await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: p.number, body });
+                   await github.rest.issues.addLabels({ owner: context.repo.owner, repo: context.repo.repo, issue_number: p.number, labels: ['stale'] });
+                  } else if (decision.action === 'final-reminder') {
+                    await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: p.number, body: messages['final-reminder'](p.html_url) });
+                  } else if (decision.action === 'reset-label') {
+                   try { await github.rest.issues.removeLabel({ owner: context.repo.owner, repo: context.repo.repo, issue_number: p.number, name: 'stale' }); }
+                   catch (error) { if (error.status !== 404) throw error; }
+                 } else if (decision.action === 'close') {
+                   await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: p.number, body: messages.closure(p.html_url) });
+                   await github.rest.pulls.update({ owner: context.repo.owner, repo: context.repo.repo, pull_number: p.number, state: 'closed' });
+                }
+              } catch (error) { core.warning(`Skipping PR #${p.number}; metadata is incomplete or unavailable: ${error.message}`); }
+            }
