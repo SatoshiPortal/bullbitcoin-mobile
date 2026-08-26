@@ -13,6 +13,7 @@ on:
 # Checkout + tests only; no writes to the repo via the token.
 permissions:
   contents: read
+  issues: read
   pull-requests: read
 
 # Cancel superseded runs on the same PR — these builds are heavy (Rust FRB
@@ -22,7 +23,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Two independent jobs split at the FRB boundary. `checks` (analyze + fix +
+# Three cheap prechecks gate two independent jobs split at the FRB boundary.
+# `checks` (analyze + fix +
 # format + unit tests) never compiles the Rust FRB crates — unit tests run on
 # the Dart VM against the bindings' Dart side only — so it reports in ~11min.
 # `integration` builds and launches the real Linux GTK app (Rust + GTK), the
@@ -32,7 +34,7 @@ concurrency:
 # exists so the fast signal never waits for the slow one.
 jobs:
   classification:
-    name: Classify changed files
+    name: Detect docs-only PR
     runs-on: ubuntu-24.04
     outputs:
       run_app_checks: ${{ steps.classify.outputs.run_app_checks }}
@@ -120,9 +122,44 @@ jobs:
       - name: Verify external action pins
         run: bash trusted/tools/check_action_pins.sh "$GITHUB_WORKSPACE/candidate"
 
+  readiness:
+    name: PR readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip PR readiness for manual runs
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: echo "PR readiness is not applicable to a manual workflow run."
+      # Bootstrap from the immutable commit that introduced the policy. This
+      # lets the introducing PR verify itself before the file exists on the
+      # base branch; policy upgrades require an explicit SHA bump here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          ref: 78be3ed5f14bb2765e19602b90ca6ad62a6cf9c1
+          persist-credentials: false
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          script: |
+            const { readiness } = require('./tools/pr_governance/policy');
+            const owner = context.repo.owner, name = context.repo.repo;
+            let cursor = null, refs = [];
+            do {
+              const data = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ author{login} labels(first:100){nodes{name}} closingIssuesReferences(first:100,after:$cursor){nodes{state repository{nameWithOwner} labels(first:100){nodes{name}}} pageInfo{hasNextPage endCursor}}}}}`, { owner, name, number: context.issue.number, cursor });
+              const pr = data.repository.pullRequest;
+              if (!pr) core.setFailed('Pull request metadata is unavailable');
+              if (!global.pr) global.pr = { repository: { nameWithOwner: `${owner}/${name}` }, author: pr.author, labels: pr.labels.nodes, closingIssuesReferences: [] };
+              refs = refs.concat(pr.closingIssuesReferences.nodes); cursor = pr.closingIssuesReferences.pageInfo.hasNextPage ? pr.closingIssuesReferences.pageInfo.endCursor : null;
+            } while (cursor);
+            global.pr.closingIssuesReferences = refs;
+            const result = readiness(global.pr);
+            if (!result.ready) core.setFailed(`PR is not ready: ${result.reason}. Link an open local issue labelled ready, or use the no-issue-needed exemption.`);
+            else core.info(`PR readiness passed (${result.reason})`);
+
   checks:
-    needs: classification
-    if: ${{ needs.classification.outputs.run_app_checks == 'true' }}
+    needs: [classification, action-pins, readiness]
+    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Static checks and unit tests
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -181,8 +218,9 @@ jobs:
         run: make unit-test
 
   integration:
-    needs: classification
-    if: ${{ needs.classification.outputs.run_app_checks == 'true' }}
+    needs: [classification, action-pins, readiness]
+    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Integration tests
     # arm64: free 4-vCPU runners for public repos, native arm execution — the
     # Rust FRB compile is exactly the workload that benefits. If this arch
     # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
@@ -276,7 +314,7 @@ jobs:
   ci:
     name: CI
     if: ${{ !cancelled() }}
-    needs: [classification, action-pins, checks, integration]
+    needs: [classification, action-pins, readiness, checks, integration]
     runs-on: ubuntu-24.04
     steps:
       - name: Require the expected checks
@@ -284,6 +322,7 @@ jobs:
           CLASSIFICATION_RESULT: ${{ needs.classification.result }}
           RUN_APP_CHECKS: ${{ needs.classification.outputs.run_app_checks }}
           ACTION_PINS_RESULT: ${{ needs.action-pins.result }}
+          READINESS_RESULT: ${{ needs.readiness.result }}
           CHECKS_RESULT: ${{ needs.checks.result }}
           INTEGRATION_RESULT: ${{ needs.integration.result }}
         run: |
@@ -295,6 +334,11 @@ jobs:
           }
           [[ "$ACTION_PINS_RESULT" == success ]] || {
             echo "Action-pin result was ${ACTION_PINS_RESULT}, expected success" >&2
+            exit 1
+          }
+
+          [[ "$READINESS_RESULT" == success ]] || {
+            echo "PR readiness result was ${READINESS_RESULT}, expected success" >&2
             exit 1
           }
 
