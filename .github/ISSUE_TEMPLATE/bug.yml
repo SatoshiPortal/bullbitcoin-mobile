@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible problem in Bull Bitcoin Mobile.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Never include mnemonics, private keys, PINs, tokens, or other secrets. Report security vulnerabilities privately using the Security Policy link."
+  - type: input
+    id: version
+    attributes: { label: Version, description: App version or commit, placeholder: "e.g. 1.2.3" }
+    validations: { required: true }
+  - type: input
+    id: platform
+    attributes: { label: Platform, placeholder: "e.g. Android, iOS, Linux" }
+    validations: { required: true }
+  - type: input
+    id: device
+    attributes: { label: Device and OS version }
+    validations: { required: true }
+  - type: textarea
+    id: observed
+    attributes: { label: Observed behavior, description: "What happened?" }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected behavior, description: "What did you expect to happen?" }
+    validations: { required: true }
+  - type: textarea
+    id: reproduction
+    attributes: { label: Reproduction steps, description: Give the smallest reliable sequence of steps. }
+    validations: { required: true }
+  - type: textarea
+    id: impact
+    attributes: { label: Impact, description: "Who is affected and how often? Include transaction or funds impact without sharing secrets." }
+    validations: { required: true }
+  - type: textarea
+    id: additional-context
+    attributes: { label: Attachments or additional context, description: "Optionally add screenshots, logs, or other context. Remove secrets before submitting." }
