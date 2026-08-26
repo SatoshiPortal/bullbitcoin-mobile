@@ -1,0 +1,300 @@
+{
+  "@@locale": "zh",
+  "recoverbullGoogleDriveNoBackupsFound": "没有发现的支持",
+  "recoverbullRecoveryErrorMissingDerivationPath": "后备档案缺失衍生物.",
+  "recoverbullGoogleDriveScreenTitle": "页: 1",
+  "recoverbullVaultKeyInput": "Vault Key",
+  "recoverbullSwitchToPassword": "取而代之",
+  "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
+  "recoverbullLongestStep": "这是最长的一步。首次启动可能超过一分钟。",
+  "recoverbullRecoveryErrorVaultCorrupted": "某些备案卷被腐败.",
+  "recoverbullVaultImportedSuccess": "成功进口",
+  "recoverbullPasswordTooShort": "密码必须至少具有6个长期性",
+  "recoverbullFetchingVaultKey": "Fetching Vault 关键",
+  "recoverbullSecureBackup": "确保你们的支持",
+  "backupWalletHowToDecideVaultCloudRecommendationText": "你们想要确保,即使你失去装置,你也永远不会失去接触你的ault.",
+  "walletSetupErrorTryAgain": "设置钱包时出了点问题，请重试。",
+  "recoverbullRecoveryLoadingMessage": "寻找平衡和交易..…",
+  "recoverbullErrorMissingBytes": "从Tor的回复中失踪的tes。 收复,但如果问题继续存在,对与Tor有联系的一些装置来说,这是一个众所周知的问题.",
+  "torSettingsTitle": "三、背景",
+  "recoverbullSelectRecoverWallet": "恢复钱包",
+  "recoverbullErrorServiceUnavailable": "无法提供的服务。 请检查您的联系.",
+  "recoverbullPassword": "密码",
+  "recoverbullReenterRequired": "重新加入{inputType}",
+  "@recoverbullReenterRequired": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "你相信,你不会丢失ault,如果你失去电话,仍然可以查阅.",
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "谷歌运动",
+  "recoverbullEnterInput": "{inputType}",
+  "@recoverbullEnterInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "URL 为必填项",
+  "recoverbullServerUsingCustom": "使用自定义服务器",
+  "recoverbullErrorRejected": "关键服务器重新启用",
+  "recoverbullSettingsKeyServerUrl": "密钥服务器 URL",
+  "recoverbullKeyServer": "主要服务器 ",
+  "recoverbullGoogleDriveDeleteVaultTitle": "删除",
+  "recoverbullGoogleDriveCancelButton": "Cancel",
+  "recoverbullSelectVaultSelected": "Vault Selected",
+  "recoverbullRecoveryErrorWalletExists": "这个钱包已存在",
+  "recoverbullSelectCustomLocationProvider": "习俗地点",
+  "recoverbullTorNotStarted": "未开始收监",
+  "recoverbullFailed": "Failed",
+  "recoverbullConnectionFailed": "连接失败",
+  "recoverbullSelectFetchDriveFilesError": "未能抓住所有的动力",
+  "recoverbullSelectFileNotSelectedError": "未选定",
+  "backupWalletHowToDecideVaultCustomRecommendation": "习俗地点: ",
+  "recoverbullSwitchToPIN": "反之",
+  "recoverbullSelectDecryptVault": "加密",
+  "recoverbullPleaseWait": "请等待我们建立安全联系......",
+  "recoverbullPhaseNetworkInfo": "正在获取网络信息",
+  "recoverbullReenterConfirm": "请重新加入{inputType}号],以确认.",
+  "@recoverbullReenterConfirm": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "当前传输方式：{transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "密码不匹配",
+  "recoverbullErrorDecryptFailed": "未能加密",
+  "recoverbullSelectCustomLocation": "习俗地点",
+  "recoverbullGoogleDriveErrorDisplay": "Rror: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "未能从谷歌猛进出口",
+  "recoverbullTestSuccessDescription": "你们能够恢复使用丢失的“红外墙”",
+  "recoverbullPasswordRequired": "需要密码",
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds}秒",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "违约,可以是档案或钥匙",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "当地背后的主要衍生物失败.",
+  "recoverbullSelectBackupFileNotValidError": "收回备用文件无效",
+  "recoverbullErrorFetchKeyFailed": "未能从服务器中取出电子键",
+  "recoverbullEnterToView": "请进入您的{inputType}处,查看你的过失钥匙.",
+  "@recoverbullEnterToView": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "快速和容易",
+  "recoverbullTorClockSkewed": "设备时钟不准，Tor 无法验证中继证书。请检查日期和时间设置。",
+  "recoverbullGoogleDriveDeleteConfirmation": "你们是否希望删除这一ault? 这一行动是不可放弃的.",
+  "recoverbullSelectVaultProvider": "选择Vault Provider",
+  "recoverbullRecoveryBalanceLabel": "余额:{amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "继续",
+  "recoverbullSettingsSave": "保存",
+  "recoverbullEnterToTest": "请进入您的{inputType},以测试你的过失.",
+  "@recoverbullEnterToTest": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 他们只能进入与关键服务器(在线服务,储存你的加密密码)相勾结的不太可能的事件。 如果关键服务器破碎,那么,谷歌或 Apple云可能会有风险.",
+  "torSettingsModeAutomaticDescription": "先尝试直连 Tor；若网络似乎屏蔽 Tor，则改用 Snowflake。",
+  "recoverbullSelectVaultImportSuccess": "成功进口",
+  "recoverbullErrorVaultNotSet": "无",
+  "recoverbullVaultRecoveryTitle": "2. 追回被盗资产",
+  "recoverbullCreatingVault": "建立加密 缩略语",
+  "recoverbullTorCantStart": "Tor 暂时无法连接。请重试。",
+  "recoverbullDecryptVault": "加密",
+  "recoverbullErrorSelectVault": "未选定过失",
+  "torSettingsStatusCensored": "连接似乎被过滤",
+  "torSettingsModeSnowflakeDescription": "通过志愿者提供的 Snowflake 代理，从被过滤的网络连接 Tor。",
+  "backupWalletHowToDecideBackupModalTitle": "如何决定",
+  "recoverbullSettingsUrlMustBeOnion": "URL 必须以 .onion 结尾",
+  "recoverbullServerConfirmTitle": "保险库恢复服务器",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "成功完成试验!",
+  "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Valle Drive",
+  "recoverbullSettingsEdit": "编辑",
+  "recoverbullPIN": "PIN",
+  "torSettingsModeDirectDescription": "不使用可插拔传输，直接连接 Tor 网络。",
+  "recoverbullUnexpectedError": "未预见的错误",
+  "recoverbullRecoveryTransactionsLabel": "交易:{count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "URL 无效",
+  "recoverbullSelectDriveBackups": "驱赶",
+  "recoverbullErrorUnexpected": "未预见的错误,见记录",
+  "recoverbullCheckingConnection": "RecoverBull检查连接",
+  "recoverbullErrorInvalidCredentials": "这一备份卷宗的密码",
+  "recoverbullGoBackEdit": "<背 景",
+  "recoverbullGoogleDriveExportButton": "出口",
+  "recoverbullSeeMoreVaults": "See more vaults",
+  "recoverbullServerCustomWarning": "您正在使用自定义的 Recoverbull 服务器。请确保您信任此服务器。",
+  "recoverbullTestRecovery": "试验恢复",
+  "recoverbullRecoveryContinueButton": "继续",
+  "recoverbullServerUrlLabel": "服务器 URL：",
+  "recoverbullTorNetwork": "Tor Network",
+  "torSettingsDescConnected": "代理正在运行并准备就绪",
+  "recoverbullSettingsTitle": "Recoverbull 设置",
+  "recoverbullSelectErrorPrefix": "错误:",
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "RecoverBull服务器",
+  "recoverbullTorOffline": "似乎没有网络连接。",
+  "recoverbullServerUsingDefault": "使用默认服务器",
+  "recoverbullTestBackupDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
+  "recoverbullErrorPasswordNotSet": "密码未设置",
+  "recoverbullEncryptedVaultCreated": "• 建立加密的Vault!",
+  "recoverbullErrorRateLimited": "比率有限。 {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "A. 取而代之",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "了解更多关于 Recoverbull 的信息",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "Tor 无法连接到网络。这通常意味着连接正在被过滤。",
+  "recoverbullGoogleDriveErrorDeleteFailed": "页: 1",
+  "recoverbullVaultCreatedSuccess": "成功制造",
+  "recoverbullConfirm": "执 行",
+  "recoverbullWaiting": "放弃",
+  "backupWalletHowToDecideVaultMoreInfo": "访问后收集更多信息.",
+  "recoverbullVaultSelected": "Vault Selected",
+  "recoverbullSettingsCancel": "取消",
+  "backupWalletHowToDecideVaultCloudRecommendation": "谷歌 肥料云: ",
+  "backupWalletHowToDecide": "如何决定?",
+  "durationMinute": "{minutes}分钟",
+  "@durationMinute": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "发生错误。 请再次审判.",
+  "recoverbullRecoveryTitle": "2. 追回被盗资产",
+  "recoverbullConnected": "连接",
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "删除",
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Vault Key",
+  "recoverbullSelectEnterBackupKeyManually": "填写关键手册",
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "未能与目标关键服务器连接。 请再次尝试!",
+  "recoverbullFetchVaultKey": "Fetch Vault 关键",
+  "recoverbullGoogleDriveErrorSelectFailed": "未能从谷歌风暴中选取ault",
+  "recoverbullSelectTakeYourTime": "发言时间",
+  "recoverbullRecoveryErrorWalletMismatch": "已经存在不同的违约墙。 你们只能有一个缺省墙.",
+  "recoverbullConfirmInput": "Confirm {inputType}",
+  "@recoverbullConfirmInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "您必须确保对 {inputType} 的记忆，以便于恢复您对钱包的访问。其至少应为 6 位数字。如果您丢失了 {inputType} 您将无法恢复备份",
+  "@recoverbullMemorizeWarning": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL 必须为 HTTP",
+  "recoverbullGotIt": "签字",
+  "recoverbullPasswordTooCommon": "这一密码太常见。 请选择不同的方法",
+  "recoverbullServerTorNotice": "我们将通过 Tor 连接到此服务器",
+  "backupWalletHowToDecideVaultCustomLocation": "习俗地点可能更加安全,取决于你选择哪一个地点。 你们还必须保证不要丢失备份文件或丢失贵国备份档案存放的装置.",
+  "recoverbullEnterToDecrypt": "请进入您的{inputType},对你的过失进行加密.",
+  "@recoverbullEnterToDecrypt": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "没有发现的支持",
+  "recoverbullSelectAppleIcloud": "页: 1",
+  "recoverbullServerUnreachableTorOk": "Tor 正常运行，但备份服务器没有响应。首次启动后这可能需要一点时间。",
+  "durationMinutes": "{minutes}分钟",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "连接",
+  "recoverbullErrorVaultCreatedKeyNotStored": "失败:制造了Vault文档,但钥匙没有储存在服务器上",
+  "recoverbullRetry": "学历",
+  "recoverbullConnectingTor": "连接Tor。\n时间可长达一分钟.",
+  "recoverbullSelectCustomLocationError": "未能从海关地点选择档案",
+  "torSettingsDescDisconnected": "委托代理公司没有运行",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "重试",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "继续",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "页: 1",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "近距离",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

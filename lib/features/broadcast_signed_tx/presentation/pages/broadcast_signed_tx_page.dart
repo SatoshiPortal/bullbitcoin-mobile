@@ -15,11 +15,10 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAssets, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -135,7 +134,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
 
                 if (state.isBroadcasted == true) ...[
                   Gif(
-                    image: AssetImage(Assets.animations.successTick.path),
+                    image: BullAssets.animations.successTick,
                     autostart: Autostart.once,
                     height: 200,
                     width: 200,

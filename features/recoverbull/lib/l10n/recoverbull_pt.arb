@@ -1,0 +1,306 @@
+{
+  "@@locale": "pt",
+  "recoverbullGoogleDriveNoBackupsFound": "Nenhum backup encontrado",
+  "recoverbullRecoveryErrorMissingDerivationPath": "Arquivo de backup faltando caminho de derivação.",
+  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
+  "recoverbullVaultKeyInput": "Chave de fenda",
+  "recoverbullSwitchToPassword": "Escolha uma senha em vez",
+  "recoverbullErrorInvalidVaultFile": "Arquivo de cofre inválido.",
+  "recoverbullLongestStep": "Este é o passo mais longo. Um primeiro arranque pode demorar mais de um minuto.",
+  "recoverbullRecoveryErrorVaultCorrupted": "O arquivo de backup selecionado está corrompido.",
+  "recoverbullVaultImportedSuccess": "Seu cofre foi importado com sucesso",
+  "recoverbullPasswordTooShort": "Senha deve ter pelo menos 6 caracteres de comprimento",
+  "recoverbullFetchingVaultKey": "Fetching Vault Chaveiro",
+  "recoverbullSecureBackup": "Proteja seu backup",
+  "backupWalletHowToDecideVaultCloudRecommendationText": "você quer se certificar de que você nunca perder o acesso ao seu arquivo de vault mesmo se você perder seus dispositivos.",
+  "walletSetupErrorTryAgain": "Algo correu mal ao configurar a sua carteira. Por favor, tente novamente.",
+  "recoverbullRecoveryLoadingMessage": "Procurando equilíbrio e transações..",
+  "recoverbullErrorMissingBytes": "Perdendo bytes da resposta Tor. Retira mas se o problema persistir, é um problema conhecido para alguns dispositivos com Tor.",
+  "torSettingsTitle": "Configurações do Tor",
+  "recoverbullSelectRecoverWallet": "Recuperar Carteira",
+  "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
+  "recoverbullPassword": "Senha",
+  "recoverbullReenterRequired": "Reiniciar seu {inputType}",
+  "@recoverbullReenterRequired": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "você está confiante de que você não vai perder o arquivo do vault e ainda será acessível se você perder seu telefone.",
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "Google Drive",
+  "recoverbullEnterInput": "Digite seu {inputType}",
+  "@recoverbullEnterInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "O URL é obrigatório",
+  "recoverbullServerUsingCustom": "A usar um servidor personalizado",
+  "recoverbullErrorRejected": "Rejeitado pelo servidor chave",
+  "recoverbullSettingsKeyServerUrl": "URL do servidor de chaves",
+  "recoverbullKeyServer": "Servidor chave ",
+  "recoverbullGoogleDriveDeleteVaultTitle": "Excluir Vault",
+  "recoverbullGoogleDriveCancelButton": "Cancelar",
+  "recoverbullSelectVaultSelected": "Vault selecionado",
+  "recoverbullRecoveryErrorWalletExists": "Esta carteira já existe.",
+  "recoverbullSelectCustomLocationProvider": "Localização personalizada",
+  "recoverbullTorNotStarted": "Tor não é iniciado",
+  "recoverbullFailed": "Falhado",
+  "recoverbullConnectionFailed": "A conexão falhou",
+  "recoverbullSelectFetchDriveFilesError": "Falhado para buscar todos os backups de unidade",
+  "recoverbullSelectFileNotSelectedError": "Arquivo não selecionado",
+  "backupWalletHowToDecideVaultCustomRecommendation": "Localização personalizada: ",
+  "recoverbullSwitchToPIN": "Escolha um PIN em vez",
+  "recoverbullSelectDecryptVault": "Descriptografar cofre",
+  "recoverbullPleaseWait": "Espere enquanto estabelecemos uma ligação segura...",
+  "recoverbullPhaseNetworkInfo": "A obter informações da rede",
+  "recoverbullReenterConfirm": "Por favor, volte a entrar no seu {inputType} para confirmar.",
+  "@recoverbullReenterConfirm": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "Transporte ativo: {transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "As senhas não coincidem",
+  "recoverbullErrorDecryptFailed": "Falhado para descriptografar o cofre",
+  "recoverbullSelectCustomLocation": "Localização personalizada",
+  "recoverbullGoogleDriveErrorDisplay": "Erro: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Falhado para exportar o vault do Google Drive",
+  "recoverbullTestSuccessDescription": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
+  "recoverbullPasswordRequired": "A senha é necessária",
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds} segundos",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "A criação de falhas falhou, pode ser o arquivo ou a chave",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "A derivação da chave de backup local falhou.",
+  "recoverbullSelectBackupFileNotValidError": "O arquivo de backup do Recoverbull não é válido",
+  "recoverbullErrorFetchKeyFailed": "Falhado para buscar a chave do cofre do servidor",
+  "recoverbullEnterToView": "Digite seu {inputType} para ver sua chave do cofre.",
+  "@recoverbullEnterToView": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "Rápido e fácil",
+  "recoverbullTorClockSkewed": "O relógio do dispositivo está errado, por isso o Tor não consegue verificar os certificados dos relays. Verifica a data e a hora.",
+  "recoverbullGoogleDriveDeleteConfirmation": "Tem a certeza de que deseja apagar este backup do vault? Esta ação não pode ser desfeita.",
+  "recoverbullSelectVaultProvider": "Selecione Provedor de Vault",
+  "recoverbullRecoveryBalanceLabel": "Equilíbrio: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "Continue",
+  "recoverbullSettingsSave": "Guardar",
+  "recoverbullEnterToTest": "Digite seu {inputType} para testar seu cofre.",
+  "@recoverbullEnterToTest": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Eles só podem acessar seu Bitcoin no caso improvável que eles colludem com o servidor chave (o serviço on-line que armazena sua senha de criptografia). Se o servidor chave alguma vez for hackeado, seu Bitcoin pode estar em risco com o Google ou a nuvem da Apple.",
+  "torSettingsModeAutomaticDescription": "Tenta primeiro uma ligação Tor direta e usa o Snowflake se a rede parecer bloquear o Tor.",
+  "recoverbullSelectVaultImportSuccess": "Seu cofre foi importado com sucesso",
+  "recoverbullErrorVaultNotSet": "Vault não está definido",
+  "recoverbullVaultRecoveryTitle": "Recuperação do vault do Recoverbull",
+  "recoverbullCreatingVault": "Criando criptografia Vault",
+  "recoverbullTorCantStart": "O Tor não conseguiu ligar-se neste momento. Tenta novamente.",
+  "recoverbullDecryptVault": "Descriptografar cofre",
+  "recoverbullErrorSelectVault": "Falhado para selecionar o cofre",
+  "torSettingsStatusCensored": "A ligação parece filtrada",
+  "torSettingsModeSnowflakeDescription": "Usa proxies voluntários Snowflake para alcançar o Tor a partir de uma rede filtrada.",
+  "backupWalletHowToDecideBackupModalTitle": "Como decidir",
+  "recoverbullSettingsUrlMustBeOnion": "O URL deve terminar em .onion",
+  "recoverbullServerConfirmTitle": "Servidor de recuperação do cofre",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "Teste concluído com sucesso!",
+  "recoverbullGoogleDriveErrorFetchFailed": "Falhado para buscar cofres do Google Drive",
+  "recoverbullSettingsEdit": "Editar",
+  "recoverbullPIN": "PIN",
+  "torSettingsModeDirectDescription": "Liga-se diretamente à rede Tor, sem pluggable transport.",
+  "recoverbullUnexpectedError": "Erro inesperado",
+  "recoverbullRecoveryTransactionsLabel": "Transações: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "O URL não é válido",
+  "recoverbullSelectDriveBackups": "Drive Backups",
+  "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
+  "recoverbullCheckingConnection": "Verificando conexão para RecoverBull",
+  "recoverbullErrorInvalidCredentials": "Senha errada para este arquivo de backup",
+  "recoverbullGoBackEdit": "< Voltar e editar",
+  "recoverbullGoogleDriveExportButton": "Exportação",
+  "recoverbullSeeMoreVaults": "Ver mais cofres",
+  "recoverbullServerCustomWarning": "Está a usar um servidor Recoverbull personalizado. Certifique-se de que confia neste servidor.",
+  "recoverbullTestRecovery": "Recuperação de Teste",
+  "recoverbullRecoveryContinueButton": "Continue",
+  "recoverbullServerUrlLabel": "URL do servidor:",
+  "recoverbullTorNetwork": "Rede de Torno",
+  "torSettingsDescConnected": "O Proxy Tor está em execução e pronto",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "recoverbullSettingsTitle": "Definições do Recoverbull",
+  "recoverbullSelectErrorPrefix": "Erro:",
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "Servidor de recuperação",
+  "recoverbullTorOffline": "Parece não haver ligação à internet.",
+  "recoverbullServerUsingDefault": "A usar o servidor predefinido",
+  "recoverbullTestBackupDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
+  "recoverbullErrorPasswordNotSet": "A senha não está definida",
+  "recoverbullEncryptedVaultCreated": "Criptografado Vault criado!",
+  "recoverbullErrorRateLimited": "Taxa limitada. Por favor, tente novamente em {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "Digite uma chave de cofre em vez",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Saber mais sobre o Recoverbull",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isto indica muitas vezes uma ligação filtrada.",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Falhado para excluir o vault do Google Drive",
+  "recoverbullVaultCreatedSuccess": "Vault criado com sucesso",
+  "recoverbullConfirm": "Confirmação",
+  "recoverbullWaiting": "Esperando",
+  "backupWalletHowToDecideVaultMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
+  "recoverbullVaultSelected": "Vault selecionado",
+  "recoverbullSettingsCancel": "Cancelar",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Google ou Nuvem da Apple: ",
+  "backupWalletHowToDecide": "Como decidir?",
+  "durationMinute": "{minutes} minuto",
+  "@durationMinute": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "Um erro ocorreu. Por favor, tente novamente.",
+  "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
+  "recoverbullConnected": "Conectado",
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "Excluir",
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Chave de fenda",
+  "recoverbullSelectEnterBackupKeyManually": "Digite a tecla de backup manualmente >>",
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "Falhado em se conectar ao servidor de chaves de destino. Por favor, tente novamente mais tarde!",
+  "recoverbullFetchVaultKey": "Fetch Vault Chaveiro",
+  "recoverbullGoogleDriveErrorSelectFailed": "Falhado para selecionar o vault do Google Drive",
+  "recoverbullSelectTakeYourTime": "Leve o seu tempo",
+  "recoverbullRecoveryErrorWalletMismatch": "Uma carteira padrão diferente já existe. Você só pode ter uma carteira padrão.",
+  "recoverbullConfirmInput": "Confirme {inputType}",
+  "@recoverbullConfirmInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "Você deve memorizar este {inputType} para recuperar o acesso à sua carteira. Deve ter pelo menos 6 dígitos. Se você perder este {inputType} você não pode recuperar seu backup.",
+  "@recoverbullMemorizeWarning": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "O URL deve ser HTTP",
+  "recoverbullGotIt": "Entendido",
+  "recoverbullPasswordTooCommon": "Esta senha é muito comum. Por favor, escolha um diferente",
+  "recoverbullServerTorNotice": "Vamos ligar-nos a este servidor através do Tor",
+  "backupWalletHowToDecideVaultCustomLocation": "Um local personalizado pode ser muito mais seguro, dependendo de qual local você escolher. Você também deve ter certeza de não perder o arquivo de backup ou perder o dispositivo no qual seu arquivo de backup é armazenado.",
+  "recoverbullEnterToDecrypt": "Digite seu {inputType} para descriptografar seu cofre.",
+  "@recoverbullEnterToDecrypt": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "Nenhum backup encontrado",
+  "recoverbullSelectAppleIcloud": "Apple iCloud",
+  "recoverbullServerUnreachableTorOk": "O Tor está a funcionar, mas o servidor de backup não respondeu. Logo após um primeiro arranque isto pode demorar um momento.",
+  "durationMinutes": "{minutes}",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "Conexão",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Falhado: arquivo Vault criado mas chave não armazenado no servidor",
+  "recoverbullRetry": "Repito",
+  "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
+  "recoverbullSelectCustomLocationError": "Falhado para selecionar o arquivo do local personalizado",
+  "torSettingsDescDisconnected": "O proxy do Tor não está em execução",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "Tentar novamente",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "Continuar",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "Entendido",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "Fechar",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

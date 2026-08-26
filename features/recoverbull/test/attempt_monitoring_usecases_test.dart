@@ -1,0 +1,781 @@
+import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
+import 'package:bull_recoverbull/src/public/recoverbull.dart' as public;
+import 'package:bull_recoverbull/src/domain/entity/key_server_attempts.dart';
+import 'package:bull_recoverbull/src/domain/entity/recoverbull_attempt_alert.dart';
+import 'package:bull_recoverbull/src/domain/usecases/check_backup_attempt_monitoring_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/acknowledge_attempt_alert_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/is_recoverbull_attempt_monitoring_enabled_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/record_local_attempt_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/set_recoverbull_attempt_monitoring_enabled_usecase.dart';
+import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _Remote implements RecoverBullAttemptMonitoringRemotePort {
+  RecoverBullAttemptsSnapshot? response;
+  int calls = 0;
+  String? lastEtag;
+
+  @override
+  Future<RecoverBullAttemptsSnapshot?> poll({
+    required String? etag,
+    required List<String> backupDigests,
+  }) async {
+    calls++;
+    lastEtag = etag;
+    return response;
+  }
+}
+
+void main() {
+  final id = List<int>.generate(16, (i) => i);
+  final window = DateTime.utc(2026, 8, 5, 14, 37, 22);
+
+  Future<(RecoverBullDatabase, RecoverBullAttemptMonitoringStore)>
+  build() async {
+    final db = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    await db.ensureState();
+    return (db, RecoverBullAttemptMonitoringStore(db));
+  }
+
+  test('registering a backup does not count an attempt', () async {
+    final (db, store) = await build();
+    await RegisterMonitoredBackupUsecase(store).execute(
+      backupIdHex: id.map((b) => b.toRadixString(16).padLeft(2, '0')).join(),
+    );
+    expect(
+      (await store.monitoredBackups())
+          .single
+          .expectedServerDistinctCandidateTotal,
+      0,
+    );
+    await db.close();
+  });
+
+  test('status recording uses the server total as the baseline', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await RecordLocalAttemptUsecase(store).execute(
+      backupIdHex: id.map((b) => b.toRadixString(16).padLeft(2, '0')).join(),
+      attemptStatus: KeyServerAttemptStatus(
+        totalAttempts: 2,
+        failedAttempts: 1,
+        remainingAttempts: 1,
+        windowStartedAt: window,
+        previousAttemptAt: null,
+        resetsAt: window.add(const Duration(days: 1)),
+      ),
+    );
+    expect(
+      (await store.monitoredBackups())
+          .single
+          .expectedServerDistinctCandidateTotal,
+      2,
+    );
+    await db.close();
+  });
+
+  test('snapshot excess produces one warning and deduplicates it', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final digest = (await store.monitoredBackups()).single.digest;
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: DateTime.utc(2026, 8, 5, 9),
+        totalAttempts: {digest: 2},
+        windowStartedAt: {digest: window},
+        etag: 'one',
+      );
+    final check = CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: remote,
+      clock: () => DateTime.utc(2026, 8, 5, 15),
+    );
+    final first = await check.execute();
+    expect(first.single, isA<SuspiciousActivityAlert>());
+    final second = await check.execute();
+    expect(second, isEmpty);
+    await db.close();
+  });
+
+  test('matching server total stays silent', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final digest = (await store.monitoredBackups()).single.digest;
+    await store.recordStatus(
+      id,
+      KeyServerAttemptStatus(
+        totalAttempts: 2,
+        failedAttempts: 0,
+        remainingAttempts: 1,
+        windowStartedAt: window,
+        previousAttemptAt: null,
+        resetsAt: window,
+      ),
+    );
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: DateTime.utc(2026, 8, 5, 9),
+        totalAttempts: {digest: 2},
+        windowStartedAt: {digest: window},
+      );
+    expect(
+      await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+      ).execute(),
+      isEmpty,
+    );
+    await db.close();
+  });
+
+  test('304 is accepted and refreshes successful-check time', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
+          0,
+          isUtc: true,
+        ),
+        totalAttempts: {},
+        notModified: true,
+      );
+    await CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: remote,
+    ).execute();
+    expect((await store.state()).lastSuccessfulCheckAt, isNotNull);
+    await db.close();
+  });
+
+  test(
+    'a real collection followed by 304 preserves monitored backups and emits no wipe alert',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final digest = (await store.monitoredBackups()).single.digest;
+      await store.applySnapshot(
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 2},
+        ),
+      );
+      final now = DateTime.now().toUtc().add(const Duration(minutes: 2));
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
+            0,
+            isUtc: true,
+          ),
+          totalAttempts: const {},
+          notModified: true,
+        );
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+        clock: () => now,
+      ).execute();
+      expect(alerts.whereType<CountersWipedAlert>(), isEmpty);
+      expect(await store.monitoredBackups(), hasLength(1));
+      expect((await store.state()).collectionStartedAt, window);
+      await db.close();
+    },
+  );
+
+  test(
+    'a real collection followed by service busy preserves monitored backups and counts a poll failure',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final digest = (await store.monitoredBackups()).single.digest;
+      await store.applySnapshot(
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 2},
+        ),
+      );
+      final previousSuccessfulCheck =
+          (await store.state()).lastSuccessfulCheckAt;
+      final now = DateTime.now().toUtc().add(const Duration(minutes: 2));
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
+            0,
+            isUtc: true,
+          ),
+          totalAttempts: const {},
+          serviceBusy: true,
+        );
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+        clock: () => now,
+      ).execute();
+      expect(alerts.whereType<CountersWipedAlert>(), isEmpty);
+      expect(alerts, contains(isA<ServicePressureAlert>()));
+      expect((await store.state()).consecutiveFailures, 1);
+      expect(
+        (await store.state()).lastSuccessfulCheckAt,
+        previousSuccessfulCheck,
+      );
+      expect(await store.monitoredBackups(), hasLength(1));
+      await db.close();
+    },
+  );
+
+  test(
+    'collection timestamp comparison ignores sub-second round-trip precision',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      await store.applySnapshot(
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window.add(const Duration(microseconds: 456)),
+          totalAttempts: const {},
+        ),
+      );
+      final now = DateTime.now().toUtc().add(const Duration(minutes: 2));
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window.add(const Duration(microseconds: 123)),
+          totalAttempts: const {},
+        );
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+        clock: () => now,
+      ).execute();
+      expect(alerts.whereType<CountersWipedAlert>(), isEmpty);
+      expect(await store.monitoredBackups(), hasLength(1));
+      await db.close();
+    },
+  );
+
+  test(
+    'concurrent status and replacement preserve monotonic row revisions',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final digest = (await store.monitoredBackups()).single.digest;
+      await Future.wait([
+        store.recordStatus(id, _status(2)),
+        store.replaceBackup(
+          AttemptMonitoringBackupState(
+            serverUrl: '',
+            backupIdHash: _hex(digest),
+            expectedTotalAttempts: 3,
+            currentWindow: 1,
+          ),
+        ),
+      ]);
+      expect(
+        (await store.monitoredBackups()).single.rowRevision,
+        greaterThanOrEqualTo(2),
+      );
+      await db.close();
+    },
+  );
+
+  test('newly created monitoring state is enabled by default', () async {
+    final (db, store) = await build();
+    expect((await store.state()).attemptMonitoringEnabled, isTrue);
+    await db.close();
+  });
+
+  test('ETag is sent on the next poll and not-modified is advisory', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    var now = DateTime.now().toUtc();
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
+          0,
+          isUtc: true,
+        ),
+        totalAttempts: {},
+        etag: 'cached',
+      );
+    final check = CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: remote,
+      clock: () => now,
+    );
+    await check.execute();
+    remote.response = RecoverBullAttemptsSnapshot(
+      collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      totalAttempts: {},
+      notModified: true,
+    );
+    now = now.add(const Duration(seconds: 61));
+    await check.execute();
+    expect(remote.lastEtag, 'cached');
+    await db.close();
+  });
+
+  test(
+    'window rollover adopts the new server baseline without an attack alert',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      await store.recordStatus(id, _status(3));
+      final digest = (await store.monitoredBackups()).single.digest;
+      final next = window.add(const Duration(hours: 1));
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: DateTime.utc(2026, 8, 5, 9),
+          totalAttempts: {digest: 1},
+          windowStartedAt: {digest: next},
+        );
+      expect(
+        await CheckBackupAttemptMonitoringUsecase(
+          store: store,
+          remote: remote,
+        ).execute(),
+        isEmpty,
+      );
+      expect(
+        (await store.monitoredBackups())
+            .single
+            .expectedServerDistinctCandidateTotal,
+        1,
+      );
+      await db.close();
+    },
+  );
+
+  test('service pressure is advisory', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
+          0,
+          isUtc: true,
+        ),
+        totalAttempts: {},
+        serviceBusy: true,
+      );
+    expect(
+      (await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+      ).execute()).single,
+      isA<ServicePressureAlert>(),
+    );
+    await db.close();
+  });
+
+  test('disable wipes monitored identifiers and resets generation', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final generation = (await store.state()).generation;
+    await SetRecoverbullAttemptMonitoringEnabledUsecase(store).execute(false);
+    expect(
+      await IsRecoverbullAttemptMonitoringEnabledUsecase(store).execute(),
+      isFalse,
+    );
+    expect(await store.monitoredBackups(), isEmpty);
+    expect((await store.state()).generation, generation + 1);
+    await db.close();
+  });
+
+  test('old server response without status does not count locally', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await RecordLocalAttemptUsecase(store).execute(backupIdHex: '00');
+    expect(
+      (await store.monitoredBackups())
+          .single
+          .expectedServerDistinctCandidateTotal,
+      0,
+    );
+    await db.close();
+  });
+
+  test('opaque alert handle is not its digest or URL', () {
+    final alert = public.RecoverBullAttemptAlertState(
+      public.RecoverBullAttemptAlertKind.suspiciousActivity,
+    );
+    expect(alert.opaqueHandle.toString(), isNot(contains('http')));
+    expect(alert.opaqueHandle.toString(), isNot(contains('00')));
+  });
+
+  test(
+    'polling remote failures do not escape the attempt monitoring check',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final remote = _ThrowingRemote();
+      await expectLater(
+        CheckBackupAttemptMonitoringUsecase(
+          store: store,
+          remote: remote,
+        ).execute(),
+        completes,
+      );
+      await db.close();
+    },
+  );
+
+  test('first operation registers the backup with expected = 1', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await RecordLocalAttemptUsecase(
+      store,
+    ).execute(backupIdHex: _hex(id), attemptStatus: _status(1));
+    expect(
+      (await store.monitoredBackups())
+          .single
+          .expectedServerDistinctCandidateTotal,
+      1,
+    );
+    await db.close();
+  });
+
+  test('server total exceeding this device count raises an alert', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final alert = await RecordLocalAttemptUsecase(
+      store,
+    ).execute(backupIdHex: _hex(id), attemptStatus: _status(3));
+    expect(alert, isA<SuspiciousActivityAlert>());
+    expect(alert!.expectedTotal, 1);
+    await db.close();
+  });
+
+  test('a new window resets the local counter to 1', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await store.recordStatus(id, _status(3));
+    await RecordLocalAttemptUsecase(store).execute(
+      backupIdHex: _hex(id),
+      attemptStatus: _status(1, at: window.add(const Duration(days: 1))),
+    );
+    final row = (await store.monitoredBackups()).single;
+    expect(row.expectedServerDistinctCandidateTotal, 1);
+    expect(
+      row.currentWindow,
+      attemptWindowIdentity(window.add(const Duration(days: 1))),
+    );
+    await db.close();
+  });
+
+  test(
+    'own replays do not inflate the baseline, and a foreign candidate is still detected afterwards',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      for (var i = 0; i < 3; i++) {
+        expect(
+          await RecordLocalAttemptUsecase(
+            store,
+          ).execute(backupIdHex: _hex(id), attemptStatus: _status(1)),
+          isNull,
+        );
+      }
+      expect(
+        (await store.monitoredBackups())
+            .single
+            .expectedServerDistinctCandidateTotal,
+        1,
+      );
+      expect(
+        await RecordLocalAttemptUsecase(
+          store,
+        ).execute(backupIdHex: _hex(id), attemptStatus: _status(3)),
+        isA<SuspiciousActivityAlert>(),
+      );
+      await db.close();
+    },
+  );
+
+  test('no monitored backups -> no check, no alerts', () async {
+    final (db, store) = await build();
+    final remote = _Remote();
+    expect(
+      await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+      ).execute(),
+      isEmpty,
+    );
+    expect(remote.calls, 0);
+    await db.close();
+  });
+
+  test('fresh last check -> skipped (no snapshot fetch)', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await store.applySnapshot(
+      RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: {},
+      ),
+    );
+    final remote = _Remote();
+    expect(
+      await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+        clock: () => window.add(const Duration(seconds: 1)),
+      ).execute(),
+      isEmpty,
+    );
+    expect(remote.calls, 0);
+    await db.close();
+  });
+
+  test(
+    'changed collection_started_at resets the baseline, no attack alarm',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      await store.applySnapshot(
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {},
+        ),
+      );
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window.add(const Duration(hours: 1)),
+          totalAttempts: {id: 9},
+        );
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+        clock: () => DateTime.now().toUtc().add(const Duration(minutes: 2)),
+      ).execute();
+      expect(alerts, contains(isA<CountersWipedAlert>()));
+      expect(alerts.whereType<SuspiciousActivityAlert>(), isEmpty);
+      await db.close();
+    },
+  );
+
+  test('prolonged unavailability surfaces the soft warning once', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await store.applySnapshot(
+      RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: {},
+      ),
+    );
+    final remote = _ThrowingRemote();
+    final alerts = await CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: remote,
+      clock: () => DateTime.now().toUtc().add(const Duration(days: 4)),
+    ).execute();
+    expect(alerts.single, isA<AttemptMonitoringUnavailableAlert>());
+    await db.close();
+  });
+
+  test(
+    'an exact attempt_status window and the hour-truncated snapshot window for the SAME window raise NO false alert',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      await store.recordStatus(id, _status(1));
+      final digest = (await store.monitoredBackups()).single.digest;
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 1},
+          windowStartedAt: {digest: DateTime.utc(2026, 8, 5, 14)},
+        );
+      expect(
+        await CheckBackupAttemptMonitoringUsecase(
+          store: store,
+          remote: remote,
+        ).execute(),
+        isEmpty,
+      );
+      await db.close();
+    },
+  );
+
+  test(
+    'a real extra attempt IS still detected across the precision boundary',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      await store.recordStatus(id, _status(1));
+      final digest = (await store.monitoredBackups()).single.digest;
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 3},
+          windowStartedAt: {digest: DateTime.utc(2026, 8, 5, 14)},
+        );
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+      ).execute();
+      expect(alerts.whereType<SuspiciousActivityAlert>(), hasLength(1));
+      await db.close();
+    },
+  );
+
+  test(
+    'registering an already-monitored backup leaves the baseline alone',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      await store.recordStatus(id, _status(2));
+      await store.registerBackup(id);
+      expect(
+        (await store.monitoredBackups())
+            .single
+            .expectedServerDistinctCandidateTotal,
+        2,
+      );
+      await db.close();
+    },
+  );
+
+  test('one attacker probe after a store is NOT masked', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final digest = (await store.monitoredBackups()).single.digest;
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: {digest: 1},
+        windowStartedAt: {digest: window},
+      );
+    expect(
+      (await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+      ).execute()).whereType<SuspiciousActivityAlert>(),
+      hasLength(1),
+    );
+    await db.close();
+  });
+
+  test(
+    'a sustained /attempts flood escalates to the unavailability warning',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final remote = _ThrowingRemote();
+      final clock = window.add(const Duration(days: 4));
+      final usecase = CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+        clock: () => clock,
+      );
+      expect(await usecase.execute(), isEmpty);
+      expect(await usecase.execute(), isEmpty);
+      expect(
+        (await usecase.execute()).single,
+        isA<AttemptMonitoringUnavailableAlert>(),
+      );
+      await db.close();
+    },
+  );
+
+  test('a single first-ever failure does not warn at all', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    expect(
+      await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: _ThrowingRemote(),
+      ).execute(),
+      isEmpty,
+    );
+    await db.close();
+  });
+
+  test('concurrent poll failures preserve every failure increment', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+
+    await Future.wait([
+      store.recordPollFailure(now: window),
+      store.recordPollFailure(now: window),
+    ]);
+
+    expect((await store.state()).consecutiveFailures, 2);
+    await db.close();
+  });
+
+  test(
+    'repeated failures without any success warn with NO fabricated duration',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final usecase = CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: _ThrowingRemote(),
+        clock: () => window,
+      );
+      await usecase.execute();
+      await usecase.execute();
+      final alert =
+          (await usecase.execute()).single as AttemptMonitoringUnavailableAlert;
+      expect(alert.since, isNull);
+      await db.close();
+    },
+  );
+
+  test('the same window does not re-raise on a second recovery', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    final digest = (await store.monitoredBackups()).single.digest;
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: {digest: 2},
+        windowStartedAt: {digest: window},
+      );
+    final check = CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: remote,
+    );
+    expect(
+      (await check.execute()).whereType<SuspiciousActivityAlert>(),
+      hasLength(1),
+    );
+    expect(await check.execute(), isEmpty);
+    await db.close();
+  });
+
+  test('acknowledgement keeps alert handles ephemeral', () async {
+    final alert = SuspiciousActivityAlert(
+      backupIdHash: 'opaque',
+      observedTotal: 1,
+      expectedTotal: 0,
+      windowStartedAt: DateTime.utc(2026),
+    );
+    await const AcknowledgeAttemptAlertUsecase().execute(alert);
+    expect(alert.backupIdHash, isNot(contains('http')));
+  });
+}
+
+String _hex(List<int> bytes) =>
+    bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+
+KeyServerAttemptStatus _status(int total, {DateTime? at}) =>
+    KeyServerAttemptStatus(
+      totalAttempts: total,
+      failedAttempts: 0,
+      remainingAttempts: 3 - total,
+      windowStartedAt: at ?? DateTime.utc(2026, 8, 5, 14, 37, 22),
+      previousAttemptAt: null,
+      resetsAt: (at ?? DateTime.utc(2026, 8, 5, 14, 37, 22)).add(
+        const Duration(days: 1),
+      ),
+    );
+
+class _ThrowingRemote implements RecoverBullAttemptMonitoringRemotePort {
+  @override
+  Future<RecoverBullAttemptsSnapshot?> poll({
+    required String? etag,
+    required List<String> backupDigests,
+  }) => Future.error(StateError('offline'));
+}

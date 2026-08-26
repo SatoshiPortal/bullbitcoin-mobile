@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -106,6 +106,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           wallets: wallets,
           syncStatus: syncStatus,
           isOnLegacyStorage: isOnLegacyStorage,
+          backupNeeded: await _checkBackupNeededUsecase.execute(),
         ),
       );
 
@@ -183,6 +184,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           error: null,
           syncStatus: syncStatus,
           isRefreshing: false,
+          backupNeeded: await _checkBackupNeededUsecase.execute(),
         ),
       );
     } on NoWalletsFoundException catch (e) {
@@ -385,9 +387,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     VerifyBackupStatus event,
     Emitter<WalletState> emit,
   ) async {
-    final dbBackupNeeded = await _checkBackupNeededUsecase.execute();
-    if (dbBackupNeeded == state.hasNoBackup()) return;
-    final wallets = await _getWalletsUsecase.execute();
-    emit(state.copyWith(wallets: wallets));
+    final backupNeeded = await _checkBackupNeededUsecase.execute();
+    if (backupNeeded == state.backupNeeded) return;
+    emit(state.copyWith(backupNeeded: backupNeeded));
   }
 }

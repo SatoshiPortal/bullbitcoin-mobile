@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/sync/sync_locator.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/payjoin_setup.dart';
+import 'package:bb_mobile/recoverbull_setup.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
@@ -66,6 +67,7 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    bool startRecoverBull = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -134,6 +136,13 @@ class AppLocator {
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
     WalletLocator.setup(locator);
+    if (startRecoverBull) {
+      await RecoverBullSetup.setup(
+        locator,
+        database: database,
+        startAttemptMonitoring: true,
+      );
+    }
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);

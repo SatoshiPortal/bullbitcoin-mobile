@@ -1,0 +1,636 @@
+{
+  "@@locale": "as",
+  "recoverbullGoogleDriveNoBackupsFound": "কোনো বেকআপ পোৱা নগ'ল",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "বেকআপ ফাইলত Derivation Path নাই।",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
+  },
+  "recoverbullVaultKeyInput": "Vault Key",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullSwitchToPassword": "পৰিৱৰ্তে পাছৱৰ্ড বাছনি কৰক",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullErrorInvalidVaultFile": "অবৈধ vault ফাইল।",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullLongestStep": "এইটোৱেই আটাইতকৈ দীঘলীয়া পদক্ষেপ। প্ৰথমবাৰ আৰম্ভ হ'বলৈ এক মিনিটতকৈ বেছি সময় লাগিব পাৰে।",
+  "recoverbullRecoveryErrorVaultCorrupted": "বাছনি কৰা বেকআপ ফাইলটো নষ্ট হৈছে।",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullVaultImportedSuccess": "আপোনাৰ vault সফলভাৱে আমদানি কৰা হৈছে",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullPasswordTooShort": "পাছৱৰ্ড কমেও ৬টা আখৰৰ হ'ব লাগিব",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullFetchingVaultKey": "Vault কী আনা হৈছে",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullSecureBackup": "আপোনাৰ বেকআপ সুৰক্ষিত কৰক",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "backupWalletHowToDecideVaultCloudRecommendationText": "আপুনি নিশ্চিত কৰিব বিচাৰে যে ডিভাইচ হেৰালেও আপুনি vault ফাইললৈ প্ৰৱেশ কেতিয়াও নেহেৰুৱায়।",
+  "@backupWalletHowToDecideVaultCloudRecommendationText": {
+    "description": "Recommendation text for when to use cloud storage"
+  },
+  "walletSetupErrorTryAgain": "আপোনাৰ wallet ছেট আপ কৰোঁতে কিবা ভুল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recoverbullRecoveryLoadingMessage": "বেলেন্স আৰু লেনদেন বিচাৰি আছে…",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullErrorMissingBytes": "Tor সঁহাৰিৰ পৰা bytes হেৰাই গৈছে। পুনৰ চেষ্টা কৰক, কিন্তু যদি সমস্যা অব্যাহত থাকে, Tor-ৰ সৈতে কিছুমান ডিভাইচত এইটো এটা জ্ঞাত সমস্যা।",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "torSettingsTitle": "Tor ছেটিংছ",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "recoverbullSelectRecoverWallet": "Wallet পুনৰুদ্ধাৰ কৰক",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullErrorServiceUnavailable": "সেৱা উপলব্ধ নহয়। অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক।",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullPassword": "পাছৱৰ্ড",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullReenterRequired": "আপোনাৰ {inputType} পুনৰায় দিয়ক",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "আপুনি আত্মবিশ্বাসী যে vault ফাইলটো হেৰুৱাব নাপাব আৰু ফোন হেৰালেও প্ৰৱেশযোগ্য থাকিব।",
+  "@backupWalletHowToDecideVaultCustomRecommendationText": {
+    "description": "Recommendation text for when to use custom location"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "Google Drive",
+  "@recoverbullSelectGoogleDrive": {
+    "description": "Name label for Google Drive backup provider option"
+  },
+  "recoverbullEnterInput": "আপোনাৰ {inputType} দিয়ক",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "URL প্ৰয়োজন",
+  "recoverbullServerUsingCustom": "কাষ্টম চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে",
+  "recoverbullErrorRejected": "Key Server-দ্বাৰা প্ৰত্যাখ্যান কৰা হৈছে",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSettingsKeyServerUrl": "কী চাৰ্ভাৰ URL",
+  "recoverbullKeyServer": "Key Server ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Vault মচক",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveCancelButton": "বাতিল কৰক",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullSelectVaultSelected": "Vault বাছনি হৈছে",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullRecoveryErrorWalletExists": "এই wallet ইতিমধ্যে আছে।",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullSelectCustomLocationProvider": "কাষ্টম স্থান",
+  "@recoverbullSelectCustomLocationProvider": {
+    "description": "Name label for custom location backup provider option"
+  },
+  "recoverbullTorNotStarted": "Tor আৰম্ভ হোৱা নাই",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullFailed": "বিফল হৈছে",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullConnectionFailed": "সংযোগ বিফল হৈছে",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullSelectFetchDriveFilesError": "সকলো drive বেকআপ আনিবলৈ বিফল হৈছে",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectFileNotSelectedError": "ফাইল বাছনি কৰা হোৱা নাই",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "backupWalletHowToDecideVaultCustomRecommendation": "কাষ্টম স্থান: ",
+  "@backupWalletHowToDecideVaultCustomRecommendation": {
+    "description": "Bold label for custom location recommendation"
+  },
+  "recoverbullSwitchToPIN": "পৰিৱৰ্তে PIN বাছনি কৰক",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullSelectDecryptVault": "Vault ডিক্ৰিপ্ট কৰক",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullPleaseWait": "অনুগ্ৰহ কৰি অপেক্ষা কৰক, এটা সুৰক্ষিত সংযোগ স্থাপন কৰা হৈছে...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullPhaseNetworkInfo": "নেটৱৰ্কৰ তথ্য সংগ্ৰহ কৰি আছে",
+  "recoverbullReenterConfirm": "নিশ্চিত কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ {inputType} পুনৰায় দিয়ক।",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "পাছৱৰ্ড মিলা নাই",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullErrorDecryptFailed": "Vault ডিক্ৰিপ্ট কৰিবলৈ বিফল হৈছে",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullSelectCustomLocation": "কাষ্টম স্থান",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "ত্ৰুটি: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Google Drive-ৰ পৰা vault ৰপ্তানি কৰিবলৈ বিফল হৈছে",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullTestSuccessDescription": "আপুনি হেৰোৱা Bitcoin wallet পুনৰুদ্ধাৰ কৰিব পাৰে",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullPasswordRequired": "পাছৱৰ্ড প্ৰয়োজন",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds} ছেকেণ্ড",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "Vault তৈয়াৰ বিফল হৈছে, ফাইল বা কী-ৰ সমস্যা হ'ব পাৰে",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "স্থানীয় বেকআপ key derivation বিফল হৈছে।",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectBackupFileNotValidError": "Recoverbull বেকআপ ফাইল বৈধ নহয়",
+  "@recoverbullSelectBackupFileNotValidError": {
+    "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullErrorFetchKeyFailed": "চাৰ্ভাৰৰ পৰা vault কী আনিবলৈ বিফল হৈছে",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullEnterToView": "আপোনাৰ vault কী চাবলৈ অনুগ্ৰহ কৰি আপোনাৰ {inputType} দিয়ক।",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "দ্ৰুত আৰু সহজ",
+  "@recoverbullSelectQuickAndEasy": {
+    "description": "Description tag for Google Drive and iCloud provider options"
+  },
+  "recoverbullTorClockSkewed": "আপোনাৰ ডিভাইচৰ ঘড়ী ভুল, সেয়েহে Tor-এ ৰিলে প্ৰমাণপত্ৰ পৰীক্ষা কৰিব নোৱাৰে। তাৰিখ আৰু সময়ৰ ছেটিং চাওক।",
+  "recoverbullGoogleDriveDeleteConfirmation": "আপুনি নিশ্চিতভাৱে এই vault বেকআপ মচিব বিচাৰে নে? এই কাৰ্য পূৰ্বাৱস্থালৈ ঘূৰাই আনিব নোৱাৰিব।",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullSelectVaultProvider": "Vault প্ৰদানকাৰী বাছনি কৰক",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullRecoveryBalanceLabel": "বেলেন্স: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "অব্যাহত ৰাখক",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullSettingsSave": "সংৰক্ষণ কৰক",
+  "recoverbullEnterToTest": "আপোনাৰ vault পৰীক্ষা কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ {inputType} দিয়ক।",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Google বা Apple-ৰ দৰে ক্লাউড সংৰক্ষণ প্ৰদানকাৰীৰ আপোনাৰ Bitcoin-লৈ প্ৰৱেশ নাথাকিব কাৰণ এনক্ৰিপ্শন পাছৱৰ্ড অতি শক্তিশালী। কেৱল অসম্ভাৱ্য ঘটনাত যদি তেওঁলোকে key server-ৰ সৈতে মিলি ষড়যন্ত্ৰ কৰে তেহে তেওঁলোকে আপোনাৰ Bitcoin-লৈ প্ৰৱেশ পাব পাৰে। যদি key server কেতিয়াবা হেক হয়, তেন্তে Google বা Apple ক্লাউডৰ আপোনাৰ Bitcoin বিপদত পৰিব পাৰে।",
+  "@backupWalletHowToDecideVaultCloudSecurity": {
+    "description": "Explanation of cloud storage security in vault location decision help modal"
+  },
+  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
+  "recoverbullSelectVaultImportSuccess": "আপোনাৰ vault সফলভাৱে আমদানি হৈছে",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullErrorVaultNotSet": "Vault ছেট কৰা হোৱা নাই",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullVaultRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
+  "recoverbullCreatingVault": "এনক্ৰিপ্টেড Vault তৈয়াৰ কৰা হৈছে",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullTorCantStart": "এতিয়া Tor সংযোগ কৰিব পৰা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recoverbullDecryptVault": "Vault ডিক্ৰিপ্ট কৰক",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullErrorSelectVault": "Vault বাছনি কৰিবলৈ বিফল হৈছে",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
+  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
+  "backupWalletHowToDecideBackupModalTitle": "কেনেকৈ সিদ্ধান্ত ল'ব",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "recoverbullSettingsUrlMustBeOnion": "URL অৱশ্যে .onion ৰে শেষ হ'ব লাগিব",
+  "recoverbullServerConfirmTitle": "Vault ৰিকভাৰী চাৰ্ভাৰ",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "পৰীক্ষা সফলভাৱে সম্পন্ন হৈছে!",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Google Drive-ৰ পৰা vaults আনিবলৈ বিফল হৈছে",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullSettingsEdit": "সম্পাদনা কৰক",
+  "recoverbullPIN": "PIN",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
+  "recoverbullUnexpectedError": "অপ্ৰত্যাশিত ত্ৰুটি",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryTransactionsLabel": "লেনদেন: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "URL বৈধ নহয়",
+  "recoverbullSelectDriveBackups": "Drive বেকআপসমূহ",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি, লগ চাওক",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullCheckingConnection": "RecoverBull-ৰ সংযোগ পৰীক্ষা কৰা হৈছে",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullErrorInvalidCredentials": "এই বেকআপ ফাইলৰ বাবে ভুল পাছৱৰ্ড",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
+  "recoverbullGoBackEdit": "<< পিছলৈ যাওক আৰু সম্পাদনা কৰক",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGoogleDriveExportButton": "ৰপ্তানি কৰক",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullSeeMoreVaults": "অধিক vaults চাওক",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
+  },
+  "recoverbullServerCustomWarning": "আপুনি এটা কাষ্টম Recoverbull চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে। নিশ্চিত কৰক যে আপুনি এই চাৰ্ভাৰক বিশ্বাস কৰে।",
+  "recoverbullTestRecovery": "পুনৰুদ্ধাৰ পৰীক্ষা কৰক",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullRecoveryContinueButton": "অব্যাহত ৰাখক",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullServerUrlLabel": "চাৰ্ভাৰ URL:",
+  "recoverbullTorNetwork": "Tor Network",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "torSettingsDescConnected": "Tor proxy চলি আছে আৰু সাজু",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "recoverbullSettingsTitle": "Recoverbull ছেটিংছ",
+  "recoverbullSelectErrorPrefix": "ত্ৰুটি:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "RecoverBull Server",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullTorOffline": "ইণ্টাৰনেট সংযোগ নথকা যেন লাগিছে।",
+  "recoverbullServerUsingDefault": "ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে",
+  "recoverbullTestBackupDescription": "এতিয়া আপোনাৰ বেকআপ পৰীক্ষা কৰা যাওক যাতে সকলো সঠিকভাৱে কৰা হৈছে।",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullErrorPasswordNotSet": "পাছৱৰ্ড ছেট কৰা হোৱা নাই",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullEncryptedVaultCreated": "এনক্ৰিপ্টেড Vault তৈয়াৰ হৈছে!",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullErrorRateLimited": "হাৰ সীমাবদ্ধ হৈছে। {retryIn}-ত পুনৰ চেষ্টা কৰক",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "পৰিৱৰ্তে vault কী দিয়ক",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Recoverbull ৰ বিষয়ে অধিক জানক",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Google Drive-ৰ পৰা vault মচিবলৈ বিফল হৈছে",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullVaultCreatedSuccess": "Vault সফলভাৱে তৈয়াৰ হৈছে",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullConfirm": "নিশ্চিত কৰক",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullWaiting": "অপেক্ষা কৰক",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
+  },
+  "backupWalletHowToDecideVaultMoreInfo": "অধিক তথ্যৰ বাবে recoverbull.com চাওক।",
+  "@backupWalletHowToDecideVaultMoreInfo": {
+    "description": "Link text to external resource about vault locations"
+  },
+  "recoverbullVaultSelected": "Vault বাছনি কৰা হৈছে",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullSettingsCancel": "বাতিল কৰক",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Google বা Apple ক্লাউড: ",
+  "@backupWalletHowToDecideVaultCloudRecommendation": {
+    "description": "Bold label for cloud storage recommendation"
+  },
+  "backupWalletHowToDecide": "কেনেকৈ সিদ্ধান্ত ল'ব?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "durationMinute": "{minutes} মিনিট",
+  "@durationMinute": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "এটা ত্ৰুটি হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullConnected": "সংযুক্ত হৈছে",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "মচক",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Vault Key",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "বেকআপ কী হাতেৰে দিয়ক >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "লক্ষ্য key server-ত সংযোগ কৰিবলৈ বিফল হৈছে। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক!",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullFetchVaultKey": "Vault কী আনক",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Google Drive-ৰ পৰা vault বাছনি কৰিবলৈ বিফল হৈছে",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullSelectTakeYourTime": "সময় লওক",
+  "@recoverbullSelectTakeYourTime": {
+    "description": "Description tag for custom location provider option"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "এটা বেলেগ ডিফল্ট wallet ইতিমধ্যে আছে। আপোনাৰ মাত্ৰ এটাই ডিফল্ট wallet থাকিব পাৰে।",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullConfirmInput": "{inputType} নিশ্চিত কৰক",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "আপোনাৰ wallet-লৈ প্ৰৱেশ পুনৰুদ্ধাৰ কৰিবলৈ আপুনি এই {inputType} মনত ৰাখিব লাগিব। ই কমেও ৬টা অংকৰ হ'ব লাগিব। যদি আপুনি এই {inputType} হেৰুৱায়, আপুনি বেকআপ পুনৰুদ্ধাৰ কৰিব নোৱাৰিব।",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL অৱশ্যে HTTP হ'ব লাগিব",
+  "recoverbullGotIt": "বুজিলোঁ",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullPasswordTooCommon": "এই পাছৱৰ্ড অতি সাধাৰণ। অনুগ্ৰহ কৰি এটা ভিন্ন পাছৱৰ্ড বাছনি কৰক",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullServerTorNotice": "আমি Tor ৰ জৰিয়তে এই চাৰ্ভাৰৰ সৈতে সংযোগ কৰিম",
+  "backupWalletHowToDecideVaultCustomLocation": "আপুনি বাছনি কৰা স্থানৰ ওপৰত নিৰ্ভৰ কৰি, কাষ্টম স্থান বহুত বেছি সুৰক্ষিত হ'ব পাৰে। আপুনি বেকআপ ফাইলটো নেহেৰুৱায় বা আপোনাৰ বেকআপ ফাইল থকা ডিভাইচটো নেহেৰুৱায় সেইটোও নিশ্চিত কৰিব লাগিব।",
+  "@backupWalletHowToDecideVaultCustomLocation": {
+    "description": "Explanation of custom location benefits and risks"
+  },
+  "recoverbullEnterToDecrypt": "আপোনাৰ vault ডিক্ৰিপ্ট কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ {inputType} দিয়ক।",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "কোনো বেকআপ পোৱা নগ'ল",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullSelectAppleIcloud": "Apple iCloud",
+  "@recoverbullSelectAppleIcloud": {
+    "description": "Name label for Apple iCloud backup provider option"
+  },
+  "recoverbullServerUnreachableTorOk": "Tor কাম কৰি আছে, কিন্তু বেকআপ ছাৰ্ভাৰে সঁহাৰি দিয়া নাই। প্ৰথমবাৰ আৰম্ভ কৰাৰ পিছত ইয়াত অলপ সময় লাগিব পাৰে।",
+  "durationMinutes": "{minutes} মিনিট",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "সংযোগ কৰা হৈছে",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "বিফল হৈছে: Vault ফাইল তৈয়াৰ হৈছে কিন্তু চাৰ্ভাৰত কী সংৰক্ষণ হোৱা নাই",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRetry": "পুনৰ চেষ্টা কৰক",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullConnectingTor": "Tor-ৰ জৰিয়তে Key Server-ত সংযোগ কৰা হৈছে।\nইয়াত এক মিনিট পৰ্যন্ত লাগিব পাৰে।",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullSelectCustomLocationError": "কাষ্টম স্থানৰ পৰা ফাইল বাছনি কৰিবলৈ বিফল হৈছে",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "torSettingsDescDisconnected": "Tor proxy চলি নাই",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "পুনৰ চেষ্টা কৰক",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "অব্যাহত ৰাখক",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "কপি কৰক",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "বন্ধ কৰক",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

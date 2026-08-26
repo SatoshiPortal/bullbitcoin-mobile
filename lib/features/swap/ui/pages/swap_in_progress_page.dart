@@ -6,10 +6,9 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAssets, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,9 +51,7 @@ class SwapInProgressPage extends StatelessWidget {
                         Gif(
                           autostart: Autostart.loop,
                           height: 123,
-                          image: AssetImage(
-                            Assets.animations.cubesLoading.path,
-                          ),
+                          image: BullAssets.animations.cubesLoading,
                         ),
                         const Gap(8),
                         Text(

@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: recoverbull_en.arb
+output-localization-file: recoverbull_localizations.dart
+output-class: RecoverBullLocalizations
+output-dir: lib/l10n
+nullable-getter: false
