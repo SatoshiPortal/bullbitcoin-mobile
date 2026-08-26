@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -13,6 +14,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -116,6 +118,10 @@ class _MockCheckConsolidation extends Mock
     implements CheckLiquidConsolidationUsecase {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(const RelativeFee(250));
+  });
+
   late _MockMarkUnknown markUnknown;
   late _MockMarkBroadcast markBroadcast;
   late _MockBroadcastBitcoin broadcastBitcoin;
@@ -127,6 +133,7 @@ void main() {
   late _MockConvertSats convertSats;
   late _MockWatchOrder watchOrder;
   late _MockGetWallet getWallet;
+  late _MockPrepareBitcoin prepareBitcoin;
   late OrderSwapRecord prepared;
   late TransferBloc bloc;
 
@@ -142,6 +149,7 @@ void main() {
     convertSats = _MockConvertSats();
     watchOrder = _MockWatchOrder();
     getWallet = _MockGetWallet();
+    prepareBitcoin = _MockPrepareBitcoin();
     prepared = _prepared();
     when(
       () => getWallet.execute('wallet-1', sync: true),
@@ -151,7 +159,7 @@ void main() {
       getSettingsUsecase: getSettings,
       getWalletsUsecase: getWallets,
       getNetworkFeesUsecase: getNetworkFees,
-      prepareBitcoinSendUsecase: _MockPrepareBitcoin(),
+      prepareBitcoinSendUsecase: prepareBitcoin,
       prepareLiquidSendUsecase: _MockPrepareLiquid(),
       calculateBitcoinAbsoluteFeesUsecase: _MockCalculateBitcoin(),
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquid(),
@@ -181,6 +189,42 @@ void main() {
   });
 
   tearDown(() => bloc.close());
+
+  test(
+    'exposes insufficient funds when same-chain creation raises a shortfall',
+    () async {
+      final source = _wallet(balanceSat: BigInt.from(2000));
+      final destination = _destinationWallet();
+      when(
+        () => prepareBitcoin.execute(
+          walletId: source.id,
+          address: any(named: 'address'),
+          amountSat: 1000,
+          networkFee: any(named: 'networkFee'),
+          drain: false,
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: true,
+        ),
+      ).thenThrow(InsufficientFundsException('shortfall'));
+      bloc.emit(
+        TransferState(
+          fromWallet: source,
+          toWallet: destination,
+          receiveAddress: 'tb1qdestination',
+          bitcoinUnit: BitcoinUnit.sats,
+          bitcoinNetworkFees: _feeOptions(),
+        ),
+      );
+
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      expect(
+        bloc.state.swapCreationException,
+        isA<InsufficientFundsSwapException>(),
+      );
+    },
+  );
 
   test(
     'broadcasts a prepared order swap and emits its transaction id',
@@ -589,7 +633,7 @@ ChainSwap _swap() =>
         )
         as ChainSwap;
 
-Wallet _wallet() => Wallet(
+Wallet _wallet({BigInt? balanceSat}) => Wallet(
   origin: 'wallet-1',
   network: Network.bitcoinTestnet,
   xpubFingerprint: 'fingerprint',
@@ -599,7 +643,7 @@ Wallet _wallet() => Wallet(
   internalPublicDescriptor: 'internal',
   signer: SignerEntity.local,
   signerDevice: null,
-  balanceSat: BigInt.zero,
+  balanceSat: balanceSat ?? BigInt.zero,
 );
 
 Wallet _liquidWallet({String id = 'wallet-1', bool isDefault = false}) =>

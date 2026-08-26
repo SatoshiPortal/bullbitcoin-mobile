@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -1633,7 +1634,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   bool _isInsufficientFundsException(Object e) {
     return e is InsufficientFundsSwapException ||
-        e.toString().contains('InsufficientFundsException');
+        e is InsufficientFundsException;
   }
 
   Future<void> _onOrderSwapUpdated(
