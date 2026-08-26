@@ -102,20 +102,20 @@ jobs:
     name: Check action pins
     runs-on: ubuntu-24.04
     steps:
-      # The trusted checker is loaded from the repository's trusted base.
+      # Bootstrap from the immutable commit that introduced the checker. This
+      # lets the introducing PR verify itself before the file exists on the
+      # base branch; checker upgrades require an explicit SHA bump here.
       - name: Checkout candidate tree (data only)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: candidate
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Checkout trusted checker and base tree
+      - name: Checkout trusted checker
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: trusted
-          # PRs use the immutable base SHA; manual runs trust the repository's
-          # default branch, selected deterministically from the dispatch event.
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: 79342f5f4e761f020453d0f78e42b15791f08faf
           persist-credentials: false
       - name: Verify external action pins
         run: bash trusted/tools/check_action_pins.sh "$GITHUB_WORKSPACE/candidate"

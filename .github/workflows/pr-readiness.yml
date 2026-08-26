@@ -14,11 +14,12 @@ jobs:
     name: PR readiness
     runs-on: ubuntu-latest
     steps:
-      # This is the trusted base, never the PR head. It supplies only the pure
-      # policy module; the check still evaluates live metadata through GraphQL.
+      # Bootstrap from the immutable commit that introduced the policy. This
+      # lets the introducing PR verify itself before the file exists on the
+      # base branch; policy upgrades require an explicit SHA bump here.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: 78be3ed5f14bb2765e19602b90ca6ad62a6cf9c1
           persist-credentials: false
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
