@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 
 class PrepareLiquidSendUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
@@ -32,6 +33,8 @@ class PrepareLiquidSendUsecase {
     } on NoSpendableUtxoException {
       rethrow;
     } on ConsolidationRequiredException {
+      rethrow;
+    } on InsufficientFundsException {
       rethrow;
     } catch (e) {
       throw PrepareLiquidSendException(e.toString());

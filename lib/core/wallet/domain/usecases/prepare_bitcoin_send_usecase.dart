@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -71,6 +72,8 @@ class PrepareBitcoinSendUsecase {
       );
       return (unsignedPsbt: psbt, txSize: size, isToSelf: isToSelf);
     } on NoSpendableUtxoException {
+      rethrow;
+    } on InsufficientFundsException {
       rethrow;
     } catch (e) {
       throw PrepareBitcoinSendException(e.toString());
