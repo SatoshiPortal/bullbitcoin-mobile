@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
+import 'package:bb_mobile/features/bullnym/bullnym_locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
@@ -171,6 +172,7 @@ class AppLocator {
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
     NostrIdentityLocator.setup(locator);
+    BullnymLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);

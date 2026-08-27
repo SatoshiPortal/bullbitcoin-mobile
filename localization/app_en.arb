@@ -14618,5 +14618,21 @@
   "settingsNostrKeysSystemNip05Verification": "NIP-05 verification",
   "settingsNostrKeysSystemMetadataBackupDescription": "Identifies and signs your encrypted metadata backup.",
   "settingsNostrKeysSystemBullnymAuthDescription": "Authenticates this wallet to Bull Bitcoin payment services.",
-  "settingsNostrKeysSystemNip05VerificationDescription": "Reserved for public payment-name verification over Nostr."
+  "settingsNostrKeysSystemNip05VerificationDescription": "Reserved for public payment-name verification over Nostr.",
+  "bullnymErrorConnectionFailed": "Unable to reach the server. Check your network connection and try again.",
+  "@bullnymErrorConnectionFailed": {
+    "description": "Bullnym error when the request cannot reach the server (network down or timed out)"
+  },
+  "bullnymErrorServerUnavailable": "The server is temporarily unavailable. Please try again later.",
+  "@bullnymErrorServerUnavailable": {
+    "description": "Bullnym error when the server rejects a request but the operation can be retried"
+  },
+  "bullnymErrorServerError": "The server could not complete the request. Please try again later.",
+  "@bullnymErrorServerError": {
+    "description": "Bullnym error when the server rejects a request and it should not be retried as-is"
+  },
+  "bullnymErrorUnexpected": "Something went wrong. Please try again.",
+  "@bullnymErrorUnexpected": {
+    "description": "Bullnym generic error for invalid input, unexpected responses, or a local signing failure"
+  }
 }

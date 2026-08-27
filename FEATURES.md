@@ -24,6 +24,7 @@ graph TB
     NETWORK[Network]
     BIP85[BIP85]
     NOSTR_IDENTITY[Nostr Identity]
+    BULLNYM[Bullnym]
     KEYCHAIN_MANIFEST[Keychain Manifest]
     FEES[Fees]
     WALLETS[Wallets]
@@ -70,6 +71,7 @@ graph TB
     AUTOSWAP --> SWAPS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
+    BULLNYM --> NOSTR_IDENTITY
     BACKUPS --> BIP85
     BACKUPS --> TOR
     BACKUPS --> WALLETS
