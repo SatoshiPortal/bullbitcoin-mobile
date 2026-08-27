@@ -2,8 +2,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateWalletButton extends StatelessWidget {
   const CreateWalletButton({super.key});
@@ -28,7 +30,9 @@ class CreateWalletButton extends StatelessWidget {
       disabled: creating,
       onPressed: () {
         if (creating) return;
-        context.read<OnboardingBloc>().add(const OnboardingCreateNewWallet());
+        // Wallet creation goes through the entropy ceremony: the ceremony
+        // screen dispatches OnboardingCreateNewWallet once its bar fills.
+        context.pushNamed(OnboardingRoute.entropyCeremony.name);
       },
     );
   }

@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/presentation/entropy_ceremony_cubit.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_entropy_ceremony.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
@@ -14,6 +16,7 @@ import 'package:go_router/go_router.dart';
 enum OnboardingRoute {
   onboarding('/onboarding'),
   splash('splash'),
+  entropyCeremony('entropy-ceremony'),
   recoverOptions('recover-options'),
   retrievedBackupInfo('retrieved-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
@@ -79,6 +82,14 @@ class OnboardingRouter {
                 name: OnboardingRoute.splash.name,
                 path: OnboardingRoute.splash.path,
                 builder: (context, state) => const OnboardingSplash(),
+              ),
+              GoRoute(
+                name: OnboardingRoute.entropyCeremony.name,
+                path: OnboardingRoute.entropyCeremony.path,
+                builder: (context, state) => BlocProvider(
+                  create: (_) => locator<EntropyCeremonyCubit>()..start(),
+                  child: const OnboardingEntropyCeremony(),
+                ),
               ),
               GoRoute(
                 name: OnboardingRoute.recoverFromPhysical.name,
