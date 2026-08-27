@@ -959,7 +959,13 @@ void main() {
           walletId: 'wallet-1',
           psbt: 'old-unsigned-psbt',
         ),
-      ).thenAnswer((_) async => (signedPsbt: 'old-signed-psbt', txSize: 100));
+      ).thenAnswer(
+        (_) async => const Ok((
+          signedPsbt: 'old-signed-psbt',
+          txSize: 100,
+          isFinalized: true,
+        )),
+      );
       when(
         () => calculateBitcoin.execute(psbt: 'old-signed-psbt'),
       ).thenAnswer((_) async => 1200);
@@ -1029,6 +1035,7 @@ void main() {
           toWallet: replacementDestination,
         ),
       );
+      await pumpEventQueue();
       prepareCompleter.complete(
         Ok((
           unsignedPsbt: 'old-unsigned-psbt',
@@ -1073,7 +1080,13 @@ void main() {
       });
       when(
         () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'unsigned-psbt'),
-      ).thenAnswer((_) async => (signedPsbt: 'signed-psbt', txSize: 100));
+      ).thenAnswer(
+        (_) async => const Ok((
+          signedPsbt: 'signed-psbt',
+          txSize: 100,
+          isFinalized: true,
+        )),
+      );
       when(
         () => calculateBitcoin.execute(psbt: 'signed-psbt'),
       ).thenAnswer((_) async => 1200);
@@ -1178,7 +1191,13 @@ void main() {
           walletId: 'wallet-1',
           psbt: 'new-unsigned-psbt',
         ),
-      ).thenAnswer((_) async => (signedPsbt: 'new-signed-psbt', txSize: 100));
+      ).thenAnswer(
+        (_) async => const Ok((
+          signedPsbt: 'new-signed-psbt',
+          txSize: 100,
+          isFinalized: true,
+        )),
+      );
       when(
         () => calculateBitcoin.execute(psbt: 'new-signed-psbt'),
       ).thenAnswer((_) async => 1200);
@@ -1246,7 +1265,13 @@ void main() {
     when(
       () =>
           signBitcoin.execute(walletId: 'wallet-1', psbt: 'new-unsigned-psbt'),
-    ).thenAnswer((_) async => (signedPsbt: 'new-signed-psbt', txSize: 100));
+    ).thenAnswer(
+      (_) async => const Ok((
+        signedPsbt: 'new-signed-psbt',
+        txSize: 100,
+        isFinalized: true,
+      )),
+    );
     when(
       () => calculateBitcoin.execute(psbt: 'new-signed-psbt'),
     ).thenAnswer((_) async => 1200);

@@ -26,21 +26,16 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async {
-    final (secret, metadata) = await _loadSecret(walletId, network);
-    // The receiver's own input in a payjoin proposal carries no derivation
-    // path, and the package signs only what it can derive: the watch-only
-    // view adds the paths first.
-    final annotated = await _wallet.addOwnDerivations(
-      psbt: psbt,
-      wallet: WalletModel.fromMetadata(metadata),
+    final wallet = await _loadPrivateWallet(walletId, network);
+    final signed = await _wallet.signPsbt(
+      psbt,
+      wallet: wallet,
+      allowFinalizedForeignInputs: true,
     );
-    return _unwrap(
-      await secret.sign.psbt(
-        annotated,
-        network: network,
-        scriptType: metadata.scriptType.shared,
-      ),
-    );
+    if (!signed.isFinalized) {
+      throw StateError('Payjoin PSBT is not fully signed');
+    }
+    return signed.psbt;
   }
 
   @override
@@ -111,25 +106,26 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     if (signer.descriptorKeys.length != 1) {
       throw StateError('Payjoin requires a standard local wallet');
     }
-    final descriptorKey = signer.descriptorKeys.single;
+    final key = signer.descriptorKeys.single;
+    final account = scriptType.standardAccount(
+      key.derivationPath,
+      metadata.network,
+    );
     if (signer.signer != Signer.local ||
-        scriptType.standardAccount(
-              descriptorKey.derivationPath,
-              metadata.network,
-            ) !=
-            0 ||
-        descriptorKey.descriptorPath != standardSingleSignatureDescriptorPath) {
+        account == null ||
+        key.descriptorPath != standardSingleSignatureDescriptorPath) {
       throw StateError('Payjoin requires a standard local wallet');
     }
-    final seed = await _seed.get(descriptorKey.masterFingerprint);
+    final seed = await _seed.get(key.masterFingerprint);
     if (seed is! MnemonicSeedModel) {
-      throw StateError('Payjoin requires a local mnemonic wallet');
+      throw StateError('Payjoin requires a standard local wallet');
     }
     return WalletModel.privateBdk(
           id: walletId,
           scriptType: scriptType,
           mnemonic: seed.mnemonicWords.join(' '),
           passphrase: seed.passphrase,
+          account: account,
           isTestnet: metadata.isTestnet,
         )
         as PrivateBdkWalletModel;

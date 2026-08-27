@@ -15,6 +15,19 @@ sealed class WalletModel with _$WalletModel {
     required String combinedCtDescriptor,
     required bool isTestnet,
   }) = PublicLwkWalletModel;
+  const factory WalletModel.privateBdk({
+    required String id,
+    required ScriptType scriptType,
+    required String mnemonic,
+    String? passphrase,
+    required int account,
+    required bool isTestnet,
+  }) = PrivateBdkWalletModel;
+  const factory WalletModel.privateLwk({
+    required String id,
+    required String mnemonic,
+    required bool isTestnet,
+  }) = PrivateLwkWalletModel;
 
   const WalletModel._();
 

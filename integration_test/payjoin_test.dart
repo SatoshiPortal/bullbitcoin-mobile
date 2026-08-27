@@ -82,10 +82,16 @@ Future<void> main({bool isInitialized = false}) async {
         'Bitcoin preparation failed: ${failure.runtimeType}',
       ),
     };
-    final signed = await signBitcoinTx.execute(
+    final signingResult = await signBitcoinTx.execute(
       psbt: prepared.unsignedPsbt,
       walletId: walletId,
     );
+    final signed = switch (signingResult) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw StateError(
+        'Failed to sign consolidation transaction: ${failure.runtimeType}',
+      ),
+    };
     await broadcastBitcoinTx.execute(signed.signedPsbt, isPsbt: true);
     await Future<void>.delayed(const Duration(seconds: 3));
     // Fail fast: a funding sync that failed would otherwise surface as a

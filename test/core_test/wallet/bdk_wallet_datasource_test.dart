@@ -1,33 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-// Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
-// dropped manual UTXO selection and the RBF-off sequence flag.
-//
-// bdk_dart's `TxBuilder` is an IMMUTABLE builder: every method (`addUtxos`,
-// `setExactSequence`, `feeAbsolute`, `unspendable`, ...) returns a brand new
-// `TxBuilder` instance rather than mutating the receiver in place. Two call
-// sites in `buildPsbt` called `txBuilder.addUtxos(...)` and
-// `txBuilder.setExactSequence(...)` without reassigning the result, so both
-// calls were silent no-ops: BDK picked inputs on its own regardless of the
-// user's manual coin selection, and the RBF-off toggle never took effect.
-//
-// This test exercises the real production method end-to-end against a real
-// (offline, in-process) BDK wallet — no network, no mocked repository — so
-// it proves the actual `TxBuilder` wiring, not just that a mock was called
-// with the right arguments.
-//
-// Setup, fully deterministic and offline:
-//   1. A fixed BIP84 testnet wallet (the canonical
-//      "abandon ... abandon about" test mnemonic) is used to derive a
-//      public (watch-only) descriptor pair — exactly what
-//      `BitcoinWalletRepository.buildPsbt` passes down in production.
-//   2. The wallet is "funded" by hand-crafting a raw funding transaction
-//      with two outputs (to two of the wallet's own addresses) and applying
-//      it as an unconfirmed transaction via `Wallet.applyUnconfirmedTxs`.
-//      This is the standard offline way to seed known, deterministic UTXOs
-//      into a BDK wallet without hitting a real Electrum server.
-//   3. `path_provider`'s method channel is mocked to a temp directory so
-//      `BdkFacade`'s sqlite-file persister (production code, untouched)
-//      works under `flutter test`.
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -37,11 +7,14 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'bdk_wallet_test_fixture.dart';
 
 // The canonical BIP39 test mnemonic ("abandon" x11 + "about"). Public
 // knowledge, no funds, safe to hardcode.
@@ -147,14 +120,19 @@ void main() {
       keychainKind: bdk.KeychainKind.external_,
       networkKind: bdk.NetworkKind.test,
     );
+    final internal = bdk.Descriptor.newBip84(
+      secretKey: secretKey,
+      keychainKind: bdk.KeychainKind.internal,
+      networkKind: bdk.NetworkKind.test,
+    );
+
     walletModel =
         WalletModel.publicBdk(
               id: 'bdk-wallet-datasource-test',
-              descriptor: external
-                  .toString()
-                  .split('#')
-                  .first
-                  .replaceAll('/0/*', '/<0;1>/*'),
+              descriptor: twoPathDescriptor(
+                external.toString(),
+                internal.toString(),
+              ),
               isTestnet: true,
             )
             as PublicBdkWalletModel;
@@ -236,77 +214,6 @@ void main() {
       isFalse,
     );
   });
-
-  test(
-    'buildPsbt honors manual UTXO selection: a manually selected UTXO must '
-    'be spendable even when every other UTXO is frozen/unspendable',
-    () async {
-      final datasource = BdkWalletDatasource();
-
-      // The LARGE utxo (200k) is marked unspendable — i.e. excluded from
-      // BDK's own automatic coin-selection pool. It is ALSO the one
-      // manually `selected` here, which per BDK's documented semantics
-      // forces it into the transaction as a mandatory input REGARDLESS of
-      // the unspendable flag.
-      //
-      // NOTE: this selected-overrides-unspendable behavior is raw BDK
-      // semantics that this datasource deliberately preserves as a thin
-      // wrapper — it is the INVERSE of the app-level D7 invariant ("a
-      // frozen coin must never be spendable"). D7 is enforced one layer
-      // up: BitcoinWalletRepository.buildPsbt strips selected ∩
-      // unspendable before calling down (see
-      // bitcoin_wallet_repository_test.dart), and
-      // PrepareBitcoinSendUsecase additionally strips frozen coins from
-      // the selection. The combination is exploited here ONLY because it
-      // is a deterministic discriminator for the addUtxos-reassignment
-      // regression, with no dependency on BDK's coin-selection
-      // heuristics.
-      //
-      // The only utxo left in the automatic pool is the SMALL one (30k),
-      // which alone cannot cover the 150k send. This makes the two code
-      // paths unambiguous, with no dependency on BDK's coin-selection
-      // tie-breaking heuristics:
-      //   * Fixed code: `addUtxos` really runs, forcing the large utxo in
-      //     -> the build succeeds and spends it.
-      //   * Buggy code (return value of `addUtxos` discarded): no utxo is
-      //     forced in; BDK's automatic selection is left with only the
-      //     30k utxo, which can't cover 150k -> the build throws.
-      const sendAmountSat = 150000; // only the large (200k) utxo covers this
-      final psbt = await datasource.buildPsbt(
-        wallet: walletModel,
-        recipients: _fixedRecipients(sendAmountSat),
-        networkFee: const NetworkFee.relativeSatPerKwu(1000), // 4 sat/vB
-        unspendable: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
-        selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoLargeVout,
-            amountSat: BigInt.from(utxoLargeAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-        ],
-        replaceByFee: true,
-      );
-
-      final tx = bdk.Psbt(psbtBase64: psbt).extractTx();
-      final spendsLargeUtxo = tx.input().any(
-        (input) =>
-            input.previousOutput.txid.toString() == utxoLargeTxId &&
-            input.previousOutput.vout == utxoLargeVout,
-      );
-
-      expect(
-        spendsLargeUtxo,
-        isTrue,
-        reason:
-            'the manually selected UTXO must be forced into the built '
-            'transaction even though it is also marked unspendable for '
-            "BDK's own automatic selection",
-      );
-    },
-  );
 
   test(
     'buildPsbt sets a non-RBF sequence when replaceByFee is false',

@@ -83,3 +83,21 @@ final class WalletTransactionBuildFailure extends WalletFailure {
 final class WalletConsolidationRequiredFailure extends WalletFailure {
   const WalletConsolidationRequiredFailure([super.logMessage]);
 }
+
+enum BitcoinSigningFailureKind {
+  invalidPsbt,
+  walletMismatch,
+  missingLocalOrigin,
+  missingUtxo,
+  frozenUtxo,
+  unsupportedSighash,
+  unsupportedPolicyPath,
+  incomplete,
+  unexpected,
+}
+
+final class BitcoinSigningFailure extends WalletFailure {
+  final BitcoinSigningFailureKind kind;
+
+  const BitcoinSigningFailure(this.kind, [super.logMessage]);
+}

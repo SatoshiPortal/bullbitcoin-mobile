@@ -113,8 +113,8 @@ void main() {
       expect(wallet(signer: SignerEntity.remote).supportsLegacySend, isTrue);
     });
 
-    test('accepts higher accounts only for remote signers', () {
-      expect(wallet(derivationPath: "m/84'/0'/1'").supportsLegacySend, isFalse);
+    test('accepts higher accounts for local and remote signers', () {
+      expect(wallet(derivationPath: "m/84'/0'/1'").supportsLegacySend, isTrue);
       expect(
         wallet(
           derivationPath: 'm/84h/0h/1h',

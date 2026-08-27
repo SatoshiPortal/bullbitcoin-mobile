@@ -28,6 +28,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -461,7 +462,7 @@ void main() {
     expect(models.map((recipient) => recipient.amountSat), [25000, null]);
   });
 
-  test('private wallet reconstruction rejects a higher account', () async {
+  test('private wallet reconstruction preserves a higher account', () async {
     when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
       (_) async => metadata.copyWith(
         signers: [
@@ -479,11 +480,16 @@ void main() {
         ],
       ),
     );
-
-    await expectLater(
-      repository.getPrivateWallet(walletId: _walletId),
-      throwsA(isA<StateError>()),
+    when(() => seedDatasource.get('73c5da0a')).thenAnswer(
+      (_) async => SeedModel.mnemonic(
+        mnemonicWords:
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+                .split(' '),
+      ),
     );
-    verifyNever(() => seedDatasource.get(any()));
+
+    final wallet = await repository.getPrivateWallet(walletId: _walletId);
+
+    expect(wallet.account, 1);
   });
 }
