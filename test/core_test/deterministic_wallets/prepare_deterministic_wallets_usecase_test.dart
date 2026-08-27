@@ -92,6 +92,12 @@ void main() {
         parentPassphraseUsed: true,
       )),
     );
+    when(
+      () => wallets.getDefaultBitcoinWalletBirthday(
+        masterFingerprint: 'aabbccdd',
+        environment: Environment.mainnet,
+      ),
+    ).thenAnswer((_) async => null);
   });
 
   test('reuses matching wallets without touching the child seed', () async {
@@ -122,6 +128,70 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     );
+    verifyNever(
+      () => wallets.getDefaultBitcoinWalletBirthday(
+        masterFingerprint: 'aabbccdd',
+        environment: Environment.mainnet,
+      ),
+    );
+  });
+
+  Future<void> expectInheritedBirthday(DateTime? birthday) async {
+    when(
+      () => wallets.getDefaultBitcoinWalletBirthday(
+        masterFingerprint: 'aabbccdd',
+        environment: Environment.mainnet,
+      ),
+    ).thenAnswer((_) async => birthday);
+    when(
+      () => wallets.findMatchingDeterministicWallet(
+        seed: any(named: 'seed'),
+        spec: any(named: 'spec'),
+      ),
+    ).thenAnswer((_) async => null);
+    when(() => seeds.exists(any())).thenAnswer((_) async => true);
+    for (final spec in [_bitcoin, _liquid]) {
+      when(
+        () => wallets.createWallet(
+          seed: any(named: 'seed'),
+          network: spec.network,
+          scriptType: spec.scriptType,
+          provenance: WalletProvenance.bip85,
+          seedPassphraseUsed: true,
+          label: spec.label,
+          isDefault: spec.isDefault,
+          sync: spec.sync,
+          birthday: birthday,
+        ),
+      ).thenAnswer((_) async => _wallet(spec));
+    }
+
+    final result = await usecase.execute(_request);
+
+    expect(result, isA<Ok<dynamic, DeterministicWalletFailure>>());
+    for (final spec in [_bitcoin, _liquid]) {
+      verify(
+        () => wallets.createWallet(
+          seed: any(named: 'seed'),
+          network: spec.network,
+          scriptType: spec.scriptType,
+          provenance: WalletProvenance.bip85,
+          seedPassphraseUsed: true,
+          label: spec.label,
+          isDefault: spec.isDefault,
+          sync: spec.sync,
+          birthday: birthday,
+        ),
+      ).called(1);
+    }
+  }
+
+  test('inherits the generated parent wallet birthday', () async {
+    await expectInheritedBirthday(DateTime.utc(2026, 8, 25));
+  });
+
+  test('keeps a restored parent wallet birthday unknown', () async {
+    await expectInheritedBirthday(null);
   });
 
   test(
@@ -150,6 +220,7 @@ void main() {
           label: _bitcoin.label,
           isDefault: _bitcoin.isDefault,
           sync: _bitcoin.sync,
+          birthday: null,
         ),
       ).thenAnswer((_) async => _wallet(_bitcoin));
       when(
@@ -162,6 +233,7 @@ void main() {
           label: _liquid.label,
           isDefault: _liquid.isDefault,
           sync: _liquid.sync,
+          birthday: null,
         ),
       ).thenThrow(Exception('create failed'));
       when(

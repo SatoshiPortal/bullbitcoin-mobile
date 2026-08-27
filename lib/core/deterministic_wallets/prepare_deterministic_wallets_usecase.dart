@@ -58,6 +58,8 @@ class PrepareDeterministicWalletsUsecase {
 
     final seed = _seed(value.mnemonic);
     final prepared = <PreparedDeterministicWallet>[];
+    DateTime? parentBirthday;
+    var parentBirthdayRead = false;
     var storedSeed = false;
     var seedReady = false;
     try {
@@ -69,6 +71,13 @@ class PrepareDeterministicWalletsUsecase {
         if (existing != null) {
           prepared.add(existing);
           continue;
+        }
+        if (!parentBirthdayRead) {
+          parentBirthday = await _wallets.getDefaultBitcoinWalletBirthday(
+            masterFingerprint: value.parentFingerprint,
+            environment: request.environment,
+          );
+          parentBirthdayRead = true;
         }
         if (!seedReady) {
           if (!await _seeds.exists(seed.masterFingerprint)) {
@@ -89,6 +98,7 @@ class PrepareDeterministicWalletsUsecase {
           label: spec.label,
           isDefault: spec.isDefault,
           sync: spec.sync,
+          birthday: parentBirthday,
         );
         prepared.add(_prepared(spec, wallet, created: true));
       }

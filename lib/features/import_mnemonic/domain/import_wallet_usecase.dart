@@ -72,6 +72,7 @@ class ImportWalletUsecase {
         isDefault: false,
         sync: false,
         label: label,
+        birthday: null,
       );
 
       log.fine('Wallet imported');

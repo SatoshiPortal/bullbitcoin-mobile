@@ -124,6 +124,7 @@ void main() {
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
+          birthday: null,
         ),
       ).thenAnswer((_) async => fakeWallet);
 

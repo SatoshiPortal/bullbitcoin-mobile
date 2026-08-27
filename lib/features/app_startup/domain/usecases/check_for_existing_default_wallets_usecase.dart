@@ -72,6 +72,7 @@ class CheckForExistingDefaultWalletsUsecase {
           scriptType: ScriptType.bip84,
           provenance: WalletProvenance.defaultSeed,
           isDefault: true,
+          birthday: null,
         );
         defaultWallets = await _walletRepository.getWallets(
           onlyDefaults: true,

@@ -145,6 +145,7 @@ void main() {
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
+          birthday: null,
         ),
       ).thenThrow(const WalletAlreadyExistsException('existing-wallet-id'));
 
@@ -172,6 +173,7 @@ void main() {
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
+          birthday: null,
         ),
       ).thenThrow(Exception('electrum unreachable'));
 

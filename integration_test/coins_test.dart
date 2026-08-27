@@ -156,6 +156,7 @@ Future<void> main({bool isInitialized = false}) async {
           seed: seed,
           network: Network.bitcoinTestnet,
           scriptType: ScriptType.bip84,
+          birthday: null,
           provenance: WalletProvenance.importedMnemonic,
         );
         await walletRepository.getWallets(sync: true);

@@ -65,12 +65,15 @@ class WalletRepository {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
+
+    /// Earliest time before which this wallet provably cannot have funds.
+    /// Use null when the creation or import history cannot establish that bound.
+    required DateTime? birthday,
     required WalletProvenance provenance,
     bool? seedPassphraseUsed,
     String? label,
     bool isDefault = false,
     bool sync = false,
-    DateTime? birthday,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -336,6 +339,21 @@ class WalletRepository {
         )
         .map((wallet) => wallet.masterFingerprint)
         .toList(growable: false);
+  }
+
+  /// Reads the scan floor without loading a wallet engine or fetching balances.
+  Future<DateTime?> getDefaultBitcoinWalletBirthday({
+    required String masterFingerprint,
+    required Environment environment,
+  }) async {
+    final matches = (await _walletMetadataDatasource.fetchAll()).where(
+      (wallet) =>
+          wallet.isDefault &&
+          wallet.isBitcoin &&
+          wallet.masterFingerprint == masterFingerprint &&
+          wallet.isMainnet == environment.isMainnet,
+    );
+    return matches.length == 1 ? matches.single.birthday : null;
   }
 
   /// Resolves default Bitcoin wallet identities without loading a wallet

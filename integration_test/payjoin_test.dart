@@ -182,12 +182,14 @@ Future<void> main({bool isInitialized = false}) async {
         seed: receiverSeed,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
+        birthday: null,
         provenance: WalletProvenance.importedMnemonic,
       );
       senderWallet = await walletRepository.createWallet(
         seed: senderSeed,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
+        birthday: null,
         provenance: WalletProvenance.importedMnemonic,
       );
     });
