@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';

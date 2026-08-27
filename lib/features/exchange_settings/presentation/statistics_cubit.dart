@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

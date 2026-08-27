@@ -1,0 +1,19 @@
+{
+  "logSettingsLogsTitle": "Kumbukumbu",
+  "logsViewerDeleteButton": "Futa",
+  "logsViewerShareButton": "Shiriki",
+  "logsExportedMessage": "Kumbukumbu zimehamiishwa kwa mafanikio",
+  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu",
+  "logsViewerShowingCount": "Inaonyesha {shown} kati ya {total} kumbukumbu",
+  "logsViewerClearFilter": "Futa kichujio",
+  "logsViewerFilterByDate": "Chuja kwa Tarehe",
+  "copiedToClipboardMessage": "Imenakiliwa",
+  "logsViewerDeleteTitle": "Futa kumbukumbu",
+  "logsViewerDeleteConfirmation": "Una uhakika unataka kufuta kumbukumbu zote? Kitendo hiki hakiwezi kutenduliwa.",
+  "logsDeletedMessage": "Kumbukumbu zimefutwa",
+  "logsViewerCancelButton": "Ghairi",
+  "logsShareOptionShare": "Shiriki",
+  "logsShareOptionExport": "Hamisha",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "retry": "Jaribu Tena"
+}

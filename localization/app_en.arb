@@ -5893,10 +5893,6 @@
       }
     }
   },
-  "shareLogsLabel": "Share logs",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
-  },
   "deleteLogsTitle": "Delete logs",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -5917,10 +5913,6 @@
         "type": "String"
       }
     }
-  },
-  "copiedToClipboardMessage": "Copied to clipboard",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
   },
   "submitButton": "Submit",
   "@submitButton": {
@@ -6021,10 +6013,6 @@
   "routeErrorMessage": "Page not found",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
-  },
-  "logsViewerTitle": "Logs",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
   },
   "payInvoiceTitle": "Pay Invoice",
   "@payInvoiceTitle": {
@@ -13331,22 +13319,6 @@
   "@backupCardSubtitle": {
     "description": "Subtitle of the backup reminder card on the home screen"
   },
-  "logsViewerDeleteTitle": "Delete logs",
-  "@logsViewerDeleteTitle": {
-    "description": "Title of the delete logs confirmation bottom sheet"
-  },
-  "logsViewerDeleteConfirmation": "Are you sure you want to delete all logs? This action cannot be undone.",
-  "@logsViewerDeleteConfirmation": {
-    "description": "Confirmation message shown before deleting all logs"
-  },
-  "logsViewerDeleteButton": "Delete",
-  "@logsViewerDeleteButton": {
-    "description": "Button to confirm deleting all logs"
-  },
-  "logsViewerCancelButton": "Cancel",
-  "@logsViewerCancelButton": {
-    "description": "Button to cancel deleting logs"
-  },
   "mempoolCustomServerSsl": "SSL",
   "@mempoolCustomServerSsl": {
     "description": "Badge shown when a custom mempool server uses SSL"
@@ -13609,34 +13581,6 @@
   "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"
-  },
-  "logsViewerFilterByDate": "Filter by Date",
-  "@logsViewerFilterByDate": {
-    "description": "Button label to filter logs by date range"
-  },
-  "logsViewerShowingCount": "Showing {shown} of {total} logs",
-  "@logsViewerShowingCount": {
-    "description": "Counter showing filtered vs total log entries",
-    "placeholders": {
-      "shown": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "logsViewerClearFilter": "Clear filter",
-  "@logsViewerClearFilter": {
-    "description": "Tooltip for the button that clears the date filter"
-  },
-  "logsViewerShareButton": "Share",
-  "@logsViewerShareButton": {
-    "description": "Button to open the share/export options for logs"
-  },
-  "logsShareOptionShare": "Share",
-  "@logsShareOptionShare": {
-    "description": "Option in the bottom sheet to share logs as text"
   },
   "logsShareOptionExport": "Export",
   "@logsShareOptionExport": {
@@ -14804,45 +14748,5 @@
   "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
   "@onboardingBackupVerificationError": {
     "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
-  },
-  "logsViewerSearchHint": "Search logs",
-  "@logsViewerSearchHint": {
-    "description": "Hint for the log search field"
-  },
-  "logsViewerFilter": "Filter logs",
-  "@logsViewerFilter": {
-    "description": "Tooltip for the log filters button"
-  },
-  "logsViewerAllLevels": "All levels",
-  "@logsViewerAllLevels": {
-    "description": "Option showing logs from every severity level"
-  },
-  "logsShareFailedMessage": "Failed to share logs",
-  "@logsShareFailedMessage": {
-    "description": "Error message shown when sharing logs fails"
-  },
-  "logsViewerExpandHint": "Tap a log to expand it. Long press to copy.",
-  "@logsViewerExpandHint": {
-    "description": "Hint explaining how to expand and copy a collapsed log entry"
-  },
-  "logsViewerCollapseHint": "Tap to collapse. Long press to copy.",
-  "@logsViewerCollapseHint": {
-    "description": "Accessibility hint for an expanded log entry"
-  },
-  "logsViewerWrapAll": "Wrap all",
-  "@logsViewerWrapAll": {
-    "description": "Button that expands all visible log entries onto multiple lines"
-  },
-  "logsViewerCollapseAll": "Collapse all",
-  "@logsViewerCollapseAll": {
-    "description": "Button that collapses all visible log entries to one line"
-  },
-  "logsViewerEmpty": "No logs yet",
-  "@logsViewerEmpty": {
-    "description": "Empty state when no logs have been recorded"
-  },
-  "logsViewerNoMatches": "No logs match the active filters",
-  "@logsViewerNoMatches": {
-    "description": "Empty state when filters hide every log entry"
   }
 }

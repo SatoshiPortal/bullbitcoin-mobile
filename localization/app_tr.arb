@@ -1515,10 +1515,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "Copied to klibi",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "Connected",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1530,10 +1526,6 @@
   "payLightningNetwork": "Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "Share logs",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "Ledger'de adresleme ...",
   "@ledgerSuccessVerifyTitle": {
@@ -7478,10 +7470,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "Logs",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor başlamadı",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -11916,11 +11904,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Tarihe Göre Filtrele",
-  "logsViewerShowingCount": "{total} kayıttan {shown} tanesi gösteriliyor",
-  "logsViewerClearFilter": "Filtreyi Temizle",
-  "logsViewerShareButton": "Paylaş",
-  "logsShareOptionShare": "Paylaş",
   "logsShareOptionExport": "Dışa Aktar",
   "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
   "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı",
@@ -12220,10 +12203,6 @@
   "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",
-  "logsViewerDeleteTitle": "Günlükleri sil",
-  "logsViewerDeleteConfirmation": "Tüm günlükleri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
-  "logsViewerDeleteButton": "Sil",
-  "logsViewerCancelButton": "İptal",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

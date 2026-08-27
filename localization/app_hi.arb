@@ -1519,10 +1519,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "कोपिड टू क्लिपबोर्ड",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "कनेक्ट",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1534,10 +1530,6 @@
   "payLightningNetwork": "Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "शेयर लॉग",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "लेजर पर पता सत्यापित ..।",
   "@ledgerSuccessVerifyTitle": {
@@ -7532,10 +7524,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "लॉग",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor शुरू नहीं किया गया है",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -12183,11 +12171,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "तारीख के अनुसार फ़िल्टर करें",
-  "logsViewerShowingCount": "{total} में से {shown} लॉग दिखाए जा रहे हैं",
-  "logsViewerClearFilter": "फ़िल्टर हटाएं",
-  "logsViewerShareButton": "शेयर करें",
-  "logsShareOptionShare": "शेयर करें",
   "logsShareOptionExport": "निर्यात करें",
   "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
   "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
@@ -12412,10 +12395,6 @@
   "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
-  "logsViewerDeleteTitle": "लॉग हटाएं",
-  "logsViewerDeleteConfirmation": "क्या आप वाकई सभी लॉग हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
-  "logsViewerDeleteButton": "हटाएं",
-  "logsViewerCancelButton": "रद्द करें",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

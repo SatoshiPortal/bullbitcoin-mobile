@@ -1383,10 +1383,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "Копирано в клипборда",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "receiveNote": "Бележка",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1394,10 +1390,6 @@
   "payLightningNetwork": "Лайтнинг мрежа",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "Сподели логове",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "payCorporateNameHint": "Въведете име на корпорацията",
   "@payCorporateNameHint": {
@@ -5836,10 +5828,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "Логове",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor не е стартиран",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -9429,11 +9417,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Филтриране по дата",
-  "logsViewerShowingCount": "Показване на {shown} от {total} журнала",
-  "logsViewerClearFilter": "Изчисти филтъра",
-  "logsViewerShareButton": "Споделяне",
-  "logsShareOptionShare": "Споделяне",
   "logsShareOptionExport": "Експортиране",
   "logsExportedMessage": "Журналите са експортирани успешно",
   "logsExportFailedMessage": "Неуспешно експортиране на журналите",
@@ -10199,10 +10182,6 @@
   "backupWarningBackupNow": "ДА",
   "backupWarningBackupLater": "НЕ, РАЗБИРАМ РИСКА",
   "transactionSwapOpenWithin24h": "Отворете приложението в рамките на 24 часа, за да завършите обмена си.",
-  "logsViewerDeleteTitle": "Изтрий логовете",
-  "logsViewerDeleteConfirmation": "Сигурни ли сте, че искате да изтриете всички логове? Това действие не може да бъде отменено.",
-  "logsViewerDeleteButton": "Изтрий",
-  "logsViewerCancelButton": "Отказ",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

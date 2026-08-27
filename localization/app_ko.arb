@@ -1519,10 +1519,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "클립보드에 복사",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "연결하기",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1534,10 +1530,6 @@
   "payLightningNetwork": "Lightning 네트워크",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "비밀번호",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "Ledger에 주소 검증 ...",
   "@ledgerSuccessVerifyTitle": {
@@ -7532,10 +7524,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "제품정보",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "시작되지 않음",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -11916,11 +11904,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "날짜별 필터",
-  "logsViewerShowingCount": "{total}개 중 {shown}개 로그 표시",
-  "logsViewerClearFilter": "필터 지우기",
-  "logsViewerShareButton": "공유",
-  "logsShareOptionShare": "공유",
   "logsShareOptionExport": "내보내기",
   "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
   "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
@@ -12020,10 +12003,6 @@
   "nfcError": "NFC 오류: {error}",
   "deleteLogsTitle": "로그 삭제",
   "logsDeletedMessage": "로그가 삭제되었습니다",
-  "logsViewerDeleteTitle": "로그 삭제",
-  "logsViewerDeleteConfirmation": "모든 로그를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-  "logsViewerDeleteButton": "삭제",
-  "logsViewerCancelButton": "취소",
   "sendSelfTransfer": "자체 전송",
   "sendCoordinatingPayjoinTransaction": "Payjoin 트랜잭션을 조율하고 있습니다.",
   "sendErrorInvoiceExpired": "이 인보이스는 만료되었습니다. 수취인에게 새 인보이스를 요청하세요.",

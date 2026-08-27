@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cub
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
@@ -47,6 +46,7 @@ import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_logs/bull_logs.dart';
 
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
@@ -235,11 +235,7 @@ class SettingsRouter {
           );
         },
       ),
-      GoRoute(
-        path: SettingsRoute.logs.path,
-        name: SettingsRoute.logs.name,
-        builder: (context, state) => const LogSettingsScreen(),
-      ),
+      const LogsFeature().route,
       GoRoute(
         path: SettingsRoute.allSeedView.path,
         name: SettingsRoute.allSeedView.name,

@@ -1,0 +1,22 @@
+{
+  "logSettingsLogsTitle": "Protokolle",
+  "logsViewerDeleteButton": "Löschen",
+  "logsViewerShareButton": "Teilen",
+  "logsExportedMessage": "Protokolle erfolgreich exportiert",
+  "logsExportFailedMessage": "Export der Protokolle fehlgeschlagen",
+  "logsViewerShowingCount": "{shown} von {total} Protokollen werden angezeigt",
+  "logsViewerClearFilter": "Filter löschen",
+  "logsViewerFilterByDate": "Nach Datum filtern",
+  "copiedToClipboardMessage": "In die Zwischenablage kopiert.",
+  "logsViewerDeleteTitle": "Logs löschen",
+  "logsViewerDeleteConfirmation": "Möchten Sie wirklich alle Logs löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "logsDeletedMessage": "Logs gelöscht",
+  "logsViewerCancelButton": "Abbrechen",
+  "logsShareOptionShare": "Teilen",
+  "logsShareOptionExport": "Exportieren",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "retry": "Wiederholen",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

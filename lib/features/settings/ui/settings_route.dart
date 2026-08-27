@@ -7,7 +7,6 @@ enum SettingsRoute {
   backupSettings('backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
   walletAddresses('wallet-details/:walletId/addresses'),
-  logs('logs'),
   allSeedView('seed-viewer'),
   experimental('experimental-settings'),
   exchangeAccount('exchange-account'),

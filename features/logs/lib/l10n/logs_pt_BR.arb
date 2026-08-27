@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "Excluir",
+  "logsViewerShareButton": "Compartilhar",
+  "logsExportedMessage": "Registros exportados com sucesso",
+  "logsExportFailedMessage": "Falha ao exportar os registros",
+  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
+  "logsViewerClearFilter": "Limpar filtro",
+  "logsViewerFilterByDate": "Filtrar por data",
+  "copiedToClipboardMessage": "Copiado para clipboard",
+  "logsViewerDeleteTitle": "Excluir registros",
+  "logsViewerDeleteConfirmation": "Tem certeza de que deseja excluir todos os registros? Esta ação não pode ser desfeita.",
+  "logsDeletedMessage": "Registros excluídos",
+  "logsViewerCancelButton": "Cancelar",
+  "logsShareOptionShare": "Compartilhar",
+  "logsShareOptionExport": "Exportar",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "Tentar novamente",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_net
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 class DatabaseSeeds {
   static Future<void> seedDefaultSettings(SqliteDatabase db) async {

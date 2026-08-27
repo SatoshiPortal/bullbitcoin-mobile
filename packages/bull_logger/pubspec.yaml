@@ -1,0 +1,30 @@
+name: bull_logger
+description: Bull Bitcoin logging and diagnostic infrastructure.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  logging_colorful: ^1.3.2
+  battery_plus: ^7.1.1
+  connectivity_plus: ^7.3.1
+  device_info_plus: ^12.4.0
+  package_info_plus: ^9.0.0
+  file_picker: 10.3.6
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  share_plus: ^12.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.1.0
+
+flutter:
+  uses-material-design: true

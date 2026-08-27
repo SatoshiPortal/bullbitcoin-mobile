@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 class GetMnemonicFromFingerprintUsecase {
   final SeedRepository _seedRepository;

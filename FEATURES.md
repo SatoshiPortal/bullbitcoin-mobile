@@ -11,10 +11,12 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
     %% Feature modules
     SETTINGS[Settings]
+    LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     RECOVERBULL[RecoverBull]
     TOR[Tor<br/>Workspace Package]
@@ -58,6 +60,11 @@ graph TB
 
     %% Extracted package dependencies
     CORE --> PRIMITIVES
+    CORE --> BULL_LOGGER
+    LOGS --> BULL_LOGGER
+    LOGS --> PRIMITIVES
+    LOGS --> BULL_UI
+    SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
 
@@ -67,6 +74,7 @@ graph TB
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
+    APP_STARTUP --> LOGS
     AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
     AUTOSWAP --> TRANSFER

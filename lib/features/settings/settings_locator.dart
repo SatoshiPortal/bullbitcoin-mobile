@@ -1,18 +1,7 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/settings/data/datasources/export_logs_datasource.dart';
-import 'package:bb_mobile/features/settings/data/datasources/logger_logs_datasource.dart';
-import 'package:bb_mobile/features/settings/data/datasources/share_logs_datasource.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
-import 'package:bb_mobile/features/settings/data/logs_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
-import 'package:bb_mobile/features/settings/domain/repositories/logs_repository.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/delete_logs_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/export_logs_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/filter_logs_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/load_logs_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/share_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -31,7 +20,6 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amou
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/logs_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
@@ -100,32 +88,6 @@ class SettingsLocator {
 
     locator.registerLazySingleton<PayjoinDisclaimerRepository>(
       PayjoinDisclaimerRepositoryImpl.new,
-    );
-    locator.registerLazySingleton<LoggerLogsDatasource>(
-      () => LoggerLogsDatasourceImpl(log),
-    );
-    locator.registerLazySingleton<ShareLogsDatasource>(
-      SharePlusLogsDatasource.new,
-    );
-    locator.registerLazySingleton<ExportLogsDatasource>(
-      FilePickerLogsDatasource.new,
-    );
-    locator.registerLazySingleton<LogsRepository>(
-      () => LogsRepositoryImpl(locator(), locator(), locator()),
-    );
-    locator.registerFactory<LoadLogsUsecase>(() => LoadLogsUsecase(locator()));
-    locator.registerFactory<DeleteLogsUsecase>(
-      () => DeleteLogsUsecase(locator()),
-    );
-    locator.registerFactory<ShareLogsUsecase>(
-      () => ShareLogsUsecase(locator()),
-    );
-    locator.registerFactory<ExportLogsUsecase>(
-      () => ExportLogsUsecase(locator()),
-    );
-    locator.registerFactory<FilterLogsUsecase>(FilterLogsUsecase.new);
-    locator.registerFactory<LogsCubit>(
-      () => LogsCubit(locator(), locator(), locator(), locator(), locator()),
     );
     locator.registerFactory<GetPayjoinDisclaimerShownUsecase>(
       () => GetPayjoinDisclaimerShownUsecase(

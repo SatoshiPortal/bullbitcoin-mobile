@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
+import 'package:bull_logs/bull_logs.dart';
+import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
@@ -155,7 +156,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 textColor: context.appColors.onPrimary,
               ),
               const SizedBox(height: 24),
-              const ShareLogsWidget(),
+              ShareLogsWidget(facade: GetIt.I<LogsFacade>()),
             ],
           ),
         ),

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 

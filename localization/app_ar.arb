@@ -1417,10 +1417,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "مركب على لوح مشبك",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "Connected",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1432,10 +1428,6 @@
   "payLightningNetwork": "شبكة البرق",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "سجلات التقاسم",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "عنوان التحقق على ليدجر...",
   "@ledgerSuccessVerifyTitle": {
@@ -7023,10 +7015,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "اللوز",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "(تور) لم يبدأ",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -11920,11 +11908,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "تصفية حسب التاريخ",
-  "logsViewerShowingCount": "عرض {shown} من {total} سجل",
-  "logsViewerClearFilter": "مسح التصفية",
-  "logsViewerShareButton": "مشاركة",
-  "logsShareOptionShare": "مشاركة",
   "logsShareOptionExport": "تصدير",
   "logsExportedMessage": "تم تصدير السجلات بنجاح",
   "logsExportFailedMessage": "فشل تصدير السجلات",
@@ -12223,10 +12206,6 @@
   "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
-  "logsViewerDeleteTitle": "حذف السجلات",
-  "logsViewerDeleteConfirmation": "هل أنت متأكد من رغبتك في حذف جميع السجلات؟ لا يمكن التراجع عن هذا الإجراء.",
-  "logsViewerDeleteButton": "حذف",
-  "logsViewerCancelButton": "إلغاء",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

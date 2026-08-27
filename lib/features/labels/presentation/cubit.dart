@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';

@@ -1737,10 +1737,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "Připojil se do schránky",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "Připojeno",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1752,10 +1748,6 @@
   "payLightningNetwork": "Bleskové sítě",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "Sdílet protokoly",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "Ověřit adresu na Ledger ...",
   "@ledgerSuccessVerifyTitle": {
@@ -7475,10 +7467,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "Přihlášení",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor není spuštěn",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -12032,11 +12020,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Filtrovat podle data",
-  "logsViewerShowingCount": "Zobrazeno {shown} z {total} záznamů",
-  "logsViewerClearFilter": "Vymazat filtr",
-  "logsViewerShareButton": "Sdílet",
-  "logsShareOptionShare": "Sdílet",
   "logsShareOptionExport": "Exportovat",
   "logsExportedMessage": "Záznamy byly úspěšně exportovány",
   "logsExportFailedMessage": "Export záznamů se nezdařil",
@@ -12220,10 +12203,6 @@
   "backupWarningBackupNow": "ANO",
   "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
   "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
-  "logsViewerDeleteTitle": "Smazat logy",
-  "logsViewerDeleteConfirmation": "Opravdu chcete smazat všechny logy? Tuto akci nelze vrátit zpět.",
-  "logsViewerDeleteButton": "Smazat",
-  "logsViewerCancelButton": "Zrušit",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

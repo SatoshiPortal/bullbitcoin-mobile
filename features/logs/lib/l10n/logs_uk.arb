@@ -1,0 +1,25 @@
+{
+  "logSettingsLogsTitle": "Логін",
+  "logsViewerDeleteButton": "Видалити",
+  "logsViewerShareButton": "Поділитися",
+  "logsExportedMessage": "Журнали успішно експортовано",
+  "logsExportFailedMessage": "Не вдалося експортувати журнали",
+  "logsViewerShowingCount": "Показано {shown} з {total} записів",
+  "logsViewerClearFilter": "Очистити фільтр",
+  "logsViewerFilterByDate": "Фільтр за датою",
+  "copiedToClipboardMessage": "Скопіювати до буферу",
+  "logsViewerDeleteTitle": "Видалити журнали",
+  "logsViewerDeleteConfirmation": "Ви впевнені, що хочете видалити всі журнали? Цю дію не можна скасувати.",
+  "logsDeletedMessage": "Журнали видалено",
+  "logsViewerCancelButton": "Скасувати",
+  "logsShareOptionShare": "Поділитися",
+  "logsShareOptionExport": "Експорт",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "retry": "Повторити",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

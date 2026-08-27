@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +25,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
 
   Future<void> _shareLogs(BuildContext context, AppLocalizations loc) async {
     try {
-      final logs = await log.readLogs();
+      final logs = await readLogsForSharing();
       await shareLogsAsFile(logs);
     } catch (e) {
       log.severe(
@@ -44,7 +43,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
 
   Future<void> _exportLogs(BuildContext context, AppLocalizations loc) async {
     try {
-      final logs = await log.readLogs();
+      final logs = await readLogsForSharing();
       final saved = await exportLogsAsFile(logs);
       if (!context.mounted) return;
       if (saved) {

@@ -1559,7 +1559,6 @@
   "urDecodingFailedMessage": "UR:n dekoodaus epäonnistui",
   "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
   "scanNfcButton": "Skannaa NFC",
-  "shareLogsLabel": "Jaa lokitiedot",
   "viewLogsLabel": "Näytä lokitiedot",
   "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
   "@errorSharingLogsMessage": {
@@ -1569,7 +1568,6 @@
       }
     }
   },
-  "copiedToClipboardMessage": "Kopioitu leikepöydälle",
   "submitButton": "Lähetä",
   "optionalPassphraseHint": "Valinnainen salafraasi",
   "labelInputLabel": "Tunniste",
@@ -1594,7 +1592,6 @@
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
   "routeErrorMessage": "Sivua ei löytynyt",
-  "logsViewerTitle": "Lokitiedot",
   "payInvoiceTitle": "Maksa lasku",
   "payEnterAmountTitle": "Syötä summa",
   "payInvalidInvoice": "Virheellinen lasku",
@@ -4675,11 +4672,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Suodata päivämäärän mukaan",
-  "logsViewerShowingCount": "Näytetään {shown} / {total} lokia",
-  "logsViewerClearFilter": "Tyhjennä suodatin",
-  "logsViewerShareButton": "Jaa",
-  "logsShareOptionShare": "Jaa",
   "logsShareOptionExport": "Vie",
   "logsExportedMessage": "Lokit viety onnistuneesti",
   "logsExportFailedMessage": "Lokien vienti epäonnistui",
@@ -4818,10 +4810,6 @@
   "viewerAddressTab": "Osoite",
   "viewerPaymentUriTab": "Maksu-URI",
   "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
-  "logsViewerDeleteTitle": "Poista lokit",
-  "logsViewerDeleteConfirmation": "Haluatko varmasti poistaa kaikki lokit? Tätä toimintoa ei voi peruuttaa.",
-  "logsViewerDeleteButton": "Poista",
-  "logsViewerCancelButton": "Peruuta",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

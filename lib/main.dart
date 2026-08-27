@@ -9,8 +9,8 @@ import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/diagnostic_context.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_logs/bull_logs.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
@@ -52,6 +52,38 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 /// identically in both timing paths.
 WizardRepository _buildPreInitWizardRepository() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
+
+final class _ReportLoggerReporter implements LoggerReporter {
+  const _ReportLoggerReporter();
+
+  @override
+  void reportError({
+    String? message,
+    required Object exception,
+    required StackTrace stackTrace,
+    required ReportCategory category,
+  }) {
+    Report.error(
+      message: message,
+      exception: exception,
+      stackTrace: stackTrace,
+      category: category,
+    );
+  }
+
+  @override
+  Future<void> reportShout({
+    required String message,
+    Object? exception,
+    StackTrace? stackTrace,
+    ReportCategory? category,
+  }) => Report.shout(
+    message: message,
+    exception: exception,
+    stackTrace: stackTrace,
+    category: category,
+  );
+}
 
 @visibleForTesting
 void resumePayjoinsOnAppResume(
@@ -131,6 +163,7 @@ class Bull {
       directory: logDirectory,
       background: background,
       diagnosticContextLoader: diagnosticContextProvider?.load,
+      reporter: const _ReportLoggerReporter(),
     );
     await log.ensureLogsExist();
     if (!background) {
@@ -424,8 +457,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     routerConfig: AppRouter.router,
                     theme: AppTheme.themeData(appThemeType),
                     locale: language?.locale,
-                    localizationsDelegates:
-                        AppLocalizations.localizationsDelegates,
+                    localizationsDelegates: [
+                      ...AppLocalizations.localizationsDelegates,
+                      LogsLocalizations.delegate,
+                    ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
                       final app = AppStartupWidget(app: child!);

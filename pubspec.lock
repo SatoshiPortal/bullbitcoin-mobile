@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "2.0.1"
   battery_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: battery_plus
       sha256: "3853aa1e18ea1d15493dd1d3edac05770b4b95c1e691fb85934c5fd3b1ac0fcc"
@@ -463,7 +463,7 @@ packages:
     source: hosted
     version: "3.0.0"
   connectivity_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: connectivity_plus
       sha256: "762c99f890ca8bf87f7337236f99edd42793843bc6c3631da294a76653a54bd0"
@@ -599,7 +599,7 @@ packages:
     source: hosted
     version: "1.5.0"
   device_info_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: device_info_plus
       sha256: b4fed1b2835da9d670d7bed7db79ae2a94b0f5ad6312268158a9b5479abbacdd
@@ -1334,7 +1334,7 @@ packages:
     source: hosted
     version: "1.3.0"
   logging_colorful:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: logging_colorful
       sha256: "702888d741bb0b419cea9ecccc8509483fd228297a7635bf9aac05c0b13d555a"

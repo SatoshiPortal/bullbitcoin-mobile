@@ -1,0 +1,22 @@
+{
+  "logSettingsLogsTitle": "Lokitiedot",
+  "logsViewerDeleteButton": "Poista",
+  "logsViewerShareButton": "Jaa",
+  "logsExportedMessage": "Lokit viety onnistuneesti",
+  "logsExportFailedMessage": "Lokien vienti epäonnistui",
+  "logsViewerShowingCount": "Näytetään {shown} / {total} lokia",
+  "logsViewerClearFilter": "Tyhjennä suodatin",
+  "logsViewerFilterByDate": "Suodata päivämäärän mukaan",
+  "copiedToClipboardMessage": "Kopioitu leikepöydälle",
+  "logsViewerDeleteTitle": "Poista lokit",
+  "logsViewerDeleteConfirmation": "Haluatko varmasti poistaa kaikki lokit? Tätä toimintoa ei voi peruuttaa.",
+  "logsDeletedMessage": "Lokit poistettu",
+  "logsViewerCancelButton": "Peruuta",
+  "logsShareOptionShare": "Jaa",
+  "logsShareOptionExport": "Vie",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

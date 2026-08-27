@@ -2278,10 +2278,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "نصب شده برای Clipboard",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "receiveNote": "Note",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -2289,10 +2285,6 @@
   "payLightningNetwork": "شبکه Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "Share logs",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "payCorporateNameHint": "نام شرکت",
   "@payCorporateNameHint": {
@@ -7263,10 +7255,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "Logs",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor شروع نشده است",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -11916,11 +11904,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "فیلتر بر اساس تاریخ",
-  "logsViewerShowingCount": "نمایش {shown} از {total} گزارش",
-  "logsViewerClearFilter": "پاک کردن فیلتر",
-  "logsViewerShareButton": "اشتراک‌گذاری",
-  "logsShareOptionShare": "اشتراک‌گذاری",
   "logsShareOptionExport": "صدور",
   "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
   "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود",
@@ -12220,10 +12203,6 @@
   "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",
-  "logsViewerDeleteTitle": "حذف گزارش‌ها",
-  "logsViewerDeleteConfirmation": "آیا مطمئن هستید که می‌خواهید همه‌ی گزارش‌ها را حذف کنید؟ این عمل قابل بازگشت نیست.",
-  "logsViewerDeleteButton": "حذف",
-  "logsViewerCancelButton": "لغو",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

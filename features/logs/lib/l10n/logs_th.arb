@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "เข้าสู่ระบบ",
+  "logsViewerDeleteButton": "ลบ",
+  "logsViewerShareButton": "แชร์",
+  "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ",
+  "logsViewerShowingCount": "กำลังแสดง {shown} จาก {total} รายการบันทึก",
+  "logsViewerClearFilter": "ล้างตัวกรอง",
+  "logsViewerFilterByDate": "กรองตามวันที่",
+  "copiedToClipboardMessage": "ติดตามคลิปบอร์ด",
+  "logsViewerDeleteTitle": "ลบบันทึก",
+  "logsViewerDeleteConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมด การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+  "logsDeletedMessage": "ลบบันทึกแล้ว",
+  "logsViewerCancelButton": "ยกเลิก",
+  "logsShareOptionShare": "แชร์",
+  "logsShareOptionExport": "ส่งออก",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "ลองอีกครั้ง",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

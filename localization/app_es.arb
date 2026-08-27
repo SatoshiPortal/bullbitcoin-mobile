@@ -1610,7 +1610,6 @@
   "urDecodingFailedMessage": "Decodificación UR fallida",
   "urProcessingFailedMessage": "Procesamiento UR fallido",
   "scanNfcButton": "Escanear NFC",
-  "shareLogsLabel": "Compartir registros",
   "viewLogsLabel": "Ver registros",
   "errorSharingLogsMessage": "Error al compartir registros: {error}",
   "@errorSharingLogsMessage": {
@@ -1620,7 +1619,6 @@
       }
     }
   },
-  "copiedToClipboardMessage": "Copiado al portapapeles",
   "submitButton": "Enviar",
   "optionalPassphraseHint": "Frase de contraseña opcional",
   "labelInputLabel": "Etiqueta",
@@ -1645,7 +1643,6 @@
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
   "routeErrorMessage": "Página no encontrada",
-  "logsViewerTitle": "Registros",
   "payInvoiceTitle": "Pagar Factura",
   "payEnterAmountTitle": "Ingresar Monto",
   "payInvalidInvoice": "Factura inválida",
@@ -4689,11 +4686,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Filtrar por fecha",
-  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
-  "logsViewerClearFilter": "Borrar filtro",
-  "logsViewerShareButton": "Compartir",
-  "logsShareOptionShare": "Compartir",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados correctamente",
   "logsExportFailedMessage": "Error al exportar los registros",
@@ -4818,10 +4810,6 @@
   "viewerAddressTab": "Dirección",
   "viewerPaymentUriTab": "URI de pago",
   "transactionSwapOpenWithin24h": "Abra la aplicación dentro de las próximas 24 horas para completar su intercambio.",
-  "logsViewerDeleteTitle": "Eliminar registros",
-  "logsViewerDeleteConfirmation": "¿Está seguro de que desea eliminar todos los registros? Esta acción no se puede deshacer.",
-  "logsViewerDeleteButton": "Eliminar",
-  "logsViewerCancelButton": "Cancelar",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
