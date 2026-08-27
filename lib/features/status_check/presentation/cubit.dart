@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ServiceStatusCubit extends Cubit<ServiceStatusState> {
   final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
+  int _checkGeneration = 0;
 
   ServiceStatusCubit({
     required this._checkAllServiceStatusUsecase,
@@ -14,6 +15,7 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
   }) : super(const ServiceStatusState());
 
   Future<void> checkStatus() async {
+    final generation = ++_checkGeneration;
     try {
       emit(state.copyWith(isLoading: true, error: null));
 
@@ -23,17 +25,22 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
 
       final serviceStatus = await _checkAllServiceStatusUsecase.execute(
         network: network,
+        initialStatus: state.serviceStatus,
+        onUpdate: (serviceStatus) {
+          if (generation != _checkGeneration || isClosed) return;
+          emit(state.copyWith(serviceStatus: serviceStatus, isLoading: true));
+        },
       );
 
-      if (isClosed) return;
+      if (generation != _checkGeneration || isClosed) return;
       emit(state.copyWith(serviceStatus: serviceStatus, isLoading: false));
     } catch (e) {
+      if (generation != _checkGeneration || isClosed) return;
       log.severe(
         message: '[ServiceStatusCubit] Failed to check service status',
         error: e,
         trace: StackTrace.current,
       );
-      if (isClosed) return;
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
