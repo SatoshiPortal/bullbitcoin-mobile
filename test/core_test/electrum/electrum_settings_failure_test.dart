@@ -169,7 +169,7 @@ void main() {
     });
 
     test(
-      'returns Unreachable failure when the socket check is offline',
+      'returns Unreachable failure when the Bitcoin probe is offline',
       () async {
         when(
           () => serverRepo.fetchByUrl(any()),
@@ -178,9 +178,12 @@ void main() {
           () => electrumSettingsRepo.fetchByNetwork(_network),
         ).thenAnswer((_) async => Ok(_settings()));
         when(
-          () => statusPort.checkSocket(
+          () => statusPort.checkElectrum(
             url: any(named: 'url'),
+            network: _network,
+            validateDomain: true,
             timeout: any(named: 'timeout'),
+            retry: 1,
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -194,6 +197,61 @@ void main() {
         );
       },
     );
+
+    test('keeps the preliminary socket check for Liquid', () async {
+      const liquidNetwork = ElectrumServerNetwork.liquidMainnet;
+      when(
+        () => serverRepo.fetchByUrl(any()),
+      ).thenAnswer((_) async => Ok(null));
+      when(() => electrumSettingsRepo.fetchByNetwork(liquidNetwork)).thenAnswer(
+        (_) async => Ok(
+          ElectrumSettings(
+            stopGap: 20,
+            timeout: 5,
+            retry: 1,
+            validateDomain: true,
+            network: liquidNetwork,
+          ),
+        ),
+      );
+      when(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).thenAnswer((_) async => ElectrumServerStatus.offline);
+
+      final result = await usecase.execute(
+        AddCustomServerRequest(
+          server: ElectrumServerDto(
+            url: 'liquid.example:995',
+            network: liquidNetwork,
+            isCustom: true,
+            priority: 0,
+          ),
+        ),
+      );
+
+      expect(result, isA<Err>());
+      verify(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).called(1);
+      verifyNever(
+        () => statusPort.checkElectrum(
+          url: any(named: 'url'),
+          network: liquidNetwork,
+          validateDomain: any(named: 'validateDomain'),
+          timeout: any(named: 'timeout'),
+          retry: any(named: 'retry'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      );
+    });
 
     test(
       'probes with the user validateDomain setting, not a fixed one',
@@ -292,9 +350,12 @@ void main() {
         (_) async => ElectrumTorRoute(endpoint, () async => routeClosed = true),
       );
       when(
-        () => statusPort.checkSocket(
+        () => statusPort.checkElectrum(
           url: 'ssl://hidden.onion:50002',
+          network: _network,
+          validateDomain: true,
           timeout: 30,
+          retry: 1,
           proxyEndpoint: endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -313,12 +374,22 @@ void main() {
       expect(result, isA<Err>());
       expect(routeClosed, isTrue);
       verify(
-        () => statusPort.checkSocket(
+        () => statusPort.checkElectrum(
           url: 'ssl://hidden.onion:50002',
+          network: _network,
+          validateDomain: true,
           timeout: 30,
+          retry: 1,
           proxyEndpoint: endpoint,
         ),
       ).called(1);
+      verifyNever(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      );
     });
 
     test('passes a ready external route to a Bitcoin probe', () async {
@@ -380,6 +451,23 @@ void main() {
           isCustom: true,
           externalProxyEnabled: true,
           externalProxyPort: externalRoute.endpoint.port,
+        ),
+      ).called(1);
+      verifyNever(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      );
+      verify(
+        () => statusPort.checkElectrum(
+          url: any(named: 'url'),
+          network: _network,
+          validateDomain: true,
+          timeout: 5,
+          retry: 1,
+          proxyEndpoint: externalRoute.endpoint,
         ),
       ).called(1);
     });
