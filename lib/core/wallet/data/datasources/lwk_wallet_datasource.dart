@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 
@@ -400,6 +401,9 @@ class LwkWalletDatasource {
       return pset;
     } catch (e) {
       if (e is lwk.LwkError) {
+        if (e.msg.contains(_lwkInsufficientFundsMarker)) {
+          throw InsufficientFundsException(e.msg);
+        }
         // A build failure on a wallet whose confirmed L-BTC UTXO count exceeds
         // the Liquid confidential-tx input limit is almost certainly the
         // ">256 inputs" case.
@@ -416,6 +420,11 @@ class LwkWalletDatasource {
   /// Number of confidential-tx inputs above which a Liquid transaction can no
   /// longer be built (the true protocol maximum is 256).
   static const int maxLiquidTxInputs = 256;
+
+  /// LWK reports a shortfall as plain text, e.g.
+  /// `InsufficientFunds { missing_sats: 21, asset_id: ..., is_token: false }`.
+  /// Matching the text is all the SDK gives us, so it stays in this file.
+  static const String _lwkInsufficientFundsMarker = 'InsufficientFunds';
 
   /// Number of L-BTC UTXOs in the wallet — the count that matters for the
   /// 256-input limit (asset-filtered, mirroring lwk's `utxoStatus`). Drives
