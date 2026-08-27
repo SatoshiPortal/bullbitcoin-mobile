@@ -218,6 +218,10 @@ class SendCubit extends Cubit<SendState>
     );
   }
 
+  String _sanitizeRawPaymentRequest(String rawPaymentRequest) {
+    return rawPaymentRequest.trim().replaceAll(RegExp(r'^["\"]+|["\"]+$'), '');
+  }
+
   void clearFailure() => emit(state.copyWith(failure: null));
 
   int _startNewPaymentRequestInput() {
@@ -262,10 +266,7 @@ class SendCubit extends Cubit<SendState>
     _startNewPaymentRequestInput();
     clearFailure();
     _invalidateSignedTransaction();
-    final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
-      RegExp(r'^["\"]+|["\"]+$'),
-      '',
-    );
+    final sanitizedText = _sanitizeRawPaymentRequest(scannedRawPaymentRequest);
     final recipientChanged =
         state.paymentRequest != paymentRequest ||
         state.scannedRawPaymentRequest != scannedRawPaymentRequest;
@@ -286,52 +287,64 @@ class SendCubit extends Cubit<SendState>
   }
 
   /// Called when text is pasted or entered manually
-  Future<void> onChangedText(String text) async {
-    final inputGeneration = _startNewPaymentRequestInput();
-    try {
-      clearFailure();
-      _invalidateSignedTransaction();
-      final sanitizedText = text.trim().replaceAll(
-        RegExp(r'^["\"]+|["\"]+$'),
-        '',
-      );
-      final paymentRequest = await _detectBitcoinStringUsecase.execute(
-        data: sanitizedText,
-      );
-      if (inputGeneration != _paymentRequestInputGeneration) return;
-      final recipientChanged = state.paymentRequest != paymentRequest;
-      emit(
-        state.copyWith(
-          copiedRawPaymentRequest: sanitizedText,
-          paymentRequest: paymentRequest,
-          sendMax: false,
-        ),
-      );
-      // Same invalidation reason as onScannedPaymentRequest — recipient
-      // changed. Skip when paste/typing resolves to the same paymentRequest.
-      if (recipientChanged) clearBitcoinFeePreviews();
-    } catch (e) {
-      if (inputGeneration != _paymentRequestInputGeneration) return;
-      final recipientCleared = state.paymentRequest != null;
-      emit(
-        state.copyWith(
-          copiedRawPaymentRequest: text,
-          paymentRequest: null,
-          sendMax: false,
-          // Don't show exception if text field is clear
-          failure: text.isNotEmpty
-              ? const SendInvalidPaymentRequestFailure()
-              : null,
-        ),
-      );
-      if (recipientCleared) clearBitcoinFeePreviews();
-    }
+  void onChangedText(String text) {
+    _startNewPaymentRequestInput();
+    clearFailure();
+    _invalidateSignedTransaction();
+    final recipientChanged = state.paymentRequest != null;
+    emit(
+      state.copyWith(
+        copiedRawPaymentRequest: _sanitizeRawPaymentRequest(text),
+        paymentRequest: null,
+        sendMax: false,
+      ),
+    );
+    if (recipientChanged) clearBitcoinFeePreviews();
   }
 
   Future<void> continueOnAddressConfirmed() async {
     final inputGeneration = _paymentRequestInputGeneration;
     try {
-      emit(state.copyWith(loadingBestWallet: true));
+      final rawPaymentRequest = state.copiedRawPaymentRequest;
+      final cachedPaymentRequest = state.paymentRequest;
+      if (rawPaymentRequest.isEmpty) {
+        emit(
+          state.copyWith(
+            paymentRequest: null,
+            failure: const SendInvalidPaymentRequestFailure(),
+          ),
+        );
+        return;
+      }
+
+      emit(state.copyWith(loadingBestWallet: true, failure: null));
+      final PaymentRequest paymentRequest;
+      if (cachedPaymentRequest != null) {
+        paymentRequest = cachedPaymentRequest;
+      } else {
+        try {
+          paymentRequest = await _detectBitcoinStringUsecase.execute(
+            data: rawPaymentRequest,
+          );
+        } catch (_) {
+          if (inputGeneration != _paymentRequestInputGeneration ||
+              state.copiedRawPaymentRequest != rawPaymentRequest) {
+            return;
+          }
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              failure: const SendInvalidPaymentRequestFailure(),
+            ),
+          );
+          return;
+        }
+      }
+      if (inputGeneration != _paymentRequestInputGeneration ||
+          state.copiedRawPaymentRequest != rawPaymentRequest) {
+        return;
+      }
+      emit(state.copyWith(paymentRequest: paymentRequest));
       await unifiedBip21Prioritization(inputGeneration: inputGeneration);
       if (inputGeneration != _paymentRequestInputGeneration) return;
 

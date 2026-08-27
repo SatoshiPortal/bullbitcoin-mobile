@@ -910,135 +910,117 @@ void main() {
     });
   });
 
-  group('SendCubit.onChangedText stale detection results', () {
-    const oldText = 'old payment request';
-    const newText = 'new payment request';
-    const oldPaymentRequest = PaymentRequest.bitcoin(
-      address: 'old-address',
-      isTestnet: true,
-    );
-    const newPaymentRequest = PaymentRequest.bitcoin(
-      address: 'new-address',
-      isTestnet: true,
-    );
-
-    test('ignores an old success that resolves after a new success', () async {
+  group('SendCubit payment request input', () {
+    test('stores sanitized input immediately without parsing', () {
       final cubit = buildCubit();
       addTearDown(cubit.close);
-      final oldResult = Completer<PaymentRequest>();
-      final newResult = Completer<PaymentRequest>();
-      when(
-        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
-      ).thenAnswer((invocation) {
-        final data = invocation.namedArguments[#data] as String;
-        return data == oldText ? oldResult.future : newResult.future;
-      });
 
-      final oldInput = cubit.onChangedText(oldText);
-      final newInput = cubit.onChangedText(newText);
-      newResult.complete(newPaymentRequest);
-      await newInput;
-      oldResult.complete(oldPaymentRequest);
-      await oldInput;
+      cubit.onChangedText('  "user@example.com"  ');
 
-      expect(cubit.state.copiedRawPaymentRequest, newText);
-      expect(cubit.state.paymentRequest, newPaymentRequest);
-      expect(cubit.state.failure, isNull);
-    });
-
-    test('ignores an old error that resolves after a new success', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      final oldResult = Completer<PaymentRequest>();
-      final newResult = Completer<PaymentRequest>();
-      when(
-        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
-      ).thenAnswer((invocation) {
-        final data = invocation.namedArguments[#data] as String;
-        return data == oldText ? oldResult.future : newResult.future;
-      });
-
-      final oldInput = cubit.onChangedText(oldText);
-      final newInput = cubit.onChangedText(newText);
-      newResult.complete(newPaymentRequest);
-      await newInput;
-      oldResult.completeError(StateError('old parse failed'));
-      await oldInput;
-
-      expect(cubit.state.copiedRawPaymentRequest, newText);
-      expect(cubit.state.paymentRequest, newPaymentRequest);
-      expect(cubit.state.failure, isNull);
-    });
-
-    test('ignores an old success that resolves after a scan', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      final oldResult = Completer<PaymentRequest>();
-      when(
-        () => detectBitcoinStringUsecase.execute(data: oldText),
-      ).thenAnswer((_) => oldResult.future);
-
-      final oldInput = cubit.onChangedText(oldText);
-      await cubit.onScannedPaymentRequest('scanned payment request', null);
-      oldResult.complete(oldPaymentRequest);
-      await oldInput;
-
-      expect(cubit.state.copiedRawPaymentRequest, 'scanned payment request');
+      expect(cubit.state.copiedRawPaymentRequest, 'user@example.com');
       expect(cubit.state.paymentRequest, isNull);
+      verifyNever(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      );
+    });
+
+    test('parses the current input when continuing', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => detectBitcoinStringUsecase.execute(data: 'invalid-address'),
+      ).thenThrow(StateError('invalid'));
+
+      cubit.onChangedText('invalid-address');
+      await cubit.continueOnAddressConfirmed();
+
+      verify(
+        () => detectBitcoinStringUsecase.execute(data: 'invalid-address'),
+      ).called(1);
+      expect(cubit.state.paymentRequest, isNull);
+      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+      expect(cubit.state.loadingBestWallet, isFalse);
     });
 
     test(
-      'ignores a stale scan after a newer paste during Lightning parsing',
+      'keeps a newer valid submit result when an older one completes',
       () async {
-        final parsing = Completer<PaymentRequest>();
-        final cubit = buildCubit(parsePaymentRequest: (_) => parsing.future);
+        final cubit = buildCubit();
         addTearDown(cubit.close);
+        final oldResult = Completer<PaymentRequest>();
+        final newResult = Completer<PaymentRequest>();
         when(
-          () => detectBitcoinStringUsecase.execute(data: 'new payment request'),
-        ).thenAnswer(
-          (_) async => const PaymentRequest.bitcoin(
-            address: 'new-address',
-            isTestnet: true,
-          ),
-        );
-        when(
-          () => bestWalletUsecase.execute(
-            wallets: any(named: 'wallets'),
-            request: any(named: 'request'),
-            amountSat: any(named: 'amountSat'),
-          ),
-        ).thenReturn(_bitcoinLocalWallet());
-        const bip21 = PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
-          uri: 'bitcoin:old-address?lightning=old-invoice',
-          address: 'old-address',
-          lightning: 'old-invoice',
-        );
+          () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+        ).thenAnswer((invocation) {
+          final data = invocation.namedArguments[#data] as String;
+          return data == 'old-address' ? oldResult.future : newResult.future;
+        });
 
-        final oldScan = cubit.onScannedPaymentRequest('old scan', bip21);
-        await Future<void>.delayed(Duration.zero);
-        await cubit.onChangedText('new payment request');
-        parsing.complete(
-          PaymentRequest.bolt11(
-            invoice: 'stale-invoice',
-            amountSat: 1000,
-            paymentHash: 'stale-hash',
-            expiresAt: DateTime(2030).millisecondsSinceEpoch ~/ 1000,
-            isTestnet: true,
-          ),
+        cubit.onChangedText('old-address');
+        final oldSubmit = cubit.continueOnAddressConfirmed();
+        cubit.onChangedText('new-address');
+        final newSubmit = cubit.continueOnAddressConfirmed();
+        newResult.complete(
+          const PaymentRequest.lnAddress(address: 'new@example.com'),
         );
-        await oldScan;
+        await newSubmit;
+        oldResult.complete(
+          const PaymentRequest.bitcoin(address: 'old', isTestnet: true),
+        );
+        await oldSubmit;
 
-        expect(cubit.state.copiedRawPaymentRequest, 'new payment request');
+        expect(cubit.state.copiedRawPaymentRequest, 'new-address');
         expect(
           cubit.state.paymentRequest,
-          const PaymentRequest.bitcoin(address: 'new-address', isTestnet: true),
+          const PaymentRequest.lnAddress(address: 'new@example.com'),
         );
-        expect(cubit.state.selectedWallet, isNull);
-        expect(cubit.state.step, SendStep.address);
-        expect(cubit.state.loadingBestWallet, isFalse);
       },
     );
+
+    test('keeps a newer valid result when an older parse fails', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == 'old-address' ? oldResult.future : newResult.future;
+      });
+
+      cubit.onChangedText('old-address');
+      final oldSubmit = cubit.continueOnAddressConfirmed();
+      cubit.onChangedText('new-address');
+      final newSubmit = cubit.continueOnAddressConfirmed();
+      newResult.complete(
+        const PaymentRequest.lnAddress(address: 'new@example.com'),
+      );
+      await newSubmit;
+      oldResult.completeError(StateError('old input is invalid'));
+      await oldSubmit;
+
+      expect(
+        cubit.state.paymentRequest,
+        const PaymentRequest.lnAddress(address: 'new@example.com'),
+      );
+    });
+
+    test('uses a scanned payment request without reparsing it', () async {
+      const request = PaymentRequest.lnAddress(address: 'user@example.com');
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      // The scanner already supplied the parsed request; this assertion only
+      // covers the input boundary before the remainder of the flow runs.
+      await cubit.onScannedPaymentRequest('  user@example.com  ', request);
+
+      expect(cubit.state.copiedRawPaymentRequest, 'user@example.com');
+      expect(cubit.state.paymentRequest, request);
+      verifyNever(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      );
+    });
   });
 
   // A shortfall used to show "Build Failed", the same message as a dead
