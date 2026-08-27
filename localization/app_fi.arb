@@ -5029,5 +5029,6 @@
   "exchangeSupportChatSendMessageError": "Viestin lähettäminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen.",
   "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
-  "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita"
+  "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita",
+  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen."
 }

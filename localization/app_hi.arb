@@ -12774,5 +12774,6 @@
   "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
   "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
   "statusCheckNoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
-  "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं"
+  "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं",
+  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।"
 }

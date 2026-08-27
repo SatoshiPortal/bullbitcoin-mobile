@@ -5035,5 +5035,6 @@
   "exchangeSupportChatSendMessageError": "Не вдалося надіслати повідомлення. Спробуйте ще раз.",
   "exchangeSupportChatLoadAttachmentError": "Не вдалося відкрити вкладення. Спробуйте ще раз.",
   "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
-  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими"
+  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими",
+  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз."
 }

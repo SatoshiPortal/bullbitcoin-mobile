@@ -12587,5 +12587,6 @@
   "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
   "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
   "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
-  "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة"
+  "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة",
+  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى."
 }

@@ -3675,5 +3675,6 @@
   "exchangeSupportChatSendMessageError": "Չհաջողվեց ուղարկել ձեր հաղորդագրությունը։ Խնդրում ենք կրկին փորձել։",
   "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։",
   "statusCheckNoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։",
-  "statusCheckResultsMayBeOutdated": "Արդյունքները կարող են հնացած լինել"
+  "statusCheckResultsMayBeOutdated": "Արդյունքները կարող են հնացած լինել",
+  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։"
 }
