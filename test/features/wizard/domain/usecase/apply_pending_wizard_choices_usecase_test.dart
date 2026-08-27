@@ -3,16 +3,22 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 
 class _MockWizardRepository extends Mock implements WizardRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
+class _MockWalletBackupFacade extends Mock implements WalletBackupFacade {}
+
 void main() {
   late _MockWizardRepository wizard;
   late _MockSettingsRepository settings;
+  late _MockWalletBackupFacade walletBackup;
   late ApplyPendingWizardChoicesUsecase usecase;
 
   setUpAll(() {
@@ -23,9 +29,11 @@ void main() {
   setUp(() {
     wizard = _MockWizardRepository();
     settings = _MockSettingsRepository();
+    walletBackup = _MockWalletBackupFacade();
     usecase = ApplyPendingWizardChoicesUsecase(
       wizardRepository: wizard,
       settingsRepository: settings,
+      walletBackup: walletBackup,
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
@@ -116,4 +124,46 @@ void main() {
     verify(() => wizard.clearPending()).called(1);
     verify(() => wizard.markComplete()).called(1);
   });
+
+  test('enables wallet backup before clearing the pending choice', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        metadataBackupEnabled: true,
+        touched: {WizardField.metadataBackupEnabled},
+      ),
+    );
+    when(
+      () => walletBackup.setEnabled(true),
+    ).thenAnswer((_) async => const Ok(null));
+
+    final result = await usecase.execute();
+
+    expect(result, const Ok<void, WizardFailure>(null));
+    verifyInOrder([
+      () => walletBackup.setEnabled(true),
+      () => wizard.clearPending(),
+      () => wizard.markComplete(),
+    ]);
+  });
+
+  test(
+    'keeps the choice pending when wallet backup cannot be enabled',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          metadataBackupEnabled: true,
+          touched: {WizardField.metadataBackupEnabled},
+        ),
+      );
+      when(
+        () => walletBackup.setEnabled(true),
+      ).thenAnswer((_) async => const Err(WalletBackupStorageFailure()));
+
+      final result = await usecase.execute();
+
+      expect(result, const Err<void, WizardFailure>(WizardApplyFailure()));
+      verifyNever(() => wizard.clearPending());
+      verifyNever(() => wizard.markComplete());
+    },
+  );
 }

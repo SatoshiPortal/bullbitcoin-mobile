@@ -18,7 +18,7 @@ class RestoreVaultUsecase {
 
   // Orchestrates the still-throwing wallet core repo; the local try/catch is
   // the boundary, mapping any failure to a sanitized core failure.
-  Future<Result<Null, RecoverBullCoreFailure>> execute({
+  Future<Result<List<String>, RecoverBullCoreFailure>> execute({
     required DecryptedVault decryptedVault,
   }) async {
     try {
@@ -40,7 +40,7 @@ class RestoreVaultUsecase {
       }
 
       log.fine('Vault restored');
-      return const Ok(null);
+      return Ok(List.unmodifiable(restoredWallets.map((wallet) => wallet.id)));
     } catch (e, st) {
       log.severe(
         message: 'restoreVault failed',

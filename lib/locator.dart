@@ -38,6 +38,7 @@ import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
+import 'package:bb_mobile/features/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
@@ -51,6 +52,7 @@ import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -66,6 +68,7 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    bool startWalletBackupCoordinator = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -140,7 +143,6 @@ class AppLocator {
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
     ConsolidationLocator.setup(locator);
-    BackupSettingsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
@@ -174,6 +176,12 @@ class AppLocator {
     NostrIdentityLocator.setup(locator);
     BullnymLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
+    WalletBackupLocator.setup(locator);
+    RecoverBullLocator.setup(locator);
+    BackupSettingsLocator.setup(locator);
+    if (startWalletBackupCoordinator) {
+      WalletBackupLocator.start(locator);
+    }
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);

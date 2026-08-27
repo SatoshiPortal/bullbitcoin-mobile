@@ -16,8 +16,14 @@ class WalletFreezeAdapter implements WalletFreezePort {
   });
 
   @override
-  Future<List<({String walletId, String txId, int vout})>> getAllFrozen() =>
-      _datasource.getAllFrozen();
+  Future<List<({String walletId, String txId, int vout})>>
+  getAllFrozen() async {
+    final rows = await _datasource.getAllFrozen();
+    return [
+      for (final row in rows)
+        (walletId: row.walletId, txId: row.txId, vout: row.vout),
+    ];
+  }
 
   @override
   Future<void> freeze(

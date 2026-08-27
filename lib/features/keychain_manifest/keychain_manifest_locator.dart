@@ -76,6 +76,7 @@ abstract final class KeychainManifestLocator {
         GetKeychainManifestReservationWalletIdsUsecase(
           locator<KeychainManifestRepository>(),
         ),
+        deriver(),
       ),
     );
   }

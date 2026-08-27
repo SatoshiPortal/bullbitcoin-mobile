@@ -10,10 +10,14 @@ import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keyc
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_reserved_wallets_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/update_keychain_manifest_nostr_key_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/watch_keychain_manifest_changes_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_deriver.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
+import 'package:mocktail/mocktail.dart';
 
 import 'support/manifest_fixtures.dart';
 
@@ -36,6 +40,10 @@ void main() {
       RecordReservedWalletsUsecase(repository),
       RecordKeychainManifestNostrKeyUsecase(repository),
       GetKeychainManifestReservationWalletIdsUsecase(repository),
+      KeychainManifestNostrKeyDeriver(
+        _MockGetSettingsUsecase(),
+        _MockGetDefaultSeedUsecase(),
+      ),
     );
   });
 
@@ -159,6 +167,11 @@ void main() {
     );
   });
 }
+
+class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+
+class _MockGetDefaultSeedUsecase extends Mock
+    implements GetDefaultSeedUsecase {}
 
 KeychainManifestWalletBinding _wallet(String id) =>
     KeychainManifestWalletBinding(

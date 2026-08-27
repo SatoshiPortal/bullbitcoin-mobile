@@ -26,6 +26,10 @@ graph TB
     NOSTR_IDENTITY[Nostr Identity]
     BULLNYM[Bullnym]
     KEYCHAIN_MANIFEST[Keychain Manifest]
+    WALLET_BACKUP[Wallet Backup]
+    BACKUP_SETTINGS[Backup Settings]
+    RECOVERBULL[RecoverBull]
+    WIZARD[Onboarding Wizard]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -72,6 +76,12 @@ graph TB
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BULLNYM --> NOSTR_IDENTITY
+    WALLET_BACKUP --> BULLNYM
+    WALLET_BACKUP --> KEYCHAIN_MANIFEST
+    WALLET_BACKUP --> LABELS
+    BACKUP_SETTINGS --> WALLET_BACKUP
+    RECOVERBULL --> WALLET_BACKUP
+    WIZARD --> WALLET_BACKUP
     BACKUPS --> BIP85
     BACKUPS --> TOR
     BACKUPS --> WALLETS

@@ -79,8 +79,9 @@ final class BullnymFacade {
 
   factory BullnymFacade.create(
     BullnymRepository repository,
-    BullnymAuthenticator authenticator,
-  ) => BullnymFacade._(
+    BullnymAuthenticator authenticator, [
+    BullnymAuthenticator? backupAuthenticator,
+  ]) => BullnymFacade._(
     GetBullnymVersionUsecase(repository),
     RegisterBullnymUsecase(repository, authenticator),
     DeleteBullnymRegistrationUsecase(repository, authenticator),
@@ -100,9 +101,12 @@ final class BullnymFacade {
     GetInvoiceQuoteUsecase(repository),
     GetFiatSettlementUsecase(repository, authenticator),
     SetFiatSettlementUsecase(repository, authenticator),
-    FetchBullnymBackupUsecase(repository, authenticator),
-    StoreBullnymBackupUsecase(repository, authenticator),
-    DeleteBullnymBackupUsecase(repository, authenticator),
+    FetchBullnymBackupUsecase(repository, backupAuthenticator ?? authenticator),
+    StoreBullnymBackupUsecase(repository, backupAuthenticator ?? authenticator),
+    DeleteBullnymBackupUsecase(
+      repository,
+      backupAuthenticator ?? authenticator,
+    ),
   );
 
   @useResult

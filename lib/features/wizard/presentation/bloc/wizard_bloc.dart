@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/save_metadata_backup_choice_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,17 +22,22 @@ part 'wizard_state.dart';
 /// reads the blob, flushes touched fields to SQLite, calls
 /// `markComplete()` again (idempotent), and clears pending.
 class WizardBloc extends Bloc<WizardEvent, WizardState> {
-  WizardBloc({required this._savePending, required this._markComplete})
-    : super(const WizardState()) {
+  WizardBloc({
+    required this._savePending,
+    required this._saveMetadataBackupChoice,
+    required this._markComplete,
+  }) : super(const WizardState()) {
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
     on<_WizardConsentPicked>(_onConsentPicked);
+    on<_WizardMetadataBackupPicked>(_onMetadataBackupPicked);
     on<_WizardThemeDetected>(_onThemeDetected);
     on<_WizardCompleted>(_onCompleted);
   }
 
   final SavePendingWizardChoicesUsecase _savePending;
+  final SaveMetadataBackupChoiceUsecase _saveMetadataBackupChoice;
   final MarkWizardCompleteUsecase _markComplete;
 
   void _onThemePicked(_WizardThemePicked event, Emitter<WizardState> emit) {
@@ -67,6 +74,38 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
         ),
       ),
     );
+  }
+
+  Future<void> _onMetadataBackupPicked(
+    _WizardMetadataBackupPicked event,
+    Emitter<WizardState> emit,
+  ) async {
+    if (state.metadataBackupSaving) return;
+    emit(
+      state.copyWith(
+        metadataBackupSaving: true,
+        metadataBackupSaveFailed: false,
+      ),
+    );
+    final result = await _saveMetadataBackupChoice.execute(event.enabled);
+    switch (result) {
+      case Ok():
+        emit(
+          state.copyWith(
+            choices: state.choices.copyWith(
+              metadataBackupEnabled: ConsentValue(event.enabled),
+            ),
+            metadataBackupSaving: false,
+          ),
+        );
+      case Err():
+        emit(
+          state.copyWith(
+            metadataBackupSaving: false,
+            metadataBackupSaveFailed: true,
+          ),
+        );
+    }
   }
 
   void _onThemeDetected(_WizardThemeDetected event, Emitter<WizardState> emit) {

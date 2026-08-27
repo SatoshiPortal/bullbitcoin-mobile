@@ -29,14 +29,23 @@ final class BullnymAuthentication {
 final class BullnymAuthenticator {
   final NostrIdentityFacade _identity;
   final int Function() _nowSecs;
+  final bool _walletBackupIdentity;
 
   const BullnymAuthenticator(
     this._identity, {
     this._nowSecs = currentBullnymTimestampSecs,
-  });
+  }) : _walletBackupIdentity = false;
+
+  const BullnymAuthenticator.walletBackup(
+    this._identity, {
+    this._nowSecs = currentBullnymTimestampSecs,
+  }) : _walletBackupIdentity = true;
 
   Future<Result<String, BullnymFailure>> publicKey() async {
-    return switch (await _identity.bullnymAuthPublicKey()) {
+    final result = _walletBackupIdentity
+        ? await _identity.walletBackupPublicKey()
+        : await _identity.bullnymAuthPublicKey();
+    return switch (result) {
       Ok(:final value) => Ok(value.hex),
       Err(:final failure) => Err(
         BullnymAuthenticationFailure(failure.runtimeType.toString()),
@@ -110,7 +119,9 @@ final class BullnymAuthenticator {
     Uint8List message,
   ) async {
     final digest = sha256.convert(message).toString();
-    final signature = await _identity.signBullnymAuthHash(digest);
+    final signature = _walletBackupIdentity
+        ? await _identity.signWalletBackupHash(digest)
+        : await _identity.signBullnymAuthHash(digest);
     switch (signature) {
       case Err(:final failure):
         return Err(

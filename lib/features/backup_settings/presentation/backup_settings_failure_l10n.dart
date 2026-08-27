@@ -5,5 +5,10 @@ import 'package:flutter/widgets.dart';
 extension BackupSettingsFailureL10n on BackupSettingsFailure {
   String toTranslated(BuildContext context) => switch (this) {
     BackupSettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    BackupSettingsUnavailableFailure() =>
+      context.loc.walletBackupSettingsUnavailable,
+    BackupSettingsDisabledFailure() => context.loc.walletBackupSettingsDisabled,
+    BackupSettingsUpdateRequiredFailure() =>
+      context.loc.walletBackupSettingsUpdateRequired,
   };
 }

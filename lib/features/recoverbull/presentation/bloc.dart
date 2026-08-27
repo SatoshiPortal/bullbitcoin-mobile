@@ -21,6 +21,8 @@ import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/domain/complete_encrypted_vault_backup_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -35,11 +37,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
   final SaveVaultToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
+  final CompleteEncryptedVaultBackupUsecase
+  _completeEncryptedVaultBackupUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
   final CheckServerConnectionUsecase _checkKeyServerConnectionUsecase;
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
+  final RecoverBullRemoteKeychainUsecase _recoverRemoteKeychainUsecase;
   final InitTorUsecase _initializeTorUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
@@ -54,11 +59,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._pickVaultUsecase,
     required this._saveFileToSystemUsecase,
     required this._createEncryptedVaultUsecase,
+    required this._completeEncryptedVaultBackupUsecase,
     required this._storeVaultKeyIntoServerUsecase,
     required this._checkKeyServerConnectionUsecase,
     required this._fetchVaultKeyFromServerUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
+    required this._recoverRemoteKeychainUsecase,
     required this._connectToGoogleDriveUsecase,
     required this._saveToGoogleDriveUsecase,
     required this._initializeTorUsecase,
@@ -266,10 +273,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       final EncryptedVault vault;
       final String vaultKey;
+      final String walletId;
       switch (await _createEncryptedVaultUsecase.execute()) {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
+          walletId = value.walletId;
         case Err():
           emit(state.copyWith(failure: const VaultCreationFailure()));
           return;
@@ -316,6 +325,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         // credentials) instead of collapsing it to the generic creation error.
         emit(state.copyWith(failure: _storeKeyFailure(failure)));
         return;
+      }
+
+      final completed = await _completeEncryptedVaultBackupUsecase.execute(
+        walletId: walletId,
+      );
+      if (completed case Err()) {
+        log.warning(
+          'Encrypted vault is durable but its local completion marker failed',
+        );
       }
 
       emit(state.copyWith(vault: vault, vaultProvider: event.provider));
@@ -422,7 +440,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     switch (await _restoreVaultUsecase.execute(
       decryptedVault: decryptedVault,
     )) {
-      case Ok():
+      case Ok(:final value):
+        await _recoverRemoteKeychainUsecase.execute(
+          defaultCreatedWalletIds: value.toSet(),
+        );
         _walletBloc.add(const WalletStarted());
         log.fine('Vault recovered');
         emit(state.copyWith(isFlowFinished: true, isLoading: false));

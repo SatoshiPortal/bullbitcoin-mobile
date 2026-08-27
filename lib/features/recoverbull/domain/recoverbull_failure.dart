@@ -49,6 +49,10 @@ final class VaultRecoveryFailure extends RecoverBullFailure {
   const VaultRecoveryFailure();
 }
 
+final class VaultStatusPersistenceFailure extends RecoverBullFailure {
+  const VaultStatusPersistenceFailure();
+}
+
 final class InvalidVaultCredentialsFailure extends RecoverBullFailure {
   const InvalidVaultCredentialsFailure();
 }

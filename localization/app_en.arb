@@ -14634,5 +14634,130 @@
   "bullnymErrorUnexpected": "Something went wrong. Please try again.",
   "@bullnymErrorUnexpected": {
     "description": "Bullnym generic error for invalid input, unexpected responses, or a local signing failure"
+  },
+  "walletBackupSettingsTitle": "Bull backup",
+  "@walletBackupSettingsTitle": {
+    "description": "Title for the automatic encrypted Bull backup controls"
+  },
+  "walletBackupSettingsDescription": "Automatically stores one encrypted, seed-bound backup of your wallet recovery data.",
+  "@walletBackupSettingsDescription": {
+    "description": "Description for the automatic Bull backup"
+  },
+  "walletBackupSettingsEnabled": "Automatic Bull backup",
+  "@walletBackupSettingsEnabled": {
+    "description": "Switch label for automatic Bull backup"
+  },
+  "walletBackupSettingsPending": "Backup pending",
+  "@walletBackupSettingsPending": {
+    "description": "Status shown when local backup changes have not been published"
+  },
+  "walletBackupSettingsOff": "Automatic backup is off",
+  "@walletBackupSettingsOff": {
+    "description": "Status shown while automatic Bull backup is disabled"
+  },
+  "walletBackupSettingsNeverBackedUp": "Not backed up yet",
+  "@walletBackupSettingsNeverBackedUp": {
+    "description": "Status shown before the first successful Bull backup"
+  },
+  "walletBackupSettingsLastBackup": "Last backup: {date}",
+  "@walletBackupSettingsLastBackup": {
+    "description": "Status showing the last successful Bull backup time",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "walletBackupSettingsBackupNow": "Back up now",
+  "@walletBackupSettingsBackupNow": {
+    "description": "Button to publish the Bull backup immediately"
+  },
+  "walletBackupSettingsDelete": "Delete backup",
+  "@walletBackupSettingsDelete": {
+    "description": "Button to delete the remote Bull backup"
+  },
+  "walletBackupSettingsDeleteTitle": "Delete Bull backup?",
+  "@walletBackupSettingsDeleteTitle": {
+    "description": "Title of the remote Bull backup deletion confirmation"
+  },
+  "walletBackupSettingsDeleteDescription": "This removes the remote backup. Your wallets and local data stay on this device.",
+  "@walletBackupSettingsDeleteDescription": {
+    "description": "Description of remote Bull backup deletion"
+  },
+  "walletBackupSettingsCancel": "Cancel",
+  "@walletBackupSettingsCancel": {
+    "description": "Cancel remote Bull backup deletion"
+  },
+  "walletBackupSettingsDeleteConfirm": "Delete",
+  "@walletBackupSettingsDeleteConfirm": {
+    "description": "Confirm remote Bull backup deletion"
+  },
+  "walletBackupSettingsUnavailable": "Bull backup is temporarily unavailable.",
+  "@walletBackupSettingsUnavailable": {
+    "description": "Error when the Bull backup service cannot be reached"
+  },
+  "walletBackupSettingsDisabled": "Enable automatic Bull backup first.",
+  "@walletBackupSettingsDisabled": {
+    "description": "Error shown when backup now is requested while disabled"
+  },
+  "walletBackupSettingsUpdateRequired": "Update the app before changing this backup.",
+  "@walletBackupSettingsUpdateRequired": {
+    "description": "Error or status for a backup written by a newer app"
+  },
+  "walletBackupSettingsRecoveryBlocked": "Backup recovery needs attention.",
+  "@walletBackupSettingsRecoveryBlocked": {
+    "description": "Shown when remote wallet backup recovery was incomplete"
+  },
+  "walletMetadataBackupConsentTitle": "Enable Bull backup?",
+  "@walletMetadataBackupConsentTitle": {
+    "description": "Title for the Bullnym metadata storage disclosure dialog."
+  },
+  "walletMetadataBackupConsentBody": "Bull Bitcoin will store one encrypted copy of your wallet recovery data and metadata on Bullnym. Bull Bitcoin can observe backup timing and size but cannot read the encrypted backup. This uses one shared Bull backup identity and encryption key. Turning this off stops future updates; you can delete the remote copy separately.",
+  "@walletMetadataBackupConsentBody": {
+    "description": "Privacy and retention disclosure shown before wallet metadata backup is enabled."
+  },
+  "walletMetadataBackupConsentCancel": "Cancel",
+  "@walletMetadataBackupConsentCancel": {
+    "description": "Cancel enabling wallet metadata backup."
+  },
+  "walletMetadataBackupConsentContinue": "Enable backup",
+  "@walletMetadataBackupConsentContinue": {
+    "description": "Accept Bullnym storage and enable wallet metadata backup."
+  },
+  "wizardMetadataBackupTitle": "Keep your wallet organized after recovery",
+  "@wizardMetadataBackupTitle": {
+    "description": "Title of the onboarding wallet metadata backup choice."
+  },
+  "wizardMetadataBackupBody": "Automatically store one encrypted Bull backup containing wallet recovery data, labels, frozen-coin state, and wallet preferences on Bullnym. Bull backup does not back up or replace your wallet seed. Bull Bitcoin can observe backup timing and size but cannot read the encrypted contents. This uses one shared Bull backup identity and encryption key. Turning it off later stops new updates, and the remote copy can be deleted separately.",
+  "@wizardMetadataBackupBody": {
+    "description": "Privacy disclosure for the onboarding wallet metadata backup choice."
+  },
+  "wizardMetadataBackupQuestion": "Back up this wallet automatically?",
+  "@wizardMetadataBackupQuestion": {
+    "description": "Question shown on the onboarding wallet metadata backup choice."
+  },
+  "wizardMetadataBackupEnable": "Enable data backups",
+  "@wizardMetadataBackupEnable": {
+    "description": "Prominent affirmative onboarding wallet metadata backup action."
+  },
+  "wizardMetadataBackupDecline": "No, I don't want backups",
+  "@wizardMetadataBackupDecline": {
+    "description": "Explicit destructive-styled decline action for onboarding wallet metadata backup."
+  },
+  "wizardMetadataBackupRequired": "Choose whether to enable Bull backup before continuing.",
+  "@wizardMetadataBackupRequired": {
+    "description": "Shown when onboarding is completed without a metadata backup preference."
+  },
+  "wizardMetadataBackupSaveFailed": "Your backup choice couldn’t be saved. Try again.",
+  "@wizardMetadataBackupSaveFailed": {
+    "description": "Retryable message when the onboarding backup choice cannot be persisted."
+  },
+  "walletBackupSettingsRecoveryComplete": "Last recovery completed.",
+  "@walletBackupSettingsRecoveryComplete": {
+    "description": "Status shown when the last Bull backup recovery completed successfully."
+  },
+  "walletBackupSettingsRecoveryIncomplete": "Last recovery needs attention.",
+  "@walletBackupSettingsRecoveryIncomplete": {
+    "description": "Status shown when the last Bull backup recovery did not complete."
   }
 }

@@ -40,6 +40,7 @@ void main() {
       expect(prefs.getString('wizard_pending_theme_mode'), isNull);
       expect(prefs.getString('wizard_pending_currency'), isNull);
       expect(prefs.getBool('wizard_pending_error_reporting'), isNull);
+      expect(prefs.getBool('wizard_pending_metadata_backup'), isNull);
       expect(prefs.getInt('wizard_pending_version'), isNull);
     });
 
@@ -87,7 +88,9 @@ void main() {
         language: Language.franceFrench,
         defaultCurrency: 'CAD',
         reportingConsent: true,
+        metadataBackupEnabled: true,
         touched: {
+          WizardField.metadataBackupEnabled,
           WizardField.language,
           WizardField.defaultCurrency,
           WizardField.reportingConsent,
@@ -100,7 +103,9 @@ void main() {
       expect(read!.language, Language.franceFrench);
       expect(read.defaultCurrency, 'CAD');
       expect(read.reportingConsent, true);
+      expect(read.metadataBackupEnabled, true);
       expect(read.touched, {
+        WizardField.metadataBackupEnabled,
         WizardField.language,
         WizardField.defaultCurrency,
         WizardField.reportingConsent,

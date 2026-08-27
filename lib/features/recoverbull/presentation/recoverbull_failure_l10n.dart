@@ -17,6 +17,7 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     VaultKeyFetchFailure() => context.loc.recoverbullErrorFetchKeyFailed,
     VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,
     VaultRecoveryFailure() => context.loc.walletSetupErrorTryAgain,
+    VaultStatusPersistenceFailure() => context.loc.oopsSomethingWentWrong,
     InvalidVaultCredentialsFailure() =>
       context.loc.recoverbullErrorInvalidCredentials,
     InvalidVaultFileFormatFailure() =>

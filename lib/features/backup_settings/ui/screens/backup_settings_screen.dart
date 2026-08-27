@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +70,8 @@ class _Screen extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
                       ),
+                      const Gap(24),
+                      const _WalletBackupSection(),
                       const Gap(40),
                       const _StartBackupButton(),
                       if (state.lastEncryptedBackup != null)
@@ -90,6 +93,166 @@ class _Screen extends StatelessWidget {
     );
   }
 }
+
+class _WalletBackupSection extends StatelessWidget {
+  const _WalletBackupSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+      buildWhen: (previous, current) =>
+          previous.walletBackup != current.walletBackup ||
+          previous.walletBackupOperation != current.walletBackupOperation ||
+          previous.lastRecoveryOutcome != current.lastRecoveryOutcome,
+      builder: (context, state) {
+        final backup = state.walletBackup;
+        if (backup == null) return const SizedBox.shrink();
+        final busy = state.walletBackupBusy;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.loc.walletBackupSettingsTitle,
+              style: context.font.titleMedium,
+            ),
+            const Gap(6),
+            Text(
+              context.loc.walletBackupSettingsDescription,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.onSurfaceVariant,
+              ),
+            ),
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              title: Text(context.loc.walletBackupSettingsEnabled),
+              subtitle: Text(_walletBackupStatus(context, backup)),
+              value: backup.enabled,
+              onChanged: busy
+                  ? null
+                  : (enabled) => _setEnabled(context, enabled),
+            ),
+            if (state.lastRecoveryOutcome case final outcome?
+                when outcome.status != WalletBackupRecoveryStatus.noBackup)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  _walletBackupRecoveryStatus(context, outcome),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            if (backup.enabled)
+              SettingsEntryItem(
+                icon: Icons.cloud_upload_outlined,
+                title: context.loc.walletBackupSettingsBackupNow,
+                onTap: busy
+                    ? null
+                    : context.read<BackupSettingsCubit>().backupWalletNow,
+              ),
+            if (state.canRetryRecovery)
+              SettingsEntryItem(
+                icon: Icons.restore,
+                title: context.loc.walletBackupSettingsRecoveryBlocked,
+                onTap: context
+                    .read<BackupSettingsCubit>()
+                    .retryWalletBackupRecovery,
+              ),
+            SettingsEntryItem(
+              icon: Icons.delete_outline,
+              iconColor: context.appColors.error,
+              textColor: context.appColors.error,
+              title: context.loc.walletBackupSettingsDelete,
+              onTap: busy ? null : () => _confirmDelete(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _setEnabled(BuildContext context, bool enabled) async {
+    if (!enabled) {
+      await context.read<BackupSettingsCubit>().setWalletBackupEnabled(false);
+      return;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.loc.walletMetadataBackupConsentTitle),
+        content: Text(dialogContext.loc.walletMetadataBackupConsentBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(dialogContext.loc.walletMetadataBackupConsentCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(dialogContext.loc.walletMetadataBackupConsentContinue),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await context.read<BackupSettingsCubit>().setWalletBackupEnabled(true);
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.loc.walletBackupSettingsDeleteTitle),
+        content: Text(dialogContext.loc.walletBackupSettingsDeleteDescription),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(dialogContext.loc.walletBackupSettingsCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(dialogContext.loc.walletBackupSettingsDeleteConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await context.read<BackupSettingsCubit>().deleteWalletBackup();
+    }
+  }
+}
+
+String _walletBackupStatus(BuildContext context, WalletBackupState state) {
+  if (!state.enabled) return context.loc.walletBackupSettingsOff;
+  if (state.recoveryBlocked) {
+    return context.loc.walletBackupSettingsRecoveryBlocked;
+  }
+  if (state.unsupportedVersion != null) {
+    return context.loc.walletBackupSettingsUpdateRequired;
+  }
+  if (state.dirty) return context.loc.walletBackupSettingsPending;
+  final succeededAt = state.lastSucceededAt;
+  if (succeededAt == null) return context.loc.walletBackupSettingsNeverBackedUp;
+  final date = DateTime.fromMillisecondsSinceEpoch(
+    succeededAt * 1000,
+    isUtc: true,
+  ).toLocal();
+  return context.loc.walletBackupSettingsLastBackup(
+    MaterialLocalizations.of(context).formatMediumDate(date),
+  );
+}
+
+String _walletBackupRecoveryStatus(
+  BuildContext context,
+  WalletBackupRecoveryOutcome outcome,
+) => switch (outcome.status) {
+  WalletBackupRecoveryStatus.restored =>
+    context.loc.walletBackupSettingsRecoveryComplete,
+  WalletBackupRecoveryStatus.newerVersion =>
+    context.loc.walletBackupSettingsUpdateRequired,
+  WalletBackupRecoveryStatus.noBackup => '',
+  _ => context.loc.walletBackupSettingsRecoveryIncomplete,
+};
 
 class _BackupTestStatusWidget extends StatelessWidget {
   const _BackupTestStatusWidget();

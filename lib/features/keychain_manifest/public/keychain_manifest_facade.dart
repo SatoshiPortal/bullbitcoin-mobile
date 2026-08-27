@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manife
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_requests.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_deriver.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_keychain_manifest_reservation_wallet_ids_usecase.dart';
@@ -34,6 +35,7 @@ final class KeychainManifestFacade {
   final RecordReservedWalletsUsecase _recordWallets;
   final RecordKeychainManifestNostrKeyUsecase _recordNostrKey;
   final GetKeychainManifestReservationWalletIdsUsecase _walletIds;
+  final KeychainManifestNostrKeyDeriver _nostrDeriver;
 
   KeychainManifestFacade(
     this._watchChanges,
@@ -44,6 +46,7 @@ final class KeychainManifestFacade {
     this._recordWallets,
     this._recordNostrKey,
     this._walletIds,
+    this._nostrDeriver,
   );
 
   Stream<void> watchCommittedChanges() => _watchChanges.execute();
@@ -161,4 +164,47 @@ final class KeychainManifestFacade {
     updatedAt: updatedAt,
     origin: KeychainManifestWriteOrigin.recovery,
   );
+
+  Future<Result<bool, KeychainManifestFailure>> restoreNostrKey({
+    required String reservationId,
+    required Fingerprint parentFingerprint,
+    required String derivationPath,
+    required String publicKeyHex,
+    required KeychainManifestNostrKeyKind keyKind,
+    required String purpose,
+    String? description,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) async {
+    final source = await _nostrDeriver.source();
+    switch (source) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (value.fingerprint != parentFingerprint ||
+            _nostrDeriver.derivePublicKey(value.seed, derivationPath) !=
+                publicKeyHex) {
+          return const Err(KeychainManifestConflictFailure());
+        }
+    }
+    return _recordNostrKey.execute(
+      reservationId: reservationId,
+      parentFingerprint: parentFingerprint,
+      derivationPath: derivationPath,
+      publicKeyHex: publicKeyHex,
+      keyKind: keyKind,
+      purpose: purpose,
+      description: description,
+      now: createdAt,
+      updatedAt: updatedAt,
+      origin: KeychainManifestWriteOrigin.recovery,
+    );
+  }
+}
+
+Result<String, KeychainManifestFailure> canonicalizeKeychainManifestPayload(
+  String payload,
+) {
+  const codec = KeychainManifestFileCodec();
+  return codec.decode(payload).map(codec.encode);
 }

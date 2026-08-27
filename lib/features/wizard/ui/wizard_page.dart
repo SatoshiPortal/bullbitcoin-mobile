@@ -11,6 +11,7 @@ const double kWizardChromeHeight = 140;
 /// `WizardStepLayout`'s eyebrow.
 enum WizardPage {
   welcome,
+  metadataBackup,
   customize,
   mission,
   journey;

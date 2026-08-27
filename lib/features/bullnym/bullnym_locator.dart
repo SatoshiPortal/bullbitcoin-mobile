@@ -19,7 +19,14 @@ final class BullnymLocator {
       final authenticator = BullnymAuthenticator(
         locator<NostrIdentityFacade>(),
       );
-      return BullnymFacade.create(repository, authenticator);
+      final backupAuthenticator = BullnymAuthenticator.walletBackup(
+        locator<NostrIdentityFacade>(),
+      );
+      return BullnymFacade.create(
+        repository,
+        authenticator,
+        backupAuthenticator,
+      );
     });
   }
 }

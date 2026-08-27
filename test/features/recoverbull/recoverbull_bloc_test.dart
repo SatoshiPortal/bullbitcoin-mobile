@@ -19,7 +19,9 @@ import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/domain/complete_encrypted_vault_backup_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,6 +31,12 @@ class _MockPickVault extends Mock implements PickVaultUsecase {}
 class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
+
+class _MockCompleteVault extends Mock
+    implements CompleteEncryptedVaultBackupUsecase {}
+
+class _MockRemoteRecovery extends Mock
+    implements RecoverBullRemoteKeychainUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
@@ -65,6 +73,8 @@ void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
+  late _MockCompleteVault completeVault;
+  late _MockRemoteRecovery remoteRecovery;
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
@@ -87,6 +97,8 @@ void main() {
     pickVault = _MockPickVault();
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
+    completeVault = _MockCompleteVault();
+    remoteRecovery = _MockRemoteRecovery();
     storeKey = _MockStoreKey();
     checkConnection = _MockCheckConnection();
     fetchKey = _MockFetchKey();
@@ -113,11 +125,13 @@ void main() {
     pickVaultUsecase: pickVault,
     saveFileToSystemUsecase: saveFile,
     createEncryptedVaultUsecase: createVault,
+    completeEncryptedVaultBackupUsecase: completeVault,
     storeVaultKeyIntoServerUsecase: storeKey,
     checkKeyServerConnectionUsecase: checkConnection,
     fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
+    recoverRemoteKeychainUsecase: remoteRecovery,
     connectToGoogleDriveUsecase: connectDrive,
     saveToGoogleDriveUsecase: saveDrive,
     initializeTorUsecase: initTor,
@@ -186,9 +200,10 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(
-          () => createVault.execute(),
-        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => createVault.execute()).thenAnswer(
+          (_) async =>
+              Ok((vault: vault, vaultKey: 'deadbeef', walletId: 'wallet-id')),
+        );
         when(() => checkConnection.execute()).thenAnswer((_) async => true);
         when(
           () => saveFile.execute(
