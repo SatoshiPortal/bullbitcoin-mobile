@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:bb_mobile/core/deterministic_wallets/prepare_deterministic_wallets_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -7,9 +8,12 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/apply_recovered_wallet_preferences_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_frozen_wallet_outpoints_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_preferences_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_definitions_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/restore_wallet_definition_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/restore_frozen_wallet_outpoints_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_preference_changes_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_catalog_changes_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_utxo_freeze_changes_usecase.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -18,6 +22,7 @@ import 'package:bb_mobile/features/wallet_backup/data/bullnym_wallet_backup_remo
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/recoverbull_wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_recovery_outcome_repository_impl.dart';
+import 'package:bb_mobile/features/wallet_backup/data/wallet_definitions_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_envelope_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
@@ -33,6 +38,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_recovery_blocked_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/sync_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/watch_wallet_backup_state_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/data/labels_bip329_wallet_metadata_contributor.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/data/wallet_metadata_backup_section_provider.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/data/wallet_metadata_snapshot_composition_repository_impl.dart';
@@ -60,17 +66,24 @@ abstract final class WalletBackupLocator {
 }
 
 final class _WalletBackupGraph {
+  final WalletDefinitionsBackup definitions;
   final WalletMetadataBackup metadata;
   final WalletBackupCoordinator coordinator;
   final WalletBackupFacade facade;
 
   const _WalletBackupGraph({
+    required this.definitions,
     required this.metadata,
     required this.coordinator,
     required this.facade,
   });
 
   factory _WalletBackupGraph.build(GetIt locator) {
+    final definitions = WalletDefinitionsBackupImpl(
+      locator<GetWalletDefinitionsUsecase>().execute,
+      locator<RestoreWalletDefinitionUsecase>().execute,
+      locator<WatchWalletCatalogChangesUsecase>().execute,
+    );
     final contributors = <WalletMetadataContributor>[
       LabelsBip329WalletMetadataContributor(locator<LabelsFacade>()),
       WalletUtxoFreezeMetadataContributor(
@@ -107,6 +120,7 @@ final class _WalletBackupGraph {
     final keychainManifest = locator<KeychainManifestFacade>();
     final buildEnvelope = BuildWalletBackupEnvelopeUsecase(
       keychainManifest,
+      definitions,
       metadata: metadata,
     );
     final sync = SyncWalletBackupUsecase(
@@ -115,6 +129,7 @@ final class _WalletBackupGraph {
       encryption: encryption,
       remote: remote,
       keychainManifest: keychainManifest,
+      definitions: definitions,
       metadata: metadata,
     );
     final backupNow = BackupWalletNowUsecase(
@@ -124,12 +139,16 @@ final class _WalletBackupGraph {
     );
     final coordinator = WalletBackupCoordinator(
       manifestChanges: keychainManifest.watchCommittedChanges(),
-      metadataChanges: metadata.changes,
+      metadataChanges: StreamGroup.merge([
+        definitions.changes,
+        metadata.changes,
+      ]),
       syncResults: locator<WatchElectrumSyncResultsUsecase>().execute(),
       publishBackup: backupNow.execute,
       markDirty: MarkWalletBackupDirtyUsecase(state).execute,
     );
     final recover = RecoverWalletBackupUsecase(
+      definitions,
       fetchImport: FetchWalletBackupManifestImportUsecase(
         resolveKey: resolveKey,
         remote: remote,
@@ -157,6 +176,7 @@ final class _WalletBackupGraph {
       getRecoveryOutcome: GetWalletBackupRecoveryOutcomeUsecase(outcomes),
     );
     return _WalletBackupGraph(
+      definitions: definitions,
       metadata: metadata,
       coordinator: coordinator,
       facade: facade,

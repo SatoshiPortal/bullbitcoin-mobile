@@ -7,10 +7,13 @@ class WalletMetadataDatasource {
   final SqliteDatabase _sqlite;
   final StreamController<void> _preferenceChanges =
       StreamController<void>.broadcast(sync: true);
+  final StreamController<void> _catalogChanges =
+      StreamController<void>.broadcast(sync: true);
 
   WalletMetadataDatasource({required this._sqlite});
 
   Stream<void> get preferenceChanges => _preferenceChanges.stream;
+  Stream<void> get catalogChanges => _catalogChanges.stream;
 
   Future<void> store(WalletMetadataModel metadata) async {
     final previous = await fetch(metadata.id);
@@ -18,6 +21,7 @@ class WalletMetadataDatasource {
     if (_preferencesDiffer(previous, metadata)) {
       _preferenceChanges.add(null);
     }
+    if (_definitionsDiffer(previous, metadata)) _catalogChanges.add(null);
   }
 
   Future<void> _store(WalletMetadataModel metadata) async {
@@ -37,6 +41,9 @@ class WalletMetadataDatasource {
     });
     if (metadata.any((item) => _preferencesDiffer(previous[item.id], item))) {
       _preferenceChanges.add(null);
+    }
+    if (metadata.any((item) => _definitionsDiffer(previous[item.id], item))) {
+      _catalogChanges.add(null);
     }
   }
 
@@ -92,6 +99,9 @@ class WalletMetadataDatasource {
         _hasRepresentedPreferences(previous)) {
       _preferenceChanges.add(null);
     }
+    if (deleted > 0 && previous != null && _isBackedUpDefinition(previous)) {
+      _catalogChanges.add(null);
+    }
   }
 }
 
@@ -138,3 +148,24 @@ bool _hasRepresentedPreferences(WalletMetadataModel metadata) {
       metadata.hideOnHome != null ||
       metadata.autoSweepEnabled != null;
 }
+
+bool _definitionsDiffer(
+  WalletMetadataModel? previous,
+  WalletMetadataModel current,
+) {
+  if (previous != null &&
+      _isBackedUpDefinition(previous) != _isBackedUpDefinition(current)) {
+    return true;
+  }
+  if (!_isBackedUpDefinition(current)) return false;
+  return previous == null ||
+      previous.externalPublicDescriptor != current.externalPublicDescriptor ||
+      previous.internalPublicDescriptor != current.internalPublicDescriptor ||
+      previous.masterFingerprint != current.masterFingerprint ||
+      previous.signerDevice != current.signerDevice ||
+      previous.birthday != current.birthday ||
+      previous.provenance != current.provenance ||
+      previous.seedPassphraseUsed != current.seedPassphraseUsed;
+}
+
+bool _isBackedUpDefinition(WalletMetadataModel metadata) => metadata.isBitcoin;

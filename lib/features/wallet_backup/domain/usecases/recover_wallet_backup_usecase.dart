@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/restore_wallet_backup_manifest_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_recovery_blocked_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_apply.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_section.dart';
 import 'package:bb_mobile/features/wallet_backup/watchers/wallet_backup_coordinator.dart';
@@ -24,11 +25,13 @@ final class RecoverWalletBackupUsecase {
   final SetWalletBackupRecoveryBlockedUsecase _setBlocked;
   final WalletBackupCoordinator _coordinator;
   final WalletBackupRecoveryOutcomeRepository _outcomes;
+  final WalletDefinitionsBackup? _definitions;
   final WalletMetadataBackup? _metadata;
   final DateTime Function() _nowUtc;
   final Duration _budget;
 
-  const RecoverWalletBackupUsecase({
+  const RecoverWalletBackupUsecase(
+    this._definitions, {
     required this._fetchImport,
     required this._fetchIdentity,
     required this._restoreManifest,
@@ -119,6 +122,30 @@ final class RecoverWalletBackupUsecase {
         return _result(WalletBackupRecoveryStatus.timedOut, restored: restored);
       }
 
+      WalletDefinitionsRecoveryResult? definitionsRestored;
+      final definitionsPayload = manifestImport.definitionsPayload;
+      if (definitionsPayload != null && _definitions != null) {
+        switch (await _definitions.recover(
+          payload: definitionsPayload,
+          deadline: deadline,
+        )) {
+          case Ok(:final value):
+            definitionsRestored = value;
+          case Err():
+            return _result(
+              WalletBackupRecoveryStatus.invalid,
+              restored: restored,
+            );
+        }
+      }
+      if (_expired(deadline)) {
+        return _result(
+          WalletBackupRecoveryStatus.timedOut,
+          restored: restored,
+          definitions: definitionsRestored,
+        );
+      }
+
       var metadataComplete = true;
       final metadataPayload = manifestImport.metadataPayload;
       if (metadataPayload != null && _metadata != null) {
@@ -127,6 +154,7 @@ final class RecoverWalletBackupUsecase {
           createdWalletRefs: {
             ...defaultCreatedWalletIds,
             ...restored.createdWalletIds,
+            ...?definitionsRestored?.createdWalletRefs,
           },
           deadline: deadline,
         );
@@ -137,7 +165,11 @@ final class RecoverWalletBackupUsecase {
         };
       }
       if (_expired(deadline)) {
-        return _result(WalletBackupRecoveryStatus.timedOut, restored: restored);
+        return _result(
+          WalletBackupRecoveryStatus.timedOut,
+          restored: restored,
+          definitions: definitionsRestored,
+        );
       }
 
       final WalletBackupRemoteIdentity finalIdentity;
@@ -145,19 +177,31 @@ final class RecoverWalletBackupUsecase {
         case Ok(:final value):
           finalIdentity = value;
         case Err(:final failure):
-          return _result(_failureStatus(failure), restored: restored);
+          return _result(
+            _failureStatus(failure),
+            restored: restored,
+            definitions: definitionsRestored,
+          );
       }
       if (finalIdentity != initialIdentity) {
-        return _result(WalletBackupRecoveryStatus.conflict, restored: restored);
+        return _result(
+          WalletBackupRecoveryStatus.conflict,
+          restored: restored,
+          definitions: definitionsRestored,
+        );
       }
 
-      final complete = restored.failedCount == 0 && metadataComplete;
+      final complete =
+          restored.failedCount == 0 &&
+          (definitionsRestored?.failedCount ?? 0) == 0 &&
+          metadataComplete;
       if (complete) {
         final unblocked = await _setBlocked.execute(false);
         if (unblocked case Err()) {
           return _result(
             WalletBackupRecoveryStatus.localFailure,
             restored: restored,
+            definitions: definitionsRestored,
           );
         }
       }
@@ -166,6 +210,7 @@ final class RecoverWalletBackupUsecase {
             ? WalletBackupRecoveryStatus.restored
             : WalletBackupRecoveryStatus.partiallyRestored,
         restored: restored,
+        definitions: definitionsRestored,
       );
     } finally {
       lease.close();
@@ -175,11 +220,16 @@ final class RecoverWalletBackupUsecase {
   WalletBackupRecoveryResult _result(
     WalletBackupRecoveryStatus status, {
     WalletBackupManifestRestoreResult? restored,
+    WalletDefinitionsRecoveryResult? definitions,
   }) => WalletBackupRecoveryResult(
     status: status,
-    restoredCount: restored?.restoredCount ?? 0,
-    failedCount: restored?.failedCount ?? 0,
-    createdWalletIds: restored?.createdWalletIds ?? const [],
+    restoredCount:
+        (restored?.restoredCount ?? 0) + (definitions?.restoredCount ?? 0),
+    failedCount: (restored?.failedCount ?? 0) + (definitions?.failedCount ?? 0),
+    createdWalletIds: [
+      ...?restored?.createdWalletIds,
+      ...?definitions?.createdWalletRefs,
+    ],
   );
 
   bool _expired(DateTime deadline) => !_nowUtc().isBefore(deadline);
@@ -198,6 +248,7 @@ WalletBackupRecoveryStatus _failureStatus(WalletBackupFailure failure) =>
       WalletBackupEncryptionFailure() ||
       WalletBackupInvalidRemoteFailure() ||
       WalletBackupManifestFailure() => WalletBackupRecoveryStatus.invalid,
+      WalletBackupDefinitionsFailure() => WalletBackupRecoveryStatus.invalid,
       _ => WalletBackupRecoveryStatus.localFailure,
     };
 

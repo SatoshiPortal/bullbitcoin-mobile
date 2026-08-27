@@ -48,6 +48,41 @@ void main() {
     expect(codec.encode(decoded), encoded);
   });
 
+  test('round-trips wallet definitions between manifest and metadata', () {
+    final envelope = WalletBackupEnvelope(
+      parentFingerprint: 'fedcba98',
+      createdAt: 2,
+      manifest: WalletBackupManifestSection(
+        payload: _manifestPayload,
+        parentFingerprint: 'fedcba98',
+      ),
+      definitions: WalletBackupDefinitionsSection(
+        payload: '{"version":1,"definitions":[]}',
+      ),
+      metadata: WalletBackupMetadataSection(
+        payload: '{"records":[],"sections":[]}',
+        parentFingerprint: 'fedcba98',
+      ),
+    );
+
+    final encoded = codec.encode(envelope);
+    final decoded = codec.decode(
+      encoded,
+      expectedParentFingerprint: 'fedcba98',
+    );
+
+    expect(
+      encoded.indexOf('"keychain_manifest"'),
+      lessThan(encoded.indexOf('"wallet_definitions"')),
+    );
+    expect(
+      encoded.indexOf('"wallet_definitions"'),
+      lessThan(encoded.indexOf('"wallet_metadata"')),
+    );
+    expect(decoded.definitions?.payload, '{"version":1,"definitions":[]}');
+    expect(codec.encode(decoded), encoded);
+  });
+
   test('rejects non-canonical JSON rather than silently normalizing it', () {
     final canonical = codec.encode(_envelope());
 
@@ -154,6 +189,44 @@ void main() {
         ),
       );
     }
+  });
+
+  test('classifies newer definitions before parsing their payload', () {
+    final canonical = codec.encode(
+      WalletBackupEnvelope(
+        parentFingerprint: 'fedcba98',
+        createdAt: 2,
+        manifest: WalletBackupManifestSection(
+          payload: _manifestPayload,
+          parentFingerprint: 'fedcba98',
+        ),
+        definitions: WalletBackupDefinitionsSection(
+          payload: '{"version":1,"definitions":[]}',
+        ),
+      ),
+    );
+    final future = canonical
+        .replaceFirst(
+          '"wallet_definitions":{"version":1',
+          '"wallet_definitions":{"version":2',
+        )
+        .replaceFirst(
+          '"payload":{"version":1,"definitions":[]}',
+          '"payload":"unknown"',
+        );
+
+    expect(
+      () => codec.decode(future, expectedParentFingerprint: 'fedcba98'),
+      throwsA(
+        isA<WalletBackupEnvelopeCodecException>()
+            .having(
+              (error) => error.reason,
+              'reason',
+              WalletBackupEnvelopeCodecFailureReason.unsupportedSection,
+            )
+            .having((error) => error.version, 'version', 2),
+      ),
+    );
   });
 
   test('recovers but write-blocks a non-canonical manifest payload', () {

@@ -31,6 +31,7 @@ final class WalletBackupEnvelopeCodecException implements Exception {
 
 final class WalletBackupEnvelopeCodec {
   static const manifestSectionId = 'keychain_manifest';
+  static const definitionsSectionId = 'wallet_definitions';
   static const metadataSectionId = 'wallet_metadata';
 
   /// RecoverBull adds a 16-byte nonce, up to 16 bytes of AES-CBC padding, and
@@ -113,6 +114,7 @@ final class WalletBackupEnvelopeModel {
     'sections',
   };
   static const _manifestSectionKeys = {'version', 'payload'};
+  static const _definitionsSectionKeys = {'version', 'payload'};
   static const _metadataSectionKeys = {'version', 'payload'};
 
   final int version;
@@ -121,6 +123,8 @@ final class WalletBackupEnvelopeModel {
   final int createdAt;
   final int manifestVersion;
   final Map<String, Object?> manifestPayload;
+  final int? definitionsVersion;
+  final String? definitionsPayload;
   final int? metadataVersion;
   final String? metadataPayload;
 
@@ -131,6 +135,8 @@ final class WalletBackupEnvelopeModel {
     required this.createdAt,
     required this.manifestVersion,
     required this.manifestPayload,
+    required this.definitionsVersion,
+    required this.definitionsPayload,
     required this.metadataVersion,
     required this.metadataPayload,
   });
@@ -185,6 +191,16 @@ final class WalletBackupEnvelopeModel {
         message: 'wallet metadata section payload must use canonical JSON',
       );
     }
+    final definitions = envelope.definitions;
+    final definitionsPayload = definitions?.payload;
+    if (definitions != null &&
+        (!_isCanonicalJsonObject(definitionsPayload!) ||
+            !definitions.isCanonical)) {
+      throw const WalletBackupEnvelopeCodecException(
+        reason: WalletBackupEnvelopeCodecFailureReason.nonCanonical,
+        message: 'wallet definitions section payload must use canonical JSON',
+      );
+    }
     return WalletBackupEnvelopeModel(
       version: envelope.version,
       contentType: envelope.contentType,
@@ -192,6 +208,8 @@ final class WalletBackupEnvelopeModel {
       createdAt: envelope.createdAt,
       manifestVersion: envelope.manifest.version,
       manifestPayload: manifestPayload,
+      definitionsVersion: definitions?.version,
+      definitionsPayload: definitionsPayload,
       metadataVersion: metadata?.version,
       metadataPayload: metadataPayload,
     );
@@ -225,6 +243,7 @@ final class WalletBackupEnvelopeModel {
     final sections = _objectMap(json['sections'], 'sections');
     for (final sectionId in sections.keys) {
       if (sectionId != WalletBackupEnvelopeCodec.manifestSectionId &&
+          sectionId != WalletBackupEnvelopeCodec.definitionsSectionId &&
           sectionId != WalletBackupEnvelopeCodec.metadataSectionId) {
         throw WalletBackupEnvelopeCodecException(
           reason: WalletBackupEnvelopeCodecFailureReason.unsupportedSection,
@@ -251,6 +270,48 @@ final class WalletBackupEnvelopeModel {
       _manifestSectionKeys,
       WalletBackupEnvelopeCodec.manifestSectionId,
     );
+
+    final definitionsValue =
+        sections[WalletBackupEnvelopeCodec.definitionsSectionId];
+    final definitionsMap = definitionsValue == null
+        ? null
+        : _objectMap(
+            definitionsValue,
+            WalletBackupEnvelopeCodec.definitionsSectionId,
+          );
+    final definitionsVersion = definitionsMap == null
+        ? null
+        : _int(definitionsMap, 'version');
+    if (definitionsVersion != null &&
+        definitionsVersion != WalletBackupDefinitionsSection.currentVersion) {
+      throw WalletBackupEnvelopeCodecException(
+        reason: WalletBackupEnvelopeCodecFailureReason.unsupportedSection,
+        message: 'unsupported wallet definitions section version',
+        sectionId: WalletBackupEnvelopeCodec.definitionsSectionId,
+        version: definitionsVersion,
+      );
+    }
+    final definitionsPayload = definitionsMap == null
+        ? null
+        : jsonEncode(
+            _objectMap(
+              definitionsMap['payload'],
+              'wallet definitions section payload',
+            ),
+          );
+    if (definitionsMap != null) {
+      _requireExactKeys(
+        definitionsMap,
+        _definitionsSectionKeys,
+        WalletBackupEnvelopeCodec.definitionsSectionId,
+      );
+      if (!_isCanonicalJsonObject(definitionsPayload!)) {
+        throw const WalletBackupEnvelopeCodecException(
+          reason: WalletBackupEnvelopeCodecFailureReason.nonCanonical,
+          message: 'wallet definitions section payload must use canonical JSON',
+        );
+      }
+    }
 
     final metadata = sections[WalletBackupEnvelopeCodec.metadataSectionId];
     final metadataVersion = metadata == null
@@ -306,6 +367,8 @@ final class WalletBackupEnvelopeModel {
         manifest['payload'],
         'keychain manifest section payload',
       ),
+      definitionsVersion: definitionsVersion,
+      definitionsPayload: definitionsPayload,
       metadataVersion: metadataVersion,
       metadataPayload: metadataPayload,
     );
@@ -342,6 +405,13 @@ final class WalletBackupEnvelopeModel {
           parentFingerprint: manifestFingerprint,
           isCanonical: canonicalManifestPayload == manifestPayload,
         ),
+        definitions: definitionsPayload == null
+            ? null
+            : WalletBackupDefinitionsSection(
+                version: definitionsVersion!,
+                payload: definitionsPayload!,
+                isCanonical: _isCanonicalJsonObject(definitionsPayload!),
+              ),
         metadata: metadataPayload == null
             ? null
             : WalletBackupMetadataSection(
@@ -370,6 +440,11 @@ final class WalletBackupEnvelopeModel {
         'version': manifestVersion,
         'payload': manifestPayload,
       },
+      if (definitionsPayload != null)
+        WalletBackupEnvelopeCodec.definitionsSectionId: {
+          'version': definitionsVersion,
+          'payload': jsonDecode(definitionsPayload!),
+        },
       if (metadataPayload != null)
         WalletBackupEnvelopeCodec.metadataSectionId: {
           'version': metadataVersion,

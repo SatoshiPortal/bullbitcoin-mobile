@@ -231,6 +231,7 @@ class WalletMetadataService {
 
   static Future<WalletMetadataModel> fromDescriptor(
     WatchOnlyDescriptorEntity entity, {
+    DateTime? birthday,
     WalletProvenance? provenance,
     bool? seedPassphraseUsed,
   }) async {
@@ -253,6 +254,7 @@ class WalletMetadataService {
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: entity.label,
+      birthday: birthday,
       provenance:
           provenance ??
           (entity.signer == SignerEntity.remote

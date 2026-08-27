@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/deterministic_wallets/deterministic_wallets.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
@@ -18,10 +19,12 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -56,6 +59,8 @@ class WalletRepository {
 
   Stream<ElectrumSyncResult> get electrumSyncResultStream =>
       _electrumSyncResultController.stream;
+
+  Stream<void> get catalogChanges => _walletMetadataDatasource.catalogChanges;
 
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
@@ -374,6 +379,83 @@ class WalletRepository {
         .toList(growable: false);
   }
 
+  Future<List<WalletDefinition>> getWalletDefinitions() async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where((metadata) => metadata.isBitcoin)
+        .map(_definitionFromMetadata)
+        .toList(growable: false);
+  }
+
+  Future<WalletDefinitionRestoreResult> restoreWalletDefinition(
+    WalletDefinition definition,
+  ) async {
+    if (!definition.network.isBitcoin) {
+      throw const FormatException('Only Bitcoin descriptors are supported');
+    }
+    final expected = _canonicalDefinition(definition);
+    final existing = await _walletMetadataDatasource.fetch(
+      definition.walletRef,
+    );
+    if (existing != null) {
+      final local = _canonicalDefinition(_definitionFromMetadata(existing));
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status: local.hasSameDescriptors(expected)
+            ? WalletDefinitionRestoreStatus.alreadyPresent
+            : WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+
+    if (expected.provenance.recoverableFromSeed) {
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status: WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+
+    final WatchOnlyWalletEntity parsed;
+    try {
+      parsed = await WatchOnlyWalletEntity.parse(
+        definition.receiveDescriptor,
+        signerDevice: definition.signerDevice,
+      );
+    } on String {
+      throw const FormatException('Wallet descriptor is not importable');
+    }
+    if (parsed is! WatchOnlyDescriptorEntity ||
+        parsed.network != definition.network ||
+        (definition.masterFingerprint != null &&
+            parsed.masterFingerprint.toLowerCase() !=
+                definition.masterFingerprint)) {
+      throw const FormatException('Wallet definition does not match import');
+    }
+    final input = parsed.copyWith(
+      signer: definition.signerDevice == null
+          ? SignerEntity.none
+          : SignerEntity.remote,
+      signerDevice: definition.signerDevice,
+    );
+    final metadata = await WalletMetadataService.fromDescriptor(
+      input,
+      birthday: definition.birthday,
+      provenance: definition.provenance,
+      seedPassphraseUsed: definition.seedPassphraseUsed,
+    );
+    final restored = _canonicalDefinition(_definitionFromMetadata(metadata));
+    if (metadata.id != definition.walletRef ||
+        !restored.hasSameDescriptors(expected)) {
+      throw const FormatException('Wallet definition round trip changed');
+    }
+
+    await _getBalance(metadata);
+    await _walletMetadataDatasource.store(metadata);
+    return WalletDefinitionRestoreResult(
+      walletRef: metadata.id,
+      status: WalletDefinitionRestoreStatus.created,
+    );
+  }
+
   Future<PreparedDeterministicWallet?> findMatchingDeterministicWallet({
     required MnemonicSeed seed,
     required DeterministicWalletSpec spec,
@@ -657,4 +739,49 @@ class WalletRepository {
       );
     }
   }
+}
+
+WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
+    WalletDefinition(
+      walletRef: metadata.id,
+      network: metadata.network,
+      receiveDescriptor: metadata.externalPublicDescriptor,
+      changeDescriptor: metadata.internalPublicDescriptor,
+      masterFingerprint: metadata.masterFingerprint,
+      signerDevice: metadata.signerDevice?.toEntity(),
+      birthday: metadata.birthday,
+      provenance: metadata.provenance,
+      seedPassphraseUsed: metadata.seedPassphraseUsed,
+    );
+
+WalletDefinition _canonicalDefinition(WalletDefinition definition) =>
+    WalletDefinition(
+      walletRef: definition.walletRef,
+      network: definition.network,
+      receiveDescriptor: _canonicalDescriptor(
+        definition.receiveDescriptor,
+        definition.network,
+      ),
+      changeDescriptor: definition.changeDescriptor == null
+          ? null
+          : _canonicalDescriptor(
+              definition.changeDescriptor!,
+              definition.network,
+            ),
+      masterFingerprint: definition.masterFingerprint,
+      signerDevice: definition.signerDevice,
+      birthday: definition.birthday,
+      provenance: definition.provenance,
+      seedPassphraseUsed: definition.seedPassphraseUsed,
+    );
+
+String _canonicalDescriptor(String value, Network network) {
+  final descriptor = bdk.Descriptor(
+    descriptor: value,
+    networkKind: network.isTestnet
+        ? bdk.NetworkKind.test
+        : bdk.NetworkKind.main,
+  );
+  descriptor.sanityCheck();
+  return descriptor.toString();
 }

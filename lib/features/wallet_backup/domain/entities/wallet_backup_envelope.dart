@@ -60,6 +60,35 @@ final class WalletBackupMetadataSection {
   }
 }
 
+final class WalletBackupDefinitionsSection {
+  static const currentVersion = 1;
+
+  final int version;
+  final String payload;
+  final bool isCanonical;
+
+  WalletBackupDefinitionsSection({
+    this.version = currentVersion,
+    required this.payload,
+    this.isCanonical = true,
+  }) {
+    if (version != currentVersion) {
+      throw ArgumentError.value(
+        version,
+        'version',
+        'unsupported wallet definitions section version',
+      );
+    }
+    if (payload.isEmpty) {
+      throw ArgumentError.value(
+        payload,
+        'payload',
+        'wallet definitions section payload is required',
+      );
+    }
+  }
+}
+
 final class WalletBackupEnvelope {
   static const currentVersion = 1;
   static const contentTypeV1 = 'bullbitcoin.wallet_backup.v1';
@@ -69,6 +98,7 @@ final class WalletBackupEnvelope {
   final String parentFingerprint;
   final int createdAt;
   final WalletBackupManifestSection manifest;
+  final WalletBackupDefinitionsSection? definitions;
   final WalletBackupMetadataSection? metadata;
 
   WalletBackupEnvelope({
@@ -77,6 +107,7 @@ final class WalletBackupEnvelope {
     required String parentFingerprint,
     required this.createdAt,
     required this.manifest,
+    this.definitions,
     this.metadata,
   }) : parentFingerprint = _normalizeFingerprint(parentFingerprint) {
     if (version != currentVersion) {

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_envelope_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_section.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -17,6 +18,7 @@ final class SyncWalletBackupUsecase {
   final WalletBackupEncryptionRepository _encryption;
   final WalletBackupRemoteRepository _remote;
   final KeychainManifestFacade _keychainManifest;
+  final WalletDefinitionsBackup? _definitions;
   final WalletMetadataBackup? _metadata;
 
   const SyncWalletBackupUsecase({
@@ -25,6 +27,7 @@ final class SyncWalletBackupUsecase {
     required this._encryption,
     required this._remote,
     required this._keychainManifest,
+    this._definitions,
     this._metadata,
   });
 
@@ -170,7 +173,19 @@ final class SyncWalletBackupUsecase {
       Ok(:final value) => value,
       Err() => null,
     };
+    final definitionsResult = _definitions == null
+        ? null
+        : await _definitions.compose(
+            remotePayload: remoteEnvelope.definitions?.payload,
+          );
+    if (definitionsResult case Err(:final failure)) return Err(failure);
+    final definitionsPayload = switch (definitionsResult) {
+      null => remoteEnvelope.definitions?.payload,
+      Ok(:final value) => value,
+      Err() => null,
+    };
     if (mergedManifest == remoteEnvelope.manifest.payload &&
+        definitionsPayload == remoteEnvelope.definitions?.payload &&
         metadataPayload == remoteEnvelope.metadata?.payload) {
       return Ok(_ComposedBackup(remoteEnvelope, matchesRemote: true));
     }
@@ -183,6 +198,9 @@ final class SyncWalletBackupUsecase {
             payload: mergedManifest,
             parentFingerprint: parentFingerprint,
           ),
+          definitions: definitionsPayload == null
+              ? null
+              : WalletBackupDefinitionsSection(payload: definitionsPayload),
           metadata: metadataPayload == null
               ? null
               : WalletBackupMetadataSection(

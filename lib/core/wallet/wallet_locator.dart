@@ -34,17 +34,20 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_preferences_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_definitions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/restore_frozen_wallet_outpoints_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/restore_wallet_definition_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_preference_changes_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_catalog_changes_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_utxo_freeze_changes_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
@@ -130,6 +133,15 @@ class WalletLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<GetWalletDefinitionsUsecase>(
+      () => GetWalletDefinitionsUsecase(locator<WalletRepository>()),
+    );
+    locator.registerFactory<RestoreWalletDefinitionUsecase>(
+      () => RestoreWalletDefinitionUsecase(locator<WalletRepository>()),
+    );
+    locator.registerFactory<WatchWalletCatalogChangesUsecase>(
+      () => WatchWalletCatalogChangesUsecase(locator<WalletRepository>()),
+    );
     locator.registerFactory<GetDefaultBitcoinWalletFingerprintsUsecase>(
       () => GetDefaultBitcoinWalletFingerprintsUsecase(
         locator<WalletRepository>(),

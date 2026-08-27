@@ -77,6 +77,7 @@ class FetchWalletBackupManifestImportUsecase {
           Ok(value: final importPlan) => Ok(
             WalletBackupManifestImport(
               plan: importPlan,
+              definitionsPayload: envelope.definitions?.payload,
               metadataPayload: envelope.metadata?.payload,
             ),
           ),

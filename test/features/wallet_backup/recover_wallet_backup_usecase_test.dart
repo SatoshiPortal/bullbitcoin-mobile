@@ -12,6 +12,9 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/restore_wallet_backup_manifest_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_recovery_blocked_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
+import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_apply.dart';
+import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_section.dart';
 import 'package:bb_mobile/features/wallet_backup/watchers/wallet_backup_coordinator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -31,6 +34,10 @@ class _MockSetBlocked extends Mock
 
 class _MockOutcomes extends Mock
     implements WalletBackupRecoveryOutcomeRepository {}
+
+class _MockDefinitions extends Mock implements WalletDefinitionsBackup {}
+
+class _MockMetadata extends Mock implements WalletMetadataBackup {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +87,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
     when(() => outcomes.save(any())).thenAnswer((_) async => const Ok(null));
     usecase = RecoverWalletBackupUsecase(
+      null,
       fetchImport: fetchImport,
       fetchIdentity: fetchIdentity,
       restoreManifest: restoreManifest,
@@ -145,6 +153,90 @@ void main() {
       verify(() => fetchIdentity.execute()).called(2);
     },
   );
+
+  test('restores definitions before applying metadata to their refs', () async {
+    final definitions = _MockDefinitions();
+    final metadata = _MockMetadata();
+    final identity = _present('a');
+    when(() => fetchIdentity.execute()).thenAnswer((_) async => Ok(identity));
+    when(() => fetchImport.execute()).thenAnswer(
+      (_) async => Ok(
+        WalletBackupManifestImport(
+          plan: plan,
+          definitionsPayload: '{"definitions":[]}',
+          metadataPayload: '{"records":[]}',
+        ),
+      ),
+    );
+    when(
+      () => restoreManifest.execute(any(), deadline: any(named: 'deadline')),
+    ).thenAnswer(
+      (_) async => const WalletBackupManifestRestoreResult(
+        restoredCount: 1,
+        failedCount: 0,
+        createdWalletIds: ['wallet-manifest'],
+      ),
+    );
+    when(
+      () => definitions.recover(
+        payload: any(named: 'payload'),
+        deadline: any(named: 'deadline'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok(
+        WalletDefinitionsRecoveryResult(
+          restoredCount: 1,
+          failedCount: 0,
+          createdWalletRefs: ['wallet-definition'],
+        ),
+      ),
+    );
+    when(
+      () => metadata.recover(
+        payload: any(named: 'payload'),
+        createdWalletRefs: any(named: 'createdWalletRefs'),
+        deadline: any(named: 'deadline'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok(
+        WalletMetadataRecoveryApplyResult(
+          status: WalletMetadataRecoveryApplyStatus.complete,
+          contributorOutcomes: const [],
+          unsupportedRecordCount: 0,
+          unsupportedSectionCount: 0,
+          invalidRecordCount: 0,
+        ),
+      ),
+    );
+    usecase = RecoverWalletBackupUsecase(
+      definitions,
+      fetchImport: fetchImport,
+      fetchIdentity: fetchIdentity,
+      restoreManifest: restoreManifest,
+      setBlocked: setBlocked,
+      coordinator: coordinator,
+      outcomes: outcomes,
+      metadata: metadata,
+      nowUtc: () => DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
+    );
+
+    final result = await usecase.execute();
+
+    expect(result.status, WalletBackupRecoveryStatus.restored);
+    expect(result.createdWalletIds, ['wallet-manifest', 'wallet-definition']);
+    verifyInOrder([
+      () => restoreManifest.execute(any(), deadline: any(named: 'deadline')),
+      () => definitions.recover(
+        payload: any(named: 'payload'),
+        deadline: any(named: 'deadline'),
+      ),
+      () => metadata.recover(
+        payload: any(named: 'payload'),
+        createdWalletRefs: {'wallet-manifest', 'wallet-definition'},
+        deadline: any(named: 'deadline'),
+      ),
+    ]);
+  });
 
   test('keeps publication blocked when the remote object changes', () async {
     var reads = 0;

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_envelope.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_section.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -9,11 +10,13 @@ DateTime _systemNowUtc() => DateTime.now().toUtc();
 
 final class BuildWalletBackupEnvelopeUsecase {
   final KeychainManifestFacade _keychainManifest;
+  final WalletDefinitionsBackup? _definitions;
   final WalletMetadataBackup? _metadata;
   final DateTime Function() _nowUtc;
 
   const BuildWalletBackupEnvelopeUsecase(
-    this._keychainManifest, {
+    this._keychainManifest,
+    this._definitions, {
     this._metadata,
     this._nowUtc = _systemNowUtc,
   });
@@ -21,6 +24,7 @@ final class BuildWalletBackupEnvelopeUsecase {
   @useResult
   Future<Result<WalletBackupEnvelope, WalletBackupFailure>> execute({
     required String parentFingerprint,
+    String? remoteDefinitionsPayload,
     String? remoteMetadataPayload,
     bool allowEmpty = false,
   }) async {
@@ -39,6 +43,16 @@ final class BuildWalletBackupEnvelopeUsecase {
       case Err(:final failure):
         return Err(WalletBackupManifestFailure(failure.runtimeType.toString()));
     }
+
+    final definitionsResult = _definitions == null
+        ? null
+        : await _definitions.compose(remotePayload: remoteDefinitionsPayload);
+    if (definitionsResult case Err(:final failure)) return Err(failure);
+    final definitionsPayload = switch (definitionsResult) {
+      null => null,
+      Ok(:final value) => value,
+      Err() => null,
+    };
 
     final metadataResult = _metadata == null
         ? null
@@ -63,6 +77,9 @@ final class BuildWalletBackupEnvelopeUsecase {
           payload: manifestPayload,
           parentFingerprint: fingerprint.hex,
         ),
+        definitions: definitionsPayload == null
+            ? null
+            : WalletBackupDefinitionsSection(payload: definitionsPayload),
         metadata: metadataPayload == null
             ? null
             : WalletBackupMetadataSection(
