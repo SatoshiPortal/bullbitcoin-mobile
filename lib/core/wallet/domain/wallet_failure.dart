@@ -62,3 +62,7 @@ final class WalletLwkStatusConflictFailure extends WalletFailure {
 final class WalletUnexpectedFailure extends WalletFailure {
   const WalletUnexpectedFailure([super.logMessage]);
 }
+
+final class SignedTransactionVerificationFailure extends WalletFailure {
+  const SignedTransactionVerificationFailure([super.logMessage]);
+}

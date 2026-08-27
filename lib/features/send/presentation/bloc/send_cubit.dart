@@ -28,6 +28,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
@@ -40,7 +41,6 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quo
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -50,7 +50,6 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -59,6 +58,7 @@ import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_us
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -180,7 +180,7 @@ class SendCubit extends Cubit<SendState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
-  final VerifySignedTxUsecase _verifySignedTxUsecase;
+  final VerifySendSignedTxUsecase _verifySignedTxUsecase;
   final ValidateSpRecipientForSendUsecase _validateSpRecipientForSendUsecase;
   final ValidateSpAmountForSendUsecase _validateSpAmountForSendUsecase;
   final GetSpNetworkForSendUsecase _getSpNetworkForSendUsecase;
@@ -2820,10 +2820,15 @@ class SendCubit extends Cubit<SendState>
     emit(state.copyWith(signedBitcoinTx: null, failure: null));
     final verification = await _verifySignedTxUsecase.execute(
       unsignedPsbt: unsignedPsbt,
-      signedTxHex: signedTx,
+      signedTransaction: signedTx,
     );
     if (verification case Err(:final failure)) {
-      // Already logged at the boundary, with which of the two checks failed.
+      log.severe(
+        error:
+            'Hardware signer returned a transaction that does not match '
+            'the confirmed one: ${failure.logMessage}',
+        trace: StackTrace.current,
+      );
       emit(state.copyWith(signedBitcoinTx: null, failure: failure));
       return false;
     }

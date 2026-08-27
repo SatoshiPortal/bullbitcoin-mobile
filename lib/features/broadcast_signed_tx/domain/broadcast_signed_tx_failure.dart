@@ -12,7 +12,7 @@ sealed class BroadcastSignedTxFailure extends Failure {
 }
 
 final class InvalidTransactionFailure extends BroadcastSignedTxFailure {
-  const InvalidTransactionFailure();
+  const InvalidTransactionFailure([super.logMessage]);
 }
 
 final class InvalidPushTxFailure extends BroadcastSignedTxFailure {
