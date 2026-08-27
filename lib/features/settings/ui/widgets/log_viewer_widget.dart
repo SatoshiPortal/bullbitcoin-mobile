@@ -1,6 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/log_entry.dart';
+import 'package:bb_mobile/features/settings/presentation/logs_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/logs_state.dart';
+import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
@@ -9,13 +13,12 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class LogsViewerWidget extends StatefulWidget {
-  final List<String> logs;
-
-  const LogsViewerWidget({super.key, required this.logs});
+  const LogsViewerWidget({super.key});
 
   @override
   State<LogsViewerWidget> createState() => _LogsViewerScreenState();
@@ -25,47 +28,41 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  List<String> get _filteredLogs {
+  List<LogEntry> get _filteredLogs {
     // Copy: `widget.logs` is owned by the parent and may be aliased by
     // sibling widgets (share-logs etc.). `.sort()` mutates in place,
     // so without a copy the parent's list flips from `readLogs()`'s
     // ascending order to this widget's descending order after the
     // first build.
-    final result = List<String>.of(widget.logs);
-    result.sort((a, b) {
-      final partsA = a.split('\t');
-      final partsB = b.split('\t');
-      return partsB[0].compareTo(partsA[0]);
-    });
+    final result = List<LogEntry>.of(context.read<LogsCubit>().state.entries);
+    result.sort(
+      (a, b) => b.timestamp == null || a.timestamp == null
+          ? 0
+          : b.timestamp!.compareTo(a.timestamp!),
+    );
 
     if (_startDate == null && _endDate == null) return result;
 
     return result.where((log) {
-      final parts = log.split('\t');
-      if (parts.isEmpty) return false;
+      final timestamp = log.timestamp;
+      if (timestamp == null) return false;
 
-      try {
-        final timestamp = DateTime.parse(parts[0]);
+      if (_startDate != null && timestamp.isBefore(_startDate!)) return false;
 
-        if (_startDate != null && timestamp.isBefore(_startDate!)) return false;
-
-        if (_endDate != null) {
-          final endOfDay = DateTime(
-            _endDate!.year,
-            _endDate!.month,
-            _endDate!.day,
-            23,
-            59,
-            59,
-            999,
-          );
-          if (timestamp.isAfter(endOfDay)) return false;
-        }
-
-        return true;
-      } catch (e) {
-        return false;
+      if (_endDate != null) {
+        final endOfDay = DateTime(
+          _endDate!.year,
+          _endDate!.month,
+          _endDate!.day,
+          23,
+          59,
+          59,
+          999,
+        );
+        if (timestamp.isAfter(endOfDay)) return false;
       }
+
+      return true;
     }).toList();
   }
 
@@ -102,17 +99,28 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
   Future<void> _shareLogs() async {
     if (_filteredLogs.isEmpty) return;
     try {
-      await shareLogsAsText(_filteredLogs);
+      await context.read<LogsCubit>().share(_filteredLogs);
     } catch (_) {}
   }
 
   Future<void> _exportLogs() async {
     if (_filteredLogs.isEmpty) return;
     try {
-      final saved = await exportLogsAsFile(_filteredLogs);
+      final result = await context.read<LogsCubit>().export(_filteredLogs);
       if (!context.mounted) return;
-      if (saved) {
-        SnackBarUtils.showSnackBar(context, context.loc.logsExportedMessage);
+      switch (result) {
+        case Ok(:final value):
+          if (value) {
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.logsExportedMessage,
+            );
+          }
+        case Err():
+          SnackBarUtils.showSnackBar(
+            context,
+            context.loc.logsExportFailedMessage,
+          );
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -122,6 +130,13 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<LogsCubit>().state;
+    if (state.status == LogsStatus.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (state.status == LogsStatus.failure) {
+      return Center(child: Text(state.failure!.toTranslated(context)));
+    }
     final logs = _filteredLogs;
 
     return Column(
@@ -146,7 +161,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                 BBText(
                   context.loc.logsViewerShowingCount(
                     logs.length,
-                    widget.logs.length,
+                    context.read<LogsCubit>().state.entries.length,
                   ),
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.6),
@@ -174,50 +189,36 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                 crossAxisAlignment: .start,
                 children: List.generate(logs.length, (index) {
                   final logLine = logs[index];
-                  final parts = logLine.split('\t');
-
                   // color for level
                   Color iconColor = context.appColors.secondary;
-                  if (parts.length > 1) {
-                    final colorForLevel = switch (parts[1]) {
-                      'FINEST' => context.appColors.success.withValues(
-                        alpha: 0.5,
-                      ),
-                      'FINER' => context.appColors.success.withValues(
+                  {
+                    final colorForLevel = switch (logLine.severity) {
+                      LogSeverity.finest =>
+                        context.appColors.success.withValues(alpha: 0.5),
+                      LogSeverity.finer => context.appColors.success.withValues(
                         alpha: 0.7,
                       ),
-                      'FINE' => context.appColors.success,
-                      'CONFIG' => context.appColors.textMuted,
-                      'INFO' => context.appColors.info,
-                      'WARNING' => context.appColors.warning,
-                      'SEVERE' => context.appColors.error,
-                      'SHOUT' => context.appColors.primary,
+                      LogSeverity.fine => context.appColors.success,
+                      LogSeverity.config => context.appColors.textMuted,
+                      LogSeverity.info => context.appColors.info,
+                      LogSeverity.warning => context.appColors.warning,
+                      LogSeverity.severe => context.appColors.error,
+                      LogSeverity.shout => context.appColors.primary,
                       _ => context.appColors.textMuted,
                     };
                     iconColor = colorForLevel;
                   }
 
-                  // remove milliseconds from datetime
-                  final displayParts = parts.toList();
-                  if (displayParts.isNotEmpty && displayParts[0].length > 7) {
-                    try {
-                      displayParts[0] = displayParts[0].substring(
-                        0,
-                        displayParts[0].length - 7,
-                      );
-                    } catch (_) {}
-                  }
-                  final displayText = displayParts.join(' | ');
-
                   return Row(
                     children: [
                       IconButton(
-                        onPressed: () =>
-                            Clipboard.setData(ClipboardData(text: logLine)),
+                        onPressed: () => Clipboard.setData(
+                          ClipboardData(text: logLine.rawLine),
+                        ),
                         icon: Icon(Icons.copy, color: iconColor),
                       ),
                       SelectableText(
-                        displayText,
+                        logLine.displayText,
                         style: context.font.bodySmall?.copyWith(
                           fontFamily: 'monospace',
                           fontSize: 12,
@@ -290,7 +291,7 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
                 BBButton.small(
                   onPressed: () async {
                     context.goNamed(WalletRoute.walletHome.name);
-                    await log.deleteLogs();
+                    await context.read<LogsCubit>().delete();
                   },
                   label: context.loc.logsViewerDeleteButton,
                   bgColor: context.appColors.primary,
