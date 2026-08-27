@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaim
 import 'package:bb_mobile/features/settings/domain/repositories/logs_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/delete_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_logs_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/filter_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/load_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/share_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
@@ -122,8 +123,9 @@ class SettingsLocator {
     locator.registerFactory<ExportLogsUsecase>(
       () => ExportLogsUsecase(locator()),
     );
+    locator.registerFactory<FilterLogsUsecase>(FilterLogsUsecase.new);
     locator.registerFactory<LogsCubit>(
-      () => LogsCubit(locator(), locator(), locator(), locator()),
+      () => LogsCubit(locator(), locator(), locator(), locator(), locator()),
     );
     locator.registerFactory<GetPayjoinDisclaimerShownUsecase>(
       () => GetPayjoinDisclaimerShownUsecase(

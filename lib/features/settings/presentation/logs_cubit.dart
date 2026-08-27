@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/settings/domain/log_entry.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/delete_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_logs_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/filter_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/load_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/share_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/logs_state.dart';
@@ -13,23 +14,145 @@ class LogsCubit extends Cubit<LogsState> {
   final DeleteLogsUsecase _deleteLogs;
   final ShareLogsUsecase _shareLogs;
   final ExportLogsUsecase _exportLogs;
+  final FilterLogsUsecase _filterLogs;
 
-  LogsCubit(this._loadLogs, this._deleteLogs, this._shareLogs, this._exportLogs)
-    : super(const LogsState());
+  LogsCubit(
+    this._loadLogs,
+    this._deleteLogs,
+    this._shareLogs,
+    this._exportLogs,
+    this._filterLogs,
+  ) : super(const LogsState());
 
   Future<void> load() async {
     if (state.status != LogsStatus.loading) return;
     switch (await _loadLogs.execute()) {
       case Ok(:final value):
-        emit(state.copyWith(status: LogsStatus.ready, entries: value));
+        _emitReady(value);
       case Err(:final failure):
-        emit(state.copyWith(status: LogsStatus.failure, failure: failure));
+        emit(
+          LogsState(
+            status: LogsStatus.failure,
+            entries: state.entries,
+            visibleEntries: state.visibleEntries,
+            failure: failure,
+            query: state.query,
+            severities: state.severities,
+            startDate: state.startDate,
+            endDate: state.endDate,
+          ),
+        );
     }
   }
 
-  Future<Result<void, SettingsFailure>> delete() => _deleteLogs.execute();
+  Future<Result<List<LogEntry>, SettingsFailure>> refresh() async {
+    final result = await _loadLogs.execute();
+    if (result case Ok(:final value)) _emitReady(value);
+    return result;
+  }
+
+  Future<Result<void, SettingsFailure>> delete() async {
+    final result = await _deleteLogs.execute();
+    if (result case Ok()) {
+      emit(
+        LogsState(
+          status: state.status,
+          failure: state.failure,
+          query: state.query,
+          severities: state.severities,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        ),
+      );
+    }
+    return result;
+  }
+
   Future<Result<void, SettingsFailure>> share(List<LogEntry> entries) =>
       _shareLogs.execute(entries);
   Future<Result<bool, SettingsFailure>> export(List<LogEntry> entries) =>
       _exportLogs.execute(entries);
+
+  void setQuery(String query) => _applyFilters(
+    query: query,
+    severities: state.severities,
+    startDate: state.startDate,
+    endDate: state.endDate,
+  );
+
+  void toggleSeverity(LogSeverity severity) {
+    final next = {...state.severities};
+    next.contains(severity) ? next.remove(severity) : next.add(severity);
+    _applyFilters(severities: next);
+  }
+
+  void clearFilters() => _applyFilters(
+    query: '',
+    severities: const {},
+    startDate: null,
+    endDate: null,
+    replaceDates: true,
+  );
+
+  void setDateRange(DateTime? startDate, DateTime? endDate) => _applyFilters(
+    query: state.query,
+    severities: state.severities,
+    startDate: startDate,
+    endDate: endDate,
+    replaceDates: true,
+  );
+
+  void _applyFilters({
+    String? query,
+    Set<LogSeverity>? severities,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool replaceDates = false,
+  }) {
+    final nextQuery = query ?? state.query;
+    final nextSeverities = severities ?? state.severities;
+    final nextStartDate = replaceDates
+        ? startDate
+        : startDate ?? state.startDate;
+    final nextEndDate = replaceDates ? endDate : endDate ?? state.endDate;
+    final nextVisible = _filterLogs.execute(
+      state.entries,
+      query: nextQuery,
+      severities: nextSeverities,
+      startDate: nextStartDate,
+      endDate: nextEndDate,
+    );
+    emit(
+      LogsState(
+        status: state.status,
+        entries: state.entries,
+        visibleEntries: nextVisible,
+        failure: state.failure,
+        query: nextQuery,
+        severities: nextSeverities,
+        startDate: nextStartDate,
+        endDate: nextEndDate,
+      ),
+    );
+  }
+
+  void _emitReady(List<LogEntry> entries) {
+    emit(
+      LogsState(
+        status: LogsStatus.ready,
+        entries: entries,
+        visibleEntries: _filterLogs.execute(
+          entries,
+          query: state.query,
+          severities: state.severities,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        ),
+        query: state.query,
+        severities: state.severities,
+        startDate: state.startDate,
+        endDate: state.endDate,
+      ),
+    );
+  }
 }

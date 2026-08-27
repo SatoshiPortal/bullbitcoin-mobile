@@ -6,21 +6,21 @@ enum LogsStatus { loading, ready, failure }
 class LogsState {
   final LogsStatus status;
   final List<LogEntry> entries;
+  final List<LogEntry> visibleEntries;
   final SettingsFailure? failure;
+  final String query;
+  final Set<LogSeverity> severities;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const LogsState({
     this.status = LogsStatus.loading,
     this.entries = const [],
+    this.visibleEntries = const [],
     this.failure,
+    this.query = '',
+    this.severities = const {},
+    this.startDate,
+    this.endDate,
   });
-
-  LogsState copyWith({
-    LogsStatus? status,
-    List<LogEntry>? entries,
-    SettingsFailure? failure,
-  }) => LogsState(
-    status: status ?? this.status,
-    entries: entries ?? this.entries,
-    failure: failure ?? this.failure,
-  );
 }

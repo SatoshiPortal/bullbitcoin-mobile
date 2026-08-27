@@ -6,23 +6,33 @@ import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/delete_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_logs_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/filter_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/load_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/share_logs_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/logs_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _LogsRepository implements LogsRepository {
+  List<LogEntry> entries;
+  List<LogEntry>? sharedEntries;
+  SettingsFailure? readFailure;
+
+  _LogsRepository({this.entries = const []});
+
   @override
-  Future<Result<List<LogEntry>, SettingsFailure>> read() async => Ok([
-    LogEntryModel.fromRawLine('2026-01-01T00:00:00Z\tINFO\tmessage').toDomain(),
-  ]);
+  Future<Result<List<LogEntry>, SettingsFailure>> read() async {
+    final failure = readFailure;
+    return failure == null ? Ok(entries) : Err(failure);
+  }
 
   @override
   Future<Result<void, SettingsFailure>> delete() async => const Ok(null);
 
   @override
-  Future<Result<void, SettingsFailure>> share(List<LogEntry> entries) async =>
-      const Ok(null);
+  Future<Result<void, SettingsFailure>> share(List<LogEntry> entries) async {
+    sharedEntries = entries;
+    return const Ok(null);
+  }
 
   @override
   Future<Result<bool, SettingsFailure>> export(List<LogEntry> entries) async =>
@@ -31,13 +41,14 @@ class _LogsRepository implements LogsRepository {
 
 void main() {
   test('loads once and exposes ready entries', () async {
-    final repository = _LogsRepository();
-    final cubit = LogsCubit(
-      LoadLogsUsecase(repository),
-      DeleteLogsUsecase(repository),
-      ShareLogsUsecase(repository),
-      ExportLogsUsecase(repository),
+    final repository = _LogsRepository(
+      entries: [
+        LogEntryModel.fromRawLine(
+          '2026-01-01T00:00:00Z\tINFO\tmessage',
+        ).toDomain(),
+      ],
     );
+    final cubit = _buildCubit(repository);
 
     await cubit.load();
     expect(cubit.state.status.name, 'ready');
@@ -45,4 +56,79 @@ void main() {
     await cubit.load();
     await cubit.close();
   });
+
+  test('applies and clears filters before sharing visible entries', () async {
+    final info = LogEntryModel.fromRawLine(
+      '2026-01-01T10:00:00Z\tINFO\tnetwork ready',
+    ).toDomain();
+    final warning = LogEntryModel.fromRawLine(
+      '2026-01-02T10:00:00Z\tWARNING\tdisk warning',
+    ).toDomain();
+    final repository = _LogsRepository(entries: [warning, info]);
+    final cubit = _buildCubit(repository);
+
+    await cubit.load();
+    cubit.setQuery('warning');
+    cubit.toggleSeverity(LogSeverity.warning);
+    cubit.setDateRange(DateTime(2026, 1, 2), DateTime(2026, 1, 2));
+    expect(cubit.state.visibleEntries, [warning]);
+
+    await cubit.share(cubit.state.visibleEntries);
+    expect(repository.sharedEntries, [warning]);
+
+    cubit.clearFilters();
+    cubit.setDateRange(null, null);
+    cubit.setQuery('');
+    expect(cubit.state.visibleEntries, [warning, info]);
+
+    cubit.toggleSeverity(LogSeverity.warning);
+    cubit.toggleSeverity(LogSeverity.info);
+    expect(cubit.state.severities, {LogSeverity.warning, LogSeverity.info});
+    expect(cubit.state.visibleEntries, [warning, info]);
+    cubit.clearFilters();
+
+    await cubit.delete();
+    expect(cubit.state.entries, isEmpty);
+    expect(cubit.state.visibleEntries, isEmpty);
+    await cubit.close();
+  });
+
+  test(
+    'refreshes entries, reapplies filters, and retains data on error',
+    () async {
+      final initialWarning = LogEntryModel.fromRawLine(
+        '2026-01-02T10:00:00Z\tWARNING\tinitial warning',
+      ).toDomain();
+      final refreshedWarning = LogEntryModel.fromRawLine(
+        '2026-01-03T10:00:00Z\tWARNING\trefreshed warning',
+      ).toDomain();
+      final repository = _LogsRepository(entries: [initialWarning]);
+      final cubit = _buildCubit(repository);
+
+      await cubit.load();
+      cubit.toggleSeverity(LogSeverity.warning);
+      repository.entries = [refreshedWarning];
+
+      final refreshResult = await cubit.refresh();
+      expect(refreshResult, isA<Ok<List<LogEntry>, SettingsFailure>>());
+      expect(cubit.state.entries, [refreshedWarning]);
+      expect(cubit.state.visibleEntries, [refreshedWarning]);
+      expect(cubit.state.severities, {LogSeverity.warning});
+
+      repository.readFailure = const SettingsLogsFailure('refresh failed');
+      final failedRefreshResult = await cubit.refresh();
+      expect(failedRefreshResult, isA<Err<List<LogEntry>, SettingsFailure>>());
+      expect(cubit.state.entries, [refreshedWarning]);
+      expect(cubit.state.visibleEntries, [refreshedWarning]);
+      await cubit.close();
+    },
+  );
 }
+
+LogsCubit _buildCubit(_LogsRepository repository) => LogsCubit(
+  LoadLogsUsecase(repository),
+  DeleteLogsUsecase(repository),
+  ShareLogsUsecase(repository),
+  ExportLogsUsecase(repository),
+  const FilterLogsUsecase(),
+);

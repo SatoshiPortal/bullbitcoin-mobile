@@ -4996,5 +4996,15 @@
   "exchangeSupportChatLoadAttachmentError": "Impossible d'ouvrir la pièce jointe. Veuillez réessayer.",
   "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "statusCheckResultsMayBeOutdated": "Les résultats peuvent être obsolètes",
-  "onboardingBackupVerificationError": "Votre portefeuille a été récupéré, mais la vérification de la sauvegarde n'a pas pu être complétée. Veuillez réessayer."
+  "onboardingBackupVerificationError": "Votre portefeuille a été récupéré, mais la vérification de la sauvegarde n'a pas pu être complétée. Veuillez réessayer.",
+  "logsViewerSearchHint": "Rechercher dans les logs",
+  "logsViewerFilter": "Filtrer les journaux",
+  "logsViewerAllLevels": "Tous les niveaux",
+  "logsShareFailedMessage": "Échec du partage des logs",
+  "logsViewerExpandHint": "Touchez un journal pour le déplier. Appuyez longuement pour le copier.",
+  "logsViewerCollapseHint": "Touchez pour replier. Appuyez longuement pour copier.",
+  "logsViewerWrapAll": "Déplier tout",
+  "logsViewerCollapseAll": "Replier tout",
+  "logsViewerEmpty": "Aucun journal pour le moment",
+  "logsViewerNoMatches": "Aucun journal ne correspond aux filtres actifs"
 }
