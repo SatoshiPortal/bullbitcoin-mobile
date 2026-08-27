@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -1766,10 +1767,23 @@ class SendCubit extends Cubit<SendState>
             ),
           );
         } else {
-          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+          final signingResult = await _signBitcoinTxUsecase.execute(
             psbt: txPreparation.unsignedPsbt,
             walletId: state.selectedWallet!.id,
           );
+          final SignedBitcoinTransaction signedPsbtAndTxSize;
+          switch (signingResult) {
+            case Ok(:final value):
+              signedPsbtAndTxSize = value;
+            case Err(:final failure):
+              emit(
+                state.copyWith(
+                  failure: SendTransactionSigningFailure(failure.logMessage),
+                  buildingTransaction: false,
+                ),
+              );
+              return;
+          }
           final bitcoinAbsoluteFeesSat =
               await _calculateBitcoinAbsoluteFeesUsecase.execute(
                 psbt: signedPsbtAndTxSize.signedPsbt,
@@ -1853,6 +1867,20 @@ class SendCubit extends Cubit<SendState>
                 : state.selectedUtxos.isNotEmpty
                 ? SendSelectedCoinsInsufficientFailure(e.message)
                 : SendInsufficientBalanceFailure(e.message),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
+      if (e is BitcoinCoinSelectionException) {
+        emit(
+          state.copyWith(
+            failure: switch (e) {
+              SelectedBitcoinCoinsUnavailableException() =>
+                SendSelectedCoinsUnavailableFailure(e.message),
+              SelectedBitcoinCoinsInsufficientException() =>
+                SendSelectedCoinsInsufficientFailure(e.message),
+            },
             buildingTransaction: false,
           ),
         );
@@ -1972,10 +2000,23 @@ class SendCubit extends Cubit<SendState>
           );
           _watchPayjoin(payjoinSender.id);
         } else {
-          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+          final signingResult = await _signBitcoinTxUsecase.execute(
             psbt: state.unsignedPsbt!,
             walletId: state.selectedWallet!.id,
           );
+          final SignedBitcoinTransaction signedPsbtAndTxSize;
+          switch (signingResult) {
+            case Ok(:final value):
+              signedPsbtAndTxSize = value;
+            case Err(:final failure):
+              emit(
+                state.copyWith(
+                  failure: SendTransactionSigningFailure(failure.logMessage),
+                  signingTransaction: false,
+                ),
+              );
+              return;
+          }
           final bitcoinAbsoluteFeesSat =
               await _calculateBitcoinAbsoluteFeesUsecase.execute(
                 psbt: signedPsbtAndTxSize.signedPsbt,
