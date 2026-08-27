@@ -24,6 +24,7 @@ graph TB
     NETWORK[Network]
     BIP85[BIP85]
     NOSTR_IDENTITY[Nostr Identity]
+    KEYCHAIN_MANIFEST[Keychain Manifest]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -108,6 +109,7 @@ graph TB
     SEND --> WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
+    SETTINGS --> KEYCHAIN_MANIFEST
     STATUS --> BULL_PAYJOIN
     SWAPS --> BULL_PAYJOIN
     SWAPS --> EXCHANGE
