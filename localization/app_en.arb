@@ -14962,5 +14962,17 @@
   "electrumOnionUsesTorDescription": "This .onion server is routed through Tor.",
   "@electrumOnionUsesTorDescription": {
     "description": "Explains Tor routing when adding a custom onion Electrum server"
+  },
+  "statusCheckNoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@statusCheckNoDefaultWalletError": {
+    "description": "Error shown when service status cannot be checked because no default wallet is configured"
+  },
+  "statusCheckResultsMayBeOutdated": "Results may be outdated",
+  "@statusCheckResultsMayBeOutdated": {
+    "description": "Short warning shown next to the last-checked time when the most recent service status refresh failed"
+  },
+  "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
+  "@onboardingBackupVerificationError": {
+    "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
   }
 }

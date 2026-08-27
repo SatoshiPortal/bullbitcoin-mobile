@@ -12526,5 +12526,8 @@
   "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
   "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
-  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin."
+  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin.",
+  "statusCheckNoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
+  "statusCheckResultsMayBeOutdated": "Sonuçlar güncel olmayabilir",
+  "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin."
 }

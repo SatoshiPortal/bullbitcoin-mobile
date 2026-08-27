@@ -12526,5 +12526,8 @@
   "settingsSearchStartTyping": "Comece a digitar para ver os resultados.",
   "exchangeSupportChatLoadMessagesError": "Não foi possível carregar as mensagens. Tente novamente.",
   "exchangeSupportChatSendMessageError": "Não foi possível enviar sua mensagem. Tente novamente.",
-  "exchangeSupportChatLoadAttachmentError": "Não foi possível abrir o anexo. Tente novamente."
+  "exchangeSupportChatLoadAttachmentError": "Não foi possível abrir o anexo. Tente novamente.",
+  "statusCheckNoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente.",
+  "statusCheckResultsMayBeOutdated": "Os resultados podem estar desatualizados",
+  "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente."
 }

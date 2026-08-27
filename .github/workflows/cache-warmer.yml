@@ -43,7 +43,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # x64 stock images are tight on disk once the SDK + pub + build_runner
       # output land (see the checks job in analyze_and_test.yml); the arm64
@@ -74,7 +74,7 @@ jobs:
       # save — quota); this workflow is the single writer. Keep path + key in
       # sync with the restore step in .github/actions/flutter-setup/action.yml.
       - name: Save build_runner cache
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             .dart_tool/build

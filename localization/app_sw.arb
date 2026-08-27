@@ -3668,5 +3668,8 @@
   "settingsSearchStartTyping": "Anza kuandika ili kuona matokeo.",
   "exchangeSupportChatLoadMessagesError": "Imeshindwa kupakia ujumbe. Tafadhali jaribu tena.",
   "exchangeSupportChatSendMessageError": "Imeshindwa kutuma ujumbe wako. Tafadhali jaribu tena.",
-  "exchangeSupportChatLoadAttachmentError": "Imeshindwa kufungua kiambatisho. Tafadhali jaribu tena."
+  "exchangeSupportChatLoadAttachmentError": "Imeshindwa kufungua kiambatisho. Tafadhali jaribu tena.",
+  "statusCheckNoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
+  "statusCheckResultsMayBeOutdated": "Matokeo yanaweza kuwa ya zamani",
+  "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena."
 }

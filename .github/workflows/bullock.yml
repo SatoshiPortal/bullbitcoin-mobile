@@ -158,7 +158,7 @@ jobs:
       # secrets present. (Issue mode always passes: it checks out develop.)
       - name: Checkout source branch
         if: steps.src.outputs.cross != 'true'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ steps.src.outputs.checkout_ref }}
           fetch-depth: 0 # full history for branch/PR operations
@@ -224,7 +224,7 @@ jobs:
         # Budget: ~6min gate+setup before this step + 45 here + ~2 of git/PR
         # plumbing after stays under the job's 60.
         timeout-minutes: 45
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@16b3b310c3d7b5279df73130324d5205aeea8eac # v1.0.205
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: >-

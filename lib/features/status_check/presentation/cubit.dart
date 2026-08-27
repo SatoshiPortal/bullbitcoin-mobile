@@ -1,49 +1,35 @@
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/status_check/domain/check_service_status_usecase.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ServiceStatusCubit extends Cubit<ServiceStatusState> {
-  final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final CheckServiceStatusUsecase _checkServiceStatusUsecase;
   int _checkGeneration = 0;
 
-  ServiceStatusCubit({
-    required this._checkAllServiceStatusUsecase,
-    required this._getWalletsUsecase,
-  }) : super(const ServiceStatusState());
+  ServiceStatusCubit({required this._checkServiceStatusUsecase})
+    : super(const ServiceStatusState());
 
   Future<void> checkStatus() async {
     final generation = ++_checkGeneration;
-    try {
-      emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
-      final wallets = await _getWalletsUsecase.execute();
-      final defaultWallet = wallets.firstWhere((w) => w.isDefault);
-      final network = defaultWallet.network;
+    final result = await _checkServiceStatusUsecase.execute(
+      initialStatus: state.serviceStatus,
+      onUpdate: (serviceStatus) {
+        if (generation != _checkGeneration || isClosed) return;
+        emit(state.copyWith(serviceStatus: serviceStatus, isLoading: true));
+      },
+    );
 
-      final serviceStatus = await _checkAllServiceStatusUsecase.execute(
-        network: network,
-        initialStatus: state.serviceStatus,
-        onUpdate: (serviceStatus) {
-          if (generation != _checkGeneration || isClosed) return;
-          emit(state.copyWith(serviceStatus: serviceStatus, isLoading: true));
-        },
-      );
-
-      if (generation != _checkGeneration || isClosed) return;
-      emit(state.copyWith(serviceStatus: serviceStatus, isLoading: false));
-    } catch (e) {
-      if (generation != _checkGeneration || isClosed) return;
-      log.severe(
-        message: '[ServiceStatusCubit] Failed to check service status',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+    if (generation != _checkGeneration || isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(state.copyWith(serviceStatus: value, isLoading: false));
+      case Err(:final failure):
+        emit(state.copyWith(isLoading: false, failure: failure));
     }
   }
 
-  void clearError() => emit(state.copyWith(error: null));
+  void clearError() => emit(state.copyWith(failure: null));
 }

@@ -22,15 +22,17 @@ This approach enables clear ownership, strong encapsulation, and independent dev
 
 ## 🧭 How the codebase actually looks today
 
-> Honest snapshot (directory census, 2026-06). Read this before assuming the sections below describe what already exists — they describe where we are heading. Numbers are approximate (`≈`) and will drift.
+> Honest snapshot (directory census, re-measured 2026-08-25). Read this before assuming the sections below describe what already exists — they describe where we are heading. Numbers are approximate (`≈`), non-normative, and will drift; re-measure with `find`/`grep` rather than trusting this snapshot as it ages.
 
 The codebase has **two coexisting patterns**, which is expected mid-migration:
 
-**1. The dominant pattern — `ui → bloc → usecase → repository → datasource`** (calls flow down; data flows back up). Most shared *data + domain* lives in `lib/core/<domain>/` (≈30 domains, ≈20 datasources, ≈26 repositories, ≈167 use-case files app-wide — most in `lib/core`, ≈21 features carry their own — ~80% under `domain/usecases/`). Most *features* in `lib/features/<feature>/` are **presentation + ui** (bloc/cubit in ≈44 of 48 features) that consume `lib/core`. The shape: a datasource per external system, an abstract repository with its implementation, use-cases, a bloc on top, `get_it` for wiring. It is simple, uniform, and well understood — **this is the pattern we consolidate on.**
+**1. The dominant pattern — `ui → bloc → usecase → repository → datasource`** (calls flow down; data flows back up). Most shared *data + domain* lives in `lib/core/<domain>/` (28 top-level domains under `lib/core/`, 32 datasource files, 28 repository interfaces under `domain/repositories/`, ≈279 use-case files app-wide — most in `lib/core`, ≈20 features carry their own under `domain/usecases/`). Most *features* in `lib/features/<feature>/` are **presentation + ui** (bloc/cubit files found across ≈38 of 48 feature folders) that consume `lib/core`. The shape: a datasource per external system, an abstract repository with its implementation, use-cases, a bloc on top, `get_it` for wiring. It is simple, uniform, and well understood — **this is the pattern we consolidate on.**
 
 **2. A minority drifted to a heavier hexagonal split (≈6 modules: `labels`, `electrum_settings`, `fund_exchange`, `recipients`, `transactions`, `broadcast_signed_tx`).** Extra rings — `application/` (use-cases + ports), `adapters/`, `frameworks/`, `interface_adapters/` — plus per-layer error types and several model+mapper hops. More files, more vocabulary, no extra capability. **We converge these back** onto pattern 1 (see "Convergence" below).
 
-**Two things barely exist yet:** the `public/` facade (≈1 feature) and `watchers/` (≈1 feature). So "facade-only cross-feature" is currently aspiration, not reality — features still reach into each other directly in places, which we are fixing.
+**The `public/` facade exists but is still a minority pattern (9 `*_facade.dart` files under `lib/features/`, 2026-08-25 count) and `watchers/` barely exists (0 found).** So "facade-only cross-feature" is progressing but not complete — features still reach into each other directly in places, which we are fixing.
+
+**Documentation-only PRs still produce the final `CI` status.** The `Analyze and Test` workflow ([analyze_and_test.yml](.github/workflows/analyze_and_test.yml)) runs changed-file classification and the action-pin gate for every PR; docs-only changes skip the heavy application checks and integration job, then the final `CI` job reports success. The repository ruleset is not yet updated to require this status, so it is not mandatory until an administrator activates that requirement.
 
 This split maps almost 1:1 onto the melos target (see Monorepo Migration): `lib/core/<domain>` → `packages/<domain>` (shared data + domain, no UI), `lib/features/<feature>` → `features/<feature>` (presentation + ui). The migration is mostly a **relocation**, not a rewrite.
 
@@ -341,7 +343,7 @@ While the architecture described above represents our current standards, the cod
 
 The codebase is migrating, incrementally, from a single Flutter package to a [melos](https://melos.invertase.dev/) pub-workspace. This is an organizational change layered on top of the architecture above — it does not alter the feature-based / layered rules, it gives them a stronger, compile-time boundary.
 
-**Current state.** The app remains at the repo root and is declared as a workspace package through `useRootAsPackage: true`. `packages/bull_ui` owns the design system, `packages/bull_ui_catalogue` is its dev-only Widgetbook, `packages/primitives` owns shared pure-Dart value types and results, `packages/bull_payjoin` owns the pure-Dart Payjoin contract, engine, and persistence, and the Flutter-dependent `packages/bull_tor` owns embedded Tor. User-facing feature packages have not moved into `features/` yet.
+**Current state.** The app remains at the repo root and is declared as a workspace package through `useRootAsPackage: true`. The root `pubspec.yaml` `workspace:` key lists 6 members (checked 2026-08-25): `packages/bull_ui` owns the design system, `packages/bull_ui_catalogue` is its dev-only Widgetbook, `packages/primitives` owns shared pure-Dart value types and results, `packages/bull_payjoin` owns the pure-Dart Payjoin contract, engine, and persistence, the Flutter-dependent `packages/bull_tor` owns embedded Tor, and the Flutter-dependent `packages/screen_privacy` owns screenshot/recording-capture blocking. User-facing feature packages have not moved into `features/` yet.
 
 **Target layout.** As modules are extracted (one at a time, never a big-bang), they become pub-workspace members:
 

@@ -1,19 +1,15 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/status_check/domain/check_service_status_usecase.dart';
+import 'package:bb_mobile/features/status_check/domain/status_check_failure.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockCheckAllServiceStatusUsecase extends Mock
-    implements CheckAllServiceStatusUsecase {}
-
-class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
-
-class _MockWallet extends Mock implements Wallet {}
+class _MockCheckServiceStatusUsecase extends Mock
+    implements CheckServiceStatusUsecase {}
 
 void main() {
   setUpAll(() {
@@ -24,12 +20,7 @@ void main() {
   test(
     'publishes partial service results while the refresh continues',
     () async {
-      final checkAll = _MockCheckAllServiceStatusUsecase();
-      final getWallets = _MockGetWalletsUsecase();
-      final wallet = _MockWallet();
-      when(() => wallet.isDefault).thenReturn(true);
-      when(() => wallet.network).thenReturn(Network.bitcoinMainnet);
-      when(() => getWallets.execute()).thenAnswer((_) async => [wallet]);
+      final checkService = _MockCheckServiceStatusUsecase();
 
       const partial = AllServicesStatus(
         liquidElectrum: ServiceStatusInfo(
@@ -45,8 +36,7 @@ void main() {
         lastChecked: DateTime(2026),
       );
       when(
-        () => checkAll.execute(
-          network: Network.bitcoinMainnet,
+        () => checkService.execute(
           initialStatus: any(named: 'initialStatus'),
           onUpdate: any(named: 'onUpdate'),
         ),
@@ -55,13 +45,10 @@ void main() {
             invocation.namedArguments[#onUpdate]
                 as void Function(AllServicesStatus)?;
         onUpdate?.call(partial);
-        return completed;
+        return Ok<AllServicesStatus, StatusCheckFailure>(completed);
       });
 
-      final cubit = ServiceStatusCubit(
-        checkAllServiceStatusUsecase: checkAll,
-        getWalletsUsecase: getWallets,
-      );
+      final cubit = ServiceStatusCubit(checkServiceStatusUsecase: checkService);
       addTearDown(cubit.close);
       final statesFuture = cubit.stream.take(3).toList();
 
@@ -77,20 +64,14 @@ void main() {
   );
 
   test('ignores results from an obsolete refresh', () async {
-    final checkAll = _MockCheckAllServiceStatusUsecase();
-    final getWallets = _MockGetWalletsUsecase();
-    final wallet = _MockWallet();
+    final checkService = _MockCheckServiceStatusUsecase();
     final firstResult = Completer<AllServicesStatus>();
     final secondResult = Completer<AllServicesStatus>();
     void Function(AllServicesStatus)? firstUpdate;
     void Function(AllServicesStatus)? secondUpdate;
     var invocationCount = 0;
-    when(() => wallet.isDefault).thenReturn(true);
-    when(() => wallet.network).thenReturn(Network.bitcoinMainnet);
-    when(() => getWallets.execute()).thenAnswer((_) async => [wallet]);
     when(
-      () => checkAll.execute(
-        network: Network.bitcoinMainnet,
+      () => checkService.execute(
         initialStatus: any(named: 'initialStatus'),
         onUpdate: any(named: 'onUpdate'),
       ),
@@ -101,10 +82,14 @@ void main() {
               as void Function(AllServicesStatus)?;
       if (invocationCount == 1) {
         firstUpdate = onUpdate;
-        return firstResult.future;
+        return firstResult.future.then(
+          (value) => Ok<AllServicesStatus, StatusCheckFailure>(value),
+        );
       }
       secondUpdate = onUpdate;
-      return secondResult.future;
+      return secondResult.future.then(
+        (value) => Ok<AllServicesStatus, StatusCheckFailure>(value),
+      );
     });
     const stale = AllServicesStatus(
       bitcoinElectrum: ServiceStatusInfo(
@@ -118,10 +103,7 @@ void main() {
         name: 'Bitcoin Electrum',
       ),
     );
-    final cubit = ServiceStatusCubit(
-      checkAllServiceStatusUsecase: checkAll,
-      getWalletsUsecase: getWallets,
-    );
+    final cubit = ServiceStatusCubit(checkServiceStatusUsecase: checkService);
     addTearDown(cubit.close);
 
     final firstCheck = cubit.checkStatus();

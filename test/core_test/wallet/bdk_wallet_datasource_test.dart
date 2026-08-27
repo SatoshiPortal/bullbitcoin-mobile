@@ -35,6 +35,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,6 +105,8 @@ void main() {
 
   const utxoLargeAmountSat = 200000;
   const utxoSmallAmountSat = 30000;
+  // Both UTXOs share utxoLargeTxId (same funding tx); only vout differs.
+  const utxoSmallVout = 1;
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('bdk_wallet_datasource_');
@@ -329,6 +332,57 @@ void main() {
       );
 
       expect(selectedInput.sequence, 0xFFFFFFFD);
+    },
+  );
+
+  // BDK has two exception types for a shortfall and doesn't say which it uses
+  // when, so these pin it against the real builder: either must arrive as
+  // InsufficientFundsException.
+  test(
+    'buildPsbt reports more than the whole balance as insufficient funds',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          address: _externalTestnetAddress,
+          amountSat: utxoLargeAmountSat + utxoSmallAmountSat + 10000,
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+        ),
+        throwsA(isA<InsufficientFundsException>()),
+      );
+    },
+  );
+
+  // The amount fits the picked coin but not the fee. The large coin must be
+  // unspendable too: `addUtxos` only makes a coin required, so BDK would
+  // otherwise top the transaction up from it and never fall short.
+  test(
+    'buildPsbt reports a fee-only shortfall as insufficient funds',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          address: _externalTestnetAddress,
+          amountSat: utxoSmallAmountSat,
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+          selected: [
+            WalletUtxoModel.bitcoin(
+              txId: utxoLargeTxId,
+              vout: utxoSmallVout,
+              amountSat: BigInt.from(utxoSmallAmountSat),
+              scriptPubkey: Uint8List(0),
+              address: '',
+              isExternalKeyChain: true,
+            ),
+          ],
+          unspendable: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
+        ),
+        throwsA(isA<InsufficientFundsException>()),
+      );
     },
   );
 }
