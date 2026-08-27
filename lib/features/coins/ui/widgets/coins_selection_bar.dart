@@ -6,9 +6,9 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Sticky bottom action bar shown in selection mode (§14). Summary line plus
-/// Freeze / Unfreeze tool buttons — **no Send/Sweep** (Decision D4). Freeze is
-/// shown when any unfrozen coin is selected; Unfreeze when any frozen coin is.
+/// Sticky bottom action bar shown in selection mode. Sweep is available only
+/// when every selected coin is spendable; mixed frozen/unfrozen selections
+/// must be resolved before they can be spent.
 class CoinsSelectionBar extends StatelessWidget {
   const CoinsSelectionBar({
     super.key,
@@ -16,6 +16,7 @@ class CoinsSelectionBar extends StatelessWidget {
     required this.selectedTotalSat,
     required this.anyUnfrozen,
     required this.anyFrozen,
+    required this.onSweep,
     required this.onFreeze,
     required this.onUnfreeze,
   });
@@ -24,6 +25,7 @@ class CoinsSelectionBar extends StatelessWidget {
   final BigInt selectedTotalSat;
   final bool anyUnfrozen;
   final bool anyFrozen;
+  final VoidCallback onSweep;
   final VoidCallback onFreeze;
   final VoidCallback onUnfreeze;
 
@@ -45,12 +47,18 @@ class CoinsSelectionBar extends StatelessWidget {
     return BullSelectionActionBar(
       summary: '${loc.coinsSelectedCount(selectedCount)} · $total',
       actions: [
+        if (anyUnfrozen && !anyFrozen)
+          BullToolButton(
+            label: loc.coinsSweep,
+            icon: BullIcons.callMerge,
+            onPressed: onSweep,
+            primary: true,
+          ),
         if (anyUnfrozen)
           BullToolButton(
             label: loc.coinsFreeze,
             icon: BullIcons.acUnit,
             onPressed: onFreeze,
-            primary: true,
           ),
         if (anyFrozen)
           BullToolButton(

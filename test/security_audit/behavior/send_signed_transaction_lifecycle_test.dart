@@ -43,22 +43,27 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
+
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 class _MockSelectBestWalletUsecase extends Mock
     implements SelectBestWalletUsecase {}
@@ -209,6 +214,8 @@ class _TestSendCubit extends SendCubit {
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
     required super.verifySignedTxUsecase,
+    required super.resolveSweepInputsUsecase,
+    required super.validateSweepPaymentRequestUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -309,6 +316,10 @@ void main() {
       checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
       getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
       verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+      resolveSweepInputsUsecase: ResolveSweepInputsUsecase(
+        _MockPayjoinSessions(),
+      ),
+      validateSweepPaymentRequestUsecase: ValidateSweepPaymentRequestUsecase(),
     );
   });
 

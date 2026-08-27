@@ -30,7 +30,7 @@ void main() {
         'lib/features/send/presentation/send_failure_l10n.dart',
       ).readAsStringSync();
       final load = cubitSource.substring(
-        cubitSource.indexOf('Future<void> loadWalletWithRatesAndFees()'),
+        cubitSource.indexOf('Future<void> loadWalletWithRatesAndFees('),
         cubitSource.indexOf('/// Called when a payment request'),
       );
       expect(load, isNot(contains('error: e.toString()')));

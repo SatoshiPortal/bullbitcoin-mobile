@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -33,6 +34,7 @@ class PrepareBitcoinSendUsecase {
     int? amountSat,
     bool drain = false,
     List<WalletUtxo>? selectedInputs,
+    bool selectedOnly = false,
     bool replaceByFee = true,
   }) async {
     try {
@@ -54,6 +56,24 @@ class PrepareBitcoinSendUsecase {
         'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
       );
 
+      // Belt-and-suspenders: defensively strip any selected input that falls in
+      // the unspendable set before building (guards a future send-from-selected
+      // path from ever pinning a frozen coin).
+      final filteredSelectedInputs = selectedInputs
+          ?.where(
+            (utxo) =>
+                !unspendableUtxos.contains((txId: utxo.txId, vout: utxo.vout)),
+          )
+          .toList();
+      if (selectedOnly &&
+          (selectedInputs == null ||
+              selectedInputs.isEmpty ||
+              filteredSelectedInputs!.length != selectedInputs.length)) {
+        throw SelectedInputsUnavailableException(
+          'One or more selected inputs are unavailable',
+        );
+      }
+
       final psbt = await _bitcoinWalletRepository.buildPsbt(
         walletId: walletId,
         address: address,
@@ -61,7 +81,8 @@ class PrepareBitcoinSendUsecase {
         networkFee: networkFee,
         drain: drain,
         unspendable: unspendableUtxos,
-        selected: selectedInputs,
+        selected: filteredSelectedInputs,
+        selectedOnly: selectedOnly,
         replaceByFee: replaceByFee,
       );
       final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
@@ -70,9 +91,14 @@ class PrepareBitcoinSendUsecase {
         walletId: walletId,
       );
       return (unsignedPsbt: psbt, txSize: size, isToSelf: isToSelf);
-    } on NoSpendableUtxoException {
+    } on NoSpendableUtxoException catch (error) {
+      if (selectedOnly) {
+        throw SelectedInputsUnavailableException(error.message);
+      }
       rethrow;
     } on InsufficientFundsException {
+      rethrow;
+    } on SelectedInputsUnavailableException {
       rethrow;
     } catch (e) {
       throw PrepareBitcoinSendException(e.toString());
