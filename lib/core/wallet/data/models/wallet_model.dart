@@ -21,6 +21,7 @@ sealed class WalletModel with _$WalletModel {
     required ScriptType scriptType,
     required String mnemonic,
     String? passphrase,
+    required int account,
     required bool isTestnet,
   }) = PrivateBdkWalletModel;
   const factory WalletModel.privateLwk({

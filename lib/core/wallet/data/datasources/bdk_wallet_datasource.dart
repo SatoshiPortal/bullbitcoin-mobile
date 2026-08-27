@@ -4,20 +4,31 @@ import 'dart:math';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_policy_maturity_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_psbt_review_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_wallet_policy_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
@@ -190,7 +201,7 @@ class BdkWalletDatasource {
   }) async {
     final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
     return (String psbtBase64) {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+      final psbt = _parsePsbt(psbtBase64);
       // Unlike signPsbt (the sender signing a complete transaction, where a
       // non-finalized result is a genuine anomaly), this signs only the
       // receiver's own contributed input into a multi-party payjoin
@@ -234,6 +245,7 @@ class BdkWalletDatasource {
     bool? drain,
     List<WalletUtxoModel>? selected,
     bool replaceByFee = true,
+    BitcoinPolicyPath? policyPath,
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
@@ -259,28 +271,25 @@ class BdkWalletDatasource {
       );
     }
 
-    if (selected != null && selected.isNotEmpty) {
-      final selectableOutPoints = selected
-          .map(
-            (utxo) => bdk.OutPoint(
-              txid: bdk.Txid.fromString(hex: utxo.txId),
-              vout: utxo.vout,
-            ),
-          )
-          .toList();
-      // bdk_dart's TxBuilder is immutable — every method returns a NEW
-      // builder instance rather than mutating in place. Discarding the
-      // return value (as this call did before) silently drops the manual
-      // UTXO selection and leaves BDK to pick inputs automatically.
-      txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
-      txBuilder = txBuilder.manuallySelectedOnly();
-    }
-
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
     // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
-    // Same immutable-builder pitfall as addUtxos above — must reassign.
-    if (!replaceByFee) {
+    if (!replaceByFee && policyPath?.requiresRelativeTimelock != true) {
       txBuilder = txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    }
+
+    if (policyPath != null) {
+      if (policyPath.external.isNotEmpty) {
+        txBuilder = txBuilder.policyPath(
+          policyPath: policyPath.external,
+          keychain: bdk.KeychainKind.external_,
+        );
+      }
+      if (policyPath.internal.isNotEmpty) {
+        txBuilder = txBuilder.policyPath(
+          policyPath: policyPath.internal,
+          keychain: bdk.KeychainKind.internal,
+        );
+      }
     }
 
     switch (networkFee) {
@@ -297,9 +306,64 @@ class BdkWalletDatasource {
         );
     }
 
-    // Make sure utxos that are unspendable are not used
-    final unspendableOutPoints = unspendable
-        ?.map(
+    // Keep policy-ineligible coins out of automatic and manual coin selection.
+    // Relative timelocks are per UTXO, so a wallet can have a mix of eligible
+    // and ineligible coins for the same selected descriptor path.
+    final unspendableByKey = {
+      for (final input in unspendable ?? const <({String txId, int vout})>[])
+        '${input.txId}:${input.vout}': input,
+    };
+    final unspents = bdkWallet.listUnspent();
+    if (policyPath != null) {
+      for (final utxo in unspents) {
+        final key = '${utxo.outpoint.txid}:${utxo.outpoint.vout}';
+        final eligible = utxo.keychain == bdk.KeychainKind.external_
+            ? policyPath.eligibleExternalOutpoints
+            : policyPath.eligibleInternalOutpoints;
+        if (eligible != null && !eligible.contains(key)) {
+          unspendableByKey[key] = (
+            txId: utxo.outpoint.txid.toString(),
+            vout: utxo.outpoint.vout,
+          );
+        }
+      }
+    }
+
+    final selectedKeys = {
+      for (final utxo in selected ?? const <WalletUtxoModel>[])
+        '${utxo.txId}:${utxo.vout}',
+    };
+    final hasManualSelection = selectedKeys.isNotEmpty;
+    if (hasManualSelection) {
+      final unspentKeys = {
+        for (final utxo in unspents)
+          '${utxo.outpoint.txid}:${utxo.outpoint.vout}',
+      };
+      final hasDuplicateSelection = selectedKeys.length != selected!.length;
+      final hasUnavailableSelection =
+          hasDuplicateSelection ||
+          !unspentKeys.containsAll(selectedKeys) ||
+          selectedKeys.any(unspendableByKey.containsKey);
+      if (hasUnavailableSelection) {
+        throw SelectedBitcoinCoinsUnavailableException();
+      }
+
+      final selectedOutpoints = selected
+          .map(
+            (utxo) => bdk.OutPoint(
+              txid: bdk.Txid.fromString(hex: utxo.txId),
+              vout: utxo.vout,
+            ),
+          )
+          .toList();
+      // Apply the selection only after checking that every coin is eligible.
+      txBuilder = txBuilder
+          .addUtxos(outpoints: selectedOutpoints)
+          .manuallySelectedOnly();
+    }
+
+    final unspendableOutPoints = unspendableByKey.values
+        .map(
           (input) => bdk.OutPoint(
             txid: bdk.Txid.fromString(hex: input.txId),
             vout: input.vout,
@@ -309,7 +373,7 @@ class BdkWalletDatasource {
 
     // TODO: MOVE THIS TO THE TRANSACTION REPOSITORY, the repository should check the unspendable and spendable inputs
     // and build the transaction accordingly or return an error
-    if (unspendableOutPoints != null && unspendableOutPoints.isNotEmpty) {
+    if (unspendableOutPoints.isNotEmpty) {
       // Check if there are unspents that are not in the unspendable set so a
       // transaction can be built. Compare by (txId, vout) value, NOT by
       // bdk.OutPoint identity: OutPoint/Txid are opaque Rust handles with no
@@ -317,13 +381,9 @@ class BdkWalletDatasource {
       // Set.contains on the objects would always miss, leaving the all-frozen
       // case undetected (BDK would then fail with "insufficient funds" instead
       // of NoSpendableUtxoException).
-      final unspents = bdkWallet.listUnspent();
-      final unspendableKeys = unspendable!
-          .map((o) => '${o.txId}:${o.vout}')
-          .toSet();
       final spendableUtxos = unspents.where((utxo) {
         final key = '${utxo.outpoint.txid}:${utxo.outpoint.vout}';
-        return !unspendableKeys.contains(key);
+        return !unspendableByKey.containsKey(key);
       }).toList();
 
       if (spendableUtxos.isEmpty) {
@@ -333,31 +393,191 @@ class BdkWalletDatasource {
       txBuilder = txBuilder.unspendable(unspendable: unspendableOutPoints);
     }
 
-    // Finish the transaction building process
-    final bdk.Psbt psbt;
+    late final bdk.Psbt psbt;
     try {
       psbt = txBuilder.finish(wallet: bdkWallet);
     } on bdk.InsufficientFundsCreateTxException catch (e) {
-      // Mapped here so callers don't depend on a BDK type.
+      if (hasManualSelection) {
+        throw SelectedBitcoinCoinsInsufficientException();
+      }
       throw InsufficientFundsException(e.toString());
     } on bdk.CoinSelectionCreateTxException catch (e) {
-      // The same situation reported through a different variant: BDK raises
-      // this one when the selection can't cover the outputs plus the fee,
-      // which is what hand-picked coins hit.
+      if (hasManualSelection) {
+        throw SelectedBitcoinCoinsInsufficientException();
+      }
       throw InsufficientFundsException(e.errorMessage);
+    }
+
+    if (hasManualSelection) {
+      final transaction = psbt.extractTx();
+      try {
+        final actualInputKeys = {
+          for (final input in transaction.input())
+            '${input.previousOutput.txid}:${input.previousOutput.vout}',
+        };
+        if (actualInputKeys.length != selectedKeys.length ||
+            !actualInputKeys.containsAll(selectedKeys)) {
+          throw SelectedBitcoinCoinsUnavailableException();
+        }
+      } finally {
+        transaction.dispose();
+      }
     }
 
     return psbt.serialize();
   }
 
-  Future<int> decodeTxSize(String psbtString) async {
-    final psbt = bdk.Psbt(psbtBase64: psbtString);
-    final size = psbt.extractTx().vsize();
-    return size.toInt();
+  int decodeTxSize(String psbtString, {required PublicBdkWalletModel wallet}) {
+    final psbt = _parsePsbt(psbtString);
+    try {
+      final transaction = psbt.extractTx();
+      try {
+        final transactionInputs = transaction.input();
+        final psbtInputs = psbt.input();
+        if (transactionInputs.length != psbtInputs.length) {
+          throw const InvalidBitcoinPsbtException();
+        }
+        if (psbtInputs.every(_isFinalizedInput)) return transaction.vsize();
+        final descriptorWallet = BdkFacade.createEphemeralDescriptorWallet(
+          descriptor: wallet.descriptor,
+          isTestnet: wallet.isTestnet,
+        );
+        try {
+          final keychains = <BitcoinPolicyKeychain>[];
+          for (final (index, input) in psbtInputs.indexed) {
+            final utxo = _inputUtxo(
+              input,
+              transactionInputs[index].previousOutput,
+            );
+            final ownership = _descriptorOwnership(
+              descriptorWallet,
+              script: utxo.scriptPubkey,
+              keySources: input.bip32Derivation.values,
+            );
+            if (ownership == null) {
+              throw const BitcoinPsbtWalletMismatchException();
+            }
+            keychains.add(ownership.keychain);
+          }
+          return _completedTransactionVsize(
+            transaction: transaction,
+            inputs: psbtInputs,
+            inputKeychains: keychains,
+            wallet: wallet,
+          );
+        } finally {
+          descriptorWallet.dispose();
+        }
+      } finally {
+        transaction.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  }
+
+  bool validatePolicyPreimage(BitcoinPolicyPreimage preimage) {
+    final input = _psbtPreimage(preimage);
+    return hex.encode(_preimageHash(input)) == preimage.hash;
+  }
+
+  String applyPolicyPreimages(
+    String psbtBase64,
+    List<BitcoinPolicyPreimage> preimages,
+  ) {
+    final parsed = _parsePsbt(psbtBase64);
+    final String normalizedPsbt;
+    try {
+      normalizedPsbt = parsed.serialize();
+    } finally {
+      parsed.dispose();
+    }
+    if (preimages.isEmpty) return normalizedPsbt;
+    final psbt = bitcoin_base.Psbt.fromBase64(normalizedPsbt);
+    final inputs = [for (final preimage in preimages) _psbtPreimage(preimage)];
+    for (var index = 0; index < psbt.input.length; index++) {
+      psbt.input.updateInputs(index, inputs);
+    }
+    return psbt.toBase64();
+  }
+
+  ({String transaction, int txSize}) verifyFinalTransaction({
+    required String psbtBase64,
+    required String transactionHex,
+  }) {
+    final psbt = _parsePsbt(psbtBase64);
+    try {
+      final prepared = psbt.extractTx();
+      try {
+        final signed = bdk.Transaction(
+          transactionBytes: Uint8List.fromList(hex.decode(transactionHex)),
+        );
+        try {
+          final preparedInputs = prepared.input();
+          final psbtInputs = psbt.input();
+          final signedInputs = signed.input();
+          final preparedOutputs = prepared.output();
+          final signedOutputs = signed.output();
+
+          final sameHeader =
+              prepared.version() == signed.version() &&
+              prepared.lockTime() == signed.lockTime();
+          final sameInputs =
+              preparedInputs.length == signedInputs.length &&
+              Iterable<int>.generate(preparedInputs.length).every((index) {
+                final expected = preparedInputs[index];
+                final actual = signedInputs[index];
+                return expected.previousOutput.txid.toString() ==
+                        actual.previousOutput.txid.toString() &&
+                    expected.previousOutput.vout ==
+                        actual.previousOutput.vout &&
+                    expected.sequence == actual.sequence;
+              });
+          final sameOutputs =
+              preparedOutputs.length == signedOutputs.length &&
+              Iterable<int>.generate(preparedOutputs.length).every((index) {
+                final expected = preparedOutputs[index];
+                final actual = signedOutputs[index];
+                return expected.value.toSat() == actual.value.toSat() &&
+                    listEquals(
+                      expected.scriptPubkey.toBytes(),
+                      actual.scriptPubkey.toBytes(),
+                    );
+              });
+          final hasOnlyCommittedSignatures =
+              psbtInputs.length == signedInputs.length &&
+              Iterable<int>.generate(signedInputs.length).every(
+                (index) => _hasOnlyCommittedSignatures(
+                  signedInputs[index],
+                  psbtInputs[index],
+                ),
+              );
+          if (!sameHeader ||
+              !sameInputs ||
+              !sameOutputs ||
+              !hasOnlyCommittedSignatures) {
+            throw const FormatException(
+              'Signed transaction does not match the prepared PSBT',
+            );
+          }
+
+          return (
+            transaction: hex.encode(signed.serialize()),
+            txSize: signed.vsize(),
+          );
+        } finally {
+          signed.dispose();
+        }
+      } finally {
+        prepared.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
   }
 
   Future<int> getFeeAmount(String psbtString) async {
-    final psbt = bdk.Psbt(psbtBase64: psbtString);
+    final psbt = _parsePsbt(psbtString);
     final fee = psbt.fee();
     return fee;
   }
@@ -367,7 +587,7 @@ class BdkWalletDatasource {
     String address, {
     required bool isTestnet,
   }) async {
-    final psbt = bdk.Psbt(psbtBase64: psbtString);
+    final psbt = _parsePsbt(psbtString);
     final tx = psbt.extractTx();
     final outputs = tx.output();
     int totalAmount = 0;
@@ -385,31 +605,624 @@ class BdkWalletDatasource {
   }
   // 25000 - 988
 
-  Future<String> signPsbt(
+  Future<({String psbt, bool isFinalized})> signPsbt(
     String unsignedPsbt, {
     required PrivateBdkWalletModel wallet,
+    bool allowFinalizedForeignInputs = false,
   }) async {
-    final psbt = bdk.Psbt(psbtBase64: unsignedPsbt);
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+    final psbt = _parsePsbt(unsignedPsbt);
+    try {
+      final inputs = psbt.input();
+      _validatePartialSignatures(
+        unsignedPsbt,
+        inputs: inputs,
+        allowFinalizedTaprootInputs: allowFinalizedForeignInputs,
+      );
+      final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+      try {
+        if (allowFinalizedForeignInputs) {
+          _rejectFinalizedWalletInputs(psbt, inputs, bdkWallet);
+        } else {
+          _rejectFinalizedInputs(inputs);
+        }
+        bdkWallet.sign(
+          psbt: psbt,
+          signOptions: bdk.SignOptions(
+            trustWitnessUtxo: true,
+            assumeHeight: null,
+            allowAllSighashes: false,
+            tryFinalize: false,
+            signWithTapInternalKey: false,
+            allowGrinding: true,
+          ),
+        );
+        final signed = inputs.every(_isFinalizedInput)
+            ? (psbt: psbt.serialize(), isFinalized: true)
+            : _finalizeCompletePsbt(psbt);
+        if (!signed.isFinalized) {
+          log.info('Signed PSBT is not finalized');
+        } else {
+          log.info('Signed PSBT is finalized');
+        }
+        return signed;
+      } finally {
+        bdkWallet.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  }
 
-    final isFinalized = bdkWallet.sign(
-      psbt: psbt,
-      signOptions: bdk.SignOptions(
-        trustWitnessUtxo: true,
-        assumeHeight: null,
-        allowAllSighashes: false,
-        tryFinalize: true,
-        signWithTapInternalKey: false,
-        allowGrinding: true,
-      ),
+  BitcoinWalletPolicyModel analyzePolicy({
+    required PublicBdkWalletModel wallet,
+    List<WalletDescriptorKeyModel> descriptorKeys = const [],
+  }) {
+    final bdkWallet = BdkFacade.createEphemeralDescriptorWallet(
+      descriptor: wallet.descriptor,
+      isTestnet: wallet.isTestnet,
     );
-    if (!isFinalized) {
-      log.info('Signed PSBT is not finalized');
-    } else {
-      log.info('Signed PSBT is finalized');
+    final keyIdentityWallet = descriptorKeys.isEmpty
+        ? null
+        : BdkFacade.createEphemeralDescriptorWallet(
+            descriptor: BdkFacade.descriptorForPolicyAnalysis(
+              wallet.descriptor,
+            ),
+            isTestnet: wallet.isTestnet,
+          );
+    try {
+      final external = bdkWallet.policies(keychain: bdk.KeychainKind.external_);
+      final internal = bdkWallet.policies(keychain: bdk.KeychainKind.internal);
+      final externalKeyIdentities =
+          keyIdentityWallet?.policies(keychain: bdk.KeychainKind.external_) ??
+          external;
+      final internalKeyIdentities =
+          keyIdentityWallet?.policies(keychain: bdk.KeychainKind.internal) ??
+          internal;
+      if (external == null ||
+          internal == null ||
+          externalKeyIdentities == null ||
+          internalKeyIdentities == null) {
+        throw StateError('Wallet descriptor has no spend policy');
+      }
+
+      return BitcoinWalletPolicyMapper.fromBdk(
+        external: external,
+        internal: internal,
+        externalKeyIdentities: externalKeyIdentities,
+        internalKeyIdentities: internalKeyIdentities,
+        descriptorKeys: descriptorKeys,
+      );
+    } finally {
+      keyIdentityWallet?.dispose();
+      bdkWallet.dispose();
+    }
+  }
+
+  Future<BitcoinPsbtReviewModel> inspectPsbt(
+    String psbtBase64, {
+    required PublicBdkWalletModel wallet,
+    required Set<String> walletFingerprints,
+  }) async {
+    final psbt = _parsePsbt(psbtBase64);
+    try {
+      final transaction = psbt.extractTx();
+      try {
+        final transactionInputs = transaction.input();
+        final transactionOutputs = transaction.output();
+        final psbtInputs = psbt.input();
+        final psbtOutputs = psbt.output();
+        if (transactionInputs.length != psbtInputs.length ||
+            transactionOutputs.length != psbtOutputs.length) {
+          throw const InvalidBitcoinPsbtException();
+        }
+        _validatePartialSignatures(psbtBase64, inputs: psbtInputs);
+
+        final descriptorWallet = await BdkFacade.createWallet(wallet);
+        try {
+          final normalizedWalletFingerprints = walletFingerprints
+              .map((fingerprint) => fingerprint.toLowerCase())
+              .toSet();
+          final inputs = <BitcoinPsbtInputReviewRecord>[];
+          for (final (index, input) in psbtInputs.indexed) {
+            final previousOutput = transactionInputs[index].previousOutput;
+            final utxo = _inputUtxo(input, previousOutput);
+            final ownership = _descriptorOwnership(
+              descriptorWallet,
+              script: utxo.scriptPubkey,
+              keySources: input.bip32Derivation.values,
+            );
+            if (ownership == null) {
+              throw const BitcoinPsbtWalletMismatchException();
+            }
+
+            final originKeySources = [
+              for (final entry in input.bip32Derivation.entries)
+                (
+                  publicKey: entry.key.toString().toLowerCase(),
+                  fingerprint: entry.value.fingerprint.toLowerCase(),
+                  derivationPath: entry.value.path.toString(),
+                ),
+            ];
+            final signedKeySources = [
+              for (final publicKey in input.partialSigs.keys)
+                (
+                  publicKey: publicKey.toString().toLowerCase(),
+                  fingerprint: input.bip32Derivation[publicKey]?.fingerprint
+                      .toLowerCase(),
+                  derivationPath: input.bip32Derivation[publicKey]?.path
+                      .toString(),
+                ),
+            ];
+            inputs.add((
+              amountSat: BigInt.from(utxo.value.toSat()),
+              keychain: ownership.keychain == BitcoinPolicyKeychain.external
+                  ? BitcoinPolicyKeychainModel.external
+                  : BitcoinPolicyKeychainModel.internal,
+              originKeySources: originKeySources,
+              outpoint: '${previousOutput.txid}:${previousOutput.vout}',
+              sequence: transactionInputs[index].sequence,
+              signedKeySources: signedKeySources,
+            ));
+          }
+
+          final outputs = <BitcoinPsbtOutputReviewRecord>[];
+          for (final (index, txOut) in transactionOutputs.indexed) {
+            final output = psbtOutputs[index];
+            final ownership = _descriptorOwnership(
+              descriptorWallet,
+              script: txOut.scriptPubkey,
+              keySources: output.bip32Derivation.values,
+            );
+            final originFingerprints = output.bip32Derivation.values
+                .map((source) => source.fingerprint.toLowerCase())
+                .toSet();
+            if (ownership == null &&
+                originFingerprints
+                    .intersection(normalizedWalletFingerprints)
+                    .isNotEmpty) {
+              throw const BitcoinPsbtWalletMismatchException();
+            }
+            outputs.add((
+              address: _addressFromScript(
+                txOut.scriptPubkey,
+                isTestnet: wallet.isTestnet,
+              ),
+              amountSat: BigInt.from(txOut.value.toSat()),
+              index: index,
+              isWalletOwned: ownership != null,
+              scriptHex: hex.encode(txOut.scriptPubkey.toBytes()),
+            ));
+          }
+
+          return BitcoinPsbtReviewModel(
+            transactionId: transaction.computeTxid().toString(),
+            inputs: inputs,
+            outputs: outputs,
+            feeSat: BigInt.from(psbt.fee()),
+            estimatedTransactionVsize: _completedTransactionVsize(
+              transaction: transaction,
+              inputs: psbtInputs,
+              inputKeychains: inputs
+                  .map(
+                    (input) =>
+                        input.keychain == BitcoinPolicyKeychainModel.external
+                        ? BitcoinPolicyKeychain.external
+                        : BitcoinPolicyKeychain.internal,
+                  )
+                  .toList(),
+              wallet: wallet,
+            ),
+            lockTime: transaction.lockTime(),
+            version: transaction.version(),
+          );
+        } finally {
+          descriptorWallet.dispose();
+        }
+      } finally {
+        transaction.dispose();
+      }
+    } on bdk.MissingInputValueExtractTxException {
+      throw const BitcoinPsbtMissingUtxoException();
+    } finally {
+      psbt.dispose();
+    }
+  }
+
+  Future<void> validateWalletPsbtInputs(
+    String psbtBase64, {
+    required PublicBdkWalletModel wallet,
+    Set<String> frozenOutpoints = const {},
+    String? replacingTxid,
+  }) async {
+    final psbt = _parsePsbt(psbtBase64);
+    try {
+      final transaction = psbt.extractTx();
+      try {
+        final transactionInputs = transaction.input();
+        final psbtInputs = psbt.input();
+        if (transactionInputs.length != psbtInputs.length) {
+          throw const InvalidBitcoinPsbtException();
+        }
+
+        final bdkWallet = await BdkFacade.createWallet(wallet);
+        try {
+          final replacedOutpoints = replacingTxid == null
+              ? const <String>{}
+              : _transactionInputOutpoints(bdkWallet, replacingTxid);
+          final outputs = {
+            for (final output in bdkWallet.listOutput())
+              '${output.outpoint.txid}:${output.outpoint.vout}': output,
+          };
+          final seenOutpoints = <String>{};
+          for (final (index, transactionInput) in transactionInputs.indexed) {
+            final previousOutput = transactionInput.previousOutput;
+            final outpoint = '${previousOutput.txid}:${previousOutput.vout}';
+            if (!seenOutpoints.add(outpoint)) {
+              throw const InvalidBitcoinPsbtException();
+            }
+            if (frozenOutpoints.contains(outpoint)) {
+              throw const BitcoinPsbtFrozenUtxoException();
+            }
+            final localOutput = outputs[outpoint];
+            if (localOutput == null ||
+                (localOutput.isSpent &&
+                    !replacedOutpoints.contains(outpoint))) {
+              throw const BitcoinPsbtMissingUtxoException();
+            }
+            final expected = localOutput.txout;
+            final supplied = _inputUtxo(psbtInputs[index], previousOutput);
+            if (supplied.value.toSat() != expected.value.toSat() ||
+                !_sameBytes(
+                  supplied.scriptPubkey.toBytes(),
+                  expected.scriptPubkey.toBytes(),
+                )) {
+              throw const InvalidBitcoinPsbtException();
+            }
+          }
+        } finally {
+          bdkWallet.dispose();
+        }
+      } finally {
+        transaction.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  }
+
+  Set<String> _transactionInputOutpoints(bdk.Wallet wallet, String txid) {
+    final parsedTxid = bdk.Txid.fromString(hex: txid);
+    try {
+      final transaction = wallet.getTx(txid: parsedTxid)?.transaction;
+      if (transaction == null) {
+        throw const BitcoinPsbtMissingUtxoException();
+      }
+      try {
+        return {
+          for (final input in transaction.input())
+            '${input.previousOutput.txid}:${input.previousOutput.vout}',
+        };
+      } finally {
+        transaction.dispose();
+      }
+    } finally {
+      parsedTxid.dispose();
+    }
+  }
+
+  Future<BitcoinPolicyMaturityModel> getPolicyMaturity({
+    required PublicBdkWalletModel wallet,
+    ElectrumConnection? electrumServer,
+    required bool includeTimeBasedLocks,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    try {
+      final unspents = bdkWallet.listUnspent();
+      var tipHeight = bdkWallet.latestCheckpoint().height;
+      int? medianTimePast;
+      final confirmationMedianTimes = <int, int>{};
+
+      if (electrumServer != null) {
+        final referenceHeights = includeTimeBasedLocks
+            ? unspents
+                  .map((utxo) => utxo.chainPosition)
+                  .whereType<bdk.ConfirmedChainPosition>()
+                  .map(
+                    (position) => max(
+                      0,
+                      position.confirmationBlockTime.blockId.height - 1,
+                    ),
+                  )
+                  .toSet()
+                  .toList()
+            : const <int>[];
+        final chainState = await compute(
+          _fetchPolicyChainState,
+          _PolicyChainStateParams(
+            electrumUrl: electrumServer.url,
+            electrumSocks5: electrumServer.socks5,
+            electrumTimeout: electrumServer.timeout,
+            electrumRetry: electrumServer.retry,
+            electrumValidateDomain: electrumServer.validateDomain,
+            includeMedianTimePast: includeTimeBasedLocks,
+            referenceHeights: referenceHeights,
+          ),
+        );
+        tipHeight = chainState.tipHeight;
+        medianTimePast = chainState.medianTimePast;
+        confirmationMedianTimes.addAll(chainState.referenceMedianTimes);
+      }
+
+      return BitcoinPolicyMaturityModel(
+        tipHeight: tipHeight,
+        medianTimePast: medianTimePast,
+        utxos: [
+          for (final utxo in unspents)
+            BitcoinPolicyUtxoMaturityModel(
+              outpoint: '${utxo.outpoint.txid}:${utxo.outpoint.vout}',
+              keychain: utxo.keychain == bdk.KeychainKind.external_
+                  ? BitcoinPolicyKeychainModel.external
+                  : BitcoinPolicyKeychainModel.internal,
+              amountSat: BigInt.from(utxo.txout.value.toSat()),
+              confirmations: confirmationsFromTip(
+                tip: tipHeight,
+                height: utxo.chainPosition is bdk.ConfirmedChainPosition
+                    ? (utxo.chainPosition as bdk.ConfirmedChainPosition)
+                          .confirmationBlockTime
+                          .blockId
+                          .height
+                    : null,
+              ),
+              confirmationMedianTimePast:
+                  utxo.chainPosition is bdk.ConfirmedChainPosition
+                  ? confirmationMedianTimes[max(
+                      0,
+                      (utxo.chainPosition as bdk.ConfirmedChainPosition)
+                              .confirmationBlockTime
+                              .blockId
+                              .height -
+                          1,
+                    )]
+                  : null,
+            ),
+        ],
+      );
+    } finally {
+      bdkWallet.dispose();
+    }
+  }
+
+  /// Partially signs a PSBT with private keys in the supplied descriptors.
+  ///
+  /// The descriptors and wallet are kept in memory only.
+  ({String psbt, bool isFinalized}) signPsbtWithDescriptor(
+    String psbtBase64, {
+    required String descriptor,
+    required bool isTestnet,
+    bool tryFinalize = true,
+  }) {
+    final psbt = _parsePsbt(psbtBase64);
+    try {
+      final inputs = psbt.input();
+      _validatePartialSignatures(psbtBase64, inputs: inputs);
+      _rejectFinalizedInputs(inputs);
+      final wallet = BdkFacade.createEphemeralDescriptorWallet(
+        descriptor: descriptor,
+        isTestnet: isTestnet,
+      );
+      try {
+        wallet.sign(
+          psbt: psbt,
+          signOptions: bdk.SignOptions(
+            trustWitnessUtxo: true,
+            assumeHeight: null,
+            allowAllSighashes: false,
+            tryFinalize: false,
+            signWithTapInternalKey: false,
+            allowGrinding: true,
+          ),
+        );
+        return tryFinalize
+            ? _finalizeCompletePsbt(psbt)
+            : (psbt: psbt.serialize(), isFinalized: false);
+      } finally {
+        wallet.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  }
+
+  String combinePsbts({required String first, required String second}) {
+    final firstPsbt = _parsePsbt(first);
+    try {
+      final secondPsbt = _parsePsbt(second);
+      try {
+        final combined = firstPsbt.combine(other: secondPsbt);
+        try {
+          return combined.serialize();
+        } finally {
+          combined.dispose();
+        }
+      } finally {
+        secondPsbt.dispose();
+      }
+    } finally {
+      firstPsbt.dispose();
+    }
+  }
+
+  void validateExternalPartialPsbt({
+    required String currentPsbtBase64,
+    required String signedPsbtBase64,
+  }) {
+    final current = _parsePsbt(currentPsbtBase64);
+    try {
+      final signed = _parsePsbt(signedPsbtBase64);
+      try {
+        final currentInputs = current.input();
+        final signedInputs = signed.input();
+        if (currentInputs.length != signedInputs.length ||
+            signedInputs.any(
+              (input) =>
+                  input.finalScriptSig != null ||
+                  input.finalScriptWitness != null,
+            )) {
+          throw const InvalidBitcoinPsbtException();
+        }
+
+        var hasNewSignature = false;
+        for (final (index, input) in signedInputs.indexed) {
+          if (input.tapKeySig != null || input.tapScriptSigs.isNotEmpty) {
+            throw const BitcoinPsbtUnsupportedSighashException();
+          }
+          for (final entry in input.partialSigs.entries) {
+            final signature = entry.value;
+            if (signature.isEmpty || signature.last != 0x01) {
+              throw const BitcoinPsbtUnsupportedSighashException();
+            }
+            final currentSignature =
+                currentInputs[index].partialSigs[entry.key];
+            if (currentSignature == null ||
+                !listEquals(currentSignature, signature)) {
+              hasNewSignature = true;
+            }
+          }
+        }
+        if (!hasNewSignature) throw const InvalidBitcoinPsbtException();
+      } finally {
+        signed.dispose();
+      }
+    } finally {
+      current.dispose();
     }
 
-    return psbt.serialize();
+    final combined = combinePsbts(
+      first: currentPsbtBase64,
+      second: signedPsbtBase64,
+    );
+    _validatePartialSignatures(combined);
+  }
+
+  void _validatePartialSignatures(
+    String psbtBase64, {
+    List<bdk.Input>? inputs,
+    bool allowFinalizedTaprootInputs = false,
+  }) {
+    final parsedPsbt = inputs == null ? _parsePsbt(psbtBase64) : null;
+    try {
+      final bdkInputs = inputs ?? parsedPsbt!.input();
+      for (final input in bdkInputs) {
+        _validateSighash(input.sighashType);
+        if ((input.tapKeySig != null || input.tapScriptSigs.isNotEmpty) &&
+            !(allowFinalizedTaprootInputs && _isFinalizedInput(input))) {
+          throw const BitcoinPsbtUnsupportedSighashException();
+        }
+      }
+      final finalizedInputIndexes = [
+        for (final (index, input) in bdkInputs.indexed)
+          if (_isFinalizedInput(input)) index,
+      ];
+      if (finalizedInputIndexes.isNotEmpty) {
+        final finalizedPsbt = parsedPsbt ?? _parsePsbt(psbtBase64);
+        try {
+          final transaction = finalizedPsbt.extractTx();
+          try {
+            final transactionInputs = transaction.input();
+            if (transactionInputs.length != bdkInputs.length) {
+              throw const InvalidBitcoinPsbtException();
+            }
+            for (final index in finalizedInputIndexes) {
+              _validateFinalizedInputSignatures(
+                transactionInputs[index],
+                bdkInputs[index],
+                allowTaproot: allowFinalizedTaprootInputs,
+              );
+            }
+          } finally {
+            transaction.dispose();
+          }
+        } finally {
+          if (!identical(finalizedPsbt, parsedPsbt)) finalizedPsbt.dispose();
+        }
+      }
+      if (bdkInputs.every((input) => input.partialSigs.isEmpty)) return;
+
+      final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
+      final builder = bitcoin_base.PsbtBuilder.fromPsbt(psbt);
+      final txInputs = builder.txInputs();
+      if (txInputs.length != bdkInputs.length) {
+        throw const InvalidBitcoinPsbtException();
+      }
+      final unsignedTransaction = builder.buildUnsignedTransaction();
+      for (final index in Iterable<int>.generate(txInputs.length)) {
+        final inputInfo = bitcoin_base.PsbtUtils.getPsbtInputInfo(
+          psbt: psbt,
+          inputIndex: index,
+          txInputs: txInputs,
+        );
+        final digest = bitcoin_base.PsbtUtils.generateInputTransactionDigest(
+          index: index,
+          unsignedTx: unsignedTransaction,
+          params: inputInfo,
+          tapleafHash: null,
+          input: psbt.input,
+          psbt: psbt,
+        );
+        final partialSignatures =
+            psbt.input.getInputs<bitcoin_base.PsbtInputPartialSig>(
+              index,
+              bitcoin_base.PsbtInputTypes.partialSignature,
+            ) ??
+            const <bitcoin_base.PsbtInputPartialSig>[];
+        final signingScript = inputInfo.isScriptSpending
+            ? inputInfo.witnessScript ?? inputInfo.redeemScript
+            : inputInfo.scriptPubKey;
+        for (final signature in partialSignatures) {
+          if (signature.signature.isEmpty || signature.signature.last != 0x01) {
+            throw const BitcoinPsbtUnsupportedSighashException();
+          }
+          if (!_isBitcoinEcdsaSignature(
+            Uint8List.fromList(signature.signature),
+          )) {
+            throw const InvalidBitcoinPsbtException();
+          }
+          if (!bitcoin_base.PsbtUtils.keyInScript(
+                publicKey: signature.publicKey,
+                script: signingScript,
+                type: inputInfo.type,
+              ) ||
+              !digest.verifyEcdsaSignature(signature)) {
+            throw const InvalidBitcoinPsbtException();
+          }
+        }
+      }
+    } finally {
+      parsedPsbt?.dispose();
+    }
+  }
+
+  ({String psbt, bool isFinalized}) finalizePsbt(String psbtBase64) {
+    final psbt = _parsePsbt(psbtBase64);
+    try {
+      final inputs = psbt.input();
+      _validatePartialSignatures(psbtBase64, inputs: inputs);
+      _rejectFinalizedInputs(inputs);
+      return _finalizeCompletePsbt(psbt);
+    } finally {
+      psbt.dispose();
+    }
+  }
+
+  ({String psbt, bool isFinalized}) _finalizeCompletePsbt(bdk.Psbt psbt) {
+    final result = psbt.finalize();
+    try {
+      return result.couldFinalize
+          ? (psbt: result.psbt.serialize(), isFinalized: true)
+          : (psbt: psbt.serialize(), isFinalized: false);
+    } finally {
+      result.psbt.dispose();
+    }
   }
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
@@ -827,6 +1640,530 @@ class BdkWalletDatasource {
   }
 }
 
+typedef _DescriptorOwnership = ({int index, BitcoinPolicyKeychain keychain});
+
+bdk.Psbt _parsePsbt(String psbtBase64) {
+  try {
+    return bdk.Psbt(psbtBase64: normalizeBitcoinPsbt(psbtBase64));
+  } on Exception {
+    throw const InvalidBitcoinPsbtException();
+  }
+}
+
+int _completedTransactionVsize({
+  required bdk.Transaction transaction,
+  required List<bdk.Input> inputs,
+  required List<BitcoinPolicyKeychain> inputKeychains,
+  required PublicBdkWalletModel wallet,
+}) {
+  if (inputs.length != inputKeychains.length) {
+    throw const InvalidBitcoinPsbtException();
+  }
+  if (inputs.every(_isFinalizedInput)) return transaction.vsize();
+
+  final networkKind = wallet.isTestnet
+      ? bdk.NetworkKind.test
+      : bdk.NetworkKind.main;
+  final descriptors = BdkFacade.parsePublicTwoPathDescriptor(
+    descriptor: wallet.descriptor,
+    isTestnet: wallet.isTestnet,
+  );
+  final external = bdk.Descriptor(
+    descriptor: descriptors.externalDescriptor,
+    networkKind: networkKind,
+  );
+  final internal = bdk.Descriptor(
+    descriptor: descriptors.internalDescriptor,
+    networkKind: networkKind,
+  );
+  try {
+    final descriptorTypes = [
+      for (final keychain in inputKeychains)
+        (keychain == BitcoinPolicyKeychain.external ? external : internal)
+            .descType(),
+    ];
+    final hasSegwitInput = descriptorTypes.any(_isSegwitDescriptor);
+    final transactionAlreadyHasWitness = transaction.input().any(
+      (input) => input.witness.isNotEmpty,
+    );
+    var completedWeight = transaction.weight();
+    if (hasSegwitInput && !transactionAlreadyHasWitness) {
+      // A legacy-serialized unsigned transaction has neither the SegWit
+      // marker/flag nor each input's empty witness-vector count. Descriptor
+      // maxWeightToSatisfy is measured from a default SegWit TxIn, which
+      // already includes that empty-vector byte.
+      completedWeight += 2 + inputs.length;
+    }
+    for (final index in Iterable<int>.generate(inputs.length)) {
+      if (_isFinalizedInput(inputs[index])) continue;
+      final descriptor = inputKeychains[index] == BitcoinPolicyKeychain.external
+          ? external
+          : internal;
+      var satisfactionWeight = descriptor.maxWeightToSatisfy();
+      if (!hasSegwitInput) satisfactionWeight -= 1;
+      completedWeight += satisfactionWeight;
+    }
+    return (completedWeight + 3) ~/ 4;
+  } finally {
+    external.dispose();
+    internal.dispose();
+  }
+}
+
+bool _isFinalizedInput(bdk.Input input) =>
+    input.finalScriptSig != null || input.finalScriptWitness != null;
+
+void _rejectFinalizedInputs(List<bdk.Input> inputs) {
+  if (inputs.any(_isFinalizedInput)) {
+    throw const InvalidBitcoinPsbtException();
+  }
+}
+
+void _rejectFinalizedWalletInputs(
+  bdk.Psbt psbt,
+  List<bdk.Input> inputs,
+  bdk.Wallet wallet,
+) {
+  final transaction = psbt.extractTx();
+  try {
+    final transactionInputs = transaction.input();
+    if (transactionInputs.length != inputs.length) {
+      throw const InvalidBitcoinPsbtException();
+    }
+    for (final (index, input) in inputs.indexed) {
+      if (!_isFinalizedInput(input)) continue;
+      final utxo = _inputUtxo(
+        input,
+        transactionInputs[index].previousOutput,
+        allowTaprootWitnessUtxo: true,
+      );
+      if (wallet.isMine(script: utxo.scriptPubkey)) {
+        throw const InvalidBitcoinPsbtException();
+      }
+    }
+  } finally {
+    transaction.dispose();
+  }
+}
+
+bool _hasOnlyCommittedSignatures(bdk.TxIn input, bdk.Input psbtInput) {
+  final signatures = _inputEcdsaSignatures(input, psbtInput);
+  return signatures != null &&
+      signatures.isNotEmpty &&
+      signatures.every((signature) => signature.last == 0x01);
+}
+
+void _validateFinalizedInputSignatures(
+  bdk.TxIn input,
+  bdk.Input psbtInput, {
+  bool allowTaproot = false,
+}) {
+  final hasUnlockingData =
+      input.scriptSig.toBytes().isNotEmpty ||
+      input.witness.any((item) => item.isNotEmpty);
+  if (!hasUnlockingData) throw const InvalidBitcoinPsbtException();
+
+  if (allowTaproot) {
+    final signatures = _inputTaprootSignatures(input, psbtInput);
+    if (signatures != null) {
+      if (signatures.isEmpty) throw const InvalidBitcoinPsbtException();
+      if (signatures.any(
+        (signature) => signature.length == 65 && signature.last != 0x01,
+      )) {
+        throw const BitcoinPsbtUnsupportedSighashException();
+      }
+      return;
+    }
+  }
+
+  final signatures = _inputEcdsaSignatures(input, psbtInput);
+  if (signatures == null || signatures.isEmpty) {
+    throw const InvalidBitcoinPsbtException();
+  }
+  if (signatures.any((signature) => signature.last != 0x01)) {
+    throw const BitcoinPsbtUnsupportedSighashException();
+  }
+}
+
+List<Uint8List>? _inputTaprootSignatures(bdk.TxIn input, bdk.Input psbtInput) {
+  final utxo = _inputUtxo(
+    psbtInput,
+    input.previousOutput,
+    allowTaprootWitnessUtxo: true,
+  );
+  if (!_isV1TaprootProgram(utxo.scriptPubkey.toBytes())) return null;
+  final witness = input.witness.toList();
+  if (witness.length >= 2 &&
+      witness.last.isNotEmpty &&
+      witness.last.first == 0x50) {
+    witness.removeLast();
+  }
+  final signatureItems = witness.length <= 1
+      ? witness
+      : witness.sublist(0, witness.length - 2);
+  return signatureItems
+      .where((item) => item.length == 64 || item.length == 65)
+      .toList(growable: false);
+}
+
+List<Uint8List>? _inputEcdsaSignatures(bdk.TxIn input, bdk.Input psbtInput) {
+  final scriptPushes = _scriptPushes(input.scriptSig.toBytes());
+  if (scriptPushes == null) return null;
+  final preimages = <Uint8List>[
+    ...psbtInput.sha256Preimages.values,
+    ...psbtInput.hash256Preimages.values,
+    ...psbtInput.ripemd160Preimages.values,
+    ...psbtInput.hash160Preimages.values,
+  ];
+  final hashlockCommitments = _inputHashlockCommitments(
+    input,
+    psbtInput,
+    scriptPushes,
+  );
+  return <Uint8List>[...input.witness, ...scriptPushes]
+      .where(
+        (item) =>
+            _isBitcoinEcdsaSignature(item) &&
+            !preimages.any((preimage) => listEquals(preimage, item)) &&
+            !_matchesHashlockPreimage(item, hashlockCommitments),
+      )
+      .toList(growable: false);
+}
+
+List<({BitcoinHashlockType type, List<int> hash})> _inputHashlockCommitments(
+  bdk.TxIn input,
+  bdk.Input psbtInput,
+  List<Uint8List> scriptPushes,
+) {
+  final scripts = <List<int>>[
+    if (psbtInput.witnessScript case final script?) script.toBytes(),
+    if (psbtInput.redeemScript case final script?) script.toBytes(),
+    if (input.witness.length > 1) input.witness.last,
+    if (scriptPushes.length > 1) scriptPushes.last,
+  ];
+  final commitments = <({BitcoinHashlockType type, List<int> hash})>[];
+  for (final scriptBytes in scripts) {
+    commitments.addAll(_scriptHashlockCommitments(scriptBytes));
+  }
+  return commitments;
+}
+
+List<({BitcoinHashlockType type, List<int> hash})> _scriptHashlockCommitments(
+  List<int> scriptBytes,
+) {
+  final List<dynamic> tokens;
+  try {
+    tokens = bitcoin_base.Script.deserialize(bytes: scriptBytes).script;
+  } on RangeError {
+    throw const InvalidBitcoinPsbtException();
+  }
+  final commitments = <({BitcoinHashlockType type, List<int> hash})>[];
+  BitcoinHashlockType? pendingType;
+  for (final token in tokens) {
+    final type = switch (token) {
+      'OP_RIPEMD160' => BitcoinHashlockType.ripemd160,
+      'OP_SHA256' => BitcoinHashlockType.sha256,
+      'OP_HASH160' => BitcoinHashlockType.hash160,
+      'OP_HASH256' => BitcoinHashlockType.hash256,
+      _ => null,
+    };
+    if (type != null) {
+      pendingType = type;
+      continue;
+    }
+    final commitmentType = pendingType;
+    if (commitmentType == null || token is! String) continue;
+    final List<int> hash;
+    try {
+      hash = hex.decode(token);
+    } on FormatException {
+      pendingType = null;
+      continue;
+    }
+    final expectedLength = switch (commitmentType) {
+      BitcoinHashlockType.sha256 || BitcoinHashlockType.hash256 => 32,
+      BitcoinHashlockType.ripemd160 || BitcoinHashlockType.hash160 => 20,
+    };
+    if (hash.length == expectedLength) {
+      commitments.add((type: commitmentType, hash: hash));
+    }
+    pendingType = null;
+  }
+  return commitments;
+}
+
+bool _matchesHashlockPreimage(
+  Uint8List item,
+  List<({BitcoinHashlockType type, List<int> hash})> commitments,
+) {
+  for (final commitment in commitments) {
+    final hash = switch (commitment.type) {
+      BitcoinHashlockType.sha256 => bitcoin_base.PsbtInputSha256.fromPreImage(
+        item,
+      ).hash,
+      BitcoinHashlockType.hash256 => bitcoin_base.PsbtInputHash256.fromPreImage(
+        item,
+      ).hash,
+      BitcoinHashlockType.ripemd160 =>
+        bitcoin_base.PsbtInputRipemd160.fromPreImage(item).hash,
+      BitcoinHashlockType.hash160 => bitcoin_base.PsbtInputHash160.fromPreImage(
+        item,
+      ).hash,
+    };
+    if (_sameBytes(hash, commitment.hash)) return true;
+  }
+  return false;
+}
+
+bool _isBitcoinEcdsaSignature(Uint8List bytes) {
+  if (bytes.length < 9 || bytes.length > 73 || bytes[0] != 0x30) return false;
+  if (bytes[1] != bytes.length - 3 || bytes[2] != 0x02) return false;
+  final rLength = bytes[3];
+  if (rLength == 0 || 5 + rLength >= bytes.length) return false;
+  final sLength = bytes[5 + rLength];
+  if (rLength + sLength + 7 != bytes.length) return false;
+  if ((bytes[4] & 0x80) != 0 ||
+      (rLength > 1 && bytes[4] == 0 && (bytes[5] & 0x80) == 0)) {
+    return false;
+  }
+  if (bytes[4 + rLength] != 0x02 || sLength == 0) return false;
+  if ((bytes[6 + rLength] & 0x80) != 0 ||
+      (sLength > 1 &&
+          bytes[6 + rLength] == 0 &&
+          (bytes[7 + rLength] & 0x80) == 0)) {
+    return false;
+  }
+  return true;
+}
+
+List<Uint8List>? _scriptPushes(Uint8List script) {
+  final pushes = <Uint8List>[];
+  var cursor = 0;
+  while (cursor < script.length) {
+    final opcode = script[cursor++];
+    if (opcode == 0) {
+      pushes.add(Uint8List(0));
+      continue;
+    }
+    if (opcode == 0x4f || (opcode >= 0x51 && opcode <= 0x60)) {
+      // OP_1NEGATE and OP_1 through OP_16 are push-only opcodes, but cannot
+      // contain a signature.
+      continue;
+    }
+    final int length;
+    if (opcode <= 75) {
+      length = opcode;
+    } else if (opcode == 76) {
+      if (cursor >= script.length) return null;
+      length = script[cursor++];
+    } else if (opcode == 77) {
+      if (cursor + 2 > script.length) return null;
+      length = script[cursor] | (script[cursor + 1] << 8);
+      cursor += 2;
+    } else if (opcode == 78) {
+      if (cursor + 4 > script.length) return null;
+      length =
+          script[cursor] |
+          (script[cursor + 1] << 8) |
+          (script[cursor + 2] << 16) |
+          (script[cursor + 3] << 24);
+      cursor += 4;
+    } else {
+      return null;
+    }
+    if (length < 0 || cursor + length > script.length) return null;
+    pushes.add(Uint8List.sublistView(script, cursor, cursor + length));
+    cursor += length;
+  }
+  return pushes;
+}
+
+bool _isSegwitDescriptor(bdk.DescriptorType type) => switch (type) {
+  bdk.DescriptorType.wpkh ||
+  bdk.DescriptorType.wsh ||
+  bdk.DescriptorType.shWsh ||
+  bdk.DescriptorType.shWpkh ||
+  bdk.DescriptorType.wshSortedMulti ||
+  bdk.DescriptorType.shWshSortedMulti ||
+  bdk.DescriptorType.tr => true,
+  bdk.DescriptorType.bare ||
+  bdk.DescriptorType.sh ||
+  bdk.DescriptorType.pkh ||
+  bdk.DescriptorType.shSortedMulti => false,
+};
+
+bdk.TxOut _inputUtxo(
+  bdk.Input input,
+  bdk.OutPoint previousOutput, {
+  bool allowTaprootWitnessUtxo = false,
+}) {
+  final witnessUtxo = input.witnessUtxo;
+  final previousTransaction = input.nonWitnessUtxo;
+  if (previousTransaction != null) {
+    if (previousTransaction.computeTxid().toString() !=
+        previousOutput.txid.toString()) {
+      throw const InvalidBitcoinPsbtException();
+    }
+    final outputs = previousTransaction.output();
+    if (previousOutput.vout >= outputs.length) {
+      throw const BitcoinPsbtMissingUtxoException();
+    }
+    final previousTxOut = outputs[previousOutput.vout];
+    if (witnessUtxo != null &&
+        (witnessUtxo.value.toSat() != previousTxOut.value.toSat() ||
+            !_sameBytes(
+              witnessUtxo.scriptPubkey.toBytes(),
+              previousTxOut.scriptPubkey.toBytes(),
+            ))) {
+      throw const InvalidBitcoinPsbtException();
+    }
+    return previousTxOut;
+  }
+
+  if (witnessUtxo == null) {
+    throw const BitcoinPsbtMissingUtxoException();
+  }
+  final script = witnessUtxo.scriptPubkey.toBytes();
+  if (!_isV0WitnessProgram(script) &&
+      !_isNestedSegwitInput(input, script) &&
+      !(allowTaprootWitnessUtxo && _isV1TaprootProgram(script))) {
+    throw const BitcoinPsbtMissingUtxoException();
+  }
+  return witnessUtxo;
+}
+
+bool _isV0WitnessProgram(List<int> script) =>
+    script.length >= 4 &&
+    script.first == 0 &&
+    (script[1] == 20 || script[1] == 32) &&
+    script[1] + 2 == script.length;
+
+bool _isV1TaprootProgram(List<int> script) =>
+    script.length == 34 && script[0] == 0x51 && script[1] == 32;
+
+bool _isNestedSegwitInput(bdk.Input input, List<int> scriptPubkey) {
+  if (scriptPubkey.length != 23 ||
+      scriptPubkey[0] != 0xa9 ||
+      scriptPubkey[1] != 0x14 ||
+      scriptPubkey.last != 0x87) {
+    return false;
+  }
+  final finalScriptSig = input.finalScriptSig;
+  final redeemScript = finalScriptSig == null
+      ? input.redeemScript?.toBytes()
+      : switch (_scriptPushes(finalScriptSig.toBytes())) {
+          [final redeemScript] => redeemScript,
+          _ => null,
+        };
+  if (redeemScript == null || !_isV0WitnessProgram(redeemScript)) {
+    return false;
+  }
+  final redeemHash = bitcoin_base.BitcoinAddressUtils.scriptToHash160Bytes(
+    bitcoin_base.Script.deserialize(bytes: redeemScript),
+  );
+  return _sameBytes(redeemHash, scriptPubkey.sublist(2, 22));
+}
+
+void _validateSighash(String? sighashType) {
+  if (sighashType == null) return;
+  final normalized = sighashType.toUpperCase().replaceFirst('SIGHASH_', '');
+  if (normalized != 'ALL' && normalized != '1') {
+    throw const BitcoinPsbtUnsupportedSighashException();
+  }
+}
+
+_DescriptorOwnership? _descriptorOwnership(
+  bdk.Wallet wallet, {
+  required bdk.Script script,
+  required Iterable<bdk.KeySource> keySources,
+}) {
+  final tracked = wallet.derivationOfSpk(spk: script);
+  if (tracked != null) {
+    return (
+      index: tracked.index,
+      keychain: tracked.keychain == bdk.KeychainKind.external_
+          ? BitcoinPolicyKeychain.external
+          : BitcoinPolicyKeychain.internal,
+    );
+  }
+
+  final scriptBytes = script.toBytes();
+  final candidateIndices = <int>{};
+  for (final source in keySources) {
+    final path = source.path.toU32Vec();
+    if (path.isEmpty) continue;
+    final child = path.last;
+    const hardenedBit = 1 << 31;
+    if (child & hardenedBit != 0) continue;
+    if (child > 10000000) {
+      throw const InvalidBitcoinPsbtException();
+    }
+    candidateIndices.add(child);
+  }
+
+  for (final index in candidateIndices) {
+    final external = wallet.peekAddress(
+      keychain: bdk.KeychainKind.external_,
+      index: index,
+    );
+    if (_sameBytes(external.address.scriptPubkey().toBytes(), scriptBytes)) {
+      return (index: index, keychain: BitcoinPolicyKeychain.external);
+    }
+    final internal = wallet.peekAddress(
+      keychain: bdk.KeychainKind.internal,
+      index: index,
+    );
+    if (_sameBytes(internal.address.scriptPubkey().toBytes(), scriptBytes)) {
+      return (index: index, keychain: BitcoinPolicyKeychain.internal);
+    }
+  }
+  return null;
+}
+
+String? _addressFromScript(bdk.Script script, {required bool isTestnet}) {
+  try {
+    return bdk.Address.fromScript(
+      script: script,
+      network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+    ).toString();
+  } on Exception {
+    return null;
+  }
+}
+
+bool _sameBytes(List<int> left, List<int> right) {
+  if (left.length != right.length) return false;
+  for (var index = 0; index < left.length; index++) {
+    if (left[index] != right[index]) return false;
+  }
+  return true;
+}
+
+bitcoin_base.PsbtInputData _psbtPreimage(BitcoinPolicyPreimage preimage) {
+  final bytes = hex.decode(preimage.preimageHex);
+  return switch (preimage.type) {
+    BitcoinHashlockType.sha256 => bitcoin_base.PsbtInputSha256.fromPreImage(
+      bytes,
+    ),
+    BitcoinHashlockType.hash256 => bitcoin_base.PsbtInputHash256.fromPreImage(
+      bytes,
+    ),
+    BitcoinHashlockType.ripemd160 =>
+      bitcoin_base.PsbtInputRipemd160.fromPreImage(bytes),
+    BitcoinHashlockType.hash160 => bitcoin_base.PsbtInputHash160.fromPreImage(
+      bytes,
+    ),
+  };
+}
+
+List<int> _preimageHash(bitcoin_base.PsbtInputData input) => switch (input) {
+  bitcoin_base.PsbtInputSha256(:final hash) ||
+  bitcoin_base.PsbtInputHash256(:final hash) ||
+  bitcoin_base.PsbtInputRipemd160(:final hash) ||
+  bitcoin_base.PsbtInputHash160(:final hash) => hash,
+  _ => throw ArgumentError.value(input, 'input'),
+};
+
 // Top-level function for isolate execution
 class _SyncParams {
   final String walletId;
@@ -911,6 +2248,93 @@ class UnsupportedBdkNetworkException extends BullException {
 int confirmationsFromTip({required int tip, required int? height}) {
   if (height == null) return 0;
   return max(0, tip - height + 1);
+}
+
+int _medianTimePast({
+  required bdk.ElectrumClient client,
+  required int height,
+  bdk.Header? knownHeader,
+}) {
+  final firstHeight = max(0, height - 10);
+  final times = <int>[];
+  for (
+    var currentHeight = firstHeight;
+    currentHeight <= height;
+    currentHeight++
+  ) {
+    final header = currentHeight == height && knownHeader != null
+        ? knownHeader
+        : client.blockHeader(height: currentHeight);
+    times.add(header.time);
+  }
+  times.sort();
+  return times[times.length ~/ 2];
+}
+
+final class _PolicyChainStateParams {
+  final String electrumUrl;
+  final String? electrumSocks5;
+  final int electrumTimeout;
+  final int electrumRetry;
+  final bool electrumValidateDomain;
+  final bool includeMedianTimePast;
+  final List<int> referenceHeights;
+
+  const _PolicyChainStateParams({
+    required this.electrumUrl,
+    required this.electrumSocks5,
+    required this.electrumTimeout,
+    required this.electrumRetry,
+    required this.electrumValidateDomain,
+    required this.includeMedianTimePast,
+    required this.referenceHeights,
+  });
+}
+
+final class _PolicyChainState {
+  final int tipHeight;
+  final int? medianTimePast;
+  final Map<int, int> referenceMedianTimes;
+
+  const _PolicyChainState({
+    required this.tipHeight,
+    required this.medianTimePast,
+    required this.referenceMedianTimes,
+  });
+}
+
+_PolicyChainState _fetchPolicyChainState(_PolicyChainStateParams params) {
+  final client = _createElectrumClient(
+    url: params.electrumUrl,
+    socks5: params.electrumSocks5,
+    timeout: params.electrumTimeout,
+    retry: params.electrumRetry,
+    validateDomain: params.electrumValidateDomain,
+  );
+  try {
+    final tip = client.blockHeadersSubscribe();
+    final referenceMedianTimes = <int, int>{};
+    for (final requestedHeight in params.referenceHeights) {
+      final height = min(requestedHeight, tip.height);
+      referenceMedianTimes[requestedHeight] = _medianTimePast(
+        client: client,
+        height: height,
+      );
+    }
+    return _PolicyChainState(
+      tipHeight: tip.height,
+      medianTimePast: params.includeMedianTimePast
+          ? _medianTimePast(
+              client: client,
+              height: tip.height,
+              knownHeader: tip.header,
+            )
+          : null,
+      referenceMedianTimes: referenceMedianTimes,
+    );
+  } finally {
+    client.dispose();
+  }
 }
 
 class _DryScanParams {

@@ -50,6 +50,7 @@ extension SendFailureL10n on SendFailure {
     SendFeesUnavailableFailure() => context.loc.sendErrorFeesUnavailable,
     SendExchangeOrderMismatchFailure() =>
       context.loc.sendErrorExchangeOrderMismatch,
+    SendTransactionSigningFailure() => context.loc.sendErrorConfirmationFailed,
     SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed

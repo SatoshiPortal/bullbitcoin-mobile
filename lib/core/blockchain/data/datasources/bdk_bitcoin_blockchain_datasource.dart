@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 
 class BdkBitcoinBlockchainDatasource {
@@ -11,7 +12,7 @@ class BdkBitcoinBlockchainDatasource {
     required ElectrumConnection connection,
   }) async {
     final blockchain = await _createClient(connection);
-    final psbt = bdk.Psbt(psbtBase64: finalizedPsbt);
+    final psbt = bdk.Psbt(psbtBase64: normalizeBitcoinPsbt(finalizedPsbt));
     final tx = psbt.extractTx();
     final txId = blockchain.transactionBroadcast(tx: tx);
     return txId.toString();
