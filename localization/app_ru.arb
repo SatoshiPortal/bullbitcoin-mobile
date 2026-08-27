@@ -5042,5 +5042,7 @@
   "settingsSearchStartTyping": "Начните вводить, чтобы увидеть результаты.",
   "exchangeSupportChatLoadMessagesError": "Не удалось загрузить сообщения. Попробуйте ещё раз.",
   "exchangeSupportChatSendMessageError": "Не удалось отправить сообщение. Попробуйте ещё раз.",
-  "exchangeSupportChatLoadAttachmentError": "Не удалось открыть вложение. Попробуйте ещё раз."
+  "exchangeSupportChatLoadAttachmentError": "Не удалось открыть вложение. Попробуйте ещё раз.",
+  "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
+  "statusCheckResultsMayBeOutdated": "Результаты могут быть устаревшими"
 }

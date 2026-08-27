@@ -3673,5 +3673,7 @@
   "settingsSearchStartTyping": "Սկսեք մուտքագրել՝ արդյունքները տեսնելու համար։",
   "exchangeSupportChatLoadMessagesError": "Չհաջողվեց բեռնել հաղորդագրությունները։ Խնդրում ենք կրկին փորձել։",
   "exchangeSupportChatSendMessageError": "Չհաջողվեց ուղարկել ձեր հաղորդագրությունը։ Խնդրում ենք կրկին փորձել։",
-  "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։"
+  "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։",
+  "statusCheckNoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։",
+  "statusCheckResultsMayBeOutdated": "Արդյունքները կարող են հնացած լինել"
 }

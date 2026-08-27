@@ -5036,5 +5036,7 @@
   "settingsSearchStartTyping": "Empieza a escribir para ver resultados.",
   "exchangeSupportChatLoadMessagesError": "No se pudieron cargar los mensajes. Inténtalo de nuevo.",
   "exchangeSupportChatSendMessageError": "No se pudo enviar tu mensaje. Inténtalo de nuevo.",
-  "exchangeSupportChatLoadAttachmentError": "No se pudo abrir el archivo adjunto. Inténtalo de nuevo."
+  "exchangeSupportChatLoadAttachmentError": "No se pudo abrir el archivo adjunto. Inténtalo de nuevo.",
+  "statusCheckNoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
+  "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados"
 }
