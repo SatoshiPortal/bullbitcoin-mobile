@@ -86,12 +86,10 @@ class _WalletCard extends StatelessWidget {
                 label: context.loc.walletBackupManifestSigner,
                 value: signer.displayName,
               ),
-            if (wallet.seedPassphraseUsed case final used?)
+            if (_passphrase(context, wallet) case final passphrase?)
               _Detail(
                 label: context.loc.walletBackupManifestPassphrase,
-                value: used
-                    ? context.loc.walletBackupManifestPassphraseUsed
-                    : context.loc.walletBackupManifestPassphraseNotUsed,
+                value: passphrase,
               ),
             if (birthday != null)
               _Detail(
@@ -158,4 +156,14 @@ String _recovery(BuildContext context, WalletProvenance provenance) =>
         context.loc.walletBackupManifestRecoveryWatchOnly,
       WalletProvenance.externalSigner =>
         context.loc.walletBackupManifestRecoveryExternalSigner,
+    };
+
+String? _passphrase(BuildContext context, WalletBackupWalletSummary wallet) =>
+    switch (wallet.provenance) {
+      WalletProvenance.watchOnly || WalletProvenance.externalSigner => null,
+      _ => switch (wallet.seedPassphraseUsed) {
+        true => context.loc.walletBackupManifestPassphraseUsed,
+        false => context.loc.walletBackupManifestPassphraseNotUsed,
+        null => context.loc.walletBackupManifestPassphraseUnknown,
+      },
     };

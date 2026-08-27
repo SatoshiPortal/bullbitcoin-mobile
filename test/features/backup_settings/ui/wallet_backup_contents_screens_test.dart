@@ -49,6 +49,7 @@ void main() {
     await tester.drag(find.byType(ListView), const Offset(0, -900));
     await tester.pump();
     expect(find.text('Imported mnemonic wallet'), findsOneWidget);
+    expect(find.text('Unknown'), findsWidgets);
     expect(find.text('Not included for Liquid yet'), findsOneWidget);
     expect(find.text('Jade'), findsOneWidget);
     expect(find.textContaining('wpkh('), findsNothing);

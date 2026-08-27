@@ -14824,6 +14824,7 @@
   "walletBackupManifestLiquidDefinitionExcluded": "Not included for Liquid yet",
   "walletBackupManifestPassphraseUsed": "Used",
   "walletBackupManifestPassphraseNotUsed": "Not used",
+  "walletBackupManifestPassphraseUnknown": "Unknown",
   "walletBackupManifestDefault": "Default wallet",
   "walletBackupManifestBip85": "Deterministic product wallet",
   "walletBackupManifestImportedMnemonic": "Imported mnemonic wallet",
