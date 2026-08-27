@@ -43,9 +43,9 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -163,7 +163,7 @@ class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
 class _MockVerifySignedTxUsecase extends Mock
-    implements VerifySignedTxUsecase {}
+    implements VerifySendSignedTxUsecase {}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -479,7 +479,7 @@ void main() {
     when(
       () => verifySignedTxUsecase.execute(
         unsignedPsbt: any(named: 'unsignedPsbt'),
-        signedTxHex: any(named: 'signedTxHex'),
+        signedTransaction: any(named: 'signedTransaction'),
       ),
     ).thenAnswer((_) async => const Ok<void, SendFailure>(null));
 
@@ -727,19 +727,15 @@ void main() {
       confirmedAmountSat: 50000,
     );
 
-    test('audit reproducer: a signed transaction that fails verification is '
-        'refused, never stored for broadcast', () async {
-      // Before the fix, updateSignedBitcoinTx stored the device-returned
-      // bytes verbatim and onConfirmTransactionClicked broadcast them
-      // unchecked, while the confirm screen kept showing the pre-signing
-      // address and amount.
+    test('a signed transaction that fails verification is refused and never '
+        'stored for broadcast', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(hardwareSignReadyState());
       when(
         () => verifySignedTxUsecase.execute(
           unsignedPsbt: any(named: 'unsignedPsbt'),
-          signedTxHex: any(named: 'signedTxHex'),
+          signedTransaction: any(named: 'signedTransaction'),
         ),
       ).thenAnswer(
         (_) async => const Err<void, SendFailure>(
@@ -771,7 +767,7 @@ void main() {
       verify(
         () => verifySignedTxUsecase.execute(
           unsignedPsbt: 'cHNidP8=',
-          signedTxHex: 'deadbeef',
+          signedTransaction: 'deadbeef',
         ),
       ).called(1);
     });
@@ -784,7 +780,7 @@ void main() {
       when(
         () => verifySignedTxUsecase.execute(
           unsignedPsbt: any(named: 'unsignedPsbt'),
-          signedTxHex: any(named: 'signedTxHex'),
+          signedTransaction: any(named: 'signedTransaction'),
         ),
       ).thenAnswer((_) async {
         attempts++;
@@ -822,7 +818,7 @@ void main() {
         verifyNever(
           () => verifySignedTxUsecase.execute(
             unsignedPsbt: any(named: 'unsignedPsbt'),
-            signedTxHex: any(named: 'signedTxHex'),
+            signedTransaction: any(named: 'signedTransaction'),
           ),
         );
       },

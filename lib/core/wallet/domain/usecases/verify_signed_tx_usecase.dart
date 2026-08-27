@@ -1,52 +1,38 @@
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:convert/convert.dart';
 import 'package:meta/meta.dart';
 
-/// Checks that a transaction signed by a directly-connected hardware device
-/// (Ledger, BitBox) is the transaction carried by the unsigned PSBT.
-///
-/// The confirm screen shows the pre-signing address and amount; without this
-/// check, a compromised device or transport could return a transaction that
-/// redirects funds or substitutes inputs, and the app would broadcast it while
-/// the user still sees the intended details. Signing may add scriptSig and
-/// witness data, but every other transaction field must remain identical.
+/// Checks that a signed Bitcoin transaction preserves the unsigned PSBT's
+/// version, locktime, inputs, sequences, outputs, amounts, and scripts.
+/// Signatures and witness data may change; the transaction skeleton may not.
 class VerifySignedTxUsecase {
   @useResult
-  Future<Result<void, SendFailure>> execute({
+  Future<Result<void, SignedTransactionVerificationFailure>> execute({
     required String unsignedPsbt,
-    required String signedTxHex,
+    required String signedTransaction,
+    bool isPsbt = false,
   }) async {
     final BitcoinTx signed;
     final BitcoinTx intended;
     try {
-      signed = await BitcoinTx.fromBytes(hex.decode(signedTxHex));
+      signed = isPsbt
+          ? await BitcoinTx.fromPsbt(signedTransaction)
+          : await BitcoinTx.fromBytes(hex.decode(signedTransaction));
       intended = await BitcoinTx.fromPsbt(unsignedPsbt);
-    } catch (e, st) {
-      log.severe(
-        message: 'Could not decode the signed transaction',
-        error: e,
-        trace: st,
-      );
+    } on Exception catch (error) {
       return Err(
-        SendTransactionConfirmationFailure(
-          logMessage: 'Could not decode the signed transaction: $e',
+        SignedTransactionVerificationFailure(
+          'Could not decode the signed transaction: $error',
         ),
       );
     }
 
     if (!_isSameUnsignedTransaction(signed, intended)) {
-      log.severe(
-        error:
-            'The signed transaction does not match the confirmed transaction',
-        trace: StackTrace.current,
-      );
       return const Err(
-        SendTransactionConfirmationFailure(
-          logMessage:
-              'The signed transaction does not match the confirmed transaction',
+        SignedTransactionVerificationFailure(
+          'The signed transaction does not match the confirmed transaction',
         ),
       );
     }
