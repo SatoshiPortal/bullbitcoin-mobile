@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_set
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
@@ -66,13 +67,20 @@ class _Screen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
+                      const _WalletBackupSection(),
+                      const Gap(32),
+                      const _ProtectedDataSection(),
+                      const Gap(32),
+                      Text(
+                        context.loc.backupSettingsRecoveryMethods,
+                        style: context.font.titleMedium,
+                      ),
+                      const Gap(12),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
                       ),
                       const Gap(24),
-                      const _WalletBackupSection(),
-                      const Gap(40),
                       const _StartBackupButton(),
                       if (state.lastEncryptedBackup != null)
                         const _ViewVaultKeyButton(),
@@ -90,6 +98,76 @@ class _Screen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _ProtectedDataSection extends StatelessWidget {
+  const _ProtectedDataSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+      buildWhen: (previous, current) =>
+          previous.contents != current.contents ||
+          previous.contentsLoading != current.contentsLoading,
+      builder: (context, state) {
+        final contents = state.contents;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.loc.walletBackupContentsTitle,
+              style: context.font.titleMedium,
+            ),
+            const Gap(6),
+            Text(
+              context.loc.walletBackupContentsDescription,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.onSurfaceVariant,
+              ),
+            ),
+            const Gap(8),
+            if (contents != null) ...[
+              SettingsEntryItem(
+                icon: Icons.account_balance_wallet_outlined,
+                title: context.loc.walletBackupManifestRow(
+                  contents.wallets.length,
+                ),
+                onTap: () => context.pushNamed(
+                  BackupSettingsSubroute.walletManifest.name,
+                  extra: contents.wallets,
+                ),
+              ),
+              SettingsEntryItem(
+                icon: Icons.description_outlined,
+                title: context.loc.walletBackupMetadataRow(
+                  contents.metadataRecordCount,
+                ),
+                onTap: () => context.pushNamed(
+                  BackupSettingsSubroute.walletMetadata.name,
+                  extra: contents.metadata,
+                ),
+              ),
+            ] else if (state.contentsLoading)
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              SettingsEntryItem(
+                icon: Icons.refresh,
+                title: context.loc.walletBackupContentsRetry,
+                onTap: context.read<BackupSettingsCubit>().loadContents,
+              ),
+            SettingsEntryItem(
+              icon: Icons.key_outlined,
+              title: context.loc.walletBackupNostrIdentities,
+              onTap: () => context.pushNamed(KeychainManifestRoutes.listName),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -267,11 +345,13 @@ class _BackupTestStatusWidget extends StatelessWidget {
             _StatusRow(
               label: context.loc.backupSettingsPhysicalBackup,
               isTested: state.isDefaultPhysicalBackupTested,
+              testedAt: state.lastPhysicalBackup,
             ),
             const Gap(15),
             _StatusRow(
               label: context.loc.backupSettingsEncryptedVault,
               isTested: state.isDefaultEncryptedBackupTested,
+              testedAt: state.lastEncryptedBackup,
             ),
           ],
         );
@@ -283,8 +363,13 @@ class _BackupTestStatusWidget extends StatelessWidget {
 class _StatusRow extends StatelessWidget {
   final String label;
   final bool isTested;
+  final DateTime? testedAt;
 
-  const _StatusRow({required this.label, required this.isTested});
+  const _StatusRow({
+    required this.label,
+    required this.isTested,
+    required this.testedAt,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +379,13 @@ class _StatusRow extends StatelessWidget {
         const Spacer(),
         Text(
           isTested
-              ? context.loc.backupSettingsTested
+              ? testedAt == null
+                    ? context.loc.backupSettingsTested
+                    : context.loc.backupSettingsTestedOn(
+                        MaterialLocalizations.of(
+                          context,
+                        ).formatMediumDate(testedAt!.toLocal()),
+                      )
               : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
             color: isTested
@@ -328,13 +419,15 @@ class _StartBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.save_as,
-      iconColor: context.appColors.primary,
-      title: context.loc.backupSettingsStartBackup,
-      onTap: () => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        icon: const Icon(Icons.save_as),
+        label: Text(context.loc.backupSettingsStartBackup),
+        onPressed: () => context.pushNamed(
+          BackupSettingsSubroute.backupOptions.name,
+          extra: BackupSettingsFlow.backup,
+        ),
       ),
     );
   }

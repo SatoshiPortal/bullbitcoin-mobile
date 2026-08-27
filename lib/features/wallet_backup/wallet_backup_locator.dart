@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/apply_recovered_wallet_pre
 import 'package:bb_mobile/core/wallet/domain/usecases/get_frozen_wallet_outpoints_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_preferences_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_definitions_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/restore_wallet_definition_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/restore_frozen_wallet_outpoints_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
@@ -30,6 +31,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_remote_identity_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_recovery_outcome_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_state_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/mark_wallet_backup_dirty_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
@@ -168,6 +170,11 @@ final class _WalletBackupGraph {
     );
     final facade = WalletBackupFacade(
       getState: GetWalletBackupStateUsecase(state),
+      getContents: GetWalletBackupContentsUsecase(
+        locator<GetWalletRecoveryInventoryUsecase>().execute,
+        locator<GetWalletPreferencesUsecase>().execute,
+        metadata.localInventory,
+      ),
       watchState: WatchWalletBackupStateUsecase(state),
       setEnabled: SetWalletBackupEnabledUsecase(state),
       delete: DeleteWalletBackupUsecase(remote: remote, state: state),

@@ -34,6 +34,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_preferences_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_definitions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -135,6 +136,9 @@ class WalletLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetWalletDefinitionsUsecase>(
       () => GetWalletDefinitionsUsecase(locator<WalletRepository>()),
+    );
+    locator.registerFactory<GetWalletRecoveryInventoryUsecase>(
+      () => GetWalletRecoveryInventoryUsecase(locator<WalletRepository>()),
     );
     locator.registerFactory<RestoreWalletDefinitionUsecase>(
       () => RestoreWalletDefinitionUsecase(locator<WalletRepository>()),

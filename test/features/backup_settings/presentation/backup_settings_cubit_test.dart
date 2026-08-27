@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failur
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_recovery_outcome_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/watch_wallet_backup_usecase.dart';
@@ -63,6 +64,10 @@ void main() {
     when(
       () => walletBackup.watchState(),
     ).thenAnswer((_) => backupStates.stream);
+    when(() => walletBackup.getContents()).thenAnswer(
+      (_) async =>
+          Ok(WalletBackupContents(wallets: const [], metadata: const [])),
+    );
 
     cubit = BackupSettingsCubit(
       getWalletsUsecase: getWallets,
@@ -72,6 +77,7 @@ void main() {
       backupWalletNow: BackupWalletNowUsecase(walletBackup),
       deleteWalletBackup: DeleteWalletBackupUsecase(walletBackup),
       getRecoveryOutcome: GetWalletBackupRecoveryOutcomeUsecase(walletBackup),
+      getContents: GetWalletBackupContentsUsecase(walletBackup),
       retryRecovery: RetryWalletBackupRecoveryUsecase(walletBackup),
     );
   });
@@ -91,6 +97,7 @@ void main() {
       expect(cubit.state.walletBackup, same(clean));
       expect(cubit.state.lastRecoveryOutcome, same(recoveryOutcome));
       expect(cubit.state.status, BackupSettingsStatus.success);
+      expect(cubit.state.contents, isNotNull);
 
       final dirty = backupState(dirty: true);
       backupStates.add(Ok(dirty));
@@ -131,5 +138,30 @@ void main() {
       cubit.state.walletBackupOperation,
       WalletBackupSettingsOperation.idle,
     );
+  });
+
+  test('keeps a contents read failure local and allows retry', () async {
+    when(() => walletBackup.getContents()).thenAnswer(
+      (_) async => const Err<WalletBackupContents, WalletBackupFailure>(
+        WalletBackupStorageFailure(),
+      ),
+    );
+
+    await cubit.loadContents();
+
+    expect(cubit.state.contents, isNull);
+    expect(cubit.state.contentsLoading, isFalse);
+    expect(cubit.state.failure, isNull);
+
+    final contents = WalletBackupContents(
+      wallets: const [],
+      metadata: const [],
+    );
+    when(
+      () => walletBackup.getContents(),
+    ).thenAnswer((_) async => Ok(contents));
+    await cubit.loadContents();
+
+    expect(cubit.state.contents, same(contents));
   });
 }

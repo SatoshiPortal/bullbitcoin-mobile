@@ -387,6 +387,13 @@ class WalletRepository {
         .toList(growable: false);
   }
 
+  /// Reads recovery provenance for every wallet without starting wallet
+  /// engines or fetching balances.
+  Future<List<WalletDefinition>> getWalletRecoveryInventory() async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas.map(_definitionFromMetadata).toList(growable: false);
+  }
+
   Future<WalletDefinitionRestoreResult> restoreWalletDefinition(
     WalletDefinition definition,
   ) async {

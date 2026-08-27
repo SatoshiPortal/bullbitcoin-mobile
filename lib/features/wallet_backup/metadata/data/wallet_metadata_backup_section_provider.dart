@@ -72,6 +72,19 @@ final class WalletMetadataBackupImpl implements WalletMetadataBackup {
   Stream<void> get changes => _changes.stream;
 
   @override
+  Future<Result<WalletMetadataSnapshotInventory, WalletMetadataBackupFailure>>
+  localInventory() async {
+    final inventories = await _exportInventories();
+    return switch (inventories) {
+      Err(:final failure) => Err(failure),
+      Ok(:final value) => _composition.compose(
+        contributors: value,
+        remoteHead: null,
+      ),
+    };
+  }
+
+  @override
   Future<Result<String?, WalletMetadataBackupFailure>> compose({
     required String parentFingerprint,
     required String? remotePayload,
@@ -85,21 +98,13 @@ final class WalletMetadataBackupImpl implements WalletMetadataBackup {
         return const Err(WalletMetadataBackupKeyFailure());
       }
 
-      final inventories = <WalletMetadataContributorInventory>[];
-      for (final contributor in _contributors) {
-        final exported = await contributor.exportRecords();
-        switch (exported) {
-          case Err(:final failure):
-            return Err(failure);
-          case Ok(:final value):
-            inventories.add(
-              WalletMetadataContributorInventory(
-                recordType: contributor.recordType,
-                supportedVersions: contributor.supportedVersions,
-                records: value,
-              ),
-            );
-        }
+      final inventoryResult = await _exportInventories();
+      final List<WalletMetadataContributorInventory> inventories;
+      switch (inventoryResult) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          inventories = value;
       }
 
       final remoteHead = remoteSnapshot == null
@@ -150,6 +155,31 @@ final class WalletMetadataBackupImpl implements WalletMetadataBackup {
     } on Exception {
       return const Err(WalletMetadataBackupEncodingFailure());
     }
+  }
+
+  Future<
+    Result<
+      List<WalletMetadataContributorInventory>,
+      WalletMetadataBackupFailure
+    >
+  >
+  _exportInventories() async {
+    final inventories = <WalletMetadataContributorInventory>[];
+    for (final contributor in _contributors) {
+      switch (await contributor.exportRecords()) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          inventories.add(
+            WalletMetadataContributorInventory(
+              recordType: contributor.recordType,
+              supportedVersions: contributor.supportedVersions,
+              records: value,
+            ),
+          );
+      }
+    }
+    return Ok(List.unmodifiable(inventories));
   }
 
   @override

@@ -19,6 +19,8 @@ sealed class BackupSettingsState with _$BackupSettingsState {
     DateTime? lastEncryptedBackup,
     WalletBackupState? walletBackup,
     WalletBackupRecoveryOutcome? lastRecoveryOutcome,
+    WalletBackupContents? contents,
+    @Default(false) bool contentsLoading,
     @Default(WalletBackupSettingsOperation.idle)
     WalletBackupSettingsOperation walletBackupOperation,
     @Default(BackupSettingsStatus.initial) BackupSettingsStatus status,

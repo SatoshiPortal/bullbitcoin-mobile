@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_set
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_recovery_outcome_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/watch_wallet_backup_usecase.dart';
@@ -22,6 +23,7 @@ class BackupSettingsLocator {
         backupWalletNow: BackupWalletNowUsecase(walletBackup),
         deleteWalletBackup: DeleteWalletBackupUsecase(walletBackup),
         getRecoveryOutcome: GetWalletBackupRecoveryOutcomeUsecase(walletBackup),
+        getContents: GetWalletBackupContentsUsecase(walletBackup),
         retryRecovery: RetryWalletBackupRecoveryUsecase(walletBackup),
       ),
     );

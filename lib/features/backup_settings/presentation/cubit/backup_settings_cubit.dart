@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failur
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_recovery_outcome_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/watch_wallet_backup_usecase.dart';
@@ -27,6 +28,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final BackupWalletNowUsecase _backupWalletNow;
   final DeleteWalletBackupUsecase _deleteWalletBackup;
   final GetWalletBackupRecoveryOutcomeUsecase _getRecoveryOutcome;
+  final GetWalletBackupContentsUsecase _getContents;
   final RetryWalletBackupRecoveryUsecase _retryRecovery;
   StreamSubscription<Result<WalletBackupState, BackupSettingsFailure>>?
   _walletBackupSubscription;
@@ -39,12 +41,14 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     required this._backupWalletNow,
     required this._deleteWalletBackup,
     required this._getRecoveryOutcome,
+    required this._getContents,
     required this._retryRecovery,
   }) : super(BackupSettingsState());
 
   Future<void> checkBackupStatus() async {
     await _startWalletBackupWatch();
     await _loadRecoveryOutcome();
+    await loadContents();
     try {
       emit(state.copyWith(status: BackupSettingsStatus.loading));
 
@@ -93,6 +97,21 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           failure: BackupSettingsUnexpectedFailure(e.toString()),
         ),
       );
+    }
+  }
+
+  Future<void> loadContents() async {
+    if (state.contentsLoading) return;
+    emit(state.copyWith(contentsLoading: true));
+    switch (await _getContents.execute()) {
+      case Ok(:final value):
+        if (!isClosed) {
+          emit(state.copyWith(contents: value, contentsLoading: false));
+        }
+      case Err():
+        if (!isClosed) {
+          emit(state.copyWith(contentsLoading: false));
+        }
     }
   }
 

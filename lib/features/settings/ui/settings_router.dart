@@ -220,7 +220,7 @@ class SettingsRouter {
         name: SettingsRoute.backupSettings.name,
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
-          BackupSettingsSettingsRouter.route,
+          ...BackupSettingsSettingsRouter.routes,
           TestWalletBackupRouter.route,
         ],
       ),

@@ -1,5 +1,10 @@
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart'
     show WalletBackupState;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart'
+    show
+        WalletBackupContents,
+        WalletBackupWalletSummary,
+        WalletBackupMetadataSummary;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart'
     show WalletBackupRecoveryResult, WalletBackupRecoveryStatus;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery_outcome.dart'
@@ -8,10 +13,12 @@ export 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.da
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery_outcome.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_state_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_recovery_outcome_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_enabled_usecase.dart';
@@ -22,6 +29,7 @@ import 'package:meta/meta.dart';
 
 class WalletBackupFacade {
   final GetWalletBackupStateUsecase _getState;
+  final GetWalletBackupContentsUsecase _getContents;
   final WatchWalletBackupStateUsecase _watchState;
   final SetWalletBackupEnabledUsecase _setEnabled;
   final DeleteWalletBackupUsecase _delete;
@@ -31,6 +39,7 @@ class WalletBackupFacade {
 
   const WalletBackupFacade({
     required this._getState,
+    required this._getContents,
     required this._watchState,
     required this._setEnabled,
     required this._delete,
@@ -42,6 +51,11 @@ class WalletBackupFacade {
   @useResult
   Future<Result<WalletBackupState, WalletBackupFailure>> getState() {
     return _getState.execute();
+  }
+
+  @useResult
+  Future<Result<WalletBackupContents, WalletBackupFailure>> getContents() {
+    return _getContents.execute();
   }
 
   @useResult

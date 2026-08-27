@@ -14760,6 +14760,95 @@
   "@walletBackupSettingsRecoveryIncomplete": {
     "description": "Status shown when the last Bull backup recovery did not complete."
   },
+  "backupSettingsRecoveryMethods": "Recovery methods",
+  "@backupSettingsRecoveryMethods": {
+    "description": "Heading for physical and encrypted wallet recovery methods."
+  },
+  "backupSettingsTestedOn": "Tested {date}",
+  "@backupSettingsTestedOn": {
+    "description": "Status showing when a recovery method was last tested.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "walletBackupContentsTitle": "Protected wallet data",
+  "@walletBackupContentsTitle": {
+    "description": "Heading for the data covered by wallet backup."
+  },
+  "walletBackupContentsDescription": "Review what can be recovered without exposing private keys or public wallet identifiers.",
+  "@walletBackupContentsDescription": {
+    "description": "Description of the sanitized wallet backup contents views."
+  },
+  "walletBackupManifestRow": "Wallet recovery manifest ({count})",
+  "@walletBackupManifestRow": {
+    "description": "Navigation row to the wallet recovery manifest.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletBackupMetadataRow": "Wallet metadata ({count})",
+  "@walletBackupMetadataRow": {
+    "description": "Navigation row to the backed-up wallet metadata summary.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletBackupNostrIdentities": "Nostr identities",
+  "@walletBackupNostrIdentities": {
+    "description": "Navigation row to the existing Nostr identity inventory."
+  },
+  "walletBackupContentsRetry": "Reload protected wallet data",
+  "@walletBackupContentsRetry": {
+    "description": "Retry action when the local backup contents cannot be read."
+  },
+  "walletBackupManifestTitle": "Wallet recovery manifest",
+  "@walletBackupManifestTitle": {
+    "description": "Title of the sanitized wallet recovery manifest screen."
+  },
+  "walletBackupManifestDescription": "This inventory explains how each wallet can be recovered. It never displays descriptors, fingerprints, xpubs, or keys.",
+  "@walletBackupManifestDescription": {
+    "description": "Privacy explanation on the wallet recovery manifest screen."
+  },
+  "walletBackupManifestRecovery": "Recovery",
+  "walletBackupManifestDefinition": "Wallet definition",
+  "walletBackupManifestSigner": "Signer",
+  "walletBackupManifestPassphrase": "Seed passphrase",
+  "walletBackupManifestBirthday": "Birthday",
+  "walletBackupManifestDefinitionIncluded": "Included",
+  "walletBackupManifestLiquidDefinitionExcluded": "Not included for Liquid yet",
+  "walletBackupManifestPassphraseUsed": "Used",
+  "walletBackupManifestPassphraseNotUsed": "Not used",
+  "walletBackupManifestDefault": "Default wallet",
+  "walletBackupManifestBip85": "Deterministic product wallet",
+  "walletBackupManifestImportedMnemonic": "Imported mnemonic wallet",
+  "walletBackupManifestWatchOnly": "Watch-only wallet",
+  "walletBackupManifestExternalSigner": "External signer wallet",
+  "walletBackupManifestRecoveryMainSeed": "Main seed",
+  "walletBackupManifestRecoveryBip85": "Main seed via BIP85",
+  "walletBackupManifestRecoveryImportedMnemonic": "Original imported mnemonic",
+  "walletBackupManifestRecoveryWatchOnly": "Included public wallet definition",
+  "walletBackupManifestRecoveryExternalSigner": "Included public definition and external signer",
+  "walletBackupMetadataTitle": "Wallet metadata",
+  "@walletBackupMetadataTitle": {
+    "description": "Title of the backed-up wallet metadata summary."
+  },
+  "walletBackupMetadataDescription": "These records preserve how your wallets are organized after recovery.",
+  "@walletBackupMetadataDescription": {
+    "description": "Description of the backed-up wallet metadata summary."
+  },
+  "walletBackupMetadataLabels": "Labels",
+  "walletBackupMetadataPreferences": "Wallet preferences",
+  "walletBackupMetadataFrozenCoins": "Frozen coin state",
+  "walletBackupMetadataExcluded": "Balances and transaction history are rebuilt from the network and are not stored in this backup.",
+  "@walletBackupMetadataExcluded": {
+    "description": "Explanation of data intentionally absent from wallet backup."
+  },
   "btcpayAutoSweepWallet": "Auto-sweep received funds",
   "@btcpayAutoSweepWallet": {
     "description": "Toggle label for sweeping received funds from a BTCPay wallet to the default wallet"
