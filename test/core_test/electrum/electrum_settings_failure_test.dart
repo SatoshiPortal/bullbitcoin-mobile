@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
@@ -655,11 +656,21 @@ void main() {
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
 
+      final updates = <LoadElectrumServerDataResponse>[];
       final result = await usecase.execute(
         LoadElectrumServerDataRequest(isLiquid: false),
+        onUpdate: updates.add,
       );
 
       expect(result, isA<Ok>());
+      expect(
+        updates.first.serverStatuses[server.url],
+        ElectrumServerStatus.unknown,
+      );
+      expect(
+        updates.last.serverStatuses[server.url],
+        ElectrumServerStatus.online,
+      );
       expect(routeClosed, isTrue);
       verify(
         () => statusPort.checkElectrum(

@@ -38,8 +38,9 @@ class LoadElectrumServerDataUsecase {
 
   @useResult
   Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> execute(
-    LoadElectrumServerDataRequest request,
-  ) async {
+    LoadElectrumServerDataRequest request, {
+    void Function(LoadElectrumServerDataResponse response)? onUpdate,
+  }) async {
     try {
       final isLiquid = request.isLiquid;
       final environment = await _environmentPort.getEnvironment();
@@ -76,7 +77,22 @@ class LoadElectrumServerDataUsecase {
       }
 
       final appSettings = await _settingsRepository.fetch();
-      final serverStatusMap = <String, ElectrumServerStatus>{};
+      final serverDtos = servers
+          .map((server) => ElectrumServerDto.fromDomain(server))
+          .toList();
+      final settingsDto = ElectrumSettingsDto.fromDomain(settings);
+      final serverStatusMap = {
+        for (final server in servers) server.url: ElectrumServerStatus.unknown,
+      };
+
+      LoadElectrumServerDataResponse response() =>
+          LoadElectrumServerDataResponse(
+            servers: serverDtos,
+            serverStatuses: Map.unmodifiable(serverStatusMap),
+            settings: settingsDto,
+          );
+
+      onUpdate?.call(response());
       await Future.wait(
         servers.map((server) async {
           final effectiveTimeout = ElectrumConnection.resolveEffectiveTimeout(
@@ -103,19 +119,13 @@ class LoadElectrumServerDataUsecase {
           } on Exception {
             serverStatusMap[server.url] = ElectrumServerStatus.offline;
           } finally {
+            onUpdate?.call(response());
             await route?.close();
           }
         }),
       );
 
-      // Return the response DTO
-      return Ok(
-        LoadElectrumServerDataResponse(
-          servers: servers.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
-          serverStatuses: serverStatusMap,
-          settings: ElectrumSettingsDto.fromDomain(settings),
-        ),
-      );
+      return Ok(response());
     } catch (e, st) {
       log.severe(
         message: 'Failed to load electrum server data',
