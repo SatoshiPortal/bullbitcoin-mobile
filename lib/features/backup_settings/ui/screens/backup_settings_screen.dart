@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/telemetry_warnings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -69,7 +70,9 @@ class _Screen extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
                       ),
-                      const Gap(40),
+                      const Gap(16),
+                      const RecoverbullTelemetryWarnings(),
+                      const Gap(24),
                       items
                           .byId(SettingsItemId.startBackup)
                           .buildTile(

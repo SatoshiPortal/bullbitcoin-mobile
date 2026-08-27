@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_with_status_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -38,7 +39,10 @@ class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 class _MockCheckConnection extends Mock
     implements CheckServerConnectionUsecase {}
 
-class _MockFetchKey extends Mock implements FetchVaultKeyFromServerUsecase {}
+class _MockFetchKeyWithStatus extends Mock
+    implements FetchVaultKeyWithStatusFromServerUsecase {}
+
+class _MockTelemetryCubit extends Mock implements RecoverbullTelemetryCubit {}
 
 class _MockDecrypt extends Mock implements DecryptVaultUsecase {}
 
@@ -70,7 +74,8 @@ void main() {
   late _MockCreateVault createVault;
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
-  late _MockFetchKey fetchKey;
+  late _MockFetchKeyWithStatus fetchKeyWithStatus;
+  late _MockTelemetryCubit telemetryCubit;
   late _MockDecrypt decrypt;
   late _MockRestore restore;
   late _MockConnectDrive connectDrive;
@@ -94,7 +99,8 @@ void main() {
     when(
       () => checkConnection.execute(),
     ).thenAnswer((_) async => const Ok(true));
-    fetchKey = _MockFetchKey();
+    fetchKeyWithStatus = _MockFetchKeyWithStatus();
+    telemetryCubit = _MockTelemetryCubit();
     decrypt = _MockDecrypt();
     restore = _MockRestore();
     connectDrive = _MockConnectDrive();
@@ -112,6 +118,20 @@ void main() {
     when(
       () => watchTor.execute(),
     ).thenAnswer((_) => const Stream<TorConnectionState>.empty());
+
+    // The telemetry cubit is fail-safe and unawaited: stub its methods so
+    // unawaited calls never see a null future.
+    when(
+      () => telemetryCubit.recordLocalAttempt(
+        backupIdHex: any(named: 'backupIdHex'),
+        attemptStatus: any(named: 'attemptStatus'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => telemetryCubit.reportTargetedLockout(
+        backupIdHex: any(named: 'backupIdHex'),
+      ),
+    ).thenAnswer((_) async {});
   });
 
   // No event is auto-dispatched, so unstubbed mocks stay untouched unless a
@@ -132,7 +152,6 @@ void main() {
       ensureRecoverBullTorSession,
       wait: (_) async {},
     ),
-    fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
     connectToGoogleDriveUsecase: connectDrive,
@@ -142,6 +161,8 @@ void main() {
     fetchLatestGoogleDriveVaultUsecase: fetchLatestDrive,
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
+    fetchVaultKeyWithStatusFromServerUsecase: fetchKeyWithStatus,
+    recoverbullTelemetryCubit: telemetryCubit,
   );
 
   group('OnVaultPasswordSet guard', () {
@@ -159,7 +180,7 @@ void main() {
       // through to `state.vault!`).
       expect(bloc.state.vaultPassword, isNull);
       verifyNever(
-        () => fetchKey.execute(
+        () => fetchKeyWithStatus.execute(
           vault: any(named: 'vault'),
           password: any(named: 'password'),
         ),
@@ -253,7 +274,9 @@ void main() {
 
   test('maps external failure while fetching and does not decrypt', () async {
     final vault = _MockEncryptedVault();
-    when(() => fetchKey.execute(vault: vault, password: 'pw')).thenAnswer(
+    when(
+      () => fetchKeyWithStatus.execute(vault: vault, password: 'pw'),
+    ).thenAnswer(
       (_) async => const Err(core.ExternalTorProxyUnavailableFailure()),
     );
     final bloc = buildBloc(

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_telemetry_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -11,6 +12,8 @@ import 'package:bull_tor/tor.dart';
 class _MockRemote extends Mock implements RecoverBullRemoteDatasource {}
 
 class _MockSettings extends Mock implements RecoverbullSettingsDatasource {}
+
+class _MockTelemetry extends Mock implements RecoverbullTelemetryDatasource {}
 
 void main() {
   final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 9050);
@@ -28,6 +31,7 @@ void main() {
     repository = RecoverBullRepositoryImpl(
       remoteDatasource: remote,
       recoverbullSettingsDatasource: _MockSettings(),
+      recoverbullTelemetryDatasource: _MockTelemetry(),
     );
   });
 
@@ -92,13 +96,28 @@ void main() {
     });
 
     test('5xx -> KeyServerUnavailableFailure', () async {
-      stubFetchThrows(recoverbull.KeyServerException(code: 503));
+      stubFetchThrows(recoverbull.KeyServerException(code: 500));
 
       final result = await fetch();
 
       expect(
         (result as Err<String, RecoverBullCoreFailure>).failure,
         isA<KeyServerUnavailableFailure>(),
+      );
+    });
+
+    // 503 is the one 5xx the server gives a meaning to: every service-wide
+    // bucket answers 503, and the reverse proxy rewrites its own edge 429 to
+    // 503 too. Only this one may be shown as "the server is busy" — a server
+    // we simply could not reach must not be described as overloaded.
+    test('503 -> KeyServerBusyFailure', () async {
+      stubFetchThrows(recoverbull.KeyServerException(code: 503));
+
+      final result = await fetch();
+
+      expect(
+        (result as Err<String, RecoverBullCoreFailure>).failure,
+        isA<KeyServerBusyFailure>(),
       );
     });
 

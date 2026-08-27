@@ -96,9 +96,12 @@ dependencies:
   google_sign_in: ^6.3.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.13
   recoverbull:
+    # Pinned by SHA so every checkout builds the same code. This is the merge
+    # commit of the client telemetry PR on main (distinct-candidate telemetry
+    # v1, HTTP-status error classification, HMAC enforcement).
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: 92925c959f219fa4dfd0fe0f40392ddf868e2774
+      ref: 293b0d709f6c7775180f775c6a5fe99a39f175ce
   flutter_zxing: ^2.2.1
   webview_cookie_manager:
     git:

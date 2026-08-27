@@ -28,4 +28,11 @@ class Settings extends Table {
   // by the bull_payjoin package. During development, schema 14 briefly added
   // payjoin_enabled, payjoin_min_amount_sat and payjoin_expire_after_sec here,
   // but they were removed before schema 14 shipped in v6.13.0.
+
+  // Whether brute-force telemetry checks (the `/attempts` polling and
+  // suspicious-activity warnings) are enabled. Disabled by default: the
+  // feature rolls out only after the server contract and the pinned client
+  // are confirmed in production.
+  BoolColumn get isRecoverbullTelemetryEnabled =>
+      boolean().withDefault(const Constant(false))();
 }

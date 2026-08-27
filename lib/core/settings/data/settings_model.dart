@@ -60,6 +60,9 @@ class SettingsModel {
       screenCaptureProtectionEnabled: screenCaptureProtectionEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
+      // Seeding default only: the flag is read and written through the
+      // datasource's targeted accessors, never through this model.
+      isRecoverbullTelemetryEnabled: false,
     );
   }
 

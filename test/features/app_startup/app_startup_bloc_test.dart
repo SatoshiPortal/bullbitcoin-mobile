@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_us
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,6 +30,9 @@ class _MockCheckBackupUsecase extends Mock implements CheckBackupUsecase {}
 class _MockInitializeRequiredTorUsecase extends Mock
     implements InitializeRequiredTorUsecase {}
 
+class _MockRecoverbullTelemetryCubit extends Mock
+    implements RecoverbullTelemetryCubit {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
@@ -44,6 +48,7 @@ void main() {
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockCheckLegacyInstallUsecase checkLegacyInstall;
   late _MockInitializeRequiredTorUsecase initializeRequiredTor;
+  late _MockRecoverbullTelemetryCubit recoverbullTelemetryCubit;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -52,6 +57,7 @@ void main() {
     checkLegacyInstallUsecase: checkLegacyInstall,
     checkBackupUsecase: _MockCheckBackupUsecase(),
     initializeRequiredTorUsecase: initializeRequiredTor,
+    recoverbullTelemetryCubit: recoverbullTelemetryCubit,
   );
 
   setUp(() {
@@ -60,10 +66,14 @@ void main() {
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     checkLegacyInstall = _MockCheckLegacyInstallUsecase();
     initializeRequiredTor = _MockInitializeRequiredTorUsecase();
+    recoverbullTelemetryCubit = _MockRecoverbullTelemetryCubit();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
     // No encrypted backup in these fixtures, so Tor is never warmed.
     when(() => initializeRequiredTor.execute()).thenAnswer((_) async => null);
+    when(
+      () => recoverbullTelemetryCubit.checkOnColdLaunch(),
+    ).thenAnswer((_) async {});
   });
 
   test(

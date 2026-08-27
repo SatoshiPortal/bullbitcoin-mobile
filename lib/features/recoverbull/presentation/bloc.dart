@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_with_status_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/telemetry/recoverbull_telemetry_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +49,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   /// Retrying: the connecting screen, where a cold onion lookup is expected to
   /// need more than one try.
   final ConnectToKeyServerUsecase _connectToKeyServerUsecase;
-  final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
@@ -57,6 +57,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final UpdateLatestEncryptedVaultTestUsecase
   _updateLatestEncryptedVaultTestUsecase;
   final tor.WatchTorConnectionUsecase _watchTorConnectionUsecase;
+  final FetchVaultKeyWithStatusFromServerUsecase
+  _fetchVaultKeyWithStatusFromServerUsecase;
+  final RecoverbullTelemetryCubit _recoverbullTelemetryCubit;
 
   StreamSubscription<tor.TorConnectionState>? _torSubscription;
   Future<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>?
@@ -72,7 +75,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._storeVaultKeyIntoServerUsecase,
     required this._checkKeyServerConnectionUsecase,
     required this._connectToKeyServerUsecase,
-    required this._fetchVaultKeyFromServerUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
     required this._connectToGoogleDriveUsecase,
@@ -82,6 +84,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._fetchLatestGoogleDriveVaultUsecase,
     required this._updateLatestEncryptedVaultTestUsecase,
     required this._watchTorConnectionUsecase,
+    required this._fetchVaultKeyWithStatusFromServerUsecase,
+    required this._recoverbullTelemetryCubit,
   }) : super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
@@ -443,6 +447,16 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         return;
       }
 
+      // Telemetry: register this backup as monitored WITHOUT counting an
+      // attempt — the server does not count stores, so counting one here
+      // would mask one attacker probe per window. Unawaited, never blocks
+      // the creation flow.
+      unawaited(
+        _recoverbullTelemetryCubit.registerMonitoredBackup(
+          backupIdHex: vault.id,
+        ),
+      );
+
       emit(state.copyWith(vault: vault, vaultProvider: event.provider));
       log.fine('Vault created and key stored in server');
     } finally {
@@ -459,15 +473,36 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       emit(state.copyWith(isLoading: true, vaultKey: null));
 
-      switch (await _fetchVaultKeyFromServerUsecase.execute(
+      switch (await _fetchVaultKeyWithStatusFromServerUsecase.execute(
         vault: event.vault,
         password: event.password,
       )) {
         case Ok(:final value):
-          emit(state.copyWith(vaultKey: value));
+          emit(state.copyWith(vaultKey: value.vaultKey));
           log.fine('Vault key fetched from server');
-          await _onVaultDecryption(OnVaultDecryption(vaultKey: value), emit);
+          // Telemetry: record this device's own operation and surface an
+          // immediate suspicious-activity alert when the server's counters
+          // exceed it. Unawaited, never blocks the recovery flow.
+          unawaited(
+            _recoverbullTelemetryCubit.recordLocalAttempt(
+              backupIdHex: event.vault.id,
+              attemptStatus: value.attemptStatus,
+            ),
+          );
+          await _onVaultDecryption(
+            OnVaultDecryption(vaultKey: value.vaultKey),
+            emit,
+          );
         case Err(:final failure):
+          // The targeted per-identifier lockout on the user's own fetch is
+          // an alarm signal: someone may be probing or griefing this backup.
+          if (failure is core.KeyServerRateLimitedFailure) {
+            unawaited(
+              _recoverbullTelemetryCubit.reportTargetedLockout(
+                backupIdHex: event.vault.id,
+              ),
+            );
+          }
           emit(state.copyWith(failure: _fetchKeyFailure(failure)));
       }
     } finally {
@@ -584,6 +619,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           const InvalidVaultCredentialsFailure(),
         core.KeyServerRateLimitedFailure(:final retryIn) =>
           VaultRateLimitedFailure(retryIn: retryIn ?? Duration.zero),
+        // 503 and plain unreachability are service issues, never an attack:
+        // surface them as a fetch failure, never as a lockout alarm.
+        core.KeyServerBusyFailure() => const VaultKeyFetchFailure(),
         core.KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
         core.ExternalTorProxyUnavailableFailure() =>
           const ExternalTorProxyUnavailableFailure(),
@@ -603,6 +641,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     core.KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
       retryIn: retryIn ?? Duration.zero,
     ),
+    core.KeyServerBusyFailure() => const KeyServerConnectionFailure(),
     core.KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
     core.ExternalTorProxyUnavailableFailure() =>
       const ExternalTorProxyUnavailableFailure(),
